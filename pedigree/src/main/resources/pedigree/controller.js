@@ -13,6 +13,7 @@ var Controller = Class.create({
         document.observe("pedigree:graph:clear",               this.handleClearGraph);
         document.observe("pedigree:undo",                      this.handleUndo);
         document.observe("pedigree:redo",                      this.handleRedo);
+        document.observe("pedigree:renumber",                  this.handleRenumber);
         document.observe("pedigree:node:remove",               this.handleRemove);
         document.observe("pedigree:node:setproperty",          this.handleSetProperty);
         document.observe("pedigree:node:modify",               this.handleModification);
@@ -35,6 +36,61 @@ var Controller = Class.create({
     {
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         editor.getActionStack().redo();
+    },
+
+    handleRenumber: function(event)
+    {
+        // Assigns user-visible node labels for all person nodes, based on generation and order
+        // ("I-1","I-2","I-3", "II-1", "II-2", etc.)
+
+        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+
+        var check = event.memo.hasOwnProperty("check");
+        var clear = false;
+
+        do {
+            var secondPass = false;
+
+            for (var nodeID in editor.getView().getNodeMap()) {
+                if (editor.getView().getNodeMap().hasOwnProperty(nodeID)) {
+                    if (editor.getGraph().isPerson(nodeID)) {
+                        var node = editor.getView().getNode(nodeID);
+
+                        if (clear) {
+                            var pedNumber = "";
+                        } else {
+                            var generation = editor.getGraph().getGeneration(nodeID);
+                            var order      = editor.getGraph().getOrderWithinGeneration(nodeID);
+                            var pedNumber  = romanize(generation) + "-" + order;
+
+                            if (check) {
+                                var currentPedNumber = node.getPedNumber();
+                                if (pedNumber != currentPedNumber) {
+                                    // one of the nodes PED number is not correct
+                                    clear = true;
+                                    secondPass = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        node.setPedNumber(pedNumber);
+                        var allProperties = node.getProperties();
+                        editor.getGraph().setProperties( nodeID, allProperties );
+                    }
+                }
+            }
+        } while (secondPass);
+
+        var renumberButton = $('action-number');
+        if (clear) {
+            renumberButton.className = renumberButton.className.replace("disabled-menu-item", "menu-item");
+        } else {
+            renumberButton.className = renumberButton.className.replace(/^menu-item/, "disabled-menu-item");
+        }
+
+        if (!event.memo.noUndoRedo)
+            editor.getActionStack().addState( event );
     },
 
     handleAutoLayout: function(event)
@@ -115,7 +171,7 @@ var Controller = Class.create({
 
     handleSetProperty: function(event)
     {
-        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         var nodeID     = event.memo.nodeID;
         var properties = event.memo.properties;
         var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": cloneObject(event.memo.properties)}};

@@ -137,13 +137,8 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method setPedNumber
      */
-    setPedNumber: function(generation, number) {
-        if (!number || !isInt(number) || !generation || !isInt(generation)) {
-            this._pedNumber = "";
-        }
-        else {
-            this._pedNumber = romanize(generation) + "-" + number;
-        }
+    setPedNumber: function(pedNumberString) {
+        this._pedNumber = pedNumberString;
         this.getGraphics().updateNumberLabel();
     },
 
@@ -765,7 +760,9 @@ var Person = Class.create(AbstractPerson, {
         if (this._evaluated)
             info['evaluated'] = this._evaluated;
         if (this._carrierStatus)
-            info['carrierStatus'] = this._carrierStatus;        
+            info['carrierStatus'] = this._carrierStatus;
+        if (this.getPedNumber() != "")
+            info['nodeNumber'] = this.getPedNumber();
         return info;
      },
 
@@ -830,7 +827,10 @@ var Person = Class.create(AbstractPerson, {
             }            
             if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
                 this.setCarrierStatus(info.carrierStatus);
-            }                        
+            }
+            if (info.hasOwnProperty("nodeNumber") && this.getPedNumber() != info.nodeNumber) {
+                this.setPedNumber(info.nodeNumber);
+            }
             return true;
         }
         return false;

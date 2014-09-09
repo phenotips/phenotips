@@ -80,8 +80,10 @@ var ActionStack = Class.create({
         if (this._currentState < this._size())
             this._stack.splice(this._currentState, this._stack.length - this._currentState);
 
-        if (!serializedState)
+        if (!serializedState) {
             serializedState = editor.getSaveLoadEngine().serialize();
+        }
+        //console.log("Serialized state: " + stringifyObject(serializedState));
         
         //if (!eventToGetToThisState && !serializedState)
         //    serializedState = editor.getSaveLoadEngine().serialize();

@@ -90,7 +90,7 @@ var PedigreeEditor = Class.create({
 
         var renumberButton = $('action-number');
         renumberButton && renumberButton.on("click", function(event) {
-            editor.getView().renumberAllNodes();
+            document.fire("pedigree:renumber");
         });
 
         var unsupportedBrowserButton = $('action-readonlymessage');

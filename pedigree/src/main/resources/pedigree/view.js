@@ -98,30 +98,6 @@ var View = Class.create({
         return max;
     },
 
-    renumberAllNodes: function() {
-        var renumberButton = $('action-number');
-        renumberButton.hide();
-        for (var node in this._nodeMap) {
-            if (this._nodeMap.hasOwnProperty(node)) {
-                if (editor.getGraph().isPerson(node)) {
-                    var generation = editor.getGraph().getGeneration(node);
-                    var order      = editor.getGraph().getOrderWithinGeneration(node);
-                    this._nodeMap[node].setPedNumber(generation, order);
-                }
-            }
-        }
-    },
-
-    clearNodeNumbering: function() {
-        var renumberButton = $('action-number');
-        renumberButton.show();
-        for (var node in this._nodeMap) {
-            if (this._nodeMap.hasOwnProperty(node)) {
-                this._nodeMap[node].setPedNumber && this._nodeMap[node].setPedNumber("");
-            }
-        }
-    },
-
     /**
      * Returns the person node containing x and y coordinates, or null if outside all person nodes
      *
@@ -558,10 +534,7 @@ var View = Class.create({
         //                                      them after all person nodes are already in correct position
         // 4. create new relationships
 
-
         if (changeSet.hasOwnProperty("removed")) {
-            this.clearNodeNumbering();
-
             var affectedByLineRemoval = {};
 
             for (var i = 0; i < changeSet.removed.length; i++) {
@@ -672,10 +645,6 @@ var View = Class.create({
 
         timer.printSinceLast("=== Move persons runtime: ");
 
-        if (newPersons.length > 0) {
-            this.clearNodeNumbering();
-        }
-
         for (var i = 0; i < newPersons.length; i++) {
             var newPerson = this.addNode(newPersons[i]);
             if (markNew) {
@@ -707,12 +676,17 @@ var View = Class.create({
         //timer.printSinceLast("=== highlight: ");
 
         // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
-        for (var nodeID in this._nodeMap)
-            if (this._nodeMap.hasOwnProperty(nodeID))
+        for (var nodeID in this._nodeMap) {
+            if (this._nodeMap.hasOwnProperty(nodeID)) {
                 if (editor.getGraph().isPerson(nodeID) && !this.getNode(nodeID).getGraphics().getHoverBox().isMenuToggled()) {
                     this.getNode(nodeID).getGraphics().getHoverBox().removeButtons();
                     this.getNode(nodeID).getGraphics().getHoverBox().removeHandles();
                 }
+            }
+        }
+
+        var checkNumberingEvent = { "memo": { "check": true, "noUndoRedo": true } };
+        editor.getController().handleRenumber(checkNumberingEvent);
 
         // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
 
