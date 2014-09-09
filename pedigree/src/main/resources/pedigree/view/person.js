@@ -549,7 +549,9 @@ var Person = Class.create(AbstractPerson, {
             this._disorders = this.getDisorders().without(disorderID);
         }
         else {
-            alert("This person doesn't have the specified disorder");
+            if (disorderID != "affected") {
+                alert("This person doesn't have the specified disorder");
+            }
         }
     },
 
