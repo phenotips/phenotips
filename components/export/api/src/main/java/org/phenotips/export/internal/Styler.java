@@ -35,6 +35,9 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 
 /**
  * Takes care of giving cells the right style, and applying styles to the output spreadsheet.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public class Styler
 {

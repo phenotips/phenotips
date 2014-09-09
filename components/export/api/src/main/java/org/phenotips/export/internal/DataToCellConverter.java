@@ -48,6 +48,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}. If there are cells requested
  * (header present) but there is no data to put inside the cells, do not return null as cell value or no cell at all,
  * return a cell containing an empty string.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public class DataToCellConverter
 {

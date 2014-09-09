@@ -43,6 +43,9 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * These are supplementary functions to the main conversion functions.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public class ConversionHelpers
 {

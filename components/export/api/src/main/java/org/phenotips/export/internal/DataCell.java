@@ -28,6 +28,9 @@ import java.util.Set;
 /**
  * Holds the value of the cell and its styling. The position is held as indices of a 2D array in whatever class is
  * referencing the cell.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public class DataCell
 {

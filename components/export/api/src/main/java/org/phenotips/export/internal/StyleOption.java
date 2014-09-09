@@ -21,6 +21,9 @@ package org.phenotips.export.internal;
 
 /**
  * An enum of all the possible style options for a cell.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public enum StyleOption
 {

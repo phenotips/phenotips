@@ -32,6 +32,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Assembles the various DataSections.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 public class SheetAssembler
 {
