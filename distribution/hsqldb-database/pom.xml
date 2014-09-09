@@ -69,12 +69,22 @@
             <hibernateConfig>
               ${project.build.directory}/maven-shared-archive-resources/hibernate.cfg.xml
             </hibernateConfig>
+            <xwikiConfig>
+              ${project.build.directory}/maven-shared-archive-resources/xwiki.cfg
+            </xwikiConfig>
           </configuration>
           <dependencies>
             <dependency>
               <groupId>org.hsqldb</groupId>
               <artifactId>hsqldb</artifactId>
               <version>2.3.2</version>
+            </dependency>
+            <!-- Filesystem attachment storage -->
+            <dependency>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-store-filesystem-attachments</artifactId>
+              <version>${xwiki.version}</version>
+              <scope>runtime</scope>
             </dependency>
             <!-- Add dependencies that have their own set of migrators, so that a new database doesn't trigger migrators. -->
             <dependency>
@@ -164,37 +174,21 @@
                     <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                     <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
                     <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
-                    <xwikiCfgPlugins>\
-  com.xpn.xwiki.monitor.api.MonitorPlugin,\
-  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
-  com.xpn.xwiki.plugin.feed.FeedPlugin,\
-  com.xpn.xwiki.plugin.google.GooglePlugin,\
-  com.xpn.xwiki.plugin.mail.MailPlugin,\
-  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
-  com.xpn.xwiki.plugin.svg.SVGPlugin,\
-  com.xpn.xwiki.plugin.charts.ChartingPlugin,\
-  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
-  com.xpn.xwiki.plugin.image.ImagePlugin,\
-  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
-  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
-  com.xpn.xwiki.plugin.diff.DiffPlugin,\
-  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
-  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
-  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
-  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
-  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
-  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
-  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
                     <xwikiCfgVirtual>0</xwikiCfgVirtual>
-                    <xwikiCfgVirtualUsepath>${xwiki.cfg.virtual.usepath}</xwikiCfgVirtualUsepath>
+                    <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                     <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
                     <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
                     <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
                     <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+                    <xwikiCfgAdditionalProperties>
+xwiki.plugin.watchlist.automaticwatch=none
+xwiki.authentication.group.allgroupimplicit=1
+xwiki.backlinks=0
+xwiki.monitor=0
+xwiki.store.attachment.hint=file
+xwiki.store.attachment.versioning.hint=file
+xwiki.store.attachment.recyclebin.hint=file
+                    </xwikiCfgAdditionalProperties>
                   </properties>
                 </configuration>
               </execution>

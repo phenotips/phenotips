@@ -163,6 +163,9 @@ xwiki.defaultweb=data
 xwiki.usedefaultweb=1
 xwiki.usedefaultaction=0
 xwiki.monitor=0
+xwiki.store.attachment.hint=file
+xwiki.store.attachment.versioning.hint=file
+xwiki.store.attachment.recyclebin.hint=file
                 </xwikiCfgAdditionalProperties>
                 <xwikiPropertiesEnvironmentPermanentDirectory>/var/lib/phenotips/</xwikiPropertiesEnvironmentPermanentDirectory>
                 <xwikiPropertiesAdditionalProperties>
