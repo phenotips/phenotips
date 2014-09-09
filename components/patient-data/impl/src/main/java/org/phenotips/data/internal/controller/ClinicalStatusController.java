@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
 
 import net.sf.json.JSONObject;
 
@@ -45,20 +44,20 @@ import net.sf.json.JSONObject;
  * Has only one field corresponding to whether the patient is affected, normal, or pre-symptomatic.
  *
  * @version $Id$
- * @since 1.0RC2
+ * @since 1.0RC1
  */
 @Component(roles = { PatientDataController.class })
 @Named("clinicalStatus")
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
-    /** Provides access to the underlying data storage. */
-    @Inject
-    protected DocumentAccessBridge documentAccessBridge;
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    /** Provides access to the underlying data storage. */
+    @Inject
+    protected DocumentAccessBridge documentAccessBridge;
 
     @Override
     public String getName()
@@ -76,15 +75,11 @@ public class ClinicalStatusController implements PatientDataController<String>
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            BaseProperty field = (BaseProperty) data.getField(unaffected);
-            if (field != null) {
-                Object propertyValue = field.getValue();
-                /* If the controller only works with codes, store the Ontology Instances rather than Strings */
-                if (propertyValue == 0) {
-                    return new SimpleValuePatientData<String>(getName(), unaffected);
-                } else if (propertyValue == 1) {
-                    return new SimpleValuePatientData<String>(getName(), "affected");
-                }
+            int isNormal = data.getIntValue(unaffected);
+            if (isNormal == 0) {
+                return new SimpleValuePatientData<String>(getName(), unaffected);
+            } else if (isNormal == 1) {
+                return new SimpleValuePatientData<String>(getName(), "affected");
             }
         } catch (Exception e) {
             this.logger.error(
