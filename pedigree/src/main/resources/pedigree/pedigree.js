@@ -62,6 +62,7 @@ var PedigreeEditor = Class.create({
 
         var saveButton = $('action-save');
         saveButton && saveButton.on("click", function(event) {
+            editor.getView().unmarkAll();
             editor.getSaveLoadEngine().save();
         });
         var loadButton = $('action-reload');
