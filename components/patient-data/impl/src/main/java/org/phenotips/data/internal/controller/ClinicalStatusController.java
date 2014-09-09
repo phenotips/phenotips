@@ -57,7 +57,7 @@ public class ClinicalStatusController implements PatientDataController<String>
 
     /** Provides access to the underlying data storage. */
     @Inject
-    protected DocumentAccessBridge documentAccessBridge;
+    private DocumentAccessBridge documentAccessBridge;
 
     @Override
     public String getName()
