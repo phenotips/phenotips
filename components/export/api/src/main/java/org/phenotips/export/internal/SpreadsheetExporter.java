@@ -66,34 +66,31 @@ public class SpreadsheetExporter
         try {
             createBlankWorkbook();
             processMainSheet(enabledFields, patients);
-            wBook.write(outputStream);
+            this.wBook.write(outputStream);
             outputStream.flush();
-//            wBook.write(wOutputStream);
+            // wBook.write(wOutputStream);
         } catch (IOException ex) {
-            //FIXME
+            // FIXME
         } catch (Exception ex) {
-            //Nothing that can be really done, so just rethrow it.
+            // Nothing that can be really done, so just rethrow it.
             throw ex;
         } finally {
-            /* if (wOutputStream != null) {
-                try {
-                    wOutputStream.close();
-                } catch (IOException ex) {
-                    //If this happens, something went very wrong.
-                }
-            } */
-//            return wOutputStream;
+            /*
+             * if (wOutputStream != null) { try { wOutputStream.close(); } catch (IOException ex) { //If this happens,
+             * something went very wrong. } }
+             */
+            // return wOutputStream;
         }
     }
 
     protected void processMainSheet(Set<String> enabledFields, List<XWikiDocument> patients) throws Exception
     {
         String sheetName = "main";
-        Sheet sheet = wBook.createSheet("Patient Sheet");
-        sheets.put(sheetName, sheet);
+        Sheet sheet = this.wBook.createSheet("Patient Sheet");
+        this.sheets.put(sheetName, sheet);
 
         SheetAssembler assembler = runAssembler(enabledFields, patients);
-//        styleCells();
+        // styleCells();
         write(assembler.getAssembled(), sheet);
         freezeHeader(assembler.headerHeight.shortValue(), sheet);
     }
@@ -144,7 +141,7 @@ public class SpreadsheetExporter
                 }
                 Cell cell = row.createCell(x);
                 cell.setCellValue(dataCell.getValue());
-                styler.style(dataCell, cell, wBook);
+                styler.style(dataCell, cell, this.wBook);
 
                 if (dataCell.getNumberOfLines() != null) {
                     maxLines = maxLines < dataCell.getNumberOfLines() ? dataCell.getNumberOfLines() : maxLines;
@@ -169,18 +166,19 @@ public class SpreadsheetExporter
                 if (dataCell != null && dataCell.getMergeX() != null) {
                     sheet.addMergedRegion(new CellRangeAddress(y, y, x, x + dataCell.getMergeX()));
                 }
-                /* No longer will be merging cells on the Y axis, but keep this code for future reference.
-                if (dataCell.getYBoundry() != null) {
-                    sheet.addMergedRegion(new CellRangeAddress(dataCell.y, dataCell.getYBoundry(), dataCell.x, dataCell.x));
-                } */
+                /*
+                 * No longer will be merging cells on the Y axis, but keep this code for future reference. if
+                 * (dataCell.getYBoundry() != null) { sheet.addMergedRegion(new CellRangeAddress(dataCell.y,
+                 * dataCell.getYBoundry(), dataCell.x, dataCell.x)); }
+                 */
             }
         }
     }
 
     protected void createBlankWorkbook() throws IOException
     {
-        wBook = new XSSFWorkbook();
-//        wOutputStream = new FileOutputStream("/home/anton/Documents/workbook.xlsx");
-        wOutputStream = new ByteArrayOutputStream();
+        this.wBook = new XSSFWorkbook();
+        // wOutputStream = new FileOutputStream("/home/anton/Documents/workbook.xlsx");
+        this.wOutputStream = new ByteArrayOutputStream();
     }
 }

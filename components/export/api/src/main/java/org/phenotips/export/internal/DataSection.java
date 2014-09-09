@@ -48,7 +48,7 @@ public class DataSection
 
     public DataSection(String name)
     {
-        sectionName = name;
+        this.sectionName = name;
     }
 
     /** This constructor should be used only when combining several sections into one */
@@ -60,66 +60,69 @@ public class DataSection
     public void addCell(DataCell cell)
     {
         /* Add to matrix only if the cell fits within the boundaries and the current spot is empty */
-        if (matrix != null) {
-            if (cell.getX() < matrixX && cell.getY() < matrixY) {
-                if (matrix[cell.getX()][cell.getY()] == null) {
-                    matrix[cell.getX()][cell.getY()] = cell;
+        if (this.matrix != null) {
+            if (cell.getX() < this.matrixX && cell.getY() < this.matrixY) {
+                if (this.matrix[cell.getX()][cell.getY()] == null) {
+                    this.matrix[cell.getX()][cell.getY()] = cell;
                 }
             }
         }
-        if (cell.getX() > maxX) {
-            maxX = cell.getX();
+        if (cell.getX() > this.maxX) {
+            this.maxX = cell.getX();
         }
-        if (cell.getY() > maxY) {
-            maxY = cell.getY();
+        if (cell.getY() > this.maxY) {
+            this.maxY = cell.getY();
         }
-        cellList.add(cell);
+        this.cellList.add(cell);
     }
 
     public void finalizeToMatrix() throws Exception
     {
-        if (maxX == null || maxY == null) {
+        if (this.maxX == null || this.maxY == null) {
             throw new Exception("The maximum values should be initialized");
         }
 
-        /* From now on the cell positioning can be read from the 2D array's points,
-        rather then the positioning stored within the cell. */
-        matrixX = maxX + 1;
-        matrixY = maxY + 1;
-        matrix = new DataCell[matrixX][matrixY];
-        for (DataCell cell : cellList) {
-            matrix[cell.getX()][cell.getY()] = cell;
+        /*
+         * From now on the cell positioning can be read from the 2D array's points, rather then the positioning stored
+         * within the cell.
+         */
+        this.matrixX = this.maxX + 1;
+        this.matrixY = this.maxY + 1;
+        this.matrix = new DataCell[this.matrixX][this.matrixY];
+        for (DataCell cell : this.cellList) {
+            this.matrix[cell.getX()][cell.getY()] = cell;
 
-            /* Some cells will be later merged, and to preserve styles they need to generate a list of empty
-            cells */
+            /*
+             * Some cells will be later merged, and to preserve styles they need to generate a list of empty cells
+             */
             for (DataCell emptyCell : cell.generateMergedCells()) {
-                matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
+                this.matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
             }
         }
     }
 
     public void addMergedToMatrix()
     {
-        for (DataCell cell : cellList) {
+        for (DataCell cell : this.cellList) {
             for (DataCell emptyCell : cell.generateMergedCells()) {
-                matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
+                this.matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
             }
         }
     }
 
     public void mergeX() throws Exception
     {
-        if (matrix == null) {
+        if (this.matrix == null) {
             throw new Exception("The section has not been converted to a matrix");
         }
         for (Integer y = 0; y <= getMaxY(); y++) {
             for (Integer x = 0; x <= getMaxX(); x++) {
-                DataCell cell = matrix[x][y];
+                DataCell cell = this.matrix[x][y];
                 if (cell == null) {
                     continue;
                 }
                 Integer nextX = x + 1;
-                while (nextX <= getMaxX() && matrix[nextX][y] == null) {
+                while (nextX <= getMaxX() && this.matrix[nextX][y] == null) {
                     cell.addMergeX();
                     nextX++;
                 }
@@ -129,21 +132,21 @@ public class DataSection
 
     public Set<DataCell> getCellList()
     {
-        return cellList;
+        return this.cellList;
     }
 
     public DataCell[][] getMatrix()
     {
-        return matrix;
+        return this.matrix;
     }
 
     public Integer getMaxX()
     {
-        return maxX;
+        return this.maxX;
     }
 
     public Integer getMaxY()
     {
-        return maxY;
+        return this.maxY;
     }
 }

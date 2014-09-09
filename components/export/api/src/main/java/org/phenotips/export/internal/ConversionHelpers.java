@@ -59,7 +59,7 @@ public class ConversionHelpers
 
     public void newPatient()
     {
-        sectionFeatureTree = new HashMap<String, String>();
+        this.sectionFeatureTree = new HashMap<String, String>();
     }
 
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
@@ -77,9 +77,9 @@ public class ConversionHelpers
         Object _mapping = mappingService.get("phenotype");
         if (_mapping instanceof ArrayList) {
             List<Map<String, Object>> fullMapping = (List<Map<String, Object>>) _mapping;
-            categoryMapping = new LinkedHashMap<String, ArrayList<String>>();
+            this.categoryMapping = new LinkedHashMap<>();
             for (Map<String, Object> categoryEntry : fullMapping) {
-                categoryMapping
+                this.categoryMapping
                     .put(categoryEntry.get("title").toString(), (ArrayList<String>) categoryEntry.get("categories"));
             }
         } else {
@@ -91,7 +91,7 @@ public class ConversionHelpers
     {
         List<Feature> sortedFeatures = new LinkedList<Feature>();
         for (Feature feature : features) {
-            if (feature.isPresent() == status && positive) {
+            if (feature.isPresent() == status && this.positive) {
                 sortedFeatures.add(0, feature);
             }
         }
@@ -132,7 +132,7 @@ public class ConversionHelpers
                     if (getCategoriesFromOntology(feature.getId()).contains(category) ||
                         StringUtils.equals(feature.getId(), category))
                     {
-                        sectionFeatureTree.put(feature.getId(), section);
+                        this.sectionFeatureTree.put(feature.getId(), section);
                         sortedFeatures.add(feature);
                         toRemove.add(feature);
                     }
@@ -147,6 +147,7 @@ public class ConversionHelpers
 
     /**
      * Filters features based on their prenatal status
+     *
      * @param prenatal if true returns prenatal features, if false non-prenatal
      */
     public Set<Feature> filterFeaturesByPrenatal(Set<? extends Feature> features, Boolean prenatal)
@@ -178,15 +179,16 @@ public class ConversionHelpers
 
     public Map<String, ArrayList<String>> getCategoryMapping()
     {
-        return categoryMapping;
+        return this.categoryMapping;
     }
 
     public Map<String, String> getSectionFeatureTree()
     {
-        return sectionFeatureTree;
+        return this.sectionFeatureTree;
     }
 
-    /** No longer needed */ public static String wrapString(String string, Integer charactersPerLine)
+    /** No longer needed */
+    public static String wrapString(String string, Integer charactersPerLine)
     {
         if (string == null) {
             return "";
@@ -194,7 +196,7 @@ public class ConversionHelpers
         StringBuilder returnString = new StringBuilder(string);
         Integer counter = charactersPerLine;
         Character nextChar = null;
-        while(counter < string.length()) {
+        while (counter < string.length()) {
             Boolean found = false;
             /* TODO. See if this breaks in Unicode */
             while (nextChar == null || nextChar.compareTo(' ') != 0) {
@@ -203,7 +205,7 @@ public class ConversionHelpers
                 found = true;
             }
             if (found) {
-//                returnString.insert(counter, "\n");
+                // returnString.insert(counter, "\n");
             }
 
             counter += charactersPerLine;

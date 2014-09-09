@@ -87,7 +87,6 @@ public class Styler
         }
     }
 
-
     public static void extendStyleHorizontally(DataSection section, StyleOption... styles)
         throws Exception
     {
@@ -165,7 +164,7 @@ public class Styler
             if (!found) {
                 continue;
             }
-//            for (int y = startingY + 1; y <= section.getMaxY(); y++) {
+            // for (int y = startingY + 1; y <= section.getMaxY(); y++) {
             for (int y = 0; y <= section.getMaxY(); y++) {
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
@@ -183,22 +182,22 @@ public class Styler
         CellStyle cellStyle = wBook.createCellStyle();
         /* For \n to work properly set to true */
         cellStyle.setWrapText(true);
-        if (defaultFont == null) {
-            defaultFont = createDefaultFont(wBook);
+        if (this.defaultFont == null) {
+            this.defaultFont = createDefaultFont(wBook);
         }
-        cellStyle.setFont(defaultFont);
+        cellStyle.setFont(this.defaultFont);
         if (styles == null) {
-            if (styleCache.containsKey(Collections.<StyleOption>emptySet())) {
-                cell.setCellStyle(styleCache.get(Collections.<StyleOption>emptySet()));
+            if (this.styleCache.containsKey(Collections.<StyleOption>emptySet())) {
+                cell.setCellStyle(this.styleCache.get(Collections.<StyleOption>emptySet()));
                 return;
             }
             cell.setCellStyle(cellStyle);
-            styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
+            this.styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
             return;
         }
 
-        if (styleCache.containsKey(styles)) {
-            cell.setCellStyle(styleCache.get(styles));
+        if (this.styleCache.containsKey(styles)) {
+            cell.setCellStyle(this.styleCache.get(styles));
             return;
         }
 
@@ -265,10 +264,11 @@ public class Styler
         }
 
         /* Keep this as the last statement. */
-        styleCache.put(styles, cellStyle);
+        this.styleCache.put(styles, cellStyle);
     }
 
-    private Font createDefaultFont(Workbook wBook) {
+    private Font createDefaultFont(Workbook wBook)
+    {
         Font font = wBook.createFont();
         font.setFontHeightInPoints((short) 9);
         font.setFontName(XSSFFont.DEFAULT_FONT_NAME);

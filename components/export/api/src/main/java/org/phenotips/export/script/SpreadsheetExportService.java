@@ -89,14 +89,14 @@ public class SpreadsheetExportService implements ScriptService
      */
     public void export(String[] enabledFields, List<String> patients, OutputStream outputStream) throws XWikiException
     {
-        context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
-        wiki = context.getWiki();
+        this.context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+        this.wiki = this.context.getWiki();
 
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
             exporter.export(enabledFields, patientListToXWikiDocument(patients), outputStream);
         } catch (Exception ex) {
-            logger.error("Error caught while generating an export spreadsheet", ex);
+            this.logger.error("Error caught while generating an export spreadsheet", ex);
         }
     }
 
@@ -104,15 +104,15 @@ public class SpreadsheetExportService implements ScriptService
     {
         List<XWikiDocument> docList = new LinkedList<XWikiDocument>();
         for (String id : patients) {
-            docList.add(wiki.getDocument(stringReferenceResolver.resolve(id), context));
+            docList.add(this.wiki.getDocument(this.stringReferenceResolver.resolve(id), this.context));
         }
         return docList;
     }
 
     protected String[] substitutePretty(String[] fields) throws XWikiException
     {
-        DocumentReference classDoc = referenceResolver.resolve(patientClass);
-        BaseClass patientClassObj = wiki.getXClass(classDoc, context);
+        DocumentReference classDoc = this.referenceResolver.resolve(patientClass);
+        BaseClass patientClassObj = this.wiki.getXClass(classDoc, this.context);
         String[] prettyFields = new String[fields.length];
         Integer counter = 0;
         for (String field : fields) {
@@ -130,4 +130,3 @@ public class SpreadsheetExportService implements ScriptService
         return prettyFields;
     }
 }
-

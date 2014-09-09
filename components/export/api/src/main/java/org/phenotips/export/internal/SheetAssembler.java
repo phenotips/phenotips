@@ -78,11 +78,12 @@ public class SheetAssembler
         /* Add style through functions. Use only with finalized sections. */
         Styler.styleSectionBottom(headerCombined, StyleOption.HEADER_BOTTOM);
 
-        headerHeight = headerCombined.getMaxY() + 1;
-        oneSection = assembleSectionsY(Arrays.asList(headerCombined, bodyCombined), true);
+        this.headerHeight = headerCombined.getMaxY() + 1;
+        this.oneSection = assembleSectionsY(Arrays.asList(headerCombined, bodyCombined), true);
 
         /* Extend the section borders all the way to the bottom of the sheet */
-        Styler.extendStyleVertically(oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
+        Styler
+            .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients,
@@ -139,7 +140,8 @@ public class SheetAssembler
         return headerSections;
     }
 
-    private DataSection assembleSectionsX(Collection<DataSection> sections, Boolean finalize)  throws Exception {
+    private DataSection assembleSectionsX(Collection<DataSection> sections, Boolean finalize) throws Exception
+    {
         DataSection combinedSection = new DataSection();
 
         Integer offset = 0;
@@ -160,7 +162,8 @@ public class SheetAssembler
         return combinedSection;
     }
 
-    private DataSection assembleSectionsY(Collection<DataSection> sections, Boolean finalize) throws Exception {
+    private DataSection assembleSectionsY(Collection<DataSection> sections, Boolean finalize) throws Exception
+    {
         DataSection combinedSection = new DataSection();
 
         Integer offset = 0;
@@ -182,6 +185,6 @@ public class SheetAssembler
 
     public DataSection getAssembled()
     {
-        return oneSection;
+        return this.oneSection;
     }
 }

@@ -45,9 +45,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
- * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}.
- * If there are cells requested (header present) but there is no data to put inside the cells,
- * do not return null as cell value or no cell at all, return a cell containing an empty string.
+ * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}. If there are cells requested
+ * (header present) but there is no data to put inside the cells, do not return null as cell value or no cell at all,
+ * return a cell containing an empty string.
  */
 public class DataToCellConverter
 {
@@ -80,17 +80,17 @@ public class DataToCellConverter
             }
             counter++;
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        phenotypeHelper = new ConversionHelpers();
-        phenotypeHelper
+        this.phenotypeHelper = new ConversionHelpers();
+        this.phenotypeHelper
             .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
     {
         String sectionName = "phenotype";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present.isEmpty()) {
             return null;
         }
@@ -136,7 +136,7 @@ public class DataToCellConverter
     public DataSection phenotypeBody(Patient patient) throws Exception
     {
         String sectionName = "phenotype";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -147,15 +147,15 @@ public class DataToCellConverter
         int x;
         int y = 0;
         Set<? extends Feature> features = patient.getFeatures();
-        phenotypeHelper.newPatient();
+        this.phenotypeHelper.newPatient();
         Boolean categoriesEnabled = present.contains("category");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
         if (!categoriesEnabled) {
-            sortedFeatures = phenotypeHelper.sortFeaturesSimple(features);
+            sortedFeatures = this.phenotypeHelper.sortFeaturesSimple(features);
         } else {
-            sortedFeatures = phenotypeHelper.sortFeaturesWithSections(features);
-            sectionFeatureLookup = phenotypeHelper.getSectionFeatureTree();
+            sortedFeatures = this.phenotypeHelper.sortFeaturesWithSections(features);
+            sectionFeatureLookup = this.phenotypeHelper.getSectionFeatureTree();
         }
 
         Boolean lastStatus = false;
@@ -237,7 +237,7 @@ public class DataToCellConverter
                 emptyX++;
             }
         }
-//        section.finalizeToMatrix();
+        // section.finalizeToMatrix();
         return section;
     }
 
@@ -254,7 +254,7 @@ public class DataToCellConverter
         if (present.size() == 0) {
             return null;
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection section = new DataSection(sectionName);
         DataCell topCell = new DataCell("Identifiers", 0, 0, StyleOption.HEADER);
@@ -268,14 +268,14 @@ public class DataToCellConverter
             DataCell externalIdCell = new DataCell("Patient Identifier", 1, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
         }
-//        section.finalizeToMatrix();
+        // section.finalizeToMatrix();
         return section;
     }
 
     public DataSection idBody(Patient patient) throws Exception
     {
         String sectionName = "id";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -289,7 +289,7 @@ public class DataToCellConverter
             DataCell cell = new DataCell(patient.getExternalId(), 1, 0);
             section.addCell(cell);
         }
-//        section.finalizeToMatrix();
+        // section.finalizeToMatrix();
         return section;
     }
 
@@ -310,7 +310,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection headerSection = new DataSection(sectionName);
         if (present.isEmpty()) {
@@ -333,7 +333,7 @@ public class DataToCellConverter
     public DataSection documentInfoBody(XWikiDocument patientDoc)
     {
         String sectionName = "documentInfo";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -388,7 +388,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection headerSection = new DataSection(sectionName);
         if (present.isEmpty()) {
@@ -411,7 +411,7 @@ public class DataToCellConverter
     public DataSection patientInfoBody(Patient patient)
     {
         String sectionName = "patientInfo";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -472,7 +472,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
         if (present.isEmpty()) {
             return null;
         }
@@ -511,7 +511,7 @@ public class DataToCellConverter
     public DataSection familyHistoryBody(Patient patient)
     {
         String sectionName = "familyHistory";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -600,7 +600,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
         if (present.isEmpty()) {
             return null;
         }
@@ -643,7 +643,7 @@ public class DataToCellConverter
     public DataSection prenatalPerinatalHistoryBody(Patient patient)
     {
         String sectionName = "prenatalPerinatalHistory";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -722,18 +722,18 @@ public class DataToCellConverter
             }
             counter++;
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         /* Needed for ordering phenotypes */
-        prenatalPhenotypeHelper = new ConversionHelpers();
-        prenatalPhenotypeHelper
+        this.prenatalPhenotypeHelper = new ConversionHelpers();
+        this.prenatalPhenotypeHelper
             .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
     {
         String sectionName = "prenatalPhenotype";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present.isEmpty()) {
             return null;
         }
@@ -779,7 +779,7 @@ public class DataToCellConverter
     public DataSection prenatalPhenotypeBody(Patient patient) throws Exception
     {
         String sectionName = "prenatalPhenotype";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -791,16 +791,16 @@ public class DataToCellConverter
         int y = 0;
         Set<? extends Feature> features = patient.getFeatures();
 
-        prenatalPhenotypeHelper.newPatient();
-        features = prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
+        this.prenatalPhenotypeHelper.newPatient();
+        features = this.prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
         Boolean categoriesEnabled = present.contains("category");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
         if (!categoriesEnabled) {
-            sortedFeatures = prenatalPhenotypeHelper.sortFeaturesSimple(features);
+            sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesSimple(features);
         } else {
-            sortedFeatures = prenatalPhenotypeHelper.sortFeaturesWithSections(features);
-            sectionFeatureLookup = prenatalPhenotypeHelper.getSectionFeatureTree();
+            sortedFeatures = this.prenatalPhenotypeHelper.sortFeaturesWithSections(features);
+            sectionFeatureLookup = this.prenatalPhenotypeHelper.getSectionFeatureTree();
         }
 
         Boolean lastStatus = false;
@@ -871,7 +871,7 @@ public class DataToCellConverter
                 emptyX++;
             }
         }
-//        section.finalizeToMatrix();
+        // section.finalizeToMatrix();
         return section;
     }
 
@@ -895,7 +895,7 @@ public class DataToCellConverter
             }
             counter++;
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         // Must be linked to keep order; in other sections as well
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
@@ -924,7 +924,7 @@ public class DataToCellConverter
     public DataSection disordersBody(Patient patient)
     {
         String sectionName = "disorders";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -990,7 +990,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection headerSection = new DataSection(sectionName);
         if (present.isEmpty()) {
@@ -1013,7 +1013,7 @@ public class DataToCellConverter
     public DataSection medicalHistoryBody(Patient patient)
     {
         String sectionName = "medicalHistory";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -1053,7 +1053,7 @@ public class DataToCellConverter
                 present.add(fieldId);
             }
         }
-        enabledHeaderIdsBySection.put(sectionName, present);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
 
         DataSection headerSection = new DataSection(sectionName);
         if (present.isEmpty()) {
@@ -1070,7 +1070,7 @@ public class DataToCellConverter
     public DataSection isNormalBody(Patient patient)
     {
         String sectionName = "isNormal";
-        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }

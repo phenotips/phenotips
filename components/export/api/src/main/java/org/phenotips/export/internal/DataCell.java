@@ -64,12 +64,12 @@ public class DataCell
 
     public void addStyle(StyleOption _style)
     {
-        if (styles == null) {
-            styles = new HashSet<StyleOption>();
+        if (this.styles == null) {
+            this.styles = new HashSet<StyleOption>();
         }
-        styles.add(_style);
-        if (generated != null) {
-            for (DataCell child : generated) {
+        this.styles.add(_style);
+        if (this.generated != null) {
+            for (DataCell child : this.generated) {
                 child.addStyle(_style);
             }
         }
@@ -80,12 +80,12 @@ public class DataCell
         if (_styles == null) {
             return;
         }
-        if (styles == null) {
-            styles = new HashSet<StyleOption>();
+        if (this.styles == null) {
+            this.styles = new HashSet<StyleOption>();
         }
-        styles.addAll(_styles);
-        if (generated != null) {
-            for (DataCell child : generated) {
+        this.styles.addAll(_styles);
+        if (this.generated != null) {
+            for (DataCell child : this.generated) {
                 child.addStyles(_styles);
             }
         }
@@ -93,12 +93,12 @@ public class DataCell
 
     public Integer getX()
     {
-        return x;
+        return this.x;
     }
 
     public Integer getY()
     {
-        return y;
+        return this.y;
     }
 
     public void setX(Integer x)
@@ -113,50 +113,50 @@ public class DataCell
 
     public String getValue()
     {
-        return value;
+        return this.value;
     }
 
     public Integer getMergeX()
     {
-        return mergeX;
+        return this.mergeX;
     }
 
     public void addMergeX()
     {
-        if (mergeX == null) {
-            mergeX = 0;
+        if (this.mergeX == null) {
+            this.mergeX = 0;
         }
-        mergeX++;
+        this.mergeX++;
     }
 
     public Set<DataCell> generateMergedCells()
     {
-        if (mergeX == null) {
+        if (this.mergeX == null) {
             return Collections.emptySet();
         }
-        if (generated != null) {
-            return generated;
+        if (this.generated != null) {
+            return this.generated;
         }
 
-        generated = new HashSet<DataCell>();
-        for (int x = 1; x <= mergeX; x++) {
+        this.generated = new HashSet<DataCell>();
+        for (int x = 1; x <= this.mergeX; x++) {
             DataCell cell = new DataCell("", this.x + x, this.getY());
             cell.setIsChild(true);
             cell.addStyles(this.styles);
-            generated.add(cell);
+            this.generated.add(cell);
         }
 
-        return generated;
+        return this.generated;
     }
 
     public Set<StyleOption> getStyles()
     {
-        return styles;
+        return this.styles;
     }
 
     public Boolean isChild()
     {
-        if (isChild == null || !isChild) {
+        if (this.isChild == null || !this.isChild) {
             return false;
         }
         return true;
@@ -167,12 +167,13 @@ public class DataCell
         this.isChild = isChild;
     }
 
-    public void setMultiline() {
+    public void setMultiline()
+    {
         this.numberOfLines = this.value.split("\n").length;
     }
 
     public Integer getNumberOfLines()
     {
-        return numberOfLines;
+        return this.numberOfLines;
     }
 }
