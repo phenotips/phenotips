@@ -31,10 +31,10 @@
   <name>PhenoTips - Data export - Spreadsheet Export APIs</name>
 
   <properties>
-      <!-- FIXME -->
+    <!-- FIXME -->
     <coverage.instructionRatio>0.0</coverage.instructionRatio>
-      <!-- FIXME. This module was written inside the patient-data-sharing module, which had skip checkstyle enabled.
-      There are now 234 checkstyle errors in this module. That is part of the documentation/tests issue now. -->
+    <!-- FIXME. This module was written inside the patient-data-sharing module, which had skip checkstyle enabled.
+    There are now many checkstyle errors in this module. That is part of the documentation/tests issue now (#1096). -->
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
