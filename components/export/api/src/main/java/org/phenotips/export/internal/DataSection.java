@@ -34,10 +34,10 @@ public class DataSection
 
     private Set<DataCell> cellList = new HashSet<DataCell>();
 
-    /** Populated after all the cells are in the buffer list */
+    /** Populated after all the cells are in the buffer list. */
     private DataCell[][] matrix;
 
-    /** The matrix X and Y are size parameters, not the max X or Y index */
+    /** The matrix X and Y are size parameters, not the max X or Y index. */
     private Integer matrixX = 0;
 
     private Integer matrixY = 0;
@@ -51,12 +51,12 @@ public class DataSection
         this.sectionName = name;
     }
 
-    /** This constructor should be used only when combining several sections into one */
+    /** This constructor should be used only when combining several sections into one. */
     public DataSection()
     {
     }
 
-    /** Need the buffer to determine the size of the matrix first */
+    /** Need the buffer to determine the size of the matrix first. */
     public void addCell(DataCell cell)
     {
         /* Add to matrix only if the cell fits within the boundaries and the current spot is empty */
@@ -82,19 +82,15 @@ public class DataSection
             throw new Exception("The maximum values should be initialized");
         }
 
-        /*
-         * From now on the cell positioning can be read from the 2D array's points, rather then the positioning stored
-         * within the cell.
-         */
+        // From now on the cell positioning can be read from the 2D array's points, rather then the positioning stored
+        // within the cell.
         this.matrixX = this.maxX + 1;
         this.matrixY = this.maxY + 1;
         this.matrix = new DataCell[this.matrixX][this.matrixY];
         for (DataCell cell : this.cellList) {
             this.matrix[cell.getX()][cell.getY()] = cell;
 
-            /*
-             * Some cells will be later merged, and to preserve styles they need to generate a list of empty cells
-             */
+            // Some cells will be later merged, and to preserve styles they need to generate a list of empty cells
             for (DataCell emptyCell : cell.generateMergedCells()) {
                 this.matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
             }
