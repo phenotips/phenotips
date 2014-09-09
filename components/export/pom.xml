@@ -32,7 +32,7 @@
   <name>PhenoTips - Data export</name>
 
   <modules>
+    <module>api</module>
     <module>ui</module>
-    <module>export-api</module>
   </modules>
 </project>
