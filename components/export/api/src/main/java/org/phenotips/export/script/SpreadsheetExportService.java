@@ -36,8 +36,6 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWikiException;
-
 /**
  * Service for exporting a list of patients into an {@code .xlsx} Excel file.
  *
@@ -66,7 +64,7 @@ public class SpreadsheetExportService implements ScriptService
      *            readable labels
      * @param outputStream the output stream where the resulting binary {@code .xlsx} file will be sent
      */
-    public void export(List<Patient> patients, String[] enabledFields, OutputStream outputStream) throws XWikiException
+    public void export(List<Patient> patients, String[] enabledFields, OutputStream outputStream)
     {
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
