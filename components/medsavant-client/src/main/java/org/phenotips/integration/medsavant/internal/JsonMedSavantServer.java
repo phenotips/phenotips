@@ -469,7 +469,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         throws XWikiException, IOException
     {
         BufferedReader in =
-            new BufferedReader(new InputStreamReader(attachment.getContentInputStream(context),
+            IOUtils.toBufferedReader(new InputStreamReader(attachment.getContentInputStream(context),
                 XWiki.DEFAULT_ENCODING));
         String line;
         while ((line = in.readLine()) != null) {
