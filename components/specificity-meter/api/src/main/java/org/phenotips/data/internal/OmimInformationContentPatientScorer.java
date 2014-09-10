@@ -29,8 +29,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -77,7 +80,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     public PatientSpecificity getSpecificity(Patient patient)
     {
         double score = getScore(patient);
-        return new PatientSpecificity(score, new Date(), "local-omim");
+        return new PatientSpecificity(score, now(), "local-omim");
     }
 
     @Override
@@ -144,5 +147,10 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     private double informationContent(long n)
     {
         return n == 0 ? 0 : -Math.log((n * 1.0) / this.totalTerms) / Math.log(2);
+    }
+
+    private Date now()
+    {
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT).getTime();
     }
 }

@@ -34,7 +34,10 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -110,7 +113,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             return specificity.getScore();
         }
         if (patient.getFeatures().isEmpty()) {
-            this.cache.set(key, new PatientSpecificity(0, new Date(), SCORER_NAME));
+            this.cache.set(key, new PatientSpecificity(0, now(), SCORER_NAME));
             return 0;
         }
         CloseableHttpResponse response = null;
@@ -136,7 +139,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             method.setConfig(config);
             response = this.client.execute(method);
             JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
-            specificity = new PatientSpecificity(score.getDouble("scaled_score"), new Date(), SCORER_NAME);
+            specificity = new PatientSpecificity(score.getDouble("scaled_score"), now(), SCORER_NAME);
             this.cache.set(key, specificity);
             return specificity.getScore();
         } catch (Exception ex) {
@@ -166,5 +169,10 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             }
         }
         return result.toString();
+    }
+
+    private Date now()
+    {
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT).getTime();
     }
 }
