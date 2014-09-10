@@ -21,7 +21,6 @@ package org.phenotips.ontology.internal;
 
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
-import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -80,7 +79,7 @@ public class GeneNomenclature implements OntologyService, Initializable
      * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
      * requested entry.
      */
-    private static final OntologyTerm EMPTY_MARKER = new SolrOntologyTerm(null, null);
+    private static final OntologyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
 
     private static final String BASE_SERVICE_URL = "http://rest.genenames.org/";
 
@@ -149,7 +148,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 if (docs.size() == 1) {
-                    result = new JSONOntologyTerm(docs.getJSONObject(0));
+                    result = new JSONOntologyTerm(docs.getJSONObject(0), this);
                     this.cache.set(id, result);
                 } else {
                     this.cache.set(id, EMPTY_MARKER);
@@ -207,7 +206,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                     }
 
                     for (int i = start; i < end; ++i) {
-                        result.add(new JSONOntologyTerm(docs.getJSONObject(i)));
+                        result.add(new JSONOntologyTerm(docs.getJSONObject(i), this));
                     }
                     return result;
                     // This is too slow, for the moment only return summaries
@@ -387,13 +386,16 @@ public class GeneNomenclature implements OntologyService, Initializable
         return query;
     }
 
-    private class JSONOntologyTerm implements OntologyTerm
+    private static class JSONOntologyTerm implements OntologyTerm
     {
         private JSONObject data;
 
-        public JSONOntologyTerm(JSONObject data)
+        private OntologyService ontology;
+
+        public JSONOntologyTerm(JSONObject data, OntologyService ontology)
         {
             this.data = data;
+            this.ontology = ontology;
         }
 
         @Override
@@ -448,7 +450,7 @@ public class GeneNomenclature implements OntologyService, Initializable
         @Override
         public OntologyService getOntology()
         {
-            return GeneNomenclature.this;
+            return this.ontology;
         }
 
         @Override
