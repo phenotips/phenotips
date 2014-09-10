@@ -516,51 +516,53 @@ $content
       if(result = (new RegExp('[?&amp;]'+encodeURIComponent(name)+'=([^&amp;#]*)')).exec(window.location.search))
         return decodeURIComponent(result[1]);
     };
-    $$('.manage-images-button:not(.initialized)').invoke('observe', 'click', function(event) {
-      event.stop();
-      var targetElement = event.element();
-      targetElement.addClassName('initialized');
-      var reloadTargetId = targetElement.up('*[id]');
-      if (reloadTargetId) {
-        reloadTargetId = reloadTargetId.id;
-      }
-      var url = targetElement.href;
-      if (url.indexOf('?') &lt; 0) {
-        url += '?';
-      }
-      url += "&amp;xpage=plain&amp;dprefix="+ XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX;
-      dialog = new PhenoTips.widgets.ModalPopup(
-        loading, {}, {
-          'verticalPosition' : 'top',
-          'removeOnClose' : true,
-          'title' : targetElement.innerHTML,
-           onClose : function() {this.__controller.updateSource()}
+    $$('.manage-images-button:not(.initialized)').each(function(item) {
+      item.observe('click', function(event) {
+        event.stop();
+        var targetElement = event.findElement();
+        var reloadTargetId = targetElement.up('*[id]');
+        if (reloadTargetId) {
+          reloadTargetId = reloadTargetId.id;
         }
-      );
-      dialog.shortcuts.close.keys = [];
-      dialog.showDialog();
-      new Ajax.Updater(loading.up(), url, {
-        onComplete : function() {
-          // Play nice with the Lightbox widget
-          if (window.gallery_lb) {
-            window.gallery_lb.updateImageList();
-          }
-          // Manually convert the special rel values into target attributes for the newly inserted content (rel="_something" =&gt; target="something")
-          if (typeof (XWiki.fixLinksTargetAttribute) == 'function') {
-            // Trick the function into updating link targets in inline mode; normally the conversion only takes place in view mode
-            var __tmp = XWiki.contextaction;
-            XWiki.contextaction = 'view';
-            XWiki.fixLinksTargetAttribute(dialog.dialog);
-            XWiki.contextaction = __tmp;
-          }
-          new XWiki.MultiImageSelector(dialog, reloadTargetId,  targetElement.up('.actions').next('.attachment-list'));
-          var toCheck = null;
-          if (toCheck = __getParameter(XWiki.MultiImageSelector.prototype.CHECK_LASTATT_MARKER)) {
-            var lastAtt = dialog.dialogBox.down('.attachment-item input[type=checkbox]'); // in 3.4+ add "[value=' + toCheck + ']"
-            if (lastAtt) {lastAtt.checked = true}
-          }
+        var url = targetElement.href;
+        if (url.indexOf('?') &lt; 0) {
+          url += '?';
         }
+        url += "&amp;xpage=plain&amp;dprefix="+ XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX;
+        dialog = new PhenoTips.widgets.ModalPopup(
+          loading, {}, {
+            'verticalPosition' : 'top',
+            'removeOnClose' : true,
+            'title' : targetElement.innerHTML,
+             onClose : function() {this.__controller.updateSource()}
+          }
+        );
+        dialog.shortcuts.close.keys = [];
+        dialog.showDialog();
+        new Ajax.Updater(loading.up(), url, {
+          onComplete : function() {
+            // Play nice with the Lightbox widget
+            if (window.gallery_lb) {
+              window.gallery_lb.updateImageList();
+            }
+            // Manually convert the special rel values into target attributes for the newly inserted content (rel="_something" =&gt; target="something")
+            if (typeof (XWiki.fixLinksTargetAttribute) == 'function') {
+              // Trick the function into updating link targets in inline mode; normally the conversion only takes place in view mode
+              var __tmp = XWiki.contextaction;
+              XWiki.contextaction = 'view';
+              XWiki.fixLinksTargetAttribute(dialog.dialog);
+              XWiki.contextaction = __tmp;
+            }
+            new XWiki.MultiImageSelector(dialog, reloadTargetId,  targetElement.up('.actions').next('.attachment-list'));
+            var toCheck = null;
+            if (toCheck = __getParameter(XWiki.MultiImageSelector.prototype.CHECK_LASTATT_MARKER)) {
+              var lastAtt = dialog.dialogBox.down('.attachment-item input[type=checkbox]'); // in 3.4+ add "[value=' + toCheck + ']"
+              if (lastAtt) {lastAtt.checked = true}
+            }
+          }
+        });
       });
+      item.addClassName('initialized');
     });
     var activeAction = null;
     if (__getParameter(XWiki.MultiImageSelector.prototype.ENFORCE_POPUP_MARKER) &amp;&amp; window.location.hash
