@@ -907,6 +907,19 @@
   </build>
   <profiles>
     <profile>
+      <!-- Use this ( mvn install -Pquick ) when trying to get a quicker test build, without running any quality control checks. -->
+      <id>quick</id>
+      <properties>
+        <enforcer.skip>true</enforcer.skip>
+        <checkstyle.skip>true</checkstyle.skip>
+        <clirr.skip>true</clirr.skip>
+        <jacoco.skip>true</jacoco.skip>
+        <skipTests>true</skipTests>
+        <license.skip>true</license.skip>
+      </properties>
+    </profile>
+
+    <profile>
       <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released
            + ensure we sign files using GPG. -->
       <id>release</id>
