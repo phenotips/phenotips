@@ -966,9 +966,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 .calendar_date_select, .suggestItems {
   z-index : 300000 !important;
 }
-.msdialog-modal-container {
-  z-index : 300001 !important;
-}
 
 .export-dialog .section {
   float: left;

@@ -1748,6 +1748,9 @@ widgets.ModalPopup = Class.create({
   /** Create the dialog, if it is not already loaded. Otherwise, just make it visible again. */
   createDialog : function(event) {
     this.dialog = new Element('div', {'class': 'msdialog-modal-container'});
+    if (this.options.extraDialogClassName) {
+      this.dialog.addClassName(this.options.extraDialogClassName);
+    }
     // A full-screen semi-transparent screen covering the main document
     this.screen = new Element('div', {'class': 'msdialog-screen'}).setStyle({
       opacity : this.options.screenOpacity,
@@ -2353,8 +2356,9 @@ return PhenoTips;
       this.container = new PhenoTips.widgets.ModalPopup(this.loadingMessage, {}, {
         idPrefix : 'ontology-browser-window-',
         title : "Related terms",
-        backgroundColor: "#ffffff",
-        verticalPosition : "top"
+        backgroundColor : "#ffffff",
+        verticalPosition : "top",
+        extraDialogClassName : "dialog-ontology-browser"
       });
       this.options.modal = true;
     }
@@ -5004,6 +5008,9 @@ div.resultContainer div.sourceContent.loading {
 }
 .msdialog-box .ontology-tree .term-tools {
   display: none;
+}
+.dialog-ontology-browser {
+  z-index: 400000 !important;
 }</code>
     </property>
     <property>
