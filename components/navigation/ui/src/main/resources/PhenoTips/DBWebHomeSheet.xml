@@ -344,7 +344,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             resultAltName: "synonym",
             resultCategory : "term_category",
             resultInfo : {},
-            tooltip: 'phenotype-info',
             enableHierarchy: true,
             resultParent : "is_a",
             fadeOnClear : false,

@@ -547,6 +547,10 @@
 .menu-box .field-hpo_positive {
   padding: 1em 0;
 }
+/* Disable the "browse ontology" button, as ontology browser events are not supported (yet) */
+.suggestItems .term-tools {
+  display: none;
+}
 .menu-box .field-disorders {
   padding: 0.6em 0;
 }
