@@ -71,6 +71,12 @@
   cursor: pointer;
   display: inline-block;
   white-space: nowrap;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #editor-menu .menu-item:last-of-type {
   margin: 0;
@@ -217,33 +223,22 @@
   position: relative;
 }
 .legend-box {
-  position: absolute;
-  top: 5px;
-  right: 0;
-  padding: 4px;
   background: #FFF;
-  z-index: 100000;
   border-radius: 0 0 0 4px;
-  padding: .5em 1em;
-  width: 15%;
-  min-width: 100px;
+  padding: .5em .5em .5em 1em;
 }
-
-.legend-box .legend-tab {
-  display: block;
-  height: 28px;
-  width: 28px;
-  background: #FFF url("$xwiki.getSkinFile('icons/silk/information.png')") center center no-repeat;
-  border-radius: 4px 0 0 4px;
+.legend-container {
+  top:5px;
   position: absolute;
-  top: 0;
-  left: -28px;
+  right: 0;
+  z-index: 10000;
+  min-width: 140px;
+  max-width: 250px;
 }
 .legend-box .legend-title {
   font-size: 1.1em;
   margin: 0 0 0.3em;
 }
-
 .legend-box .disorder-list {
   list-style-type: none;
   margin: 0;
@@ -271,6 +266,7 @@
   position: absolute;
   width: 340px;
   color: #000000;
+  z-index: 100000;
 }
 .width80px {
   width: 80px;
@@ -278,15 +274,75 @@
 .relationship-menu {
   width: 290px;
 }
-.menu-box form:hover {
-  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+.menu-box .tabs {
+  margin-bottom: 0 !important;
+  margin-left: 2px;
+  display: inline-block;
+}
+.menu-box .tabs dd, .tabs .tab-title {
+  position: relative;
+  margin-bottom: -3px !important;
+  list-style: none;
+  float: left;
+  border-radius: 0.8em 0.8em 0 0;
+}
+.menu-box .tabs dd.active {
+  box-shadow: none;
+  background-color: #E1E1E1;
+}
+.menu-box .tabs dd:not(.active) {
+  box-shadow: none;
+  background-color: #EFEFEF;
+  box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+}
+.menu-box .tabs dd a  {
+  text-decoration: none;
+}
+.menu-box .tabs dd.active a, .tabs .tab-title.active a {
+  color: #222222;
+  font-weight: bold;
+  pointer-events: none;
+  box-shadow: none;
+}
+.menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover {
+  background-color: #D1D1D1;
+  cursor:pointer;
+}
+.menu-box .tabs dd > a, .tabs .tab-title > a {
+  display: block;
+  color: #222222;
+  padding: 0.88889rem 1.77778rem;
+  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+  font-size: 0.88889rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.menu-box .tabs-content > .content {
+  display: none;
+  float: left;
+  padding: 0;
+}
+.menu-box .tabs-content > .content.active {
+  display: block;
+  float: none;
+  padding: .3em 1.3em 0.8em;
 }
 .menu-box form {
-  padding: .3em 1.3em 0.7em;
   border: 1px solid #F5F5F5;
-  border-radius: 0 .75em .75em .75em;
+  border-top-width: 0;
+  border-radius: 0 0 .75em .75em;
   background: #EEE;
-  box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+  box-shadow: 0 0 6px #DDD, 0 -1px 25px #DDDDDD inset;
+}
+.menu-box form:not(.content){
+  padding: 0 0 0 0;
+}
+.menu-box form.content {
+  padding: .3em 1.3em 0.8em !important;
 }
 .menu-box .close-button {
   cursor: pointer;
@@ -295,12 +351,18 @@
   font-weight: bold;
   height: 12px;
   line-height: 9px;
-  margin: .3em .3em;
+  margin: 3em .3em 0 .3em;
   text-align: center;
   width: 12px;
 }
+.menu-box .close-button-old {
+  margin: 0.3em .3em 0 .3em !important;
+}
 .menu-box .field-box {
   padding: .5em 0;
+}
+.menu-box .field-gender {
+  padding: .8em 0;
 }
 .menu-box .field-box input[type=text] {
   width: 99%;
@@ -414,6 +476,7 @@
 .field-inputs {
   display: table;
   width: 100%;
+  padding-top: 0.2em;
 }
 .field-inputs>span {
   display: table-cell;
@@ -464,7 +527,7 @@
   padding: 0.48em 0;
 }
 .menu-box .field-evaluated {
-  padding-top: 0;
+  padding-top: 0.7em;
   padding-bottom: 0.5em;
   padding-right: 0;
   padding-left: 0.08em;
@@ -473,19 +536,22 @@
   font-weight: normal;
 }
 .menu-box .field-carrier {
-  padding-top: 0.4em;
-  padding-bottom: 0.2em;
+  padding-top: 0.8em;
+  padding-bottom: 0em;
   padding-right: 0;
   padding-left: 0;
 }
 .menu-box .field-comments {
   padding: 0.3em 0;
 }
+.menu-box .field-hpo_positive {
+  padding: 1em 0;
+}
 .menu-box .field-disorders {
   padding: 0.6em 0;
 }
 .menu-box .field-identifier {
-  padding: 0.2em 0;
+  padding: 0 0;
 }
 .menu-box .field-childlessSelect {
   padding: 0.5em 0 0.5em;

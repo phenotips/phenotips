@@ -66,7 +66,7 @@ DynamicPositionedGraph.prototype = {
     getGeneration: function( id )
     {
         var minRank = Math.min.apply(null, this.DG.ranks);
-        return (this.DG.ranks[id] + 1)/2 - minRank + 1;
+        return (this.DG.ranks[id] - minRank)/2 + 1;
     },
 
     getOrderWithinGeneration: function( id )

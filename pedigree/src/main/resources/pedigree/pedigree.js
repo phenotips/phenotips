@@ -24,6 +24,7 @@ var PedigreeEditor = Class.create({
         this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
         this._okCancelDialogue = new OkCancelDialogue();
         this._disorderLegend = new DisorgerLegend();
+        this._hpoLegend = new HPOLegend();
 
         this._view = new View();
 
@@ -196,6 +197,14 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * @method getHPOLegend
+     * @return {Legend} Responsible for managing and displaying the phenotype/HPO legend
+     */
+    getHPOLegend: function() {
+        return this._hpoLegend;
+    },
+
+    /**
      * @method getPaper
      * @return {Workspace.paper} Raphael paper element
      */
@@ -307,12 +316,14 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'identifier',
                 'label' : '',
-                'type'  : 'hidden'
+                'type'  : 'hidden',
+                'tab': 'Personal'
             },
             {
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
+                'tab': 'Personal',
                 'columns': 3,
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
@@ -326,36 +337,42 @@ var PedigreeEditor = Class.create({
                 'name' : 'first_name',
                 'label': 'First name',
                 'type' : 'text',
+                'tab': 'Personal',
                 'function' : 'setFirstName'
             },
             {
                 'name' : 'last_name',
                 'label': 'Last name',
                 'type' : 'text',
+                'tab': 'Personal',
                 'function' : 'setLastName'
             },
             {
                 'name' : 'last_name_birth',
                 'label': 'Last name at birth',
                 'type' : 'text',
+                'tab': 'Personal',
                 'function' : 'setLastNameAtBirth'
             },
             {
                 'name' : 'external_id',
                 'label': 'External ID',
                 'type' : 'text',
+                'tab': 'Personal',
                 'function' : 'setExternalID'
             },
             {
                 'name' : 'ethnicity',
                 'label' : 'Ethnicities',
                 'type' : 'ethnicity-picker',
+                'tab': 'Personal',
                 'function' : 'setEthnicities'
             },
             {
                 'name' : 'carrier',
                 'label' : 'Carrier status',
                 'type' : 'radio',
+                'tab': 'Clinical',
                 'values' : [
                     { 'actual' : '', 'displayed' : 'Not affected' },
                     { 'actual' : 'carrier', 'displayed' : 'Carrier' },
@@ -370,25 +387,43 @@ var PedigreeEditor = Class.create({
                 'name' : 'evaluated',
                 'label' : 'Documented evaluation',
                 'type' : 'checkbox',
+                'tab': 'Clinical',
                 'function' : 'setEvaluated'
             },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
+                'tab': 'Clinical',
                 'function' : 'setDisorders'
             },
             {
                 'name' : 'comments',
                 'label' : 'Comments',
                 'type' : 'textarea',
+                'tab': 'Clinical',
                 'rows' : 2,
                 'function' : 'setComments'
+            },
+            {
+                'name' : 'hpo_positive',
+                'label' : 'Clinical symptoms: observed phenotypes',
+                'type' : 'hpo-picker',
+                'tab': 'Clinical',
+                'function' : 'setHPO'
+            },
+            {
+                'name' : 'candidate_genes',
+                'label' : 'Genotype information: candidate genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setGenes'
             },
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
+                'tab': 'Personal',
                 'format' : 'dd/MM/yyyy',
                 'function' : 'setBirthDate'
             },
@@ -396,6 +431,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'date_of_death',
                 'label' : 'Date of death',
                 'type' : 'date-picker',
+                'tab': 'Personal',
                 'format' : 'dd/MM/yyyy',
                 'function' : 'setDeathDate'
             },
@@ -403,6 +439,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'gestation_age',
                 'label' : 'Gestation age',
                 'type' : 'select',
+                'tab': 'Personal',
                 'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
                 'nullValue' : true,
                 'function' : 'setGestationAge'
@@ -411,6 +448,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'state',
                 'label' : 'Individual is',
                 'type' : 'radio',
+                'tab': 'Personal',
                 'columns': 3,
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
@@ -427,6 +465,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
+                'tab': 'Personal',
                 'function' : 'setChildlessStatus'
             },
             {
@@ -434,27 +473,31 @@ var PedigreeEditor = Class.create({
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
+                'tab': 'Personal',
                 'function' : 'setChildlessReason'
             },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted in',
                 'type' : 'checkbox',
+                'tab': 'Personal',
                 'function' : 'setAdopted'
             },
             {
                 'name' : 'monozygotic',
                 'label' : 'Monozygotic twin',
                 'type' : 'checkbox',
+                'tab': 'Personal',
                 'function' : 'setMonozygotic'
             },
             {
                 'name' : 'placeholder',
                 'label' : 'Placeholder node',
                 'type' : 'checkbox',
+                'tab': 'Personal',
                 'function' : 'makePlaceholder'
             }
-        ]);
+        ], ["Personal", "Clinical"]);
     },
 
     /**
@@ -551,7 +594,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
             }
-        ]);
+        ], []);
     },
 
     /**
@@ -604,7 +647,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'function' : 'setBrokenStatus'
             }
-        ], "relationship-menu");
+        ], [], "relationship-menu");
     },
 
     /**

@@ -45,8 +45,9 @@ var Controller = Class.create({
 
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
 
-        var check = event.memo.hasOwnProperty("check");
-        var clear = false;
+        var check      = event.memo.hasOwnProperty("check");
+        var clear      = false;
+        var needRedraw = false;
 
         do {
             var secondPass = false;
@@ -63,8 +64,9 @@ var Controller = Class.create({
                             var order      = editor.getGraph().getOrderWithinGeneration(nodeID);
                             var pedNumber  = romanize(generation) + "-" + order;
 
+                            var currentPedNumber = node.getPedNumber();
+
                             if (check) {
-                                var currentPedNumber = node.getPedNumber();
                                 if (pedNumber != currentPedNumber) {
                                     // one of the nodes PED number is not correct
                                     clear = true;
@@ -74,9 +76,12 @@ var Controller = Class.create({
                             }
                         }
 
-                        node.setPedNumber(pedNumber);
-                        var allProperties = node.getProperties();
-                        editor.getGraph().setProperties( nodeID, allProperties );
+                        if (currentPedNumber != pedNumber) {
+                            needRedraw = true;
+                            node.setPedNumber(pedNumber);
+                            var allProperties = node.getProperties();
+                            editor.getGraph().setProperties( nodeID, allProperties );
+                        }
                     }
                 }
             }
@@ -89,8 +94,10 @@ var Controller = Class.create({
             renumberButton.className = renumberButton.className.replace(/^menu-item/, "disabled-menu-item");
         }
 
-        if (!event.memo.noUndoRedo)
+        if (!event.memo.noUndoRedo && needRedraw) {
+            editor.getView().unmarkAll();
             editor.getActionStack().addState( event );
+        }
     },
 
     handleAutoLayout: function(event)

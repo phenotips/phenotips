@@ -63,6 +63,8 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/disorderLegend.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/hpoLegend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/okCancelDialogue.js')##
@@ -87,6 +89,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/hpoTerm.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/versionUpdater.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/controller.js')##

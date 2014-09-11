@@ -17,7 +17,7 @@ var Disorder = Class.create( {
         this._disorderID = Disorder.sanitizeID(disorderID);
         this._name       = name ? name : "loading...";
 
-        if (!name)
+        if (!name && callWhenReady)
             this.load(callWhenReady);
     },
 
@@ -59,6 +59,10 @@ var Disorder = Class.create( {
     }
 });
 
+/*
+ * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
+ * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to some underscores.
+ */
 Disorder.sanitizeID = function(disorderID) {
     if (isInt(disorderID))
         return disorderID;
