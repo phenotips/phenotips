@@ -957,7 +957,7 @@
   },
 
   generateListItem : function(data, cssClass, disableTooltip) {
-    var displayNode = new Element("div");
+    var displayNode = new Element("div", {'class': 'tooltip-'+this.options.tooltip});
     // If the search result contains an icon information, we insert this icon in the result entry.
     if (data.icon) {
       displayNode.insert(new Element("img", {'src' : data.icon, 'class' : 'icon' }));

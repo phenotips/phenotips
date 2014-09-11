@@ -548,7 +548,7 @@
   padding: 1em 0;
 }
 /* Disable the "browse ontology" button, as ontology browser events are not supported (yet) */
-.suggestItems .term-tools {
+.tooltip-phenotype-info .term-tools {
   display: none;
 }
 .menu-box .field-disorders {
