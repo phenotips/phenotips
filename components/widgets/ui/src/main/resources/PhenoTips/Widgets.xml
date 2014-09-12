@@ -2358,7 +2358,8 @@ return PhenoTips;
         title : "Related terms",
         backgroundColor : "#ffffff",
         verticalPosition : "top",
-        extraDialogClassName : "dialog-ontology-browser"
+        extraDialogClassName : "dialog-ontology-browser",
+        removeOnClose: true
       });
       this.options.modal = true;
     }
