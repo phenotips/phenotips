@@ -239,15 +239,34 @@ NodeMenu = Class.create({
                 //console.log("HPO\SOLR URL: " + solrServiceURL);
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: solrServiceURL + "rows=100&",
+                    queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
+                        'name' : {'wordBoost': 10, 'phraseBoost': 20},
+                        'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
+                        'nameExact' : {'phraseBoost': 100},
+                        'namePrefix' : {'phraseBoost': 30},
+                        'synonym' : {'wordBoost': 6, 'phraseBoost': 15},
+                        'synonymSpell' : {'wordBoost': 10, 'phraseBoost': 25, 'stubBoost': 7},
+                        'synonymExact' : {'phraseBoost': 70},
+                        'synonymPrefix' : {'phraseBoost': 20},
+                        'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                        'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true},
+                        'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                        'alt_id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
+                      }, {
+                        'term_category': ['HP:0000118']
+                      }
+                    ),
                     varname: "q",
                     noresults: "No matching terms",
-                    resultsParameter : "rows",
                     json: true,
+                    resultsParameter : "rows",
                     resultId : "id",
                     resultValue : "name",
-                    resultInfo : {},
+                    resultAltName: "synonym",
                     resultCategory : "term_category",
+                    resultInfo : {},
                     enableHierarchy: false,
+                    resultParent : "is_a",
                     tooltip: 'phenotype-info',
                     fadeOnClear : false,
                     timeout : 30000,
