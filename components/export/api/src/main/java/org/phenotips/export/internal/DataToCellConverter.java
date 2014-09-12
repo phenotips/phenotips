@@ -440,9 +440,14 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("date_of_birth")) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
             Date dob = patient.<Date>getData("dates").get("date_of_birth");
-            DataCell cell = new DataCell(format.format(dob), x, 0);
+            DataCell cell;
+            if (dob != null) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+                cell = new DataCell(format.format(dob), x, 0);
+            } else {
+                cell = new DataCell("", x, 0);
+            }
             bodySection.addCell(cell);
             x++;
         }
@@ -562,12 +567,13 @@ public class DataToCellConverter
         if (present.contains("maternal_ethnicity")) {
             List<String> maternalEthnicity = ethnicities.get("maternal_ethnicity");
             int y = 0;
-            for (String mEthnicity : maternalEthnicity) {
-                DataCell cell = new DataCell(mEthnicity, x, y);
-                bodySection.addCell(cell);
-                y++;
-            }
-            if (maternalEthnicity.size() == 0) {
+            if (maternalEthnicity != null && !maternalEthnicity.isEmpty()) {
+                for (String mEthnicity : maternalEthnicity) {
+                    DataCell cell = new DataCell(mEthnicity, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            } else {
                 DataCell cell = new DataCell("", x, y);
                 bodySection.addCell(cell);
             }
@@ -576,12 +582,13 @@ public class DataToCellConverter
         if (present.contains("paternal_ethnicity")) {
             List<String> paternalEthnicity = ethnicities.get("paternal_ethnicity");
             int y = 0;
-            for (String pEthnicity : paternalEthnicity) {
-                DataCell cell = new DataCell(pEthnicity, x, y);
-                bodySection.addCell(cell);
-                y++;
-            }
-            if (paternalEthnicity.size() == 0) {
+            if (paternalEthnicity != null && !paternalEthnicity.isEmpty()) {
+                for (String pEthnicity : paternalEthnicity) {
+                    DataCell cell = new DataCell(pEthnicity, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            } else {
                 DataCell cell = new DataCell("", x, y);
                 bodySection.addCell(cell);
             }
