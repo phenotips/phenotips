@@ -64,6 +64,7 @@ var TemplateSelector = Class.create( {
         pictureBox.pedigreeData = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");
         pictureBox.type         = 'internal';
         pictureBox.description  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "description", "value");
+        pictureBox.title        = pictureBox.description;
 
         //console.log("[Data from Template] - " + stringifyObject(pictureBox.pedigreeData));
 
