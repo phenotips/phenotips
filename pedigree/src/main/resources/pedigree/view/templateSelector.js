@@ -60,21 +60,10 @@ var TemplateSelector = Class.create( {
      * @private
      */
     _onTemplateAvailable: function(pictureBox, response) {
-        pictureBox.innerHTML = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value").replace(/&amp;/, '&');
-        var value = pictureBox.innerText || pictureBox.text || pictureBox.textContent; // damn IE ;)        
-        var db_data = JSON.parse(value);
-        // TODO
-        // HACK until DB is updated: hardcoded templates
-        if (db_data.partnerships.length == 0) {
-            pictureBox.pedigreeData = '{"GG":[{"id":0,"prop":{"gender":"U","fName":"Proband"}}],"ranks":[1],"order":[[],[0]],"positions":[5]}';
-            pictureBox.type         = 'internal';
-            pictureBox.description  = "Proband only";
-        }
-        else {
-            pictureBox.pedigreeData = '[{"id":0,"father":3,"mother":4},{"id":3,"father":8,"mother":7,"sex":"male"},{"id":4,"father":12,"mother":11,"sex":"female"},{"id":7,"father":27,"mother":28,"sex":"female"},{"id":8,"father":15,"mother":16,"sex":"male"},{"id":11,"father":19,"mother":20,"sex":"female"},{"id":12,"father":23,"mother":24,"sex":"male"},{"id":15,"sex":"male"},{"id":16,"sex":"female"},{"id":19,"sex":"male"},{"id":20,"sex":"female"},{"id":23,"sex":"male"},{"id":24,"sex":"female"},{"id":27,"sex":"male"},{"id":28,"sex":"female"}]';
-            pictureBox.type         = 'simpleJSON';
-            pictureBox.description  = "Proband with 3 generations of ancestors";
-        }
+        pictureBox.innerHTML = getSubSelectorTextFromXML(response.responseXML, "property", "name", "image", "value").replace(/&amp;/, '&');
+        pictureBox.pedigreeData = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");
+        pictureBox.type         = 'internal';
+        pictureBox.description  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "description", "value");
 
         //console.log("[Data from Template] - " + stringifyObject(pictureBox.pedigreeData));
 
