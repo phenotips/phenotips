@@ -39,9 +39,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
-
-{{velocity filter="indent"}}
+  <content>{{velocity filter="indent"}}
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.q" != '')##
