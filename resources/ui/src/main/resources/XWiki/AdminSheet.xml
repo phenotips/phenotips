@@ -101,11 +101,10 @@
   {
     'id' : 'extensionmanager',
     'priority' : 500,
-    'advanced' : true,
     'children': [
        {'id' : 'XWiki.AddExtensions'},
        {'id' : 'XWiki.InstalledExtensions'},
-       {'id' : 'XWiki.CoreExtensions'},
+       {'id' : 'XWiki.CoreExtensions', 'advanced' : true},
        {'id' : 'XWiki.ExtensionUpdater'}
     ]
   },
