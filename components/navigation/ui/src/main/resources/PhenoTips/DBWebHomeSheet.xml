@@ -42,7 +42,7 @@
   <content>{{velocity}}
 {{include document="PhenoTips.DatabaseFilters" /}}
 
-{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circe"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
+{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circe"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in Excel format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
 
 {{velocity}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
@@ -584,7 +584,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       document.observe('custom:selection:changed', updateMatchCounter);
       document.observe('xwiki:multisuggestpicker:selectionchanged', updateMatchCounter);
       content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
-      //content.select('input[type=text]').invoke('observe', 'blur', updateMatchCounter);
+      content.select('input[name=external_id]').invoke('observe', 'keyup', updateMatchCounter);
     }
   };
   var exportTool = $('phenotips_export');
