@@ -39,9 +39,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
-
-{{velocity filter="indent"}}
+  <content>{{velocity filter="indent"}}
 #if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')##
   #set ($_service = $services.omim)
   #if ("$!{request.defType}" != '')
@@ -93,7 +91,15 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
 #end
   {{/html}}
   #else
-    #json__respondJSON($results, {})
+    $response.setContentType('application/json')
+    #set ($result = {
+      "returnedrows" : "$results.size()",
+      "rows" : $results
+    })
+    #if ("$!request.reqNo" != '')
+      #set ($discard = $result.put("reqNo", $!{request.reqNo}))
+    #end
+    $jsontool.serialize($result)
   #end
 #end
 {{/velocity}}</content>
