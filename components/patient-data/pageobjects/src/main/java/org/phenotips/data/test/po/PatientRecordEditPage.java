@@ -414,7 +414,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[@class = 'entry-data'][.//*[contains(@class, 'yes-no-picker')]][.//*[@value = 'HP:0004328']]//*[@class = 'value'][text() = 'Abnormality of the anterior segment of the eye']")
     WebElement abnormalityOfTheAnteriorSegmentOfTheEyeCheck;
 
-    @FindBy(xpath = "//*[@class = 'msdialog-modal-container']//*[@class = 'msdialog-box']//*[@class = 'msdialog-close']")
+    @FindBy(xpath = "//*[contains(@class, 'msdialog-modal-container')]//*[@class = 'msdialog-box']//*[@class = 'msdialog-close']")
     WebElement closeBrowseRelatedTerms;
 
     @FindBy(xpath = "//*[contains(@class, 'entry descendent')][.//span[contains(@class, 'yes-no-picker')]][.//label[@class = 'yes']][.//input[@value = 'HP:0012629']]//*[contains(@class, 'yes-no-picker')]//*[@class = 'yes']")
