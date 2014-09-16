@@ -65,6 +65,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/disorderLegend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/hpoLegend.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/geneLegend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/okCancelDialogue.js')##

@@ -24,6 +24,7 @@ var PedigreeEditor = Class.create({
         this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
         this._okCancelDialogue = new OkCancelDialogue();
         this._disorderLegend = new DisorgerLegend();
+        this._geneLegend = new GeneLegend();
         this._hpoLegend = new HPOLegend();
 
         this._view = new View();
@@ -202,6 +203,14 @@ var PedigreeEditor = Class.create({
      */
     getHPOLegend: function() {
         return this._hpoLegend;
+    },
+
+    /**
+     * @method getGeneLegend
+     * @return {Legend} Responsible for managing and displaying the candidate genes legend
+     */
+    getGeneLegend: function() {
+        return this._geneLegend;
     },
 
     /**

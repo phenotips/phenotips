@@ -1,15 +1,15 @@
 /**
- * Class responsible for keeping track of disorders and their properties.
- * This information is graphically displayed in a 'Legend' box
+ * Class responsible for keeping track of disorders and their properties, and for
+ * caching disorders data as loaded from the OMIM database.
+ * This information is graphically displayed in a 'Legend' box.
  *
  * @class DisorderLegend
  * @constructor
  */
-           
 var DisorgerLegend = Class.create( Legend, {
 
     initialize: function($super) {
-        $super('Disorders');
+        $super('Disorders', true);
 
         this._disorderCache = {};
         
@@ -18,40 +18,12 @@ var DisorgerLegend = Class.create( Legend, {
                                          new RegExp("^OvCa",  "i"),
                                          new RegExp("^ProCa", "i"),
                                          new RegExp("^PanCa", "i") ];
-
-        this._disorderColors = {};
-        this._affectedNodes  = {};
-
-        this._disorderList = new Element('ul', {'class' : 'disorder-list'});
-        this._legendBox.insert(this._disorderList);
-
-        Droppables.add(editor.getWorkspace().canvas, {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
-    },
-   
-    /**
-     * Returns the name of disorder with the given ID.
-     * Returns "" for unknown disorders and disorders not loaded form the database
-     *
-     * @method getDisorderName
-     * @return {String} Name of the given disorder
-     */
-    getDisorderName: function(disorderID) {
-        return this.getDisorder(disorderID).getName();
     },
 
-    /**
-     * Retrieve the color associated to a specific disorder
-     *
-     * @method getDisorderColor
-     * @param {String|Number} disorderID The id for the disorder, taken from the OMIM database
-     * @return {String} CSS color value for that disorder
-     */
-    getDisorderColor: function(disorderID) {
-        if (!this._disorderColors.hasOwnProperty(disorderID))
-            return "#ff0000";
-        return this._disorderColors[disorderID];
+    _getPrefix: function(id) {
+        return "disorder";
     },
-        
+
     /**
      * Returns the disorder object with the given ID. If object is not in cache yet
      * returns a newly created one which may have the disorder name & other attributes not loaded yet
@@ -67,7 +39,6 @@ var DisorgerLegend = Class.create( Legend, {
             var whenNameIsLoaded = function() { this._updateDisorderName(disorderID); }
             this._disorderCache[disorderID] = new Disorder(disorderID, null, whenNameIsLoaded.bind(this));            
         }
-            
         return this._disorderCache[disorderID];
     },
 
@@ -80,68 +51,13 @@ var DisorgerLegend = Class.create( Legend, {
      * @param {String} disorderName The name of the disorder
      * @param {Number} nodeID ID of the Person who has this disorder
      */
-    addCase: function(disorderID, disorderName, nodeID) {
+    addCase: function($super, disorderID, disorderName, nodeID) {
         if (!this._disorderCache.hasOwnProperty(disorderID))
             this._disorderCache[disorderID] = new Disorder(disorderID, disorderName);
-                                
-        if(Object.keys(this._affectedNodes).length == 0) {
-            this._legendBox.show();
-            //(new Effect.Opacity('legend-box', { from: 0, to:.9, duration: 0.5 }));
-        }
-        if(!this._hasAffectedNodes(disorderID)) {
-            this._affectedNodes[disorderID] = [nodeID];
-            var color = this._generateColor(disorderID);
-            this._disorderColors[disorderID] = color;
-            document.fire('disorder:color', {'id' : disorderID, color: color});
-            var listElement = this._generateDisorderElement(disorderID, disorderName, color);
-            this._disorderList.insert(listElement);
-        }
-        else {
-            this._affectedNodes[disorderID].push(nodeID);
-        }
-        this._displayCasesForDisorder(disorderID);
+
+        $super(disorderID, disorderName, nodeID);
     },
 
-    /**
-     * Removes an occurrence of a disorder if there are any. Removes the disorder
-     * from the 'Legend' box if this disorder is not registered in any individual.
-     *
-     * @param {Number} disorderID ID for this disorder taken from the OMIM database
-     * @param {Number} nodeID ID of the Person who has this disorder
-     */
-    removeCase: function(disorderID, nodeID) {
-        if (this._hasAffectedNodes(disorderID)) {
-            this._affectedNodes[disorderID] = this._affectedNodes[disorderID].without(nodeID);
-            if(this._affectedNodes[disorderID].length == 0) {
-                //console.log("no more disorders with id = " + disorderID); 
-                delete this._affectedNodes[disorderID];
-                delete this._disorderColors[disorderID];
-                $('disorder-' + disorderID).remove();                
-                if(Object.keys(this._affectedNodes).length == 0) {
-                    this._legendBox.hide();
-                    //new Effect.Opacity('legend-box', { from:.9, to:0, duration: 0.5 });
-                }
-            }
-            else
-                this._displayCasesForDisorder(disorderID);
-        }
-    },
-    
-    /**
-     * Updates the displayed number of affected cases for for a disorder in the legend UI.
-     *
-     * @method _displayCasesForDisorder
-     * @param {Number} disorderID The identifier of the disorder to update
-     * @private
-     */
-    _displayCasesForDisorder : function(disorderID) {
-      var label = this._legendBox.down('li#disorder-' + disorderID + ' .disorder-cases');
-      if (label) {
-        var cases = this._affectedNodes.hasOwnProperty(disorderID) ? this._affectedNodes[disorderID].length : 0;
-        label.update(cases + "&nbsp;case" + ((cases - 1) && "s" || ""));
-      }
-    },
-    
     /**
      * Updates the displayed disorder name for the given disorder
      *
@@ -151,133 +67,88 @@ var DisorgerLegend = Class.create( Legend, {
      */    
     _updateDisorderName: function(disorderID) {
         //console.log("updating disorder display for " + disorderID + ", name = " + this.getDisorder(disorderID).getName());
-        var name = this._legendBox.down('li#disorder-' + disorderID + ' .disorder-name');
+        var name = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .disorder-name');
         name.update(this.getDisorder(disorderID).getName());
     },   
 
     /**
-     * Returns True if there are nodes reported to have this disorder to this DisorderLegend
-     *
-     * @method _hasAffectedNodes
-     * @param {Number} disorderID The id for the disorder, taken from the OMIM database
-     * @private 
-     */
-    _hasAffectedNodes: function(disorderID) {
-        return this._affectedNodes.hasOwnProperty(disorderID);
-    },
-
-    /**
      * Generate the element that will display information about the given disorder in the legend
      *
-     * @method _generateDisorderElement
-     * @param {Number} id The id for the disorder, taken from the OMIM database
+     * @method _generateElement
+     * @param {Number} disorderID The id for the disorder, taken from the OMIM database
      * @param {String} name The human-readable disorder name
-     * @param {String} color CSS color associated with the disorder, displayed on affected nodes in the pedigree
      * @return {HTMLLIElement} List element to be insert in the legend
      */
-    _generateDisorderElement: function(id, name, color) {
-        var item = new Element('li', {'class' : 'disorder', 'id' : 'disorder-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
-        var bubble = new Element('span', {'class' : 'disorder-color'});
-        bubble.style.backgroundColor = color;
-        item.insert({'top' : bubble});
-        var countLabel = new Element('span', {'class' : 'disorder-cases'});
-        var countLabelContainer = new Element('span', {'class' : 'disorder-cases-container'}).insert("(").insert(countLabel).insert(")");
-        item.insert(" ").insert(countLabelContainer);
-        var me = this;
-        Element.observe(item, 'mouseover', function() {
-            //item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});
-            item.down('.disorder-name').setStyle({'background': color, 'cursor' : 'default'});
-            me._affectedNodes[id] && me._affectedNodes[id].forEach(function(nodeID) {
-                var node = editor.getNode(nodeID);
-                node && node.getGraphics().highlight();
-            });
-        });
-        Element.observe(item, 'mouseout', function() {
-            //item.setStyle({'text-decoration':'none'});
-            item.down('.disorder-name').setStyle({'background':'', 'cursor' : 'default'});
-            me._affectedNodes[id] && me._affectedNodes[id].forEach(function(nodeID) {
-                var node = editor.getNode(nodeID);
-                node && node.getGraphics().unHighlight();
-            });
-        });
-        new Draggable(item, {
-          revert: true,
-          reverteffect: function(segment) {
-          // Reset the in-line style.
-            segment.setStyle({
-              height: '',
-              left: '',
-              position: '',
-              top: '',
-              zIndex: '',
-              width: ''
-            });
-          },
-          ghosting: true
-        });
-        return item;
+    _generateElement: function($super, disorderID, name) {
+        if (!this._objectColors.hasOwnProperty(disorderID)) {
+            var color = this._generateColor(disorderID);
+            this._objectColors[disorderID] = color;
+            document.fire('disorder:color', {'id' : disorderID, color: color});
+        }
+
+        return $super(disorderID, name);
     },
 
     /**
-     * Callback for dragging a disorder from the legend onto-nodes
+     * Callback for dragging an object from the legend onto nodes
      *
-     * @method _onDropDisorder
-     * @param {HTMLElement} [disorderLabel]
-     * @param {HTMLElement} [target]
-     * @param {Event} [event]
-     * @private
+     * @method _onDropGeneric
+     * @param {Person} Person node
+     * @param {String|Number} id ID of the disorder being dropped
      */
-    _onDropDisorder: function(disorderLabel, target, event) {
-        var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
-        var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
-        var node = editor.getView().getPersonNodeNear(pos.x, pos.y);
-        //console.log("Position x: " + pos.x + " position y: " + pos.y);
-        if (node) {
-            var disorderID = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);
-            var currentDisorders = node.getDisorders().slice(0);
-            if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
-                currentDisorders.push(disorderID);
-                editor.getView().unmarkAll();
-                var properties = { "setDisorders": currentDisorders };
-                var event = { "nodeID": node.getID(), "properties": properties };
-                document.fire("pedigree:node:setproperty", event);
-            } else {
-                alert("This person already has the specified disorder");
-            }
+    _onDropObject: function(node, disorderID) {
+        var currentDisorders = node.getDisorders().slice(0);
+        if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
+            currentDisorders.push(disorderID);
+            editor.getView().unmarkAll();
+            var properties = { "setDisorders": currentDisorders };
+            var event = { "nodeID": node.getID(), "properties": properties };
+            document.fire("pedigree:node:setproperty", event);
+        } else {
+            alert("This person already has the specified disorder");
         }
     },
 
     /**
-     * Generates a CSS color. Has preference for 7 colors that can be distinguished in gray-scale.
+     * Generates a CSS color.
+     * Has preference for some predefined colors that can be distinguished in gray-scale
+     * and are distint from gene colors.
      *
      * @method generateColor
      * @return {String} CSS color
      */
     _generateColor: function(disorderID) {
-        if(this._disorderColors.hasOwnProperty(disorderID)) {
-            return this._disorderColors[disorderID];
+        if(this._objectColors.hasOwnProperty(disorderID)) {
+            return this._objectColors[disorderID];
         }
 
         // check special disorder prefixes
         for (var i = 0; i < this._specialDisordersRegexps.length; i++) {
             if (disorderID.match(this._specialDisordersRegexps[i]) !== null) {
-                for (var disorder in this._disorderColors) {
-                    if (this._disorderColors.hasOwnProperty(disorder)) {
+                for (var disorder in this._objectColors) {
+                    if (this._objectColors.hasOwnProperty(disorder)) {
                         if (disorder.match(this._specialDisordersRegexps[i]) !== null)
-                            return this._disorderColors[disorder];
+                            return this._objectColors[disorder];
                     }
                 }
                 break;
             }
         }
 
-        var usedColors = Object.values(this._disorderColors),
-            prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
+        var usedColors = Object.values(this._objectColors),
+            // [red/yellow]           prefColors = ["#FEE090", '#f8ebb7', '#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'];        
+            // [original yellow/blue] prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
+            // [green]                prefColors = ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
+        prefColors = ['#E0F8F8', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });
-        if (disorderID == "affected" && usedColors.indexOf('#FEE090') > -1 ) {
-            return "#dbad71";
+        if (disorderID == "affected") {
+            if (usedColors.indexOf('#FEE090') > -1 ) {
+                return "#dbad71";
+            } else {
+                return "#FEE090";
+            }
         }
         if(prefColors.length > 0) {
             return prefColors[0];

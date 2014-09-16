@@ -311,7 +311,25 @@ NodeMenu = Class.create({
            }
            _this._updateDisorderColor(event.memo.id, event.memo.color);
         });
-        this._setFieldValue['disease-picker'].bind(this);
+        //this._setFieldValue['disease-picker'].bind(this);
+
+        // Update gene colors
+        this._updateGeneColor = function(id, color) {
+          this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
+             var colorBubble = item.up('li').down('.disorder-color');
+             if (!colorBubble) {
+               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               item.up('li').insert({top : colorBubble});
+             }
+             colorBubble.setStyle({background : color});
+          });
+        }.bind(this);
+        document.observe('gene:color', function(event) {
+           if (!event.memo || !event.memo.id || !event.memo.color) {
+             return;
+           }
+           _this._updateGeneColor(event.memo.id, event.memo.color);
+        });
     },
 
     _generateEmptyField : function (data) {
@@ -748,7 +766,7 @@ NodeMenu = Class.create({
                 if (values) {
                     values.each(function(v) {
                         target._suggestPicker.addItem(v.id, v.value, '');
-                        _this._updateDisorderColor(v.id, editor.getDisorderLegend().getDisorderColor(v.id));
+                        _this._updateDisorderColor(v.id, editor.getDisorderLegend().getObjectColor(v.id));
                     })
                 }
                 target._silent = false;
@@ -791,6 +809,7 @@ NodeMenu = Class.create({
                 if (values) {
                     values.each(function(v) {
                         target._suggestPicker.addItem(v, v, '');
+                        _this._updateGeneColor(v, editor.getGeneLegend().getObjectColor(v));
                     })
                 }
                 target._silent = false;

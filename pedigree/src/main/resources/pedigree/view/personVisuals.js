@@ -211,8 +211,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateDisorderShapes: function() {
         this._disorderShapes && this._disorderShapes.remove();
-        var disorders = this.getNode().getDisorders();
-        if (disorders.length == 0) return;
+        var colors = this.getNode().getAllNodeColors();
+        if (colors.length == 0) return;
 
         var gradient = function(color, angle) {
             var hsb = Raphael.rgb2hsb(color),
@@ -231,9 +231,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 height = side/Math.sqrt(2),
                 x1 = this.getX() - height,
                 y1 = this.getY();
-            delta = (height * 2)/(disorders.length);
+            delta = (height * 2)/(colors.length);
 
-            for(var k = 0; k < disorders.length; k++) {
+            for(var k = 0; k < colors.length; k++) {
                 var corner = [];
                 var x2 = x1 + delta;
                 var y2 = this.getY() - (height - Math.abs(x2 - this.getX()));
@@ -241,7 +241,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
                 var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
-                color = gradient(editor.getDisorderLegend().getDisorderColor(disorders[k]), 70);
+                color = gradient(colors[k], 70);
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
@@ -251,17 +251,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         else {
-            var disorderAngle = (360/disorders.length).round();
-            delta = (360/(disorders.length))/2;
-            if (disorders.length == 1 && this.getNode().getGender() == 'U')
+            var disorderAngle = (360/colors.length).round();
+            delta = (360/(colors.length))/2;
+            if (colors.length == 1 && this.getNode().getGender() == 'U')
                 delta -= 45; // since this will be rotated by shape transform later
             
             var radius = (this._shapeRadius-0.6);    // -0.6 to avoid disorder fills to overlap with shape borders (due to aliasing/Raphael pixel layout)
             if (this.getNode().getGender() == 'U')
                 radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
             
-            for(var i = 0; i < disorders.length; i++) {
-                color = gradient(editor.getDisorderLegend().getDisorderColor(disorders[i]), (i * disorderAngle)+delta);
+            for(var i = 0; i < colors.length; i++) {
+                color = gradient(colors[i], (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), radius,
                                     this.getNode().getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }

@@ -487,7 +487,24 @@ var Person = Class.create(AbstractPerson, {
     getCarrierStatus: function() {
         return this._carrierStatus;
     },
-    
+
+    /**
+     * Returns the list of all colors associated with the node
+     * (e.g. all colors of all disorders and all colors of all the genes)
+     * @method getAllNodeColors
+     * @return {Array of Strings}
+     */
+    getAllNodeColors: function() {
+        var result = [];
+        for (var i = 0; i < this.getDisorders().length; i++) {
+            result.push(editor.getDisorderLegend().getObjectColor(this.getDisorders()[i]));
+        }
+        for (var i = 0; i < this.getGenes().length; i++) {
+            result.push(editor.getGeneLegend().getObjectColor(this.getGenes()[i]));
+        }
+        return result;
+    },
+
     /**
      * Returns a list of disorders of this person.
      *
@@ -564,13 +581,11 @@ var Person = Class.create(AbstractPerson, {
      */
     setDisorders: function(disorders) {
         //console.log("Set disorders: " + stringifyObject(disorders));
-        
         for(var i = this.getDisorders().length-1; i >= 0; i--) {
             this.removeDisorder( this.getDisorders()[i] );
         }
         for(var i = 0; i < disorders.length; i++) {
-            var disorder = disorders[i];
-            this.addDisorder( disorder );
+            this.addDisorder( disorders[i] );
         }        
         this.getGraphics().updateDisorderShapes();
         this.setCarrierStatus(); // update carrier status
@@ -679,13 +694,43 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Adds gene to the list of this node's candidate genes
+     *
+     * @method addGenes
+     */
+    addGene: function(gene) {
+        if (this.getGenes().indexOf(gene) == -1) {
+            editor.getGeneLegend().addCase(gene, gene, this.getID());
+            this.getGenes().push(gene);
+        }
+    },
+
+    /**
+     * Removes gene from the list of this node's candidate genes
+     *
+     * @method removeGene
+     */
+    removeGene: function(gene) {
+        if (this.getGenes().indexOf(gene) !== -1) {
+            editor.getGeneLegend().removeCase(gene, this.getID());
+            this._candidateGenes = this.getGenes().without(gene);
+        }
+    },
+
+    /**
      * Sets the list of candidate genes of this person to the given list
      *
      * @method setGenes
      * @param {Array} genes List of gene names (as strings)
      */
     setGenes: function(genes) {
-        this._candidateGenes = genes;
+        for(var i = this.getGenes().length-1; i >= 0; i--) {
+            this.removeGene(this.getGenes()[i]);
+        }
+        for(var i = 0; i < genes.length; i++) {
+            this.addGene( genes[i] );
+        }
+        this.getGraphics().updateDisorderShapes();
     },
 
     /**
@@ -707,6 +752,7 @@ var Person = Class.create(AbstractPerson, {
     remove: function($super) {
         this.setDisorders([]);  // remove disorders form the legend
         this.setHPO([]);
+        this.setGenes([]);
         $super();
     },
 
@@ -763,12 +809,12 @@ var Person = Class.create(AbstractPerson, {
                                                  // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
         var disorders = [];
         this.getDisorders().forEach(function(disorder) {
-            var disorderName = editor.getDisorderLegend().getDisorderName(disorder);
+            var disorderName = editor.getDisorderLegend().getDisorder(disorder).getName();
             disorders.push({id: disorder, value: disorderName});
         });
         var hpoTerms = [];
         this.getHPO().forEach(function(hpo) {
-            var termName = editor.getHPOLegend().getTermName(hpo);
+            var termName = editor.getHPOLegend().getTerm(hpo).getName();
             hpoTerms.push({id: hpo, value: termName});
         });
 

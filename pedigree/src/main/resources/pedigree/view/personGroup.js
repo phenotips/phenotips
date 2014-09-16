@@ -118,12 +118,12 @@ var PersonGroup = Class.create(Person, {
     getSummary: function() {
         var disorders = [];
         this.getDisorders().forEach(function(disorder) {
-            var disorderName = editor.getDisorderLegend().getDisorderName(disorder);
+            var disorderName = editor.getDisorderLegend().getDisorder(disorder).getName();
             disorders.push({id: disorder, value: disorderName});
         });
-        
+
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
-        
+
         return {
             identifier:   {value : this.getID()},
             comment:      {value : this.getFirstName()},
