@@ -2621,7 +2621,7 @@ return PhenoTips;
     }
 
     if (expandable) {
-      var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
+      var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(!element.hasClassName('root')));
       expandTool.observe('click', function(event) {
         var entry = event.element().up('.entry');
         if (!this._isExpandToolLocked(entry)){
