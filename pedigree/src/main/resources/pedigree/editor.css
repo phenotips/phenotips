@@ -623,7 +623,20 @@
   TODO: remove this
   */
   text-align: center;
+  text-shadow: 1px 1px 0 #FFF;
   line-height: 24px;
+}
+/* The unicode symbols we use for different node types have disproportionate sizes.
+   Adjusting the font size for a cleaner look:
+*/
+.node-type-option.person-type-option.node-type-M {
+    font-size: 1.1em;
+}
+.node-type-option.person-type-option.node-type-F {
+    font-size: 0.75em;
+}
+.node-type-option.person-type-option.node-type-U {
+    font-size: 1.2em;
 }
 .expand-arrow {
   cursor: pointer;
