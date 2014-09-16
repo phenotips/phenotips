@@ -40,5 +40,5 @@ public interface DiagnosisService
      * @param absentPhenotypes A List of String phenotypes not observed in the patient
      * @return A list of suggested diagnosies
      */
-    public List<String> getDiagnosis(List<String> presentPhenotypes, List<String> absentPhenotypes);
+    List<String> getDiagnosis(List<String> presentPhenotypes, List<String> absentPhenotypes);
 }

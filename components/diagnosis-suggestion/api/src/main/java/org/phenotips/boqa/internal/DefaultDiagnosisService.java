@@ -19,32 +19,44 @@
  */
 package org.phenotips.boqa.internal;
 
+import org.phenotips.boqa.DiagnosisService;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Singleton;
+
 import ontologizer.GlobalPreferences;
 import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
 import ontologizer.types.ByteString;
-import org.phenotips.boqa.DiagnosisService;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
+
 import sonumina.boqa.calculation.BOQA;
 import sonumina.boqa.calculation.Observations;
 
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.*;
-
 /**
- * An implementation of Diagnosis Service using BOQA (http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract)
+ * An implementation of Diagnosis Service using BOQA
+ * see (http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract)
  * Created by meatcar on 9/5/14.
  * @version $Id$
  */
-@Component
 @Singleton
+@Component
 public class DefaultDiagnosisService implements DiagnosisService, Initializable
 {
-    BOQA boqa;
-    Map<Integer, ByteString> omimMap;
+    private BOQA boqa;
+    private Map<Integer, ByteString> omimMap;
 
     @Override
     public void initialize() throws InitializationException {
@@ -61,8 +73,8 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         GlobalPreferences.setProxyPort(888);
         GlobalPreferences.setProxyHost("realproxy.charite.de");
 
-        String ontologyPath = ""; //TODO set ontologyPath
-        String annotationPath = ""; //TODO set anntoationPath
+        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").toString();
+        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").toString();
 
         // Load datafiles
         Datafiles df = null;
@@ -77,14 +89,23 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         boqa.setup(df.graph, df.assoc);
 
         //Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
-        Set<Map.Entry<ByteString,Integer>> omimtonum = boqa.item2Index.entrySet();
+        Set<Map.Entry<ByteString, Integer>> omimtonum = boqa.item2Index.entrySet();
         this.omimMap = new HashMap<Integer, ByteString>(omimtonum.size());
 
-        for(Map.Entry<ByteString, Integer> item : omimtonum) {
+        for (Map.Entry<ByteString, Integer> item : omimtonum) {
             this.omimMap.put(item.getValue(), item.getKey());
         }
     }
 
+    /**
+     * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
+     * in the format {@code <ontology prefix>:<term id>}, for example
+     *            {@code HP:0002066}
+     *
+     * @param presentPhenotypes A List of String phenotypes observed in the patient
+     * @param absentPhenotypes A List of String phenotypes not observed in the patient
+     * @return A list of suggested diagnosies
+     */
     public List<String> getDiagnosis(List<String> presentPhenotypes, List<String> absentPhenotypes) {
         Observations o = new Observations();
         o.observations = new boolean[boqa.getOntology().getNumberOfTerms()];
@@ -92,7 +113,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         //Add all hpo terms with ancestors to array of booleans
         for (String hpo : presentPhenotypes) {
             Term t = boqa.getOntology().getTerm(hpo);
-            addTermAndAncestors(t,o);
+            addTermAndAncestors(t, o);
         }
 
         //Get marginals
@@ -101,21 +122,21 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
 
         //All of this is sorting diseases by marginals
         Integer[] order = new Integer[res.size()];
-        for (int i=0; i < order.length; i++) {
+        for (int i = 0; i < order.length; i++) {
             order[i] = i;
         }
 
         Arrays.sort(order, new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                if (res.getMarginal(o1) < res.getMarginal(o2)) return 1;
-                if (res.getMarginal(o1) > res.getMarginal(o2)) return -1;
+                if (res.getMarginal(o1) < res.getMarginal(o2)) { return 1; }
+                if (res.getMarginal(o1) > res.getMarginal(o2)) { return -1; }
                 return 0;
             }
         });
 
         //Get top 20 results
-        ArrayList<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<String>();
         for (int i = 0; i < 20; i++) {
             int id = order[i];
             results.add(res.getMarginal(id) + "\t" + this.omimMap.get(id));

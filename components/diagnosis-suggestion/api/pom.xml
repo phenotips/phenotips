@@ -139,6 +139,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>sonumina</groupId>
+            <artifactId>boqa</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.xwiki.commons</groupId>

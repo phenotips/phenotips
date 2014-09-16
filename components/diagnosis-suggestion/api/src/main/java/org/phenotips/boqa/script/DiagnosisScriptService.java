@@ -20,16 +20,19 @@
 package org.phenotips.boqa.script;
 
 import org.phenotips.boqa.DiagnosisService;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.List;
 
 /**
  * Created by meatcar on 9/5/14.
+ *
  * @version $Id$
  */
 @Component
@@ -40,7 +43,16 @@ public class DiagnosisScriptService implements ScriptService
     @Inject
     private DiagnosisService manager;
 
-    public List<String> diagnose(List<String> presentPhenotypes, List<String> absentPhenotypes) {
+    /**
+     * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
+     * in the format {@code <ontology prefix>:<term id>}, for example
+     * {@code HP:0002066}
+     *
+     * @param presentPhenotypes A List of String phenotypes observed in the patient
+     * @param absentPhenotypes  A List of String phenotypes not observed in the patient
+     * @return A list of suggested diagnosies
+     */
+    public List<String> get(List<String> presentPhenotypes, List<String> absentPhenotypes) {
         return this.manager.getDiagnosis(presentPhenotypes, absentPhenotypes);
     }
 }
