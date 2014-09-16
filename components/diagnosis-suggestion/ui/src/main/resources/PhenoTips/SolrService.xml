@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>SolrService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822196000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822196000</date>
+  <contentUpdateDate>1401822196000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}{{html clean="false"}}
+#if ($xcontext.action == 'get')
+  #if ("$!{request.defType}" != '')
+    #set ($parameters = {})
+    #foreach ($param in $request.parameterMap.entrySet())
+      #set ($foreach.value = '')
+      #foreach ($value in $param.value)
+        #set ($foreach.parent.value = $foreach.parent.value.concat($value))
+      #end
+      #set ($discard = $parameters.put($param.key, $foreach.value))
+    #end
+    #set ($results = $services.hpo.customSearch($parameters))
+  #else
+    #set ($rows = -1)
+    #if ("$!request.rows" != '')
+      #set ($rows = $mathtool.toInteger($request.rows))
+    #end
+    #set ($start = 0)
+    #if ("$!request.start" != '')
+      #set ($start = $mathtool.toInteger($request.start))
+    #end
+    #set ($results = $services.hpo.search("$!request.q", "$!request.sort", $rows, $start))
+  #end
+  #if ("$!request.format" == 'xml')
+    $response.setContentType('text/xml')
+&lt;response&gt;
+&lt;result name="response" numFound="$results.size()"&gt;
+#foreach ($result in $results)
+  &lt;doc&gt;
+    #foreach ($field in $result.fieldNames)
+      #set ($values = $result.getFieldValues($field))
+      #if ($values.size() &gt; 1)
+        &lt;arr name="$field"&gt;
+        #foreach ($value in $values)
+          &lt;str&gt;$escapetool.xml($value)&lt;/str&gt;
+        #end
+        &lt;/arr&gt;
+      #else
+        &lt;str name="$field"&gt;$escapetool.xml($values.get(0))&lt;/str&gt;
+      #end
+    #end
+  &lt;/doc&gt;
+#end
+&lt;/result&gt;
+&lt;/response&gt;
+  #else## No known custom format requested. Defaulting to JSON
+    $response.setContentType('application/json')
+{
+   "returnedrows" : "$results.size()",
+   "rows" : [
+#foreach ($result in $results)
+     {
+    #foreach ($field in $result.fieldNames)
+      #set ($values = $result.getFieldValues($field))
+      #if ($values.size() &gt; 0)
+      #if ($values.size() == 1)
+        "$field" : "$escapetool.javascript($values.get(0)).replace('\''', '''')"##
+      #else
+        "$field" : [
+        #foreach ($value in $values)
+          "$escapetool.javascript($value).replace('\''', '''')"#if($foreach.hasNext()),#end
+
+        #end
+        ]##
+      #end
+      #if($foreach.hasNext()),#end
+
+      #end
+    #end
+     }#if($foreach.hasNext()),#end
+
+#end
+   ]## docs array
+}
+  #end## Done generating response
+#end## Done handling get action
+{{/html}}{{/velocity}}</content>
+</xwikidoc>
