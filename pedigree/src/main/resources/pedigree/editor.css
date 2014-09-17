@@ -268,6 +268,9 @@
   color: #000000;
   z-index: 100000;
 }
+.calendar_date_select {
+  z-index: 100000 !important;
+}
 .width80px {
   width: 80px;
 }
