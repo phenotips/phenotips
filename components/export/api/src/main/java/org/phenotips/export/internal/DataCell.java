@@ -46,9 +46,9 @@ public class DataCell
 
     private Boolean isChild;
 
-    Set<DataCell> generated;
+    private Set<DataCell> generated;
 
-    private Integer numberOfLines = null;
+    private Integer numberOfLines;
 
     public DataCell(String value, Integer x, Integer y)
     {
@@ -65,31 +65,31 @@ public class DataCell
         addStyle(style);
     }
 
-    public void addStyle(StyleOption _style)
+    public void addStyle(StyleOption style)
     {
         if (this.styles == null) {
             this.styles = new HashSet<StyleOption>();
         }
-        this.styles.add(_style);
+        this.styles.add(style);
         if (this.generated != null) {
             for (DataCell child : this.generated) {
-                child.addStyle(_style);
+                child.addStyle(style);
             }
         }
     }
 
-    public void addStyles(Collection<StyleOption> _styles)
+    public void addStyles(Collection<StyleOption> styles)
     {
-        if (_styles == null) {
+        if (styles == null) {
             return;
         }
         if (this.styles == null) {
             this.styles = new HashSet<StyleOption>();
         }
-        this.styles.addAll(_styles);
+        this.styles.addAll(styles);
         if (this.generated != null) {
             for (DataCell child : this.generated) {
-                child.addStyles(_styles);
+                child.addStyles(styles);
             }
         }
     }
