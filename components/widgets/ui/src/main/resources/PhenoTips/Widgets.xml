@@ -846,7 +846,7 @@
       hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
       this.container.insert({top : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
 
-      hideButton = new Element('span', {'class' : 'hide-button'}).update('hide-suggestions');
+      hideButton = new Element('span', {'class' : 'hide-button'}).update('hide suggestions');
       hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
       this.container.insert({bottom : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
     }
