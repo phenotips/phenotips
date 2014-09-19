@@ -117,6 +117,10 @@
   #set ($guid      = $request.guid)
   #set ($fields    = $request.fields)
 
+  #if ($guid == 'auto')
+     #set ($guid = $service.getPatientPushHistory($patientid, $serverId).getRemotePatientGUID())
+  #end
+
   #if (!$username)
     #set ($response = $service.sendPatient($patientid, $fields, $groupname, $guid, $serverId))  ## passwordless login using stored token
   #else

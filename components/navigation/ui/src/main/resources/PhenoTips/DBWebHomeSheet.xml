@@ -39,66 +39,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-{{include document="PhenoTips.DatabaseFilters" /}}
-
-{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circe"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in Excel format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
-
-{{velocity}}
-$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
-$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
-$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
-$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
-$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
-$xwiki.ssx.use('PhenoTips.Widgets')##
-$xwiki.jsx.use('PhenoTips.Widgets')##
-$xwiki.jsx.use('XWiki.DateTimePicker')##
-$xwiki.ssx.use('XWiki.DateTimePicker')##
-#set ($config = $doc.getObject('PhenoTips.DBConfigurationClass'))
-#set ($patientClassName = 'PhenoTips.PatientClass')
-#if ($config)
-#set ($configuredColumns = $config.getProperty('livetableColumns').value)
-#if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
-  #set ($configuredColumns = 'doc.name')
-#end
-#set ($columns = [])
-#set ($discard = $columns.addAll($configuredColumns))
-#set ($columnsProperties = {
-  '_actions' : {'actions': ['edit', 'delete']}
-})
-#foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true, 'html': true }))
-#end
-##
-#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
-== Filters ==
-
-{{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
-#set ($discard = $columns.add('_actions'))
-##
-#set ($options = {
-  'className'         : $patientClassName,
-  'translationPrefix' : 'patient.livetable.',
-  'rowCount'          : 25,
-  'maxPages'          : 10,
-  'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
-  'defaultOrder'      : 'asc',
-  'topFilters'        : $topFilters,
-  'resultPage'        : 'PhenoTips.LiveTableResults'
-})
-#if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
-  #set ($options.rowCount = $config.getProperty('livetableRows').value)
-#end
-#livetable('patients' $columns $columnsProperties $options)
-$xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#else
-{{warning}}**Configuration missing.**{{/warning}}
-#end
-{{/velocity}}</content>
+  <content/>
   <object>
     <name>PhenoTips.DBWebHomeSheet</name>
     <number>0</number>
@@ -615,7 +556,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {
       var elements = event.memo &amp;&amp; event.memo.elements || [document.documentElement];
-      elements.each(function(item) {
+      elements &amp;&amp; elements.each(function(item) {
         // We defer so that the standard suggests have time to initialize before applying the enhanced suggests
         enhanceDialog.defer(item);
       });
@@ -1013,6 +954,25 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+.xdialog-modal-container {
+  z-index: 400000 !important;
+}
+.xdialog-box {
+  max-width: 600px;
+  width: inherit;
+}
+.xdialog-box .buttons {
+  margin-left: 25px;
+  margin-top: 0px;
+}
+.xdialog-box .button {
+  width: 100px;
+}
+.xdialog-box .question {
+  padding: 4px 0 6px 25px;
+  white-space: nowrap;
 }</code>
     </property>
     <property>

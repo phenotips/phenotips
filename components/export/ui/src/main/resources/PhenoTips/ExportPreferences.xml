@@ -42,7 +42,7 @@
   <content>{{include document="PhenoTips.DatabaseFilters" /}}
 
 {{velocity output=false}}
-#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList)
+#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList $activeFields)
   {{html clean="false"}}
     #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
     &lt;ul class="field-list"&gt;
@@ -104,27 +104,41 @@
 )))##section filters
 
 (% class="section columns"%)(((
+#if ($request.multipatient)
+=== (% class="step" %)2(%%) Select the fields to be included in pushed data ===
+  #set($activeFields = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
+  #set($ignored = {})
+  #set($customValues = {})
+  #set($codeFields = [])
+  #set($metaFields = [])
+  #set($selectedValues = [])
+  #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $activeFields)
+  #set($exportTitle = "Push to " + $request.remoteserver)
+  #set($exportButtonID = "push-multiple-patients")
+#else
 === (% class="step" %)2(%%) Select the fields to be exported ===
-
-#set($ignored = {
-  'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype'],
-  'types'  : []
-})
-#set($customValues = {
+  #set($ignored = {
+    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype'],
+    'types'  : []
+  })
+  #set($customValues = {
        'doc.name' : "Report identifier",
        'referrer' : "Referrer (report creator)",
        'creationDate' : "Report creation date",
        'author' : "Last modified by",
        'date' : "Last modification date"
-})
-#set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
-#set($metaFields = ['phenotype'])
-#set($selectedValues = ['phenotype'])
-#__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues)
+  })
+  #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
+  #set($metaFields = ['phenotype'])
+  #set($selectedValues = ['phenotype'])
+  #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues)
+  #set($exportTitle = "Export")
+  #set($exportButtonID = "export-multiple-patients")
+#end
 )))##section columns
 
 (% class="buttons"%)(((
-{{html clean="false"}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Export" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
+{{html clean="false"}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" id="$exportButtonID" value="$exportTitle" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
 {{html clean="false"}}&lt;/div&gt;&lt;/form&gt;{{/html}}
 )))
 {{/velocity}}</content>

@@ -32,7 +32,6 @@ import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.phenotips.data.securestorage.RemoteLoginData;
 import org.phenotips.data.securestorage.SecureStorageManager;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -174,11 +173,18 @@ public class DefaultPushPatientService implements PushPatientService
         Map<PushServerInfo, PatientPushHistory> response = new TreeMap<PushServerInfo, PatientPushHistory>();
 
         for (PushServerInfo server : servers) {
-            PatientPushedToInfo pushInfo = this.storageManager.getPatientPushInfo(localPatientID, server.getServerID());
-            PatientPushHistory history = (pushInfo == null) ? null : new DefaultPatientPushHistory(pushInfo);
+            PatientPushHistory history = getPatientPushHistory(localPatientID, server.getServerID());
             response.put(server, history);
         }
         return response;
+    }
+
+    @Override
+    public PatientPushHistory getPatientPushHistory(String localPatientID, String remoteServerIdentifier)
+    {
+        PatientPushedToInfo pushInfo = this.storageManager.getPatientPushInfo(localPatientID, remoteServerIdentifier);
+        PatientPushHistory history = (pushInfo == null) ? null : new DefaultPatientPushHistory(pushInfo);
+        return history;
     }
 
     private Patient getPatientByID(String patientID, String accessLevelName)

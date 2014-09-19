@@ -127,12 +127,23 @@
       // ---------------------------------------------------------------------
       // Search for the push patient elements. Exist if missing.
       // ---------------------------------------------------------------------
+      this._pushManyPatients = false;
+
       var pushTargets = $$("div[id^=push-patient]");
-      if (pushTargets.length == 0) { return; }
+      if (pushTargets.length == 0) {
+          pushTargets = $$("a[id^=pushall-server]");
+          if (pushTargets.length == 0) {
+              return;
+          }
+          this._pushManyPatients = true;
+      }
 
       this._serviceURL = new XWiki.Document('PushPatientService', 'PhenoTips').getURL('get', 'outputSyntax=plain');
       this._patientId  = XWiki.currentDocument.page;
-      //console.log("PUSH UI: Patient: " + this._patientId + ", serviceURL: " + this._serviceURL);
+      //if (!this._pushManyPatients)
+      //    console.log("PUSH UI: Patient: " + this._patientId + ", serviceURL: " + this._serviceURL);
+      //else
+      //    console.log("PUSH UI: multipush, serviceURL: " + this._serviceURL);
 
       // ---------------------------------------------------------------------
       // Initialize the UI
@@ -150,7 +161,7 @@
 
       for (var server = 0; server &lt; pushTargets.length; server++) {
           var nextServer = pushTargets[server];
-          var pushLauncher = nextServer.down('a');
+          var pushLauncher = this._pushManyPatients ? nextServer : nextServer.down('a');
           if (!pushLauncher) continue;
 
           var serverName = nextServer.readAttribute("name");
@@ -198,32 +209,45 @@
                     .insert(new Element ('div', {'class' : 'section-contents'}));
       };
 
+      var serverTitle = this._pushManyPatients ? 'Where to send all the patient data to?' :
+                                                 'Where to send this patient profile?';
+      var serverDesc  = this._pushManyPatients ? 'Remote PhenoTips server where all the data will be sent' :
+                                                 'Remote PhenoTips server where this patient\'s data will be sent';
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
-      this._container.insert(generateSection('server-selection','Where to send this patient profile?','Remote PhenoTips server where this patient\'s data will be sent'))
+      this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
                      .insert(generateSection('user-selection','Authentication on remote server','Please choose the user name to be used to authenticate on the server and '+
                                                    'send the data; this user will be marked as the reporter on the remote server.'))
                      .insert(generateSection('group-selection','Remote PhenoTips group','The PhenoTips group you would like to share this patient with on the remote server. ' +
                                                                        'If a group is selected, the group would be the owner and the given remote user will be a collaborator. ' +
-                                                                       'If no group is selected, the given remote user will be the only owner.'))
-                     .insert(generateSection('fields-selection','Patient data preview','Please review the data that will be sent to the server'));
+                                                                       'If no group is selected, the given remote user will be the only owner.'));
+      if (!this._pushManyPatients) {
+          this._container.insert(generateSection('fields-selection','Patient data preview','Please review the data that will be sent to the server'));
+      }
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
       var labelApprove = new Element('label', {'id':'approve-label'});
-      labelApprove.insert(this._checkBoxApprove).insert(" I agree to push this data to the server");
+      var approveMessage = this._pushManyPatients ? " I agree to push patient data to this server" :
+                                                    " I agree to push this data to the server";
+      labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
+      if (this._pushManyPatients) {
+          this._container.insert("&lt;br/&gt;");
+      }
       this._container.insert(this._approveElement);
 
       this._serverManager = this._container.down('#server-selection .section-contents');
       this._userManager   = this._container.down('#user-selection .section-contents');
       this._groupManager  = this._container.down('#group-selection .section-contents');
-      this._fieldsManager = this._container.down('#fields-selection .section-contents');
+      this._fieldsManager = this._pushManyPatients ? null : this._container.down('#fields-selection .section-contents');
 
       this._initServerSelector();
       this._initMainFormActions();
 
-      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': 'Pushing ' + this._patientId +
-                                                                        ' to a remote database...', 'verticalPosition': 'top', 'removeOnClose': false});
+      var title = this._pushManyPatients ? 'Pushing patient data to a remote PhenoTips instance...' :
+                                           'Pushing ' + this._patientId + ' to a remote database...';
+
+      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
     _generateServerFirstMessage: function() {
@@ -300,7 +324,7 @@
       this._patientData = undefined;
 
       this._groupManager.update(this._generateServerAndUserFirstMessage());
-      this._fieldsManager.update(this._generateServerAndUserFirstMessage());
+      !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
 
       this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
       this._approveElement.hide();
@@ -670,7 +694,11 @@
           this._remoteServers[this._selectedServer]["noUpdates"] = true;
       }
       this._displayGroupPicker(groupList);
-      this._generateDataPreview(fieldList);
+      if (this._pushManyPatients) {
+        this._showApproveCheckbox();
+      } else {
+        this._generateDataPreview(fieldList);
+      }
     },
 
     _displayGroupPicker: function(groupList) {
@@ -749,14 +777,17 @@
     },
 
     _displayPatientData: function(patientData) {
-      this._checkBoxApprove.checked = false;
-      this._checkBoxApprove.enable();
-      this._approveElement.show();
+      this._showApproveCheckbox();
       this._patientData = patientData;
       //console.log("Data: " + stringifyObject(patientData));
       this._fieldsManager.update(this._generatePatientDataPreview(patientData));
     },
 
+    _showApproveCheckbox: function() {
+      this._checkBoxApprove.checked = false;
+      this._checkBoxApprove.enable();
+      this._approveElement.show();
+    },
 
     _generatePatientDataPreview: function(patientJSON) {
         var dataCategories = [
@@ -930,7 +961,8 @@
       var buttons = new Element('div', {'class' : 'buttons'});
       buttons.insert(new Element('input', {type: 'hidden', name : 'xaction', 'value': 'push'}));
       buttons.insert(new Element('input', {type: 'hidden', name : 'patient', 'value': this._patientId}));
-      buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': 'Push', 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
+      var pushButtonTitle = this._pushManyPatients ? 'Next: Select patients and data fields to be pushed' : 'Push';
+      buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': pushButtonTitle, 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
       buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(buttons);
 
@@ -955,7 +987,11 @@
 
       this._container.observe('submit', function(event) {
         event.stop();
-        _this._pushPatient();
+        if (_this._pushManyPatients) {
+            _this._pushMultiplePatients();
+        } else {
+            _this._pushPatient();
+        }
       })  // observe('submit')
     },
 
@@ -969,12 +1005,12 @@
     },
 
     _selectPushNewPatient: function() {
-	    var radioSelectUpdate = document.getElementById('choice-update-patient');
-	    var radioSelectNew    = document.getElementById('choice-new-patient');
-	    if (radioSelectUpdate &amp;&amp; radioSelectNew) {
-	        radioSelectUpdate.checked = false;
-	        radioSelectNew.checked    = true;
-	    }
+        var radioSelectUpdate = document.getElementById('choice-update-patient');
+        var radioSelectNew    = document.getElementById('choice-new-patient');
+	if (radioSelectUpdate &amp;&amp; radioSelectNew) {
+            radioSelectUpdate.checked = false;
+            radioSelectNew.checked    = true;
+        }
     },
 
     _disableUpdateOption: function() {
@@ -990,14 +1026,24 @@
         }
     },
 
-    _pushPatient: function() {
+    _pushPatient: function(patientID, callBack, columnList) {
         var _this = this;
-        _this._pushResultSection.update("");
-        var params = {"do":"push", 'serverid': this._selectedServer, 'patientid': this._patientId};
+        if (_this._pushManyPatients &amp;&amp; (!patientID || !callBack)) {
+            return;
+        }
+        if (!_this._pushManyPatients) {
+            _this._pushResultSection.update("");
+        }
 
-        params["fields"] = Object.toJSON(this._patientFieldList);
+        var patientID = patientID ? patientID : this._patientId;
 
-        if (this._updatingExistingPatient()) {
+        var params = {"do":"push", 'serverid': this._selectedServer, 'patientid': patientID};
+
+        params["fields"] = columnList ? Object.toJSON(columnList) : Object.toJSON(this._patientFieldList);
+
+        if (_this._pushManyPatients){
+            params["guid"] = "auto";
+        } else if (this._updatingExistingPatient()) {
             params["guid"] = _this._remoteServers[_this._selectedServer].remoteGUID;
         }
 
@@ -1018,6 +1064,10 @@
             try {
                 console.log("Got response: " + stringifyObject(response.responseJSON));
                 var res = response.responseJSON;
+                if (_this._pushManyPatients) {
+                    callBack(res, patientID);
+                    return;
+                }
                 if (res.status == "success") {
                     _this._checkBoxApprove.checked = false;
 
@@ -1069,6 +1119,10 @@
               }
           },
           onFailure : function(response) {
+            if (_this._pushManyPatients) {
+                callBack({"status": "error"}, patientID);
+                return;
+            }
             var provideRetry  = false;
             var failureReason = response.statusText;
             if (response.statusText == '' || response.status == 12031 ) {   // no response + IE special case
@@ -1078,6 +1132,10 @@
             _this._pushResultSection.update(_this._generateFailedToPushPatient(failureReason, provideRetry));
           },
           on0 : function (response) {
+            if (_this._pushManyPatients) {
+                callBack({"status": "error"}, patientID);
+                return;
+            }
             response.request.options.onFailure(response);
           },
           onComplete : function() {
@@ -1094,6 +1152,87 @@
           url = "http://" + url;
         }
         return url;
+    },
+
+    _pushMultiplePatients: function() {
+        var _this = this;
+
+        var doMultiPush = function(patients, columns) {
+            //console.log("Push with params: " + patients + " -&gt; " + columns + " -&gt; " + _this._selectedServer);
+            _this._checkBoxApprove.checked = false;
+            var pushResult = new Element("div", {"class": "multi-push-results infomessage"});
+            _this._pushResultSection.update(pushResult);
+
+            var next = 0;
+            var pushSingleFunc = function(previousPushResult, prevPatientID) {
+               // display previous push status
+               if (previousPushResult &amp;&amp; prevPatientID) {
+                   if (previousPushResult.status != "success") {
+                       pushResult.className = "multi-push-results errormessage";
+                       if (previousPushResult.cantconnect) {
+                           pushResult.insert(" unable to connect to the remote server.");
+                           return;
+                       }
+                       var reason = "failed.";
+                       if (previousPushResult.invalidguid) {
+                           reason = "unable to update: stored remote GUID is incorrect.";
+                       } else if (previousPushResult.accessdeniedguid) {
+                           reason = "unable to update: access denied.";
+                       }
+                       pushResult.insert(' ' + reason + "&lt;br/&gt;");
+                   } else {
+                       pushResult.innerHTML = pushResult.innerHTML.replace(/Pushing (\w+?)\.\.\.$/, "");
+                       var newURL       = _this._remoteServers[_this._selectedServer].url + previousPushResult.patienturl;
+                       var linkToRemote = "&lt;a href='" + newURL + "' target='_blank'&gt;" + previousPushResult.patientid + "&lt;/a&gt;";
+                       pushResult.insert("&lt;div class='pushed-ok-message'&gt;Pushed " + prevPatientID + " successfully, remote patient ID is " + linkToRemote + "&lt;/div&gt;");
+                   }
+               }
+               // push next
+               if (next &lt; patients.length) {
+                   var nextPatientID = patients[next++];
+                   pushResult.insert("Pushing " + nextPatientID + "...");
+                   _this._pushPatient(nextPatientID, pushSingleFunc, columns);
+               }
+            }
+
+            pushSingleFunc();
+        }
+        var pushCallBack = function(patients, columns) {
+            if (patients.length == 0) {
+                return;
+            }
+            var confirmMessage = "Do you want to push the following " + patients.length + " patients to " + _this._selectedServer + "?"+
+                                 "&lt;br/&gt;&lt;div class='plainmessage multi-push-patient-list'&gt;&lt;ol&gt;";
+            patients.each(function(item) {
+                confirmMessage += "&lt;li&gt;" + item + "&lt;/li&gt;";
+            });
+            confirmMessage += "&lt;/ol&gt;&lt;/div&gt;"
+
+            new XWiki.widgets.ConfirmationBox(
+              { onYes : function() { doMultiPush(patients, columns); }, },
+              { confirmationText: confirmMessage, showCancelButton: false }
+            );
+        }
+        var pushPreferencesFail = function() {
+            alert("Failed to get the list of patients to be pushed");
+        }
+        var exportTool = $('phenotips_export');
+        if (!exportTool) return;
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        dialog.showDialog();
+        // =================================================================================
+        // Generate the dialog content
+        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
+          onSuccess: function(transport) {
+            var content = dialog.dialogBox._x_contentPlug;
+            content.update(transport.responseText);
+            content.__dialog = dialog;
+            document.fire('xwiki:dom:updated', {'elements': [content],
+                                                'multiPushPreferences': content,
+                                                'callbackOK': pushCallBack,
+                                                'callbackFail': pushPreferencesFail});
+          }
+        });
     }
 
   });
@@ -1102,10 +1241,58 @@
 //  ========================================================================
 // End PhenoTips augmentation.
 
+
+// overwrite thebehaviour of the "export/push to" button on the export preferences page:
+// get the selected patients and fields and push using this javascript
+['xwiki:dom:updated'].each(function(eventName) {
+    document.observe(eventName, function(event) {
+        if (!event.memo || !event.memo.multiPushPreferences || !event.memo.callbackOK) {
+            return;
+        }
+        var dialog       = event.memo.multiPushPreferences.__dialog;
+        var callbackOK   = event.memo.callbackOK;
+        var callbackFail = event.memo.callbackFail;
+        var pushButton = $('push-multiple-patients');
+        pushButton &amp;&amp; pushButton.observe('click', function(event) {
+            event.stop();
+            var liveMatchCounter = $('filter-match-count');
+            var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
+            if (form) {
+                // 1) get the list of selected data columns from the form
+                var selectedFields = [];
+                var fields = form.down('ul.field-list');
+                var checkboxes = fields.select('input[name="columns"]');
+                checkboxes.each(function(item) {
+                    if (item.checked) {
+                        selectedFields.push(item.identify().replace("columns_",""));
+                    }
+                });
+
+                // 2) get the list of filtered patients from the Export page
+                var url = "$xwiki.getURL('PhenoTips.Export', 'get')?list=true&amp;" + form.serialize();
+                var ajx = new Ajax.Request(url, {
+                    method: 'get',
+                    onSuccess: function(response) {
+                        var patients = [];
+                        response.responseJSON.each(function(item) {
+                            patients.push(item.replace("data.",""));
+                        });
+                        callbackOK(patients, selectedFields);
+                    },
+                    onFailure: function (response) {
+                        callbackFail &amp;&amp; callbackFail();
+                    }
+                });
+            };
+            dialog.closeDialog();
+        });
+    });
+});
+
+
 document.observe("xwiki:dom:loaded", function() {
   new PhenoTips.widgets.PushPatientWidget();
 });
-
 
 
 //--- debug:
@@ -1350,6 +1537,19 @@ function _printObjectInternal(o, level) {
   padding: .5em;
   margin: .5em 0;
   font-weight: bold;
+}
+.multi-push-results {
+  overflow-y: auto;
+  max-height: 150px;
+}
+.multi-push-results .pushed-ok-message {
+  color: #336699;
+}
+.multi-push-patient-list {
+  overflow-y: auto;
+  max-height: 150px;
+  width: 250px;
+  padding: 0.5em;
 }</code>
     </property>
     <property>

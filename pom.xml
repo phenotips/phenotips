@@ -381,6 +381,11 @@
               <className>**/data/PatientRepository</className>
               <method>org.phenotips.data.Patient loadPatientFromDocument(org.xwiki.bridge.DocumentModelBridge)</method>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/push/PushPatientService</className>
+              <method>org.phenotips.data.push.PatientPushHistory getPatientPushHistory(java.lang.String, java.lang.String)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

@@ -204,6 +204,11 @@
   $patientIds.size()
   #break
 #end
+#if ($request.list)
+  $response.setContentType('application/json')
+  $jsontool.serialize($patientIds)
+  #break
+#end
 
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
 #set ($enabledFields = $request.getParameterValues('columns'))

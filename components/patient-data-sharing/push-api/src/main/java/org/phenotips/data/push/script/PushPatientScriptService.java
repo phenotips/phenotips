@@ -25,7 +25,6 @@ import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
 import org.phenotips.data.push.PushServerSendPatientResponse;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
@@ -64,6 +63,11 @@ public class PushPatientScriptService implements ScriptService
     public Map<PushServerInfo, PatientPushHistory> getPushTargetsWithHistory(String localPatientID)
     {
         return this.internalService.getPushTargetsWithHistory(localPatientID);
+    }
+
+    public PatientPushHistory getPatientPushHistory(String localPatientID, String remoteServerIdentifier)
+    {
+        return this.internalService.getPatientPushHistory(localPatientID, remoteServerIdentifier);
     }
 
     public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)
