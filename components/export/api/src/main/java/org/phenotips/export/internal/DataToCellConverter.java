@@ -68,13 +68,11 @@ public class DataToCellConverter
     public void phenotypeSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "phenotype";
-        String[] fieldIds =
-            { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta", "phenotype_meta",
-                "negative_phenotype", "phenotype_by_section"};
+        String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
+            "phenotype_meta", "negative_phenotype", "phenotype_by_section"};
         // FIXME These will not work properly in different configurations
-        String[][] headerIds =
-            { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" },
-                { "category" } };
+        String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" },
+            { "negative" }, { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -497,8 +495,8 @@ public class DataToCellConverter
         int ethnicityOffset = 0;
         if (present.contains("maternal_ethnicity") || present.contains("paternal_ethnicity")) {
             bottomY = 2;
-            if (fieldToHeaderMap.containsKey("maternal_ethnicity") &&
-                fieldToHeaderMap.containsKey("paternal_ethnicity"))
+            if (fieldToHeaderMap.containsKey("maternal_ethnicity")
+                && fieldToHeaderMap.containsKey("paternal_ethnicity"))
             {
                 ethnicityOffset = 2;
             } else {
@@ -536,8 +534,8 @@ public class DataToCellConverter
         Integer x = 0;
         if (present.contains("global_mode_of_inheritance")) {
             PatientData<SolrOntologyTerm> globalControllers = patient.<SolrOntologyTerm>getData("global-qualifiers");
-            SolrOntologyTerm modeTerm = globalControllers !=
-                null ? globalControllers.get("global_mode_of_inheritance") : null;
+            SolrOntologyTerm modeTerm =
+                globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
             String mode = modeTerm != null ? modeTerm.getName() : "";
             DataCell cell = new DataCell(mode, x, 0);
             bodySection.addCell(cell);
@@ -721,12 +719,10 @@ public class DataToCellConverter
     public void prenatalPhenotypeSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "prenatalPhenotype";
-        String[] fieldIds =
-            { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-                "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+        String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
+            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
-        String[][] headerIds =
-            { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
+        String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -895,11 +891,9 @@ public class DataToCellConverter
     {
         String sectionName = "disorders";
 
-        String[] fieldIds =
-            { "omim_id", "omim_id_code", "omim_id_combined", "diagnosis_notes" };
+        String[] fieldIds = { "omim_id", "omim_id_code", "omim_id_combined", "diagnosis_notes" };
         /* FIXME These will not work properly in different configurations */
-        String[][] headerIds =
-            { { "disorder" }, { "code" }, { "disorder", "code" }, { "notes" } };
+        String[][] headerIds = { { "disorder" }, { "code" }, { "disorder", "code" }, { "notes" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;

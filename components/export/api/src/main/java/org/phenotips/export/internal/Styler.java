@@ -41,9 +41,9 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
  */
 public class Styler
 {
-    Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<Set<StyleOption>, CellStyle>();
+    private Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<Set<StyleOption>, CellStyle>();
 
-    Font defaultFont = null;
+    private Font defaultFont = null;
 
     /** Use only on finalized sections */
     public static void styleSectionBottom(DataSection section, StyleOption style) throws Exception

@@ -23,6 +23,7 @@ import org.phenotips.data.Patient;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -35,9 +36,9 @@ import java.util.Set;
  */
 public class SheetAssembler
 {
-    DataSection oneSection = new DataSection();
+    private DataSection oneSection = new DataSection();
 
-    Integer headerHeight = 0;
+    private Integer headerHeight = 0;
 
     public SheetAssembler(Set<String> enabledFields, List<Patient> patients) throws Exception
     {
@@ -85,30 +86,36 @@ public class SheetAssembler
             .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
+    public Integer getHeaderHeight()
+    {
+        return this.headerHeight;
+    }
+
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
         throws Exception
     {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
             /* To weed out null sections */
-            List<DataSection> _patientSections = new LinkedList<DataSection>();
             List<DataSection> patientSections = new LinkedList<DataSection>();
-            _patientSections.add(converter.idBody(patient));
+            patientSections.add(converter.idBody(patient));
             /* An unfortunate need for the XWiki patient doc. This should be fixed in PhenoTipsPatient */
-            _patientSections.add(converter.documentInfoBody(patient));
-            _patientSections.add(converter.patientInfoBody(patient));
-            _patientSections.add(converter.familyHistoryBody(patient));
-            _patientSections.add(converter.prenatalPerinatalHistoryBody(patient));
-            _patientSections.add(converter.prenatalPhenotypeBody(patient));
-            _patientSections.add(converter.medicalHistoryBody(patient));
-            _patientSections.add(converter.isNormalBody(patient));
-            _patientSections.add(converter.phenotypeBody(patient));
-            _patientSections.add(converter.disordersBody(patient));
+            patientSections.add(converter.documentInfoBody(patient));
+            patientSections.add(converter.patientInfoBody(patient));
+            patientSections.add(converter.familyHistoryBody(patient));
+            patientSections.add(converter.prenatalPerinatalHistoryBody(patient));
+            patientSections.add(converter.prenatalPhenotypeBody(patient));
+            patientSections.add(converter.medicalHistoryBody(patient));
+            patientSections.add(converter.isNormalBody(patient));
+            patientSections.add(converter.phenotypeBody(patient));
+            patientSections.add(converter.disordersBody(patient));
 
             /* Null section filter */
-            for (DataSection section : _patientSections) {
-                if (section != null) {
-                    patientSections.add(section);
+            Iterator<DataSection> it = patientSections.iterator();
+            while (it.hasNext()) {
+                DataSection i = it.next();
+                if (i == null) {
+                    it.remove();
                 }
             }
             allSections.add(patientSections);
@@ -119,21 +126,22 @@ public class SheetAssembler
     private List<DataSection> generateHeader(DataToCellConverter converter, Set<String> enabledFields) throws Exception
     {
         List<DataSection> headerSections = new LinkedList<DataSection>();
-        List<DataSection> _headerSections = new LinkedList<DataSection>();
-        _headerSections.add(converter.idHeader(enabledFields));
-        _headerSections.add(converter.documentInfoHeader(enabledFields));
-        _headerSections.add(converter.patientInfoHeader(enabledFields));
-        _headerSections.add(converter.familyHistoryHeader(enabledFields));
-        _headerSections.add(converter.prenatalPerinatalHistoryHeader(enabledFields));
-        _headerSections.add(converter.prenatalPhenotypeHeader());
-        _headerSections.add(converter.medicalHistoryHeader(enabledFields));
-        _headerSections.add(converter.isNormalHeader(enabledFields));
-        _headerSections.add(converter.phenotypeHeader());
-        _headerSections.add(converter.disordersHeaders(enabledFields));
+        headerSections.add(converter.idHeader(enabledFields));
+        headerSections.add(converter.documentInfoHeader(enabledFields));
+        headerSections.add(converter.patientInfoHeader(enabledFields));
+        headerSections.add(converter.familyHistoryHeader(enabledFields));
+        headerSections.add(converter.prenatalPerinatalHistoryHeader(enabledFields));
+        headerSections.add(converter.prenatalPhenotypeHeader());
+        headerSections.add(converter.medicalHistoryHeader(enabledFields));
+        headerSections.add(converter.isNormalHeader(enabledFields));
+        headerSections.add(converter.phenotypeHeader());
+        headerSections.add(converter.disordersHeaders(enabledFields));
 
-        for (DataSection section : _headerSections) {
-            if (section != null) {
-                headerSections.add(section);
+        Iterator<DataSection> it = headerSections.iterator();
+        while (it.hasNext()) {
+            DataSection i = it.next();
+            if (i == null) {
+                it.remove();
             }
         }
         return headerSections;

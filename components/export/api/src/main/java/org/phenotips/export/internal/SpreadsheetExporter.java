@@ -88,7 +88,7 @@ public class SpreadsheetExporter
         SheetAssembler assembler = runAssembler(enabledFields, patients);
         // styleCells();
         write(assembler.getAssembled(), sheet);
-        freezeHeader(assembler.headerHeight.shortValue(), sheet);
+        freezeHeader(assembler.getHeaderHeight().shortValue(), sheet);
     }
 
     /*
