@@ -78,6 +78,7 @@ public class LocalLoginToken
     public void setLoginToken(String newToken)
     {
         this.loginToken = newToken;
+        this.timeTokenCreated = new Timestamp(System.currentTimeMillis());
     }
 
     public String getLocalUserName()
