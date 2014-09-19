@@ -602,7 +602,7 @@
 .node-type-options .separator {
   display: inline-block;
   width: 0;
-  margin: 0 12px;
+  margin: 0 8px;
   overflow: hidden;
 }
 .node-type-options .node-type-option {
@@ -626,22 +626,28 @@
   TODO: remove this
   */
   text-align: center;
-  text-shadow: 1px 1px 0 #FFF;
   line-height: 24px;
 }
 /* The unicode symbols we use for different node types have disproportionate sizes.
    Adjusting the font size for a cleaner look:
 */
 .fa-rotate-45 {
-    -webkit-transform: rotate(45deg);
-    -moz-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    -o-transform: rotate(45deg);
-    transform: rotate(45deg);
-    display: inline-block !important;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  display: inline-block !important;
+  font-size: 90%;
 }
 .expand-arrow {
   cursor: pointer;
+  font-size: 15px;
+  margin-left: -1px;
+  margin-right: 2px;
+}
+.expand-arrow:hover {
+  color: #6666CC;
 }
 .node-type-options .expandable-node-type-option {
     background: transparent none center center no-repeat;
