@@ -436,8 +436,8 @@ public class PhenoTipsPatient implements Patient
                             serializer.getName());
                     }
                 } catch (UnsupportedOperationException ex) {
-                    this.logger.warn("Unable to update patient from JSON using serializer [{}] - [{}]: {}",
-                        serializer.getName(), ex.getMessage(), ex);
+                    this.logger.warn("Unable to update patient from JSON using serializer [{}] : [{}]",
+                        serializer.getName(), ex.getMessage());
                 }
             }
         } catch (Exception ex) {

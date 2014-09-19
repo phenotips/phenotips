@@ -25,7 +25,9 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,6 +42,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -60,6 +63,8 @@ public class IdentifiersController implements PatientDataController<String>
 
     private static final String EXTERNAL_IDENTIFIER_PROPERTY_NAME = "external_id";
 
+    private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -68,6 +73,10 @@ public class IdentifiersController implements PatientDataController<String>
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
+    /** Provides access to the current execution context. */
+    @Inject
+    private Execution execution;
+
     @Override
     public PatientData<String> load(Patient patient)
     {
@@ -75,7 +84,7 @@ public class IdentifiersController implements PatientDataController<String>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             Map<String, String> result = new LinkedHashMap<String, String>();
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
@@ -89,7 +98,25 @@ public class IdentifiersController implements PatientDataController<String>
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            if (data == null) {
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+            }
+
+            PatientData<String> identifiers = patient.<String>getData(DATA_NAME);
+            if (!identifiers.isNamed()) {
+                return;
+            }
+            String externalId = identifiers.get(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
+            data.setStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
+
+            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            context.getWiki().saveDocument(doc, "Updated identifiers from JSON", true, context);
+        } catch (Exception e) {
+            this.logger.error("Failed to save identifiers: [{}]", e.getMessage());
+        }
     }
 
     @Override
@@ -121,7 +148,15 @@ public class IdentifiersController implements PatientDataController<String>
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        if (!json.containsKey(EXTERNAL_IDENTIFIER_PROPERTY_NAME)) {
+            // no data supported by this controller is present in provided JSON
+            return null;
+        }
+        String externalId = json.getString(EXTERNAL_IDENTIFIER_PROPERTY_NAME);
+
+        Map<String, String> result = new LinkedHashMap<String, String>();
+        result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, externalId);
+        return new DictionaryPatientData<String>(DATA_NAME, result);
     }
 
     @Override
