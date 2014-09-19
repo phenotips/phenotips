@@ -14,7 +14,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Male",
             tip  : "Create a person of male gender",
-            symbol: "◻",
+            symbol: "",
+            class: "fa fa-square-o",
             callback : "CreateChild",
             params: { parameters: {"gender": "M"} },
             inSiblingMode: true
@@ -23,7 +24,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Female",
             tip  : "Create a person of female gender",
-            symbol: "◯",
+            symbol: "",
+            class: "fa fa-circle-thin",
             callback : "CreateChild",
             params: { parameters: {"gender": "F"} },
             inSiblingMode: true
@@ -32,7 +34,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Unknown",
             tip  : "Create a person of unknown gender",
-            symbol: "◇",
+            symbol: "<div class='fa fa-square-o fa-rotate-45'></div>",
+            class: "",
             callback : "CreateChild",
             params: { parameters: {"gender": "U"} },
             inSiblingMode: true
@@ -42,6 +45,7 @@ var NodetypeSelectionBubble = Class.create({
             label: "Twins",
             tip  : "Create twins (expandable to triplets or more)",
             symbol: "⋀",
+            class: "",
             callback : "CreateChild",
             params: { "twins": true, "parameters": {"gender": "U"} },
             expandsTo: 'expandTwins',
@@ -55,6 +59,7 @@ var NodetypeSelectionBubble = Class.create({
             label: "Multiple",
             tip  : "Create a node representing multiple siblings",
             symbol: "〈n〉",
+            class: "",
             callback : "CreateChild",
             params: { "group": true },
             expandsTo: "expandPersonGroup",
@@ -67,6 +72,7 @@ var NodetypeSelectionBubble = Class.create({
             label: "No children",
             tip  : "Mark as childless by choice",
             symbol: "┴",
+            class: "",
             callback : "setProperty",
             params: { setChildlessStatus: "childless" },
             inSiblingMode: false
@@ -76,6 +82,7 @@ var NodetypeSelectionBubble = Class.create({
             label: "Infertile",
             tip  : "Mark as infertile",
             symbol: "╧",
+            class: "",
             callback : "setProperty",
             params: { setChildlessStatus: "infertile" },
             inSiblingMode: false
@@ -84,7 +91,7 @@ var NodetypeSelectionBubble = Class.create({
 
     initialize : function(siblingMode) {
         this._siblingMode = siblingMode;
-        
+
         this.element = new Element('div', {'class' : 'callout'});
         this.element.insert(new Element('span', {'class' : 'callout-handle'}));
 
@@ -126,7 +133,7 @@ var NodetypeSelectionBubble = Class.create({
         }
         var expandablePrefix = (typeof this[data.expandsTo] == "function") ? "expandable-" : "";
         var o = new Element('a', {
-            'class' : expandablePrefix + 'node-type-option ' + (data.type || '') + '-type-option node-type-' + data.key,
+            'class' : data.class + ' ' + expandablePrefix + 'node-type-option ' + (data.type || '') + '-type-option node-type-' + data.key,
             'title' : data.tip,
             'href' : '#'
         }).update(data.symbol); // TODO: eliminate symbol, do ".update(data.label)", add style (icons);

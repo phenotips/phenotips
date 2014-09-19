@@ -632,14 +632,13 @@
 /* The unicode symbols we use for different node types have disproportionate sizes.
    Adjusting the font size for a cleaner look:
 */
-.node-type-option.person-type-option.node-type-M {
-    font-size: 1.1em;
-}
-.node-type-option.person-type-option.node-type-F {
-    font-size: 0.75em;
-}
-.node-type-option.person-type-option.node-type-U {
-    font-size: 1.2em;
+.fa-rotate-45 {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    display: inline-block !important;
 }
 .expand-arrow {
   cursor: pointer;
