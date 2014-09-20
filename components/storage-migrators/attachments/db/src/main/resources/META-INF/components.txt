@@ -1,0 +1,2 @@
+org.phenotips.storage.migrators.internal.HibernateAttachmentsReader
+org.phenotips.storage.migrators.internal.HibernateDeletedAttachmentsReader

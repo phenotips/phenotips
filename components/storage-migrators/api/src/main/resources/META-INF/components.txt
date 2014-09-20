@@ -1,0 +1,3 @@
+org.phenotips.storage.migrators.internal.AutomaticDataMigrationEventListener
+org.phenotips.storage.migrators.internal.AutomaticDataMigrationManager
+org.phenotips.storage.migrators.internal.LegacyXWikiConfigurationSource
