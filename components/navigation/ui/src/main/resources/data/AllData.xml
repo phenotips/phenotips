@@ -50,7 +50,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #set ($counter = 0)##
 #foreach ($mapEntry in $configuredServers.entrySet())##
   #set ($serverName = $mapEntry.key.getServerID())##
-{{html wiki=false clean=false}} · &lt;a href="#" id="pushall-server-$counter" name="$serverName" title="Push multiple patients to $serverName in one batch"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;Push to $serverName&lt;/a&gt;{{/html}}##
+{{html wiki=false clean=false}} · &lt;a href="#" id="pushall-server-$counter" name="$serverName" title="Push multiple patients to $serverName in one batch"&gt;&lt;span class="fa fa-share"&gt; &lt;/span&gt;Push to $serverName&lt;/a&gt;{{/html}}##
   #set( $counter = $counter + 1 )##
 #end##
 {{html wiki=false clean=false}}&lt;/div&gt;{{/html}}##
