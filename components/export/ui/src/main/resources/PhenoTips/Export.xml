@@ -199,11 +199,13 @@
   #set ($query = ", StringProperty externalId $query and externalId.id.id = obj.id and externalId.id.name = 'external_id' and upper(externalId.value) like upper(?)")
   #set ($discard = $parameters.add("$request.get('external_id')%"))
 #end
-#set ($patientIds = $xwiki.searchDocuments($query, $parameters))
+#set ($patientIds = $services.query.hql($query).bindValues($parameters))
 #if ($request.count)
-  $patientIds.size()
+  #set ($discard = $patientIds.addFilter('count'))
+  $patientIds.execute()[0]
   #break
 #end
+#set ($patientIds = $patientIds.execute())
 #if ($request.list)
   $response.setContentType('application/json')
   $jsontool.serialize($patientIds)
