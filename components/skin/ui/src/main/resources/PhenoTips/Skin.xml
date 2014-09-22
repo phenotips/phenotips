@@ -280,12 +280,15 @@
 }
 
 #create-patient-record {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
   background: transparent;
   border: 0 none;
   color: $theme.menuLinkColor;
   cursor: pointer;
   display: inline-block;
   font: 700 0.8em/1.8em sans-serif;
+  height: 1.8em;
   padding: 2px 0 0;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
   text-transform: uppercase;
