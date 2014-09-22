@@ -31,6 +31,10 @@
   <name>PhenoTips - Storage migrators - Java APIs</name>
   <description>The interfaces defining the APIs for storage migrators.</description>
 
+  <properties>
+    <coverage.instructionRatio>0.41</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
