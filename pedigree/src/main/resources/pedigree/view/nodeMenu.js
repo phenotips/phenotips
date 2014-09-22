@@ -60,6 +60,7 @@ NodeMenu = Class.create({
                                 }
                             }
                         }
+                        _this.reposition();
                     }
                 }
                 this.tabHeaders[tabName].observe('click', switchTab(tabName));
