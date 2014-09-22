@@ -207,6 +207,9 @@ var Legend = Class.create( {
      * @private
      */
     _onDropWrapper: function(label, target, event) {
+        if (editor.isReadOnlyMode()) {
+            return;
+        }
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
         var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
