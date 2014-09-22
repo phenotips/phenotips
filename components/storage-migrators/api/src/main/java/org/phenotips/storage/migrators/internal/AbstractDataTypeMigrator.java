@@ -31,7 +31,6 @@ import org.xwiki.configuration.ConfigurationSource;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -103,17 +102,7 @@ public abstract class AbstractDataTypeMigrator<T> implements DataTypeMigrator<T>
 
     private DataWriter<T> getCurrentWriter()
     {
-        Object cfg = this.config.getProperty(getStoreConfigurationKey());
-        String hint = DEFAULT_STORE;
-        if (cfg instanceof List) {
-            // commons-configuration would return the first value if we request a string, we need to explicitly use the
-            // last value, which is the one actually used by XWiki
-            @SuppressWarnings("unchecked")
-            List<String> cfgValues = (List<String>) cfg;
-            hint = cfgValues.get(cfgValues.size() - 1);
-        } else if (cfg instanceof String) {
-            hint = (String) cfg;
-        }
+        String hint = this.config.getProperty(getStoreConfigurationKey(), DEFAULT_STORE);
         try {
             return this.cm.get().getInstance(
                 new DefaultParameterizedType(null, DataWriter.class, getImplementationType()),

@@ -22,18 +22,21 @@ package org.phenotips.storage.migrators.internal;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.configuration.internal.CommonsConfigurationSource;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
+import org.xwiki.properties.ConverterManager;
 import org.xwiki.stability.Unstable;
 
-import java.net.URL;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -47,27 +50,33 @@ import org.slf4j.Logger;
 @Component
 @Named("legacy")
 @Singleton
-public class LegacyXWikiConfigurationSource extends CommonsConfigurationSource implements Initializable
+public class LegacyXWikiConfigurationSource implements ConfigurationSource, Initializable
 {
     /** The location of the configuration file, relative to the webapp root directory. */
     private static final String XWIKI_CFG_FILE = "/WEB-INF/xwiki.cfg";
-
-    /** Provides access to the configuration file. */
-    @Inject
-    private Environment environment;
 
     /** Logging helper object. */
     @Inject
     private Logger logger;
 
+    /** Provides access to the configuration file. */
+    @Inject
+    private Environment environment;
+
+    /** Performs type conversions. */
+    @Inject
+    private ConverterManager converterManager;
+
+    private Properties properties = new Properties();
+
     @Override
     public void initialize() throws InitializationException
     {
-        URL configurationFileUrl = null;
+        InputStream data = null;
         try {
-            configurationFileUrl = this.environment.getResource(XWIKI_CFG_FILE);
-            if (configurationFileUrl != null) {
-                setConfiguration(new PropertiesConfiguration(configurationFileUrl));
+            data = this.environment.getResourceAsStream(XWIKI_CFG_FILE);
+            if (data != null) {
+                this.properties.load(data);
             } else {
                 // We use a debug logging level here since we consider it's ok that there's no XWIKI_CFG_FILE available,
                 // in which case default values are used.
@@ -80,10 +89,83 @@ public class LegacyXWikiConfigurationSource extends CommonsConfigurationSource i
             this.logger.warn("Failed to load configuration file [{}]. Using default configuration values. "
                 + "Internal error [{}]", XWIKI_CFG_FILE, ex.getMessage());
         }
+    }
 
-        // If no Commons Properties Configuration has been set, use a default empty Commons Configuration implementation
-        if (configurationFileUrl == null) {
-            setConfiguration(new BaseConfiguration());
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getProperty(String key, T defaultValue)
+    {
+        String property = this.properties.getProperty(key);
+        if (property == null) {
+            return defaultValue;
         }
+        if (defaultValue != null) {
+            return getProperty(key, (Class<T>) defaultValue.getClass());
+        } else {
+            return getProperty(key);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getProperty(String key, Class<T> valueClass)
+    {
+        String value = this.properties.getProperty(key);
+        if (value == null) {
+            return null;
+        }
+        T result = null;
+
+        try {
+            if (String.class.getName().equals(valueClass.getName())) {
+                result = (T) value;
+            } else if (List.class.isAssignableFrom(valueClass)) {
+                String[] values = StringUtils.split(value, ",");
+                List<String> resultList = new ArrayList<>();
+                for (String v : values) {
+                    resultList.add(StringUtils.trim(v));
+                }
+                result = (T) resultList;
+            } else if (null != getProperty(key)) {
+                result = (T) this.converterManager.convert(valueClass, getProperty(key));
+            }
+        } catch (org.apache.commons.configuration.ConversionException e) {
+            throw new org.xwiki.configuration.ConversionException("Key [" + key + "] is not of type ["
+                + valueClass.getName() + "]", e);
+        } catch (org.xwiki.properties.converter.ConversionException e) {
+            throw new org.xwiki.configuration.ConversionException("Key [" + key + "] is not of type ["
+                + valueClass.getName() + "]", e);
+        }
+
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getProperty(String key)
+    {
+        return (T) this.properties.getProperty(key);
+    }
+
+    @Override
+    public List<String> getKeys()
+    {
+        List<String> result = new ArrayList<>();
+        for (Object key : this.properties.keySet()) {
+            result.add(String.valueOf(key));
+        }
+        return result;
+    }
+
+    @Override
+    public boolean containsKey(String key)
+    {
+        return this.properties.contains(key);
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return this.properties.isEmpty();
     }
 }
