@@ -29,6 +29,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,20 +44,27 @@ public class LegacyXWikiConfigurationSourceTest
 {
     @Rule
     public final MockitoComponentMockingRule<ConfigurationSource> mocker =
-    new MockitoComponentMockingRule<ConfigurationSource>(
-        LegacyXWikiConfigurationSource.class);
+        new MockitoComponentMockingRule<ConfigurationSource>(
+            LegacyXWikiConfigurationSource.class);
 
     @Before
     public void setup() throws ComponentLookupException
     {
         Environment env = this.mocker.getInstance(Environment.class);
         when(env.getResourceAsStream("/WEB-INF/xwiki.cfg"))
-        .thenReturn(this.getClass().getResourceAsStream("/xwiki.cfg"));
+            .thenReturn(this.getClass().getResourceAsStream("/xwiki.cfg"));
         ConverterManager conv = this.mocker.getInstance(ConverterManager.class);
         when(conv.convert(Integer.class, "42")).thenReturn(Integer.valueOf(42));
         when(conv.convert(Boolean.class, "true")).thenReturn(Boolean.TRUE);
         when(conv.convert(Integer.class, "Hello World!")).thenThrow(
             new org.apache.commons.configuration.ConversionException());
+    }
+
+    @Test
+    public void getStringProperty() throws ComponentLookupException
+    {
+        Assert.assertEquals("Hello World!", this.mocker.getComponentUnderTest().getProperty("a.string"));
+        Assert.assertEquals("Hello World!", this.mocker.getComponentUnderTest().getProperty("a.string", (String) null));
     }
 
     @Test
@@ -123,11 +131,79 @@ public class LegacyXWikiConfigurationSourceTest
     public void defaultValueIsUsedWhenPropertyIsNotDefined() throws ComponentLookupException
     {
         Assert.assertEquals("right", this.mocker.getComponentUnderTest().getProperty("not.defined", "right"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getProperty("not.defined", (String) null));
     }
 
     @Test
     public void defaultValueIsIgnoredWhenPropertyIsDefined() throws ComponentLookupException
     {
         Assert.assertEquals("override", this.mocker.getComponentUnderTest().getProperty("defaulted", "incorrect"));
+    }
+
+    @Test
+    public void getKeysReturnsEachKeyOnce() throws ComponentLookupException
+    {
+        List<String> keys = this.mocker.getComponentUnderTest().getKeys();
+        Assert.assertEquals(10, keys.size());
+        Assert.assertFalse(keys.contains("commented"));
+        Assert.assertFalse(keys.contains("#commented"));
+        Assert.assertTrue(keys.contains("an.integer"));
+        Assert.assertTrue(keys.contains("a.boolean"));
+        Assert.assertTrue(keys.contains("space"));
+        Assert.assertTrue(keys.contains("Just.a.keyWord"));
+    }
+
+    @Test
+    public void containsKey() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("commented"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("#commented"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("World!"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().containsKey("an.integer"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().containsKey("a.boolean"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().containsKey("last.value.is.used"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().containsKey("space"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().containsKey("Just.a.keyWord"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("Just.a.keyword"));
+    }
+
+    @Test
+    public void isEmpty() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isEmpty());
+    }
+
+    @Test
+    public void missingConfigurationIsOK() throws ComponentLookupException
+    {
+        Environment env = this.mocker.getInstance(Environment.class);
+        when(env.getResourceAsStream("/WEB-INF/xwiki.cfg")).thenReturn(null);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isEmpty());
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("a.string"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getProperty("a.string"));
+        Assert.assertEquals("def", this.mocker.getComponentUnderTest().getProperty("a.string", "def"));
+    }
+
+    @Test
+    public void emptyConfigurationIsOK() throws ComponentLookupException
+    {
+        Environment env = this.mocker.getInstance(Environment.class);
+        when(env.getResourceAsStream("/WEB-INF/xwiki.cfg")).thenReturn(
+            this.getClass().getResourceAsStream("/empty.cfg"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isEmpty());
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("a.string"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getProperty("a.string"));
+        Assert.assertEquals("def", this.mocker.getComponentUnderTest().getProperty("a.string", "def"));
+    }
+
+    @Test
+    public void failedConfigurationIsOK() throws ComponentLookupException
+    {
+        Environment env = this.mocker.getInstance(Environment.class);
+        when(env.getResourceAsStream("/WEB-INF/xwiki.cfg")).thenThrow(new NotImplementedException());
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isEmpty());
+        Assert.assertFalse(this.mocker.getComponentUnderTest().containsKey("a.string"));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getProperty("a.string"));
+        Assert.assertEquals("def", this.mocker.getComponentUnderTest().getProperty("a.string", "def"));
     }
 }

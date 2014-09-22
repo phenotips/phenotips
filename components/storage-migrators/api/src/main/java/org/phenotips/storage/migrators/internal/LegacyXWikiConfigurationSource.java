@@ -23,6 +23,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.configuration.ConversionException;
 import org.xwiki.environment.Environment;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.stability.Unstable;
@@ -126,15 +127,13 @@ public class LegacyXWikiConfigurationSource implements ConfigurationSource, Init
                     resultList.add(StringUtils.trim(v));
                 }
                 result = (T) resultList;
-            } else if (null != getProperty(key)) {
+            } else {
                 result = (T) this.converterManager.convert(valueClass, getProperty(key));
             }
-        } catch (org.apache.commons.configuration.ConversionException e) {
-            throw new org.xwiki.configuration.ConversionException("Key [" + key + "] is not of type ["
-                + valueClass.getName() + "]", e);
-        } catch (org.xwiki.properties.converter.ConversionException e) {
-            throw new org.xwiki.configuration.ConversionException("Key [" + key + "] is not of type ["
-                + valueClass.getName() + "]", e);
+        } catch (org.apache.commons.configuration.ConversionException
+            | org.xwiki.properties.converter.ConversionException ex) {
+            throw new ConversionException("Key [" + key + "] is not of type ["
+                + valueClass.getName() + "]", ex);
         }
 
         return result;
@@ -160,7 +159,7 @@ public class LegacyXWikiConfigurationSource implements ConfigurationSource, Init
     @Override
     public boolean containsKey(String key)
     {
-        return this.properties.contains(key);
+        return this.properties.containsKey(key);
     }
 
     @Override
