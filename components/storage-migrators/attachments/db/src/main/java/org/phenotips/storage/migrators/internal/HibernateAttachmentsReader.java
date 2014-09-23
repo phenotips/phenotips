@@ -22,13 +22,14 @@ package org.phenotips.storage.migrators.internal;
 import org.phenotips.storage.migrators.DataReader;
 import org.phenotips.storage.migrators.Type;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,16 +38,15 @@ import javax.inject.Singleton;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiAttachmentContent;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.store.AttachmentVersioningStore;
 import com.xpn.xwiki.store.XWikiAttachmentStoreInterface;
-import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
 /**
@@ -62,8 +62,6 @@ import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
 {
     private static final Type TYPE = new Type("attachments", "hibernate");
-
-    private static final String SESSION_KEY = "hibsession";
 
     private static final String DATA_RETRIEVE_QUERY =
         "select d.fullName, a.filename from XWikiDocument d, XWikiAttachment a, XWikiAttachmentContent c"
@@ -86,9 +84,6 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
-
-    @Inject
-    private DocumentAccessBridge dab;
 
     @Inject
     private Provider<XWikiContext> context;
@@ -116,64 +111,61 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     @Override
     public Iterator<EntityReference> listData()
     {
-        // FIXME The iterator requires an open connection to the database, so the Hibernate session must be left open;
-        // however, the transaction must be closed at some point for discarded items to be actually deleted
-        // FIXME Revisit how the session/transaction is managed
-        Session session = getSession();
-        @SuppressWarnings("unchecked")
-        Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
-        return new ReferenceIterator(data);
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            @SuppressWarnings("unchecked")
+            Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            return new ReferenceIterator(data);
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public Iterator<XWikiAttachment> getData()
     {
-        Session session = getSession();
-        @SuppressWarnings("unchecked")
-        Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
-        return new AttachmentIterator(data);
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            @SuppressWarnings("unchecked")
+            Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            return new AttachmentIterator(data);
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public boolean discardEntity(XWikiAttachment entity)
     {
-        Session session = getSession();
-        session.delete(entity.getAttachment_content());
-        session.delete(entity.getAttachment_archive());
-        // FIXME The transaction needs to be committed... The last item discarded might be left in a dangling session
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            Transaction t = session.beginTransaction();
+            session.delete(entity.getAttachment_content());
+            session.delete(entity.getAttachment_archive());
+            t.commit();
+        } finally {
+            session.close();
+        }
         return true;
     }
 
     @Override
     public boolean discardAllData()
     {
-        Session session = getSession();
-        session.createQuery("delete from XWikiAttachmentContent").executeUpdate();
-        session.createQuery("delete from XWikiAttachmentArchive").executeUpdate();
-        // FIXME The transaction needs to be committed...
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            Transaction t = session.beginTransaction();
+            session.createQuery("delete from XWikiAttachmentContent").executeUpdate();
+            session.createQuery("delete from XWikiAttachmentArchive").executeUpdate();
+            t.commit();
+        } finally {
+            session.close();
+        }
         return true;
-    }
-
-    private Session getSession()
-    {
-        Session session = (Session) this.context.get().get(SESSION_KEY);
-        if (session == null) {
-            try {
-                ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
-                session = (Session) this.context.get().get(SESSION_KEY);
-            } catch (XWikiException ex) {
-                this.logger.error("Failed to start a new Hibernate session: {}", ex.getMessage(), ex);
-            }
-        }
-        return session;
-    }
-
-    private void closeSession()
-    {
-        Session session = (Session) this.context.get().get(SESSION_KEY);
-        if (session != null) {
-            ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), true);
-        }
     }
 
     private class ReferenceIterator implements Iterator<EntityReference>
@@ -182,17 +174,17 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
 
         ReferenceIterator(Iterator<Object[]> data)
         {
-            this.data = data;
+            List<Object[]> copy = new ArrayList<>();
+            while (data.hasNext()) {
+                copy.add(data.next());
+            }
+            this.data = copy.iterator();
         }
 
         @Override
         public boolean hasNext()
         {
-            boolean result = this.data.hasNext();
-            if (!result) {
-                closeSession();
-            }
-            return result;
+            return this.data.hasNext();
         }
 
         @Override
@@ -216,17 +208,17 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
 
         AttachmentIterator(Iterator<Object[]> data)
         {
-            this.data = data;
+            List<Object[]> copy = new ArrayList<>();
+            while (data.hasNext()) {
+                copy.add(data.next());
+            }
+            this.data = copy.iterator();
         }
 
         @Override
         public boolean hasNext()
         {
-            boolean result = this.data.hasNext();
-            if (!result) {
-                closeSession();
-            }
-            return result;
+            return this.data.hasNext();
         }
 
         @Override
@@ -234,8 +226,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
         {
             Object[] item = this.data.next();
             try {
-                XWikiDocument doc = (XWikiDocument) HibernateAttachmentsReader.this.dab.getDocument(
-                    HibernateAttachmentsReader.this.resolver.resolve(String.valueOf(item[0])));
+                XWikiDocument doc =
+                    new XWikiDocument(HibernateAttachmentsReader.this.resolver.resolve(String.valueOf(item[0])));
                 XWikiAttachment att = new XWikiAttachment(doc, String.valueOf(item[1]));
                 HibernateAttachmentsReader.this.store.loadAttachmentContent(att,
                     HibernateAttachmentsReader.this.context.get(), false);
