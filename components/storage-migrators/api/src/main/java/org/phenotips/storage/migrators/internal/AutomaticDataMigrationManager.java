@@ -27,7 +27,13 @@ import org.xwiki.component.annotation.Component;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 
 /**
  * Implementation for the {@link DataMigrationManager} role, which tries to invoke all available
@@ -40,6 +46,10 @@ import javax.inject.Singleton;
 @Singleton
 public class AutomaticDataMigrationManager implements DataMigrationManager
 {
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /**
      * All available migrators. Due to a limitation in the current component manager implementation, the generic type
      * cannot be used here. Update once http://jira.xwiki.org/browse/XCOMMONS-651 gets fixed.
@@ -47,13 +57,29 @@ public class AutomaticDataMigrationManager implements DataMigrationManager
     @Inject
     private List<DataTypeMigrator> migrators;
 
+    /** The current request context. */
+    @Inject
+    private Provider<XWikiContext> contextProvider;
+
     @Override
     public boolean migrate()
     {
+        XWikiContext context = this.contextProvider.get();
+        String originalDatabase = context.getDatabase();
         boolean result = true;
-        for (DataTypeMigrator<?> migrator : this.migrators) {
-            // Don't change the order, or the operation will be short-circuited before the call
-            result = migrator.migrate() && result;
+        try {
+            for (String db : context.getWiki().getVirtualWikisDatabaseNames(context)) {
+                context.setDatabase(db);
+                for (DataTypeMigrator<?> migrator : this.migrators) {
+                    // Don't change the order, or the operation will be short-circuited before the call
+                    result = migrator.migrate() && result;
+                }
+            }
+        } catch (XWikiException ex) {
+            this.logger.error("Failed to get the list of virtual wikis: {}", ex.getMessage(), ex);
+            result = false;
+        } finally {
+            context.setOriginalDatabase(originalDatabase);
         }
         return result;
     }

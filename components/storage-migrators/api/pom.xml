@@ -32,7 +32,7 @@
   <description>The interfaces defining the APIs for storage migrators.</description>
 
   <properties>
-    <coverage.instructionRatio>0.41</coverage.instructionRatio>
+    <coverage.instructionRatio>0.37</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -59,6 +59,11 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-model</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
