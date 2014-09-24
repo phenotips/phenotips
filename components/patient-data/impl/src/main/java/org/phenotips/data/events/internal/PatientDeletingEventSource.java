@@ -78,6 +78,9 @@ public class PatientDeletingEventSource implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
+        if (doc == null || doc.getOriginalDocument() == null) {
+            return;
+        }
         XWikiDocument odoc = doc.getOriginalDocument();
 
         BaseObject patientRecordObj = odoc.getXObject(Patient.CLASS_REFERENCE);
