@@ -116,6 +116,7 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     {
         try {
             List<Long> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
+            this.logger.debug("Found [{}] deleted attachments in the database trash", data.size());
             return new DeletedAttachmentIterator(data);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to get the list of database deleted attachments: {}", ex.getMessage());
@@ -131,6 +132,8 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
             transaction = ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
             Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.delete(entity);
+            this.logger.debug("Deleted deleted attachment [{}@{}#{}] from the database trash",
+                entity.getDocName(), entity.getFilename(), entity.getId());
         } catch (XWikiException ex) {
             this.logger.warn("Failed to cleanup attachment from the database trash: {}", ex.getMessage());
             return false;
@@ -214,8 +217,11 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
         {
             Long item = this.data.next();
             try {
-                return HibernateDeletedAttachmentsReader.this.store.getDeletedAttachment(
+                DeletedAttachment result = HibernateDeletedAttachmentsReader.this.store.getDeletedAttachment(
                     item, HibernateDeletedAttachmentsReader.this.context.get(), true);
+                HibernateDeletedAttachmentsReader.this.logger.debug("Loaded [{}@{}#{}] from the database trash",
+                    result.getDocName(), result.getFilename(), result.getId());
+                return result;
             } catch (Exception ex) {
                 HibernateDeletedAttachmentsReader.this.logger.error(
                     "Failed to read deleted attachment from the database store: {}",

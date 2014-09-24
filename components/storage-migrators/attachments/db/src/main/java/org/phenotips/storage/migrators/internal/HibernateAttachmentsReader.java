@@ -122,6 +122,7 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     {
         try {
             List<Object[]> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
+            this.logger.debug("Found [{}] attachments in the database", data.size());
             return new AttachmentIterator(data);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to get the list of database attachments: {}", ex.getMessage());
@@ -138,6 +139,7 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
             Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.delete(entity.getAttachment_content());
             session.delete(entity.getAttachment_archive());
+            this.logger.debug("Deleted attachment [{}] from the database", entity.getReference());
         } catch (XWikiException ex) {
             this.logger.warn("Failed to cleanup attachment from the database: {}", ex.getMessage());
             return false;
@@ -226,6 +228,7 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
                     HibernateAttachmentsReader.this.context.get(), true);
                 HibernateAttachmentsReader.this.archiveStore.loadArchive(att,
                     HibernateAttachmentsReader.this.context.get(), true);
+                HibernateAttachmentsReader.this.logger.debug("Loaded [{}] from the database", att.getReference());
                 return att;
             } catch (Exception ex) {
                 HibernateAttachmentsReader.this.logger.error("Failed to read attachment from the database store: {}",
