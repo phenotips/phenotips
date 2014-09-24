@@ -407,14 +407,6 @@ var PedigreeEditor = Class.create({
                 'function' : 'setDisorders'
             },
             {
-                'name' : 'comments',
-                'label' : 'Comments',
-                'type' : 'textarea',
-                'tab': 'Clinical',
-                'rows' : 2,
-                'function' : 'setComments'
-            },
-            {
                 'name' : 'hpo_positive',
                 'label' : 'Clinical symptoms: observed phenotypes',
                 'type' : 'hpo-picker',
@@ -505,6 +497,14 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'tab': 'Personal',
                 'function' : 'makePlaceholder'
+            },
+            {
+                'name' : 'comments',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'tab': 'Clinical',
+                'rows' : 2,
+                'function' : 'setComments'
             }
         ], ["Personal", "Clinical"]);
     },

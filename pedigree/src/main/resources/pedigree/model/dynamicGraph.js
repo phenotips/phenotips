@@ -1368,15 +1368,18 @@ DynamicPositionedGraph.prototype = {
                     }
                     // check vertical positioning changes
                     var parents = this.DG.GG.getParents(i);
-                    if (vertLevelsBefore.outEdgeVerticalLevel[parents[0]][i].verticalLevel !=  this.DG.vertLevel.outEdgeVerticalLevel[parents[0]][i].verticalLevel ||
-                        vertLevelsBefore.outEdgeVerticalLevel[parents[1]][i].verticalLevel !=  this.DG.vertLevel.outEdgeVerticalLevel[parents[1]][i].verticalLevel)
-                    {
-                        result[i] = true;
-                        continue;
+                    if (vertLevelsBefore.outEdgeVerticalLevel[parents[0]] !== undefined &&    // vertical levels may be outdated if multiple nodes were created in one batch
+                        vertLevelsBefore.outEdgeVerticalLevel[parents[1]] !== undefined) {
+                        if (vertLevelsBefore.outEdgeVerticalLevel[parents[0]][i].verticalLevel !=  this.DG.vertLevel.outEdgeVerticalLevel[parents[0]][i].verticalLevel ||
+                            vertLevelsBefore.outEdgeVerticalLevel[parents[1]][i].verticalLevel !=  this.DG.vertLevel.outEdgeVerticalLevel[parents[1]][i].verticalLevel)
+                        {
+                            result[i] = true;
+                            continue;
+                        }
                     }
 
                     var childHub = this.DG.GG.getRelationshipChildhub(i);
-                    if (vertLevelsBefore.childEdgeLevel[childHub] != this.DG.vertLevel.childEdgeLevel[childHub]) {
+                    if (vertLevelsBefore.childEdgeLevel[childHub] !== undefined && vertLevelsBefore.childEdgeLevel[childHub] != this.DG.vertLevel.childEdgeLevel[childHub]) {
                         result[i] = true;
                         continue;
                     }
