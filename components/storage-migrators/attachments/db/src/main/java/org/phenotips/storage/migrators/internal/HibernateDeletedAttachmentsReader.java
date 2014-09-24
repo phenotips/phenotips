@@ -92,7 +92,7 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     public boolean hasData()
     {
         try {
-            return this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
+            return !this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
         } catch (XWikiException ex) {
             this.logger.warn("Failed to search for deleted attachments in the database trash: {}", ex.getMessage());
             return false;
@@ -155,7 +155,7 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
             session.createQuery("delete from DeletedAttachment").executeUpdate();
         } catch (XWikiException ex) {
             this.logger
-            .warn("Failed to cleanup all attachments from the database trash: {}", ex.getMessage());
+                .warn("Failed to cleanup all attachments from the database trash: {}", ex.getMessage());
             return false;
         } finally {
             if (transaction) {

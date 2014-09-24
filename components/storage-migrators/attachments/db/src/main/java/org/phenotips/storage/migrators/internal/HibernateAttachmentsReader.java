@@ -98,7 +98,7 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     public boolean hasData()
     {
         try {
-            return this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
+            return !this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
         } catch (XWikiException ex) {
             this.logger.warn("Failed to search for attachments in the database: {}", ex.getMessage());
             return false;
