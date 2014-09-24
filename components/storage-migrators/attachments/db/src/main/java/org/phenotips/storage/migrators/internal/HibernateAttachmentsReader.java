@@ -47,7 +47,6 @@ import com.xpn.xwiki.store.AttachmentVersioningStore;
 import com.xpn.xwiki.store.XWikiAttachmentStoreInterface;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.XWikiStoreInterface;
-import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
 /**
  * {@link DataReader} that can read {@link XWikiAttachment attachment} contents and history from a Hibernate-managed
@@ -69,9 +68,6 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private HibernateSessionFactory hibernate;
 
     @Inject
     @Named("hibernate")
@@ -103,8 +99,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     {
         try {
             return this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to search for attachments in the database: {}", ex.getMessage());
             return false;
         }
     }
@@ -115,8 +111,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
         try {
             List<Object[]> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
             return new ReferenceIterator(data);
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to list the database attachments: {}", ex.getMessage());
             return Collections.emptyIterator();
         }
     }
@@ -127,8 +123,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
         try {
             List<Object[]> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
             return new AttachmentIterator(data);
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to get the list of database attachments: {}", ex.getMessage());
             return Collections.emptyIterator();
         }
     }
@@ -142,8 +138,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
             Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.delete(entity.getAttachment_content());
             session.delete(entity.getAttachment_archive());
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to cleanup attachment from the database: {}", ex.getMessage());
             return false;
         } finally {
             if (transaction) {
@@ -162,8 +158,8 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
             Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.createQuery("delete from XWikiAttachmentContent").executeUpdate();
             session.createQuery("delete from XWikiAttachmentArchive").executeUpdate();
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to cleanup all attachments from the database: {}", ex.getMessage());
             return false;
         } finally {
             if (transaction) {

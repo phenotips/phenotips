@@ -27,7 +27,7 @@ import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,13 +37,14 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.DeletedAttachment;
 import com.xpn.xwiki.store.AttachmentRecycleBinStore;
-import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
+import com.xpn.xwiki.store.XWikiHibernateBaseStore;
+import com.xpn.xwiki.store.XWikiStoreInterface;
 
 /**
  * {@link DataReader} that can read {@link DeletedAttachment deleted attachments} from a Hibernate-managed database (the
@@ -67,7 +68,8 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     private Logger logger;
 
     @Inject
-    private HibernateSessionFactory hibernate;
+    @Named("hibernate")
+    private XWikiStoreInterface docStore;
 
     @Inject
     @Named("hibernate")
@@ -89,54 +91,53 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     @Override
     public boolean hasData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            return !session.createQuery(DATA_RETRIEVE_QUERY).setMaxResults(1).list().isEmpty();
-        } finally {
-            session.close();
+            return this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to search for deleted attachments in the database trash: {}", ex.getMessage());
+            return false;
         }
     }
 
     @Override
     public Iterator<EntityReference> listData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            @SuppressWarnings("unchecked")
-            Iterator<Object[]> data = session.createQuery(DATA_REFERENCE_QUERY).iterate();
+            List<Object[]> data = this.docStore.search(DATA_REFERENCE_QUERY, 0, 0, this.context.get());
             return new ReferenceIterator(data);
-        } finally {
-            session.close();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to list the database deleted attachments: {}", ex.getMessage());
+            return Collections.emptyIterator();
         }
     }
 
     @Override
     public Iterator<DeletedAttachment> getData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            @SuppressWarnings("unchecked")
-            Iterator<Long> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            List<Long> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
             return new DeletedAttachmentIterator(data);
-        } finally {
-            session.close();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to get the list of database deleted attachments: {}", ex.getMessage());
+            return Collections.emptyIterator();
         }
     }
 
     @Override
     public boolean discardEntity(DeletedAttachment entity)
     {
-        Session session = null;
+        boolean transaction = false;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            Transaction t = session.beginTransaction();
+            transaction = ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
+            Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.delete(entity);
-            t.commit();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to cleanup attachment from the database trash: {}", ex.getMessage());
+            return false;
         } finally {
-            session.close();
+            if (transaction) {
+                ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), transaction);
+            }
         }
         return true;
     }
@@ -144,14 +145,19 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     @Override
     public boolean discardAllData()
     {
-        Session session = null;
+        boolean transaction = false;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            Transaction t = session.beginTransaction();
+            transaction = ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
+            Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.createQuery("delete from DeletedAttachment").executeUpdate();
-            t.commit();
+        } catch (XWikiException ex) {
+            this.logger
+            .warn("Failed to cleanup all attachments from the database trash: {}", ex.getMessage());
+            return false;
         } finally {
-            session.close();
+            if (transaction) {
+                ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), transaction);
+            }
         }
         return true;
     }
@@ -160,13 +166,9 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     {
         private Iterator<Object[]> data;
 
-        ReferenceIterator(Iterator<Object[]> data)
+        ReferenceIterator(List<Object[]> data)
         {
-            List<Object[]> copy = new ArrayList<>();
-            while (data.hasNext()) {
-                copy.add(data.next());
-            }
-            this.data = copy.iterator();
+            this.data = data.iterator();
         }
 
         @Override
@@ -195,13 +197,9 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     {
         private Iterator<Long> data;
 
-        DeletedAttachmentIterator(Iterator<Long> data)
+        DeletedAttachmentIterator(List<Long> data)
         {
-            List<Long> copy = new ArrayList<>();
-            while (data.hasNext()) {
-                copy.add(data.next());
-            }
-            this.data = copy.iterator();
+            this.data = data.iterator();
         }
 
         @Override
