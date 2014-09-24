@@ -590,17 +590,14 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.5</version>
           <configuration>
-            <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
-                 "install". This is causing problems since several modules will fail to build during release:prepare.
-                 See http://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
-                 goal. -->
-            <preparationGoals>clean install</preparationGoals>
+            <arguments>-Pquick</arguments>
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
             <mavenExecutorId>forked-path</mavenExecutorId>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <localCheckout>true</localCheckout>
             <pushChanges>false</pushChanges>
+            <tagNameFormat>phenotips-@{project.version}</tagNameFormat>
           </configuration>
         </plugin>
         <plugin>
