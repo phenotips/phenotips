@@ -27,7 +27,7 @@ import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,17 +36,17 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiAttachment;
-import com.xpn.xwiki.doc.XWikiAttachmentContent;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.store.AttachmentVersioningStore;
 import com.xpn.xwiki.store.XWikiAttachmentStoreInterface;
+import com.xpn.xwiki.store.XWikiHibernateBaseStore;
+import com.xpn.xwiki.store.XWikiStoreInterface;
 import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
 /**
@@ -75,6 +75,10 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
 
     @Inject
     @Named("hibernate")
+    private XWikiStoreInterface docStore;
+
+    @Inject
+    @Named("hibernate")
     private XWikiAttachmentStoreInterface store;
 
     @Inject
@@ -97,57 +101,54 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     @Override
     public boolean hasData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            Criteria c = session.createCriteria(XWikiAttachmentContent.class);
-            c.setMaxResults(1);
-            return !c.list().isEmpty();
-        } finally {
-            session.close();
+            return this.docStore.search(DATA_RETRIEVE_QUERY, 1, 0, this.context.get()).isEmpty();
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            return false;
         }
     }
 
     @Override
     public Iterator<EntityReference> listData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            @SuppressWarnings("unchecked")
-            Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            List<Object[]> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
             return new ReferenceIterator(data);
-        } finally {
-            session.close();
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            return Collections.emptyIterator();
         }
     }
 
     @Override
     public Iterator<XWikiAttachment> getData()
     {
-        Session session = null;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            @SuppressWarnings("unchecked")
-            Iterator<Object[]> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            List<Object[]> data = this.docStore.search(DATA_RETRIEVE_QUERY, 0, 0, this.context.get());
             return new AttachmentIterator(data);
-        } finally {
-            session.close();
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            return Collections.emptyIterator();
         }
     }
 
     @Override
     public boolean discardEntity(XWikiAttachment entity)
     {
-        Session session = null;
+        boolean transaction = false;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            Transaction t = session.beginTransaction();
+            transaction = ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
+            Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.delete(entity.getAttachment_content());
             session.delete(entity.getAttachment_archive());
-            t.commit();
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            return false;
         } finally {
-            session.close();
+            if (transaction) {
+                ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), transaction);
+            }
         }
         return true;
     }
@@ -155,15 +156,19 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     @Override
     public boolean discardAllData()
     {
-        Session session = null;
+        boolean transaction = false;
         try {
-            session = this.hibernate.getSessionFactory().openSession();
-            Transaction t = session.beginTransaction();
+            transaction = ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
+            Session session = ((XWikiHibernateBaseStore) this.store).getSession(this.context.get());
             session.createQuery("delete from XWikiAttachmentContent").executeUpdate();
             session.createQuery("delete from XWikiAttachmentArchive").executeUpdate();
-            t.commit();
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            return false;
         } finally {
-            session.close();
+            if (transaction) {
+                ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), transaction);
+            }
         }
         return true;
     }
@@ -172,13 +177,9 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     {
         private Iterator<Object[]> data;
 
-        ReferenceIterator(Iterator<Object[]> data)
+        ReferenceIterator(List<Object[]> data)
         {
-            List<Object[]> copy = new ArrayList<>();
-            while (data.hasNext()) {
-                copy.add(data.next());
-            }
-            this.data = copy.iterator();
+            this.data = data.iterator();
         }
 
         @Override
@@ -206,13 +207,9 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
     {
         private Iterator<Object[]> data;
 
-        AttachmentIterator(Iterator<Object[]> data)
+        AttachmentIterator(List<Object[]> data)
         {
-            List<Object[]> copy = new ArrayList<>();
-            while (data.hasNext()) {
-                copy.add(data.next());
-            }
-            this.data = copy.iterator();
+            this.data = data.iterator();
         }
 
         @Override
@@ -230,9 +227,9 @@ public class HibernateAttachmentsReader implements DataReader<XWikiAttachment>
                     new XWikiDocument(HibernateAttachmentsReader.this.resolver.resolve(String.valueOf(item[0])));
                 XWikiAttachment att = new XWikiAttachment(doc, String.valueOf(item[1]));
                 HibernateAttachmentsReader.this.store.loadAttachmentContent(att,
-                    HibernateAttachmentsReader.this.context.get(), false);
+                    HibernateAttachmentsReader.this.context.get(), true);
                 HibernateAttachmentsReader.this.archiveStore.loadArchive(att,
-                    HibernateAttachmentsReader.this.context.get(), false);
+                    HibernateAttachmentsReader.this.context.get(), true);
                 return att;
             } catch (Exception ex) {
                 HibernateAttachmentsReader.this.logger.error("Failed to read attachment from the database store: {}",

@@ -27,22 +27,22 @@ import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.DeletedAttachment;
 import com.xpn.xwiki.store.AttachmentRecycleBinStore;
-import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
 /**
@@ -58,8 +58,6 @@ import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAttachment>
 {
     private static final Type TYPE = new Type("deleted attachments", "hibernate");
-
-    private static final String SESSION_KEY = "hibsession";
 
     private static final String DATA_RETRIEVE_QUERY = "select a.id from DeletedAttachment a";
 
@@ -94,9 +92,7 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
         Session session = null;
         try {
             session = this.hibernate.getSessionFactory().openSession();
-            Criteria c = session.createCriteria(DeletedAttachment.class);
-            c.setMaxResults(1);
-            return !c.list().isEmpty();
+            return !session.createQuery(DATA_RETRIEVE_QUERY).setMaxResults(1).list().isEmpty();
         } finally {
             session.close();
         }
@@ -105,62 +101,59 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
     @Override
     public Iterator<EntityReference> listData()
     {
-        // FIXME The iterator requires an open connection to the database, so the Hibernate session must be left open;
-        // however, the transaction must be closed at some point for discarded items to be actually deleted
-        // FIXME Revisit how the session/transaction is managed
-        Session session = getSession();
-        @SuppressWarnings("unchecked")
-        Iterator<Object[]> data = session.createQuery(DATA_REFERENCE_QUERY).iterate();
-        return new ReferenceIterator(data);
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            @SuppressWarnings("unchecked")
+            Iterator<Object[]> data = session.createQuery(DATA_REFERENCE_QUERY).iterate();
+            return new ReferenceIterator(data);
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public Iterator<DeletedAttachment> getData()
     {
-        Session session = getSession();
-        @SuppressWarnings("unchecked")
-        Iterator<Long> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
-        return new DeletedAttachmentIterator(data);
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            @SuppressWarnings("unchecked")
+            Iterator<Long> data = session.createQuery(DATA_RETRIEVE_QUERY).iterate();
+            return new DeletedAttachmentIterator(data);
+        } finally {
+            session.close();
+        }
     }
 
     @Override
     public boolean discardEntity(DeletedAttachment entity)
     {
-        Session session = getSession();
-        session.delete(entity);
-        // FIXME The transaction needs to be committed... The last item discarded might be left in a dangling session
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            Transaction t = session.beginTransaction();
+            session.delete(entity);
+            t.commit();
+        } finally {
+            session.close();
+        }
         return true;
     }
 
     @Override
     public boolean discardAllData()
     {
-        Session session = getSession();
-        session.createQuery("delete from DeletedAttachment").executeUpdate();
-        // FIXME The transaction needs to be committed...
+        Session session = null;
+        try {
+            session = this.hibernate.getSessionFactory().openSession();
+            Transaction t = session.beginTransaction();
+            session.createQuery("delete from DeletedAttachment").executeUpdate();
+            t.commit();
+        } finally {
+            session.close();
+        }
         return true;
-    }
-
-    private Session getSession()
-    {
-        Session session = (Session) this.context.get().get(SESSION_KEY);
-        if (session == null) {
-            try {
-                ((XWikiHibernateBaseStore) this.store).beginTransaction(this.context.get());
-                session = (Session) this.context.get().get(SESSION_KEY);
-            } catch (XWikiException ex) {
-                this.logger.error("Failed to start a new Hibernate session: {}", ex.getMessage(), ex);
-            }
-        }
-        return session;
-    }
-
-    private void closeSession()
-    {
-        Session session = (Session) this.context.get().get(SESSION_KEY);
-        if (session != null) {
-            ((XWikiHibernateBaseStore) this.store).endTransaction(this.context.get(), true);
-        }
     }
 
     private class ReferenceIterator implements Iterator<EntityReference>
@@ -169,16 +162,17 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
 
         ReferenceIterator(Iterator<Object[]> data)
         {
-            this.data = data;
+            List<Object[]> copy = new ArrayList<>();
+            while (data.hasNext()) {
+                copy.add(data.next());
+            }
+            this.data = copy.iterator();
         }
 
         @Override
         public boolean hasNext()
         {
             boolean result = this.data.hasNext();
-            if (!result) {
-                closeSession();
-            }
             return result;
         }
 
@@ -203,16 +197,17 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
 
         DeletedAttachmentIterator(Iterator<Long> data)
         {
-            this.data = data;
+            List<Long> copy = new ArrayList<>();
+            while (data.hasNext()) {
+                copy.add(data.next());
+            }
+            this.data = copy.iterator();
         }
 
         @Override
         public boolean hasNext()
         {
             boolean result = this.data.hasNext();
-            if (!result) {
-                closeSession();
-            }
             return result;
         }
 
@@ -222,7 +217,7 @@ public class HibernateDeletedAttachmentsReader implements DataReader<DeletedAtta
             Long item = this.data.next();
             try {
                 return HibernateDeletedAttachmentsReader.this.store.getDeletedAttachment(
-                    item, HibernateDeletedAttachmentsReader.this.context.get(), false);
+                    item, HibernateDeletedAttachmentsReader.this.context.get(), true);
             } catch (Exception ex) {
                 HibernateDeletedAttachmentsReader.this.logger.error(
                     "Failed to read deleted attachment from the database store: {}",
