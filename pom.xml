@@ -958,8 +958,8 @@
   </profiles>
 
   <modules>
-    <module>components</module>
     <module>resources</module>
+    <module>components</module>
     <module>pedigree</module>
     <module>distribution</module>
   </modules>
