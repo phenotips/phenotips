@@ -79,7 +79,7 @@ public class AutomaticDataMigrationManager implements DataMigrationManager
             this.logger.error("Failed to get the list of virtual wikis: {}", ex.getMessage(), ex);
             result = false;
         } finally {
-            context.setOriginalDatabase(originalDatabase);
+            context.setDatabase(originalDatabase);
         }
         return result;
     }
