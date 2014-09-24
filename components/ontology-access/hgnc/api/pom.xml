@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>ontology-hgnc-access</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-rc-2</version>
   </parent>
   <artifactId>ontology-hgnc-access-api</artifactId>
   <name>PhenoTips - Ontologies - HUGO Gene Nomenclature Committee (GeneNames) integration - APIs</name>
