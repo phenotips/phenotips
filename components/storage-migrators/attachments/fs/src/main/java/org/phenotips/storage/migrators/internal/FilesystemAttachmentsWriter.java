@@ -78,6 +78,7 @@ public class FilesystemAttachmentsWriter implements DataWriter<XWikiAttachment>
             this.store.loadAttachmentContent(existing, this.context.get(), false);
             // If loading succeeded, then the attachment already exists on the filesystem;
             // keep using the existing attachment version and discard the database one
+            this.logger.debug("Skipped importing already existing attachment [{}]", entity.getReference());
             return true;
         } catch (XWikiException e) {
             // No such attachment on the filesystem, continue storing it
@@ -85,6 +86,7 @@ public class FilesystemAttachmentsWriter implements DataWriter<XWikiAttachment>
         try {
             this.store.saveAttachmentContent(entity, false, this.context.get(), false);
             // The archive is also automatically stored by the call above, no need to explicitly store the archive
+            this.logger.debug("Imported attachment [{}] into the filesystem store", entity.getReference());
             return true;
         } catch (XWikiException ex) {
             this.logger.error("Failed to store attachment into the filesystem store: {}", ex.getMessage(), ex);

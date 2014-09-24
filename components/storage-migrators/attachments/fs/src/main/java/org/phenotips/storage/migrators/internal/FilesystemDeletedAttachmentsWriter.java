@@ -75,6 +75,8 @@ public class FilesystemDeletedAttachmentsWriter implements DataWriter<DeletedAtt
         try {
             XWikiAttachment attachment = entity.restoreAttachment(null, this.context.get());
             this.store.saveToRecycleBin(attachment, entity.getDeleter(), entity.getDate(), this.context.get(), false);
+            this.logger.debug("Imported deleted attachment [{}@{}#{}] into the filesystem trash store",
+                entity.getDocName(), entity.getFilename(), entity.getId());
             return true;
         } catch (XWikiException ex) {
             this.logger.error("Failed to store deleted attachment into the filesystem store: {}", ex.getMessage(), ex);
