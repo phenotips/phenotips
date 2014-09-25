@@ -63,7 +63,7 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      * Creates a new URL factory that uses the server URL and context path specified by the given XWiki context. This
      * constructor should be used only in tests. Make sure {@link XWikiContext#setURL(URL)} is called before this
      * constructor.
-     * 
+     *
      * @param context
      */
     public XWikiServletURLFactory(XWikiContext context)
@@ -84,7 +84,7 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
 
     /**
      * Returns the part of the URL identifying the web application. In a normal install, that is <tt>xwiki/</tt>.
-     * 
+     *
      * @return The configured context path.
      */
     public String getContextPath()
@@ -168,7 +168,7 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      * Get the url of the server EG: http://www.xwiki.org/ This function sometimes will return a URL with a trailing /
      * and other times not. This is because the xwiki.home param is recommended to have a trailing / but this.serverURL
      * never does.
-     * 
+     *
      * @param xwikidb the name of the database (subwiki) if null it is assumed to be the same as the wiki which we are
      *            currently displaying.
      * @param context the XWikiContext used to determine the current wiki and the value if the xwiki.home parameter if
@@ -424,7 +424,7 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
     /**
      * Check if a document is the original context document. This is needed when generating attachment revision URLs,
      * since only attachments of the context document should also be versioned.
-     * 
+     *
      * @param wiki the wiki name of the document to check
      * @param space the space name of the document to check
      * @param name the document name of the document to check
@@ -486,20 +486,20 @@ public class XWikiServletURLFactory extends XWikiDefaultURLFactory
      * An URL is considered to be external if its server component doesn't match the server of the current request URL.
      * This means that URLs are made relative with respect to the current request URL rather than the current wiki set
      * on the XWiki context. Let's take an example:
-     * 
+     *
      * <pre>
      * {@code
      * request URL: http://playground.xwiki.org/xwiki/bin/view/Sandbox/TestURL
      * current wiki: code (code.xwiki.org)
      * URL (1): http://code.xwiki.org/xwiki/bin/view/Main/WebHome
      * URL (2): http://playground.xwiki.org/xwiki/bin/view/Spage/Page
-     * 
+     *
      * The result will be:
      * (1) http://code.xwiki.org/xwiki/bin/view/Main/WebHome
      * (2) /xwiki/bin/view/Spage/Page
      * }
      * </pre>
-     * 
+     *
      * @param url the URL to convert
      * @return the converted URL as a string
      * @see com.xpn.xwiki.web.XWikiDefaultURLFactory#getURL(java.net.URL, com.xpn.xwiki.XWikiContext)

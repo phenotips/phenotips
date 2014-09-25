@@ -162,7 +162,7 @@
   #end
   #if ($hasPreviousMenuSection)
     #submenuseparator()
-  #end  
+  #end
   #submenuitem("$xwiki.getURL($WikiManagerMainDocReference)" $services.localization.render('platform.wiki.menu.wikiindex') 'tmWikiIndex' '')
   #set($homeDocumentIndexRef = $services.model.createDocumentReference($xcontext.mainWikiName, 'Main', 'AllDocs'))
   #if ($xwiki.exists($homeDocumentIndexRef))
@@ -172,7 +172,7 @@
   #if ($xwiki.exists($homeUserIndexRef))
     #submenuitem($xwiki.getURL($homeUserIndexRef) $services.localization.render('xe.panels.quicklinks.userdirectory') 'tmMainUserIndex' '')
   #end
-  #xwikitopmenuentryend()  
+  #xwikitopmenuentryend()
 #end
 ##
 ## Wiki
