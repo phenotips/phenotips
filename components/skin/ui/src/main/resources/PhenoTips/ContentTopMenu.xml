@@ -1297,7 +1297,7 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
   #set($editaction = $doc.getDefaultEditMode())
 * [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
 #end## HAS EDIT
-#set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
+#set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.hasAccessLevel('delete'))
 #if ($canDelete)
 * [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
 #end## HAS DELETE
