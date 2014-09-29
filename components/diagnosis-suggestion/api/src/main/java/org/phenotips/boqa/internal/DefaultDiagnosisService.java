@@ -37,6 +37,9 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ontologizer.GlobalPreferences;
 import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
@@ -55,6 +58,7 @@ import sonumina.boqa.calculation.Observations;
 @Component
 public class DefaultDiagnosisService implements DiagnosisService, Initializable
 {
+    private Logger logger = LoggerFactory.getLogger(DefaultDiagnosisService.class);
     private BOQA boqa;
     private Map<Integer, ByteString> omimMap;
 
@@ -97,21 +101,28 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         }
     }
 
+    private void addTermAndAncestors(Term t, Observations o) {
+        int id = boqa.getTermIndex(t);
+        o.observations[id] = true;
+        boqa.activateAncestors(id, o.observations);
+    }
+
     /**
      * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
      * in the format {@code <ontology prefix>:<term id>}, for example
      *            {@code HP:0002066}
      *
-     * @param presentPhenotypes A List of String phenotypes observed in the patient
-     * @param absentPhenotypes A List of String phenotypes not observed in the patient
+     * @param phenotypes A List of String phenotypes observed in the patient
      * @return A list of suggested diagnosies
      */
-    public List<String> getDiagnosis(List<String> presentPhenotypes, List<String> absentPhenotypes) {
+    public List<String> getDiagnosis(List<String> phenotypes) {
         Observations o = new Observations();
         o.observations = new boolean[boqa.getOntology().getNumberOfTerms()];
 
+        logger.debug("I'm doing stuff!");
+
         //Add all hpo terms with ancestors to array of booleans
-        for (String hpo : presentPhenotypes) {
+        for (String hpo : phenotypes) {
             Term t = boqa.getOntology().getTerm(hpo);
             addTermAndAncestors(t, o);
         }
@@ -143,11 +154,5 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         }
 
         return results;
-    }
-
-    private void addTermAndAncestors(Term t, Observations o) {
-        int id = boqa.getTermIndex(t);
-        o.observations[id] = true;
-        boqa.activateAncestors(id, o.observations);
     }
 }

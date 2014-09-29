@@ -48,11 +48,20 @@ public class DiagnosisScriptService implements ScriptService
      * in the format {@code <ontology prefix>:<term id>}, for example
      * {@code HP:0002066}
      *
-     * @param presentPhenotypes A List of String phenotypes observed in the patient
-     * @param absentPhenotypes  A List of String phenotypes not observed in the patient
+     * @param phenotypes A List of String phenotypes observed in the patient
      * @return A list of suggested diagnosies
      */
-    public List<String> get(List<String> presentPhenotypes, List<String> absentPhenotypes) {
-        return this.manager.getDiagnosis(presentPhenotypes, absentPhenotypes);
+    public List<String> get(List<String> phenotypes) {
+        return this.manager.getDiagnosis(phenotypes);
+    }
+
+    /**
+     *
+     * @param phenotypes A list of phenotypes observed in the patient
+     * @param limit a number of phenotypes to return
+     * @return a list of diseases found
+     */
+    public List<String> get(List<String> phenotypes, int limit) {
+        return this.get(phenotypes);
     }
 }

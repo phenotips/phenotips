@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>DiffDiagnosisService</name>
+  <name>DiagnosisSuggestion</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -45,7 +45,6 @@
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.symptom" != '')##
-    #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 20)
@@ -59,7 +58,7 @@
       #set ($discard = $ndata.add($i))
     #end
     #if ("$!{request.format}" == 'html')
-#set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $limit))
+#set ($results = $services.diagnosis.get($data, $ndata, $limit))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;

@@ -1,1 +1,1 @@
-org.phenotips.boqa.script.OmimScriptService
+org.phenotips.boqa.script.DiagnosisScriptService

@@ -35,7 +35,7 @@
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>BOQA services</xwiki.extension.name>
+    <xwiki.extension.name>Diagnosis service</xwiki.extension.name>
   </properties>
 
   <dependencies>

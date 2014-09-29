@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>OmimPredictService</name>
+  <name>DiseasePredictService</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -39,67 +39,36 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
-
-{{velocity filter="indent"}}
+  <content>{{velocity filter="indent"}}
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.q" != '')##
-    #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 20)
     #end
     #set ($data = [])
-    #set ($ancestors = $collectionstool.set)
-    #set ($negativeAncestors = $collectionstool.set)
     #foreach ($piece in $!request.getParameterValues('symptom'))
-      #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $ancestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
-    #end
-    #foreach ($piece in $!request.getParameterValues('not_symptom'))
-      #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $negativeAncestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
-    #end
-    #set ($discard = $negativeAncestors.removeAll($ancestors))
-    #if ($!request.getParameterValues('not_symptom'))
-      #set ($discard = $negativeAncestors.removeAll($!request.getParameterValues('not_symptom')))
-    #end
-    #if ($!request.getParameterValues('symptom'))
-      #set ($discard = $ancestors.removeAll($!request.getParameterValues('symptom')))
-    #end
-    #foreach ($piece in $ancestors)
-      #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}^0.3"))
-    #end
-    #foreach ($piece in $negativeAncestors)
-      #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}^0.3"))
+      #set($discard = $data.add($piece))
     #end
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
-      #set($discard = $data.add("text:""${piece}"""))
+      #set($discard = $data.add($piece))
     #end
-    #set ($discard = $data.add('-nameSort:\** -nameSort:\+* -nameSort:\^*'))
-    #if ("$!{request.format}" == 'html')
-#set ($results = $_service.search($stringtool.join($data, ' '), $limit, 0))
+#if ("$!{request.format}" == 'html')
+#set ($results = $services.diagnosis.get($data, $limit))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
 #foreach($item in $results)
-    #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
-    #set ($indexOfSeparator = $item.name.indexOf(';'))
-    #if ($indexOfSeparator &gt; 0)
-      #set($shortName = $item.name.substring(0, $indexOfSeparator))
-      #set($fullName = $item.name.replaceAll(';;', ';'))
-    #else
-      #set($shortName = $item.name)
-      #set($fullName = $item.name)
-    #end
+  #set($term = $services.ontologies.resolveTerm($item))
+  #set($shortName = $term.getName())
+  #set($fullName = $term.getDescription())
+  #set($id = $term.getId())
   &lt;li class="disorder"&gt;
-    &lt;span class="id" title="${item.id}"&gt;&lt;a href="http://www.omim.org/entry/${item.id}" target="_blank" title="Read about this disorder on OMIM"&gt;[MIM:#if("$!item.Oid"!= '')${item.Oid}#else${item.id}#end]&lt;/a&gt;&lt;/span&gt;
+    &lt;span class="id hidden" title="${id}"&gt;[MIM:${id}]&lt;/span&gt;
     &lt;span class="title" title="${fullName}"&gt;${shortName}&lt;/span&gt;
-    #if ("$!item.Locus" != '')&lt;span class="locus"&gt;(Locus: ${item.Locus})&lt;/span&gt;#end
   &lt;/li&gt;
-  #end
-#end## foreach item
+#end ## foreach item
 &lt;/ul&gt;
 {{/html}}
    #set ($hasOutput = true)

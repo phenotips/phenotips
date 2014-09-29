@@ -36,9 +36,8 @@ public interface DiagnosisService
      * in the format {@code <ontology prefix>:<term id>}, for example
      *            {@code HP:0002066}
      *
-     * @param presentPhenotypes A List of String phenotypes observed in the patient
-     * @param absentPhenotypes A List of String phenotypes not observed in the patient
+     * @param phenotypes A List of String phenotypes observed in the patient
      * @return A list of suggested diagnosies
      */
-    List<String> getDiagnosis(List<String> presentPhenotypes, List<String> absentPhenotypes);
+    List<String> getDiagnosis(List<String> phenotypes);
 }
