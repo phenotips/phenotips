@@ -530,16 +530,6 @@
   #end
  #end
 #end
-
-
-#**
- * Old alias of the #livetable_addColumnToQuery macro.
- * @deprecated since 2.2.3, use {@link #livetable_addColumnToQuery}
- *#
-#macro(grid_addcolumn $colname)
-  #livetable_addColumnToQuery($colname)
-#end
-
 {{/velocity}}
 
 {{velocity wiki="false"}}
