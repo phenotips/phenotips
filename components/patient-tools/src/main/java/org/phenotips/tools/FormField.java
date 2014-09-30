@@ -104,9 +104,11 @@ public class FormField extends AbstractFormElement
     protected String generateSelection(final String[] fieldNames)
     {
         String selectionMarker = isSelected(YES) ? "yes-selected" : isSelected(NO) ? "no-selected" : null;
+        String termSourceMarker =
+            (this.term == null || StringUtils.isEmpty(this.term.getId()) ? " fa fa-exclamation-triangle fa-fw" : "");
         String selectionPrefix = isSelected(NO) ? "NO " : "";
-        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>" + selectionPrefix
-            + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
+        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + termSourceMarker + "'>"
+            + selectionPrefix + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
     }
 
     private String generateCheckbox(String name, String value, String title, boolean selected, String labelClass,

@@ -3782,6 +3782,9 @@ h1, h2, h3, h4 {
   padding-left: 18px;
   background: transparent none left 40% no-repeat;
 }
+.value-checked.fa::before {
+  margin-right: 0.25em;
+}
 .viewbody .subsection {
   margin-left: 18px;
 }
