@@ -75,6 +75,7 @@
   ## Add the columns needed for the actual data
   ##
   #set($tablelist = [])
+  #set ($processedColumns = $collectionstool.set)
   #foreach($colname in $request.parameterNames)
     #livetable_addColumnToQuery($colname)
   #end
@@ -366,7 +367,8 @@
  *#
 #macro(livetable_addColumnToQuery $colname)
  ## Safe because / is not allowed in property names
- #if (!$colname.contains('/'))
+ #set ($colname = $stringtool.substringBefore($colname, '/'))
+ #if ($processedColumns.add($colname))
   #set ($filterValue = "$!{request.get($colname)}")
   #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}")
   #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}")
