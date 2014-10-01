@@ -1,1 +1,2 @@
 org.phenotips.boqa.script.DiagnosisScriptService
+org.phenotips.boqa.internal.DefaultDiagnosisService

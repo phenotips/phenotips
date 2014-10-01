@@ -77,8 +77,8 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         GlobalPreferences.setProxyPort(888);
         GlobalPreferences.setProxyHost("realproxy.charite.de");
 
-        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").toString();
-        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").toString();
+        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").getPath();
+        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").getPath();
 
         // Load datafiles
         Datafiles df = null;
@@ -119,7 +119,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         Observations o = new Observations();
         o.observations = new boolean[boqa.getOntology().getNumberOfTerms()];
 
-        logger.debug("I'm doing stuff!");
+        logger.info("I'm doing stuff!");
 
         //Add all hpo terms with ancestors to array of booleans
         for (String hpo : phenotypes) {

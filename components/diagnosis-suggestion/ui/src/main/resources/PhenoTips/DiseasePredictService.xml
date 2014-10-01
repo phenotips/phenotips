@@ -84,5 +84,6 @@
 #if (!$hasOutput)
 (% class="hint" %)No matches found
 #end
+WHAT IS HAPPENING HERE!!
 {{/velocity}}</content>
 </xwikidoc>
