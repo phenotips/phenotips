@@ -1653,11 +1653,11 @@ document.observe('xwiki:dom:loaded', function() {
             _this._updateValue(cell, values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
             var target = _info[p];
             if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
-              var targetElt = values[p]['valCategory'] &amp;&amp; (target['valueHooks'][values[p]['valCategory']] || target['valueHooks']["extreme-" + values[p]['valCategory']]);
+              var targetElt = values[p]['valCategory'] &amp;&amp; (target['valueHooks'][values[p]['valCategory']] || target['valueHooks'][values[p]['valCategory'].sub("extreme-", '')]);
               targetElt = _this._selectFormElementForPhenotype(targetElt);
               _this._selectMeasurementTerm(targetElt);
               if (values[p]['valCategory']) {
-                ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'], "extreme-" + values[p]['valCategory']).each(function(val) {
+                ['extreme-below-normal', 'below-normal', 'above-normal', 'extreme-above-normal'].without(values[p]['valCategory'], values[p]['valCategory'].sub("extreme-", '')).each(function(val) {
                   var elt = findFormElementForPhenotype(target['valueHooks'][val]);
                   _this._unselectMeasurementTerm(elt);
                 });
@@ -1745,27 +1745,30 @@ document.observe('xwiki:dom:loaded', function() {
     _measurementEvaluationInfo : {
        bmi : {
          value : 'td.bmi',
-         evaluation : 'td.bmi_evaluation'
+         evaluation : 'td.bmi_evaluation',
+         valueHooks : {
+           'above-normal': 'HP:0001513'
+         }
        },
        weight : {
          evaluation : 'td.weight_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0004325',
-           'extreme-above-normal': 'HP:0004324'
+           'below-normal': 'HP:0004325',
+           'above-normal': 'HP:0004324'
          }
        },
        height : {
          evaluation : 'td.height_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0004322',
-           'extreme-above-normal': 'HP:0000098'
+           'below-normal': 'HP:0004322',
+           'above-normal': 'HP:0000098'
          }
        },
        hc : {
          evaluation : 'td.hc_evaluation',
          valueHooks : {
            'extreme-below-normal': 'HP:0000252',
-           'extreme-above-normal': 'HP:0000256'
+           'above-normal': 'HP:0000256'
          }
        },
        ocd : {
@@ -1777,78 +1780,78 @@ document.observe('xwiki:dom:loaded', function() {
        pfl : {
          evaluation : 'td.pfl_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0000637',
-           'extreme-above-normal': 'HP:0012745'
+           'below-normal': 'HP:0000637',
+           'above-normal': 'HP:0012745'
          }
        },
        ipd : {
          evaluation : 'td.ipd_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0000601',
-           'extreme-above-normal': 'HP:0000316'
+           'below-normal': 'HP:0000601',
+           'above-normal': 'HP:0000316'
          }
        },
        ear : {
          evaluation : 'td.ear_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0008551',
-           'extreme-above-normal': 'HP:0000400'
+           'below-normal': 'HP:0008551',
+           'above-normal': 'HP:0000400'
          }
        },
        hand : {
          evaluation : 'td.hand_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0200055',
-           'extreme-above-normal': 'HP:0001176'
+           'below-normal': 'HP:0200055',
+           'above-normal': 'HP:0001176'
          }
        },
        palm : {
          evaluation : 'td.palm_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0004279',
-           'extreme-above-normal': 'HP:0011302'
+           'below-normal': 'HP:0004279',
+           'above-normal': 'HP:0011302'
          }
        },
        foot : {
          evaluation : 'td.foot_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0001773',
-           'extreme-above-normal': 'HP:0001833'
+           'below-normal': 'HP:0001773',
+           'above-normal': 'HP:0001833'
          }
        },
        ear_right : {
          evaluation : 'td.ear_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0008551',
-           'extreme-above-normal': 'HP:0000400'
+           'below-normal': 'HP:0008551',
+           'above-normal': 'HP:0000400'
          }
        },
        hand_right : {
          evaluation : 'td.hand_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0200055',
-           'extreme-above-normal': 'HP:0001176'
+           'below-normal': 'HP:0200055',
+           'above-normal': 'HP:0001176'
          }
        },
        palm_right : {
          evaluation : 'td.palm_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0004279',
-           'extreme-above-normal': 'HP:0011302'
+           'below-normal': 'HP:0004279',
+           'above-normal': 'HP:0011302'
          }
        },
        foot_right : {
          evaluation : 'td.foot_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0001773',
-           'extreme-above-normal': 'HP:0001833'
+           'below-normal': 'HP:0001773',
+           'above-normal': 'HP:0001833'
          }
        },
        philtrum : {
          evaluation : 'td.philtrum_evaluation',
          valueHooks : {
-           'extreme-below-normal': 'HP:0000322',
-           'extreme-above-normal': 'HP:0000343'
+           'below-normal': 'HP:0000322',
+           'above-normal': 'HP:0000343'
          }
        },
        armspan : {
