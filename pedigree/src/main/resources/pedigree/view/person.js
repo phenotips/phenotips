@@ -895,13 +895,13 @@ var Person = Class.create(AbstractPerson, {
         if (this.getExternalID() != "")
             info['externalID'] = this.getExternalID();        
         if (this.getBirthDate() != "") 
-            info['dob'] = this.getBirthDate();
+            info['dob'] = this.getBirthDate().toDateString();
         if (this.isAdopted())
             info['isAdopted'] = this.isAdopted();
         if (this.getLifeStatus() != 'alive')
             info['lifeStatus'] = this.getLifeStatus();
         if (this.getDeathDate() != "")
-            info['dod'] = this.getDeathDate();
+            info['dod'] = this.getDeathDate().toDateString();
         if (this.getGestationAge() != null)
             info['gestationAge'] = this.getGestationAge();
         if (this.getChildlessStatus() != null) {

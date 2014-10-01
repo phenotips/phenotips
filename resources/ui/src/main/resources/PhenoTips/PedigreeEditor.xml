@@ -58,6 +58,8 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/export.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/filesaver/Blob.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/filesaver/FileSaver.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##

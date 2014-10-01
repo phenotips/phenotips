@@ -7,8 +7,6 @@
 var ExportSelector = Class.create( {
 
     initialize: function() {
-        if (editor.isReadOnlyMode()) return;
-        
         var _this = this;
         
         var mainDiv = new Element('div', {'class': 'import-selector'});
@@ -108,14 +106,14 @@ var ExportSelector = Class.create( {
      * @param pictureBox
      * @private
      */
-    _onExportStarted: function() {   
+    _onExportStarted: function() {
         this.hide();
-        
+
         var patientDocument = XWiki.currentDocument.page + " pedigree";
-            
+
         var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
         //console.log("Import type: " + exportType);
-        
+
         if (exportType == "simpleJSON") { 
             var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
             var exportString = PedigreeExport.exportAsSimpleJSON(editor.getGraph().DG, privacySetting);
@@ -132,21 +130,9 @@ var ExportSelector = Class.create( {
             }
             var mimeType = "text/plain";
         }
-        
+
         console.log("Export data: >>" + exportString + "<<");
-        
-        var exportData = "data:" + mimeType + ";base64," + btoa(exportString);
-        
-        var downloadLink = $("downloadLink");
-        
-        downloadLink.setAttribute("href", exportData);
-        
-        // Note: as of today, the only way to specify the filename is via the "download" attribute,
-        //       which is not supported in all (even modern) browsers: http://caniuse.com/download
-        //       (also see: http://stackoverflow.com/questions/7717851/save-file-javascript-with-file-name)
-        downloadLink.setAttribute("download", fileName);
-        
-        downloadLink.click();      
+        saveTextAs(exportString, fileName);
     },
 
     /**

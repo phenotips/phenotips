@@ -210,6 +210,17 @@ var Controller = Class.create({
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
 
+                if (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate") {
+                    // some browsers may not treat the date string as provided by the date widget the same way,
+                    // so convert to the least common denominator which seems to be the toDateString()
+                    try {
+                        var parsedDate = new Date(propValue);
+                        propValue = parsedDate.toDateString();
+                    } catch (err) {
+                        // in case date did not parse: set date exactly as provided
+                    }
+                }
+
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
                 // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
                 if (propertySetFunction == "setLifeStatus") {

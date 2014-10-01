@@ -36,6 +36,16 @@ if (!Array.prototype.forEach)
   };
 }
 
+// Fix for Safari v4 && v5
+if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.click && document.createEvent) {
+    HTMLElement.prototype.click = function()
+    {
+        var eventObj = document.createEvent('MouseEvents');
+        eventObj.initEvent('click',true,true);
+        this.dispatchEvent(eventObj);
+    }
+}
+
 // Used for: cloning a 2D array of integers (i.e. no deep copy of elements is necessary)
 // Specific implementation is pciked based on http://jsperf.com/clone-2d-array/4
 function clone2DArray (arr2D) {
