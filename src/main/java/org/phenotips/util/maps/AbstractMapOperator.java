@@ -17,20 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.AbstractMapOperator;
-
-public class AddMapOperator<K> extends AbstractMapOperator<K, Number>
+public abstract class AbstractMapOperator<K, N extends Number> implements MapOperator<K, N>
 {
-
-    @Override
-    protected Double applyToValues(Number a, Number b)
+    @SuppressWarnings("unchecked")
+    public NumericValueMap<K, N> apply(NumericValueMap<K, N> a, NumericValueMap<K, N> b)
     {
-        try {
-            return (Double) a + (Double) b;
-        } catch (ClassCastException ex) {
+        if (!a.keySet().equals(b.keySet())) {
             return null;
         }
+        DoubleMap<K> result = new DoubleMap<K>();
+        for (K key : a.keySet()) {
+            result.put(key, this.applyToValues(a.get(key), b.get(key)));
+        }
+        return (NumericValueMap<K, N>) result;
     }
+
+    protected abstract Double applyToValues(N a, N b);
 }

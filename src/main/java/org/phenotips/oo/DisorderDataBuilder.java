@@ -1,4 +1,4 @@
-package edu.toronto.cs.cidb.oo;
+package org.phenotips.oo;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,9 +17,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import edu.toronto.cs.cidb.obo2solr.ParameterPreparer;
-import edu.toronto.cs.cidb.obo2solr.SolrUpdateGenerator;
-import edu.toronto.cs.cidb.obo2solr.TermData;
+import org.phenotips.obo2solr.ParameterPreparer;
+import org.phenotips.obo2solr.SolrUpdateGenerator;
+import org.phenotips.obo2solr.TermData;
 
 @SuppressWarnings("deprecation")
 public class DisorderDataBuilder

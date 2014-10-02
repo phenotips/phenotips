@@ -17,49 +17,62 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractNumericValueMap<K, N extends Number> extends LinkedHashMap<K, N> implements
-    NumericValueMap<K, N>
+public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Collection<V>>
 {
-    public AbstractNumericValueMap()
+    public AbstractCollectionMap()
     {
         super();
     }
 
-    public AbstractNumericValueMap(int initialCapacity)
+    public AbstractCollectionMap(int initialCapacity)
     {
         super(initialCapacity);
     }
 
-    public N addTo(K key, N value)
+    public boolean addTo(K key, V value)
     {
-        N crtValue = this.get(key);
+        Collection<V> crtValue = this.get(key);
         if (crtValue == null) {
-            return this.put(key, value);
-        } else {
-            return this.put(key, value);
+            crtValue = getEmptyCollection();
+            this.put(key, crtValue);
         }
+        return crtValue.add(value);
     }
 
-    protected abstract N getZero();
-
-    public N reset(K key)
+    public boolean addTo(K key, Collection<V> values)
     {
-        return this.put(key, getZero());
+        Collection<V> crtValue = this.get(key);
+        if (crtValue == null) {
+            crtValue = getEmptyCollection();
+            this.put(key, crtValue);
+        }
+        return crtValue.addAll(values);
     }
 
-    public N safeGet(K key)
+    protected abstract Collection<V> getEmptyCollection();
+
+    public void reset(K key)
     {
-        N value = this.get(key);
-        return value == null ? getZero() : value;
+        if (this.get(key) == null) {
+            this.put(key, getEmptyCollection());
+        }
+        this.get(key).clear();
+    }
+
+    public Collection<V> safeGet(K key)
+    {
+        Collection<V> value = this.get(key);
+        return value == null ? getEmptyCollection() : value;
     }
 
     public List<K> sort()
@@ -72,14 +85,14 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends Linke
     {
         K[] sortedKeys = (K[]) this.keySet().toArray();
         Arrays.sort(sortedKeys, new Comparator<K>()
-        {
+                    {
             public int compare(K a, K b)
-            {
-                if (safeGet(a).equals(safeGet(b))) {
+                        {
+                if (safeGet(a).size() == safeGet(b).size()) {
                     return 0;
                 }
                 try {
-                    return ((((Comparable<N>) safeGet(a)).compareTo(safeGet(b)) > 0) && descending) ? -1 : 1;
+                    return ((safeGet(a).size() > safeGet(b).size()) && descending) ? -1 : 1;
                 } catch (ClassCastException ex) {
                     return 0;
                 }
@@ -92,36 +105,13 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends Linke
         return result;
     }
 
-    public K getMax()
-    {
-        if (this.size() == 0) {
-            return null;
-        }
-        return this.sort(true).get(0);
-    }
-
-    public K getMin()
-    {
-        if (this.size() == 0) {
-            return null;
-        }
-        return this.sort().get(0);
-    }
-
-    public N getMaxValue()
-    {
-        return this.safeGet(getMax());
-    }
-
-    public N getMinValue()
-    {
-        return this.safeGet(getMin());
-    }
-
     public void writeTo(PrintStream out)
     {
         for (K key : this.keySet()) {
-            out.println(key + " : " + this.get(key));
+            out.println(key + ":");
+            for (V value : this.get(key)) {
+                out.println("\t" + value);
+            }
         }
     }
 }

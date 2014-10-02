@@ -1,4 +1,4 @@
-package edu.toronto.cs.cidb.oo;
+package org.phenotips.oo;
 
 import java.util.HashMap;
 import java.util.Map;

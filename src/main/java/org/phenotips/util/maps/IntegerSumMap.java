@@ -17,36 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.AbstractNumericValueMap;
+import org.phenotips.obo2solr.maps.IntegerMap;
 
-public class IntegerMap<K> extends AbstractNumericValueMap<K, Integer>
+public class IntegerSumMap<K> extends IntegerMap<K>
 {
-    public IntegerMap()
+    public IntegerSumMap()
     {
         super();
     }
 
-    public IntegerMap(int initialCapacity)
+    public IntegerSumMap(int initialCapacity)
     {
         super(initialCapacity);
-    }
-
-    @Override
-    protected final Integer getZero()
-    {
-        return 0;
-    }
-
-    @Override
-    public Integer addTo(K key, Integer value)
-    {
-        Integer crtValue = this.get(key);
-        if (value == null) {
-            return this.put(key, value);
-        } else {
-            return this.put(key, crtValue + value);
-        }
     }
 }

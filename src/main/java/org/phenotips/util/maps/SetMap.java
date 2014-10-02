@@ -17,29 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.IntegerMap;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
-public class CounterMap<K> extends IntegerMap<K>
+import org.phenotips.obo2solr.maps.AbstractCollectionMap;
+
+public class SetMap<K, V> extends AbstractCollectionMap<K, V>
 {
-    public CounterMap()
+
+    @Override
+    protected Collection<V> getEmptyCollection()
     {
-        super();
+        return new LinkedHashSet<V>();
     }
 
-    public CounterMap(int initialCapacity)
-    {
-        super(initialCapacity);
-    }
-
-    public Integer addTo(K key)
-    {
-        Integer value = this.get(key);
-        if (value == null) {
-            return this.put(key, 1);
-        } else {
-            return this.put(key, value + 1);
-        }
-    }
 }

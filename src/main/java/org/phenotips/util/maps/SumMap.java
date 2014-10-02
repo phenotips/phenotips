@@ -17,20 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.AbstractMapOperator;
+import org.phenotips.obo2solr.maps.DoubleMap;
 
-public class DivideMapOperator<K> extends AbstractMapOperator<K, Number>
+public class SumMap<K> extends DoubleMap<K>
 {
-
-    @Override
-    protected Double applyToValues(Number a, Number b)
+    public SumMap()
     {
-        try {
-            return (Double) a / (Double) b;
-        } catch (ClassCastException ex) {
-            return null;
-        }
+        super();
+    }
+
+    public SumMap(int initialCapacity)
+    {
+        super(initialCapacity);
     }
 }

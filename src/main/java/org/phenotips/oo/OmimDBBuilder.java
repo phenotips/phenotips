@@ -1,4 +1,4 @@
-package edu.toronto.cs.cidb.oo;
+package org.phenotips.oo;
 
 public class OmimDBBuilder
 {

@@ -17,20 +17,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.AbstractMapOperator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class SubtractMapOperator<K> extends AbstractMapOperator<K, Number>
+interface NumericValueMap<K, N extends Number>
 {
 
-    @Override
-    protected Double applyToValues(Number a, Number b)
-    {
-        try {
-            return (Double) a - (Double) b;
-        } catch (ClassCastException ex) {
-            return null;
-        }
-    }
+    public N addTo(K key, N value);
+
+    public N reset(K key);
+
+    public N get(K key);
+
+    public N safeGet(K key);
+
+    public List<K> sort();
+
+    public List<K> sort(final boolean descending);
+
+    public K getMax();
+
+    public K getMin();
+
+    public N getMaxValue();
+
+    public N getMinValue();
+
+    public void clear();
+
+    public boolean containsKey(K key);
+
+    public boolean isEmpty();
+
+    public Set<K> keySet();
+
+    public N put(K key, N value);
+
+    public void putAll(Map< ? extends K, ? extends N> m);
+
+    public N remove(K key);
+
+    public int size();
 }

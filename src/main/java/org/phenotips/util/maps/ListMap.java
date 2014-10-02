@@ -17,20 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-import edu.toronto.cs.cidb.obo2solr.maps.AbstractMapOperator;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
-public class MultiplyMapOperator<K> extends AbstractMapOperator<K, Number>
+import org.phenotips.obo2solr.maps.AbstractCollectionMap;
+
+public class ListMap<K, V> extends AbstractCollectionMap<K, V>
 {
-
     @Override
-    protected Double applyToValues(Number a, Number b)
+    protected Collection<V> getEmptyCollection()
     {
-        try {
-            return (Double) a * (Double) b;
-        } catch (ClassCastException ex) {
-            return null;
-        }
+        return new LinkedHashSet<V>();
     }
 }

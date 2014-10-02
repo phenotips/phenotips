@@ -17,9 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.util.maps;
+package org.phenotips.util.maps;
 
-interface MapOperator<K, N extends Number>
+import org.phenotips.obo2solr.maps.AbstractNumericValueMap;
+
+public class DoubleMap<K> extends AbstractNumericValueMap<K, Double>
 {
-    public NumericValueMap<K, N> apply(NumericValueMap<K, N> a, NumericValueMap<K, N> b);
+    public DoubleMap()
+    {
+        super();
+    }
+
+    public DoubleMap(int initialCapacity)
+    {
+        super(initialCapacity);
+    }
+
+    @Override
+    protected final Double getZero()
+    {
+        return 0.0;
+    }
 }
