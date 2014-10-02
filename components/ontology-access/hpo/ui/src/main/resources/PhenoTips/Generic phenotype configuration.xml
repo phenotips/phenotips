@@ -53,7 +53,7 @@
            "title" : "Weight for age",
            "data"  : [
                {"id" : "HP:0004325", "title" : "Decreased body weight (&lt;-2SD)"},
-               {"id" : "HP:0001513", "title" : "Increased body weight (&gt;+2SD)"}
+               {"id" : "HP:0004324", "title" : "Increased body weight (&gt;+2SD)"}
            ]
         },
         {
@@ -297,36 +297,36 @@
   {
     "type"       : "section",
     "title"      : "Prenatal growth parameters",
-    "categories" : ["HP:0001507"],
+    "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
        {
          "type"  : "subsection",
          "id"    : "HP:0004323",
          "group_type" : "single-select",
-         "title" : "Weight for age",
+         "title" : "Abnormal birth weight",
          "data"  : [
-           {"id" : "HP:0004325", "title" : "&lt;-2SD"},
-           {"id" : "HP:0001513", "title" : "&gt;+2SD"}
+           {"id" : "HP:0001518", "title" : "Small for gestational age (&lt;-2SD)"},
+           {"id" : "HP:0001520", "title" : "Large for gestational age (&gt;+2SD)"}
          ]
        },
        {
          "type"  : "subsection",
          "id"    : "HP:0000002",
          "group_type" : "single-select",
-         "title" : "Stature for age",
+         "title" : "Abnormal birth length",
          "data"  : [
-           {"id" : "HP:0004322", "title" : "&lt;-2SD"},
-           {"id" : "HP:0000098", "title" : "&gt;+2SD"}
+           {"id" : "HP:0003561", "title" : "Small birth length (&lt;-2SD)"},
+           {"id" : "HP:0003517", "title" : "Large birth length (&gt;+2SD)"}
          ]
        },
        {
          "type"  : "subsection",
          "id"    : "HP:0000240",
          "group_type" : "single-select",
-         "title" : "Head circumference for age",
+         "title" : "Abnormal head circumference at birth",
          "data"  : [
-           {"id" : "HP:0000252", "title" : "&lt;-3SD"},
-           {"id" : "HP:0000256", "title" : "&gt;+2SD"}
+           {"id" : "HP:0011451", "title" : "Congenital microcephaly (&lt;-3SD)"},
+           {"id" : "HP:0004488", "title" : "Congenital macrocephaly (&gt;+2SD)"}
          ]
        }
     ]
