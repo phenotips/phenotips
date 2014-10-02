@@ -36,6 +36,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -59,8 +60,12 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Component
 @Named("R54594PhenoTips#994")
 @Singleton
-public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigration
+public final class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigration
 {
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
     @Named("current")
@@ -90,19 +95,26 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
     }
 
     /**
-     * Searches for all documents containing pedigree images containing a wrongly placed quote and fixes them.
+     * Searches for all documents containing prenatal phenotypes and replaces generic measurement terms with their
+     * congenital subterms.
      */
-    private class UpdatePrenatalPhenotypesCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
+    private final class UpdatePrenatalPhenotypesCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
     {
-        /** The name of the property to fix. */
+        /** Obesity was wrongly used in place of Overweight for a while, and it should be removed. */
+        private static final String OBESITY = "HP:0001513";
+
+        /** The names of the properties to fix. */
         private final String[] propertyNames = { "prenatal_phenotype", "negative_prenatal_phenotype" };
 
+        /** Mapping between generic terms that need replacing and their congenital subterms. */
         private final Map<String, String> translations = new HashMap<>();
 
-        UpdatePrenatalPhenotypesCallback()
+        private UpdatePrenatalPhenotypesCallback()
         {
+            final String congenitalOverweight = "HP:0001520";
             this.translations.put("HP:0004325", "HP:0001518");
-            this.translations.put("HP:0004324", "HP:0001520");
+            this.translations.put("HP:0004324", congenitalOverweight);
+            this.translations.put(OBESITY, congenitalOverweight);
             this.translations.put("HP:0004322", "HP:0003561");
             this.translations.put("HP:0000098", "HP:0003517");
             this.translations.put("HP:0000252", "HP:0011451");
@@ -114,17 +126,20 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
         {
             XWikiContext context = getXWikiContext();
             XWiki xwiki = context.getWiki();
-            Query q =
-                session.createQuery("select distinct o.name from BaseObject o, DBStringListProperty p join p.list as i"
-                    + " where p.id.id = o.id and o.className = ? and p.id.name in (?, ?)");
+            Query q = session.createQuery("select distinct o.name from BaseObject o, DBStringListProperty p"
+                + " where p.id.id = o.id and o.className = ? and p.id.name in (?, ?)");
             q.setParameter(0, R54594PhenoTips994DataMigration.this.serializer.serialize(Patient.CLASS_REFERENCE));
             q.setParameter(1, this.propertyNames[0]);
             q.setParameter(2, this.propertyNames[1]);
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
+            R54594PhenoTips994DataMigration.this.logger.debug("Found {} documents with prenatal phenotypes",
+                documents.size());
             for (String docName : documents) {
+                R54594PhenoTips994DataMigration.this.logger.debug("Checking [{}]", docName);
                 XWikiDocument doc =
                     xwiki.getDocument(R54594PhenoTips994DataMigration.this.resolver.resolve(docName), context);
+
                 boolean modified = false;
                 for (BaseObject object : doc.getXObjects(Patient.CLASS_REFERENCE)) {
                     if (object == null) {
@@ -134,12 +149,16 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
                         DBStringListProperty property = (DBStringListProperty) object.get(propertyName);
                         DBStringListProperty extendedProperty =
                             (DBStringListProperty) object.get("extended_" + propertyName);
-                        modified = modified || fixList(property, extendedProperty);
+                        if (property == null || property.getList().isEmpty()) {
+                            continue;
+                        }
+                        modified = fixList(property, extendedProperty) || modified;
                     }
                 }
                 if (!modified) {
                     continue;
                 }
+
                 doc.setComment(R54594PhenoTips994DataMigration.this.getDescription());
                 doc.setMinorEdit(true);
                 try {
@@ -148,6 +167,7 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
                     session.clear();
                     ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                     session.flush();
+                    R54594PhenoTips994DataMigration.this.logger.debug("Updated [{}]", docName);
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
                 }
@@ -157,10 +177,7 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
 
         private boolean fixList(DBStringListProperty property, DBStringListProperty extendedProperty)
         {
-            if (property == null || property.getList().isEmpty()) {
-                return false;
-            }
-            boolean result = false;
+            boolean modified = false;
             List<String> values = property.getList();
             List<String> extendedValues = null;
             if (extendedProperty != null) {
@@ -168,21 +185,26 @@ public class R54594PhenoTips994DataMigration extends AbstractHibernateDataMigrat
             }
             for (Map.Entry<String, String> translation : this.translations.entrySet()) {
                 if (values.contains(translation.getKey())) {
+                    R54594PhenoTips994DataMigration.this.logger.debug(
+                        "Replacing {} with {}", translation.getKey(), translation.getValue());
                     values.remove(translation.getKey());
-                    values.add(translation.getValue());
-                    if (extendedValues != null) {
-                        extendedValues.add(translation.getValue());
+                    if (!values.contains(translation.getValue())) {
+                        values.add(translation.getValue());
+                        if (extendedValues != null) {
+                            extendedValues.add(translation.getValue());
+                        }
                     }
-                    result = true;
+                    modified = true;
                 }
             }
-            if (result) {
+            if (modified) {
                 property.setList(values);
                 if (extendedValues != null) {
+                    extendedValues.remove(OBESITY);
                     extendedProperty.setList(extendedValues);
                 }
             }
-            return result;
+            return modified;
         }
     }
 }
