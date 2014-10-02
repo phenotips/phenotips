@@ -55,7 +55,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * generic adult ones.
  *
  * @version $Id$
- * @since 1.0M13
+ * @since 1.0
  */
 @Component
 @Named("R54594PhenoTips#994")
