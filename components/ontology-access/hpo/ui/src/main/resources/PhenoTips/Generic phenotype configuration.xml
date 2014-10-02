@@ -46,38 +46,38 @@
     "title"      : "Growth parameters",
     "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
-        {
-           "type"  : "subsection",
-           "id"    : "HP:0004323",
-           "group_type" : "single-select",
-           "title" : "Weight for age",
-           "data"  : [
-               {"id" : "HP:0004325", "title" : "Decreased body weight (&lt;-2SD)"},
-               {"id" : "HP:0004324", "title" : "Increased body weight (&gt;+2SD)"}
-           ]
-        },
-        {
-           "type"  : "subsection",
-           "id"    : "HP:0000002",
-           "group_type" : "single-select",
-           "title" : "Stature for age",
-           "data"  : [
-               {"id" : "HP:0004322", "title" : "Short stature (&lt;-2SD)"},
-               {"id" : "HP:0000098", "title" : "Tall stature (&gt;+2SD)"}
-           ]
-        },
-        {
-           "type"  : "subsection",
-           "id"    : "HP:0000240",
-           "group_type" : "single-select",
-           "title" : "Head circumference for age",
-           "data"  : [
-               {"id" : "HP:0000252", "title" : "Microcephaly (&lt;-3SD)"},
-               {"id" : "HP:0000256", "title" : "Macrocephaly (&gt;+2SD)"}
-           ]
-        },
-        {"id" : "HP:0001508"},
-        {"id" : "HP:0001528"}
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0004323",
+        "group_type" : "single-select",
+        "title"  : "Weight for age",
+        "data"   : [
+          {"id"  : "HP:0004325", "title" : "Decreased body weight (&lt;-2SD)"},
+          {"id"  : "HP:0004324", "title" : "Increased body weight (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000002",
+        "group_type" : "single-select",
+        "title"  : "Stature for age",
+        "data"   : [
+          {"id"  : "HP:0004322", "title" : "Short stature (&lt;-2SD)"},
+          {"id"  : "HP:0000098", "title" : "Tall stature (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000240",
+        "group_type" : "single-select",
+        "title"  : "Head circumference for age",
+        "data"   : [
+          {"id"  : "HP:0000252", "title" : "Microcephaly (&lt;-3SD)"},
+          {"id"  : "HP:0000256", "title" : "Macrocephaly (&gt;+2SD)"}
+        ]
+      },
+      {"id" : "HP:0001508"},
+      {"id" : "HP:0001528"}
     ]
   },
   {
@@ -299,36 +299,36 @@
     "title"      : "Prenatal growth parameters",
     "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
-       {
-         "type"  : "subsection",
-         "id"    : "HP:0004323",
-         "group_type" : "single-select",
-         "title" : "Abnormal birth weight",
-         "data"  : [
-           {"id" : "HP:0001518", "title" : "Small for gestational age (&lt;-2SD)"},
-           {"id" : "HP:0001520", "title" : "Large for gestational age (&gt;+2SD)"}
-         ]
-       },
-       {
-         "type"  : "subsection",
-         "id"    : "HP:0000002",
-         "group_type" : "single-select",
-         "title" : "Abnormal birth length",
-         "data"  : [
-           {"id" : "HP:0003561", "title" : "Small birth length (&lt;-2SD)"},
-           {"id" : "HP:0003517", "title" : "Large birth length (&gt;+2SD)"}
-         ]
-       },
-       {
-         "type"  : "subsection",
-         "id"    : "HP:0000240",
-         "group_type" : "single-select",
-         "title" : "Abnormal head circumference at birth",
-         "data"  : [
-           {"id" : "HP:0011451", "title" : "Congenital microcephaly (&lt;-3SD)"},
-           {"id" : "HP:0004488", "title" : "Congenital macrocephaly (&gt;+2SD)"}
-         ]
-       }
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0004323",
+        "group_type" : "single-select",
+        "title"  : "Abnormal birth weight",
+        "data"   : [
+          {"id"  : "HP:0001518", "title" : "Small for gestational age (&lt;-2SD)"},
+          {"id"  : "HP:0001520", "title" : "Large for gestational age (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000002",
+        "group_type" : "single-select",
+        "title"  : "Abnormal birth length",
+        "data"   : [
+          {"id"  : "HP:0003561", "title" : "Small birth length (&lt;-2SD)"},
+          {"id"  : "HP:0003517", "title" : "Large birth length (&gt;+2SD)"}
+        ]
+      },
+      {
+        "type"   : "subsection",
+        "id"     : "HP:0000240",
+        "group_type" : "single-select",
+        "title"  : "Abnormal head circumference at birth",
+        "data"   : [
+          {"id"  : "HP:0011451", "title" : "Congenital microcephaly (&lt;-3SD)"},
+          {"id"  : "HP:0004488", "title" : "Congenital macrocephaly (&gt;+2SD)"}
+        ]
+      }
     ]
   },
   {
@@ -336,9 +336,9 @@
     "title"      : "Prenatal development or birth",
     "categories" : ["HP:0001197"],
     "data"       : [
-        {"id" : "HP:0001562"},
-        {"id" : "HP:0001561"},
-        {"id" : "HP:0001622"}
+      {"id" : "HP:0001562"},
+      {"id" : "HP:0001561"},
+      {"id" : "HP:0001622"}
     ]
   }
 ])
