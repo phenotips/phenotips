@@ -90,6 +90,7 @@
       {"id": "HP:0002236", "title" : "Frontal upsweep"},
       {
         "type"       : "subsection",
+        "id"         : "HP:0000599",
         "title"      : "Anterior hairline",
         "data"       : [
           {"id": "HP:0000294", "title" : "Low"},
@@ -101,7 +102,7 @@
         "title"      : "Posterior hairline",
         "data"       : [
           {"id": "HP:0002162", "title" : "Low"},
-          {"id": "_c_high_posterior_hairline", "title" : "High"}
+          {"id": "HP:0012891", "title" : "High"}
         ]
       },
       {"id": "HP:0002213", "title" : "Fine hair"},
@@ -184,7 +185,7 @@
       {"id": "HP:0000508"},
       {"id": "HP:0000286"},
       {"id": "HP:0000537"},
-      {"id": "_c_euryblepharon", "title" : "Euryblepharon"},
+      {"id": "HP:0012905", "title" : "Euryblepharon"},
       {
         "type"       : "subsection",
         "title"      : "Eyelid coloboma",
@@ -241,28 +242,32 @@
         "title"      : "Length",
         "data"       : [
           {"id": "HP:0003189", "title" : "Long"},
-          {"id": "HP:0003192", "title" : "Short"}
+          {"id": "HP:0003196", "title" : "Short"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Width",
+        "data"       : [
+          {"id": "HP:0000418", "title" : "Narrow"},
+          {"id": "HP:0012811", "title" : "Wide"}
         ]
       },
       {
         "type"       : "subsection",
         "title"      : "Shape",
         "data"       : [
-          {"id": "HP:0000444", "title" : "Beaked"},
-          {"id": "_c_tubular_nose", "title" : "Tubular"},
-          {"id": "_c_helmet_nose", "title" : "Gladiator helmet"}
+          {"id": "HP:0011120", "title" : "Concave"},
+          {"id": "HP:0000444", "title" : "Convex"}
         ]
       },
-      {"id": "HP:0000424", "title" : "Broad nasal root"},
-      {"id": "HP:0005284", "title" : "Flat nasal root"},
-      {"id": "HP:0000432", "title" : "Prominent nasal root"},
-      {"id": "HP:0011222", "title" : "Depressed glabella"},
-      {"id": "HP:0002057", "title" : "Prominent glabella"},
-      {"id": "HP:0000431", "title" : "Broad nasal bridge"},
-      {"id": "HP:0000425", "title" : "Flat nasal bridge"},
-      {"id": "HP:0000426", "title" : "Prominent nasal bridge"},
-      {"id": "HP:0011120", "title" : "Saddle nose"},
-      {"id": "HP:0000455", "title" : "Broad nasal tip"}
+      {"id": "HP:0000431"},
+      {"id": "HP:0005280"},
+      {"id": "HP:0000426"},
+      {"id": "HP:0011222"},
+      {"id": "HP:0002057"},
+      {"id": "HP:0011120"},
+      {"id": "HP:0000455"}
     ]
   },
   {
@@ -290,7 +295,7 @@
         "type"       : "subsection",
         "title"      : "Size",
         "data"       : [
-          {"id": "HP:0009095", "title" : "Small"},
+          {"id": "HP:0000160", "title" : "Small"},
           {"id": "HP:0000154", "title" : "Wide"}
         ]
       },
@@ -322,7 +327,7 @@
           {"id": "HP:0010281", "title" : "Lower"}
         ]
       },
-      {"id": "HP:0000156", "title" : "High-arched palate"},
+      {"id": "HP:0000218"},
       {"id": "HP:0000189", "title" : "Narrow palate"},
       {"id": "HP:0000175", "title" : "Cleft palate"},
       {"id": "HP:0000193", "title" : "Bifid/cleft uvula"},
@@ -369,7 +374,7 @@
       {"id": "HP:0001680", "title" : "Coarctation of aorta"},
       {"id": "HP:0001636", "title" : "Tetralogy of fallot"},
       {"id": "HP:0001638", "title" : "Cardiomyopathy"},
-      {"id": "HP:0001665", "title" : "Conduction defect"}
+      {"id": "HP:0011675"}
     ]
   },
   {
@@ -397,7 +402,7 @@
     "title"      : "Chest wall",
     "categories" : ["HP:0000765"],
     "data"       : [
-      {"id": "_c_broad_chest", "title" : "Broad chest"},
+      {"id": "HP:0000914", "title" : "Broad chest"},
       {"id": "HP:0000774", "title" : "Narrow chest"},
       {"id": "HP:0005257", "title" : "Short chest"},
       {"id": "HP:0001552", "title" : "Barrel-shaped chest"},
@@ -442,7 +447,7 @@
       {"id": "HP:0002025", "title" : "Stenosis"},
       {"id": "HP:0002575", "title" : "Imperforate"},
       {"id": "HP:0001545", "title" : "Anteriorly placed"},
-      {"id": "_c_posterior_anus", "title" : "Posteriorly placed"}
+      {"id": "HP:0012890", "title" : "Posteriorly placed"}
     ]
   },
   {
@@ -450,13 +455,13 @@
     "title"      : "Upper extremities",
     "categories" : ["HP:0002817"],
     "data"       : [
-      {"id": "HP:0002968", "title" : "Rhizomelia"},
+      {"id": "HP:0004991", "title" : "Rhizomelia"},
       {"id": "HP:0005011", "title" : "Mesomelia"},
       {"id": "HP:0010482", "title" : "Acromelia"},
       {"id": "HP:0004279", "title" : "Short palm"},
       {"id": "HP:0001176", "title" : "Large hands"},
       {"id": "HP:0010049", "title" : "Short metacarpals"},
-      {"id": "HP:0100667", "title" : "Brachydactyly"},
+      {"id": "HP:0009381", "title" : "Brachydactyly"},
       {"id": "HP:0001182", "title" : "Tapered finger"},
       {"id": "HP:0001500", "title" : "Broad finger"},
       {"id": "HP:0011304", "title" : "Broad thumb"},
@@ -477,13 +482,13 @@
     "title"      : "Lower extremities",
     "categories" : ["HP:0002814"],
     "data"       : [
-      {"id": "HP:0002968", "title" : "Rhizomelia"},
+      {"id": "HP:0012106", "title" : "Rhizomelia"},
       {"id": "HP:0004987", "title" : "Mesomelia"},
       {"id": "HP:0010494", "title" : "Acromelia"},
 
       {"id": "HP:0002857", "title" : "Genu valgu"},
       {"id": "HP:0002970", "title" : "Genu varum"},
-      {"id": "HP:0001764", "title" : "Small feet"},
+      {"id": "HP:0001773", "title" : "Small feet"},
       {"id": "HP:0001833", "title" : "Large feet"},
 
       {"id": "HP:0001763", "title" : "Pes planus"},
@@ -512,8 +517,8 @@
     "categories" : ["HP:0000924","HP:0003549"],
     "data"       : [
       {"id": "HP:0100293", "title" : "Muscle fiber hypertrophy"},
-      {"id": "HP:0100294", "title" : "Muscle fiber hypotrophy"},
-      {"id": "_c_decreased_rom", "title" : "Decreased ROM"},
+      {"id": "HP:0100295", "title" : "Muscle fiber hypotrophy"},
+      {"id": "HP:0001376", "title" : "Decreased ROM"},
       {"id": "HP:0010485", "title" : "Hyperextensibility at elbow"},
       {"id": "HP:0010500", "title" : "Hyperextensibility of the knee"}
     ]
@@ -524,7 +529,7 @@
     "categories" : ["HP:0000707"],
     "data"       : [
       {"id": "HP:0001260", "title" : "Dysarthric speech"},
-      {"id": "HP:0001614", "title" : "Hypernasal speech"},
+      {"id": "HP:0001611"},
       {"id": "HP:0007164", "title" : "Slowed slurred speech"},
       {"id": "HP:0001257", "title" : "Spasticity"},
       {"id": "HP:0002063", "title" : "Rigidity"},
@@ -535,7 +540,7 @@
       {"id": "HP:0002072", "title" : "Chorea"},
       {"id": "HP:0002066", "title" : "Gait ataxia"},
       {"id": "HP:0002064", "title" : "Spastic gait"},
-      {"id": "HP:0003377", "title" : "Foot drop"}
+      {"id": "HP:0009027", "title" : "Foot drop"}
     ]
   },
   {
@@ -543,11 +548,10 @@
     "title"      : "Back",
     "categories" : ["HP:0008518"],
     "data"       : [
-      {"id": "HP:0002650", "title" : "Scoliosis"},
-      {"id": "HP:0002939", "title" : "Lordosis"},
-      {"id": "HP:0002808", "title" : "Kyphosis"},
+      {"id": "HP:0002650"},
+      {"id": "HP:0003307"},
+      {"id": "HP:0002808"},
       {"id": "HP:0000960", "title" : "Sacral dimple"},
-      {"id": "_c_sacral_sinus", "title" : "Sacral sinus"},
       {"id": "HP:0005765", "title" : "Sacral meningocele"}
     ]
   },
@@ -556,13 +560,13 @@
     "title"      : "Skin",
     "categories" : ["HP:0000925"],
     "data"       : [
-      {"id": "_c_skin_cals", "title" : "CALS"},
+      {"id": "HP:0000957"},
       {"id": "HP:0009721", "title" : "Shagreen patch"},
       {"id": "HP:0000953", "title" : "Hyperpigmentation"},
       {"id": "HP:0001012", "title" : "Lipoma"},
       {"id": "HP:0009125", "title" : "Lipodystrophy"},
       {"id": "HP:0001067", "title" : "Neurofibroma"},
-      {"id": "_c_peringuinal_fibroma", "title" : "Peringuinal fibroma"},
+      {"id": "HP:0100804"},
       {"id": "HP:0001028", "title" : "Hemangioma"},
       {"id": "HP:0011369", "title" : "Mongolian spot"},
       {"id": "HP:0001052", "title" : "Nevus flammeus"},

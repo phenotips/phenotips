@@ -117,11 +117,11 @@
     "data"       : [
         {
            "type"  : "subsection",
-           "id"    : "HP:0000404",
+           "id"    : "HP:0000365",
            "title" : "Deafness",
            "data"  : [
-               {"id" : "HP:0008538", "title" : "Sensorineural"},
-               {"id" : "HP:0000367", "title" : "Conductive"}
+               {"id" : "HP:0000407", "title" : "Sensorineural"},
+               {"id" : "HP:0000405", "title" : "Conductive"}
            ]
         },
         {"id" : "HP:0004467"},
@@ -281,7 +281,7 @@
         {"id" : "HP:0002072"},
         {"id" : "HP:0001257"},
         {"id" : "HP:0010301"},
-        {"id" : "HP:0007319"}
+        {"id" : "HP:0002011"}
     ]
   },
   {
