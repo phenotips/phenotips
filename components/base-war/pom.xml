@@ -35,7 +35,7 @@
     <!-- By default we don't include Legacy modules and thus we don't need to exclude the non legacy JARs -->
     <xwiki.war.legacy.excludes />
     <checkstyle.skip>true</checkstyle.skip>
-    <clirr.skip />
+    <clirr.skip>true</clirr.skip>
   </properties>
   <dependencies>
     <!-- Needed for compiling patched Java code -->
