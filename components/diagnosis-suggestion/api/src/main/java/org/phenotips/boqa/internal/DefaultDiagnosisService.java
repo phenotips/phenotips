@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -177,6 +178,12 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             if (term == null) {
                 logger.warn(String.format(
                         "Unable to resolve OMIM term '%s' due to outdated OMIM ontology.", termId));
+                continue;
+            }
+
+            // Do not suggest diseases that start with *, +, and ^
+            Pattern pattern = Pattern.compile("[*+^]");
+            if (pattern.matcher(term.getName().substring(0, 1)).matches()) {
                 continue;
             }
 
