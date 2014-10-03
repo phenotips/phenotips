@@ -237,11 +237,15 @@ var Workspace = Class.create({
         // Pan controls
         this.__pan = new Element('div', {'class' : 'view-controls-pan', title : 'Pan'});
         this.__controls.insert(this.__pan);
-        ['up', 'right', 'down', 'left'].each(function (direction) {
-            _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction + ' fa fa-fw fa-arrow-' + direction, 'title' : 'Pan ' + direction});
+        ['up', 'right', 'down', 'left', 'home'].each(function (direction) {
+            var faIconClass = (direction == 'home') ? "fa-user" : "fa-arrow-" + direction;
+            _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction + ' fa fa-fw ' + faIconClass, 'title' : 'Pan ' + direction});
             _this.__pan.insert(_this.__pan[direction]);
             _this.__pan[direction].observe('click', function(event) {
-                if(direction == 'up') {
+                if (direction == 'home') {
+                    _this.centerAroundNode(0);
+                }
+                else if(direction == 'up') {
                     _this.panTo(_this.viewBoxX, _this.viewBoxY - 300);
                 }
                 else if(direction == 'down') {

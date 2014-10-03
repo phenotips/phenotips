@@ -158,6 +158,11 @@
   top: 22px;
   left: 4px;
 }
+.view-controls-pan .pan-home {
+  top: 22px;
+  left: 22px;
+  font-size: 12px;
+}
 /* ----------------------------------------
  * Zoom
  */
