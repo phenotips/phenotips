@@ -19,6 +19,8 @@
  */
 package org.phenotips.boqa;
 
+import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.component.annotation.Role;
 
 import java.util.List;
@@ -37,7 +39,8 @@ public interface DiagnosisService
      *            {@code HP:0002066}
      *
      * @param phenotypes A List of String phenotypes observed in the patient
+     * @param limit a number of phenotypes to return
      * @return A list of suggested diagnosies
      */
-    List<String> getDiagnosis(List<String> phenotypes);
+    List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit);
 }

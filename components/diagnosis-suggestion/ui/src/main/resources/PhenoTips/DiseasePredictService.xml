@@ -59,13 +59,19 @@
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
-#foreach($item in $results)
-  #set($term = $services.ontologies.resolveTerm($item))
-  #set($shortName = $term.getName())
-  #set($fullName = $term.getDescription())
+#foreach($term in $results)
+  #set($name = $term.getName())
+  #set ($indexOfSeparator = $name.indexOf(';'))
+  #if ($indexOfSeparator &gt; 0)
+    #set($shortName = $name.substring(0, $indexOfSeparator))
+    #set($fullName = $name.replaceAll(';;', ';'))
+  #else
+    #set($shortName = $name)
+    #set($fullName = $name)
+  #end
   #set($id = $term.getId())
   &lt;li class="disorder"&gt;
-    &lt;span class="id hidden" title="${id}"&gt;[MIM:${id}]&lt;/span&gt;
+    &lt;span class="id" title="${id}"&gt;&lt;a href="http://www.omim.org/entry/${id}" target="_blank" title="Read about this disorder on OMIM"&gt;[MIM:${id}]&lt;/a&gt;&lt;/span&gt;
     &lt;span class="title" title="${fullName}"&gt;${shortName}&lt;/span&gt;
   &lt;/li&gt;
 #end ## foreach item
@@ -84,6 +90,5 @@
 #if (!$hasOutput)
 (% class="hint" %)No matches found
 #end
-WHAT IS HAPPENING HERE!!
 {{/velocity}}</content>
 </xwikidoc>

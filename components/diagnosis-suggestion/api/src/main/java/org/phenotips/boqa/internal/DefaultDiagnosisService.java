@@ -20,6 +20,8 @@
 package org.phenotips.boqa.internal;
 
 import org.phenotips.boqa.DiagnosisService;
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -35,8 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +66,9 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     private BOQA boqa;
     private Map<Integer, ByteString> omimMap;
 
+    @Inject
+    private OntologyManager ontology;
+
     @Override
     public void initialize() throws InitializationException {
         //Initialize boqa
@@ -77,8 +84,10 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         GlobalPreferences.setProxyPort(888);
         GlobalPreferences.setProxyHost("realproxy.charite.de");
 
-        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").getPath();
-        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").getPath();
+//        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").getPath();
+//        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").getPath();
+        String ontologyPath = "/home/meatcar/dev/boqa/data/hp.obo.gz";
+        String annotationPath = "/home/meatcar/dev/boqa/data/new_phenotype.gz";
 
         // Load datafiles
         Datafiles df = null;
@@ -113,13 +122,12 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
      *            {@code HP:0002066}
      *
      * @param phenotypes A List of String phenotypes observed in the patient
+     * @param limit a number of phenotypes to return
      * @return A list of suggested diagnosies
      */
-    public List<String> getDiagnosis(List<String> phenotypes) {
+    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit) {
         Observations o = new Observations();
         o.observations = new boolean[boqa.getOntology().getNumberOfTerms()];
-
-        logger.info("I'm doing stuff!");
 
         //Add all hpo terms with ancestors to array of booleans
         for (String hpo : phenotypes) {
@@ -146,12 +154,37 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             }
         });
 
-        //Get top 20 results
-        List<String> results = new ArrayList<String>();
-        for (int i = 0; i < 20; i++) {
-            int id = order[i];
-            results.add(res.getMarginal(id) + "\t" + this.omimMap.get(id));
+        //Get top limit results
+        List<OntologyTerm> results = new ArrayList<OntologyTerm>();
+        for (int id : order) {
+            if (results.size() >= limit) {
+                break;
+            }
+
+            String termId = String.valueOf(this.omimMap.get(id));
+            String ontologyId = StringUtils.substringBefore(termId, ":");
+
+            // ignore ORPHANET, make sure we still get #limit results
+            if ("ORPHANET".equals(ontologyId)) {
+                continue;
+            }
+
+            // Strip 'O' in "OMIM"
+            termId = termId.substring(1);
+
+            OntologyTerm term = ontology.resolveTerm(termId);
+
+            if (term == null) {
+                logger.warn(String.format(
+                        "Unable to resolve OMIM term '%s' due to outdated OMIM ontology.", termId));
+                continue;
+            }
+
+            results.add(term);
+
         }
+
+        logger.debug(String.valueOf(results));
 
         return results;
     }
