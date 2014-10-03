@@ -261,7 +261,7 @@ var View = Class.create({
         var compareDistanceToStart = function( p1, p2 ) {
                 var dist1 = (x1-p1.x)*(x1-p1.x) + (y1-p1.y)*(y1-p1.y);
                 var dist2 = (x1-p2.x)*(x1-p2.x) + (y1-p2.y)*(y1-p2.y);
-                return dist1 > dist2;
+                return dist1 - dist2;
             };
         intersections.sort(compareDistanceToStart);
         //console.log("intersection points: " + stringifyObject(intersections));
