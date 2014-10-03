@@ -779,7 +779,7 @@ PositionedGraph.prototype = {
 
                 handled[twin] = true;
 
-                console.log("REMOVED TWIN " + twin);
+                //console.log("REMOVED TWIN " + twin);
             }
         }
 
@@ -2204,8 +2204,8 @@ PositionedGraph.prototype = {
 
     findConnectedComponent: function( v, edgeIncludedFunc, stopSet, maxSize )
     {
-        // computes connected component which includes vertex v and all vertices reachable from v
-        // not using edges which do not pass the `edgeIncludedFunc()` test
+        // computes connected component which includes vertex v (or all vertice sin array v)
+        // and all vertices reachable from v not using edges which do not pass the `edgeIncludedFunc()` test
         //
         // stops when a vertex from the `stopSet` set is found and includes `reachedStopSet` key in the response
         // stops when component size exceeds `maxSize`
@@ -2214,9 +2214,16 @@ PositionedGraph.prototype = {
         var size      = 0;
         var stopFound = false;
 
+        // if v is not an arrya make it an array with one element
+        if (Object.prototype.toString.call(v) !== '[object Array]') {
+            v = [v];
+        }
+
         var q = new Queue();
-        q.push(v);
-        component[v] = true;
+        for (var i = 0; i < v.length; i++) {
+            q.push(v[i]);
+            component[v[i]] = true;
+        }
 
         while( q.size() > 0 ) {
             var nextV = q.pop();
@@ -2531,7 +2538,7 @@ PositionedGraph.prototype = {
                             }
                             nextVerticalLevel = Math.max(nextVerticalLevel, minLevel);
                             //console.log("attaching ->" + dest + "(" + u + ") at attach port " + nextAttachPort + " and level " + nextVerticalLevel);
-                            verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachPort, verticalLevel: nextVerticalLevel };
+                            verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachPort, verticalLevel: nextVerticalLevel, numAttachLevels: edges.length };
 
                             //------------------------------
                             if (minLevel >= 2 || (minLevel == 1 && otherVirtualEdge) ) {
@@ -2821,10 +2828,10 @@ PositionedGraph.prototype = {
             for (var j = i + 1; j <= allTwins.length; j++)
                 numEdgesAcross[j] += numRightOf;
 
-            console.log("after twin " + allTwins[i] + " (leftOf: " + numLeftOf + ", rightOf: " + numRightOf + ") -> edges across: " + stringifyObject(numEdgesAcross));
+            //console.log("after twin " + allTwins[i] + " (leftOf: " + numLeftOf + ", rightOf: " + numRightOf + ") -> edges across: " + stringifyObject(numEdgesAcross));
         }
 
-        console.log("twin penalties: " + stringifyObject(numEdgesAcross));
+        //console.log("twin penalties: " + stringifyObject(numEdgesAcross));
         var orderOfLeftMostTwin  = vOrder[allTwins[0]];
         var minEdgeCrossLocation = indexOfLastMinElementInArray(numEdgesAcross);   // (index == 0) => "insert before leftmost" => (order := orderOfLeftMostTwin)
 
@@ -2837,8 +2844,8 @@ PositionedGraph.prototype = {
                 order++;
         }
 
-        console.log("edges across: " + stringifyObject(numEdgesAcross));
-        console.log("BEST INSERT POSITION for a twin of " + v + " with edges to " + stringifyObject(insertedTwinRelationships) + " is " + order);
+        //console.log("edges across: " + stringifyObject(numEdgesAcross));
+        //console.log("BEST INSERT POSITION for a twin of " + v + " with edges to " + stringifyObject(insertedTwinRelationships) + " is " + order);
         return order;
     },
 

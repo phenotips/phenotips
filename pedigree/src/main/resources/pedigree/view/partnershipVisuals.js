@@ -150,43 +150,44 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         // TODO: a better curve algo for the entire curve at once?
         var smoothCorners = true;                                   
         var cornerRadius  = PedigreeEditor.attributes.curvedLinesCornerRadius;
-        
+
         for (var p = 0; p < partnerPaths.length; p++) {
-            var path = partnerPaths[p];                                      
-            
+            var path = partnerPaths[p];
+
             // for the last piece which attaches to the person:
             // need to consider which attachment point to use, and may have to do a bended curve from current Y to the attachment point Y
-            var person           = path[path.length-1];           
+            var person           = path[path.length-1];
             var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
-            
+
             var nodePos       = editor.getGraph().getPosition(person);
-            var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );            
-            var finalYTo      = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.attachY ).y;               
+            var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
+            var finalYTo      = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.attachY ).y;
             var yTop          = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;
             var lastBend      = ((finalYTo == yTop) && (yTop < this.getY()) && finalSegmentInfo.attachmentPort == 1) ?
                                 Infinity :
-                                PedigreeEditor.attributes.radius * (2.2 - finalSegmentInfo.attachmentPort*0.35);            
-            
+                                ( finalSegmentInfo.numAttachPorts > 1 ?
+                                   PedigreeEditor.attributes.radius * (1.8 + finalSegmentInfo.numAttachPorts*0.1 - finalSegmentInfo.attachmentPort*0.35) :
+                                   PedigreeEditor.attributes.radius * 1.6
+                                );
             //console.log("Rel: " + id + ", Y: " + this.getY() + ", Attach/FinalY: " +finalYTo + ", yTOP: " + yTop + ", lastbend: " + lastBend + ", finalPos: " + stringifyObject(finalPosition));
-            
+
             var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right            
             var xFrom    = this.getX();                  // always the X of the end of the previous segment of the curve
             var yFrom    = this.getY();                  // always the Y of the end of the previous segment of the curve
             var xTo      = xFrom;
-            var yTo      = yFrom;            
+            var yTo      = yFrom;
             var prevY    = yFrom;                        // y-coordinate of the previous node: used to determine vertical vs horizontal segments
             var prevX    = xFrom;
             var vertical = false;                        // direction of the previous segment
             var wasAngle = false;
-            
+
             //console.log("Path: " + stringifyObject(path));
-            
+
             for (var i = 0; i < path.length; i++) {
-                var nextNodeOnPath = path[i];                                
-                
+                var nextNodeOnPath = path[i];
+
                 var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
                 var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
-                                
                 //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + stringifyObject(nodePos) + ", position: " + stringifyObject(position) );
                                 
                 if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions
