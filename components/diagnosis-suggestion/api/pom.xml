@@ -156,5 +156,10 @@
             <version>${xwiki.version}</version>
             <scope>test</scope>
         </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-observation-api</artifactId>
+        <version>6.1</version>
+      </dependency>
     </dependencies>
 </project>
