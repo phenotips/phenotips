@@ -93,11 +93,11 @@ public class FormSection extends FormGroup
         String displayedLabel = "Other";
         result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
             displayedLabel);
-        result += "<p class='hint'>(enter free text and choose among suggested ontology terms)</p>";
 
         result += String.format("<input type='text' name='%s' class='suggested multi suggest-hpo %s accept-value'"
-            + " value='' size='16' id='%s'/>", fieldNames[YES],
-            (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id);
+            + " value='' size='16' id='%s' placeholder='%s'/>", fieldNames[YES],
+            (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id,
+            "enter free text and choose among suggested ontology terms");
         result += String.format("<input type='hidden' value='%s' name='_category'/>",
             this.categories.toString().replaceAll("[\\[\\]\\s]", ""));
         return result;
