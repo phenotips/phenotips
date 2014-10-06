@@ -346,25 +346,31 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             text = (date) ? date + " weeks" : null;
         }
         else if(person.getLifeStatus() == 'alive') {
-            person.getBirthDate() && (text = getAge(person.getBirthDate(), null));
+            if (person.getBirthDate()) {
+                var age = getAge(person.getBirthDate(), null);
+                if (age.indexOf("day") != -1) {
+                    text = age;                                                                // 5 days
+                } else if (age.indexOf(" y") == -1) {
+                    text = "b. " + person.getBirthDate().getFullYear() + " (" + age + ")";     // b. 2014 (3 wk)
+                } else {
+                    text = "b. " + person.getBirthDate().getFullYear();                        // b. 1972
+                }
+            }
         }
         else {
-            var prefix = (person.getConceptionDate()) ? '' : "d. ";
             if(person.getDeathDate() && person.getBirthDate()) {
-                //if (person.getDeathDate().getFullYear() - person.getBirthDate().getFullYear() > 20) {
-                //    text =  '' + person.getBirthDate().getFullYear() + " - " + person.getDeathDate().getFullYear();
-                //} else {
-                    text = prefix + getAge(person.getBirthDate(), person.getDeathDate());
-                //}
-            }
-            else if (person.getDeathDate() && person.getConceptionDate()) {
-                text = prefix + getAge(person.getConceptionDate(), person.getDeathDate());
+                var age = getAge(person.getBirthDate(), person.getDeathDate());
+                if (age.indexOf("day") != -1 || age.indexOf("wk") != -1 || age.indexOf("mo") != -1) {
+                    text = "d. " + person.getDeathDate().getFullYear() + " (" + age + ")";
+                } else {
+                    text = person.getBirthDate().getFullYear() + " – " + person.getDeathDate().getFullYear();
+                }
             }
             else if (person.getDeathDate()) {
-                text = prefix + person.getDeathDate().getFullYear();
+                text = "d. " + person.getDeathDate().getFullYear();
             }
             else if(person.getBirthDate()) {
-                text = person.getBirthDate().getFullYear() + " - ?";
+                text = person.getBirthDate().getFullYear() + " – ?";
             }
         }
         this.getAgeLabel() && this.getAgeLabel().remove();

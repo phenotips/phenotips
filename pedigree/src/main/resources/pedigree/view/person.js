@@ -399,7 +399,7 @@ var Person = Class.create(AbstractPerson, {
      */
     setBirthDate: function(newDate) {
         newDate = newDate ? (new Date(newDate)) : '';
-        if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
+        if (!newDate || !this.getDeathDate() || newDate.getTime() < this.getDeathDate().getTime()) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }

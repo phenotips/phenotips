@@ -213,11 +213,13 @@ var Controller = Class.create({
                 if (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate") {
                     // some browsers may not treat the date string as provided by the date widget the same way,
                     // so convert to the least common denominator which seems to be the toDateString()
-                    try {
-                        var parsedDate = new Date(propValue);
-                        propValue = parsedDate.toDateString();
-                    } catch (err) {
-                        // in case date did not parse: set date exactly as provided
+                    if (propValue != "") {
+                        try {
+                            var parsedDate = new Date(propValue);
+                            propValue = parsedDate.toDateString();
+                        } catch (err) {
+                            // in case date did not parse: set date exactly as provided
+                        }
                     }
                 }
 
