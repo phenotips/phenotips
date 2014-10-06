@@ -722,12 +722,12 @@ public class PatientRecordEditPage extends InlinePage
         this.prenatalAndPerinatalHistoryNotes.sendKeys(value);
     }
 
-    public void setWeightIn3rdPercentile()
+    public void selectPrenatalLowWeight()
     {
         BaseElement
             .getUtil()
             .findElementWithoutWaiting(getDriver(),
-                By.cssSelector("label[for='PhenoTips.PatientClass_0_prenatal_phenotype_HP:0004325']")).click();
+                By.cssSelector("label[for='PhenoTips.PatientClass_0_prenatal_phenotype_HP:0001518']")).click();
         ;
     }
 
@@ -1038,7 +1038,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void setSensorineuralNO()
     {
-        selectPhenotype("HP:0008538", false);
+        selectPhenotype("HP:0000407", false);
 
     }
 

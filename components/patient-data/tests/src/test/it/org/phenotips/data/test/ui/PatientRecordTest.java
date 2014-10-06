@@ -112,7 +112,7 @@ public class PatientRecordTest extends AbstractTest
         patientEdit.setApgar1Score("6");
         patientEdit.setApgar5Score("8");
         patientEdit.setPrenatalAndPerinatalNotes("Test");
-        patientEdit.setWeightIn3rdPercentile();
+        patientEdit.selectPrenatalLowWeight();
         patientEdit.setPrenatalGrowthPatternsOther("test");
         patientEdit.setPositvieFerricChlorideTestYes();
         patientEdit.setPrenatalDevelopmentOrBirthOther("test");
