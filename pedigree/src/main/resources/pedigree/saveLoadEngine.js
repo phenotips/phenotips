@@ -127,8 +127,7 @@ var SaveLoadEngine = Class.create( {
 
         try {
             var changeSet = editor.getGraph().fromImport(importString, importType, importOptions);
-            
-            if (changeSet == null) throw "unable to create a pedigree from imported data"; 
+            if (changeSet == null) throw "unable to create a pedigree from imported data";
         }
         catch(err)
         {

@@ -1,4 +1,3 @@
-
 /**
  * The main class of the Pedigree Editor, responsible for initializing all the basic elements of the app.
  * Contains wrapper methods for the most commonly used functions.
@@ -454,9 +453,10 @@ var PedigreeEditor = Class.create({
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },  
-                    { 'actual' : 'aborted', 'displayed' : 'Aborted' },
-                    { 'actual' : 'unborn', 'displayed' : 'Unborn' }
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' },
+                    { 'actual' : 'unborn', 'displayed' : 'Unborn' },
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
@@ -586,7 +586,8 @@ var PedigreeEditor = Class.create({
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'aborted', 'displayed' : 'Aborted' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' }
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' }
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'

@@ -257,7 +257,7 @@ var Person = Class.create(AbstractPerson, {
      * Returns the status of this Person
      *
      * @method getLifeStatus
-     * @return {String} "alive", "deceased", "stillborn", "unborn" or "aborted"
+     * @return {String} "alive", "deceased", "stillborn", "unborn", "aborted" or "miscarriage"
      */
     getLifeStatus: function() {
         return this._lifeStatus;
@@ -274,7 +274,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Returns True is status is 'unborn', 'stillborn', 'aborted', 'alive' or 'deceased'
+     * Returns True is status is 'unborn', 'stillborn', 'aborted', 'miscarriage', 'alive' or 'deceased'
      *
      * @method _isValidLifeStatus
      * @param {String} status
@@ -283,7 +283,7 @@ var Person = Class.create(AbstractPerson, {
      */
     _isValidLifeStatus: function(status) {
         return (status == 'unborn' || status == 'stillborn'
-            || status == 'aborted'
+            || status == 'aborted' || status == 'miscarriage'
             || status == 'alive' || status == 'deceased')
     },
 
@@ -291,7 +291,7 @@ var Person = Class.create(AbstractPerson, {
      * Changes the life status of this Person to newStatus
      *
      * @method setLifeStatus
-     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
+     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn", "aborted" or "miscarriage"
      */
     setLifeStatus: function(newStatus) {
         if(this._isValidLifeStatus(newStatus)) {
@@ -796,7 +796,7 @@ var Person = Class.create(AbstractPerson, {
      */
     getSummary: function() {
         var onceAlive = editor.getGraph().hasRelationships(this.getID());
-        var inactiveStates = onceAlive ? ['unborn','aborted','stillborn'] : false;
+        var inactiveStates = onceAlive ? ['unborn','aborted','miscarriage','stillborn'] : false;
 
         var inactiveGenders = false;
         var genderSet = editor.getGraph().getPossibleGenders(this.getID());
@@ -842,7 +842,7 @@ var Person = Class.create(AbstractPerson, {
                 inactiveCarriers = [''];
             }
         }
-        if (this.getLifeStatus() == "aborted") {
+        if (this.getLifeStatus() == "aborted" || this.getLifeStatus() == "miscarriage") {
             inactiveCarriers.push('presymptomatic');
         }
 

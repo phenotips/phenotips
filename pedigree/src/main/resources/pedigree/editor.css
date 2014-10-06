@@ -269,7 +269,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 340px;
+  width: 350px;
   color: #000000;
   z-index: 100000;
 }
@@ -487,7 +487,19 @@
 .field-values-3-columns label {
   display: block;
 }
-
+.field-values-3-columns .state_deceased {
+  margin-left: -2px;
+}
+.field-values-3-columns .state_miscarriage {
+  margin-left: -2px;
+  margin-bottom: 1px;  /* otherwise the bottom pixel of the letter "g" in "miscarriage" is displayed at the top of the next column in Chrome */
+}
+.field-values-3-columns .state_unborn {
+  margin-left: 8px;
+}
+.field-values-3-columns .state_aborted {
+  margin-left: 8px;
+}
 .field-inputs {
   display: table;
   width: 100%;
@@ -522,6 +534,7 @@
 .menu-box .field-date_of_death {
   width: 48%;
   float: right;
+  margin-top: -5px; /* TODO: investigate why elements float below its intended position */
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;
@@ -539,7 +552,7 @@
   padding: 0.26em 0;
 }
 .menu-box .field-gestation_age {
-  padding: 0.48em 0;
+  padding: 0.45em 0;
 }
 .menu-box .field-evaluated {
   padding-top: 0.7em;

@@ -48,7 +48,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     setGenderGraphics: function($super) {
         //console.log("set gender graphics");
-        if(this.getNode().getLifeStatus() == 'aborted') {
+        if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
             this._genderGraphics && this._genderGraphics.remove();
 
             var radius = PedigreeEditor.attributes.radius;
@@ -125,7 +125,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      *
      * @method getFrontElements
      * @return {Raphael.st}
-     */    
+     */
     getFrontElements: function() {
         return this.getHoverBox().getFrontElements();
     },
@@ -222,7 +222,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var disorderShapes = editor.getPaper().set();
         var delta, color;
 
-        if (this.getNode().getLifeStatus() == 'aborted') {
+        if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
             var radius = PedigreeEditor.attributes.radius;
             if (this.getNode().isPersonGroup())
                 radius *= PedigreeEditor.attributes.groupNodesScale;
@@ -255,11 +255,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             delta = (360/(colors.length))/2;
             if (colors.length == 1 && this.getNode().getGender() == 'U')
                 delta -= 45; // since this will be rotated by shape transform later
-            
+
             var radius = (this._shapeRadius-0.6);    // -0.6 to avoid disorder fills to overlap with shape borders (due to aliasing/Raphael pixel layout)
             if (this.getNode().getGender() == 'U')
                 radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
-            
+
             for(var i = 0; i < colors.length; i++) {
                 color = gradient(colors[i], (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), radius,
@@ -406,7 +406,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     updateEvaluationLabel: function() {
         this._evalLabel && this._evalLabel.remove();
         if (this.getNode().getEvaluated()) {
-            if (this.getNode().getLifeStatus() == 'aborted') {
+            if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                 var x = this.getX() + this._shapeRadius * 1.6;
                 var y = this.getY() + this._shapeRadius * 0.6;
             }
@@ -446,7 +446,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
         if (status != '' && status != 'affected') {
             if (status == 'carrier') {
-                if (this.getNode().getLifeStatus() == 'aborted') {
+                if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                     x = this.getX();
                     y = this.getY() - this._radius/2;
                 } else {
@@ -455,7 +455,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 this._carrierGraphic = editor.getPaper().circle(x, y, PedigreeEditor.attributes.carrierDotRadius).attr(PedigreeEditor.attributes.carrierShape);
             } else if (status == 'presymptomatic') {
-                if (this.getNode().getLifeStatus() == 'aborted') {
+                if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                     this._carrierGraphic = null;
                     return;
                 }
@@ -558,12 +558,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getSBLabel()     && this.getSBLabel().remove();
 
         // save some redraws if possible
-        var oldShapeType = (oldStatus == 'aborted');
-        var newShapeType = (status    == 'aborted');
+        var oldShapeType = (oldStatus == 'aborted' || oldStatus == 'miscarriage');
+        var newShapeType = (status    == 'aborted' || status    == 'miscarriage');
         if (oldShapeType != newShapeType)
             this.setGenderGraphics();
 
-        if(status == 'deceased' || status == 'aborted') {
+        if(status == 'deceased' || status == 'aborted') {  // but not "miscarriage"
             this.drawDeadShape();
         }
         else if (status == 'stillborn') {
