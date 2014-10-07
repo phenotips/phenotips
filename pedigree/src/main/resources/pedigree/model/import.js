@@ -613,8 +613,10 @@ PedigreeImport.validateBaseGraph = function(newG)
  *   - "monozygotic": boolean. (only applicable for twins)
  *   - "adoptedIn": boolean (default: false)
  *   - "evaluated": boolean (default: false)
- *   - "birthDate": string (deault: none)
- *   - "deathDate": string (deault: none)
+ *   - "birthDate": string (default: none)
+ *   - "deathDate": string (default: none)
+ *   - "nodeNumber": string (default: none) pedigree node number as of last renumbering
+ *   - "lostContact": boolean (default: false) "false" if proband lost contact with the given individual
  *   - "numPersons": integer. When present and not 0 this individual is treated as a "person group"
  *   - "lifeStatus": one of {"alive", "deceased", "aborted", "miscarriage", "stillborn", "unborn"}.
  *                   (default: "alive". If death date is given status defaults to "deceased" and overwrites
@@ -1206,7 +1208,9 @@ PedigreeImport.JSONToInternalPropertyMapping = {
         "ethnicities":     "ethnicities",
         "carrierstatus":   "carrierStatus",
         "externalid":      "externalID",
-        "numpersons":      "numPersons"
+        "numpersons":      "numPersons",
+        "lostcontact":     "lostContact",
+        "nodenumber":      "nodeNumber"
     };
 
 

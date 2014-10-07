@@ -188,6 +188,7 @@ var Controller = Class.create({
         var twinUpdate = undefined;
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
+        var needUpdateAllRelationships = false;
 
         var changedValue = false;
 
@@ -289,6 +290,12 @@ var Controller = Class.create({
                     // crossed by the relationship llines to maintain correct crossing graphics
                     needUpdateRelationship = true;
                 }
+
+                if (propertySetFunction == "setLostContact") {
+                    // it is hard to say which of the incoming/outgoing lines needs to be redraws/updated,
+                    // so it is easier to just redraw all
+                    needUpdateAllRelationships = true;
+                }
             }
         }
 
@@ -318,6 +325,12 @@ var Controller = Class.create({
 
         if (needUpdateAncestors) {
             var changeSet = editor.getGraph().updateAncestors();
+            editor.getView().applyChanges(changeSet, true);
+        }
+
+        if (needUpdateAllRelationships) {
+            var rels = editor.getGraph().getAllRelatedRelationships(nodeID);
+            var changeSet = {"moved": rels};
             editor.getView().applyChanges(changeSet, true);
         }
 

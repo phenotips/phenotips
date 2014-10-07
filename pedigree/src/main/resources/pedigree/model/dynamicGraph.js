@@ -237,10 +237,10 @@ DynamicPositionedGraph.prototype = {
 
     getAllChildren: function( v )
     {
-        if (!this.isPerson(v))
-            throw "Assertion failed: getAllChildren() is applied to a non-person";
+        if (!this.isPerson(v) && !this.isRelationship(v))
+            throw "Assertion failed: getAllChildren() is applied to a non-person non-relationship node";
 
-        var rels = this.DG.GG.getAllRelationships(v);
+        var rels = this.isRelationship(v) ? [v] : this.DG.GG.getAllRelationships(v);
 
         var allChildren = [];
         for (var i = 0; i < rels.length; i++) {
@@ -250,6 +250,51 @@ DynamicPositionedGraph.prototype = {
             allChildren = allChildren.concat(children);
         }
         return allChildren;
+    },
+
+    isChildOfProband: function( v )
+    {
+        var parents = this.DG.GG.getParents(v);
+        if (arrayContains(parents,0)) return true;
+        return false;
+    },
+
+    isPartnershipRelatedToProband: function( v )
+    {
+        var parents = this.DG.GG.getParents(v);
+        if (arrayContains(parents, 0)) return true;
+        if (v == this.DG.GG.getProducingRelationship(0))
+        {
+            return true;
+        }
+        return false;
+    },
+
+    // returns true iff node v is either a sibling, a child or a parent of proband node
+    isRelatedToProband: function( v )
+    {
+        var probandRelatedRels = this.getAllRelatedRelationships(0);
+        for (var i = 0; i < probandRelatedRels.length; i++) {
+            var rel = probandRelatedRels[i];
+
+            var parents = this.DG.GG.getParents(rel);
+            if (arrayContains(parents, v)) return true;
+
+            var children = this.getAllChildren(rel);
+            if (arrayContains(children, v)) return true;
+        }
+        return false;
+    },
+
+    // returns all relationships of node v and its parent relationship, if any
+    getAllRelatedRelationships: function( v )
+    {
+        var allRels = this.DG.GG.getAllRelationships(v);
+        var parentRel = this.DG.GG.getProducingRelationship(v);
+        if (parentRel != null) {
+            allRels.push(parentRel);
+        }
+        return allRels;
     },
 
     hasNonPlaceholderNonAdoptedChildren: function( v )

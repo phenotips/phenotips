@@ -492,6 +492,13 @@ var PedigreeEditor = Class.create({
                 'function' : 'setMonozygotic'
             },
             {
+                'name' : 'nocontact',
+                'label' : 'Not in contact with proband',
+                'type' : 'checkbox',
+                'tab': 'Personal',
+                'function' : 'setLostContact'
+            },
+            {
                 'name' : 'placeholder',
                 'label' : 'Placeholder node',
                 'type' : 'checkbox',
@@ -742,10 +749,12 @@ PedigreeEditor.attributes = {
     disorderShapes: {},
     partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740
     partnershipRadius: 6.5,
-        partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
-        consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
-        partnershipHandleBreakY: 15,
-        partnershipHandleLength: 36,
+    partnershipHandleBreakY: 15,
+    partnershipHandleLength: 36,
+    partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
+    consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
+    noContactLines:            {"stroke-width": 1.75, stroke : '#333333', "stroke-dasharray": "."},
+    notInContactLineSize: 20,
     graphToCanvasScale: 12,
     layoutRelativePersonWidth: 10,
     layoutRelativeOtherWidth: 2,

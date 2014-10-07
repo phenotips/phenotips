@@ -53,6 +53,7 @@ var Person = Class.create(AbstractPerson, {
         this._monozygotic = false;
         this._evaluated = false;
         this._pedNumber = "";
+        this._lostContact = false;
     },
 
     /**
@@ -230,6 +231,27 @@ var Person = Class.create(AbstractPerson, {
         if (evaluationStatus == this._evaluated) return; 
         this._evaluated = evaluationStatus;
         this.getGraphics().updateEvaluationLabel();
+    },
+
+    /**
+     * Returns the "in contact" status of this node.
+     * "False" means proband has lost contaxt with this individual
+     *
+     * @method getLostContact
+     * @return {Boolean}
+     */
+    getLostContact: function() {
+        return this._lostContact;
+    },
+
+    /**
+     * Sets the "in contact" status of this node
+     *
+     * @method setLostContact
+     */
+    setLostContact: function(lostContact) {
+        if (lostContact == this._lostContact) return;
+        this._lostContact = lostContact;
     },
     
     /**
@@ -846,6 +868,8 @@ var Person = Class.create(AbstractPerson, {
             inactiveCarriers.push('presymptomatic');
         }
 
+        var inactiveLostContact = this.isProband() || !editor.getGraph().isRelatedToProband(this.getID());
+
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
@@ -868,7 +892,8 @@ var Person = Class.create(AbstractPerson, {
             placeholder:   {value : false, inactive: true },
             monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
             evaluated:     {value : this.getEvaluated() },
-            hpo_positive:  {value : hpoTerms}
+            hpo_positive:  {value : hpoTerms},
+            nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact}
         };
     },
 
@@ -924,6 +949,8 @@ var Person = Class.create(AbstractPerson, {
             info['evaluated'] = this._evaluated;
         if (this._carrierStatus)
             info['carrierStatus'] = this._carrierStatus;
+        if (this.getLostContact())
+            info['lostContact'] = this.getLostContact();
         if (this.getPedNumber() != "")
             info['nodeNumber'] = this.getPedNumber();
         return info;
@@ -999,6 +1026,9 @@ var Person = Class.create(AbstractPerson, {
             }
             if (info.hasOwnProperty("nodeNumber") && this.getPedNumber() != info.nodeNumber) {
                 this.setPedNumber(info.nodeNumber);
+            }
+            if (info.hasOwnProperty("lostContact") && this.getLostContact() != info.lostContact) {
+                this.setLostContact(info.lostContact);
             }
             return true;
         }

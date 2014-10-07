@@ -277,12 +277,23 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 wasAngle = angled;
             }
             
-            if (yFrom >= finalPosition.y + cornerRadius*2)
+            if (yFrom >= finalPosition.y + cornerRadius*2) {
                 editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
-            else
+            }
+            else {
                 // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
                 // It may be a line if all y are the same, a line with one bend or a line with two bends
                 editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
+            }
+
+            var lostContact = !editor.getView().getNode(person).isProband() &&
+                              editor.getView().getNode(person).getLostContact() &&
+                              editor.getGraph().isPartnershipRelatedToProband(id);
+            if (lostContact) {
+                var xCross = goesLeft ? this.getX() - 20 : this.getX() + 20;
+                var lineSize = PedigreeEditor.attributes.notInContactLineSize;
+                editor.getPaper().path("M " + (xCross) + " " + (this.getY() - lineSize) + " L " + (xCross) + " " + (this.getY() + lineSize)).attr(PedigreeEditor.attributes.noContactLines).toBack();
+            }
         }
         
         this._partnerConnections = editor.getPaper().setFinish().toBack(); 
@@ -298,7 +309,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      *
      * @method updateChildhubConnection
      */
-    updateChildhubConnection: function(preg, pregX, pregY, partnershipX, partnershipY, animate) {
+    updateChildhubConnection: function() {
         this._childhubConnection && this._childhubConnection.remove();
         
         var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;        
@@ -306,7 +317,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         var positionedGraph = editor.getGraph();
         
         var id = this.getNode().getID();
-                
+
         editor.getPaper().setStart();
         
         var childlinePos = positionedGraph.getRelationshipChildhubPosition(id);
@@ -369,7 +380,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (topLineX < leftmostX)
                 leftmostX = topLineX;
 
-            // draw regular child line - for all nodes which ar enot monozygothic twins and for the
+            // draw regular child line - for all nodes which are not monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
             if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
                 editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
@@ -377,6 +388,15 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             else {                
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
                 editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+            }
+
+            var lostContact = editor.getGraph().isChildOfProband(child) && editor.getView().getNode(child).getLostContact();
+            if (lostContact) {
+                if (twinGroupId == null) {
+                    var lineSize = PedigreeEditor.attributes.notInContactLineSize;
+                    editor.getPaper().path("M " + (topLineX - lineSize) + " " + (topLineY + 20) + " L " + (topLineX + lineSize) + " " + (topLineY + 20)).attr(PedigreeEditor.attributes.noContactLines).toBack();
+                } else {
+                }
             }
         }
 

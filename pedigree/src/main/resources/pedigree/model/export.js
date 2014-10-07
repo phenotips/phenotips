@@ -294,7 +294,9 @@ PedigreeExport.internalToJSONPropertyMapping = {
         "gender":        "sex",
         "numPersons":    "numPersons",
         "hpoTerms":      "hpoTerms",
-        "candidateGenes":"candidateGenes"
+        "candidateGenes":"candidateGenes",
+        "lostContact":   "lostContact",
+        "nodeNumber":    "nodeNumber"
     };
 
 /*
