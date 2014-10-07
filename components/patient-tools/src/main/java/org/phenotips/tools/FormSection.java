@@ -70,7 +70,11 @@ public class FormSection extends FormGroup
             return "";
         }
         String display = "";
-        if (this.elements.isEmpty() && DisplayMode.Edit.equals(mode)) {
+        // Hide sections with no elements, or sections with only custom elements displayed in the main phenotype
+        // section, which has the selection summary
+        if (this.elements.isEmpty()
+            && (this.customElements.elements.isEmpty()
+                || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
             display = "display:none";
         }
         return String.format("<div class='%s-group' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"
