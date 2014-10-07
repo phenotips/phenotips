@@ -459,6 +459,11 @@
   padding-left: .8em;
   border-top: 1px dotted $theme.borderColor;
 }
+.editbody .chapter .predefined-entries:empty ~ .custom-entries {
+  border-top: 0 none;
+  margin-top: 0;
+  padding-top: 0;
+}
 .browse-phenotype-categories {
   margin: .5em .75% 0em !important;
   padding-right: .75%;
