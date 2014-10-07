@@ -98,6 +98,7 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-container-servlet</artifactId>
       <version>${xwiki.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <!-- Extension Manager -->
     <dependency>
@@ -331,6 +332,7 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-skin-skinx</artifactId>
       <version>${xwiki.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <!-- Activity Stream -->
     <dependency>

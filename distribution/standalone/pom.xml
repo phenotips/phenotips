@@ -30,7 +30,7 @@
   <artifactId>phenotips-standalone</artifactId>
   <name>PhenoTips - Standalone Distribution</name>
   <packaging>pom</packaging>
-  <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
+  <description>Distribution including a Jetty server, embedded HSQLDB, and an UI based on XWiki</description>
   <dependencies>
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -68,7 +68,6 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
       <!-- Inject Hibernate's configuration for the specified database -->
       <plugin>
