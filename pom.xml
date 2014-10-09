@@ -59,26 +59,26 @@
 
   <distributionManagement>
     <site>
-      <id>nexus.cs.toronto.edu</id>
-      <url>dav:http://nexus.cs.toronto.edu/nexus/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
+      <id>nexus.phenotips.org</id>
+      <url>dav:https://nexus.phenotips.org/nexus/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
     </site>
     <repository>
-      <id>nexus.cs.toronto.edu</id>
+      <id>nexus.phenotips.org</id>
       <name>Maven2 Remote Repository for Releases</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/releases</url>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/releases</url>
     </repository>
     <snapshotRepository>
-      <id>nexus.cs.toronto.edu</id>
+      <id>nexus.phenotips.org</id>
       <name>Maven2 Development Repository for Snapshots</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/snapshots</url>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
   <repositories>
     <repository>
-      <id>uoft-releases</id>
-      <name>UofT Releases repository</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/releases/</url>
+      <id>phenotips-releases</id>
+      <name>PhenoTips Releases repository</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/releases/</url>
       <releases>
         <enabled>true</enabled>
         <checksumPolicy>fail</checksumPolicy>
@@ -89,21 +89,22 @@
       </snapshots>
     </repository>
     <repository>
-      <id>uoft-snapshots</id>
-      <name>UofT Releases repository</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/snapshots/</url>
+      <id>phenotips-snapshots</id>
+      <name>PhenoTips Snapshots repository</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/snapshots/</url>
       <releases>
         <enabled>false</enabled>
         <checksumPolicy>fail</checksumPolicy>
       </releases>
       <snapshots>
+        <enabled>true</enabled>
         <checksumPolicy>fail</checksumPolicy>
       </snapshots>
     </repository>
     <repository>
-      <id>uoft-externals</id>
-      <name>UofT external repositories mirror</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public/</url>
+      <id>phenotips-externals</id>
+      <name>PhenoTips external repositories mirror</name>
+      <url>https://nexus.phenotips.org/nexus/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -114,9 +115,9 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>uoft-externals</id>
-      <name>UofT external repositories mirror</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public/</url>
+      <id>phenotips-externals</id>
+      <name>PhenoTips external repositories mirror</name>
+      <url>https://nexus.phenotips.org/nexus/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -125,9 +126,9 @@
       </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>uoft-external-snapshots</id>
-      <name>UofT external snapshot repositories mirror</name>
-      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public-snapshots/</url>
+      <id>phenotips-external-snapshots</id>
+      <name>PhenoTips external snapshot repositories mirror</name>
+      <url>https://nexus.phenotips.org/nexus/content/groups/public-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
