@@ -124,21 +124,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </assistedReproduction_surrogacy>
-      <diagnosis_notes>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>---</editor>
-        <name>diagnosis_notes</name>
-        <number>29</number>
-        <picker>0</picker>
-        <prettyName>Additional comments</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </diagnosis_notes>
       <consanguinity>
         <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
@@ -221,6 +206,21 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
       </date_of_birth>
+      <diagnosis_notes>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>diagnosis_notes</name>
+        <number>29</number>
+        <picker>0</picker>
+        <prettyName>Additional comments</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </diagnosis_notes>
       <exam_date>
         <customDisplay>{{velocity}}{{html clean=false}}
 #set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
