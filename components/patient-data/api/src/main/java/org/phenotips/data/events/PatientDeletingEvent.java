@@ -24,7 +24,7 @@ import org.phenotips.data.Patient;
 import org.xwiki.users.User;
 
 /**
- * Notifies that a new patient record is being deleted. Canceling this event should prevent the deletion, although this
+ * Notifies that a patient record is being deleted. Canceling this event should prevent the deletion, although this
  * behavior isn't implemented yet.
  *
  * @version $Id$
