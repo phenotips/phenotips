@@ -24,6 +24,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.events.PatientDeletingEvent;
 import org.phenotips.data.events.PatientEvent;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentDeletedEvent;
 import org.xwiki.bridge.event.DocumentDeletingEvent;
@@ -58,6 +59,8 @@ public class PatientDeletingEventSourceTest
     public final MockitoComponentMockingRule<EventListener> mocker =
         new MockitoComponentMockingRule<EventListener>(PatientDeletingEventSource.class);
 
+    private DocumentReference ref = new DocumentReference("instance", "data", "P0000001");
+
     @Test
     public void hasProperName() throws ComponentLookupException
     {
@@ -77,13 +80,14 @@ public class PatientDeletingEventSourceTest
     }
 
     @Test
-    public void firesPatientDeletingEventsWhenPatientDocumentsAreDeleted() throws ComponentLookupException
+    public void firesPatientDeletingEventsWhenPatientDocumentsAreDeleted() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         XWikiDocument odoc = mock(XWikiDocument.class);
-        when(doc.getOriginalDocument()).thenReturn(odoc);
+        when(doc.getDocumentReference()).thenReturn(this.ref);
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        when(dab.getDocument(this.ref)).thenReturn(odoc);
         when(odoc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
-        when(doc.getDocumentReference()).thenReturn(new DocumentReference("instance", "data", "P0000001"));
 
         PatientRepository repo = this.mocker.getInstance(PatientRepository.class);
         Patient p = mock(Patient.class);
@@ -110,13 +114,14 @@ public class PatientDeletingEventSourceTest
     }
 
     @Test
-    public void doesntFireWhenNonPatientDocumentsAreDeleted() throws ComponentLookupException
+    public void doesntFireWhenNonPatientDocumentsAreDeleted() throws Exception
     {
         XWikiDocument doc = mock(XWikiDocument.class);
         XWikiDocument odoc = mock(XWikiDocument.class);
-        when(doc.getOriginalDocument()).thenReturn(odoc);
+        when(doc.getDocumentReference()).thenReturn(this.ref);
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        when(dab.getDocument(this.ref)).thenReturn(odoc);
         when(odoc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
-        when(doc.getDocumentReference()).thenReturn(new DocumentReference("instance", "data", "P0000001"));
 
         PatientRepository repo = this.mocker.getInstance(PatientRepository.class);
         UserManager um = this.mocker.getInstance(UserManager.class);
@@ -130,16 +135,14 @@ public class PatientDeletingEventSourceTest
     public void doesntFireWhenPatientTemplateIsDeleted() throws ComponentLookupException
     {
         XWikiDocument doc = mock(XWikiDocument.class);
-        XWikiDocument odoc = mock(XWikiDocument.class);
-        when(doc.getOriginalDocument()).thenReturn(odoc);
-        when(odoc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
         when(doc.getDocumentReference()).thenReturn(new DocumentReference("instance", "PhenoTips", "PatientTemplate"));
 
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         PatientRepository repo = this.mocker.getInstance(PatientRepository.class);
         UserManager um = this.mocker.getInstance(UserManager.class);
         ObservationManager om = this.mocker.getInstance(ObservationManager.class);
 
         this.mocker.getComponentUnderTest().onEvent(new DocumentDeletingEvent(), doc, null);
-        Mockito.verifyNoMoreInteractions(repo, um, om);
+        Mockito.verifyNoMoreInteractions(dab, repo, um, om);
     }
 }

@@ -23,6 +23,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.events.PatientDeletingEvent;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;
@@ -60,6 +61,9 @@ public class PatientDeletingEventSource implements EventListener
     private UserManager userManager;
 
     @Inject
+    private DocumentAccessBridge dab;
+
+    @Inject
     private PatientRepository repo;
 
     @Override
@@ -78,13 +82,18 @@ public class PatientDeletingEventSource implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
-        if (doc == null || doc.getOriginalDocument() == null) {
+        if (doc == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        XWikiDocument odoc = doc.getOriginalDocument();
+        XWikiDocument odoc;
+        try {
+            odoc = (XWikiDocument) this.dab.getDocument(doc.getDocumentReference());
+        } catch (Exception e) {
+            return;
+        }
 
         BaseObject patientRecordObj = odoc.getXObject(Patient.CLASS_REFERENCE);
-        if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
+        if (patientRecordObj == null) {
             return;
         }
         Patient patient = this.repo.loadPatientFromDocument(odoc);
