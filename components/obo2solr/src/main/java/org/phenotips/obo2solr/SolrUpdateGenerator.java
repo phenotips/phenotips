@@ -41,6 +41,9 @@ public class SolrUpdateGenerator
 {
     private static final String TERM_MARKER = "[Term]";
 
+    /** Not all entities are terms prompted by the presence of a {@link #TERM_MARKER} */
+    private static final String ENTITY_SEPARATION_REGEX = "^\\[[a-zA-Z]+\\]$";
+
     private static final String ROOT_ELEMENT_NAME = "add";
 
     private static final String TERM_ELEMENT_NAME = "doc";
@@ -83,26 +86,35 @@ public class SolrUpdateGenerator
 
             String line;
             this.counter = 0;
+            /* When encountering a separator that is not a term separator,
+            all data should be skipped until a term separator is encountered again */
+            boolean skip = false;
             while ((line = in.readLine()) != null) {
-                if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
+                if (line.trim().matches(ENTITY_SEPARATION_REGEX)) {
                     if (this.counter > 0) {
                         storeCrtTerm();
                     }
+                    // Overridden below
+                    skip = true;
+                }
+                if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
                     ++this.counter;
+                    skip = false;
                     continue;
                 }
-                String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
-                if (pieces.length != 2) {
-                    continue;
+                if (!skip) {
+                    String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
+                    if (pieces.length != 2) {
+                        continue;
+                    }
+                    loadField(pieces[0], pieces[1]);
                 }
-                loadField(pieces[0], pieces[1]);
             }
             if (this.counter > 0) {
                 storeCrtTerm();
             }
             if (isFieldSelected(TermData.TERM_CATEGORY_FIELD_NAME)) {
                 propagateAncestors();
-
                 for (String id : this.data.keySet()) {
                     writeTerm(id);
                 }

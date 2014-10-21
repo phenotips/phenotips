@@ -86,9 +86,9 @@ public class ChEBIOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         Mockito.verify(this.server).deleteByQuery("*:*");
-        Mockito.verify(this.server).commit();
-        Mockito.verify(this.server).add(Matchers.anyCollectionOf(SolrInputDocument.class));
-        Mockito.verify(this.cache).removeAll();
+        Mockito.verify(this.server, Mockito.atLeast(1)).commit();
+        Mockito.verify(this.server, Mockito.atLeast(1)).add(Matchers.anyCollectionOf(SolrInputDocument.class));
+        Mockito.verify(this.cache, Mockito.atLeast(1)).removeAll();
         Mockito.verifyNoMoreInteractions(this.cache, this.server);
         Assert.assertTrue(this.ontologyServiceResult == 0);
     }
