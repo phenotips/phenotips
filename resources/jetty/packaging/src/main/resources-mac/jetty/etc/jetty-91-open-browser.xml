@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -20,13 +20,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<assembly>
-  <id>distribution</id>
-  <formats>
-    <format>zip</format>
-  </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <componentDescriptors>
-  	<componentDescriptor>src/main/assembly/common.xml</componentDescriptor>
-  </componentDescriptors>
-</assembly>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<!-- =========================================================== -->
+<!-- Jetty lifecycle listener that opens a browser when the      -->
+<!-- server is started.                                          -->
+<!-- =========================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+  <Call name="addLifeCycleListener">
+    <Arg>
+      <New class="org.phenotips.tools.jetty.listener.OpenBrowserListener" />
+    </Arg>
+  </Call>
+
+</Configure>
