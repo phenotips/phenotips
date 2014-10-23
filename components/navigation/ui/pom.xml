@@ -65,6 +65,7 @@
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -85,6 +86,7 @@
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -97,11 +99,13 @@
       <artifactId>xwiki-platform-search-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-dashboard-macro</artifactId>
       <version>${xwiki.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
