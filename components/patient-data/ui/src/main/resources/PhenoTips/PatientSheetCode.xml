@@ -3532,9 +3532,10 @@ hr {
 }
 
 .space-data #document-head h1 {
-  border: 1px solid $theme.menuGradientColor;
+  border: 1px solid $theme.menuBackgroundColor;
   border-bottom: 0 none;
-    #css3_backgroundLinearGradient({
+  background-color: $theme.menuBackgroundColor;
+  #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [
       {'color': $theme.menuBackgroundColor, 'position': '0%'},
@@ -3554,6 +3555,7 @@ hr {
 }
 
 .space-data #document-head #document-authors {
+  background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [
@@ -3562,7 +3564,7 @@ hr {
     ]
   })
   color: $theme.menuLinkColor;
-  border: 1px solid $theme.menuGradientColor;
+  border: 1px solid $theme.menuBackgroundColor;
   font-size: 0.87em;
   padding: 0.5em 10px;
   text-shadow: 1px 0 0 rgba(0, 0, 0, .3);
