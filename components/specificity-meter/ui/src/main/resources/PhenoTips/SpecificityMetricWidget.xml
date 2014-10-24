@@ -234,7 +234,7 @@
     },
 
     showValue : function(v) {
-      this._crtValue = Math.min(1, Math.max(0, Number.isNaN(v) ? 0 : v));
+      this._crtValue = Math.min(1, Math.max(0, isNaN(v) ? 0 : v));
       var value = this._crtValue * 5;
       this.meterDisplay.title = this.levels[Math.round(value)] + " (" + value.toPrecision(3) + "/5)";
       this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value", "style" : "width: " + Math.round(v * 100) + "%;"}));
