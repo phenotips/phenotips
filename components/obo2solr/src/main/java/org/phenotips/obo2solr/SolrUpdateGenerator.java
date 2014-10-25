@@ -33,6 +33,8 @@ import java.util.Map;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -64,6 +66,8 @@ public class SolrUpdateGenerator
     private Map<String, TermData> data = new LinkedHashMap<String, TermData>();
 
     private Map<String, Double> fieldSelection;
+
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void transform(File input, File output, Map<String, Double> fieldSelection)
     {
@@ -113,16 +117,13 @@ public class SolrUpdateGenerator
             fos.flush();
             fos.close();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            System.err.println("File does not exist");
+            logger.error("File does not exist: {}", ex.getMessage(), ex);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            System.err.println("Could not locate source file: " + input.getAbsolutePath());
+            logger.error("Could not locate source file: " + input.getAbsolutePath() + ". {}", ex.getMessage(), ex);
         } catch (IOException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+            logger.error("IOException: {}", ex.getMessage(), ex);
         } catch (SAXException ex) {
-            ex.printStackTrace();
+            logger.error("SAXException: {}", ex.getMessage(), ex);
         } finally {
             this.fieldSelection = null;
             if (in != null) {
@@ -178,9 +179,9 @@ public class SolrUpdateGenerator
                 propagateAncestors();
             }
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            logger.error("NullPointer: {}", ex.getMessage(), ex);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.error("IOException: {}", ex.getMessage(), ex);
         } finally {
             this.fieldSelection = null;
         }
