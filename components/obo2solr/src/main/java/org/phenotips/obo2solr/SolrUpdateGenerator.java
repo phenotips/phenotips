@@ -67,10 +67,14 @@ public class SolrUpdateGenerator
 
     private Map<String, Double> fieldSelection;
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void transform(File input, File output, Map<String, Double> fieldSelection)
     {
+        if (input == null || output == null) {
+            this.logger.warn("Trying to process null files: [{}] -> [{}]", input, output);
+            return;
+        }
         this.fieldSelection = fieldSelection;
         BufferedReader in = null;
         try {
@@ -117,13 +121,13 @@ public class SolrUpdateGenerator
             fos.flush();
             fos.close();
         } catch (NullPointerException ex) {
-            logger.error("File does not exist: {}", ex.getMessage(), ex);
+            this.logger.error("An unexpected null: {}", ex.getMessage(), ex);
         } catch (FileNotFoundException ex) {
-            logger.error("Could not locate source file: " + input.getAbsolutePath() + ". {}", ex.getMessage(), ex);
+            this.logger.error("Could not locate source file [{}]: {}", input.getAbsolutePath(), ex.getMessage());
         } catch (IOException ex) {
-            logger.error("IOException: {}", ex.getMessage(), ex);
+            this.logger.error("Failed to read/write files: {}", ex.getMessage());
         } catch (SAXException ex) {
-            logger.error("SAXException: {}", ex.getMessage(), ex);
+            this.logger.error("Unexpected XML error: {}", ex.getMessage());
         } finally {
             this.fieldSelection = null;
             if (in != null) {
@@ -179,9 +183,9 @@ public class SolrUpdateGenerator
                 propagateAncestors();
             }
         } catch (NullPointerException ex) {
-            logger.error("NullPointer: {}", ex.getMessage(), ex);
+            this.logger.error("NullPointer: {}", ex.getMessage());
         } catch (IOException ex) {
-            logger.error("IOException: {}", ex.getMessage(), ex);
+            this.logger.error("IOException: {}", ex.getMessage());
         } finally {
             this.fieldSelection = null;
         }
