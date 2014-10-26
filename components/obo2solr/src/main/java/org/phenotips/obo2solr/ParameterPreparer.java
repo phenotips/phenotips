@@ -28,6 +28,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ParameterPreparer
 {
     public static final String TMP_INPUT_LOCATION = getResourceFilePath("tmp.obo");
@@ -38,13 +41,14 @@ public class ParameterPreparer
 
     public static final Double DEFAULT_BOOST = 1.0;
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public File getInputFileHandler(String inputLocation)
     {
         try {
             File result = new File(inputLocation);
             if (!result.exists()) {
-                // System.err.println("File <" + inputLocation + "> does not exist locally.");
-                // maybe it's an external url?
+                // File does not exist locally, assume it's an URL and fetch it
                 result = new File(TMP_INPUT_LOCATION);
                 result.createNewFile();
                 result.deleteOnExit();
@@ -63,7 +67,8 @@ public class ParameterPreparer
             }
             return result;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.warn("Failed to save OBO file from [{}] to [{}]: {}", inputLocation, TMP_INPUT_LOCATION,
+                ex.getMessage());
             return null;
         }
     }
