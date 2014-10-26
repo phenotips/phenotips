@@ -528,21 +528,24 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       content.select('input[name=external_id]').invoke('observe', 'keyup', updateMatchCounter);
     }
   };
-  var exportTool = $('phenotips_export');
-  if (exportTool) {
-    exportTool.observe('click', function(event) {
-      event.stop();
-      var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-      dialog.showDialog();
-      // =================================================================================
-      // Generate the dialog content
-      new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
-        onSuccess: function(transport) {
-          var content = dialog.dialogBox._x_contentPlug;
-          content.update(transport.responseText);
-          content.__dialog = dialog;
-          document.fire('xwiki:dom:updated', {'elements': [content]});
-        }
+  var exportTools = $$('.phenotips_export_tool');
+  if (exportTools &amp;&amp; exportTools.lenght != 0) {
+    exportTools.each(function(exportTool) {
+      exportTool.observe('click', function(event) {
+        event.stop();
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        dialog.showDialog();
+        // =================================================================================
+        // Generate the dialog content
+        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
+          parameters: {export_endpoint: exportTool.readAttribute("href"), export_id: exportTool.readAttribute("id")},
+          onSuccess: function(transport) {
+            var content = dialog.dialogBox._x_contentPlug;
+            content.update(transport.responseText);
+            content.__dialog = dialog;
+            document.fire('xwiki:dom:updated', {'elements': [content]});
+          }
+        });
       });
     });
   } else if (!$('patients-topfilters')) {

@@ -51,6 +51,12 @@ import net.sf.json.JSONObject;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
+    /** The name under which the output of this controller is requested when writing JSON. */
+    private static final String INTERNAL_PROPERTY_NAME = "unaffected";
+
+    /** Style check requires this. */
+    private static String UNAFFECTED = INTERNAL_PROPERTY_NAME;
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -68,16 +74,15 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public PatientData<String> load(Patient patient)
     {
-        String unaffected = "unaffected";
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            int isNormal = data.getIntValue(unaffected);
+            int isNormal = data.getIntValue(UNAFFECTED);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), unaffected);
+                return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
             } else if (isNormal == 1) {
                 return new SimpleValuePatientData<String>(getName(), "affected");
             }
@@ -97,14 +102,15 @@ public class ClinicalStatusController implements PatientDataController<String>
         }
         JSONObject container = json.getJSONObject(getName());
 
-        if (container == null || container.isNullObject()) {
-            // put() is placed here because we want to create the property iff at least one field is set/enabled
-            json.put(getName(), new JSONObject());
-            container = json.getJSONObject(getName());
+        if (selectedFieldNames != null && selectedFieldNames.contains(INTERNAL_PROPERTY_NAME)) {
+            if (container == null || container.isNullObject()) {
+                // put() is placed here because we want to create the property iff at least one field is set/enabled
+                json.put(getName(), new JSONObject());
+                container = json.getJSONObject(getName());
+            }
+            container.put(data.getName(), data.getValue());
         }
-        container.put(data.getName(), data.getValue());
     }
-
     @Override
     public void writeJSON(Patient patient, JSONObject json)
     {
