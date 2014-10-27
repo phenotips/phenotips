@@ -119,7 +119,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Number} The y coordinate
      */      
     getBottomY: function() {
-        return this._absoluteY + PedigreeEditor.attributes.partnershipRadius + PedigreeEditor.attributes.childlessLength;
+        return this._absoluteY + PedigreeEditor.attributes.partnershipRadius + PedigreeEditor.attributes.parnershipChildlessLength;
     },    
         
     /**
@@ -493,7 +493,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     drawLabels: function() {
         // if need to add some - see PersonVisuals.drawLabels()
-    }  
+    },
+
+    getChildlessShapeAttr: function() {
+        return PedigreeEditor.attributes.partnershipChildlessShapeAttr;
+    }
 });
 
 //ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP

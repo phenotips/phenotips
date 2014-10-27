@@ -225,10 +225,13 @@ var ChildlessBehaviorVisuals = {
 	        if(status == 'infertile')
 	            childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
 
-	        var strokeWidth = 2.5; //editor.getWorkspace().getSizeNormalizedToDefaultZoom(2);
             this._childlessShape = editor.getPaper().path(childlessPath);
-            this._childlessShape.attr({"stroke-width": strokeWidth, stroke: "#3C3C3C"});
-            this._childlessShape.toBack();            
+            if (status == 'childless' && this.getChildlessShapeAttr) {
+                this._childlessShape.attr(this.getChildlessShapeAttr());
+            } else {
+                this._childlessShape.attr(PedigreeEditor.attributes.childlessShapeAttr);
+            }
+            this._childlessShape.toBack();
         }
     },
 
@@ -243,13 +246,13 @@ var ChildlessBehaviorVisuals = {
         
         var text = "";
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
-        
+
         if(text.strip() != '') {
             this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getBottomY() + 18, "(" + text.slice(0, 15) +")" );
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
             this._childlessStatusLabel.toBack();
-        }        
-        
+        }
+
         this.drawLabels();
     }
 };

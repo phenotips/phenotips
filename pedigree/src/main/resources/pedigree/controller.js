@@ -537,7 +537,7 @@ var Controller = Class.create({
         var personID    = event.memo.personID;
         if (!editor.getGraph().isPerson(personID)) return;
         var preferLeft  = event.memo.preferLeft;
-        var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {"placeholder": true};
+        var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {};
         var numTwins    = event.memo.twins ? event.memo.twins : 1;
         var numPersons  = event.memo.groupSize ? event.memo.groupSize : 0;
 
@@ -570,7 +570,7 @@ var Controller = Class.create({
         var partnerID = event.memo.partnerID;
         if (!editor.getGraph().isPerson(personID) || !editor.getGraph().isPerson(partnerID)) return;
 
-        var childProperties = {"placeholder": true};
+        var childProperties = {};
         if (editor.getGraph().isChildless(personID) || editor.getGraph().isChildless(partnerID)) {
             childProperties["isAdopted"] = true;
         }
