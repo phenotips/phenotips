@@ -1051,8 +1051,11 @@ DynamicPositionedGraph.prototype = {
 
     convertPlaceholderTo: function( placeholderId, childParams )
     {
+        var positionsBefore  = this.DG.positions.slice(0);
         var ranksBefore      = this.DG.ranks.slice(0);
+        var vertLevelsBefore = this.DG.vertLevel.copy();
         var rankYBefore      = this.DG.rankY.slice(0);
+        var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
 
         if (!this.isPlaceholder(placeholderId)) {
             throw "Attemp to access a non-paceholder node as a placeholder";
@@ -1080,6 +1083,12 @@ DynamicPositionedGraph.prototype = {
                 moved.push(v);
             }
         }
+        
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+        
+        moved = moved.concat(movedNodes);
+        moved = filterUnique(moved);
+        removeFirstOccurrenceByValue(moved, placeholderId);
 
         return {"removed": [ placeholderId ] , "new": [ placeholderId ], "moved": moved };
     },
