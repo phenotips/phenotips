@@ -155,6 +155,13 @@ var Controller = Class.create({
                     editor.getGraph().setProperties( nodeID, {"gender": "U", "placeholder": true} );
                     changeSet.removed.push(nodeID);
                     changeSet["new"] = [ nodeID ];
+
+                    if (!editor.getGraph().isChildless(producingRelationship)) {
+                        var partnership = editor.getView().getNode(producingRelationship);
+                        partnership.setChildlessStatus('childless');
+                        var newProperties = partnership.getProperties();
+                        editor.getGraph().setProperties( producingRelationship, newProperties );
+                    }
                 }
 
                 editor.getView().applyChanges(changeSet, true);
@@ -415,6 +422,13 @@ var Controller = Class.create({
         var parentID = event.memo.parentID;
         if (!editor.getGraph().isPerson(personID) || !editor.getGraph().isValidID(parentID)) return;
 
+        if (editor.getGraph().isRelationship(parentID) && editor.getGraph().isChildlessByChoice(parentID)) {
+            var partnership = editor.getView().getNode(parentID);
+            partnership.setChildlessStatus(null);
+            var newProperties = partnership.getProperties();
+            editor.getGraph().setProperties( parentID, newProperties );
+        }
+
         if (editor.getGraph().isChildless(parentID)) {
             editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": true }, "noUndoRedo": true } } );
         }
@@ -596,7 +610,7 @@ var Controller = Class.create({
         var numTwins = event.memo.twins ? event.memo.twins : 1;
 
         var childParams = cloneObject(event.memo.childParams);
-        if (editor.getGraph().isChildless(partnershipID)) {
+        if (editor.getGraph().isInfertile(partnershipID)) {
             childParams["isAdopted"] = true;
         }
 
@@ -609,6 +623,13 @@ var Controller = Class.create({
         var children = editor.getGraph().getRelationshipChildrenSortedByOrder(partnershipID);
         if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
             var changeSet = editor.getGraph().convertPlaceholderTo(children[0], childParams);
+
+            if (editor.getGraph().isChildlessByChoice(partnershipID)) {
+                var partnership = editor.getView().getNode(partnershipID);
+                partnership.setChildlessStatus(null);
+                var newProperties = partnership.getProperties();
+                editor.getGraph().setProperties( partnershipID, newProperties );
+            }
         }
         else {
             var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);

@@ -102,8 +102,24 @@ DynamicPositionedGraph.prototype = {
     {
         if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
             return false;
-        var res =  (this.getProperties(id)["childlessStatus"] !== null);
+        var res = (this.getProperties(id)["childlessStatus"] !== null);
         //console.log("childless status of " + id + " : " + res);
+        return res;
+    },
+
+    isChildlessByChoice: function( id )
+    {
+        if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
+            return false;
+        var res = (this.getProperties(id)["childlessStatus"] == 'childless');
+        return res;
+    },
+
+    isInfertile: function( id )
+    {
+        if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
+            return false;
+        var res = (this.getProperties(id)["childlessStatus"] == 'infertile');
         return res;
     },
 
@@ -707,8 +723,15 @@ DynamicPositionedGraph.prototype = {
         var insertRank  = this.DG.ranks[personId];
         var personOrder = this.DG.order.vOrder[personId];
 
+        var needSwap = true;
+        var relProperties = {};
+        if (childProperties.hasOwnProperty("placeholder") && childProperties["placeholder"]) {
+            relProperties["childlessStatus"] = 'childless';
+            var needSwap = false;
+        }
+
         // a few special cases which involve not only insertions but also existing node rearrangements:
-        this._heuristics.swapPartnerToBringToSideIfPossible( personId );
+        this._heuristics.swapPartnerToBringToSideIfPossible( personId );   // TODO: only iff "needSwap"?
         this._heuristics.swapTwinsToBringToSideIfPossible( personId );
 
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
@@ -717,7 +740,7 @@ DynamicPositionedGraph.prototype = {
         console.log("vOrder: " + personOrder + ", inserting @ " + insertOrder);
         console.log("Orders before: " + stringifyObject(this.DG.order.order[this.DG.ranks[personId]]));
 
-        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, 1.0, personId, null, insertRank, insertOrder);
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, relProperties, 1.0, personId, null, insertRank, insertOrder);
 
         console.log("Orders after: " + stringifyObject(this.DG.order.order[this.DG.ranks[personId]]));
 
@@ -930,7 +953,12 @@ DynamicPositionedGraph.prototype = {
         var preferLeft        = (x_person2 < x_person1);
         var insertRelatOrder  = (rankP1 == rankP2) ? this._findBestRelationshipPosition( person1, false, person2 ) :
                                                      this._findBestRelationshipPosition( person1, preferLeft);
-        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, weight, person1, null, rankP1, insertRelatOrder);
+
+        var relProperties = {};
+        if (childProperties.hasOwnProperty("placeholder") && childProperties["placeholder"]) {
+            relProperties["childlessStatus"] = 'childless';
+        }
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, relProperties, weight, person1, null, rankP1, insertRelatOrder);
 
         var insertChildhubRank  = this.DG.ranks[newRelationshipId] + 1;
         var insertChildhubOrder = this._findBestInsertPosition( insertChildhubRank, newRelationshipId );
@@ -2090,6 +2118,12 @@ Heuristics.prototype = {
         var rightMostChildId    = undefined;
         var rightMostChildOrder = -Infinity;
         var rightMostHasRParner = false;
+
+        var onlyPlaceholder = false;
+        if (children.length == 1 && this.DG.GG.isPlaceholder(children[0])) {
+            onlyPlaceholder = true;
+        }
+
         for (var i = 0; i < children.length; i++) {
             var childId = children[i];
             var order   = this.DG.order.vOrder[childId];
@@ -2125,7 +2159,8 @@ Heuristics.prototype = {
                 "withPartnerSet"     : havePartners,
                 "numWithPartners"    : numWithPartners,
                 "numWithTwoPartners" : numWithTwoPartners,
-                "orderedChildren"    : orderedChildren };
+                "orderedChildren"    : orderedChildren,
+                "onlyPlaceholder"    : onlyPlaceholder };
     },
 
     hasParnerBetweenOrders: function( personId, minOrder, maxOrder )
@@ -2562,6 +2597,8 @@ Heuristics.prototype = {
                 var childhubX = xcoord.xcoord[childhub];
 
                 var childInfo = this.analizeChildren(childhub);
+
+                //if (childInfo.onlyPlaceholder) continue;
 
                 var misalignment = 0;
 
@@ -3078,7 +3115,7 @@ Heuristics.prototype = {
             }
             else
             if (this.DG.GG.isPerson(nextV)) {
-                if (!initialNodes.hasOwnProperty(nextV)) numPersons++;
+                if (!initialNodes.hasOwnProperty(nextV) && !this.DG.GG.isPlaceholder(nextV)) numPersons++;
 
                 if (!noDown_set.hasOwnProperty(nextV)) {
                     var rels = this.DG.GG.getOutEdges(nextV);
@@ -3108,6 +3145,7 @@ Heuristics.prototype = {
                     }
                 }
 
+                //if (noUp_set.hasOwnProperty(nextV) || this.DG.GG.isPlaceholder(nextV)) continue;
                 if (noUp_set.hasOwnProperty(nextV)) continue;
 
                 var inEdges = this.DG.GG.getInEdges(nextV);
@@ -3562,6 +3600,9 @@ Heuristics.prototype = {
                     chhub = parseInt(chhub);
                     if (doNotTouch.hasOwnProperty(chhub)) continue;
                     var children = this.DG.GG.getOutEdges(chhub);
+                    //if (children.length == 1 && this.DG.GG.isPlaceholder(children[0])) {
+                    //    continue;
+                    //}
                     if (children.length > 0 && children.length == childrenMoved[chhub]) {
                         var minShift = Infinity;
                         for (var j = 0; j < children.length; j++) {

@@ -8,7 +8,6 @@
 var PersonPlaceholder = Class.create(Person, {
 
     initialize: function($super, x, y, id, properties) {
-        console.log("NEW PLACEHOLDER: " + id);
         this._comment    = "";
         this._type       = "PersonPlaceholder";
         $super(x, y, id, {"gender": "U"});

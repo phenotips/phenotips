@@ -30,7 +30,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         if (this._currentHandles !== null) return;
         $super();        
 
-        if (this.getNode().getChildlessStatus() !== null) return;
+        if (this.getNode().getChildlessStatus() == 'infertile') return;
         
         var x = this.getNodeX();
         var y = this.getNodeY();     

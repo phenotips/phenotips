@@ -121,11 +121,18 @@ var Partnership = Class.create(AbstractNode, {
      * @return {Object}
      */
     getSummary: function() {
-        var childlessInactive = editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getID());
+        var childlessTextInactive = false;
+        var childlessInactive     = [];
+        if (editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getID())) {
+            childlessInactive = true;
+            childlessTextInactive = true;
+        } else {
+            childlessInactive = ['none'];
+        }
         return {
             identifier:    {value : this.getID()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive: childlessInactive},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive},            
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessTextInactive},
             consangr: {value: this._consangrMode, inactive: false},
             broken: {value: this.getBrokenStatus(), inactive: false}
         };
