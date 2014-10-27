@@ -88,6 +88,9 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/personVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/personGroup.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/personGroupVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/personGroupHoverbox.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholder.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##

@@ -243,6 +243,12 @@ BaseGraph.prototype = {
     insertVertex: function(type, properties, edgeWeights, inedges, outedges, width) {
         var width = width ? width : ((type == TYPE.PERSON) ? this.defaultPersonNodeWidth : this.defaultNonPersonNodeWidth);
 
+        //TODO: consider making placeholder nodes more narrow. Would require some
+        //      more advanced placement once the node is converted to a normal person
+        //if (properties.hasOwnProperty("placeholder") && properties["placeholder"]) {
+        //    width = this.defaultNonPersonNodeWidth;
+        //}
+
         if (type == TYPE.PERSON && !properties.hasOwnProperty("gender"))
             properties["gender"] = "U";
 
@@ -544,6 +550,16 @@ BaseGraph.prototype = {
         return (this.type[v] == TYPE.PERSON);
     },
 
+    isPlaceholder: function(v) {
+        if (!this.isPerson(v) || !this.properties[v].hasOwnProperty("placeholder")) {
+            return false;
+        }
+        if (this.properties[v]["placeholder"]) {
+            return true;
+        }
+        return false;
+    },
+
     isVirtual: function(v) {
         return (this.type[v] == TYPE.VIRTUALEDGE);  // also: v > getmaxRealVertexId()
     },
@@ -726,13 +742,12 @@ BaseGraph.prototype = {
         if (!this.isPerson(v))
             throw "Assertion failed: incorrect v in getAllTwinsOf()";
 
-        if (!this.properties[v].hasOwnProperty('twinGroup'))
+        if (!this.properties[v].hasOwnProperty('twinGroup') || this.inedges[v].length == 0) {
+            // no twinGroup or twinGroup is a leftover from a previous state and parents (and twins) have been deleted by now
             return [v];
+        }
 
         var twinGroupId = this.properties[v]['twinGroup'];
-
-        if (this.inedges[v].length == 0)
-            throw "Assertion failed: a node with no parents can not have twins";
 
         var childhubId = this.inedges[v][0];
         var children = this.v[childhubId];

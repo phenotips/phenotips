@@ -133,9 +133,29 @@ var Controller = Class.create({
         // get the list of affected nodes
         var disconnectedList = editor.getGraph().getDisconnectedSetIfNodeRemoved(nodeID);
 
+        var onlyChild = false;
+        // special case of removing the last child: need to convert to placeholder
+        if (editor.getGraph().isPerson(nodeID) && editor.getGraph().isOnlyChild(nodeID)) {
+            var producingRelationship = editor.getGraph().getParentRelationship(nodeID);
+            if (!arrayContains(disconnectedList, producingRelationship)) {
+                onlyChild = true;
+            }
+        }
+
         var removeSelected = function() {
             try {
+                if (onlyChild) {
+                    removeFirstOccurrenceByValue(disconnectedList, nodeID);
+                }
+
                 var changeSet = editor.getGraph().removeNodes(disconnectedList);
+
+                if (onlyChild) {
+                    // convert child to a placeholder
+                    editor.getGraph().setProperties( nodeID, {"gender": "U", "placeholder": true} );
+                    changeSet.removed.push(nodeID);
+                    changeSet["new"] = [ nodeID ];
+                }
 
                 editor.getView().applyChanges(changeSet, true);
 
@@ -503,7 +523,7 @@ var Controller = Class.create({
         var personID    = event.memo.personID;
         if (!editor.getGraph().isPerson(personID)) return;
         var preferLeft  = event.memo.preferLeft;
-        var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {};
+        var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {"placeholder": true};
         var numTwins    = event.memo.twins ? event.memo.twins : 1;
         var numPersons  = event.memo.groupSize ? event.memo.groupSize : 0;
 
@@ -536,9 +556,9 @@ var Controller = Class.create({
         var partnerID = event.memo.partnerID;
         if (!editor.getGraph().isPerson(personID) || !editor.getGraph().isPerson(partnerID)) return;
 
-        var childProperties = {};
+        var childProperties = {"placeholder": true};
         if (editor.getGraph().isChildless(personID) || editor.getGraph().isChildless(partnerID)) {
-            childProperties = { "isAdopted": true };
+            childProperties["isAdopted"] = true;
         }
 
         // when partnering up a node with unknown gender with a node of known gender
@@ -585,7 +605,15 @@ var Controller = Class.create({
             childParams["numPersons"] = numPersons;
         }
 
-        var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);
+        // check if there is a placeholder child which has to be replaced by the selected child type
+        var children = editor.getGraph().getRelationshipChildrenSortedByOrder(partnershipID);
+        if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
+            var changeSet = editor.getGraph().convertPlaceholderTo(children[0], childParams);
+        }
+        else {
+            var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);
+        }
+
         editor.getView().applyChanges(changeSet, true);
 
         if (!event.memo.noUndoRedo)

@@ -2529,6 +2529,7 @@ PositionedGraph.prototype = {
                             var goesOver         = [];
                             for (var o = minOrder; o < maxOrder; o++) {
                                 var w = this.order.order[r][o];
+                                if (this.GG.isPlaceholder(w))  { continue; }
                                 if (this.GG.isRelationship(w)) { minLevel = Math.max(minLevel, 2); }
                                 if (this.GG.isPerson(w))       { minLevel = Math.max(minLevel, 3); }
                                 if (this.GG.isVirtual(w) && this.GG.getInEdges(w)[0] != v) {

@@ -1,19 +1,12 @@
 /**
- * PersonGroupHoverbox is a class for all the UI elements and graphics surrounding a PersonGroup node and
- * its labels. This includes the box that appears around the node when it's hovered by a mouse.
+ * PersonPlaceholderHoverbox is a class for all the UI elements and graphics surrounding a Placeholder node.
  *
- * @class GroupHoverbox
- * @extends AbstractHoverbox
+ * @class PersonPlaceholderHoverbox
+ * @extends PersonHoverbox
  * @constructor
- * @param {PersonGroup} node The node PersonGroup for which the hoverbox is drawn
- * @param {Number} centerX The x coordinate for the hoverbox
- * @param {Number} centerY The y coordinate for the hoverbox
- * @param {Raphael.st} nodeShapes Raphaël set containing the graphical elements that make up the node
  */
-
-var PersonGroupHoverbox = Class.create(PersonHoverbox, {
+var PersonPlaceholderHoverbox = Class.create(PersonHoverbox, {
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, centerX, centerY, nodeShapes);
        },
 
@@ -24,14 +17,9 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
     * @return {Raphael.st} A set of handles
     */
     generateHandles: function($super) {
-        if (this._currentHandles !== null) return;
-
-        if (PedigreeEditor.attributes.newHandles) {
-            // TODO: singling handle for person groups?
-        }
-        // else: no handles
+        return;
     },
-
+ 
     /**
      * Creates the buttons used in this hoverbox
      *
@@ -40,20 +28,8 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
     generateButtons: function($super) {
         if (this._currentButtons !== null) return;
         this._currentButtons = [];
-
         // note: no call to super as we don't want default person buttons
         this.generateMenuBtn();
-        this.generateDeleteBtn();
-    },
-
-    /**
-     * Returns true if the menu for this node is open
-     *
-     * @method isMenuToggled
-     * @return {Boolean}
-     */
-    isMenuToggled: function() {
-        return this._isMenuToggled;
     },
 
     /**

@@ -89,8 +89,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         // need to set X and Y before animation finishes or other
         // stuff will be drawn incorrectly
         $super(x, y, animate);
-                
-        
+
         if(animate) {
             var me = this;
             this._callback = function() { if (me._toMark) {

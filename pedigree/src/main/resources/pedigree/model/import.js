@@ -1117,18 +1117,16 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
    }
 
    var defaultEdgeWeight = 1;
-   
+
    var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
-   
-   var noChildFamilies = [];
 
    // second pass (once all vertex IDs are known): process families & add edges
    for (var i = 0; i < gedcom.families.length; i++) {
        var nextFamily = gedcom.families[i];
-      
+
        var motherLink = nextFamily.hasOwnProperty("WIFE") ? getFirstValue(nextFamily["WIFE"]) : null;
        var fatherLink = nextFamily.hasOwnProperty("HUSB") ? getFirstValue(nextFamily["HUSB"]) : null;
-                  
+
        // create a virtual parent in case one of the parents is missing       
        if (fatherLink == null) {
            var fatherID = newG._addVertex( null, TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
@@ -1146,21 +1144,20 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
        }
 
        // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
-       
+
        // if there is a relationship between motherID and fatherID the corresponding childhub is returned
        // if there is no relationship, a new one is created together with the chldhub
        var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
        var children = nextFamily.hasOwnProperty("CHIL") ? nextFamily["CHIL"] : null;
-       
+
        if (children == null) {
            // create a virtual child
-           var childID = newG._addVertex( null, TYPE.PERSON, {"gender": "U", "comments": "unknown"}, newG.defaultPersonNodeWidth );
-           noChildFamilies.push(nextFamily.id);
+           var childID = newG._addVertex( null, TYPE.PERSON, {"gender": "U", "placeholder": true}, newG.defaultPersonNodeWidth );
            externalIDToID[childID] = childID;
            children = [{"value": childID}];
        }
-       
+
        for (var j = 0; j < children.length; j++) {
            var externalID = children[j].value;
            
@@ -1174,11 +1171,6 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
        }
    }
 
-   if (noChildFamilies.length > 0) {
-       // stringifyObject(noChildFamilies)
-       alert("Some families with no children were found in the imported pedigree: this is not supported at the moment, so a child was added to each childless family");
-   }
-   
    PedigreeImport.validateBaseGraph(newG);
 
    return newG;

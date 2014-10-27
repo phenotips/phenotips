@@ -7,7 +7,7 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
         this._node   = node;
         this._nodeX  = x;
         this._nodeY  = y;
-        this._shapes = shapes;
+        this._shapes = editor.getPaper().set();
     },
 
     getWidth: function() {

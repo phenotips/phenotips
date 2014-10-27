@@ -113,7 +113,7 @@ var Partnership = Class.create(AbstractNode, {
     getBrokenStatus: function() {
         return this._broken;
     },
-    
+
     /**
      * Returns an object (to be accepted by the menu) with information about this Partnership
      *
