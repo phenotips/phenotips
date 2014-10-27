@@ -790,8 +790,16 @@ DynamicPositionedGraph.prototype = {
             var rankChildHub = this.DG.ranks[childHubId];
             var rankChild    = this.DG.ranks[childId];
 
+            var otherChildren = this.getAllChildren(parentId);
+
             var weight = 1;
             this.DG.GG.addEdge(childHubId, childId, weight);
+
+            // this should be done after addEdge(), or the assumption of at least one child will
+            // be violated at the time removeNodes() is executed, resulting in a validation failure
+            if (otherChildren.length == 1 && this.isPlaceholder(otherChildren[0])) {
+                var removeChaneSet = this.removeNodes([otherChildren[0]]);
+            }
 
             var animateList = [childId];
 
@@ -816,7 +824,15 @@ DynamicPositionedGraph.prototype = {
 
             positionsBefore[parentId] = Infinity; // so that it is added to the list of moved nodes
             var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore );
-            return {"moved": movedNodes, "animate": [childId]};
+
+            if (removeChaneSet) {
+                removeChaneSet.moved = removeChaneSet.moved.concat(movedNodes);
+                removeChaneSet.moved = filterUnique(removeChaneSet.moved);
+                removeChaneSet.animate = [childId];
+                return removeChaneSet;
+            } else {
+                return {"moved": movedNodes, "animate": [childId]};
+            }
         }
         else {
             var rankParent = this.DG.ranks[parentId];
