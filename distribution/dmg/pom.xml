@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -33,24 +34,24 @@
   <description>Distribution containing the PhenoTips application packaged as a disk image with a Mac OS application bundle.</description>
 
   <properties>
-  	<!-- Required properties -->
-  	<srcDir>src/main/app-resources</srcDir>
-  	<bundleName>PhenoTips</bundleName>
-  	<bundleExecutable>start.sh</bundleExecutable>
-  	<standaloneDir>phenotips-standalone-${project.version}</standaloneDir>
-  	<dmgDir>${bundleName} DMG</dmgDir>
-  	<bundleDir>${dmgDir}/${bundleName}.app</bundleDir>
-  	<makeDmgScript>makeDMG.sh</makeDmgScript>
-  	<!-- Optional properties -->
-  	<iconFile>application-icon.icns</iconFile>
-  	<volumeIconFile>volume-icon.icns</volumeIconFile>
-  	<!-- the image in volumeBackgroundFile has to show a right-pointing arrow in the center -->
-  	<!-- image size: min width = (iconSize * 4), min height = (iconSize * 2) -->
-  	<volumeBackgroundFile>volume-background.png</volumeBackgroundFile>
-  	<!-- if iconSize is missing, its default value is 100 -->
-  	<iconSize>100</iconSize>
-  	<includeApplicationsSymlink>true</includeApplicationsSymlink>
-  	<internetEnable>true</internetEnable>
+    <!-- Required properties -->
+    <srcDir>src/main/app-resources</srcDir>
+    <bundleName>PhenoTips</bundleName>
+    <bundleExecutable>start.sh</bundleExecutable>
+    <standaloneDir>phenotips-standalone-${project.version}</standaloneDir>
+    <dmgDir>${bundleName} DMG</dmgDir>
+    <bundleDir>${dmgDir}/${bundleName}.app</bundleDir>
+    <makeDmgScript>makeDMG.sh</makeDmgScript>
+    <!-- Optional properties -->
+    <iconFile>application-icon.icns</iconFile>
+    <volumeIconFile>volume-icon.icns</volumeIconFile>
+    <!-- the image in volumeBackgroundFile has to show a right-pointing arrow in the center -->
+    <!-- image size: min width = (iconSize * 4), min height = (iconSize * 2) -->
+    <volumeBackgroundFile>volume-background.png</volumeBackgroundFile>
+    <!-- if iconSize is missing, its default value is 100 -->
+    <iconSize>100</iconSize>
+    <includeApplicationsSymlink>true</includeApplicationsSymlink>
+    <internetEnable>true</internetEnable>
   </properties>
 
   <dependencies>
@@ -75,13 +76,13 @@
             <goals>
               <goal>single</goal>
             </goals>
-	        <configuration>
-    	      <descriptors>
-        	    <descriptor>src/assembly/application.xml</descriptor>
-	          </descriptors>
-    	      <appendAssemblyId>false</appendAssemblyId>
-    	      <attach>false</attach>
-        	</configuration>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/application.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+              <attach>false</attach>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -95,9 +96,9 @@
             <goals>
               <goal>exec</goal>
             </goals>
-        	<configuration>
-        		<executable>${project.build.directory}/${project.build.finalName}/${makeDmgScript}</executable>
-        	</configuration>
+            <configuration>
+              <executable>${project.build.directory}/${project.build.finalName}/${makeDmgScript}</executable>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -111,14 +112,14 @@
             <goals>
               <goal>attach-artifact</goal>
             </goals>
-        	<configuration>
-        		<artifacts>
-        			<artifact>
-        				<file>${project.build.directory}/${project.build.finalName}.dmg</file>
-        				<type>dmg</type>
-        			</artifact>
-        		</artifacts>
-        	</configuration>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.build.finalName}.dmg</file>
+                  <type>dmg</type>
+                </artifact>
+              </artifacts>
+            </configuration>
           </execution>
         </executions>
       </plugin>

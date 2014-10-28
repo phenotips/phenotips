@@ -33,7 +33,7 @@ import org.eclipse.jetty.util.log.Logger;
  * Jetty lifecycle listener that opens a browser when the server is started.
  *
  * @version $Id$
- * @since 1.0M13
+ * @since 1.1M1
  */
 public class OpenBrowserListener extends AbstractLifeCycleListener
 {
@@ -41,29 +41,30 @@ public class OpenBrowserListener extends AbstractLifeCycleListener
     private static final Logger LOGGER = Log.getLogger(OpenBrowserListener.class);
 
     /** Handles the message translations. */
-    private static final ResourceBundle TRANSLATION = ResourceBundle.getBundle(OpenBrowserListener.class.getCanonicalName());
+    private static final ResourceBundle TRANSLATION =
+        ResourceBundle.getBundle(OpenBrowserListener.class.getCanonicalName());
 
     @Override
     public void lifeCycleStarted(LifeCycle event)
     {
-    	boolean success = false;
-    	String serverUrl = "http://localhost:" + System.getProperty("jetty.port", "8080") + "/";
+        boolean success = false;
+        String serverUrl = "http://localhost:" + System.getProperty("jetty.port", "8080") + "/";
 
         LOGGER.info(TRANSLATION.getString("jetty.startup.notification"), serverUrl);
 
         if (Desktop.isDesktopSupported()) {
             try {
-            	Desktop desktop = Desktop.getDesktop();
-            	if (desktop.isSupported(Desktop.Action.BROWSE)) {
-            		try {
-    					desktop.browse(new URI(serverUrl));
-    					success = true;
-    				} catch (Exception e) {
-    		            LOGGER.warn(TRANSLATION.getString("jetty.browser.error"), e);
-    				}
-            	} else {
+                Desktop desktop = Desktop.getDesktop();
+                if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(new URI(serverUrl));
+                        success = true;
+                    } catch (Exception e) {
+                        LOGGER.warn(TRANSLATION.getString("jetty.browser.error"), e);
+                    }
+                } else {
                     LOGGER.warn(TRANSLATION.getString("jetty.action.error"));
-            	}
+                }
             } catch (HeadlessException e) {
                 LOGGER.warn(TRANSLATION.getString("jetty.headless.error"));
             }
@@ -71,7 +72,8 @@ public class OpenBrowserListener extends AbstractLifeCycleListener
             LOGGER.warn(TRANSLATION.getString("jetty.noAPI.error"));
         }
 
-        if (success)
+        if (success) {
             LOGGER.info(TRANSLATION.getString("jetty.success.notification"));
+        }
     }
 }
