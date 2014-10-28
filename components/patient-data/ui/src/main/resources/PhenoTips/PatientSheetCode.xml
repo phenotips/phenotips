@@ -2277,7 +2277,14 @@ document.observe('xwiki:dom:loaded', function() {
        'target' : $('diffDiagnosis-search-results'),
        'suggestFor' : $('quick-phenotype-search'),
        'tooltip': 'phenotype-info'
-    }
+    },
+    'solr-omim' : {
+      'script' : new XWiki.Document('OmimPredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
+      'source' : [defaultSearchTermIDsInput],
+      'target' : $('solr-omim-search-results'),
+      'suggestFor' : omimField,
+      'tooltip': 'omim-disease-info'
+      },
   };
 
   if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
@@ -2297,6 +2304,7 @@ document.observe('xwiki:dom:loaded', function() {
     if (defaultSearchTermsInput.value != prevValue) {
       document.fire('phenotips:phenotypeChanged', {phenotype: cache});
       doSearch('omim');
+      doSearch('solr-omim');
       doSearch('diffDiagnosis');
     }
   }

@@ -43,6 +43,7 @@
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
   #if ("$!request.q" != '')##
+    #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 20)
@@ -76,7 +77,7 @@
     #end
     #set ($discard = $data.add('-nameSort:\** -nameSort:\+* -nameSort:\^*'))
     #if ("$!{request.format}" == 'html')
-#set ($results = $services.diagnosis.get($stringtool.join($data, ' '), $limit, 0))
+#set ($results = $_service.search($stringtool.join($data, ' '), $limit, 0))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
