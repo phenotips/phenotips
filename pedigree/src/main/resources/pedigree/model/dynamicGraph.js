@@ -798,13 +798,14 @@ DynamicPositionedGraph.prototype = {
             // this should be done after addEdge(), or the assumption of at least one child will
             // be violated at the time removeNodes() is executed, resulting in a validation failure
             if (otherChildren.length == 1 && this.isPlaceholder(otherChildren[0])) {
-                var removeChaneSet = this.removeNodes([otherChildren[0]]);
+                var removeChangeSet = this.removeNodes([otherChildren[0]]);
             }
 
             var animateList = [childId];
 
             if (rankChildHub != rankChild - 1) {
-                return this.redrawAll(animateList);
+                var removedList = removeChangeSet ? removeChangeSet.removed : [];
+                return this.redrawAll(removedList, animateList);
             }
 
             var positionsBefore  = this.DG.positions.slice(0);
@@ -825,11 +826,11 @@ DynamicPositionedGraph.prototype = {
             positionsBefore[parentId] = Infinity; // so that it is added to the list of moved nodes
             var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore );
 
-            if (removeChaneSet) {
-                removeChaneSet.moved = removeChaneSet.moved.concat(movedNodes);
-                removeChaneSet.moved = filterUnique(removeChaneSet.moved);
-                removeChaneSet.animate = [childId];
-                return removeChaneSet;
+            if (removeChangeSet) {
+                removeChangeSet.moved = removeChangeSet.moved.concat(movedNodes);
+                removeChangeSet.moved = filterUnique(removeChangeSet.moved);
+                removeChangeSet.animate = [childId];
+                return removeChangeSet;
             } else {
                 return {"moved": movedNodes, "animate": [childId]};
             }
@@ -853,7 +854,7 @@ DynamicPositionedGraph.prototype = {
                 this.DG.GG.addEdge(parentId, newRelationshipId, 1);
                 var animateList = [childId, parentId];
                 var newList     = [newRelationshipId, newParentId];
-                return this.redrawAll(animateList, newList, ranksBefore);
+                return this.redrawAll(null, animateList, newList, ranksBefore);
             }
 
             // add new childhub     @ rank (rankChild - 1)
@@ -1224,7 +1225,7 @@ DynamicPositionedGraph.prototype = {
         return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
     },
 
-    redrawAll: function (animateList, newList, ranksBefore)
+    redrawAll: function (removedBeforeRedrawList, animateList, newList, ranksBefore)
     {
         var ranksBefore = ranksBefore ? ranksBefore : this.DG.ranks.slice(0);  // sometimes we want to use ranksbefore as they were before some stuff was added to the graph before a redraw
 
@@ -1262,6 +1263,8 @@ DynamicPositionedGraph.prototype = {
 
         if (!animateList) animateList = [];
 
+        if (!removedBeforeRedrawList) removedBeforeRedrawList = [];
+
         if (!newList)
             newList = [];
         else {
@@ -1272,7 +1275,12 @@ DynamicPositionedGraph.prototype = {
 
         this._debugPrintAll("after");
 
-        return {"new": newList, "moved": movedNodes, "highlight": reRanked, "animate": animateList};
+        return { "new": newList,
+                 "moved": movedNodes,
+                 "highlight": reRanked,
+                 "animate": animateList,
+                 "removed": removedBeforeRedrawList,
+                 "removedInternally": removedBeforeRedrawList };
     },
 
     // remove empty-values optional properties, e.g. "fName: ''" or "disorders: []"
