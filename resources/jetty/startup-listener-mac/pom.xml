@@ -24,34 +24,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-resources</artifactId>
+    <artifactId>jetty</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>jetty</artifactId>
-  <name>PhenoTips - Jetty</name>
-  <packaging>pom</packaging>
-  <description>Packages a Jetty installation for use in the standalone distribution</description>
-  <properties>
-    <jetty.version>8.1.15.v20140411</jetty.version>
-  </properties>
-  <modules>
-    <module>startup-listener</module>
-    <module>packaging</module>
-  </modules>
-
-  <profiles>
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-	  <name>mac os x</name>
-        </os>
-      </activation>
-      <modules>
-	<module>startup-listener-mac</module>
-      </modules>
-    </profile>
-  </profiles>
+  <artifactId>jetty-startup-listener-mac</artifactId>
+  <name>PhenoTips - Jetty Lifecycle Listener - Mac</name>
+  <description>Includes a lifecycle listener that opens PhenoTips in a browser after the server started.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jetty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
