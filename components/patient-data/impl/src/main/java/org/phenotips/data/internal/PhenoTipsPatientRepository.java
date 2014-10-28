@@ -147,7 +147,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
             SpaceReference space =
                 new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                newDoc = new DocumentReference(prefix + String.format("%07d", id), space);
+                newDoc = new DocumentReference(prefix + String.format("%07d", ++id), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
@@ -206,6 +206,6 @@ public class PhenoTipsPatientRepository implements PatientRepository
             crtMaxID = crtMaxIDList.get(0);
         }
         crtMaxID = Math.max(crtMaxID, 0);
-        return crtMaxID + 1;
+        return crtMaxID;
     }
 }
