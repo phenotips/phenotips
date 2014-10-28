@@ -142,7 +142,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
             String targetSpace = Patient.DEFAULT_DATA_SPACE.getName();
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            long id = getNextAvailableId();
+            long id = getLastUsedId();
             DocumentReference newDoc;
             SpaceReference space =
                 new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
@@ -193,7 +193,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
         return createNewPatient(this.bridge.getCurrentUserReference());
     }
 
-    private long getNextAvailableId() throws QueryException
+    private long getLastUsedId() throws QueryException
     {
         long crtMaxID = 0;
         Query q =
