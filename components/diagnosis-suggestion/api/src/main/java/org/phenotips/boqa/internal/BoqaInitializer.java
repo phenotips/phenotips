@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 
 /**
  * Hook into phenotips startup to pre-initialize BOQA.
- * Created by meatcar on 10/3/14.
+ * @since 1.1M1
  * @version $Id$
  */
 

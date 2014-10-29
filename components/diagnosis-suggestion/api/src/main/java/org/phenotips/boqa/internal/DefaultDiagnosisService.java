@@ -60,8 +60,8 @@ import sonumina.boqa.calculation.Observations;
 
 /**
  * An implementation of Diagnosis Service using BOQA
- * see (http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract)
- * Created by meatcar on 9/5/14.
+ * see (http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract).
+ * @since 1.1M1
  * @version $Id$
  */
 @Singleton

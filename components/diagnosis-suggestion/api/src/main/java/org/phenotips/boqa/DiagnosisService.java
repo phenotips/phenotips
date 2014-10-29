@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
 import java.util.List;
 
 /**
- * Created by meatcar on 9/3/14.
+ * @since 1.1M1
  * @version $Id$
  */
 @Role

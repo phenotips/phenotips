@@ -32,8 +32,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Created by meatcar on 9/5/14.
- *
+ * @since 1.1M1
  * @version $Id$
  */
 @Component
