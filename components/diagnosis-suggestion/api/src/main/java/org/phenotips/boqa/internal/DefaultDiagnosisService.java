@@ -48,9 +48,7 @@ import javax.inject.Singleton;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import ontologizer.GlobalPreferences;
 import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
 import ontologizer.types.ByteString;
@@ -91,9 +89,6 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         boqa.setPrecalculateMaxICs(false);
         boqa.setMaxFrequencyTerms(2);
         boqa.setPrecalculateJaccard(false);
-
-        GlobalPreferences.setProxyPort(888);
-        GlobalPreferences.setProxyHost("realproxy.charite.de");
 
         String annotationPath  = null;
         String ontologyPath = null;
