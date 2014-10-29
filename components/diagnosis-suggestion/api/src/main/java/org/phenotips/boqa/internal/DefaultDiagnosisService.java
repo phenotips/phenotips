@@ -68,7 +68,9 @@ import sonumina.boqa.calculation.Observations;
 @Component
 public class DefaultDiagnosisService implements DiagnosisService, Initializable
 {
-    private Logger logger = LoggerFactory.getLogger(DefaultDiagnosisService.class);
+    @Inject
+    private Logger logger;
+
     private BOQA boqa;
     private Map<Integer, ByteString> omimMap;
 
