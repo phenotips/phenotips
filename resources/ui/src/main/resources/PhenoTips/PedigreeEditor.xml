@@ -60,6 +60,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/filesaver/Blob.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/filesaver/FileSaver.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/datepicker.js')
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##
@@ -94,6 +95,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/pedigreeDate.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/hpoTerm.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/versionUpdater.js')##

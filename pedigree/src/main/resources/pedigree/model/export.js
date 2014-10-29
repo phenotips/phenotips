@@ -238,8 +238,8 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        var age = "0";
        var yob = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("dob")) {
-           var date = new Date(pedigree.GG.properties[i]["dob"]);
-           yob = date.getFullYear();
+           var date = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
+           yob = date.getBestPrecisionStringYear();
            age = new Date().getFullYear() - yob;
        }
        output += age + "\t" + yob + "\t";

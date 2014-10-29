@@ -990,7 +990,9 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
            //  "BEF" - "before"
            //  "AFT" - "after"
            //  "BET ... AND ..." = "between ... and ..."
-           // for all of the above the date itself is used as the date; for the "between" the first date is used.           
+           // for all of the above the date itself is used as the date; for the "between" the first date is used.
+
+           // TODO: add support for importing approximate dates, since those are now supported by PedigreeDate object
            gedcomDate = gedcomDate.replace(/^(\s*)ABT(\s*)/,"");
            gedcomDate = gedcomDate.replace(/^(\s*)EST(\s*)/,"");
            gedcomDate = gedcomDate.replace(/^(\s*)BEF(\s*)/,"");
@@ -1005,7 +1007,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
            
            var timestamp=Date.parse(gedcomDate)
            if (isNaN(timestamp)==false) {
-               return new Date(timestamp);
+               return new PedigreeDate(new Date(timestamp));
            }           
            return null;
        };
@@ -1156,6 +1158,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
            var childID = newG._addVertex( null, TYPE.PERSON, {"gender": "U", "placeholder": true}, newG.defaultPersonNodeWidth );
            externalIDToID[childID] = childID;
            children = [{"value": childID}];
+           // TODO: add "infertile by choice" property to the relationship
        }
 
        for (var j = 0; j < children.length; j++) {

@@ -784,3 +784,25 @@
   background-image: url("$xwiki.getSkinFile('.png')");
 }
 */
+
+/* Datepicker style */
+.fuzzy-date-picker .year {
+  font-size: 14px;
+}
+.fuzzy-date-picker .month {
+  font-size: 14px;
+}
+.fuzzy-date-picker .day {
+  font-size: 14px;
+}
+.fuzzy-date-picker .empty {
+  font-size: .7em;
+  opacity: .5;
+}
+.fuzzy-date-picker .year option {
+  text-indent: 1em;
+}
+.fuzzy-date-picker .year .decade {
+  font-weight: bold;
+  text-indent: 0;
+}

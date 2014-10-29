@@ -96,12 +96,10 @@ NodeMenu = Class.create({
 
         // Attach pickers
         // date
-        var crtYear = new Date().getFullYear();
-        window.dateTimePicker = new XWiki.widgets.DateTimePicker({
-           year_range: [crtYear - 99, crtYear + 1],
-           after_navigate : function(date) {
-             this._selector.updateSelectedDate({day: date.getDate(), month: date.getMonth(), year : date.getYear() + 1900}, false);
-           }
+        this.form.select('.fuzzy-date').each(function(item) {
+          if (!item.__datePicker) {
+            item.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(item);
+          }
         });
         // disease
         this.form.select('input.suggest-omim').each(function(item) {
@@ -475,9 +473,9 @@ NodeMenu = Class.create({
         },
         'date-picker' : function (data) {
             var result = this._generateEmptyField(data);
-            var datePicker = new Element('input', {type: 'text', 'class': 'xwiki-date', name: data.name, 'title': data.format, alt : '' });
-            result.insert(datePicker);
-            datePicker._getValue = function() { return [this.alt && Date.parseISO_8601(this.alt)]; }.bind(datePicker);
+            var datePicker = new Element('input', {type: 'text', 'class': 'fuzzy-date', name: data.name, 'title': data.format, alt : '' });
+            result.inputsContainer.insert(datePicker);
+            datePicker._getValue = function() { console.log("DATE UPDATE: " + this.value); return [new PedigreeDate(JSON.parse(this.value))]; }.bind(datePicker);
             this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
             return result;
         },
@@ -751,11 +749,59 @@ NodeMenu = Class.create({
             }
         },
         'date-picker' : function (container, value) {
-            var target = container.down('input[type=text].xwiki-date');
-            if (target) {
-                target.value = value && value.toFormattedString({'format_mask' : target.title}) || '';
-                target.alt = value && value.toISO8601() || '';
-                //Event.fire(target, 'xwiki:date:changed');
+            if (!value) {
+                value = {"decade": "", "year": "", "month": "", "day": ""};
+            }
+
+            var year  = "";
+            var month = "";
+            var day   = "";
+            // there is no separate "decade" selector, need to handle the case of decade only separately
+            if (value.decade && !value.year) {
+                year = value.decade;
+            } else {
+                if (value.year) {
+                    year = value.year.toString();
+                    if (value.month) {
+                        month = value.month.toString();
+                        if (value.day) {
+                            day = value.day.toString();
+                        }
+                    }
+                }
+            }
+
+            var updated = false;
+            var yearSelect = container.down('select.year');
+            if (yearSelect) {
+                var option = yearSelect.down('option[value=' + year + ']');
+                if (option && !option.selected) {
+                    option.selected = true;
+                    updated = true;
+                }
+            }
+            var monthSelect = container.down('select.month');
+            if (monthSelect) {
+                var option = monthSelect.down('option[value=' + month + ']');
+                if (option && !option.selected) {
+                    option.selected = true;
+                    updated = true;
+                }
+            }
+            var daySelect = container.down('select.day');
+            if (daySelect) {
+                var option = daySelect.down('option[value=' + day + ']');
+                if (option && !option.selected) {
+                    option.selected = true;
+                    updated = true;
+                }
+            }
+            // TODO: review if event firing is necessary
+            if (updated) {
+                var updateElement = container.down('.fuzzy-date-picker');
+                if (updateElement) {
+                    Event.fire(updateElement, 'datepicker:date:changed');
+                }
             }
         },
         'disease-picker' : function (container, values) {

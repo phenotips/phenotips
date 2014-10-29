@@ -11,8 +11,10 @@ function getAge(birthDate, deathDate)
         now = new Date();
     }
     else {
-        now = deathDate;
+        now = deathDate.toJSDate();
     }
+
+    birthDate = birthDate.toJSDate();
 
     var aSecond = 1000;
     var aMinute = aSecond * 60;

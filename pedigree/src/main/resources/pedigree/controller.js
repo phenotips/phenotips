@@ -231,25 +231,26 @@ var Controller = Class.create({
                 var propertyGetFunction =  propertySetFunction.replace("set","get");
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
+                if (typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
+                    (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
+                    // compare Date objects
+                    try {
+                        if ( oldValue.decade == propValue.decade &&
+                             oldValue.year   == propValue.year &&
+                             oldValue.month  == propValue.month &&
+                             oldValue.day    == propValue.day )
+                            continue;
+                    } catch (err) {
+                        // fine, one of the objects is in some other format, maybe date picker has changed
+                        // and this code wa snot updated
+                    }
+                }
 
                 if (Object.prototype.toString.call(oldValue) === '[object Array]') {
                     oldValue = oldValue.slice(0);
                 }
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
-
-                if (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate") {
-                    // some browsers may not treat the date string as provided by the date widget the same way,
-                    // so convert to the least common denominator which seems to be the toDateString()
-                    if (propValue != "") {
-                        try {
-                            var parsedDate = new Date(propValue);
-                            propValue = parsedDate.toDateString();
-                        } catch (err) {
-                            // in case date did not parse: set date exactly as provided
-                        }
-                    }
-                }
 
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
                 // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
