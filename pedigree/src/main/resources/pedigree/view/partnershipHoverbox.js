@@ -131,7 +131,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             $super();
         }
     },
-    
+
     /**
      * Performs the appropriate action for clicking on the handle of type handleType
      *
@@ -140,7 +140,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @param {Boolean} isDrag Set to True if the handle is being dragged at the time of the action
      */
     handleAction : function(handleType, isDrag, curHoveredId) {
-        if(isDrag && curHoveredId) {            
+        if(isDrag && curHoveredId != null) {
             if(handleType == "child") { 
                 var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
                 document.fire("pedigree:person:drag:newparent", event);
@@ -155,6 +155,6 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
                 editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
             // if user selects anything the bubble will fire an even on its own
         }
-        this.animateHideHoverZone();        
+        this.animateHideHoverZone();
     }
 });
