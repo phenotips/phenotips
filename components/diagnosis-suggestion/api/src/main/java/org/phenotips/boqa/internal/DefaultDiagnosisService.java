@@ -26,8 +26,12 @@ import org.phenotips.ontology.OntologyTerm;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.environment.Environment;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +45,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +75,9 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     @Inject
     private OntologyManager ontology;
 
+    @Inject
+    private Environment env;
+
     @Override
     public void initialize() throws InitializationException {
         //Initialize boqa
@@ -85,10 +93,14 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         GlobalPreferences.setProxyPort(888);
         GlobalPreferences.setProxyHost("realproxy.charite.de");
 
-//        String ontologyPath = BOQA.class.getClassLoader().getResource("hp.obo.gz").getPath();
-//        String annotationPath = BOQA.class.getClassLoader().getResource("new_phenotype.gz").getPath();
-        String ontologyPath = "/home/meatcar/dev/boqa/data/hp.obo.gz";
-        String annotationPath = "/home/meatcar/dev/boqa/data/new_phenotype.gz";
+        String annotationPath  = null;
+        String ontologyPath = null;
+        try {
+            annotationPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
+            ontologyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
+        } catch (IOException e) {
+            throw new InitializationException(e.getMessage());
+        }
 
         // Load datafiles
         Datafiles df = null;
@@ -149,8 +161,12 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         Arrays.sort(order, new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                if (res.getMarginal(o1) < res.getMarginal(o2)) { return 1; }
-                if (res.getMarginal(o1) > res.getMarginal(o2)) { return -1; }
+                if (res.getMarginal(o1) < res.getMarginal(o2)) {
+                    return 1;
+                }
+                if (res.getMarginal(o1) > res.getMarginal(o2)) {
+                    return -1;
+                }
                 return 0;
             }
         });
@@ -194,5 +210,21 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         logger.debug(String.valueOf(results));
 
         return results;
+    }
+
+    /**
+     * Convert a stream into a file.
+     * @param in an inputstream
+     * @return a File
+     * @throws IOException when we can't open file
+     */
+    public File stream2file(InputStream in) throws IOException {
+        final File tempFile = File.createTempFile(env.getTemporaryDirectory().getPath(), ".tmp");
+        tempFile.deleteOnExit();
+
+        FileOutputStream out = new FileOutputStream(tempFile);
+        IOUtils.copy(in, out);
+
+        return tempFile;
     }
 }
