@@ -44,7 +44,6 @@
     <makeDmgScript>makeDMG.sh</makeDmgScript>
     <!-- Optional properties -->
     <iconFile>application-icon.icns</iconFile>
-    <volumeIconFile>volume-icon.icns</volumeIconFile>
     <!-- the image in volumeBackgroundFile has to show a right-pointing arrow in the center -->
     <!-- image size: min width = (iconSize * 4), min height = (iconSize * 2) -->
     <volumeBackgroundFile>volume-background.png</volumeBackgroundFile>
