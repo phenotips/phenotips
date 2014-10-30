@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # ---------------------------------------------------------------------------
 # See the NOTICE file distributed with this work for additional
 # information regarding copyright ownership.
@@ -22,7 +23,7 @@
 START_OPTS=${START_OPTS:-"-Xmx512m -XX:MaxPermSize=192m"}
 START_OPTS="$START_OPTS '-Xdock:name=${bundleName}'"
 [ -n "${iconFile}" ] &&
-	START_OPTS="$START_OPTS '-Xdock:icon=../${iconFile}'"
+  START_OPTS="$START_OPTS '-Xdock:icon=../${iconFile}'"
 export START_OPTS
 export JAVA_HOME="${JAVA_HOME:-`/usr/libexec/java_home`}"
 myDir="${0%/*}"
