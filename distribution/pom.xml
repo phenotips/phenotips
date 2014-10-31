@@ -63,7 +63,7 @@
         <activeByDefault>false</activeByDefault>
         <os>
           <family>mac</family>
-	  <name>mac os x</name>
+          <name>mac os x</name>
         </os>
       </activation>
       <modules>

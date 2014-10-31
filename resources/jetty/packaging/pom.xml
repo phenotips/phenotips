@@ -75,7 +75,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-          	<id>resources</id>
+            <id>resources</id>
             <phase>package</phase>
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>

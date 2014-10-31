@@ -27,35 +27,35 @@
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
-  	<fileSet>
-  		<directory>${srcDir}</directory>
-  		<outputDirectory>${bundleDir}/Contents/Resources</outputDirectory>
-  		<excludes>
-  			<exclude>*.sh</exclude>
-  			<exclude>Info.plist</exclude>
-  		</excludes>
-  		<filtered>false</filtered>
-  	</fileSet>
+    <fileSet>
+      <directory>${srcDir}</directory>
+      <outputDirectory>${bundleDir}/Contents/Resources</outputDirectory>
+      <excludes>
+        <exclude>*.sh</exclude>
+        <exclude>Info.plist</exclude>
+      </excludes>
+      <filtered>false</filtered>
+    </fileSet>
   </fileSets>
   <files>
-  	<file>
-  		<source>${srcDir}/Info.plist</source>
-  		<outputDirectory>${bundleDir}/Contents</outputDirectory>
-  		<fileMode>0644</fileMode>
-  		<filtered>true</filtered>
-  	</file>
-  	<file>
-  		<source>${srcDir}/${bundleExecutable}</source>
-  		<outputDirectory>${bundleDir}/Contents/MacOS</outputDirectory>
-  		<fileMode>0755</fileMode>
-  		<filtered>true</filtered>
-  	</file>
-  	<file>
-  		<source>${srcDir}/${makeDmgScript}</source>
-  		<outputDirectory>/</outputDirectory>
-  		<fileMode>0755</fileMode>
-  		<filtered>true</filtered>
-  	</file>
+    <file>
+      <source>${srcDir}/Info.plist</source>
+      <outputDirectory>${bundleDir}/Contents</outputDirectory>
+      <fileMode>0644</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${srcDir}/${bundleExecutable}</source>
+      <outputDirectory>${bundleDir}/Contents/MacOS</outputDirectory>
+      <fileMode>0755</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${srcDir}/${makeDmgScript}</source>
+      <outputDirectory>/</outputDirectory>
+      <fileMode>0755</fileMode>
+      <filtered>true</filtered>
+    </file>
   </files>
   <dependencySets>
     <dependencySet>

@@ -27,6 +27,6 @@
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <componentDescriptors>
-  	<componentDescriptor>src/main/assembly/common.xml</componentDescriptor>
+    <componentDescriptor>src/main/assembly/common.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
