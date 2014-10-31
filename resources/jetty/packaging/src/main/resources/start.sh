@@ -109,4 +109,4 @@ START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 # service attacks.
 START_OPTS="$START_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000"
 
-java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar ${JETTY_HOME}/etc/jetty.xml ${JETTY_HOME}/etc/jetty-*.xml
+eval java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar ${JETTY_HOME}/etc/jetty.xml ${JETTY_HOME}/etc/jetty-*.xml

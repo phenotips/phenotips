@@ -21,7 +21,7 @@
 -->
 
 <assembly>
-  <id>distribution</id>
+  <id>distribution-mac</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -29,4 +29,10 @@
   <componentDescriptors>
     <componentDescriptor>src/main/assembly/common.xml</componentDescriptor>
   </componentDescriptors>
+  <fileSets>
+    <fileSet>
+      <directory>${basedir}/src/main/resources-mac</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+  </fileSets>
 </assembly>

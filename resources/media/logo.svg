@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="50" viewBox="-350 -2200 15344 2997" version="1.1" shape-rendering="geometricPrecision">
+  <style type="">
+   .logo .background {
+     fill: #FFF;
+   }
+   .logo .overlay * {
+     fill: #000;
+     stroke: none;
+   }
+  </style>
+  <g class="logo">
+    <rect x="-450" y="-2252" width="15544" height="3100" class="background" fill="#FFF"/>
+
+    <g class="overlay" transform="scale(1 -1)" fill="#000" stroke="none">
+    <path transform="translate(0 0)" d="
+      M1031 984q0 -92 -25 -171.5t-74.5 -138t-124 -92.5t-173.5 -34h-340v-548h-156v1408h486q102 0 178.5 -30.5t127.5 -86t76 -134t25 -173.5z
+        M874 983q0 134 -67 203.5t-202 69.5h-311v-556h318q135 0 198.5 73t63.5 210z
+      M2582 0v652h-624v-652h-156v1408h156v-596h624v596h156v-1408z
+      M3538 0v1408h876v-156h-720v-452h672v-152h-672v-492h752v-156z
+      M5946 0l-616 1200l4 -97q2 -41 3 -86.5t1 -80.5v-936h-140v1408h182l624 -1208q-2 49 -5 98q-2 42 -3.5 91.5t-1.5 94.5v924h140v-1408z
+      M8037 711q0 -165 -39 -300t-113 -231t-180.5 -148t-242.5 -52q-143 0 -250 54.5t-178.5 152t-107.5 231.5t-36 293q0 165 37.5 298t110.5 226.5t180 144t246 50.5q138 0 245 -51t179.5 -145t110.5 -227t38 -296z
+        M7877 711q0 127 -27 231t-79 178t-129 114t-178 40q-103 0 -181 -40t-130.5 -114t-78 -178t-25.5 -231t26.5 -232.5t78.5 -182t129.5 -119t178.5 -42.5q108 0 186.5 43t129 119.5t75 182.5t24.5 231z
+    M8302 705l500 -500 v-905 h6120 v 2820 h-6120 v-905z
+      M9850 1252v-1252h-156v1252h-396v156h948v-156z
+      M11006 0v1408h156v-1408z
+      M12879 984q0 -92 -25 -171.5t-74.5 -138t-124 -92.5t-173.5 -34h-340v-548h-156v1408h486q102 0 178.5 -30.5t127.5 -86t76 -134t25 -173.5z
+        M12722 983q0 134 -67 203.5t-202 69.5h-311v-556h318q135 0 198.5 73t63.5 210z
+      M14454 389q0 -89 -28.5 -164t-87.5 -129.5t-148.5 -85t-212.5 -30.5q-216 0 -336.5 92t-153.5 266l152 37q11 -55 43.25 -93.25t72.75 -70.75t92.25 -57.25t134.75 -24.75q70 0 128.5 14.5t100 44.5t65 77.5t23.5 113.5q0 69 -26 112t-72.5 71q-47.6529 28.6942 -111.5 47
+        l-143 41q-73.7391 21.142 -97 28.5q-49 15.5 -94 37t-84 50.5t-68 69.5t-45.5 94t-16.5 123.5q0 100 33.5 171.5t92.5 117.5t139.5 67t173.5 21q107 0 183.5 -20.5t129 -61.5t84 -101.5t50.5 -140.5l-154 -33q-11 51 -33 91t-57.5 67t-86 41t-118.5 14q-80 0 -134.5 -17.5
+        t-87.5 -47.5t-47.5 -70.5t-14.5 -87.5q0 -63 26 -103.5t70 -67.5t102.5 -45t123.5 -36l106 -31q53 -15 101.5 -36.5t90.5 -50.5t73.5 -71t49 -99t17.5 -134z" />
+    </g>
+  </g>
+</svg>

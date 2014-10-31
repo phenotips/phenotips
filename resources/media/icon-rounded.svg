@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="140 -41 54 54" width="512" height="512" preserveAspectRatio="xMinYMin meet">
+  <style type="text/css">
+   .logo .background {
+     fill: #FFF;
+   }
+   .logo .overlay * {
+     fill: #000;
+     stroke: none;
+   }
+  </style>
+  <mask id="rr">
+   <rect x="140" y="-41" width="54" height="54" rx="4" ry="4" fill="#FFF"/>
+  </mask>
+  <g class="logo" mask="url(#rr)">
+    <rect x="120" y="-63" width="98" height="98" class="background" fill="#FFF"/>
+    <g class="overlay" transform="scale(.02 -.02)" fill="#000" stroke="none">
+      <!-- The order of the rows is: Outer P, Inner P, Tag background, T -->
+      <path transform="translate(0 0)" d="
+        M8031 985q0 -92 -25 -171.5t-74.5 -138t-124 -92.5t-173.5 -34h-340v-549h-156v1409h486q102 0 178.5 -30.5t127.5 -86t76 -134t25 -173.5z
+        M7874 983q0 134 -67 203.5t-202 69.5h-311v-556h318q135 0 198.5 73t63.5 210z
+        M8090 705l400 -400 v-1205 h1570 v 3220 h-1570 v-1205z
+        M9180 1253v-1253h-155v1253h-397v156h949v-156h-397z
+      "/>
+    </g>
+  </g>
+</svg>
