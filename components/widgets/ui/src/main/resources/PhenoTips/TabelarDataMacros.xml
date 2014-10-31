@@ -241,7 +241,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
       var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
       var addedDisplaySheet = addTrigger.href.replace(/.*&amp;xredirect=.*addedDisplaySheet=([^&amp;]*).*/, '$1') || '';
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : '')));
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : ''))).replace(/#.*/m, '');
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
