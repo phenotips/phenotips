@@ -569,7 +569,7 @@
   var init = function(event) {
     var docContent = $('mainContentArea');
     if (docContent) {
-      docContent.style.position = 'relative';
+      docContent.setStyle({'position' : 'relative'});
 
       var docActions = $('patient-record-actions');
       if (docActions) {
@@ -578,7 +578,7 @@
     }
   };
 
-  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", function() {init.defer()});
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", function() {init});
 })();</code>
     </property>
     <property>
