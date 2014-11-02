@@ -1073,6 +1073,7 @@
 /* Horizontal Menu */
 
 .menu.menu-horizontal {
+  background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [
