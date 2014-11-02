@@ -410,7 +410,7 @@ $content
       }
     },
     getFileName : function(filepath) {
-      var fpath = filepath.replace('\\', '/');
+      var fpath = filepath.replace(/\\/g, '/');
       var pieces = fpath.split('/');
       if (pieces.length == 0) {
         return null;
@@ -564,6 +564,9 @@ $content
       });
       item.addClassName('initialized');
     });
+    if (evt.eventName != 'xwiki:dom:loaded') {
+      return;
+    }
     var activeAction = null;
     if (__getParameter(XWiki.MultiImageSelector.prototype.ENFORCE_POPUP_MARKER) &amp;&amp; window.location.hash
         &amp;&amp; (activeAction = $(window.location.hash.substring(1)))
