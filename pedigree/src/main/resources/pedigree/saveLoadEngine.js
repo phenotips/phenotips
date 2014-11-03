@@ -20,7 +20,7 @@ function getSelectorFromXML(responseXML, selectorName, attributeName, attributeV
         // IE7 && IE8 && some other older browsers
         // http://www.w3schools.com/XPath/xpath_syntax.asp
         // http://msdn.microsoft.com/en-us/library/ms757846%28v=vs.85%29.aspx
-        var query = "//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
+        var query = ".//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
         try {
             return responseXML.selectSingleNode(query);
         } catch (e) {
