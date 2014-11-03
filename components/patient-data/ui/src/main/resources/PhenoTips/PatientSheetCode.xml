@@ -3604,18 +3604,6 @@ hr {
   border-top: 1px solid $theme.borderColor;
   clear: both;
 }
-input[type=text], textarea {
-  border-color: $theme.pageContentBackgroundColor;
-  width: 100%;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px #aaa inset;
-}
-textarea {
-  width: 98%;
-}
-input[type=text]:focus, textarea:focus {
-  border-color: $theme.linkColor;
-}
 .xform .xHint {
   color: $theme.notificationInfoColor;
   font-size: 87%;
