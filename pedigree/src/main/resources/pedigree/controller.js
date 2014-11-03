@@ -231,7 +231,7 @@ var Controller = Class.create({
                 var propertyGetFunction =  propertySetFunction.replace("set","get");
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
-                if (typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
+                if (oldValue && typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
                     (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
                     // compare Date objects
                     try {
