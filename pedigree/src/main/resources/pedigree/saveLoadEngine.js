@@ -191,7 +191,8 @@ var SaveLoadEngine = Class.create( {
     load: function() {
         console.log("initiating load process");
 
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/'), {
+        // IE caches AJAX requests, use a random URL to break that cache
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/?rand=' + Math.random()), {
             method: 'GET',
             onCreate: function() {
                 document.fire("pedigree:load:start");
