@@ -394,7 +394,9 @@ input[type=text], textarea {
   width: 100%;
 }
 textarea {
-  width: 98%;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
 }
 input[type=text]:focus, textarea:focus {
   border-color: $theme.linkColor;
