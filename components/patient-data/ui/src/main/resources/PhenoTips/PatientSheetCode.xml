@@ -518,7 +518,7 @@ document.observe('xwiki:dom:loaded', function() {
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info div.phenotype-group:last-of-type .phenotype-other'),
+                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info div.phenotype-group.catch-all .phenotype-other'),
                   'listInsertionPosition' : 'top',
                   'predefinedEntries' : $(document.documentElement).down('.phenotype'),
                   'silent' : true,
