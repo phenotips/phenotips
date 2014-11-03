@@ -708,7 +708,7 @@ document.observe('xwiki:dom:loaded', function() {
                });
              }
           } else {
-             delete this._crtFocus;
+             this._crtFocus = undefined;
           }
         }.bind(selectionSummary);
 
