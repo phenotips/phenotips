@@ -50,9 +50,13 @@ var PhenoTips = (function (PhenoTips) {
 
     onSelect : function(callback) {
       var _this = this;
-      this.dropdown.observe('change',function() {
-        callback();
-        _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+      var events = ['change'];
+      browser.isGecko && events.push('keyup');
+      events.each(function(eventName) {
+        _this.dropdown.observe(eventName, function() {
+          callback();
+          _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+        });
       });
     },
 
