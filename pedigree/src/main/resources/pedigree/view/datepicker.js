@@ -33,7 +33,6 @@ var PhenoTips = (function (PhenoTips) {
 
     enable : function () {
       this.dropdown.enable();
-      this.dropdown.focus();
       if (this.dropdown.selectedIndex <= 0 && this._tmpSelectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = this._tmpSelectedIndex;
       }
