@@ -260,7 +260,7 @@ var saveTextAs = saveTextAs
         }
 
         var doc = saveTxtWindow.document;
-        doc.open('text/plain', 'replace');
+        doc.open();
         doc.charset = charset;
         fileName += '.txt';
         doc.write(textContent);
