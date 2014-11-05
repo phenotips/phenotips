@@ -180,7 +180,7 @@ Ordering.prototype = {
     sortByOrder: function(v_list) {
         var vorders = this.vOrder;
         var result = v_list.slice(0);
-        result.sort(function(x, y){ return vorders[x] > vorders[y] });
+        result.sort(function(x, y){ return vorders[x] - vorders[y] });
         return result;
     },
 
