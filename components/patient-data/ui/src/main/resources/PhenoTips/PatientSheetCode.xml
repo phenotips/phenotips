@@ -3523,7 +3523,7 @@ hr {
    margin: 3em -10px -3em;
 }
 .space-data #document-head {
-  margin: -3em -11px 0;
+  margin: -2.9em -11px 0;
 }
 .space-data #document-head #document-title {
   display: inline-block;
@@ -3532,7 +3532,7 @@ hr {
 }
 
 .space-data #document-head h1 {
-  border: 1px solid $theme.menuBackgroundColor;
+  border: 0 none;
   border-bottom: 0 none;
   background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
@@ -3564,7 +3564,7 @@ hr {
     ]
   })
   color: $theme.menuLinkColor;
-  border: 1px solid $theme.menuBackgroundColor;
+  border: 0 none;
   font-size: 0.87em;
   padding: 0.5em 10px;
   text-shadow: 1px 0 0 rgba(0, 0, 0, .3);
