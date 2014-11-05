@@ -425,7 +425,7 @@ var Person = Class.create(AbstractPerson, {
         if (!newDate.isSet()) {
             newDate = null;
         }
-        if (!newDate || !this.getDeathDate() || newDate.getTime() <= this.getDeathDate().getTime()) {
+        if (!newDate || !this.getDeathDate() || this.getDeathDate().canBeAfterDate(newDate)) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }
@@ -454,7 +454,7 @@ var Person = Class.create(AbstractPerson, {
             deathDate = null;
         }
         // only set death date if it happens ot be after the birth date, or there is no birth or death date
-        if(!deathDate || !this.getBirthDate() || deathDate.getTime() >= this.getBirthDate().getTime()) {
+        if(!deathDate || !this.getBirthDate() || deathDate.canBeAfterDate(this.getBirthDate())) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }

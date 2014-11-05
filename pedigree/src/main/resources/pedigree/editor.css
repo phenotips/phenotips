@@ -488,17 +488,13 @@
   display: block;
 }
 .field-values-3-columns .state_deceased {
-  margin-left: -2px;
 }
 .field-values-3-columns .state_miscarriage {
-  margin-left: -2px;
   margin-bottom: 1px;  /* otherwise the bottom pixel of the letter "g" in "miscarriage" is displayed at the top of the next column in Chrome */
 }
 .field-values-3-columns .state_unborn {
-  margin-left: 8px;
 }
 .field-values-3-columns .state_aborted {
-  margin-left: 8px;
 }
 .field-inputs {
   display: table;
@@ -530,11 +526,13 @@
 .menu-box .field-date_of_birth {
   width: 48%;
   float: left;
+  margin-bottom: 6px;
 }
 .menu-box .field-date_of_death {
   width: 48%;
   float: right;
   margin-top: -5px; /* TODO: investigate why elements float below its intended position */
+  margin-bottom: 6px;
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;

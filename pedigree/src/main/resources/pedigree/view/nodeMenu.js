@@ -426,6 +426,9 @@ NodeMenu = Class.create({
             var _this = this;
             var _generateRadioButton = function(v) {
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
+                if (v.hasOwnProperty("columnshiftPX")) {
+                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"}); 
+                }
                 var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
                 radioLabel.insert({'top': radioButton});
                 radioButton._getValue = function() { return [this.value]; }.bind(radioButton);
@@ -433,7 +436,11 @@ NodeMenu = Class.create({
                 _this._attachFieldEventListeners(radioButton, ['click']);
                 _this._attachDependencyBehavior(radioButton, data);
             };
-            data.values.each(_generateRadioButton);
+            if (data.hasOwnProperty("valuesIE9") && navigator && navigator.appVersion.indexOf("MSIE 9") != -1) {
+                data.valuesIE9.each(_generateRadioButton);
+            } else {
+                data.values.each(_generateRadioButton);
+            }
 
             return result;
         },
@@ -796,7 +803,7 @@ NodeMenu = Class.create({
                     updated = true;
                 }
             }
-            // TODO: review if event firing is necessary
+            // TODO: replace the code above with an even request to change year-month-date
             if (updated) {
                 var updateElement = container.down('.fuzzy-date-picker');
                 if (updateElement) {

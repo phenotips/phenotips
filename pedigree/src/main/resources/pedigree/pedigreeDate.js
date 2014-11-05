@@ -179,5 +179,38 @@ var PedigreeDate = Class.create({
             return 1;
         }
         return this.day;
+    },
+
+    canBeAfterDate: function(otherPedigreeDate) {
+        if (!this.isSet()) {
+            return true;
+        }
+        if (!otherPedigreeDate.isSet()) {
+            return true;
+        }
+        if (this.getTime() > otherPedigreeDate.getTime()) {
+            return true;
+        }
+        var leastOtherYear  = otherPedigreeDate.getYear(true);
+        var leastOtherMonth = otherPedigreeDate.getMonth(true);
+        var leastOtherDay   = otherPedigreeDate.getDay(true);
+
+        var maxThisYear  = this.year  ? this.year  : this.getYear(true) + 9;
+        var maxThisMonth = this.month ? this.month : 12;
+        var maxThisDay   = this.day   ? this.day   : 31;
+
+        if (maxThisYear > leastOtherYear) {
+            return true;
+        }
+        if (maxThisYear < leastOtherYear) {
+            return false;
+        }
+        if (maxThisMonth > leastOtherMonth) {
+            return true;
+        }
+        if (maxThisMonth < leastOtherMonth) {
+            return false;
+        }
+        return (maxThisDay >= leastOtherDay);
     }
 });

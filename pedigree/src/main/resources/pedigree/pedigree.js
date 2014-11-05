@@ -448,21 +448,30 @@ var PedigreeEditor = Class.create({
                 'type' : 'radio',
                 'tab': 'Personal',
                 'columns': 3,
+                'valuesIE9' : [
+                    // different order of options because they are displayed sequentially instead of in 3-column layout
+                    { 'actual' : 'alive', 'displayed' : 'Alive' },
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
+                    { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
+                    { 'actual' : 'unborn', 'displayed' : 'Unborn' },
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' },
+                    { 'actual' : 'aborted', 'displayed' : 'Elective abortion' }],
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
-                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' },
-                    { 'actual' : 'unborn', 'displayed' : 'Unborn' },
-                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
-                ],
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased', 'columnshiftPX': -2 },
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage', 'columnshiftPX': -2},
+                    { 'actual' : 'unborn', 'displayed' : 'Unborn', 'columnshiftPX': 8 },
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted', 'columnshiftPX': 8 }],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
             },
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
-                'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
+                'values' : [{'actual': 'none', displayed: 'None'},
+                            {'actual': 'childless', displayed: 'Childless'},
+                            {'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
                 'tab': 'Personal',
                 'function' : 'setChildlessStatus'
@@ -556,7 +565,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'select',
                 'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
                             {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
-                            {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],                
+                            {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],
                 'function' : 'setNumPersons'
             },
             {
@@ -726,7 +735,7 @@ PedigreeEditor.attributes = {
     nodeShapeMenuOn:  {fill: "#000", stroke: "none", "fill-opacity": 0.1},
     nodeShapeMenuOff: {fill: "#000", stroke: "none", "fill-opacity": 0},
     nodeShapeMenuOnPartner:  {fill: "#000", stroke: "none", "fill-opacity": 0.1},
-    nodeShapeMenuOffPartner: {fill: "#000", stroke: "none",   "fill-opacity": 0},        
+    nodeShapeMenuOffPartner: {fill: "#000", stroke: "none", "fill-opacity": 0},
     nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
     menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
@@ -740,7 +749,7 @@ PedigreeEditor.attributes = {
     pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
     descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
-    nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
+    nameLabels: {'font-size': 20, 'font-family': 'Arial'},
     commentLabel: {'font-size': 19, 'font-family': 'Arial' },
     externalIDLabels: {'font-size': 18, 'font-family': 'Arial' },
     disorderShapes: {},

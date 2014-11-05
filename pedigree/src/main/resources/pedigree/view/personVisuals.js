@@ -351,17 +351,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     text = "b. " + person.getBirthDate().getDecade();
                 } else {
                     var age = getAge(person.getBirthDate(), null);
-                    if (person.getBirthDate().getMonth() == null || age.indexOf(" y") != -1) {
+                    if (person.getBirthDate().getMonth() == null) {
                         text = "b. " + person.getBirthDate().getYear();                         // b. 1972
                     } else {
-                        if (age.indexOf("day") != -1) {
-                            text = age;                                                         // 5 days
-                        } else if (age.indexOf("wk") != -1) {
-                            text = "b. " + person.getBirthDate().getMonthName() + " " +
-                                   person.getBirthDate().getYear() + " (" + age + ")";          // b. May 2014 (3 wk)
+                        if (person.getBirthDate().getDay() == null) {
+                            text = "b. " + person.getBirthDate().getMonthName() + " " +         // b. Jan 1972
+                            person.getBirthDate().getYear();
                         } else {
-                            text = "b. " + person.getBirthDate().getMonthName() + " " +         // b. Jan 2014
-                                   person.getBirthDate().getYear();
+                            text = "b. " + person.getBirthDate().getMonthName() + " " +
+                            person.getBirthDate().getDay() + ", " +
+                            person.getBirthDate().getYear();                                    // b. Jan 13, 1972
+                            if (age.indexOf("day") != -1 || age.indexOf("wk") != -1) {
+                                text += " (" + age + ")";                                       // b. Jan 13, 1972 (5 days)
+                            }
                         }
                     }
                 }
