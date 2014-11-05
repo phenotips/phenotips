@@ -103,7 +103,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>parent=Parent|child=Child|sibling=Sibling|twin=Twin|cousin=Cousin|aunt_uncle=Aunt / Uncle|grandparent=Grandparent|grandchild=Grandchild</values>
+      <values>parent=Parent|child=Child|sibling=Sibling|twin=Twin|cousin=Cousin|aunt_uncle=Aunt / Uncle|niece_nephew=Niece / Nephew|grandparent=Grandparent|grandchild=Grandchild</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </relative_type>
   </class>
