@@ -269,7 +269,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 350px;
+  width: 360px;
   color: #000000;
   z-index: 100000;
 }
@@ -341,7 +341,7 @@
 .menu-box .tabs-content > .content.active {
   display: block;
   float: none;
-  padding: .3em 1.3em 0.8em;
+  padding: .3em 1.2em 0.8em;
 }
 .menu-box form {
   border: 1px solid #F5F5F5;
@@ -786,6 +786,9 @@
 */
 
 /* Datepicker style */
+.fuzzy-date-picker {
+  margin-right: -2px;
+}
 .fuzzy-date-picker .year {
   font-size: 14px;
 }
@@ -800,9 +803,9 @@
   opacity: .5;
 }
 .fuzzy-date-picker .year option {
-  text-indent: 1em;
+  /*text-indent: 1em;*/
 }
 .fuzzy-date-picker .year .decade {
   font-weight: bold;
-  text-indent: 0;
+  /*text-indent: 0;*/
 }
