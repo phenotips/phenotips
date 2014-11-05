@@ -63,7 +63,6 @@ var PedigreeEditor = Class.create({
 
         var saveButton = $('action-save');
         saveButton && saveButton.on("click", function(event) {
-            editor.getView().unmarkAll();
             editor.getSaveLoadEngine().save();
         });
         var loadButton = $('action-reload');
@@ -86,8 +85,20 @@ var PedigreeEditor = Class.create({
 
         var closeButton = $('action-close');
         closeButton && closeButton.on("click", function(event) {
-            //editor.getSaveLoadEngine().save();
-            window.location=XWiki.currentDocument.getURL('edit');
+            var dontQuitFunc    = function() {};
+            var quitFunc        = function() { window.location=XWiki.currentDocument.getURL('edit'); };
+            var saveAndQuitFunc = function() { editor.getSaveLoadEngine().save();
+                                               quitFunc(); }
+
+            if (editor.getActionStack().hasUnsavedChanges()) {
+                editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
+                                                             'Save before closing?',
+                                                             "Save", saveAndQuitFunc,
+                                                             "Don't save", quitFunc,
+                                                             "Don't quit", dontQuitFunc, true );
+            } else {
+                quitFunc();
+            }
         });
 
         var renumberButton = $('action-number');

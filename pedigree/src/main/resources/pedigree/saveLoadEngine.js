@@ -161,6 +161,8 @@ var SaveLoadEngine = Class.create( {
         if (this._saveInProgress)
             return;   // Don't send parallel save requests
 
+        editor.getView().unmarkAll();
+
         var me = this;
 
         var jsonData = this.serialize();
@@ -182,7 +184,9 @@ var SaveLoadEngine = Class.create( {
             onComplete: function() {
                 me._saveInProgress = false;
             },
-            onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
+            onSuccess: function() { editor.getActionStack().addSaveEvent();
+                                    savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));
+                                  },
             parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
         });
         backgroundParent.insertBefore(background, backgroundPosition);
@@ -208,6 +212,9 @@ var SaveLoadEngine = Class.create( {
                     jsonData = editor.getVersionUpdater().updateToCurrentVersion(jsonData);
 
                     this.createGraphFromSerializedData(jsonData);
+
+                    // since we just loaded data from disk data in memory is equivalent to data on disk
+                    editor.getActionStack().addSaveEvent();
                 } else {
                     new TemplateSelector(true);
                 }
