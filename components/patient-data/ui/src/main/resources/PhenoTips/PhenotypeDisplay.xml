@@ -45,7 +45,7 @@
 #if ("$!{data}" != '')
   $phenotypeDisplayTools.setMode($xcontext.action)##
   $phenotypeDisplayTools.setDocument($doc)##
-  #if ($object.getProperty("negative_${name}"))
+  #if ($class.get("negative_${name}"))
     #set ($nname = "negative_${name}")##
     #set ($nvalue = $object.getProperty("negative_${name}").value)##
     $!phenotypeDisplayTools.use($prefix, $name, $nname)##
