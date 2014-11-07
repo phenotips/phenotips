@@ -1251,14 +1251,14 @@ $!value
 &lt;form id="welcome_${targetDocName}" method="post" action="$targetDoc.getURL('save')" class="xform half"&gt;
 &lt;fieldset&gt;&lt;dl&gt;
 &lt;dt&gt;&lt;label for="${targetDocName}_title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
-&lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!targetDoc.title"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!escapetool.xml($targetDoc.title)"&gt;&lt;/input&gt;&lt;/dd&gt;
 &lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
-&lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!gadgetObj.getProperty('title').value"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!escapetool.xml($gadgetObj.getProperty('title').value)"&gt;&lt;/input&gt;&lt;/dd&gt;
 &lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;Welcome message content&lt;/label&gt;&lt;/dt&gt;
-&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="5"&gt;$!gadgetObj.getProperty('content').value&lt;/textarea&gt;&lt;/dd&gt;
+&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="10"&gt;$!escapetool.xml($gadgetObj.getProperty('content').value)&lt;/textarea&gt;&lt;/dd&gt;
 &lt;/dl&gt;
-&lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$doc.getURL($xcontext.action, $request.queryString)" /&gt;
-&lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
+&lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$escapetool.xml($doc.getURL($xcontext.action, $request.queryString))" /&gt;
+&lt;input type="hidden" name="form_token" value="$!{escapetool.xml($services.csrf.token)}" /&gt;
 &lt;/fieldset&gt;
 &lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="Save" /&gt;&lt;/span&gt;
@@ -1837,7 +1837,13 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
       </title>
     </class>
     <property>
-      <content>{{translation key="phenotips.homepage.welcome.message" /}}</content>
+      <content>{{translation key="phenotips.homepage.welcome.message" /}}
+
+{{comment}}
+These are translation keys, automatically replaced with the proper translation for the current language.
+
+To write a custom message, you can remove the existing code and write your message here directly.
+{{/comment}}</content>
     </property>
     <property>
       <position>1,1</position>
