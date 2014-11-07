@@ -453,6 +453,7 @@ table.withLabel tr:first-child th {
 
 .extradata-list .file {
   width: 160px;
+  max-width: 160px;
 }
 .extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {
   display: none;
