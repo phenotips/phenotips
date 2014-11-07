@@ -3272,6 +3272,21 @@ document.observe('xwiki:dom:loaded', function() {
       <defaultWeb/>
       <nameField/>
       <validationScript/>
+      <footer>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>footer</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Footer displayed at the bottom of each PDF page</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </footer>
       <fopxsl>
         <customDisplay/>
         <disabled>0</disabled>
@@ -3279,7 +3294,7 @@ document.observe('xwiki:dom:loaded', function() {
         <name>fopxsl</name>
         <number>3</number>
         <picker>0</picker>
-        <prettyName>fopxsl</prettyName>
+        <prettyName>XSLT for post-processing the FO document</prettyName>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
@@ -3287,6 +3302,21 @@ document.observe('xwiki:dom:loaded', function() {
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </fopxsl>
+      <header>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>header</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Header displayed on top of each PDF page</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </header>
       <style>
         <customDisplay/>
         <disabled>0</disabled>
@@ -3294,7 +3324,7 @@ document.observe('xwiki:dom:loaded', function() {
         <name>style</name>
         <number>1</number>
         <picker>0</picker>
-        <prettyName>style</prettyName>
+        <prettyName>Custom CSS style to apply to the PDF</prettyName>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
@@ -3309,7 +3339,7 @@ document.observe('xwiki:dom:loaded', function() {
         <name>xhtmlxsl</name>
         <number>2</number>
         <picker>0</picker>
-        <prettyName>xhtmlxsl</prettyName>
+        <prettyName>XSLT for transforming HTML into a FO document</prettyName>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
@@ -3318,6 +3348,11 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </xhtmlxsl>
     </class>
+    <property>
+      <footer>{{velocity}}{{html clean="false"}}Page &lt;span class="page-number"&gt;&lt;/span&gt; of &lt;span class="page-total"&gt;&lt;/span&gt;
+&lt;div style="margin-top: 1em;font-size: 69.444%"&gt;Patient record last modified by $xwiki.getUserName($tdoc.author, false) on $!xwiki.formatDate($tdoc.date), exported by $xwiki.getUserName($xcontext.user, false)&lt;br/&gt;
+This is a PDF of the PhenoTips record on $xwiki.formatDate($util.date) which may have since been modified. For the latest record please check &lt;a href="$doc.getExternalURL()"&gt;PhenoTips&lt;/a&gt;.&lt;/div&gt;{{/html}}{{/velocity}}</footer>
+    </property>
     <property>
       <fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;xsl:stylesheet version="1.0"
@@ -3359,46 +3394,13 @@ document.observe('xwiki:dom:loaded', function() {
     &lt;/xsl:attribute&gt;
   &lt;/xsl:template&gt;
 
-  &lt;!-- Change the header --&gt;
-  &lt;xsl:template match="fo:static-content[@flow-name='page-header']"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:attribute name="precedence"&gt;true&lt;/xsl:attribute&gt;
-      &lt;xsl:apply-templates select="@*"/&gt;
-      &lt;fo:table margin-top="2em"&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block text-align="left"&gt;
-        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
-            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
-            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
-          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 9.5 301 60" width="100" height="20"&gt;
-          &lt;/svg&gt;
-        &lt;/fo:instream-foreign-object&gt;
-      &lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block font-size="large" space-after="0.5in" space-after.conditionality="retain" text-align="right"&gt;&lt;xsl:value-of select="//fo:block[@role='html:h1']"/&gt;&lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Change the footer --&gt;
-  &lt;xsl:template match="fo:static-content[@flow-name='page-footer']"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:apply-templates select="@*"/&gt;
-      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="center"&gt;Page &lt;fo:page-number/&gt; of &lt;fo:page-number-citation-last ref-id="x-page-sequence"/&gt;&lt;/fo:block&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
   &lt;!-- Ignore some elements --&gt;
   &lt;xsl:template match="fo:block[@id='document-actions']" /&gt;
   &lt;xsl:template match="fo:block[@role='html:h1']" /&gt;
-
-  &lt;!-- Add an ID to the whole page sequence, to be able to get the total number of pages --&gt;
-  &lt;xsl:template match="fo:page-sequence"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:attribute name="id"&gt;&lt;xsl:text&gt;x-page-sequence&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;
-      &lt;xsl:apply-templates select="@*|node()"/&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;</fopxsl>
+    </property>
+    <property>
+      <header>$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($escapetool.xml($doc.getValue('external_id')))#end</header>
     </property>
     <property>
       <style>#template('colorThemeInit.vm')
