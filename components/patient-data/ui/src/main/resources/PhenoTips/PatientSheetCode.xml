@@ -3400,7 +3400,7 @@ This is a PDF of the PhenoTips record on $xwiki.formatDate($util.date) which may
 &lt;/xsl:stylesheet&gt;</fopxsl>
     </property>
     <property>
-      <header>$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($escapetool.xml($doc.getValue('external_id')))#end</header>
+      <header>{{velocity}}$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($escapetool.xml($doc.getValue('external_id')))#end{{/velocity}}</header>
     </property>
     <property>
       <style>#template('colorThemeInit.vm')
