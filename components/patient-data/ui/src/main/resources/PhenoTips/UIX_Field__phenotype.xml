@@ -681,7 +681,7 @@ label.selected, label.subterm-selected {
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__phenotype')##
+$xwiki.ssx.use('PhenoTips.UIX_Field__phenotype', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
 #macro (__qsBox $fieldName $cssClass)
   #if ($xcontext.action == 'edit')
