@@ -37,6 +37,7 @@
     <module>hpo</module>
     <module>omim</module>
     <module>hgnc</module>
+    <module>chebi</module>
     <module>ethnicity</module>
   </modules>
 </project>

@@ -43,10 +43,8 @@
 #if ("$!{request.url}" != '' &amp;&amp; "$!{request.ontology}" != '')
   #set($result = "")
   #if("$!{request.ontology}" == 'hpo')
-ind hpo
     #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
   #elseif ("$!{request.ontology}" == 'chebi')
-ind ch
     #set($result = $services.ontologies.chebi.reindex("$!{request.url}"))
   #end
 

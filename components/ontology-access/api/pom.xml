@@ -32,7 +32,6 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <!-- Reduced the coverage from 0.15 to 0.13, as new code is tested elsewhere. 21.10.14 -->
     <coverage.instructionRatio>0.13</coverage.instructionRatio>
   </properties>
 
