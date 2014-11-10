@@ -250,12 +250,12 @@
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>supporting_documents</name>
       <number>11</number>
       <picker>0</picker>
       <prettyName>Medical report (optional)</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>
@@ -274,12 +274,12 @@
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>supporting_images</name>
       <number>10</number>
       <picker>0</picker>
       <prettyName>Image / photo (optional)</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>

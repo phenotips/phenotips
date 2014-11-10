@@ -51,7 +51,7 @@ public class ChEBIOntology extends AbstractOBOSolrOntologyService
     @Override
     protected int getSolrDocsPerBatch()
     {
-        return 1000;
+        return 3000;
     }
 
     @Override

@@ -49,7 +49,6 @@ import org.apache.solr.common.SolrInputDocument;
 public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntologyService
 {
     /**
-     * TODO. Determine if this is still relevant.
      * The name of the Alternative ID field, used for older aliases of updated HPO terms.
      */
     protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
@@ -102,16 +101,12 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
             Collection<SolrInputDocument> termBatch = new HashSet<SolrInputDocument>();
             Iterator<Map.Entry<String, TermData>> dataIterator = data.entrySet().iterator();
             int batchCounter = 0;
-            int tempBC = 0;
-             //fixme. remove
             while (dataIterator.hasNext()) {
                 /* Resetting when the batch fills */
                 if (batchCounter == getSolrDocsPerBatch()) {
                     commitTerms(termBatch);
                     termBatch = new HashSet<>();
                     batchCounter = 0;
-                    tempBC++;
-                    logger.warn("Batch number" + tempBC);
                 }
                 Map.Entry<String, TermData> item = dataIterator.next();
                 SolrInputDocument doc = new SolrInputDocument();
@@ -131,9 +126,7 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
         } catch (IOException ex) {
             this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
         } catch (OutOfMemoryError ex) {
-            this.logger.warn("Field to add terms to the Solr. Ran out of memory. {}",
-                ex.getMessage() + ex.getStackTrace());
-                //fixme. remove
+            this.logger.warn("Failed to add terms to the Solr. Ran out of memory. {}", ex.getMessage());
         }
         return 1;
     }
