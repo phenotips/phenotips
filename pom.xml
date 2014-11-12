@@ -347,7 +347,17 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0 -->
+            <!-- Remove the following ignores after we release 1.1 -->
+            <difference>
+              <differenceType>7009</differenceType>
+              <className>**/hpoa/annotation/PrettyPrint</className>
+              <method>PrettyPrint()</method>
+            </difference>
+            <difference>
+              <differenceType>7002</differenceType>
+              <className>**/obo2solr/Main</className>
+              <method>void failWithMessage(java.lang.String)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
