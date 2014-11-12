@@ -529,7 +529,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     }
   };
   var exportTools = $$('.phenotips_export_tool');
-  if (exportTools &amp;&amp; exportTools.lenght != 0) {
+  if (exportTools &amp;&amp; exportTools.length != 0) {
     exportTools.each(function(exportTool) {
       exportTool.observe('click', function(event) {
         event.stop();

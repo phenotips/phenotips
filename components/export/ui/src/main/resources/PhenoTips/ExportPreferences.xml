@@ -95,7 +95,7 @@
 {{/velocity}}
 
 {{velocity}}
-{{html clean="false" filter="indent"}}&lt;form class="xform" action="${request.get('export_endpoint')}" method="post"&gt;&lt;div&gt;{{/html}}
+{{html clean="false" filter="indent"}}&lt;form class="xform" action="${escapetool.xml($request.get('export_endpoint'))}" method="post"&gt;&lt;div&gt;{{/html}}
 (% class="section filters"%)(((
 === (% class="step" %)1(%%) Filter records you wish to export ===
 
