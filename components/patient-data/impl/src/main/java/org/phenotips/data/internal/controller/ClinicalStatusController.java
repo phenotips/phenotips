@@ -51,11 +51,14 @@ import net.sf.json.JSONObject;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
-    /** The name under which the output of this controller is requested when writing JSON. */
+    /** The name of the XProperty used to store the clinical status in the patient object. */
     private static final String INTERNAL_PROPERTY_NAME = "unaffected";
 
-    /** Style check requires this. */
-    private static String UNAFFECTED = INTERNAL_PROPERTY_NAME;
+    /** Value used when the patient is unaffected. */
+    private static final String STATUS_UNAFFECTED = INTERNAL_PROPERTY_NAME;
+
+    /** Value used when the patient is affected. */
+    private static final String STATUS_AFFECTED = "affected";
 
     /** Logging helper object. */
     @Inject
@@ -80,11 +83,11 @@ public class ClinicalStatusController implements PatientDataController<String>
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            int isNormal = data.getIntValue(UNAFFECTED);
+            int isNormal = data.getIntValue(INTERNAL_PROPERTY_NAME);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
+                return new SimpleValuePatientData<String>(getName(), STATUS_UNAFFECTED);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), "affected");
+                return new SimpleValuePatientData<String>(getName(), STATUS_AFFECTED);
             }
         } catch (Exception e) {
             this.logger.error(

@@ -209,7 +209,7 @@ public class PhenoTipsPatient implements Patient
         if (includedFieldNames == null) {
             return true;
         }
-        for(String fieldName : fieldNames) {
+        for (String fieldName : fieldNames) {
             if (isFieldIncluded(includedFieldNames, fieldName)) {
                 return true;
             }
