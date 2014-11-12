@@ -38,7 +38,7 @@ public abstract class AbstractCollectionMap<K extends Comparable<? super K>, V> 
 
     public AbstractCollectionMap(int initialCapacity)
     {
-        super();// initialCapacity);
+        super();
     }
 
     public boolean addTo(K key, V value)
@@ -101,7 +101,7 @@ public abstract class AbstractCollectionMap<K extends Comparable<? super K>, V> 
                 }
             }
         });
-        LinkedList<K> result = new LinkedList<K>();
+        List<K> result = new LinkedList<K>();
         for (K key : sortedKeys) {
             result.add(key);
         }

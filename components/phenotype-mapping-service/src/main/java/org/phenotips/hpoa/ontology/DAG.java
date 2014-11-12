@@ -29,15 +29,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DAG
 {
-    public final static String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
+    public static final String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
 
-    private final static String TERM_MARKER = "[Term]";
+    private static final String TERM_MARKER = "[Term]";
 
-    private final static String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
+    private static final String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
 
-    private final TreeMap<String, Node> nodes = new TreeMap<String, Node>();
+    private final Map<String, Node> nodes = new TreeMap<String, Node>();
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public int load(File source)
     {
@@ -60,25 +65,23 @@ public class DAG
                     }
                     continue;
                 }
-                String pieces[] = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
+                String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
                 if (pieces.length != 2) {
                     continue;
                 }
-                String name = pieces[0], value = pieces[1];
+                String name = pieces[0];
+                String value = pieces[1];
                 data.addTo(name, value);
             }
             if (data.getId() != null) {
                 this.nodes.put(data.getId(), new Node(data));
             }
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            System.err.println("File does not exist");
+            this.logger.error("Source file [{}] does not exist", source.getAbsolutePath(), ex);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+            this.logger.error("Could not locate source file [{}]", source.getAbsolutePath());
         } catch (IOException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+            this.logger.error("Cannot read source file [{}]: {}", source.getAbsolutePath(), ex.getMessage());
         } finally {
             if (in != null) {
                 try {
@@ -96,8 +99,8 @@ public class DAG
                 if (p != null) {
                     p.addChild(n);
                 } else {
-                    System.err.println("[WARNING] Node with id " + n.getId() + " has parent " + parentId
-                        + ", but no node " + parentId + "exists in the graph!\n");
+                    this.logger.warn("Node with id [{}] has parent [{}], but no such node exists in the graph!",
+                        n.getId(), parentId);
                 }
             }
         }

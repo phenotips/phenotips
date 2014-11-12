@@ -42,13 +42,13 @@ import org.slf4j.Logger;
 @Singleton
 public class HPO extends AbstractOntology implements Initializable
 {
+    private static HPO instance;
+
     @Inject
     private Logger logger;
 
     @Inject
     private Environment environment;
-
-    private static HPO instance;
 
     // @Inject
     // @Named("solr")

@@ -23,31 +23,31 @@ import java.util.List;
 
 public interface IDAGNode extends CoreNode
 {
-    public boolean addParent(String parentId);
+    boolean addParent(String parentId);
 
-    public boolean addParent(IDAGNode parent);
+    boolean addParent(IDAGNode parent);
 
-    public boolean removeParent(String parentId);
+    boolean removeParent(String parentId);
 
-    public boolean removeParent(IDAGNode parent);
+    boolean removeParent(IDAGNode parent);
 
-    public boolean hasParent(String parentId);
+    boolean hasParent(String parentId);
 
-    public boolean hasParent(IDAGNode parent);
+    boolean hasParent(IDAGNode parent);
 
-    public boolean addChild(String childId);
+    boolean addChild(String childId);
 
-    public boolean addChild(IDAGNode child);
+    boolean addChild(IDAGNode child);
 
-    public boolean removeChild(String childId);
+    boolean removeChild(String childId);
 
-    public boolean removeChild(IDAGNode child);
+    boolean removeChild(IDAGNode child);
 
-    public boolean hasChild(String childId);
+    boolean hasChild(String childId);
 
-    public boolean hasChild(IDAGNode child);
+    boolean hasChild(IDAGNode child);
 
-    public List<String> getParents();
+    List<String> getParents();
 
-    public List<String> getChildren();
+    List<String> getChildren();
 }

@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BGraph<T extends Node>
 {
     public enum Side
@@ -33,12 +36,6 @@ public class BGraph<T extends Node>
         L,
         R;
     }
-
-    private Map<String, Side> nodeSides = new HashMap<String, Side>();
-
-    private Map<String, T> lNodes = new TreeMap<String, T>();
-
-    private Map<String, T> rNodes = new TreeMap<String, T>();
 
     protected Map<Side, Map<String, T>> nodes = new HashMap<Side, Map<String, T>>()
     {
@@ -48,6 +45,14 @@ public class BGraph<T extends Node>
             put(Side.R, BGraph.this.rNodes);
         }
     };
+
+    private Map<String, Side> nodeSides = new HashMap<String, Side>();
+
+    private Map<String, T> lNodes = new TreeMap<String, T>();
+
+    private Map<String, T> rNodes = new TreeMap<String, T>();
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public void clear()
     {
@@ -86,7 +91,7 @@ public class BGraph<T extends Node>
         if (lNode != null && rNode != null) {
             addConnection(lNode, rNode);
         } else {
-            System.err.println("Wrong arguments: " + nodes);
+            this.logger.warn("Wrong arguments: [{}]", nodes);
         }
     }
 

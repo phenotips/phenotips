@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 public class DAG<T extends DAGNode>
 {
-    private TreeMap<String, T> nodes = new TreeMap<String, T>();
+    private Map<String, T> nodes = new TreeMap<String, T>();
 
     public void clear()
     {

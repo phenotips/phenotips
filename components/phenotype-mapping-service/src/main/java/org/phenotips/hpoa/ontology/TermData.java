@@ -26,25 +26,25 @@ import java.util.Collections;
 
 public class TermData extends SetMap<String, String>
 {
+    public static final String ID_FIELD_NAME = "id";
+
+    public static final String NAME_FIELD_NAME = "name";
+
+    public static final String PARENT_FIELD_NAME = "is_a";
+
+    public static final String OBSOLETE_FIELD_NAME = "is_obsolete";
+
+    public static final String ALT_ID_FIELD_NAME = "alt_id";
+
+    public static final String PARENT_ID_REGEX = "^([A-Z]+\\:[0-9]{7})\\s*!\\s*.*";
+
     private static final long serialVersionUID = 4880377023212693352L;
-
-    public final static String ID_FIELD_NAME = "id";
-
-    public final static String NAME_FIELD_NAME = "name";
-
-    public final static String PARENT_FIELD_NAME = "is_a";
-
-    public final static String OBSOLETE_FIELD_NAME = "is_obsolete";
-
-    public final static String ALT_ID_FIELD_NAME = "alt_id";
-
-    public final static String PARENT_ID_REGEX = "^([A-Z]+\\:[0-9]{7})\\s*!\\s*.*";
 
     private String id;
 
     private String name;
 
-    private boolean obsolete = false;
+    private boolean obsolete;
 
     @Override
     public void clear()

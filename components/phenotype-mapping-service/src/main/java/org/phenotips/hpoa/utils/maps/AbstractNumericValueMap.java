@@ -38,7 +38,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
 
     public AbstractNumericValueMap(int initialCapacity)
     {
-        super();// initialCapacity);
+        super();
     }
 
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
                 }
             }
         });
-        LinkedList<K> result = new LinkedList<K>();
+        List<K> result = new LinkedList<K>();
         for (K key : sortedKeys) {
             result.add(key);
         }
