@@ -133,9 +133,36 @@ var Controller = Class.create({
         // get the list of affected nodes
         var disconnectedList = editor.getGraph().getDisconnectedSetIfNodeRemoved(nodeID);
 
+        var onlyChild = false;
+        // special case of removing the last child: need to convert to placeholder
+        if (editor.getGraph().isPerson(nodeID) && editor.getGraph().isOnlyChild(nodeID)) {
+            var producingRelationship = editor.getGraph().getParentRelationship(nodeID);
+            if (!arrayContains(disconnectedList, producingRelationship)) {
+                onlyChild = true;
+            }
+        }
+
         var removeSelected = function() {
             try {
+                if (onlyChild) {
+                    removeFirstOccurrenceByValue(disconnectedList, nodeID);
+                }
+
                 var changeSet = editor.getGraph().removeNodes(disconnectedList);
+
+                if (onlyChild) {
+                    // convert child to a placeholder
+                    editor.getGraph().setProperties( nodeID, {"gender": "U", "placeholder": true} );
+                    changeSet.removed.push(nodeID);
+                    changeSet["new"] = [ nodeID ];
+
+                    if (!editor.getGraph().isChildless(producingRelationship)) {
+                        var partnership = editor.getView().getNode(producingRelationship);
+                        partnership.setChildlessStatus('childless');
+                        var newProperties = partnership.getProperties();
+                        editor.getGraph().setProperties( producingRelationship, newProperties );
+                    }
+                }
 
                 editor.getView().applyChanges(changeSet, true);
 
@@ -204,25 +231,26 @@ var Controller = Class.create({
                 var propertyGetFunction =  propertySetFunction.replace("set","get");
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
+                if (oldValue && typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
+                    (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
+                    // compare Date objects
+                    try {
+                        if ( oldValue.decade == propValue.decade &&
+                             oldValue.year   == propValue.year &&
+                             oldValue.month  == propValue.month &&
+                             oldValue.day    == propValue.day )
+                            continue;
+                    } catch (err) {
+                        // fine, one of the objects is in some other format, maybe date picker has changed
+                        // and this code wa snot updated
+                    }
+                }
 
                 if (Object.prototype.toString.call(oldValue) === '[object Array]') {
                     oldValue = oldValue.slice(0);
                 }
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
-
-                if (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate") {
-                    // some browsers may not treat the date string as provided by the date widget the same way,
-                    // so convert to the least common denominator which seems to be the toDateString()
-                    if (propValue != "") {
-                        try {
-                            var parsedDate = new Date(propValue);
-                            propValue = parsedDate.toDateString();
-                        } catch (err) {
-                            // in case date did not parse: set date exactly as provided
-                        }
-                    }
-                }
 
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
                 // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
@@ -395,6 +423,13 @@ var Controller = Class.create({
         var parentID = event.memo.parentID;
         if (!editor.getGraph().isPerson(personID) || !editor.getGraph().isValidID(parentID)) return;
 
+        if (editor.getGraph().isRelationship(parentID) && editor.getGraph().isChildlessByChoice(parentID)) {
+            var partnership = editor.getView().getNode(parentID);
+            partnership.setChildlessStatus(null);
+            var newProperties = partnership.getProperties();
+            editor.getGraph().setProperties( parentID, newProperties );
+        }
+
         if (editor.getGraph().isChildless(parentID)) {
             editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": true }, "noUndoRedo": true } } );
         }
@@ -538,7 +573,7 @@ var Controller = Class.create({
 
         var childProperties = {};
         if (editor.getGraph().isChildless(personID) || editor.getGraph().isChildless(partnerID)) {
-            childProperties = { "isAdopted": true };
+            childProperties["isAdopted"] = true;
         }
 
         // when partnering up a node with unknown gender with a node of known gender
@@ -576,7 +611,7 @@ var Controller = Class.create({
         var numTwins = event.memo.twins ? event.memo.twins : 1;
 
         var childParams = cloneObject(event.memo.childParams);
-        if (editor.getGraph().isChildless(partnershipID)) {
+        if (editor.getGraph().isInfertile(partnershipID)) {
             childParams["isAdopted"] = true;
         }
 
@@ -585,7 +620,22 @@ var Controller = Class.create({
             childParams["numPersons"] = numPersons;
         }
 
-        var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);
+        // check if there is a placeholder child which has to be replaced by the selected child type
+        var children = editor.getGraph().getRelationshipChildrenSortedByOrder(partnershipID);
+        if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
+            var changeSet = editor.getGraph().convertPlaceholderTo(children[0], childParams);
+
+            if (editor.getGraph().isChildlessByChoice(partnershipID)) {
+                var partnership = editor.getView().getNode(partnershipID);
+                partnership.setChildlessStatus(null);
+                var newProperties = partnership.getProperties();
+                editor.getGraph().setProperties( partnershipID, newProperties );
+            }
+        }
+        else {
+            var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);
+        }
+
         editor.getView().applyChanges(changeSet, true);
 
         if (!event.memo.noUndoRedo)

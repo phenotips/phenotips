@@ -51,9 +51,7 @@ DynamicPositionedGraph.prototype = {
 
     isPlaceholder: function( id )
     {
-        if (!this.isPerson(id)) return false;
-        // TODO
-        return false;
+        return this.DG.GG.isPlaceholder(id);
     },
 
     isAdopted: function( id )
@@ -104,8 +102,24 @@ DynamicPositionedGraph.prototype = {
     {
         if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
             return false;
-        var res =  (this.getProperties(id)["childlessStatus"] !== null);
+        var res = (this.getProperties(id)["childlessStatus"] !== null);
         //console.log("childless status of " + id + " : " + res);
+        return res;
+    },
+
+    isChildlessByChoice: function( id )
+    {
+        if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
+            return false;
+        var res = (this.getProperties(id)["childlessStatus"] == 'childless');
+        return res;
+    },
+
+    isInfertile: function( id )
+    {
+        if (!this.getProperties(id).hasOwnProperty("childlessStatus"))
+            return false;
+        var res = (this.getProperties(id)["childlessStatus"] == 'infertile');
         return res;
     },
 
@@ -297,23 +311,54 @@ DynamicPositionedGraph.prototype = {
         return allRels;
     },
 
+    getAllSiblings: function( v )
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: getAllSiblings() is applied to a non-person";
+
+        if (this.DG.GG.getInEdges(v).length == 0) {
+            return [];
+        }
+
+        var chhub = this.DG.GG.getInEdges(v)[0];
+
+        var siblings = this.DG.GG.getOutEdges(chhub).slice(0);
+
+        removeFirstOccurrenceByValue(siblings, v);
+
+        return siblings;
+    },
+
+    isOnlyChild: function( v )
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: isOnlyPartnerlessChild() is applied to a non-person";
+        if (this.DG.GG.getInEdges(v).length == 0) {
+            return false;  // no parents => not a child of anyone
+        }
+        if (this.getAllSiblings(v).length == 0) {
+            return true;  // no parents and no other isblings => only child
+        }
+        return false;     // has siblings
+    },
+
     hasNonPlaceholderNonAdoptedChildren: function( v )
     {
+        var children = [];
         if (this.isRelationship(v)) {
-            var children = this.getRelationshipChildrenSortedByOrder(v);
-
-            //console.log("Childtren: " + children);
-            for (var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if (!this.isPlaceholder(child) && !this.isAdopted(child)) {
-                    //console.log("child: " + child + ", isAdopted: " + this.isAdopted(child));
-                    return true;
-                }
-            }
+            children = this.getRelationshipChildrenSortedByOrder(v);
         }
         else if (this.isPerson(v)) {
-            //var children = ...
-            //TODO
+            children = this.getAllChildren(v);
+        }
+
+        //console.log("Childtren: " + children);
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (!this.isPlaceholder(child) && !this.isAdopted(child)) {
+                //console.log("child: " + child + ", isAdopted: " + this.isAdopted(child));
+                return true;
+            }
         }
 
         return false;
@@ -402,6 +447,7 @@ DynamicPositionedGraph.prototype = {
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
            if (!this.isRelationship(i) && !this.isPerson(i)) continue;
            if (this.isPersonGroup(i)) continue;
+           if (this.isPlaceholder(i)) continue;
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
            result.push(i);
         }
@@ -446,13 +492,8 @@ DynamicPositionedGraph.prototype = {
         removedList[v] = true;
 
         if (this.isPerson(v)) {
-            // special case: removing the only child also removes the relationship
-            if (this.DG.GG.getInEdges(v).length != 0) {
-                var chhub = this.DG.GG.getInEdges(v)[0];
-                if (this.DG.GG.getOutEdges(chhub).length == 1) {
-                    removedList[ this.DG.GG.getInEdges(chhub)[0] ] = true;
-                }
-            }
+            // note: removing the only child should not removes the relationship
+            //       (need to convert this child to a placeholder instead)
 
             // also remove all relationships by this person
             var allRels = this.DG.GG.getAllRelationships(v);
@@ -682,8 +723,15 @@ DynamicPositionedGraph.prototype = {
         var insertRank  = this.DG.ranks[personId];
         var personOrder = this.DG.order.vOrder[personId];
 
+        var needSwap = true;
+        var relProperties = {};
+        if (childProperties.hasOwnProperty("placeholder") && childProperties["placeholder"]) {
+            relProperties["childlessStatus"] = 'childless';
+            var needSwap = false;
+        }
+
         // a few special cases which involve not only insertions but also existing node rearrangements:
-        this._heuristics.swapPartnerToBringToSideIfPossible( personId );
+        this._heuristics.swapPartnerToBringToSideIfPossible( personId );   // TODO: only iff "needSwap"?
         this._heuristics.swapTwinsToBringToSideIfPossible( personId );
 
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
@@ -692,7 +740,7 @@ DynamicPositionedGraph.prototype = {
         console.log("vOrder: " + personOrder + ", inserting @ " + insertOrder);
         console.log("Orders before: " + stringifyObject(this.DG.order.order[this.DG.ranks[personId]]));
 
-        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, 1.0, personId, null, insertRank, insertOrder);
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, relProperties, 1.0, personId, null, insertRank, insertOrder);
 
         console.log("Orders after: " + stringifyObject(this.DG.order.order[this.DG.ranks[personId]]));
 
@@ -742,13 +790,22 @@ DynamicPositionedGraph.prototype = {
             var rankChildHub = this.DG.ranks[childHubId];
             var rankChild    = this.DG.ranks[childId];
 
+            var otherChildren = this.getAllChildren(parentId);
+
             var weight = 1;
             this.DG.GG.addEdge(childHubId, childId, weight);
+
+            // this should be done after addEdge(), or the assumption of at least one child will
+            // be violated at the time removeNodes() is executed, resulting in a validation failure
+            if (otherChildren.length == 1 && this.isPlaceholder(otherChildren[0])) {
+                var removeChangeSet = this.removeNodes([otherChildren[0]]);
+            }
 
             var animateList = [childId];
 
             if (rankChildHub != rankChild - 1) {
-                return this.redrawAll(animateList);
+                var removedList = removeChangeSet ? removeChangeSet.removed : [];
+                return this.redrawAll(removedList, animateList);
             }
 
             var positionsBefore  = this.DG.positions.slice(0);
@@ -768,7 +825,15 @@ DynamicPositionedGraph.prototype = {
 
             positionsBefore[parentId] = Infinity; // so that it is added to the list of moved nodes
             var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore );
-            return {"moved": movedNodes, "animate": [childId]};
+
+            if (removeChangeSet) {
+                removeChangeSet.moved = removeChangeSet.moved.concat(movedNodes);
+                removeChangeSet.moved = filterUnique(removeChangeSet.moved);
+                removeChangeSet.animate = [childId];
+                return removeChangeSet;
+            } else {
+                return {"moved": movedNodes, "animate": [childId]};
+            }
         }
         else {
             var rankParent = this.DG.ranks[parentId];
@@ -789,7 +854,7 @@ DynamicPositionedGraph.prototype = {
                 this.DG.GG.addEdge(parentId, newRelationshipId, 1);
                 var animateList = [childId, parentId];
                 var newList     = [newRelationshipId, newParentId];
-                return this.redrawAll(animateList, newList, ranksBefore);
+                return this.redrawAll(null, animateList, newList, ranksBefore);
             }
 
             // add new childhub     @ rank (rankChild - 1)
@@ -905,7 +970,12 @@ DynamicPositionedGraph.prototype = {
         var preferLeft        = (x_person2 < x_person1);
         var insertRelatOrder  = (rankP1 == rankP2) ? this._findBestRelationshipPosition( person1, false, person2 ) :
                                                      this._findBestRelationshipPosition( person1, preferLeft);
-        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, weight, person1, null, rankP1, insertRelatOrder);
+
+        var relProperties = {};
+        if (childProperties.hasOwnProperty("placeholder") && childProperties["placeholder"]) {
+            relProperties["childlessStatus"] = 'childless';
+        }
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, relProperties, weight, person1, null, rankP1, insertRelatOrder);
 
         var insertChildhubRank  = this.DG.ranks[newRelationshipId] + 1;
         var insertChildhubOrder = this._findBestInsertPosition( insertChildhubRank, newRelationshipId );
@@ -980,6 +1050,50 @@ DynamicPositionedGraph.prototype = {
         return {"new": newNodes, "moved": movedNodes, "animate": animateNodes};
     },
 
+    convertPlaceholderTo: function( placeholderId, childParams )
+    {
+        var positionsBefore  = this.DG.positions.slice(0);
+        var ranksBefore      = this.DG.ranks.slice(0);
+        var vertLevelsBefore = this.DG.vertLevel.copy();
+        var rankYBefore      = this.DG.rankY.slice(0);
+        var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
+
+        if (!this.isPlaceholder(placeholderId)) {
+            throw "Attemp to access a non-paceholder node as a placeholder";
+        }
+
+        if (!childParams.hasOwnProperty("gender")) {
+            childParams["gender"] = "U";
+        }
+        this.setProperties(placeholderId, childParams);
+
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
+
+        var parentRelationship = this.getParentRelationship(placeholderId);
+
+        // need to redraw (move) the partnership-child line
+        var moved = [ parentRelationship ];
+
+        // may also need to redraw all partnership lines on this rank, and
+        // some other nodes as well, since person width > placeholder width
+        var rank = this.DG.ranks[placeholderId];
+        for (var order = 0; order < this.DG.order.order[rank].length - 1; order++) {
+            var v = this.DG.order.order[rank][order];
+
+            if (this.DG.GG.isRelationship(v) && !arrayContains(moved, v)) {
+                moved.push(v);
+            }
+        }
+        
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+        
+        moved = moved.concat(movedNodes);
+        moved = filterUnique(moved);
+        removeFirstOccurrenceByValue(moved, placeholderId);
+
+        return {"removed": [ placeholderId ] , "new": [ placeholderId ], "moved": moved };
+    },
+
     removeNodes: function( nodeList )
     {
         this._debugPrintAll("before");
@@ -1000,14 +1114,14 @@ DynamicPositionedGraph.prototype = {
                 // also add its childhub
                 var chHub = this.DG.GG.getOutEdges(nodeList[i])[0];
                 nodeList.push(chHub);
-                console.log("adding " + chHub + " to removal list (chhub of " + nodeList[i] + ")");
+                //console.log("adding " + chHub + " to removal list (chhub of " + nodeList[i] + ")");
 
                 // also add its long multi-rank edges
                 var pathToParents = this.getPathToParents(nodeList[i]);
                 for (var p = 0; p < pathToParents.length; p++) {
                     for (var j = 0; j < pathToParents[p].length; j++)
                         if (this.DG.GG.isVirtual(pathToParents[p][j])) {
-                            console.log("adding " + pathToParents[p][j] + " to removal list (virtual of " + nodeList[i] + ")");
+                            //console.log("adding " + pathToParents[p][j] + " to removal list (virtual of " + nodeList[i] + ")");
                             nodeList.push(pathToParents[p][j]);
                         }
                 }
@@ -1029,6 +1143,8 @@ DynamicPositionedGraph.prototype = {
             //    if (rel !== null && !arrayContains(nodeList, rel))
             //        moved.push(rel);
             //}
+
+            // TODO: if this is one of only two twins remove twinGroupID form the remainin twin as it is no longer a twin
 
             this.DG.GG.remove(v);
             //console.log("order before: " + stringifyObject(this.DG.order));
@@ -1109,7 +1225,7 @@ DynamicPositionedGraph.prototype = {
         return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
     },
 
-    redrawAll: function (animateList, newList, ranksBefore)
+    redrawAll: function (removedBeforeRedrawList, animateList, newList, ranksBefore)
     {
         var ranksBefore = ranksBefore ? ranksBefore : this.DG.ranks.slice(0);  // sometimes we want to use ranksbefore as they were before some stuff was added to the graph before a redraw
 
@@ -1147,6 +1263,8 @@ DynamicPositionedGraph.prototype = {
 
         if (!animateList) animateList = [];
 
+        if (!removedBeforeRedrawList) removedBeforeRedrawList = [];
+
         if (!newList)
             newList = [];
         else {
@@ -1157,7 +1275,12 @@ DynamicPositionedGraph.prototype = {
 
         this._debugPrintAll("after");
 
-        return {"new": newList, "moved": movedNodes, "highlight": reRanked, "animate": animateList};
+        return { "new": newList,
+                 "moved": movedNodes,
+                 "highlight": reRanked,
+                 "animate": animateList,
+                 "removed": removedBeforeRedrawList,
+                 "removedInternally": removedBeforeRedrawList };
     },
 
     // remove empty-values optional properties, e.g. "fName: ''" or "disorders: []"
@@ -1925,6 +2048,7 @@ DynamicPositionedGraph.prototype = {
          for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
             if (!this.isPerson(i)) continue;
             if (this.isPersonGroup(i)) continue;
+            if (this.isPlaceholder(i)) continue;
             var gender = this.getProperties(i)["gender"].toLowerCase();
             //console.log("trying: " + i + ", gender: " + gender + ", validSet: " + stringifyObject(validGendersSet));
             if (arrayContains(validGendersSet, gender))
@@ -2027,6 +2151,12 @@ Heuristics.prototype = {
         var rightMostChildId    = undefined;
         var rightMostChildOrder = -Infinity;
         var rightMostHasRParner = false;
+
+        var onlyPlaceholder = false;
+        if (children.length == 1 && this.DG.GG.isPlaceholder(children[0])) {
+            onlyPlaceholder = true;
+        }
+
         for (var i = 0; i < children.length; i++) {
             var childId = children[i];
             var order   = this.DG.order.vOrder[childId];
@@ -2062,7 +2192,8 @@ Heuristics.prototype = {
                 "withPartnerSet"     : havePartners,
                 "numWithPartners"    : numWithPartners,
                 "numWithTwoPartners" : numWithTwoPartners,
-                "orderedChildren"    : orderedChildren };
+                "orderedChildren"    : orderedChildren,
+                "onlyPlaceholder"    : onlyPlaceholder };
     },
 
     hasParnerBetweenOrders: function( personId, minOrder, maxOrder )
@@ -2500,6 +2631,8 @@ Heuristics.prototype = {
 
                 var childInfo = this.analizeChildren(childhub);
 
+                //if (childInfo.onlyPlaceholder) continue;
+
                 var misalignment = 0;
 
                 // First try easy options: moving nodes without moving any other nodes (works in most cases and is fast)
@@ -2599,7 +2732,6 @@ Heuristics.prototype = {
                 //console.log("Nodes to shift: " + stringifyObject(affectedInfoChildShift) + ", acceptable: " + childShiftAcceptable);
 
                 if (parentShiftAcceptable || childShiftAcceptable) {
-
                     improved = true;   // at least one of the shifts is OK
 
                     // pick which one to use
@@ -3016,7 +3148,7 @@ Heuristics.prototype = {
             }
             else
             if (this.DG.GG.isPerson(nextV)) {
-                if (!initialNodes.hasOwnProperty(nextV)) numPersons++;
+                if (!initialNodes.hasOwnProperty(nextV) && !this.DG.GG.isPlaceholder(nextV)) numPersons++;
 
                 if (!noDown_set.hasOwnProperty(nextV)) {
                     var rels = this.DG.GG.getOutEdges(nextV);
@@ -3046,6 +3178,7 @@ Heuristics.prototype = {
                     }
                 }
 
+                //if (noUp_set.hasOwnProperty(nextV) || this.DG.GG.isPlaceholder(nextV)) continue;
                 if (noUp_set.hasOwnProperty(nextV)) continue;
 
                 var inEdges = this.DG.GG.getInEdges(nextV);
@@ -3500,6 +3633,9 @@ Heuristics.prototype = {
                     chhub = parseInt(chhub);
                     if (doNotTouch.hasOwnProperty(chhub)) continue;
                     var children = this.DG.GG.getOutEdges(chhub);
+                    //if (children.length == 1 && this.DG.GG.isPlaceholder(children[0])) {
+                    //    continue;
+                    //}
                     if (children.length > 0 && children.length == childrenMoved[chhub]) {
                         var minShift = Infinity;
                         for (var j = 0; j < children.length; j++) {

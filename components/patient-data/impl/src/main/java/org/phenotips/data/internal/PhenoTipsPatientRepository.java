@@ -142,12 +142,12 @@ public class PhenoTipsPatientRepository implements PatientRepository
             String targetSpace = Patient.DEFAULT_DATA_SPACE.getName();
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            long id = getNextAvailableId();
+            long id = getLastUsedId();
             DocumentReference newDoc;
             SpaceReference space =
                 new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                newDoc = new DocumentReference(prefix + String.format("%07d", id), space);
+                newDoc = new DocumentReference(prefix + String.format("%07d", ++id), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
@@ -193,7 +193,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
         return createNewPatient(this.bridge.getCurrentUserReference());
     }
 
-    private long getNextAvailableId() throws QueryException
+    private long getLastUsedId() throws QueryException
     {
         long crtMaxID = 0;
         Query q =
@@ -206,6 +206,6 @@ public class PhenoTipsPatientRepository implements PatientRepository
             crtMaxID = crtMaxIDList.get(0);
         }
         crtMaxID = Math.max(crtMaxID, 0);
-        return crtMaxID + 1;
+        return crtMaxID;
     }
 }

@@ -49,6 +49,21 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <footer>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>footer</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Footer displayed at the bottom of each PDF page</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </footer>
     <fopxsl>
       <customDisplay/>
       <disabled>0</disabled>
@@ -56,7 +71,7 @@
       <name>fopxsl</name>
       <number>3</number>
       <picker>0</picker>
-      <prettyName>fopxsl</prettyName>
+      <prettyName>XSLT for post-processing the FO document</prettyName>
       <rows>5</rows>
       <size>40</size>
       <unmodifiable>0</unmodifiable>
@@ -64,6 +79,21 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </fopxsl>
+    <header>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>header</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Header displayed on top of each PDF page</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </header>
     <style>
       <customDisplay/>
       <disabled>0</disabled>
@@ -71,7 +101,7 @@
       <name>style</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>style</prettyName>
+      <prettyName>Custom CSS style to apply to the PDF</prettyName>
       <rows>5</rows>
       <size>40</size>
       <unmodifiable>0</unmodifiable>
@@ -86,7 +116,7 @@
       <name>xhtmlxsl</name>
       <number>2</number>
       <picker>0</picker>
-      <prettyName>xhtmlxsl</prettyName>
+      <prettyName>XSLT for transforming HTML into a FO document</prettyName>
       <rows>5</rows>
       <size>40</size>
       <unmodifiable>0</unmodifiable>

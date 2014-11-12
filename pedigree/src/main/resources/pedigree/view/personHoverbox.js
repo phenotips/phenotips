@@ -219,11 +219,10 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @param {String} handleType "child", "partner" or "parent"
      * @param {Boolean} isDrag True if this handle is being dragged
      */
-    handleAction : function(handleType, isDrag, curHoveredId) {        
-        console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);        
-        
-        if(isDrag && curHoveredId !== null) {                   
-            
+    handleAction : function(handleType, isDrag, curHoveredId) {
+        console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);
+
+        if(isDrag && curHoveredId !== null) {
             if(handleType == "parent") {
                 this.removeHandles();
                 this.removeButtons();
@@ -231,22 +230,22 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 document.fire("pedigree:person:drag:newparent", event);
             }
             else if(handleType == "partnerR" || handleType == "partnerL") {
-                this.removeHandles();                
+                this.removeHandles();
                 var event = { "personID": this.getNode().getID(), "partnerID": curHoveredId };
                 document.fire("pedigree:person:drag:newpartner", event);
             }
             else if(handleType == "child") {
                 var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
-                document.fire("pedigree:person:drag:newparent", event);                
+                document.fire("pedigree:person:drag:newparent", event);
             }
             else if(handleType == "sibling") {
                 var event = { "sibling2ID": curHoveredId, "sibling1ID": this.getNode().getID() };
-                document.fire("pedigree:person:drag:newsibling", event);                  
+                document.fire("pedigree:person:drag:newsibling", event);
             }
         }
         else if (!isDrag) {
             if(handleType == "partnerR" || handleType == "partnerL") {
-                this.removeHandles();                
+                this.removeHandles();
                 var preferLeft = (this.getNode().getGender() == 'F') || (handleType == "partnerL");
                 var event = { "personID": this.getNode().getID(), "preferLeft": preferLeft };
                 document.fire("pedigree:person:newpartnerandchild", event);
@@ -256,7 +255,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
                 // if user selects anything the bubble will fire an even on its own
             }
-            else if(handleType == "sibling") {                
+            else if(handleType == "sibling") {
                 var position = editor.getWorkspace().canvasToDiv(this.getNodeX() - PedigreeEditor.attributes.personSiblingHandleLengthX,
                                                                  this.getNodeY() - PedigreeEditor.attributes.personHandleBreakY+PedigreeEditor.attributes.personSiblingHandleLengthY + 15);
                 editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);                

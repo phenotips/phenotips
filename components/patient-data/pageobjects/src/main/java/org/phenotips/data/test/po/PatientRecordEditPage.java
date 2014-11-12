@@ -55,7 +55,7 @@ public class PatientRecordEditPage extends InlinePage
     WebElement genderFemale;
 
     @FindBy(id = "HFamilyhistory")
-    WebElement expandFamilyHistory;
+    WebElement familyHistorySectionTitle;
 
     @FindBy(id = "PhenoTips.PatientClass_0_maternal_ethnicity_2")
     WebElement maternalEthnicity;
@@ -628,7 +628,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandFamilyHistory()
     {
-        this.expandFamilyHistory.click();
+        this.familyHistorySectionTitle.click();
     }
 
     public boolean checkFamilyHistoryExpanded()

@@ -95,6 +95,7 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
    
    for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
        if (!pedigree.GG.isPerson(i)) continue;
+       if (pedigree.GG.isPlaceholder(i)) continue;
        
        output += familyID + " " + idToPedId[i] + " "; 
        
@@ -186,6 +187,7 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
 
    for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
        if (!pedigree.GG.isPerson(i)) continue;
+       if (pedigree.GG.isPlaceholder(i)) continue;
 
        var id = idToBoadId[i];
 
@@ -236,8 +238,8 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        var age = "0";
        var yob = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("dob")) {
-           var date = new Date(pedigree.GG.properties[i]["dob"]);
-           yob = date.getFullYear();
+           var date = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
+           yob = date.getBestPrecisionStringYear();
            age = new Date().getFullYear() - yob;
        }
        output += age + "\t" + yob + "\t";
@@ -330,6 +332,7 @@ PedigreeExport.createNewIDs = function(pedigree, idGenerationPreference, maxLeng
 
     for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
         if (!pedigree.GG.isPerson(i)) continue;
+        if (pedigree.GG.isPlaceholder(i)) continue;
 
         var id = nextUnusedID++;
         if (idGenerationPreference == "external" && pedigree.GG.properties[i].hasOwnProperty("externalID")) {

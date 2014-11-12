@@ -336,6 +336,7 @@
 .quick-search-box {
   border: 0 none;
   z-index: 1000;
+  background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [
@@ -490,6 +491,7 @@
   padding: 5px 20px 5px 15px !important;
   text-align: left;
   text-transform: uppercase;
+  background-color: $theme.panelHeaderBackgroundColor;
   #css3_backgroundLinearGradient({
      'to': 'bottom',
      'colors': [
@@ -679,7 +681,7 @@ label.selected, label.subterm-selected {
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__phenotype')##
+$xwiki.ssx.use('PhenoTips.UIX_Field__phenotype', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
 #macro (__qsBox $fieldName $cssClass)
   #if ($xcontext.action == 'edit')

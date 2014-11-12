@@ -264,7 +264,7 @@ function _printObjectInternal(o, level) {
 
     var output = '';
 
-    if (typeof o == 'object')
+    if (typeof o === 'object')
     {
 
         if (Object.prototype.toString.call(o) === '[object Array]')
@@ -295,7 +295,7 @@ function _printObjectInternal(o, level) {
             output += '}';
         }
     }
-    else if (typeof o == 'string') {
+    else if (typeof o === 'string') {
         output = "'" + o + "'";
     }
     else

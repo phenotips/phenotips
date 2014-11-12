@@ -569,7 +569,7 @@
   var init = function(event) {
     var docContent = $('mainContentArea');
     if (docContent) {
-      docContent.style.position = 'relative';
+      docContent.setStyle({'position' : 'relative'});
 
       var docActions = $('patient-record-actions');
       if (docActions) {
@@ -578,7 +578,7 @@
     }
   };
 
-  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", function() {init.defer()});
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
     </property>
     <property>
@@ -916,7 +916,7 @@
   border: 0 none;
   padding: 0 0 0 10px;
   font-size: 1em;
-  height: 1.8em;
+  height: 1.833em;
   text-shadow: none;
 }
 #patient-record-actions .menu.menu-horizontal a:hover {
@@ -1073,6 +1073,7 @@
 /* Horizontal Menu */
 
 .menu.menu-horizontal {
+  background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [

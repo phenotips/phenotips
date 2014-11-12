@@ -23,11 +23,11 @@ import java.util.List;
 
 public interface CoreNode
 {
-    public String getId();
+    String getId();
 
-    public String getName();
+    String getName();
 
-    public List<String> getNeighbors();
+    List<String> getNeighbors();
 
-    public int getNeighborsCount();
+    int getNeighborsCount();
 }

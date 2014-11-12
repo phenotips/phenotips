@@ -39,26 +39,26 @@ import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractOntology extends DAG<OntologyTerm> implements Ontology
 {
-    public final static String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
+    public static final String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
 
-    private final static String TERM_MARKER = "[Term]";
+    private static final String TERM_MARKER = "[Term]";
 
-    private final static String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
+    private static final String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
 
     private final Map<String, String> alternateIdMapping = Collections.synchronizedMap(new HashMap<String, String>());
 
+    private final Map<String, Set<String>> ancestorCache =
+        Collections.synchronizedMap(new HashMap<String, Set<String>>());
+
     private IDAGNode root;
 
-    private final Map<String, Set<String>> ancestorCache = Collections
-        .synchronizedMap(new HashMap<String, Set<String>>());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#load(org.phenotips.solr.SolrScriptService)
-     */
     @Override
     public int load(AbstractSolrScriptService source)
     {
@@ -90,10 +90,6 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         return size();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#load(java.io.File)
-     */
     @Override
     public int load(File source)
     {
@@ -115,11 +111,12 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
                     data.clear();
                     continue;
                 }
-                String pieces[] = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
+                String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
                 if (pieces.length != 2) {
                     continue;
                 }
-                String name = pieces[0], value = pieces[1];
+                String name = pieces[0];
+                String value = pieces[1];
                 data.addTo(name, value);
             }
             if (data.isValid()) {
@@ -127,14 +124,11 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
             }
             in.close();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            System.err.println("File does not exist");
+            this.logger.error("Ontology source file [{}] does not exist", source.getAbsolutePath(), ex);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+            this.logger.error("Could not locate ontology source file [{}]", source.getAbsolutePath());
         } catch (IOException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+            this.logger.error("Cannot read ontology source file [{}]: {}", source.getAbsolutePath(), ex.getMessage());
         }
         cleanArcs();
         // How much did we load:
@@ -155,13 +149,14 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
                 if (p != null) {
                     p.addChild(n);
                 } else {
-                    System.err.println("[WARNING] Node with id " + n.getId() + " has parent " + parentId
-                        + ", but no node " + parentId + " exists in the graph!\n");
+                    this.logger.warn(
+                        "[WARNING] Node with id [{}] has parent [{}], but no such node exists in the graph!",
+                        n.getId(), parentId);
                 }
             }
         }
         if (roots.size() == 0) {
-            System.err.println("Something's wrong, this directed graph is DEFINITELY not acyclic!");
+            this.logger.warn("Something's wrong, this directed graph is DEFINITELY not acyclic!");
         } else if (roots.size() == 1) {
             for (IDAGNode n : roots) {
                 this.root = n;
@@ -185,20 +180,12 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getRealId(java.lang.String)
-     */
     @Override
     public String getRealId(String id)
     {
         return this.alternateIdMapping.get(id);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getTerm(java.lang.String)
-     */
     @Override
     public OntologyTerm getTerm(String id)
     {
@@ -209,10 +196,6 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getName(java.lang.String)
-     */
     @Override
     public String getName(String id)
     {
@@ -238,20 +221,12 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getRootId()
-     */
     @Override
     public String getRootId()
     {
         return this.root.getId();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getRoot()
-     */
     @Override
     public IDAGNode getRoot()
     {
@@ -285,10 +260,6 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.phenotips.hpoa.ontology.Ontology#getAncestors(java.lang.String)
-     */
     @Override
     public synchronized Set<String> getAncestors(String termId)
     {

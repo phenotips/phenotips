@@ -367,6 +367,9 @@ var View = Class.create({
             //console.log("-> add partnership");
             node = new Partnership(position.x, position.y, id, properties);
         }
+        else if (positionedGraph.isPlaceholder(id)) {
+            node = new PersonPlaceholder(position.x, position.y, id, properties);
+        }
         else if (positionedGraph.isPersonGroup(id)) {
             //console.log("-> add person group");
             node = new PersonGroup(position.x, position.y, id, properties);

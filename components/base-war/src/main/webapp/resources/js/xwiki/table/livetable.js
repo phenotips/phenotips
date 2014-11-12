@@ -19,6 +19,7 @@ XWiki.widgets.LiveTable = Class.create({
     * <ul>
     * <li>"limit" the maximum number of row entries in the table</li>
     * <li>"maxPages" the maximum number of pages to display at the same time in the pagination section.</li>
+    * <li>"selectedTags" the list of tags that should be selected initially in the tag cloud</li>
     * </ul>
     * @todo Make this a valid ARIA table: http://www.w3.org/TR/aria-role/#structural
     */
@@ -97,9 +98,9 @@ XWiki.widgets.LiveTable = Class.create({
       });
     }
 
-    if ($(domNodeName + "-tagcloud"))
-    {
-       this.tagCloud = new LiveTableTagCloud(this, domNodeName + "-tagcloud");
+    if ($(domNodeName + "-tagcloud")) {
+      this.tags = options.selectedTags;
+      this.tagCloud = new LiveTableTagCloud(this, domNodeName + "-tagcloud");
     }
     this.loadingStatus = $(this.domNodeName + '-ajax-loader') || $('ajax-loader');
     this.limitsDisplay = $(this.domNodeName + '-limits') || new Element("div");
@@ -943,7 +944,7 @@ var LiveTableFilter = Class.create({
   attachEventHandlers: function()
   {
     var refreshHandler = this.refreshHandler.bind(this);
-    for (var i = 0; i < this.inputs.length; i++) {
+    for (var i = 0; i < this.inputs.length; ++i) {
       var input = this.inputs[i];
       var events = ['xwiki:form:field-value-changed', 'change'];
       if (input.type == "text") {
@@ -957,12 +958,12 @@ var LiveTableFilter = Class.create({
       });
     }
 
-    for (var i = 0; i < this.selects.length; i++) {
+    for (var i = 0; i < this.selects.length; ++i) {
       Event.observe(this.selects[i], 'change', refreshHandler);
     }
 
     // Allow custom filters to trigger filter change from non-native events
-    document.observe("xwiki:livetable:" + this.table.domNodeName + ":filtersChanged", this.refreshHandler.bind(this));
+    document.observe("xwiki:livetable:" + this.table.domNodeName + ":filtersChanged", refreshHandler);
   },
 
   /**
@@ -1013,6 +1014,10 @@ var LiveTableTagCloud = Class.create({
       this.table = table;
       this.domNode = $(domNodeName);
       this.cloudFilter = false;
+      this.selectedTags = {};
+      for (var i = 0; i < table.tags.size(); i++) {
+        this.selectedTags[table.tags[i]] = {};
+      }
       if (typeof tags == "array") {
          this.tags = tags;
          if (tags.length > 0) {
@@ -1029,7 +1034,7 @@ var LiveTableTagCloud = Class.create({
    /**
     * Tags matching the current filters
     */
-   matchingTags: [],
+   matchingTags: {},
 
    /**
     * Tags selected as filters
@@ -1052,7 +1057,8 @@ var LiveTableTagCloud = Class.create({
         this.hasTags = true;
         this.domNode.removeClassName("hidden");
       }
-      this.matchingTags = matchingTags;
+      // Normalize the list of matching tags (all lower case).
+      this.matchingTags = Object.toJSON(matchingTags || {}).toLowerCase().evalJSON();
       this.displayTagCloud();
    },
 
@@ -1072,7 +1078,9 @@ var LiveTableTagCloud = Class.create({
          var tagLabel = this.tags[i].tag;
          var tagSpan = new Element("span").update(tagLabel.escapeHTML());
          var tag = new Element("li", {'class':liClass}).update(tagSpan);
-         if (typeof this.matchingTags[tagLabel] != "undefined") {
+         // Determine if the tag is selectable (matched) ignoring the case because multiple documents can be tagged with
+         // the same tag but in different cases (e.g. tag, Tag, TAG etc.)
+         if (typeof this.matchingTags[tagLabel.toLowerCase()] != "undefined") {
             tag.addClassName("selectable");
             Event.observe(tagSpan, "click", function(event) {
                 var tag = event.element().up("li").down("span").innerHTML.unescapeHTML();

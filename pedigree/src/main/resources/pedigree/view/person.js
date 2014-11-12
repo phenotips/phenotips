@@ -35,8 +35,8 @@ var Person = Class.create(AbstractPerson, {
         this._firstName = "";
         this._lastName = "";
         this._lastNameAtBirth = "";
-        this._birthDate = "";
-        this._deathDate = "";
+        this._birthDate = null;
+        this._deathDate = null;
         this._conceptionDate = "";
         this._gestationAge = "";
         this._isAdopted = false;
@@ -417,11 +417,15 @@ var Person = Class.create(AbstractPerson, {
      * Replaces the birth date with newDate
      *
      * @method setBirthDate
-     * @param {Date} newDate Must be earlier date than deathDate and a later than conception date
+     * @param newDate Either a string or an object with "year" (mandatory), "month" (optional) and "day" (optional) fields.
+     *                Must be earlier date than deathDate and a later than conception date
      */
     setBirthDate: function(newDate) {
-        newDate = newDate ? (new Date(newDate)) : '';
-        if (!newDate || !this.getDeathDate() || newDate.getTime() < this.getDeathDate().getTime()) {
+        newDate = new PedigreeDate(newDate);  // parse input
+        if (!newDate.isSet()) {
+            newDate = null;
+        }
+        if (!newDate || !this.getDeathDate() || this.getDeathDate().canBeAfterDate(newDate)) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }
@@ -445,9 +449,12 @@ var Person = Class.create(AbstractPerson, {
      * @param {Date} deathDate Must be a later date than birthDate
      */
     setDeathDate: function(deathDate) {
-        deathDate = deathDate ? (new Date(deathDate)) : '';
+        deathDate = new PedigreeDate(deathDate);  // parse input
+        if (!deathDate.isSet()) {
+            deathDate = null;
+        }
         // only set death date if it happens ot be after the birth date, or there is no birth or death date
-        if(!deathDate || !this.getBirthDate() || deathDate.getTime() > this.getBirthDate().getTime()) {
+        if(!deathDate || !this.getBirthDate() || deathDate.canBeAfterDate(this.getBirthDate())) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
@@ -870,6 +877,9 @@ var Person = Class.create(AbstractPerson, {
 
         var inactiveLostContact = this.isProband() || !editor.getGraph().isRelatedToProband(this.getID());
 
+        // TODO: only suggest posible birth dates which are after the latest
+        //       birth date of any ancestors; only suggest death dates which are after birth date
+
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
@@ -919,14 +929,14 @@ var Person = Class.create(AbstractPerson, {
             info['lNameAtB'] = this.getLastNameAtBirth();
         if (this.getExternalID() != "")
             info['externalID'] = this.getExternalID();        
-        if (this.getBirthDate() != "") 
-            info['dob'] = this.getBirthDate().toDateString();
+        if (this.getBirthDate() != null)
+            info['dob'] = this.getBirthDate().getSimpleObject();
         if (this.isAdopted())
             info['isAdopted'] = this.isAdopted();
         if (this.getLifeStatus() != 'alive')
             info['lifeStatus'] = this.getLifeStatus();
-        if (this.getDeathDate() != "")
-            info['dod'] = this.getDeathDate().toDateString();
+        if (this.getDeathDate() != null)
+            info['dod'] = this.getDeathDate().getSimpleObject();
         if (this.getGestationAge() != null)
             info['gestationAge'] = this.getGestationAge();
         if (this.getChildlessStatus() != null) {

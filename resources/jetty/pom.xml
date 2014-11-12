@@ -38,4 +38,20 @@
     <module>startup-listener</module>
     <module>packaging</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>mac</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <family>mac</family>
+          <name>mac os x</name>
+        </os>
+      </activation>
+      <modules>
+        <module>startup-listener-mac</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

@@ -269,7 +269,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 350px;
+  width: 360px;
   color: #000000;
   z-index: 100000;
 }
@@ -341,7 +341,7 @@
 .menu-box .tabs-content > .content.active {
   display: block;
   float: none;
-  padding: .3em 1.3em 0.8em;
+  padding: .3em 1.2em 0.8em;
 }
 .menu-box form {
   border: 1px solid #F5F5F5;
@@ -488,17 +488,13 @@
   display: block;
 }
 .field-values-3-columns .state_deceased {
-  margin-left: -2px;
 }
 .field-values-3-columns .state_miscarriage {
-  margin-left: -2px;
   margin-bottom: 1px;  /* otherwise the bottom pixel of the letter "g" in "miscarriage" is displayed at the top of the next column in Chrome */
 }
 .field-values-3-columns .state_unborn {
-  margin-left: 8px;
 }
 .field-values-3-columns .state_aborted {
-  margin-left: 8px;
 }
 .field-inputs {
   display: table;
@@ -530,11 +526,13 @@
 .menu-box .field-date_of_birth {
   width: 48%;
   float: left;
+  margin-bottom: 6px;
 }
 .menu-box .field-date_of_death {
   width: 48%;
   float: right;
   margin-top: -5px; /* TODO: investigate why elements float below its intended position */
+  margin-bottom: 6px;
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;
@@ -784,3 +782,28 @@
   background-image: url("$xwiki.getSkinFile('.png')");
 }
 */
+
+/* Datepicker style */
+.fuzzy-date-picker {
+  margin-right: -2px;
+}
+.fuzzy-date-picker .year {
+  font-size: 14px;
+}
+.fuzzy-date-picker .month {
+  font-size: 14px;
+}
+.fuzzy-date-picker .day {
+  font-size: 14px;
+}
+.fuzzy-date-picker .empty {
+  font-size: .7em;
+  opacity: .5;
+}
+.fuzzy-date-picker .year option {
+  /*text-indent: 1em;*/
+}
+.fuzzy-date-picker .year .decade {
+  font-weight: bold;
+  /*text-indent: 0;*/
+}

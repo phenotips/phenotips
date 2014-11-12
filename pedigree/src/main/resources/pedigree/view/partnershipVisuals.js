@@ -119,7 +119,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Number} The y coordinate
      */      
     getBottomY: function() {
-        return this._absoluteY + PedigreeEditor.attributes.partnershipRadius + PedigreeEditor.attributes.childlessLength;
+        return this._absoluteY + PedigreeEditor.attributes.partnershipRadius + PedigreeEditor.attributes.parnershipChildlessLength;
     },    
         
     /**
@@ -311,30 +311,37 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     updateChildhubConnection: function() {
         this._childhubConnection && this._childhubConnection.remove();
-        
+
         var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;        
-        
+
         var positionedGraph = editor.getGraph();
-        
+
         var id = this.getNode().getID();
 
-        editor.getPaper().setStart();
-        
         var childlinePos = positionedGraph.getRelationshipChildhubPosition(id);
         var childlineY   = editor.convertGraphCoordToCanvasCoord( childlinePos.x, childlinePos.y ).y;
-                      
+
         // draw child edges from childhub
         var children = positionedGraph.getRelationshipChildrenSortedByOrder(id);
 
+        if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
+            editor.getPaper().setStart();
+            //editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), this.getY() + PedigreeEditor.attributes.partnershipHandleBreakY, P
+            this._childhubConnection = editor.getPaper().setFinish();
+            return;
+        }
+        editor.getPaper().setStart();
+
+
         var leftmostX  = this.getX();
         var rightmostX = this.getX();
-        
+
         var currentTwinGroup        = null;
         var currentTwinGroupCenterX = null;
         var currentIsMonozygothic   = false;
-                
+
         var numPregnancies = 0;
-        
+
         for ( var j = 0; j < children.length; j++ ) {
             var child  = children[j];
             
@@ -486,7 +493,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     drawLabels: function() {
         // if need to add some - see PersonVisuals.drawLabels()
-    }  
+    },
+
+    getChildlessShapeAttr: function() {
+        return PedigreeEditor.attributes.partnershipChildlessShapeAttr;
+    }
 });
 
 //ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP

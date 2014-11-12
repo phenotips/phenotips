@@ -11,15 +11,17 @@ function getAge(birthDate, deathDate)
         now = new Date();
     }
     else {
-        now = deathDate;
+        now = deathDate.toJSDate();
     }
+
+    birthDate = birthDate.toJSDate();
 
     var aSecond = 1000;
     var aMinute = aSecond * 60;
     var aHour = aMinute * 60;
     var aDay = aHour * 24;
     var aWeek = aDay * 7;
-    var aMonth = aDay * 30;
+    var aMonth = aDay * 30.5;
 
     var age = now.getTime() - birthDate.getTime();
 
@@ -30,15 +32,11 @@ function getAge(birthDate, deathDate)
     var years = (new Date(now.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear()
                 - (new Date(birthDate.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear();
 
-    var offsetNow = (new Date(now.getTime() - aDay* (birthDate.getDate() -1) ));
-    var offsetBirth = (new Date(birthDate.getTime() - aDay* (birthDate.getDate() -1) ));
-    if (years > 1){
-        var months = years*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
-    }else{
-        var months = (now.getFullYear() - birthDate.getFullYear())*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
-    }
-
     var agestr = "";
+
+    // TODO: can do a bit better with up-to-a-day precision
+    //       (e.g. born Apr 10, now May 9 => 0 month, May 10 => 1 month) - but don't need it here
+    var months = Math.floor(age / aMonth);
 
     if (months < 12) {
         var days = Math.floor(age / aDay);

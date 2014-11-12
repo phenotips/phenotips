@@ -69,12 +69,12 @@ public abstract class AbstractNode implements CoreNode
         if (getClass() != obj.getClass()) {
             return false;
         }
-        AbstractNode other = (AbstractNode) obj;
+        CoreNode other = (AbstractNode) obj;
         if (this.id == null) {
-            if (other.id != null) {
+            if (other.getId() != null) {
                 return false;
             }
-        } else if (!this.id.equals(other.id)) {
+        } else if (!this.id.equals(other.getId())) {
             return false;
         }
         return true;

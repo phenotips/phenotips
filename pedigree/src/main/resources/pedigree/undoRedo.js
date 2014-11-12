@@ -9,18 +9,37 @@ var ActionStack = Class.create({
         this._currentState = 0;
         this._stack        = [];
         this._MAXUNDOSIZE  = 100;
+        this._savedState   = "";
     },
 
+    hasUnsavedChanges: function() {
+        var state = this._getCurrentState();
+        if (state == null) {
+            return true;
+        }
+        if (this._savedState == state.serializedState) {
+            return false;
+        }
+        return true;
+    },
+
+    addSaveEvent: function() {
+        var state = this._getCurrentState();
+        if (state == null) {
+            return;
+        }
+        this._savedState = state.serializedState;
+    },
     /**
      * Moves one state forward in the action stack
      *
      * @method redo
      */
     redo: function() {
-        var nextState = this._getNextState();        
+        var nextState = this._getNextState();
         //console.log("Next state: " + stringifyObject(nextState));
         if (!nextState) return;
-        
+
         if (nextState.eventToGetToThisState) {
             var memo = nextState.eventToGetToThisState.memo;
             memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
@@ -28,7 +47,7 @@ var ActionStack = Class.create({
             this._currentState++;
             return;
         }
-        
+
         editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */ );
         this._currentState++;
     },
@@ -41,7 +60,7 @@ var ActionStack = Class.create({
     undo: function() {
         var prevState = this._getPreviousState();
         if(!prevState) return;
-        
+
         // it may be more efficient to undo the current state instead of full prev state restore
         var currentState = this._getCurrentState();   
         //console.log("Current state: " + stringifyObject(currentState));
@@ -50,14 +69,14 @@ var ActionStack = Class.create({
             memo["noUndoRedo"] = true; // so that this event is not added to the undo/redo stack again
             document.fire( currentState.eventToUndo.eventName, memo );
             this._currentState--;
-            return;                
+            return;
         }
-            
+
         // no easy way - have to recreate the graph from serialization
         editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */);
         this._currentState--;
     },
-    
+
     /**
      * Pushes a new state to the end of the action stack
      * 
@@ -193,21 +212,21 @@ var ActionStack = Class.create({
      *
      * @method _getNextState
      * @return {null|Object}
-     */    
+     */
     _getNextState: function() {
         return (this._size() <= 1 || this._currentState >= this._size()) ? null : this._stack[this._currentState];
-    },    
+    },
 
     /**
      * Returns the previous state
      *
      * @method _getPreviousState
      * @return {null|Object}
-     */    
+     */
     _getPreviousState: function() {
         return (this._size() == 1 || this._currentState <= 1) ? null : this._stack[this._currentState - 2];
     },
-    
+
     _debug_print_states: function() {
         console.log("------------");
         for (var i = 0; i < this._stack.length; i++) {
@@ -224,6 +243,6 @@ var State = Class.create({
     initialize: function( serializedState, eventToGetToThisState, eventToUndo ) {
         this.serializedState       = serializedState; 
         this.eventToGetToThisState = eventToGetToThisState;
-        this.eventToUndo           = eventToUndo;        
+        this.eventToUndo           = eventToUndo;
     }
 });

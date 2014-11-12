@@ -77,10 +77,11 @@ public class FormSection extends FormGroup
                 || ("phenotype".equals(this.propertyName) && DisplayMode.Edit.equals(mode)))) {
             display = "display:none";
         }
-        return String.format("<div class='%s-group' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"
+        return String.format("<div class='%s-group%s' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"
             + "<div class='%1$s-main predefined-entries'>%s</div>"
             + "<div class='%1$s-other custom-entries'>%s%s</div></div>",
-            this.getPropertyName(), this.title.replaceAll("[^a-zA-Z0-9]+", "-"),
+            this.getPropertyName(), (this.categories.contains("HP:0000001") ? " catch-all" : ""),
+            this.title.replaceAll("[^a-zA-Z0-9]+", "-"),
             XMLUtils.escapeElementContent(this.title), displayedElements,
             StringUtils.isNotBlank(customValueDisplay)
                 ? ("<div class=\"custom-display-data\">" + customValueDisplay + "</div>") : "",
