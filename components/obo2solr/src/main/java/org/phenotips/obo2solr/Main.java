@@ -47,7 +47,7 @@ public class Main
         CommandLine cmd = parser.parse(options, args);
         if (!cmd.hasOption(OBO_DB_LOCATION_OPTION) || cmd.hasOption(HELP_OPTION)) {
             showUsage(options);
-            System.exit(cmd.hasOption(HELP_OPTION) ? 0 : 1);
+            return;
         }
         ParameterPreparer paramPrep = new ParameterPreparer();
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
@@ -77,11 +77,5 @@ public class Main
     {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("java " + Main.class.getName() + " [options]", options);
-    }
-
-    protected static void failWithMessage(String message)
-    {
-        System.err.println(message);
-        System.exit(1);
     }
 }
