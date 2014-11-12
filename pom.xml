@@ -348,11 +348,14 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.1 -->
+
+            <!-- Utility class that should never be instantiated -->
             <difference>
               <differenceType>7009</differenceType>
               <className>**/hpoa/annotation/PrettyPrint</className>
               <method>PrettyPrint()</method>
             </difference>
+            <!-- Badly designed class that is not used directly -->
             <difference>
               <differenceType>7002</differenceType>
               <className>**/obo2solr/Main</className>
