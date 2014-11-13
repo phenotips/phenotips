@@ -246,6 +246,7 @@
 #mainContentArea, #mainEditArea {
   overflow: visible;
   padding: 10px;
+  position: relative;
 }
 
 .actionmenu {
