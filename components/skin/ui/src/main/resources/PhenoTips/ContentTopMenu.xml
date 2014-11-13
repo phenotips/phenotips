@@ -568,13 +568,9 @@
       <code>(function(){
   var init = function(event) {
     var docContent = $('mainContentArea');
-    if (docContent) {
-      docContent.setStyle({'position' : 'relative'});
-
-      var docActions = $('patient-record-actions');
-      if (docActions) {
-        var daSticky  = new StickyBox(docActions, docContent, {offsetTop : 0});
-      }
+    var docActions = $('patient-record-actions');
+    if (docContent &amp;&amp; docActions) {
+      var daSticky  = new StickyBox(docActions, docContent, {offsetTop : 0});
     }
   };
 
