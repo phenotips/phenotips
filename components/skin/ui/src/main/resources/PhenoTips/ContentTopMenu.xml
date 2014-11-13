@@ -821,7 +821,8 @@
   color: inherit !important;
   padding: 0 !important;
   margin: 0 !important;
-  border: 0 none !important;
+  /* Buttons without a border in IE don't trigger the :hover state */
+  border: 1px solid transparent !important;
 }
 #patient-record-actions .menu-horizontal label:hover, #patient-record-actions .menu-horizontal label:hover input {
   cursor: pointer;
