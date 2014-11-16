@@ -361,6 +361,11 @@
               <className>**/obo2solr/Main</className>
               <method>void failWithMessage(java.lang.String)</method>
             </difference>
+            <!-- Cleaning up unused APIs -->
+            <difference>
+              <differenceType>8001</differenceType>
+              <className>**/hpoa/utils/maps/*MapOperator</className>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
