@@ -900,6 +900,7 @@
         <jacoco.skip>true</jacoco.skip>
         <skipTests>true</skipTests>
         <license.skip>true</license.skip>
+        <xar.verify.skip>true</xar.verify.skip>
       </properties>
     </profile>
 
