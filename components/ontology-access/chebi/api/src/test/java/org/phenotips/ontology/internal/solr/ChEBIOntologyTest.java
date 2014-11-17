@@ -78,13 +78,13 @@ public class ChEBIOntologyTest
         this.server = mock(SolrServer.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
-        this.ontologyServiceResult = this.ontologyService.reindex(null);
     }
 
     @Test
     public void testChEBIOntologyReindex()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
+        ontologyServiceResult = this.ontologyService.reindex(null);
         Mockito.verify(this.server).deleteByQuery("*:*");
         Mockito.verify(this.server, Mockito.atLeast(1)).commit();
         Mockito.verify(this.server, Mockito.atLeast(1)).add(Matchers.anyCollectionOf(SolrInputDocument.class));
