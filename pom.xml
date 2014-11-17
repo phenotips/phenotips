@@ -371,6 +371,8 @@
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
+            <!-- Poor choice of visibility -->
+            <exclude>**/phenotips/hpoa/PhenotypeMappingScriptService</exclude>
           </excludes>
         </configuration>
       </plugin>
