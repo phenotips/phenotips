@@ -76,12 +76,22 @@ var SaveLoadEngine = Class.create( {
     },
 
     /**
-     * Saves the state of the graph
+     * Saves the state of the pedigree (including any user preferences and current color scheme)
      *
      * @return Serialization data for the entire graph
      */
     serialize: function() {
-        return editor.getGraph().toJSON();
+        var jsonObject = editor.getGraph().toJSONObject();
+
+        var settings = editor.getView().getSettings();
+
+        for (var setting in settings) {
+            if (settings.hasOwnProperty(setting)) {
+                jsonObject[setting] = settings[setting];
+            }
+        }
+
+        return JSON.stringify(jsonObject);
     },
 
     createGraphFromSerializedData: function(JSONString, noUndo, centerAround0) {
@@ -89,7 +99,13 @@ var SaveLoadEngine = Class.create( {
         document.fire("pedigree:load:start");
 
         try {
-            var changeSet = editor.getGraph().fromJSON(JSONString);
+            var jsonObject = JSON.parse(JSONString);
+
+            // load the graph model of the pedigree & node data
+            var changeSet = editor.getGraph().fromJSONObject(jsonObject);
+
+            // load/process metadata such as pedigree options and color choices
+            editor.getView().loadSettings(jsonObject);
         }
         catch(err)
         {
@@ -105,7 +121,7 @@ var SaveLoadEngine = Class.create( {
             var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
-            JSONString = editor.getGraph().toJSON();
+            JSONString = this.serialize();
         }
 
         if (editor.getView().applyChanges(changeSet, false)) {
@@ -141,7 +157,7 @@ var SaveLoadEngine = Class.create( {
             var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with the imported pedigree. Setting proband gender to 'Unknown'");
-            JSONString = editor.getGraph().toJSON();
+            JSONString = this.serialize();
         }
 
         if (editor.getView().applyChanges(changeSet, false)) {

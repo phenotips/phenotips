@@ -1308,7 +1308,7 @@ DynamicPositionedGraph.prototype = {
         }
     },
     
-    toJSON: function ()
+    toJSONObject: function ()
     {
         this.stripUnusedProperties();
         
@@ -1327,26 +1327,24 @@ DynamicPositionedGraph.prototype = {
         console.log("JSON represenation: " + JSON.stringify(output));
         //timer.printSinceLast("=== to JSON: ");
 
-        return JSON.stringify(output);
+        return output;
     },
 
-    fromJSON: function (serializedAsJSON)
+    fromJSONObject: function (jsonData)
     {
         var removedNodes = this._getAllNodes();
 
-        var serializedData = JSON.parse(serializedAsJSON);
+        //console.log("Got serialization object: " + stringifyObject(jsonData));
 
-        //console.log("Got serialization object: " + stringifyObject(serializedData));
+        this.DG.GG = PedigreeImport.initFromPhenotipsInternal(jsonData["GG"]);
 
-        this.DG.GG = PedigreeImport.initFromPhenotipsInternal(serializedData["GG"]);
-
-        this.DG.ranks = serializedData["ranks"];
+        this.DG.ranks = jsonData["ranks"];
 
         this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
 
-        this.DG.order.deserialize(serializedData["order"]);
+        this.DG.order.deserialize(jsonData["order"]);
 
-        this.DG.positions = serializedData["positions"];
+        this.DG.positions = jsonData["positions"];
 
         this._updateauxiliaryStructures();
 
