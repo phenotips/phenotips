@@ -134,7 +134,7 @@
 enabled=true
 required=
 order=3
-fields=apgar1,apgar2</parameters>
+fields=apgar1,apgar5</parameters>
     </property>
     <property>
       <scope>wiki</scope>
