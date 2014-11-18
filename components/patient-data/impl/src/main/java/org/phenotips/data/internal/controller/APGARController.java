@@ -108,17 +108,8 @@ public class APGARController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null) {
-            boolean hasAny = false;
-            for (String selectedFieldName : selectedFieldNames) {
-                if (StringUtils.startsWithIgnoreCase(selectedFieldName, this.getName())) {
-                    hasAny = true;
-                    break;
-                }
-            }
-            if (!hasAny) {
-                return;
-            }
+        if (selectedFieldNames != null && !hasAnySelected(selectedFieldNames)) {
+            return;
         }
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed()) {
@@ -137,10 +128,23 @@ public class APGARController implements PatientDataController<Integer>
         }
         while (iterator.hasNext()) {
             Entry<String, Integer> item = iterator.next();
-            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
-                container.put(item.getKey(), item.getValue());
+            container.put(item.getKey(), item.getValue());
+        }
+    }
+
+    /**
+     * Checks if any relevant field names were selected.
+     * @return true if relevant fields were selected, false otherwise
+     */
+    private boolean hasAnySelected(Collection<String> selectedFieldNames) {
+        boolean hasAny = false;
+        for (String selectedFieldName : selectedFieldNames) {
+            if (StringUtils.startsWithIgnoreCase(selectedFieldName, this.getName())) {
+                hasAny = true;
+                break;
             }
         }
+        return hasAny;
     }
 
     @Override
