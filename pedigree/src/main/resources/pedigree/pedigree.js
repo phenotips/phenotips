@@ -83,13 +83,22 @@ var PedigreeEditor = Class.create({
             editor.getExportSelector().show();
         });
 
+        var onLeavePageFunc = function() {
+            if (editor.getActionStack().hasUnsavedChanges()) {
+                return "All changes will be lost when navigating away from this page.";
+            }
+        };
+        window.onbeforeunload = onLeavePageFunc;
+
         var closeButton = $('action-close');
         this._afterSaveFunc = null;
         closeButton && closeButton.on("click", function(event) {
-            var dontQuitFunc    = function() {};
+            var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
             var quitFunc        = function() { window.location=XWiki.currentDocument.getURL('edit'); };
             var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
                                                editor.getSaveLoadEngine().save(); }
+
+            window.onbeforeunload = undefined;
 
             if (editor.getActionStack().hasUnsavedChanges()) {
                 editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
