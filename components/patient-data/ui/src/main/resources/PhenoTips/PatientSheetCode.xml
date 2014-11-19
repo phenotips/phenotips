@@ -3852,6 +3852,12 @@ h1, h2, h3, h4 {
   font-size: 100% !important;
   color: #000 !important;
   font-weight: bold !important;
+}
+/** --------------------------------------------- **/
+/** Pedigree **/
+.pedigree-legend {
+  margin-top: 1em !important;
+  margin-left: 2em !important;
 }</code>
     </property>
     <property>

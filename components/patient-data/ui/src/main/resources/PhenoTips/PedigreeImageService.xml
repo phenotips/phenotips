@@ -39,7 +39,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
+  <content>{{include document="PhenoTips.PedigreeMacros" /}}
+
+{{velocity}}
 #if ($xcontext.action != 'get')
   **Usage**: //http[s]:~/~/&lt;hostname&gt;[:&lt;port&gt;]/&lt;appname&gt;/bin/get/PhenoTips/PedigreeImageService?[e]id=&lt;identifier&gt;[&amp;format=raster]//
   #break
@@ -60,22 +62,38 @@
   {"error" : "Patient not found."}
   #break
 #end
-#set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass').getProperty('image').value)
+#set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
   {"error" : "Pedigree not found."}
   #break
 #end
-#if ("$!request.format" == 'raster')
-  #set ($pedigreeDocRoot = $services.xml.parse($pedigree).getDocumentElement())
-  #set ($width = $mathtool.toInteger($pedigreeDocRoot.getAttribute('width')))
-  #set ($height = $mathtool.toInteger($pedigreeDocRoot.getAttribute('height')))
-  #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigreeSVG, $height, $width))
-  $response.sendRedirect($pedigreeRasterUrl)
+#if ($request.legend)
+  #set ($pedigree = $pedigree.getProperty('data').value)
+  $response.setContentType('text/html')##
+
+  #pedigreeLegend($pedigree, $request.header)
+
+  #break
 #else
-  $response.setContentType('image/svg+xml')##
-  $pedigree
+  #set ($pedigree = $pedigree.getProperty('image').value)
+  #if (!$pedigree)
+    $response.setStatus(404)##
+    $response.setContentType('application/json')##
+    {"error" : "Pedigree image not found."}
+    #break
+  #end
+  #if ("$!request.format" == 'raster')
+    #set ($pedigreeDocRoot = $services.xml.parse($pedigree).getDocumentElement())
+    #set ($width = $mathtool.toInteger($pedigreeDocRoot.getAttribute('width')))
+    #set ($height = $mathtool.toInteger($pedigreeDocRoot.getAttribute('height')))
+    #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigreeSVG, $height, $width))
+    $response.sendRedirect($pedigreeRasterUrl)
+  #else
+    $response.setContentType('image/svg+xml')##
+    $pedigree
+  #end
 #end
 #if ("$!{request.outputSyntax}" == 'plain')
   {{/content}}
@@ -83,6 +101,5 @@
   {{/html}}
 #end
 {{/velocity}}
-
 </content>
 </xwikidoc>
