@@ -195,6 +195,8 @@ var SaveLoadEngine = Class.create( {
             },
             onComplete: function() {
                 me._saveInProgress = false;
+                var actionAfterSave = editor.getAfterSaveAction();
+                actionAfterSave && actionAfterSave();
             },
             onSuccess: function() { editor.getActionStack().addSaveEvent();
                                     savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));

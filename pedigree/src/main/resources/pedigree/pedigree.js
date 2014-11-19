@@ -84,11 +84,12 @@ var PedigreeEditor = Class.create({
         });
 
         var closeButton = $('action-close');
+        this._afterSaveFunc = null;
         closeButton && closeButton.on("click", function(event) {
             var dontQuitFunc    = function() {};
             var quitFunc        = function() { window.location=XWiki.currentDocument.getURL('edit'); };
-            var saveAndQuitFunc = function() { editor.getSaveLoadEngine().save();
-                                               quitFunc(); }
+            var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
+                                               editor.getSaveLoadEngine().save(); }
 
             if (editor.getActionStack().hasUnsavedChanges()) {
                 editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
@@ -165,6 +166,14 @@ var PedigreeEditor = Class.create({
      */
     getActionStack: function() {
         return this._actionStack;
+    },
+
+    /**
+     * The action which should happen after pedigree is saved
+     * (normally null, close the editor when "save on quit")
+     */
+    getAfterSaveAction: function() {
+        return this._afterSaveFunc;
     },
 
     /**
