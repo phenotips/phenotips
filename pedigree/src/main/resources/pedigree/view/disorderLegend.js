@@ -43,6 +43,19 @@ var DisorgerLegend = Class.create( Legend, {
     },
 
     /**
+     * Returns a map disorderID -> disorderName
+     */
+    getAllNames: function() {
+        var result = {};
+        for (var disorderID in this._affectedNodes) {
+            if (this._affectedNodes.hasOwnProperty(disorderID)) {
+                result[disorderID] = this.getDisorder(disorderID).getName();
+            }
+        }
+        return result;
+    },
+
+    /**
      * Registers an occurrence of a disorder. If disorder hasn't been documented yet,
      * designates a color for it.
      *

@@ -83,13 +83,7 @@ var SaveLoadEngine = Class.create( {
     serialize: function() {
         var jsonObject = editor.getGraph().toJSONObject();
 
-        var settings = editor.getView().getSettings();
-
-        for (var setting in settings) {
-            if (settings.hasOwnProperty(setting)) {
-                jsonObject[setting] = settings[setting];
-            }
-        }
+        jsonObject["settings"] = editor.getView().getSettings();
 
         return JSON.stringify(jsonObject);
     },
@@ -105,7 +99,9 @@ var SaveLoadEngine = Class.create( {
             var changeSet = editor.getGraph().fromJSONObject(jsonObject);
 
             // load/process metadata such as pedigree options and color choices
-            editor.getView().loadSettings(jsonObject);
+            if (jsonObject.hasOwnProperty("settings")) {
+                editor.getView().loadSettings(jsonObject.settings);
+            }
         }
         catch(err)
         {
