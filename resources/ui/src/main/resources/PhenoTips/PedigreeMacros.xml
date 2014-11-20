@@ -43,32 +43,32 @@
 #**
  * Macro which produces HTML for pedigree legend
  *#
-#macro(pedigreeLegend $pedigreeDataJSON $header)
-  #set ($disorderColors = $jsontool.parse($pedigreeDataJSON).settings.colors.disorders)
-  #set ($geneColors = $jsontool.parse($pedigreeDataJSON).settings.colors.genes)
+#macro(pedigreeLegend $pedigreeData $header)
+  #set ($pedigreeDataJSON = $jsontool.parse($pedigreeData))
+  #set ($disorderColors = $pedigreeDataJSON.settings.colors.disorders)
+  #set ($geneColors = $pedigreeDataJSON.settings.colors.genes)
 
-  #if (($disorderColors &amp;&amp; $disorderColors.entrySet().size() > 0) || $geneColors &amp;&amp; $geneColors.entrySet().size() > 0)
-
+  #if (($disorderColors &amp;&amp; $disorderColors.size() > 0) || $geneColors &amp;&amp; $geneColors.size() > 0)
     #set ($listyle="margin: 0 .5em 0 0; font-family: FreeSerif, serif;")
     #set ($divstyle="")
     #if ($header)
       &lt;strong>$header&lt;/strong>
-      #set($divstyle="margin-top: 1em; margin-left: 2em;")
+      #set ($divstyle="margin-top: 1em; margin-left: 2em;")
     #end
     &lt;div class="pedigree-legend" style="$divstyle">
-    #set ($disorederNames = $jsontool.parse($pedigreeDataJSON).settings.names.disorders)
-    #if ($disorderColors &amp;&amp; $disorederNames &amp;&amp; $disorderColors.entrySet().size() > 0)
+    #set ($disorderNames = $pedigreeDataJSON.settings.names.disorders)
+    #if ($disorderColors &amp;&amp; $disorderNames &amp;&amp; $disorderColors.size() > 0)
       Disorders:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em; margin-bottom: .5em;">
       #foreach ($color in $disorderColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
           &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">●&lt;/span>
-          &lt;span class="pedigree-disorder-name">$disorederNames[$color.key]&lt;/span>
+          &lt;span class="pedigree-disorder-name">$disorderNames[$color.key]&lt;/span>
         &lt;/li>
       #end
       &lt;/ul>
     #end
-    #if ($geneColors &amp;&amp; $geneColors.entrySet().size() > 0)
+    #if ($geneColors &amp;&amp; $geneColors.size() > 0)
       Candidate Genes:
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em">
       #foreach ($color in $geneColors.entrySet())
