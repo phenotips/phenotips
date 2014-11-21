@@ -201,29 +201,35 @@ public class DataToCellConverter
             }
             if (present.contains("meta") || present.contains("meta_code")) {
                 int mX = x;
-                int mCX = x + 1;
                 Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
                 Boolean metaPresent = featureMetadatum.size() > 0;
+                int offset = 0;
                 for (FeatureMetadatum meta : featureMetadatum) {
+                    offset = 0;
                     if (present.contains("meta")) {
-                        DataCell cell = new DataCell(meta.getName(), mX, y);
+                        DataCell cell = new DataCell(meta.getName(), mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell(meta.getId(), mCX, y);
+                        DataCell cell = new DataCell(meta.getId(), mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     y++;
                 }
                 // Because otherwise the section has smaller width than the header
+                offset = 0;
                 if (!metaPresent) {
                     if (present.contains("meta")) {
-                        DataCell cell = new DataCell("", mX, y);
+                        DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell("", mCX, y);
+                        DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                 }
                 if (metaPresent) {
@@ -849,26 +855,6 @@ public class DataToCellConverter
                 DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addCell(cell);
                 x++;
-            }
-            if (present.contains("meta") || present.contains("meta_code")) {
-                int mX = x;
-                int mCX = x + 1;
-                Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
-                Boolean metaPresent = featureMetadatum.size() > 0;
-                for (FeatureMetadatum meta : featureMetadatum) {
-                    if (present.contains("meta")) {
-                        DataCell cell = new DataCell(meta.getName(), mX, y);
-                        section.addCell(cell);
-                    }
-                    if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell(meta.getId(), mCX, y);
-                        section.addCell(cell);
-                    }
-                    y++;
-                }
-                if (metaPresent) {
-                    y--;
-                }
             }
             y++;
         }
