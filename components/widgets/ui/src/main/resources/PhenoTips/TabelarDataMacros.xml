@@ -290,11 +290,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
     },
     ajaxRejectData : function (event) {
       event.stop();
-      var rejectTrigger = event.element();
-      // Checking if this is the right element, otherwise get parent.
-      if (!((' ' + rejectTrigger.className + ' ').indexOf(' add ') &gt; -1)) {
-        rejectTrigger = rejectTrigger.up(0);
-      }
+      var rejectTrigger = event.findElement('.reject');
       if (rejectTrigger.disabled) {
          return;
       }
