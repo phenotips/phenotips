@@ -43,7 +43,7 @@
 #macro (__label $propName $cssClass $text)
    #set($displayedText = "$!{text}")
    #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
-     #set($displayedText = "$!{class.get($propName).prettyName}:")
+     #set($displayedText = "$!{class.get($propName).translatedPrettyName}:")
    #end
    #if ($xcontext.action != 'edit')
      (% class="label $!{cssClass}" %)${displayedText}(%%)##
@@ -186,9 +186,9 @@
       #foreach ($o in $dataObjects)
         #foreach($prop in $dataClass.properties)
            #if ($prop.name == 'date' || $prop.name == 'age')
-             |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
+             |= ${prop.translatedPrettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
            #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-             |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
+             |= ${prop.translatedPrettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
           #end
         #end
       #end## foreach object
@@ -210,7 +210,7 @@
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
       #foreach($prop in $dataClass.properties)##
         #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
-        &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsibleProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
+        &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsibleProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.translatedPrettyName}:&lt;/label&gt;&lt;/dt&gt;##
         &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
       #end##
     &lt;/dl&gt;##
