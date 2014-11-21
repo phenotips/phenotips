@@ -69,6 +69,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     public PatientData<String> load(Patient patient)
     {
         String unaffected = "unaffected";
+        String affected = "affected";
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
@@ -77,9 +78,9 @@ public class ClinicalStatusController implements PatientDataController<String>
             }
             int isNormal = data.getIntValue(unaffected);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), unaffected);
+                return new SimpleValuePatientData<String>(getName(), affected);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), "affected");
+                return new SimpleValuePatientData<String>(getName(), unaffected);
             }
         } catch (Exception e) {
             this.logger.error(
