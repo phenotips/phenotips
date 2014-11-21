@@ -189,32 +189,6 @@ public class ConversionHelpers
         return this.sectionFeatureTree;
     }
 
-    /** No longer needed */
-    public static String wrapString(String string, Integer charactersPerLine)
-    {
-        if (string == null) {
-            return "";
-        }
-        StringBuilder returnString = new StringBuilder(string);
-        Integer counter = charactersPerLine;
-        Character nextChar = null;
-        while (counter < string.length()) {
-            Boolean found = false;
-            /* TODO. See if this breaks in Unicode */
-            while (nextChar == null || nextChar.compareTo(' ') != 0) {
-                nextChar = string.charAt(counter);
-                counter++;
-                found = true;
-            }
-            if (found) {
-                // returnString.insert(counter, "\n");
-            }
-
-            counter += charactersPerLine;
-        }
-        return returnString.toString();
-    }
-
     public static String strIntegerToStrBool(String strInt)
     {
         if (StringUtils.equals("0", strInt)) {
