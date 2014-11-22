@@ -69,10 +69,14 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "phenotype_by_section"};
+            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+            "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
-        String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" },
-            { "negative" }, { "category" } };
+        String[][] headerIds =
+            { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
+                { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+                { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+                { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -88,7 +92,7 @@ public class DataToCellConverter
 
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -115,7 +119,7 @@ public class DataToCellConverter
 
         int counter = 0;
         int hX = 0;
-        if (present.contains("phenotype") && present.contains("negative")) {
+        if (present.contains("positive") && present.contains("negative")) {
             DataCell cell = new DataCell("Present", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
@@ -145,7 +149,7 @@ public class DataToCellConverter
             return null;
         }
 
-        Boolean bothTypes = present.contains("phenotype") && present.contains("negative");
+        Boolean bothTypes = present.contains("positive") && present.contains("negative");
         DataSection section = new DataSection(sectionName);
 
         int x;
