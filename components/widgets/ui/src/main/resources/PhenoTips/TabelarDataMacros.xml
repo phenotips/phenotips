@@ -51,6 +51,10 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
 #end
 
+#macro (__extradata_rejectTool $object $anchor $options)
+  {{html clean="false"}}&lt;a class="action reject" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" data-bind="$!{options.rejectToClass}" title="Reject"&gt;&lt;i class="fa fa-level-down"&gt;&lt;/i&gt;&lt;/a&gt;{{/html}}##
+#end
+
 #macro (__extradata_addTool $classname $anchor $options)
   {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
 #end
@@ -65,7 +69,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
     #if ($options.mode != 'edit' &amp;&amp; $dataObjects.size() == 0)
       (% class="hint" %)None specified
     #elseif ($options.mode == 'export')
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end#if ("$!{options.rejectToClass}" != '') withReject#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #set ($disableLabels = true)
       #foreach ($o in $dataObjects)
         #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $options.mode, $o)#if ($velocityCount %2 == 0)
@@ -75,13 +79,13 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       #end## foreach object
     #else
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end $!{options.cssClass}" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
-      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.translatedPrettyName#end#if ($options.mode == 'edit')|=(% class="actions" %)
+      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.translatedPrettyName#end#if("$!{options.rejectToClass}" != '')|=(% class="actions" %)#end#if ($options.mode == 'edit')|=(% class="actions" %)
       #else
 
       #end
       #if ($options.mode == 'export')#set ($disableLabels = true)#end
       #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $options.mode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $options.mode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ("$!{options.rejectToClass}" != '')|(% class="actions" %)#__extradata_rejectTool($o "extradata-${dataClassName}" $options)#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
@@ -186,7 +190,9 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   tools.Editor = Class.create({
     initialize : function () {
       $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
+      $$('.extradata-list a.reject').invoke('observe', 'click', this.ajaxRejectData.bindAsEventListener(this));
       $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
+      $$('.list-actions a.add').invoke('observe', 'extradata:reject-add', this.ajaxAddData.bindAsEventListener(this));
     },
     ajaxDeleteData : function (event) {
       event.stop();
@@ -281,7 +287,42 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
           addTrigger.disabled = false
         }
       });
-    }
+    },
+    ajaxRejectData : function (event) {
+      event.stop();
+      var rejectTrigger = event.findElement('.reject');
+      if (rejectTrigger.disabled) {
+         return;
+      }
+      var transferToClass = rejectTrigger.getAttribute("data-bind");
+      new XWiki.widgets.ConfirmedAjaxRequest(rejectTrigger.href, {
+        onCreate : function() {
+          rejectTrigger.disabled = true
+        },
+        onSuccess : function() {
+          var dataRow = rejectTrigger.up('tr:not(.head-group)');
+          var dataTable = rejectTrigger.up('table.extradata-list');
+          if (dataRow) {
+            dataRow.remove();
+            Event.fire(dataTable, 'extradata:rejected', {'element' : dataRow, 'transferToClass' : transferToClass});
+            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});
+          }
+          if (dataTable) {
+            var i = 1;
+            dataTable.select('th.row-count').each(function(item) {
+              item.update((i++));
+            });
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});
+          }
+        },
+        onComplete : function() {
+          rejectTrigger.disabled = false;
+        }
+      },
+      {
+         confirmationText : "Are you sure you wish to reject this row?"
+      });    
+    },
   });
   return ExtraData;
 }(ExtraData || {}));
