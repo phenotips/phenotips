@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.phenotips</groupId>
+    <artifactId>phenotips-distribution</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>phenotips-debian</artifactId>
+  <packaging>pom</packaging>
+  <name>PhenoTips - Debian Distribution</name>
+  <description>Distribution containing the PhenoTips application deployed under Tomcat, with HSQLDB for storage, as a Debian (.deb) package.</description>
+
+  <properties>
+    <phenotips.base.path>/var/lib/phenotips</phenotips.base.path>
+    <debian.license>LGPL 2.1</debian.license>
+    <debian.homepage>http://phenotips.org/</debian.homepage>
+    <debian.maintainer>Computational Biology Lab, University of Toronto (devs@phenotips.org)</debian.maintainer>
+    <debian.description>The PhenoTips server packaged for Tomcat with an embedded HSQLDB database for data storage
+ PhenoTips is an open source software tool for collecting and analyzing phenotypic
+ information for patients with genetic disorders. The user interface closely mirrors
+ clinician workflows so as to facilitate the recording of observations made during
+ the patient encounter. This easy-to-use front-end, compatible with any device that
+ runs a Web browser, is coupled with with a standardized database back-end where
+ phenotypic information is represented using the Human Phenotype Ontology (HPO).
+ .
+ Collected data include demographics, medical history, family history, physical and
+ laboratory measurements, physical findings, and free-form notes.
+ .
+ In addition to data collection, PhenoTips automatically analyzes a wide range
+ of measurements and plots live the corresponding growth curves. It also supports
+ accurate diagnosis based on the entered data, and can suggest additional clinical
+ investigations that can improve the diagnosis.
+    </debian.description>
+  </properties>
+
+  <modules>
+    <module>debian-common</module>
+    <module>debian-tomcat6</module>
+    <module>debian-tomcat7</module>
+  </modules>
+</project>

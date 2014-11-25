@@ -1,0 +1,11 @@
+Package: phenotips-tomcat7
+Version: [[version]]
+Maintainer: [[debian.maintainer]]
+Description: [[debian.description]]
+Section: java
+Priority: optional
+Architecture: all
+Homepage: [[debian.homepage]]
+Depends: phenotips-common (= [[version]]), tomcat7
+Conflicts: phenotips-tomcat6
+XB-License: [[debian.license]]

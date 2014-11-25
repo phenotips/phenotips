@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function saveNewConfFiles {
+  cd [[phenotips.base.path]]/webapp/WEB-INF || return 1
+  for file in xwiki.{cfg,properties} hibernate.cfg.xml; do
+    if [ -e $file ] && [ -e $file.dpkg-new ] && { ! cmp -s $file $file.dpkg-new &>/dev/null; }; then
+      cp -p $file.dpkg-new $file.dpkgnew || return 1
+    fi
+  done
+  return 0
+}
+
+function removeSavedConfFiles {
+  rm -f [[phenotips.base.path]]/webapp/WEB-INF/*.dpkgnew
+}
+
+function removeData {
+  rm -rf [[phenotips.base.path]]/data
+}
+
+case $1 in
+  upgrade|failed-upgrade) saveNewConfFiles ;;
+  abort-upgrade) removeSavedConfFiles ;;
+  remove) removeSavedConfFiles; removeData ;;
+esac

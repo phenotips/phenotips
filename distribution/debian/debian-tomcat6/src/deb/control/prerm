@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+function stopTomcat {
+  invoke-rc.d --quiet $1 stop || {
+    RESULT=$?
+    # Ignore if tomcat init script does not exist (yet)
+    if [ $RESULT != 100 ]; then
+      return $RESULT
+    fi
+  }
+  return 0
+}
+
+stopTomcat [[target.tomcat]]

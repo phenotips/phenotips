@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+function stopTomcat {
+  invoke-rc.d --quiet $1 stop || {
+    RESULT=$?
+    # Ignore if tomcat init script does not exist (yet)
+    if [ $RESULT != 100 ]; then
+      return $RESULT
+    fi
+  }
+  return 0
+}
+
+function stopTomcats {
+  for v in 7 6 ; do
+    if { grep -q "[[phenotips.base.path]]/" /etc/tomcat$v/Catalina/localhost/phenotips.xml &>/dev/null; }; then
+      stopTomcat tomcat$v || return 1
+    fi
+  done
+  return 0
+}
+
+stopTomcats

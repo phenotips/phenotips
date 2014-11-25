@@ -24,52 +24,36 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-debian</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-distribution</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Distribution packages</name>
+
+  <artifactId>phenotips-debian-tomcat6</artifactId>
+  <packaging>deb</packaging>
+  <name>PhenoTips - Debian Distribution - tomcat6</name>
+  <description>Distribution containing the PhenoTips application deployed under Tomcat, with HSQLDB for storage, as a Debian (.deb) package.</description>
 
   <properties>
-    <!-- Distribution packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
-    <checkstyle.skip>true</checkstyle.skip>
-    <clirr.skip>true</clirr.skip>
+    <target.tomcat>tomcat6</target.tomcat>
   </properties>
 
-  <modules>
-    <module>hsqldb-database</module>
-    <module>war</module>
-    <module>standalone</module>
-    <module>debian</module>
-  </modules>
-
-  <profiles>
-    <profile>
-      <id>rpm</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <file>
-          <exists>/usr/bin/rpmbuild</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>rpm</module>
-        <module>rpm-rh6</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-          <name>mac os x</name>
-        </os>
-      </activation>
-      <modules>
-        <module>dmg</module>
-      </modules>
-    </profile>
-  </profiles>
+  <build>
+    <plugins>
+      <!-- Produce the DEB -->
+      <plugin>
+        <groupId>org.vafer</groupId>
+        <artifactId>jdeb</artifactId>
+        <configuration>
+          <dataSet>
+            <data>
+              <type>link</type>
+              <symlink>true</symlink>
+              <linkName>/etc/${target.tomcat}/Catalina/localhost/phenotips.xml</linkName>
+              <linkTarget>${phenotips.base.path}/webapp/META-INF/context.xml</linkTarget>
+            </data>
+          </dataSet>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

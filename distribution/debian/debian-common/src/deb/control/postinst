@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+function unpackData {
+  cd [[phenotips.base.path]] || return 1
+  if [ ! -e data/solr/ ]; then
+    # Initial installation, extract the original configuration
+    { unzip -qq -d data/ next/database-zip*.zip &&
+        unzip -qq -d data/solr/ next/solr-config*.jar; } ||
+      return 1
+  else
+    # Upgrade, update all Solr core configurations and only update specific Solr indexes
+    { unzip -q -d next/solr next/solr-config*.jar &&
+        mv -t data/solr/ next/solr/solr.xml &&
+        rm -rf data/solr/hpo/ data/solr/omim/ data/solr/ethnicity/ &&
+        mv -t data/solr/ next/solr/hpo/ next/solr/omim/ next/solr/ethnicity; } ||
+      return 1
+    if [ -d data/solr/patients/ ]; then
+      { rm -rf data/solr/patients/conf/ &&
+          mv -t data/solr/patients/ next/solr/patients/conf/; } ||
+        return 1
+    else
+      mv -t data/solr/ next/solr/patients/ || return 1
+    fi
+    # Deprecated core, remove
+    rm -rf data/solr/xwiki/ || return 1
+  fi
+
+  # Cleanup
+  rm -rf next/
+}
+
+function removeSavedConfFiles {
+  cd [[phenotips.base.path]]/webapp/WEB-INF || return 1
+  for file in xwiki.{cfg,properties} hibernate.cfg.xml; do
+    if [ -e $file ] && [ -e $file.dpkgnew ] && { cmp -s $file $file.dpkgnew &>/dev/null; }; then
+      rm -f $file.dpkgnew || return 1
+    fi
+  done
+  return 0
+}
+
+if [ $1 = configure ]; then
+  unpackData
+  removeSavedConfFiles
+fi

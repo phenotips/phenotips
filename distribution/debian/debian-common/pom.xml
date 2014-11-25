@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.phenotips</groupId>
+    <artifactId>phenotips-debian</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>phenotips-debian-common</artifactId>
+  <packaging>deb</packaging>
+  <name>PhenoTips - Debian Distribution - common</name>
+  <description>Distribution containing the PhenoTips application deployed under Tomcat, with HSQLDB for storage, as a Debian (.deb) package.</description>
+
+  <properties>
+    <war.path>${project.build.directory}/war</war.path>
+    <data.path>${project.build.directory}/data</data.path>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>database-zip</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>solr-configuration</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <!-- Unpack the war -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unzip-phenotips</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludeTransitive>true</excludeTransitive>
+              <includeArtifactIds>phenotips-war</includeArtifactIds>
+              <excludes>**\/xwiki.cfg,**/xwiki.properties,**/hibernate.cfg.xml</excludes>
+              <outputDirectory>${war.path}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-data</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludeTransitive>true</excludeTransitive>
+              <includeArtifactIds>database-zip,solr-configuration</includeArtifactIds>
+              <outputDirectory>${data.path}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Prepare configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-configuration-resources</id>
+          </execution>
+          <execution>
+            <id>xwiki-platform-tool-configuration-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${xwiki.version}</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <xwikiDbConnectionUrl>jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true;hsqldb.cache_size=50000;hsqldb.script_format=3;hsqldb.nio_max_size=512;hsqldb.lob_file_scale=16;hsqldb.default_table_type=cached;hsqldb.tx=mvcc</xwikiDbConnectionUrl>
+                <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
+                <xwikiDbConnectionPassword />
+                <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
+                <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
+                <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
+                <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiCfgPlugins>\
+  com.xpn.xwiki.monitor.api.MonitorPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+  com.xpn.xwiki.plugin.mail.MailPlugin,\
+  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
+  com.xpn.xwiki.plugin.svg.SVGPlugin,\
+  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+  com.xpn.xwiki.plugin.image.ImagePlugin,\
+  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
+  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
+  com.xpn.xwiki.plugin.diff.DiffPlugin,\
+  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
+  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
+  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
+  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
+  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
+  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
+  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
+                <xwikiCfgVirtual>0</xwikiCfgVirtual>
+                <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
+                <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
+                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+                <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+                <xwikiCfgAdditionalProperties>
+xwiki.plugin.watchlist.automaticwatch=none
+xwiki.authentication.group.allgroupimplicit=1
+xwiki.authentication.rightsclass=org.phenotips.security.authorization.ModularRightServiceImpl
+xwiki.section.edit=0
+xwiki.backlinks=0
+xwiki.showviewaction=0
+xwiki.defaultweb=data
+xwiki.usedefaultweb=1
+xwiki.usedefaultaction=0
+xwiki.monitor=0
+xwiki.store.attachment.hint=file
+xwiki.store.attachment.versioning.hint=file
+xwiki.store.attachment.recyclebin.hint=file
+                </xwikiCfgAdditionalProperties>
+                <xwikiPropertiesEnvironmentPermanentDirectory>${phenotips.base.path}/data/</xwikiPropertiesEnvironmentPermanentDirectory>
+                <xwikiPropertiesAdditionalProperties>
+model.reference.default.space=data
+extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/content/groups/public/
+extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
+extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
+rendering.transformations=macro
+                </xwikiPropertiesAdditionalProperties>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Produce the DEB archive -->
+      <plugin>
+        <groupId>org.vafer</groupId>
+        <artifactId>jdeb</artifactId>
+        <configuration>
+          <dataSet>
+            <data>
+              <src>${war.path}</src>
+              <type>directory</type>
+              <mapper>
+                <type>perm</type>
+                <prefix>${phenotips.base.path}/webapp</prefix>
+                <dirmode>750</dirmode>
+                <filemode>644</filemode>
+              </mapper>
+            </data>
+            <data>
+              <src>${project.build.outputDirectory}</src>
+              <type>directory</type>
+              <includes>xwiki.cfg,xwiki.properties,hibernate.cfg.xml</includes>
+              <mapper>
+                <type>perm</type>
+                <prefix>${phenotips.base.path}/webapp/WEB-INF</prefix>
+                <dirmode>750</dirmode>
+                <filemode>644</filemode>
+              </mapper>
+              <conffile>true</conffile>
+            </data>
+            <data>
+              <src>${data.path}</src>
+              <type>directory</type>
+              <mapper>
+                <type>perm</type>
+                <prefix>${phenotips.base.path}/next</prefix>
+                <dirmode>750</dirmode>
+                <filemode>644</filemode>
+              </mapper>
+            </data>
+            <data>
+              <src>${project.build.outputDirectory}/context.xml</src>
+              <type>file</type>
+              <dst>${phenotips.base.path}/webapp/META-INF/context.xml</dst>
+              <mapper>
+                <type>perm</type>
+                <filemode>644</filemode>
+              </mapper>
+              <conffile>true</conffile>
+            </data>
+            <data>
+              <src>${project.build.outputDirectory}/scripts</src>
+              <type>directory</type>
+              <mapper>
+                <type>perm</type>
+                <prefix>${phenotips.base.path}/scripts</prefix>
+                <dirmode>750</dirmode>
+                <filemode>755</filemode>
+              </mapper>
+            </data>
+          </dataSet>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
