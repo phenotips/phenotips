@@ -177,7 +177,7 @@ document.observe('extradata:rejected', function(parameters) {
     var lastRowNameInput = lastRow.down(".gene").down("input");
     var lastRowCommentInput = lastRow.down(".comments").down("textarea");
 
-    if ((lastRowNameInput &amp;&amp; lastRowCommentInput) &amp;&amp; (lastRowNameInput.getValue() || lastRowCommentInput.getValue())) {
+    if (!(lastRowNameInput || lastRowCommentInput) || ((lastRowNameInput &amp;&amp; lastRowCommentInput) &amp;&amp; (lastRowNameInput.getValue() || lastRowCommentInput.getValue()))) {
       var addButton = dataTable.next(".list-actions").down(".add");
       Event.observe(dataTable, "extradata:added", function(event){
         lastRow = event.memo.element;
