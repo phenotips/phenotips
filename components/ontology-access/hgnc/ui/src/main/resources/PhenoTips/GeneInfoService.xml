@@ -73,6 +73,9 @@
 #if ($term.alias_symbol)
   #set ($result.alias_symbol = $term.alias_symbol)
 #end
+#if ($term.prev_symbol)
+  #set ($result.prev_symbol = $term.prev_symbol)
+#end
 #if ($term.gene_family)
   #set ($result.gene_family = $term.gene_family)
 #end
