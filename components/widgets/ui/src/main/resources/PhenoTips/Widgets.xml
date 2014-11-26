@@ -3986,7 +3986,7 @@ document.observe("xwiki:dom:loaded", function() {
                                        .insert(elt('span', 'value').update(json.name))
                   );
 
-          var labels = {'alias_symbol' : 'Aliases', 'gene_family' : 'Gene family'};
+          var labels = {'alias_symbol' : 'Aliases', 'prev_symbol' : 'Previous symbols', 'gene_family' : 'Gene family'};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
