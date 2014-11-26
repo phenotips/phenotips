@@ -671,7 +671,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         for (var i = 0; i < labels.length; i++) {
             var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 7) : 0;
             labels[i].transform(""); // clear all transofrms, using new real x
-            labels[i].attr("y", startY + offset);                      
+            labels[i].attr("x", this.getX());
+            labels[i].attr("y", startY + offset);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2 + 11;
         }
