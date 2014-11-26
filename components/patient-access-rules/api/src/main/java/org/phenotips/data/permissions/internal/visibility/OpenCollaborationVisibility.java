@@ -30,6 +30,7 @@ import javax.inject.Singleton;
 
 /**
  * @version $Id$
+ *@since 1.1M1
  */
 @Component
 @Named("openCollaboration")
