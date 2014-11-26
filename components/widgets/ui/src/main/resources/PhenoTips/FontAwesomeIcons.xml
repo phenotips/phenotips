@@ -270,10 +270,11 @@
     <property>
       <code>{{velocity output=false}}
 #set ($aliases = {
-  'public' : 'unlock',
+  'public' : 'eye',
   'private' : 'lock',
   'hidden' : 'eye-slash',
   'matchable' : 'search',
+  'openCollaboration' : 'pencil-square-o',
   'delete' : 'times'
 })
 #set ($iconName = $xcontext.macro.params.name)
