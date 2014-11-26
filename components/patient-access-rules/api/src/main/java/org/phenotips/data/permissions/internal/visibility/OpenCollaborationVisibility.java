@@ -30,7 +30,7 @@ import javax.inject.Singleton;
 
 /**
  * @version $Id$
- *@since 1.1M1
+ * @since 1.1M1
  */
 @Component
 @Named("openCollaboration")
@@ -43,7 +43,7 @@ public class OpenCollaborationVisibility extends AbstractVisibility
 
     public OpenCollaborationVisibility()
     {
-        super(100);
+        super(80);
     }
 
     @Override
