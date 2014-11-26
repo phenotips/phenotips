@@ -53,7 +53,7 @@
   #set ($max = $mathtool.toInteger($request.max))
 #end
 #if ("$!request.q" != '')
-  #set ($terms = $services.ontologies.hgnc.search({'status' : 'Approved', 'AND' : {'symbol' : "${request.q}*", 'alias_symbol' : "${request.q}*"}}, {'rows' : "$max"}))
+  #set ($terms = $services.ontologies.hgnc.search({'status' : 'Approved', 'AND' : {'symbol' : "${request.q}*", 'alias_symbol' : "${request.q}*", 'prev_symbol' : "${request.q}*"}}, {'rows' : "$max"}))
   #set ($result = {'numReturned' : $terms.size(), 'docs': []})
   #foreach ($term in $terms)
     #set ($discard = $result.docs.add({'symbol' : $term.symbol}))
