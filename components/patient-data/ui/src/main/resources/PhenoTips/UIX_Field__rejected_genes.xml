@@ -282,11 +282,11 @@ document.observe('extradata:rejected', function(parameters) {
 $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__rejected_genes')##
-#set ($targetClassName = 'PhenoTips.InvestigatedClass')
+#set ($targetClassName = 'PhenoTips.RejectedGenesClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === List of rejected genes ===
 
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 {{/velocity}}</content>
     </property>

@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>InvestigatedClass</name>
+  <name>RejectedGenesClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -41,7 +41,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>PhenoTips.InvestigatedClass</name>
+    <name>PhenoTips.RejectedGenesClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -83,26 +83,5 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </gene>
-    <type>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>type</name>
-      <number>1</number>
-      <picker>0</picker>
-      <prettyName>Type</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>genetic=Genetic investigation|molecular=Molecular genetics</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </type>
   </class>
 </xwikidoc>

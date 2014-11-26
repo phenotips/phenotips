@@ -545,7 +545,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === List of candidate genes ===
 
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'rejectToClass' : "InvestigatedClass"})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'rejectToClass' : "RejectedGenesClass"})
 #end
 {{/velocity}}</content>
     </property>
