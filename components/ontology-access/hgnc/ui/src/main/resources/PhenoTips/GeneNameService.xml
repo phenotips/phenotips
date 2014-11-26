@@ -52,7 +52,40 @@
 #if ("$!request.max" != '')
   #set ($max = $mathtool.toInteger($request.max))
 #end
-#if ("$!request.q" != '')
+#if ($request.getParameterValues('g'))
+  #set ($results = {})
+  #foreach ($i in $request.getParameterValues('g'))
+    #if ("$!i" != '')
+      #set ($term = $services.ontologies.hgnc.getTerm($i))
+      #if ($term)
+        #set ($result = {
+          'symbol' : $term.symbol,
+          'external_ids' : {'genecards_id' :  $term.symbol}
+        })
+        #if ($term.alias_symbol)
+          #set ($result.alias_symbol = $term.alias_symbol)
+        #end
+        #if ($term.prev_symbol)
+          #set ($result.prev_symbol = $term.prev_symbol)
+        #end
+        #if ($term.gene_family)
+          #set ($result.gene_family = $term.gene_family)
+        #end
+        #foreach ($externalTerm in ['omim_id', 'entrez_id', 'refseq_accession', 'ensembl_gene_id'])
+          #if ($term.get($externalTerm))
+            #set ($discard = $result.external_ids.put($externalTerm, $term.get($externalTerm)))
+          #end
+        #end
+        #set ($discard = $results.put($i, $result))
+      #end
+    #end
+  #end
+  #if ($results.isEmpty())
+    {"error": "Gene not found."}
+  #else
+    $jsontool.serialize({"response": $results})
+  #end
+#elseif ("$!request.q" != '')
   #set ($terms = $services.ontologies.hgnc.search({'status' : 'Approved', 'AND' : {'symbol' : "${request.q}*", 'alias_symbol' : "${request.q}*", 'prev_symbol' : "${request.q}*"}}, {'rows' : "$max"}))
   #set ($result = {'numReturned' : $terms.size(), 'docs': []})
   #foreach ($term in $terms)
