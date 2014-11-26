@@ -546,7 +546,7 @@ var PedigreeEditor = Class.create({
                 'label' : 'Comments',
                 'type' : 'textarea',
                 'tab': 'Clinical',
-                'rows' : 2,
+                'rows' : 3,
                 'function' : 'setComments'
             }
         ], ["Personal", "Clinical"]);
@@ -619,7 +619,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'comments',
                 'label' : 'Comments',
                 'type' : 'textarea',
-                'rows' : 2,
+                'rows' : 3,
                 'function' : 'setComments'
             },
             {

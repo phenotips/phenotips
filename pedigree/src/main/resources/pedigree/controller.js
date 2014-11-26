@@ -216,6 +216,8 @@ var Controller = Class.create({
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         var needUpdateAllRelationships = false;
+        var needUpdateYPositions = false;  // true iff: setting this property (e.g. extra long comments)
+                                           //           may force stuff to move around in Y direction
 
         var changedValue = false;
 
@@ -307,6 +309,10 @@ var Controller = Class.create({
                     twinUpdate[propertySetFunction] = propValue;
                 }
 
+                if (propertySetFunction == "setComments") {
+                    needUpdateYPositions = true;
+                }
+
                 if (propertySetFunction == "setMonozygotic") {
                     needUpdateRelationship = true;
                     if (!twinUpdate) twinUpdate = {};
@@ -365,6 +371,11 @@ var Controller = Class.create({
         if (needUpdateRelationship) {
             var relID = editor.getGraph().isRelationship(nodeID) ? nodeID : editor.getGraph().getParentRelationship(nodeID);
             var changeSet = {"moved": [relID]};
+            editor.getView().applyChanges(changeSet, true);
+        }
+
+        if (needUpdateYPositions) {
+            var changeSet = editor.getGraph().updateYPositioning();
             editor.getView().applyChanges(changeSet, true);
         }
 

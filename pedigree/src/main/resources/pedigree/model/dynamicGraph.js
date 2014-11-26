@@ -1201,6 +1201,21 @@ DynamicPositionedGraph.prototype = {
 
         return {"moved": movedNodes};
     },
+    
+    updateYPositioning: function ()
+    {
+        var positionsBefore  = this.DG.positions; //.slice(0); not changing, no need to copy
+        var ranksBefore      = this.DG.ranks;     //.slice(0); not changing, no need to copy
+        var vertLevelsBefore = this.DG.vertLevel; //.copy();   not changing, no need to copy
+        var rankYBefore      = this.DG.rankY.slice(0);
+        var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
+
+        this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
+
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+
+        return {"moved": movedNodes};
+    },
 
     clearAll: function()
     {

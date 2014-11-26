@@ -46,6 +46,7 @@ PositionedGraph.prototype = {
     yDistanceChildhubToNode:        14,
     yExtraPerHorizontalLine:         4,
     yAttachPortHeight:             1.5,
+    yCommentLineHeight:            3.0,
 
     initialize: function( baseG,
                           horizontalPersonSeparationDist,
@@ -2855,7 +2856,7 @@ PositionedGraph.prototype = {
         var rankY = [0, 0];  // rank 0 is virtual, rank 1 starts at relative 0
 
         for ( var r = 2; r <= this.maxRank; r++ ) {
-            var yDistance = (this.GG.isChildhub(this.order.order[r][0])) ? this.yDistanceNodeToChildhub : this.yDistanceChildhubToNode;
+            var yDistance = (this.isChildhubRank(r)) ? this._computePersonRankHeight(r-1) : this.yDistanceChildhubToNode;
 
             // note: yExtraPerHorizontalLine * vertLevel.rankVerticalLevels[r] part comes from the idea that if there are many
             //       horizontal lines (childlines & relationship lines) between two ranks it is good to separate those ranks vertically
@@ -2876,6 +2877,46 @@ PositionedGraph.prototype = {
         }
 
         return rankY;
+    },
+
+    isChildhubRank: function(r)
+    {
+        for (var i = 0; i < this.order.order[r].length; i++) {
+            if (this.GG.isPerson(this.order.order[r][i]) ||
+                this.GG.isRelationship(this.order.order[r][i])) return false;
+            if (this.GG.isChildhub(this.order.order[r][i])) return true;
+        }
+    },
+
+    _computePersonRankHeight: function(r)
+    {
+        var height = this.yDistanceNodeToChildhub;
+
+        var maxNumLinesInComments = 0;
+        for (var i = 0; i < this.order.order[r].length; i++) {
+            if (this.GG.isPerson(this.order.order[r][i])) {
+                var person = this.order.order[r][i];
+                var numLabelLines = 0;
+                if (this.GG.properties[person].hasOwnProperty("comments")) {
+                    var comments = this.GG.properties[person].comments.replace(/^\s+|\s+$/g,'');
+                    // count number of new lines
+                    numLabelLines += (comments.match(/\n/g) || []).length;
+                }
+                if (this.GG.properties[person].hasOwnProperty("dob") || this.GG.properties[person].hasOwnProperty("dod")) {
+                    numLabelLines++;
+                }
+                if (this.GG.properties[person].hasOwnProperty("lName") || this.GG.properties[person].hasOwnProperty("fName")) {
+                    numLabelLines++;
+                }
+                if (numLabelLines > maxNumLinesInComments) {
+                    maxNumLinesInComments = numLabelLines;
+                }
+            }
+        }
+        if (maxNumLinesInComments > 5) {
+            height += (maxNumLinesInComments - 5)*this.yCommentLineHeight;
+        }
+        return height;
     },
 
     computeNodeY: function( rank, level )
