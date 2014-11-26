@@ -676,9 +676,15 @@ NodeMenu = Class.create({
           y = Math.floor(y);
       } else {
           if (this.menuBox.style.top.length > 0) {
-              y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+              try {
+                y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+              } catch (err) {
+                // ignore: strange style or negative y, y will b set to 0
+              }
           }
-          if (y === undefined || !isFinite(y) || y < 0) y = 0;
+      }
+      if (y === undefined || !isFinite(y) || y < 0) {
+          y = 0;
       }
 
       // Make sure the menu fits inside the screen
