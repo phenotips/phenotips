@@ -31,6 +31,7 @@ import org.xwiki.cache.eviction.LRUEvictionConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -81,14 +82,6 @@ public class GeneNomenclature implements OntologyService, Initializable
      */
     private static final OntologyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
 
-    private static final String BASE_SERVICE_URL = "http://rest.genenames.org/";
-
-    private static final String SEARCH_SERVICE_URL = BASE_SERVICE_URL + "search/";
-
-    private static final String INFO_SERVICE_URL = BASE_SERVICE_URL + "info";
-
-    private static final String FETCH_SERVICE_URL = BASE_SERVICE_URL + "fetch/";
-
     private static final String RESPONSE_KEY = "response";
 
     private static final String DATA_KEY = "docs";
@@ -100,6 +93,18 @@ public class GeneNomenclature implements OntologyService, Initializable
     private static final String DEFAULT_OPERATOR = "AND";
 
     private static final Map<String, String> QUERY_OPERATORS = new HashMap<>();
+
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configuration;
+
+    private String baseServiceURL;
+
+    private String searchServiceURL;
+
+    private String infoServiceURL;
+
+    private String fetchServiceURL;
 
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
@@ -124,6 +129,11 @@ public class GeneNomenclature implements OntologyService, Initializable
     public void initialize() throws InitializationException
     {
         try {
+            baseServiceURL =
+                configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
+            searchServiceURL = baseServiceURL + "search/";
+            infoServiceURL = baseServiceURL + "info";
+            fetchServiceURL = baseServiceURL + "fetch/";
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
             EntryEvictionConfiguration infoConfig = new LRUEvictionConfiguration(1);
             infoConfig.setTimeToLive(300);
@@ -141,7 +151,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         OntologyTerm result = this.cache.get(id);
         if (result == null) {
-            HttpGet method = new HttpGet(FETCH_SERVICE_URL + "symbol/" + id);
+            HttpGet method = new HttpGet(fetchServiceURL + "symbol/" + id);
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
@@ -185,7 +195,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         try {
             HttpGet method =
-                new HttpGet(SEARCH_SERVICE_URL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
+                new HttpGet(searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
@@ -226,7 +236,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         try {
             HttpGet method =
-                new HttpGet(SEARCH_SERVICE_URL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
+                new HttpGet(searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
@@ -283,7 +293,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     @Override
     public String getDefaultOntologyLocation()
     {
-        return BASE_SERVICE_URL;
+        return baseServiceURL;
     }
 
     @Override
@@ -299,7 +309,7 @@ public class GeneNomenclature implements OntologyService, Initializable
         if (info != null) {
             return info;
         }
-        HttpGet method = new HttpGet(INFO_SERVICE_URL);
+        HttpGet method = new HttpGet(infoServiceURL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);

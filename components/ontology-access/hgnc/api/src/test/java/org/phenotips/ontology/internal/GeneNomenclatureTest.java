@@ -28,6 +28,7 @@ import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
@@ -76,6 +77,8 @@ public class GeneNomenclatureTest
     @Rule
     public MockitoComponentMockingRule<OntologyService> mocker =
         new MockitoComponentMockingRule<OntologyService>(GeneNomenclature.class);
+    
+    private ConfigurationSource configuration;
 
     @Mock
     private CloseableHttpClient client;
@@ -101,6 +104,8 @@ public class GeneNomenclatureTest
         MockitoAnnotations.initMocks(this);
         when(this.mocker.<CacheManager>getInstance(CacheManager.class).<OntologyTerm>createNewLocalCache(
             any(CacheConfiguration.class))).thenReturn(this.cache);
+        this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
+        when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/")).thenReturn("http://rest.genenames.org/");
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         Field em = ReflectionUtils.getField(GeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
