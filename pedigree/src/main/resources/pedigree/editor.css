@@ -398,6 +398,9 @@
 .menu-box .field-box .textarea-3-rows {
   height: 4.3em;
 }
+.menu-box .field-box .textarea-4-rows {
+  height: 5.5em;
+}
 .import-upload {
   display: block;
   margin: 0.2em 0 0.75em 7.5em;

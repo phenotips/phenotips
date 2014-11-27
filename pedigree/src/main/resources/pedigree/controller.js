@@ -309,7 +309,11 @@ var Controller = Class.create({
                     twinUpdate[propertySetFunction] = propValue;
                 }
 
-                if (propertySetFunction == "setComments") {
+                if (propertySetFunction == "setComments"  || propertySetFunction == "setExternalID" ||
+                    propertySetFunction == "setFirstName" || propertySetFunction == "setLastName" ||
+                    propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
+                    // all the methods which may result in addition ort deletion of person labels
+                    // (which may cause a shift up or down)
                     needUpdateYPositions = true;
                 }
 

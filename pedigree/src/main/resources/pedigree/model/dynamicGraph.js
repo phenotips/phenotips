@@ -1212,7 +1212,7 @@ DynamicPositionedGraph.prototype = {
 
         this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
 
-        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, null, true );
 
         return {"moved": movedNodes};
     },
@@ -1505,7 +1505,7 @@ DynamicPositionedGraph.prototype = {
         return nodes;
     },
 
-    _findMovedNodes: function (maxOldID, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore)
+    _findMovedNodes: function (maxOldID, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore, fastCheck)
     {
         //console.log("Before: " + stringifyObject(vertLevelsBefore));
         //console.log("After:  " + stringifyObject(this.DG.vertLevel));
@@ -1551,10 +1551,12 @@ DynamicPositionedGraph.prototype = {
                         result[i] = true;
                         continue;
                     }
-                    var inEdges = this.DG.GG.getInEdges(i);
-                    if (inEdges[0] > this.DG.GG.maxRealVertexId || inEdges[1] > this.DG.GG.maxRealVertexId) {
-                        result[i] = true;
-                        continue;
+                    if (!fastCheck) {
+                        var inEdges = this.DG.GG.getInEdges(i);
+                        if (inEdges[0] > this.DG.GG.maxRealVertexId || inEdges[1] > this.DG.GG.maxRealVertexId) {
+                            result[i] = true;
+                            continue;
+                        }
                     }
                     // check vertical positioning changes
                     var parents = this.DG.GG.getParents(i);

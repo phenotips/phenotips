@@ -674,7 +674,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             labels[i].attr("x", this.getX());
             labels[i].attr("y", startY + offset);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
-            startY = labels[i].getBBox().y2 + 11;
+            if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
+                startY = labels[i].getBBox().y2 + 11;
+            }
         }
         if(!editor.isUnsupportedBrowser())
             labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());

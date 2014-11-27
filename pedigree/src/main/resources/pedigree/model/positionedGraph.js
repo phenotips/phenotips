@@ -46,7 +46,7 @@ PositionedGraph.prototype = {
     yDistanceChildhubToNode:        14,
     yExtraPerHorizontalLine:         4,
     yAttachPortHeight:             1.5,
-    yCommentLineHeight:            3.0,
+    yCommentLineHeight:            2.5,
 
     initialize: function( baseG,
                           horizontalPersonSeparationDist,
@@ -2900,7 +2900,7 @@ PositionedGraph.prototype = {
                 if (this.GG.properties[person].hasOwnProperty("comments")) {
                     var comments = this.GG.properties[person].comments.replace(/^\s+|\s+$/g,'');
                     // count number of new lines
-                    numLabelLines += (comments.match(/\n/g) || []).length;
+                    numLabelLines += ((comments.match(/\n/g) || []).length + 1);
                 }
                 if (this.GG.properties[person].hasOwnProperty("dob") || this.GG.properties[person].hasOwnProperty("dod")) {
                     numLabelLines++;
@@ -2908,6 +2908,9 @@ PositionedGraph.prototype = {
                 if (this.GG.properties[person].hasOwnProperty("lName") || this.GG.properties[person].hasOwnProperty("fName")) {
                     numLabelLines++;
                 }
+                if (this.GG.properties[person].hasOwnProperty("externalID")) {
+                    numLabelLines++;
+                }                
                 if (numLabelLines > maxNumLinesInComments) {
                     maxNumLinesInComments = numLabelLines;
                 }
