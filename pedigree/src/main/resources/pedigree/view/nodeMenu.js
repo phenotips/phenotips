@@ -351,6 +351,7 @@ NodeMenu = Class.create({
       var _this = this;
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
+          _this._saveCursorPositionIfNecessary(field);
           if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
           var target = _this.targetNode;
           if (!target) return;
@@ -375,6 +376,25 @@ NodeMenu = Class.create({
           field.fire('pedigree:change');
         });
       });
+    },
+
+    _saveCursorPositionIfNecessary: function(field) {
+        this.__lastSelectedField  = field.name;
+        this.__lastNodeID         = this.targetNode;
+        // for text fields in all browsers, and textarea only in IE9
+        if (field.type == "text" || (document.selection && field.type == "textarea")) {
+            this.__lastCursorPosition = getCaretPosition(field);
+        }
+    },
+
+    _restoreCursorPositionIfNecessary: function(field) {
+        if (this.targetNode == this.__lastNodeID &&
+            field.name      == this.__lastSelectedField) {
+            // for text fields in all browsers, and textarea only in IE9
+            if (field.type == "text" || (document.selection && field.type == "textarea")) {
+                setCaretPosition(field, this.__lastCursorPosition);
+            }
+        }
     },
 
     update: function(newTarget) {
@@ -754,12 +774,14 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value;
             }
+            this._restoreCursorPositionIfNecessary(target);
         },
         'textarea' : function (container, value) {
             var target = container.down('textarea');
             if (target) {
                 target.value = value;
             }
+            this._restoreCursorPositionIfNecessary(target);
         },
         'date-picker' : function (container, value) {
             if (!value) {
