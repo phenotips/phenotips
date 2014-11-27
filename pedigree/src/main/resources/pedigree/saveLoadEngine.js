@@ -62,6 +62,11 @@ var ProbandDataLoader = Class.create( {
         this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
         this.probandData.lastName  = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "last_name", "value"));
         this.probandData.gender    = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "gender", "value"));
+        try {
+          this.probandData.birthDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_birth", "value"));
+          this.probandData.deathDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_death", "value"));
+        } catch (err) {
+        }
         if (this.probandData.gender === undefined || this.probandData.gender == '')
             this.probandData.gender = 'U';
         console.log("Proband data: " + stringifyObject(this.probandData));
@@ -114,7 +119,8 @@ var SaveLoadEngine = Class.create( {
 
         if (!noUndo) {
             var probandData = editor.getProbandDataFromPhenotips();
-            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName,
+                                                             probandData.gender, probandData.birthDate, probandData.deathDate );
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
             JSONString = this.serialize();

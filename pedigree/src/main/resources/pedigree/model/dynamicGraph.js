@@ -142,7 +142,7 @@ DynamicPositionedGraph.prototype = {
     },
 
     // returns false if this gender is incompatible with this pedigree; true otherwise
-    setProbandData: function( firstName, lastName, gender )
+    setProbandData: function( firstName, lastName, gender, birthDate, deathDate )
     {
         this.DG.GG.properties[0].fName = firstName;
         this.DG.GG.properties[0].lName = lastName;
@@ -152,6 +152,15 @@ DynamicPositionedGraph.prototype = {
         if (!possibleGenders.hasOwnProperty(gender) || !possibleGenders[gender])
             setGender = 'U'
         this.DG.GG.properties[0].gender = setGender;
+
+        if (birthDate) {
+            birthDate = new PedigreeDate(birthDate);
+            this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+        }
+        if (deathDate) {
+            deathDate = new PedigreeDate(deathDate);
+            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+        }
 
         return (gender == setGender);
     },
