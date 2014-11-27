@@ -314,7 +314,9 @@ var Controller = Class.create({
                     propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
                     // all the methods which may result in addition ort deletion of person labels
                     // (which may cause a shift up or down)
-                    needUpdateYPositions = true;
+                    if (numTextLines(oldValue) != numTextLines(propValue)) {
+                        needUpdateYPositions = true;
+                    }
                 }
 
                 if (propertySetFunction == "setMonozygotic") {

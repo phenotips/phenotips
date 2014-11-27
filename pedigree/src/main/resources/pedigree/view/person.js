@@ -851,16 +851,18 @@ var Person = Class.create(AbstractPerson, {
 
         var inactiveMonozygothic = true;
         var disableMonozygothic  = true;
-        var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
-        if (twins.length > 1) {
-            // check that there are twins and that all twins
-            // have the same gender, otherwise can't be monozygothic
-            inactiveMonozygothic = false;
-            disableMonozygothic  = false;
-            for (var i = 0; i < twins.length; i++) {
-                if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
-                    disableMonozygothic = true;
-                    break;
+        if (this._twinGroup !== null) {
+            var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
+            if (twins.length > 1) {
+                // check that there are twins and that all twins
+                // have the same gender, otherwise can't be monozygothic
+                inactiveMonozygothic = false;
+                disableMonozygothic  = false;
+                for (var i = 0; i < twins.length; i++) {
+                    if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
+                        disableMonozygothic = true;
+                        break;
+                    }
                 }
             }
         }

@@ -669,17 +669,18 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 7) : 0;
+            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 3) : 0;
             labels[i].transform(""); // clear all transofrms, using new real x
             labels[i].attr("x", this.getX());
             labels[i].attr("y", startY + offset);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
+            labels[i].toBack();
             if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
                 startY = labels[i].getBBox().y2 + 11;
             }
         }
-        if(!editor.isUnsupportedBrowser())
-            labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
+        //if(!editor.isUnsupportedBrowser())
+        //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
     
     _labelSelectionOffset: function() {

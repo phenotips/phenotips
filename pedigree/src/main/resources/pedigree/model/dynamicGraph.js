@@ -1214,6 +1214,9 @@ DynamicPositionedGraph.prototype = {
 
         var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, null, true );
 
+        if (movedNodes.length == 0) {
+            return {};
+        }
         return {"moved": movedNodes};
     },
 

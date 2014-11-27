@@ -535,6 +535,7 @@ var View = Class.create({
     applyChanges: function( changeSet, markNew ) {
         // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }
         console.log("Change set: " + stringifyObject(changeSet));
+        if (isObjectEmpty(changeSet)) return;
 
         var timer = new Timer();
         var timer2 = new Timer();

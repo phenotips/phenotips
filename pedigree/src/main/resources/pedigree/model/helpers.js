@@ -143,6 +143,24 @@ function removeFirstOccurrenceByValue(array, item) {
     }
 }
 
+// Returns true iff the object has no properties
+function isObjectEmpty(map) {
+    for(var key in map) {
+       if (map.hasOwnProperty(key)) {
+          return false;
+       }
+    }
+    return true;
+}
+
+// Returns num lines in a text block, or 0 for empty lines. Ignores leading and trailing whitespace
+function numTextLines(text) {
+    if (text === null || text == "") { return 0; }
+    var useText = text.replace(/^\s+|\s+$/g,'');
+    var numLines = (useText.match(/\n/g) || []).length + 1;
+    return numLines;
+}
+
 // Used for: user input validation
 function isInt(n) {
     //return +n === n && !(n % 1);
