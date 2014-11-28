@@ -21,12 +21,13 @@ package org.phenotips.ontology.internal;
 
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
-
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -60,7 +61,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.CapturingMatcher;
 
 import net.sf.json.JSONArray;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -110,6 +110,31 @@ public class GeneNomenclatureTest
         Field em = ReflectionUtils.getField(GeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
         this.emptyMarker = (OntologyTerm) em.get(null);
+    }
+
+    @Test
+    public void checkURLConfigurable() throws ComponentLookupException, URISyntaxException,
+        ClientProtocolException, IOException, InitializationException
+    {
+        when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/"))
+            .thenReturn("https://proxy/genenames/");
+        URI expectedURI = new URI("https://proxy/genenames/fetch/symbol/BRCA1");
+        CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
+        when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
+        when(this.response.getEntity()).thenReturn(this.responseEntity);
+        when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream("BRCA1.json"));
+        // Since the component was already initialized in setUp() with the default URL, re-initialize it
+        // with the new configuration mock
+        ((Initializable) this.mocker.getComponentUnderTest()).initialize();
+        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
+        Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
+        Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
+        Assert.assertNotNull(result);
+        Assert.assertEquals("BRCA1", result.get("symbol"));
+        Assert.assertEquals("breast cancer 1, early onset", result.getName());
+        JSONArray aliases = (JSONArray) result.get("alias_symbol");
+        Assert.assertArrayEquals(new String[] { "RNF53", "BRCC1", "PPP1R53" }, aliases.toArray());
+        verify(this.cache).set("BRCA1", result);
     }
 
     @Test
