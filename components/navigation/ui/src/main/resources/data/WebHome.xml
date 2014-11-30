@@ -1250,7 +1250,7 @@ $!value
 {{html clean=false}}
 &lt;form id="welcome_${targetDocName}" method="post" action="$targetDoc.getURL('save')" class="xform half"&gt;
 &lt;fieldset&gt;&lt;dl&gt;
-&lt;dt&gt;&lt;label for="${targetDocName}_title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${targetDocName}title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!targetDoc.title"&gt;&lt;/input&gt;&lt;/dd&gt;
 &lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!gadgetObj.getProperty('title').value"&gt;&lt;/input&gt;&lt;/dd&gt;
