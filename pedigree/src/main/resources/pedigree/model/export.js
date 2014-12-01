@@ -244,7 +244,7 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        }
        output += age + "\t" + yob + "\t";
 
-       output += "AU\tAU\tAU\tAU\tAU\t";   // unimplemented fields: age at cancer detection
+       output += "0\t0\t0\t0\t0\t";   // unimplemented fields: age at cancer detection
 
        output += "0\t0\t";                 // unimplemented fields: Genetic test status + mutations
 
