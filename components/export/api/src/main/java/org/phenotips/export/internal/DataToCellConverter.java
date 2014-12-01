@@ -50,7 +50,7 @@ import com.xpn.xwiki.web.Utils;
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
  * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}. If there are cells requested
  * (header present) but there is no data to put inside the cells, do not return null as cell value or no cell at all,
- * return a cell containing an empty string.
+ * return a cell containing an empty string. Otherwise, the header will not be matched with the body.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -103,7 +103,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
         List<String> orderedHeaderIds = new LinkedList<String>();
         orderedHeaderIds.add("category");
         orderedHeaderIds.add("phenotype");
@@ -150,7 +150,7 @@ public class DataToCellConverter
         }
 
         Boolean bothTypes = present.contains("positive") && present.contains("negative");
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
 
         int x;
         int y = 0;
@@ -270,7 +270,7 @@ public class DataToCellConverter
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
         DataCell topCell = new DataCell("Identifiers", 0, 0, StyleOption.HEADER);
         topCell.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(topCell);
@@ -293,7 +293,7 @@ public class DataToCellConverter
         if (present == null || present.isEmpty()) {
             return null;
         }
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
 
         if (present.contains("id")) {
             DataCell cell = new DataCell(patient.getId(), 0, 0);
@@ -326,7 +326,7 @@ public class DataToCellConverter
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
@@ -355,7 +355,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
         Integer x = 0;
         if (present.contains("referrer")) {
             String creator = patientDoc.getCreatorReference().getName();
@@ -407,7 +407,7 @@ public class DataToCellConverter
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
@@ -433,7 +433,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
         Integer x = 0;
         if (present.contains("first_name")) {
             String firstName = patient.<String>getData("patientName").get("first_name");
@@ -498,7 +498,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
 
         int bottomY = 1;
         int ethnicityOffset = 0;
@@ -537,7 +537,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
         PatientData<Integer> familyHistory = patient.getData("familyHistory");
         PatientData<List<String>> ethnicities = patient.getData("ethnicity");
         Integer x = 0;
@@ -627,7 +627,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
 
         List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar2"));
         List<String> assitedReproductionFields = new LinkedList<String>(
@@ -670,7 +670,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
         PatientData<Integer> history = patient.getData("prenatalPerinatalHistory");
         PatientData<String> apgarScores = patient.getData("apgar");
         Integer x = 0;
@@ -758,7 +758,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
         List<String> orderedHeaderIds = new LinkedList<String>();
         orderedHeaderIds.add("category");
         orderedHeaderIds.add("phenotype");
@@ -805,7 +805,7 @@ public class DataToCellConverter
         }
 
         Boolean bothTypes = present.contains("phenotype") && present.contains("negative");
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
 
         int x;
         int y = 0;
@@ -901,7 +901,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("code", "ID");
         fieldToHeaderMap.put("notes", "Notes");
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
@@ -927,7 +927,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
 
         Set<? extends Disorder> disorders = patient.getDisorders();
         Integer y = 0;
@@ -989,7 +989,7 @@ public class DataToCellConverter
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
@@ -1014,7 +1014,7 @@ public class DataToCellConverter
         if (present == null || present.isEmpty()) {
             return null;
         }
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
 
         Integer x = 0;
         if (present.contains("global_age_of_onset")) {
@@ -1052,7 +1052,7 @@ public class DataToCellConverter
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection headerSection = new DataSection(sectionName);
+        DataSection headerSection = new DataSection();
         if (present.isEmpty()) {
             return null;
         }
@@ -1071,7 +1071,7 @@ public class DataToCellConverter
         if (present == null || present.isEmpty()) {
             return null;
         }
-        DataSection bodySection = new DataSection(sectionName);
+        DataSection bodySection = new DataSection();
 
         if (present.contains("unaffected")) {
             PatientData<Integer> isNormal = patient.getData("isClinicallyNormal");

@@ -21,7 +21,6 @@ package org.phenotips.export.internal;
 
 import org.phenotips.data.Patient;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -39,7 +38,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * FIXME
+ * Abstracts all export functionality by exposing a single function {@link #export(String[], java.util.List,
+ * java.io.OutputStream)}.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -48,37 +48,46 @@ public class SpreadsheetExporter
 {
     protected Workbook wBook;
 
-    protected OutputStream wOutputStream;
-
+    /**
+     * Holds workbook sheets names mapped to their sheet object. Although it is currently not used, this map will be
+     * needed if working with several sheets.
+     */
     protected Map<String, Sheet> sheets = new HashMap<String, Sheet>();
 
-    public void export(String[] _enabledFields, List<Patient> patients, OutputStream outputStream)
+    /**
+     * For the list of patients, completes an export limited by the list of fields that are requested, and writes the
+     * result to the output stream.
+     *
+     * @param enabledFieldsArray array of field ids that should be present in the export
+     * @param patients list of patients whose information should be present in the export
+     * @param outputStream stream to which the export will be written to
+     * @throws Exception an attempt to close outputStream will be made, but the exception will not be handled
+     */
+    public void export(String[] enabledFieldsArray, List<Patient> patients, OutputStream outputStream)
         throws Exception
     {
-        if (_enabledFields == null) {
+        if (enabledFieldsArray == null || outputStream == null) {
             return;
         }
-        Set<String> enabledFields = new HashSet<String>(Arrays.asList(_enabledFields));
+        Set<String> enabledFields = new HashSet<String>(Arrays.asList(enabledFieldsArray));
         try {
-            createBlankWorkbook();
+            this.wBook = new XSSFWorkbook();
             processMainSheet(enabledFields, patients);
             this.wBook.write(outputStream);
             outputStream.flush();
-            // wBook.write(wOutputStream);
-        } catch (IOException ex) {
-            // FIXME
-        } catch (Exception ex) {
-            // Nothing that can be really done, so just rethrow it.
-            throw ex;
         } finally {
-            /*
-             * if (wOutputStream != null) { try { wOutputStream.close(); } catch (IOException ex) { //If this happens,
-             * something went very wrong. } }
-             */
-            // return wOutputStream;
+            try {
+                outputStream.close();
+            } catch (IOException ex) {
+                //If this happens,something went very wrong.
+            }
         }
     }
 
+    /**
+     * Creates the main sheet in the workbook, calculates the positioning of the cells, and commits them into the
+     * workbook.
+     */
     protected void processMainSheet(Set<String> enabledFields, List<Patient> patients) throws Exception
     {
         String sheetName = "main";
@@ -86,21 +95,9 @@ public class SpreadsheetExporter
         this.sheets.put(sheetName, sheet);
 
         SheetAssembler assembler = runAssembler(enabledFields, patients);
-        // styleCells();
-        write(assembler.getAssembled(), sheet);
+        commit(assembler.getAssembled(), sheet);
         freezeHeader(assembler.getHeaderHeight().shortValue(), sheet);
     }
-
-    /*
-    protected void styleCells()
-    {
-        CellStyler styler = new CellStyler(wBook);
-        styler.header(formatter.getHeaders());
-        styler.patientSeparationBorder(formatter.getBody(), formatter.getPatientBottomBorders(),
-            formatter.getMaxRowLength());
-        styler.body(formatter.getBody());
-    }
-    */
 
     protected void freezeHeader(Short height, Sheet sheet)
     {
@@ -113,11 +110,45 @@ public class SpreadsheetExporter
         return new SheetAssembler(enabledFields, patients);
     }
 
-    protected void write(DataSection section, Sheet sheet)
+    /**
+     * Commits cells row by row, sets row height and column width, and merges cells.
+     * @param section usually is a single section encompassing all the data on a given sheet
+     * @param sheet a workbook sheet to which the cells from the section will be written
+     */
+    protected void commit(DataSection section, Sheet sheet)
     {
         DataCell[][] cells = section.getMatrix();
         Styler styler = new Styler();
 
+        commitRows(section, sheet, styler);
+
+        for (int col = 0; section.getMaxX() >= col; col++) {
+            sheet.autoSizeColumn(col);
+            int correctWidth = DataToCellConverter.charactersPerLine * 210;
+            if (sheet.getColumnWidth(col) > correctWidth) {
+                sheet.setColumnWidth(col, correctWidth);
+            }
+        }
+
+        /* Merging has to be done after autosizing because otherwise autosizing breaks */
+        for (Integer y = 0; y <= section.getMaxY(); y++) {
+            for (Integer x = 0; x <= section.getMaxX(); x++) {
+                DataCell dataCell = cells[x][y];
+                if (dataCell != null && dataCell.getMergeX() != null) {
+                    sheet.addMergedRegion(new CellRangeAddress(y, y, x, x + dataCell.getMergeX()));
+                }
+                /*
+                 * No longer will be merging cells on the Y axis, but keep this code for future reference.
+                 * if (dataCell.getYBoundry() != null) { sheet.addMergedRegion(new CellRangeAddress(dataCell.y,
+                 * dataCell.getYBoundry(), dataCell.x, dataCell.x)); }
+                 */
+            }
+        }
+    }
+
+    protected void commitRows(DataSection section, Sheet sheet, Styler styler)
+    {
+        DataCell[][] cells = section.getMatrix();
         Row row;
         for (Integer y = 0; y <= section.getMaxY(); y++) {
             row = sheet.createRow(y);
@@ -141,33 +172,5 @@ public class SpreadsheetExporter
                 row.setHeight(height.shortValue());
             }
         }
-        for (int col = 0; section.getMaxX() >= col; col++) {
-            sheet.autoSizeColumn(col);
-            if (sheet.getColumnWidth(col) > (DataToCellConverter.charactersPerLine * 210)) {
-                sheet.setColumnWidth(col, DataToCellConverter.charactersPerLine * 210);
-            }
-        }
-
-        /** Merging has to be done after autosizing because otherwise autosizing breaks */
-        for (Integer y = 0; y <= section.getMaxY(); y++) {
-            for (Integer x = 0; x <= section.getMaxX(); x++) {
-                DataCell dataCell = cells[x][y];
-                if (dataCell != null && dataCell.getMergeX() != null) {
-                    sheet.addMergedRegion(new CellRangeAddress(y, y, x, x + dataCell.getMergeX()));
-                }
-                /*
-                 * No longer will be merging cells on the Y axis, but keep this code for future reference. if
-                 * (dataCell.getYBoundry() != null) { sheet.addMergedRegion(new CellRangeAddress(dataCell.y,
-                 * dataCell.getYBoundry(), dataCell.x, dataCell.x)); }
-                 */
-            }
-        }
-    }
-
-    protected void createBlankWorkbook() throws IOException
-    {
-        this.wBook = new XSSFWorkbook();
-        // wOutputStream = new FileOutputStream("/home/anton/Documents/workbook.xlsx");
-        this.wOutputStream = new ByteArrayOutputStream();
     }
 }

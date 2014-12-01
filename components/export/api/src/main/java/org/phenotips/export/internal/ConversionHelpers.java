@@ -41,29 +41,53 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * These are supplementary functions to the main conversion functions.
+ * Contains supplementary functions to the main conversion functions. It is used as an instance, rather that a
+ * collection of static functions.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 public class ConversionHelpers
 {
+    private static final String YES = "Yes";
+
+    private static final String NO = "No";
+
+    private static final String NA = "N/A";
+
+    /** Global parameter for whether to include phenotypes with "present" status. */
     private Boolean positive;
 
+    /** Global parameter for whether to include phenotypes with "not present" status. */
     private Boolean negative;
 
+    /** Used for accessing HPO. */
     private OntologyService ontologyService;
 
+    /** The titles of phenotypic categories mapped to a list of HPO ids which represent that category. */
     private Map<String, List<String>> categoryMapping;
 
-    /** Feature to Section */
+    /** Phenotypic feature to phenotypic category section map. Used for sorting features by category. */
     private Map<String, String> sectionFeatureTree;
 
+    /**
+     * Clears the {@link #sectionFeatureTree} and must be called before processing each patient, as each patient has a
+     * different set of phenotypes.
+     */
     public void newPatient()
     {
         this.sectionFeatureTree = new HashMap<String, String>();
     }
 
+    /**
+     * Sets global parameters that are used by various other functions.
+     *
+     * @param positive sets the global parameter {@link #positive}
+     * @param negative same as the above positive parameter, but for {@link #negative}
+     * @param mapCategories whether the phenotypes will be sorted by which category they belong to
+     * @throws java.lang.Exception Could happen if the {@link org.phenotips.ontology.OntologyService} for HPO could not
+     * be accessed or is the phenotype category list is not available
+     */
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
     {
         /* Set to true to include, and false to not include phenotypes with positive/negative status. */
@@ -73,15 +97,17 @@ public class ConversionHelpers
             return;
         }
 
+        /* Gets a list of all categories, and maps each category's title to a list of HPO ids which represent it.
+         * This step is necessary only if {@link #mapCategories} is true. */
         ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
         this.ontologyService = cm.getInstance(OntologyService.class, "hpo");
         PhenotypeMappingService mappingService = cm.getInstance(ScriptService.class, "phenotypeMapping");
-        Object _mapping = mappingService.get("phenotype");
-        if (_mapping instanceof List) {
+        Object mappingObject = mappingService.get("phenotype");
+        if (mappingObject instanceof List) {
             @SuppressWarnings("unchecked")
-            List<Map<String, List<String>>> fullMapping = (List<Map<String, List<String>>>) _mapping;
+            List<Map<String, List<String>>> mapping = (List<Map<String, List<String>>>) mappingObject;
             this.categoryMapping = new LinkedHashMap<>();
-            for (Map<String, List<String>> categoryEntry : fullMapping) {
+            for (Map<String, List<String>> categoryEntry : mapping) {
                 this.categoryMapping.put(categoryEntry.get("title").toString(), categoryEntry.get("categories"));
             }
         } else {
@@ -89,6 +115,11 @@ public class ConversionHelpers
         }
     }
 
+    /**
+     * Simple filter, which returns a subset of features of the passed in "features" parameter that have the status of
+     * "status" parameter, or an empty list if the global setting disallows features with the status of { @param
+     * status}.
+     */
     private List<Feature> filterFeaturesByPresentStatus(Set<? extends Feature> features, Boolean status)
     {
         List<Feature> filteredFeatures = new LinkedList<Feature>();
@@ -103,6 +134,13 @@ public class ConversionHelpers
         return filteredFeatures;
     }
 
+    /**
+     * Sorts the passed in features so that the features with the "is present" status are on top. Also filters out
+     * features which are disallowed by the global {@link #positive} and {@link #negative}.
+     *
+     * @param features set of features to be filtered. Cannot be null
+     * @return a subset of the passed in features in a specific order
+     */
     public List<Feature> sortFeaturesSimple(Set<? extends Feature> features)
     {
         List<Feature> positiveList = filterFeaturesByPresentStatus(features, true);
@@ -112,6 +150,14 @@ public class ConversionHelpers
         return positiveList;
     }
 
+    /**
+     * Sorts passed in features by phenotypic category section, first sorting the features with the "is present" status
+     * and then with the "not present" status. Since it uses {@link #filterFeaturesByPresentStatus(java.util.Set,
+     * Boolean)}, the returned list of features is subject to the global {@link #positive} and {@link #negative}.
+     *
+     * @param features set of features to sort. Cannot be null
+     * @return a subset of the passed in features in a specific order
+     */
     public List<Feature> sortFeaturesWithSections(Set<? extends Feature> features)
     {
         List<Feature> positiveList = sortFeaturesBySection(filterFeaturesByPresentStatus(features, true));
@@ -121,21 +167,30 @@ public class ConversionHelpers
         return positiveList;
     }
 
+    /**
+     * Fills {@link #sectionFeatureTree} with feature ids mapped to section names. This function is used internally only
+     * in {@link #sortFeaturesWithSections(java.util.Set)}; if changing that, keep in mind the mutation of {@link
+     * #sectionFeatureTree}.
+     *
+     * @param features list of features to be sorted. Cannot be null
+     * @return list of features sorted in the same order as {@link #categoryMapping}
+     */
     private List<Feature> sortFeaturesBySection(List<Feature> features)
     {
         List<Feature> sortedFeatures = new LinkedList<Feature>();
 
-        Map<String, List<String>> mapping = getCategoryMapping();
+        Map<String, List<String>> mapping = this.getCategoryMapping();
         for (String section : mapping.keySet()) {
             if (features.isEmpty()) {
                 break;
             }
 
+            /* Each section can have several HPO ids (categories) attached to it. */
             for (String category : mapping.get(section)) {
                 Set<Feature> toRemove = new HashSet<Feature>();
                 for (Feature feature : features) {
-                    if (getCategoriesFromOntology(feature.getId()).contains(category) ||
-                        StringUtils.equals(feature.getId(), category))
+                    if (getCategoriesFromOntology(feature.getId()).contains(category)
+                        || StringUtils.equals(feature.getId(), category))
                     {
                         this.sectionFeatureTree.put(feature.getId(), section);
                         sortedFeatures.add(feature);
@@ -151,9 +206,11 @@ public class ConversionHelpers
     }
 
     /**
-     * Filters features based on their prenatal status
+     * Filters features based on their prenatal status.
      *
+     * @param features set of features to be filtered. Cannot be null
      * @param prenatal if true returns prenatal features, if false non-prenatal
+     * @return a subset of passed in features
      */
     public Set<Feature> filterFeaturesByPrenatal(Set<? extends Feature> features, Boolean prenatal)
     {
@@ -166,6 +223,13 @@ public class ConversionHelpers
         return filtered;
     }
 
+    /**
+     * Given an HPO id, finds categories to which the id belongs to.
+     *
+     * @param value must start with "HP:"
+     * @return a list of categories as HPO ids, excluding the passed in id, or an empty list if the categories could not
+     * be determined
+     */
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
     {
@@ -176,46 +240,63 @@ public class ConversionHelpers
         if (termObj != null && termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY).getClass()))
         {
-            /* Could use ancestorAndSelf, but not sure that is necessary and likely is slower */
             return (List<String>) termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY);
         }
         return new LinkedList<String>();
     }
 
+    /**
+     * @return mapping of category titles to their respective lists of HPO ids
+     */
     public Map<String, List<String>> getCategoryMapping()
     {
         return this.categoryMapping;
     }
 
+    /**
+     * @return mappings of HPO id to the title of the category the id belongs to
+     */
     public Map<String, String> getSectionFeatureTree()
     {
         return this.sectionFeatureTree;
     }
 
+    /**
+     * Converts an integer (which is of type {@link java.lang.String}) to a human readable boolean.
+     *
+     * @param strInt an integer in a string
+     * @return "No" for "0", "Yes" for "1", an empty string for an empty string, and "N/A" in all other cases
+     */
     public static String strIntegerToStrBool(String strInt)
     {
         if (StringUtils.equals("0", strInt)) {
-            return "No";
+            return NO;
         } else if (StringUtils.equals("1", strInt)) {
-            return "Yes";
+            return YES;
         } else if (StringUtils.equals("", strInt)) {
             return "";
         } else {
-            return "N/A";
+            return NA;
         }
     }
 
+    /**
+     * Converts an integer to a human readable boolean.
+     *
+     * @param integer Could be any value including {@code null}, but should be either 0 or 1
+     * @return "No" for "0", "Yes" for "1", an empty string for null, and "N/A" in all other cases
+     */
     public static String integerToStrBool(Integer integer)
     {
         if (integer == null) {
             return "";
         }
         if (integer == 0) {
-            return "No";
+            return NO;
         } else if (integer == 1) {
-            return "Yes";
+            return YES;
         } else {
-            return "N/A";
+            return NA;
         }
     }
 }

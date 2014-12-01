@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,35 +18,12 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-package org.phenotips.export.internal;
+-->
 
-/**
- * An enum of all the possible internal style options for a cell.
- *
- * @version $Id$
- * @since 1.0RC1
- */
-public enum StyleOption
-{
-    /** Regular header cell. */
-    HEADER,
-    /** Phenotypes present. */
-    YES,
-    /** Phenotypes not present. */
-    NO,
-    /** Left border between logical field sections, such as Identifiers, Patient Information, etc. */
-    SECTION_BORDER_LEFT,
-    /** Right logical field section border. */
-    SECTION_BORDER_RIGHT,
-    /** The border between patient records. */
-    PATIENT_BORDER,
-    /** The bottom border of the header. */
-    HEADER_BOTTOM,
-    /** Separates phenotypic features of one patient. */
-    FEATURE_SEPARATOR,
-    /** A header with enlarged font. */
-    LARGE_HEADER,
-    /** Separates one patients "present" and "not present" phenotype blocks. */
-    YES_NO_SEPARATOR
-}
+<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+  <suppress checks=".*" files="DataToCellConverter.java"/>
+  <suppress checks="CyclomaticComplexity" files="Styler.java" lines="132, 186"/>
+</suppressions>

@@ -34,23 +34,43 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
 /**
- * Takes care of giving cells the right style, and applying styles to the output spreadsheet.
+ * Reads the {@link org.phenotips.export.internal.DataCell#styles} from DataCells, creates {@link
+ * org.apache.poi.ss.usermodel.CellStyle}s and applies them to {@link org.apache.poi.ss.usermodel.Cell}. In other words
+ * this class bridges the gap between {@link org.phenotips.export.internal.DataCell#styles}'s keeping track of the
+ * cell's appearance, and actually committing the appearance to the spreadsheet. This class also contains some static
+ * function which have to be used at later stages of committing cells to a spreadsheet.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 public class Styler
 {
+    private static final String NO_MATRIX_ERR_MSG = "The section has not been converted to a matrix";
+
+    /**
+     * The {@link org.apache.poi.ss.usermodel.Workbook} can have only a limited number of styles. The cache prevents
+     * creation of duplicates.
+     */
     private Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<Set<StyleOption>, CellStyle>();
 
-    private Font defaultFont = null;
+    /** Cached font. */
+    private Font defaultFont;
 
-    /** Use only on finalized sections */
+    /**
+     * Styles the bottom cells of the section. Creates new {@link org.phenotips.export.internal.DataCell}s, if missing.
+     * This is a static function that is used outside of this class in the final stages of committing cells to a
+     * spreadsheet. For example, {@link org.phenotips.export.internal.SheetAssembler#SheetAssembler(java.util.Set,
+     * java.util.List)}.
+     *
+     * @param section cannot be null
+     * @param style the style to apply
+     * @throws java.lang.Exception if the section was not {@link DataSection#finalizeToMatrix()}
+     */
     public static void styleSectionBottom(DataSection section, StyleOption style) throws Exception
     {
         DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been converted to a matrix");
+            throw new Exception(NO_MATRIX_ERR_MSG);
         }
 
         /* In case the border passes through non-existent cells */
@@ -64,15 +84,24 @@ public class Styler
         }
     }
 
+    /**
+     * Styles the leftmost and rightmost cells of the section. Creates new {@link org.phenotips.export.internal
+     * .DataCell}s, if missing.
+     *
+     * @param section cannot be null
+     * @param styleLeft the style to apply to the leftmost cells
+     * @param styleRight the style to apply to the rightmost cells
+     * @throws java.lang.Exception if the section was not {@link DataSection#finalizeToMatrix()}
+     * @see #styleSectionBottom(DataSection, StyleOption)
+     */
     public static void styleSectionBorder(DataSection section, StyleOption styleLeft, StyleOption styleRight)
         throws Exception
     {
         DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been converted to a matrix");
+            throw new Exception(NO_MATRIX_ERR_MSG);
         }
 
-        /* TODO determine if setting border on both sides is needed */
         /* In case the border passes through non-existent cells */
         for (int y = 0; y <= section.getMaxY(); y++) {
             DataCell cellLeft = cellMatrix[0][y];
@@ -90,15 +119,24 @@ public class Styler
         }
     }
 
+    /**
+     * Looks for passed in styles in each row of the passed in section, determines which styles are present, and extends
+     * them horizontally from the first cell in which a style from the passed in array of styles was found. In other
+     * words, when the function finds a cell that has at least one style from the passed in styles array, it stops
+     * searching, and starts extending.
+     *
+     * @param section cannot be null
+     * @param styles an array of styles to look for
+     * @throws Exception if the section was not {@link DataSection#finalizeToMatrix()}
+     */
     public static void extendStyleHorizontally(DataSection section, StyleOption... styles)
         throws Exception
     {
         DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been converted to a matrix");
+            throw new Exception(NO_MATRIX_ERR_MSG);
         }
 
-        /* In case the border passes through non-existent cells */
         for (int y = 0; y <= section.getMaxY(); y++) {
             Set<StyleOption> toExtend = new HashSet<StyleOption>();
             Integer startingX = 0;
@@ -123,6 +161,8 @@ public class Styler
             if (!found) {
                 continue;
             }
+
+            /* In case the border passes through non-existent cells */
             for (int x = startingX + 1; x <= section.getMaxX(); x++) {
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
@@ -134,18 +174,25 @@ public class Styler
         }
     }
 
+    /**
+     * Same as {@link #extendStyleHorizontally(DataSection, StyleOption[])}, but in the vertical direction, and it is
+     * not limited by the first occurrence of a style from the passed in styles. Unlike it's horizontal cousin, this
+     * function always starts extending from the top of the section.
+     *
+     * @param section cannot be null
+     * @param styles an array of styles to look for
+     * @throws Exception if the section was not {@link DataSection#finalizeToMatrix()}
+     */
     public static void extendStyleVertically(DataSection section, StyleOption... styles)
         throws Exception
     {
         DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been converted to a matrix");
+            throw new Exception(NO_MATRIX_ERR_MSG);
         }
 
-        /* In case the border passes through non-existent cells */
         for (int x = 0; x <= section.getMaxX(); x++) {
             Set<StyleOption> toExtend = new HashSet<StyleOption>();
-            Integer startingY = 0;
             Boolean found = false;
             for (int y = 0; y <= section.getMaxY(); y++) {
                 found = false;
@@ -160,14 +207,14 @@ public class Styler
                     }
                 }
                 if (found) {
-                    startingY = y;
                     break;
                 }
             }
             if (!found) {
                 continue;
             }
-            // for (int y = startingY + 1; y <= section.getMaxY(); y++) {
+
+            /* In case the border passes through non-existent cells */
             for (int y = 0; y <= section.getMaxY(); y++) {
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
@@ -179,6 +226,12 @@ public class Styler
         }
     }
 
+    /**
+     * Translates the internal styling into styling that {@link org.apache.poi.ss.usermodel.Workbook} can use.
+     * @param dataCell from which the styling should be read
+     * @param cell to which the styling should be applied
+     * @param wBook in which the "cell" resides
+     */
     public void style(DataCell dataCell, Cell cell, Workbook wBook)
     {
         Set<StyleOption> styles = dataCell.getStyles();
@@ -189,23 +242,48 @@ public class Styler
             this.defaultFont = createDefaultFont(wBook);
         }
         cellStyle.setFont(this.defaultFont);
-        if (styles == null) {
-            if (this.styleCache.containsKey(Collections.<StyleOption>emptySet())) {
-                cell.setCellStyle(this.styleCache.get(Collections.<StyleOption>emptySet()));
-                return;
-            }
-            cell.setCellStyle(cellStyle);
-            this.styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
+
+        /* If the DataCell's styles is not set, gives default style, and indicates that this function should return. */
+        if (this.setDefaultStyle(styles, cell, cellStyle)) {
             return;
         }
-
         if (this.styleCache.containsKey(styles)) {
             cell.setCellStyle(this.styleCache.get(styles));
             return;
         }
 
-        /* Priority can be coded in by placing the if statement lower, for higher priority */
-        /** Font styles */
+        /* Priority of styles can be coded in by placing the if statement lower within the corresponding function. */
+        this.setFontStyles(styles, cell, cellStyle, wBook);
+        this.setBorderStyles(styles, cell, cellStyle, wBook);
+
+        /* Keep this as the last statement. */
+        this.styleCache.put(styles, cellStyle);
+    }
+
+    /**
+     * In case a {@link org.phenotips.export.internal.DataCell} does not have its styles set, applies the default
+     * style.
+     */
+    private boolean setDefaultStyle(Set<StyleOption> styles, Cell cell, CellStyle cellStyle)
+    {
+        if (styles == null) {
+            if (this.styleCache.containsKey(Collections.<StyleOption>emptySet())) {
+                cell.setCellStyle(this.styleCache.get(Collections.<StyleOption>emptySet()));
+                return true;
+            }
+            cell.setCellStyle(cellStyle);
+            this.styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Creates new {@link org.apache.poi.ss.usermodel.Font}s. Priority can be coded in by placing the if statement
+     * lower, for higher priority.
+     */
+    private void setFontStyles(Set<StyleOption> styles, Cell cell, CellStyle cellStyle, Workbook wBook)
+    {
         Font headerFont = null;
         if (styles.contains(StyleOption.HEADER)) {
             headerFont = wBook.createFont();
@@ -237,8 +315,14 @@ public class Styler
             cellStyle.setFont(font);
             cell.setCellStyle(cellStyle);
         }
+    }
 
-        /** Border styles */
+    /**
+     * Converts {@link org.phenotips.export.internal.StyleOption} enum to {@link org.apache.poi.ss.usermodel.CellStyle}
+     * enum. Priority can be coded in by placing the if statement lower, for higher priority.
+     */
+    private void setBorderStyles(Set<StyleOption> styles, Cell cell, CellStyle cellStyle, Workbook wBook)
+    {
         if (styles.contains(StyleOption.HEADER_BOTTOM)) {
             cellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
             cell.setCellStyle(cellStyle);
@@ -265,9 +349,6 @@ public class Styler
             cellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             cell.setCellStyle(cellStyle);
         }
-
-        /* Keep this as the last statement. */
-        this.styleCache.put(styles, cellStyle);
     }
 
     private Font createDefaultFont(Workbook wBook)

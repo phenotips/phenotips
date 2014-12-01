@@ -23,40 +23,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Holds all the DataCells of a section of information about a patient, such as phenotype.
+ * A container for {@link org.phenotips.export.internal.DataCell}s, that organizes its contents into a positional
+ * matrix.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 public class DataSection
 {
-    private String sectionName;
-
     private Set<DataCell> cellList = new HashSet<DataCell>();
 
-    /** Populated after all the cells are in the buffer list. */
+    /**
+     * Eventually the {@link org.phenotips.export.internal.DataCell}s end up in this matrix, with x and y coordinates
+     * corresponding to the matrix's indices.
+     */
     private DataCell[][] matrix;
 
-    /** The matrix X and Y are size parameters, not the max X or Y index. */
+    /** The size of the matrix along x axis. */
     private Integer matrixX = 0;
 
+    /** @see #matrixX */
     private Integer matrixY = 0;
 
+    /** Used for creating the {@link #matrix}. */
     private Integer maxX = 0;
 
+    /** @see #maxX */
     private Integer maxY = 0;
 
-    public DataSection(String name)
-    {
-        this.sectionName = name;
-    }
-
-    /** This constructor should be used only when combining several sections into one. */
-    public DataSection()
-    {
-    }
-
-    /** Need the buffer to determine the size of the matrix first. */
+    /**
+     * Adds a new cell to the {@link #cellList} and attempts to include it into the {@link #matrix}.
+     *
+     * @param cell cannot be null, and must have coordinates set relative to the top-left corner of this {@linkplain
+     * org.phenotips.export.internal.DataSection}
+     */
     public void addCell(DataCell cell)
     {
         /* Add to matrix only if the cell fits within the boundaries and the current spot is empty */
@@ -76,6 +76,12 @@ public class DataSection
         this.cellList.add(cell);
     }
 
+    /**
+     * Fills the {@link #matrix} with the cells from {@link #cellList}, putting each cell into the {@link #matrix}
+     * according to the cell's coordinates.
+     *
+     * @throws Exception if {@link #maxX} or {@link #maxY} are null
+     */
     public void finalizeToMatrix() throws Exception
     {
         if (this.maxX == null || this.maxY == null) {
@@ -97,15 +103,13 @@ public class DataSection
         }
     }
 
-    public void addMergedToMatrix()
-    {
-        for (DataCell cell : this.cellList) {
-            for (DataCell emptyCell : cell.generateMergedCells()) {
-                this.matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
-            }
-        }
-    }
-
+    /**
+     * Checks for "holes" in the {@link #matrix}, and sets the number of spreadsheets cells a {@link
+     * org.phenotips.export.internal.DataCell} should encompass.
+     *
+     * @throws Exception if this DataSection has not beet {@link #finalizeToMatrix()}
+     * @see DataCell#addMergeX()
+     */
     public void mergeX() throws Exception
     {
         if (this.matrix == null) {
@@ -126,21 +130,33 @@ public class DataSection
         }
     }
 
+    /**
+     * @return {@link #cellList}
+     */
     public Set<DataCell> getCellList()
     {
         return this.cellList;
     }
 
+    /**
+     * @return {@link #matrix}
+     */
     public DataCell[][] getMatrix()
     {
         return this.matrix;
     }
 
+    /**
+     * @return {@link #maxX}
+     */
     public Integer getMaxX()
     {
         return this.maxX;
     }
 
+    /**
+     * @return {@link #maxY}
+     */
     public Integer getMaxY()
     {
         return this.maxY;
