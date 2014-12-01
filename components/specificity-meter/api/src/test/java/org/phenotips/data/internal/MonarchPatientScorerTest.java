@@ -29,8 +29,10 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
@@ -64,6 +66,8 @@ import static org.mockito.Mockito.when;
 
 public class MonarchPatientScorerTest
 {
+    private ConfigurationSource configuration;
+
     @Mock
     private Patient patient;
 
@@ -91,6 +95,10 @@ public class MonarchPatientScorerTest
         MockitoAnnotations.initMocks(this);
         CacheManager cm = this.mocker.getInstance(CacheManager.class);
         when(cm.<PatientSpecificity>createNewCache(any(CacheConfiguration.class))).thenReturn(this.cache);
+
+        this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
+        when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score"))
+            .thenReturn("http://monarchinitiative.org/score");
 
         Feature feature = mock(Feature.class);
         when(feature.getId()).thenReturn("HP:1");
@@ -237,5 +245,25 @@ public class MonarchPatientScorerTest
         when(cm.<PatientSpecificity>createNewCache(any(CacheConfiguration.class))).thenThrow(
             new CacheException("failed"));
         ((org.xwiki.component.phase.Initializable) this.mocker.getComponentUnderTest()).initialize();
+    }
+    @Test
+    public void checkURLConfigurable() throws ComponentLookupException, URISyntaxException,
+        ClientProtocolException, IOException, InitializationException
+    {
+        when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score"))
+            .thenReturn("http://proxy/score");
+        Mockito.doReturn(this.features).when(this.patient).getFeatures();
+        URI expectedURI = new URIBuilder("http://proxy/score").addParameter("annotation_profile",
+            "{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}").build();
+        CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
+        when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
+        when(this.response.getEntity()).thenReturn(this.responseEntity);
+        when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}"));
+        // Since the component was already initialized in setUp() with the default URL, re-initialize it
+        // with the new configuration mock
+        ((Initializable) this.mocker.getComponentUnderTest()).initialize();
+        double score = this.mocker.getComponentUnderTest().getScore(this.patient);
+        Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
+        Assert.assertEquals(2.0, score, 0.0);;
     }
 }
