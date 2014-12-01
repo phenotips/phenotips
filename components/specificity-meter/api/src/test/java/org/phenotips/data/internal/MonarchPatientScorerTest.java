@@ -97,7 +97,8 @@ public class MonarchPatientScorerTest
         when(cm.<PatientSpecificity>createNewCache(any(CacheConfiguration.class))).thenReturn(this.cache);
 
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
-        when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score")).thenReturn("http://monarchinitiative.org/score");
+        when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score"))
+            .thenReturn("http://monarchinitiative.org/score");
 
         Feature feature = mock(Feature.class);
         when(feature.getId()).thenReturn("HP:1");
@@ -250,7 +251,7 @@ public class MonarchPatientScorerTest
         ClientProtocolException, IOException, InitializationException
     {
         when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score"))
-        .thenReturn("http://proxy/score");
+            .thenReturn("http://proxy/score");
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
         URI expectedURI = new URIBuilder("http://proxy/score").addParameter("annotation_profile",
             "{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}").build();
