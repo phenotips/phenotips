@@ -33,15 +33,15 @@ import javax.inject.Singleton;
  * @since 1.1M1
  */
 @Component
-@Named("openCollaboration")
+@Named("open")
 @Singleton
-public class OpenCollaborationVisibility extends AbstractVisibility
+public class OpenVisibility extends AbstractVisibility
 {
     @Inject
     @Named("edit")
     private AccessLevel access;
 
-    public OpenCollaborationVisibility()
+    public OpenVisibility()
     {
         super(80);
     }
@@ -49,7 +49,7 @@ public class OpenCollaborationVisibility extends AbstractVisibility
     @Override
     public String getName()
     {
-        return "openCollaboration";
+        return "open";
     }
 
     @Override
