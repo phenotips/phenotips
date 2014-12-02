@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
@@ -107,7 +108,7 @@ public class APGARController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(getName())) {
+        if (selectedFieldNames != null && !hasAnySelected(selectedFieldNames)) {
             return;
         }
         PatientData<Integer> data = patient.getData(getName());
@@ -129,6 +130,21 @@ public class APGARController implements PatientDataController<Integer>
             Entry<String, Integer> item = iterator.next();
             container.put(item.getKey(), item.getValue());
         }
+    }
+
+    /**
+     * Checks if any relevant field names were selected.
+     * @return true if relevant fields were selected, false otherwise
+     */
+    private boolean hasAnySelected(Collection<String> selectedFieldNames) {
+        boolean hasAny = false;
+        for (String selectedFieldName : selectedFieldNames) {
+            if (StringUtils.startsWithIgnoreCase(selectedFieldName, this.getName())) {
+                hasAny = true;
+                break;
+            }
+        }
+        return hasAny;
     }
 
     @Override

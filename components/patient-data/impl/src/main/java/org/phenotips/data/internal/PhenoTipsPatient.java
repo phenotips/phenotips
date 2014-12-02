@@ -34,7 +34,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -207,7 +206,15 @@ public class PhenoTipsPatient implements Patient
 
     private boolean isFieldIncluded(Collection<String> includedFieldNames, String[] fieldNames)
     {
-        return (includedFieldNames == null || includedFieldNames.containsAll(Arrays.asList(fieldNames)));
+        if (includedFieldNames == null) {
+            return true;
+        }
+        for (String fieldName : fieldNames) {
+            if (isFieldIncluded(includedFieldNames, fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
