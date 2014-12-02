@@ -23,16 +23,16 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._genderShape    = null;                        
         this._genderGraphics = null;  // == set(_genderShape, shadow)
         this._numberLabel    = null;
-                     
+
         this.setGenderGraphics();
-        
+
         this.setHighlightBox();
-        
+
         this.updateIDLabel();
-        
+
         this._hoverBox = this.generateHoverbox(x, y);
     },
-    
+
     updateIDLabel: function() {
         if (!editor.DEBUG_MODE) return;
                 
@@ -192,25 +192,18 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
-        var r = PedigreeEditor.attributes.radius,
-            x1 = this.getX() - ((0.8) * r),
-            x2 = this.getX() + ((0.8) * r),
-            y = this.getY() - ((1.3) * r) + 1,
-            brackets = "M" + x1 + " " + y + "l" + r/(-2) +
-                " " + 0 + "l0 " + (2.6 * r - 2) + "l" + (r)/2 + " 0M" + x2 +
-                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r - 2) + "l" +
-                (r)/(-2) + " 0";
-        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 2.5);
-        this._adoptedShape.toBack();
-    },
-
-    /**
-     * Removes the brackets around the node icon that show that this node is adopted
-     *
-     * @method removeAdoptedShape
-     */
-    removeAdoptedShape: function() {
-        this._adoptedShape && this._adoptedShape.remove();
+        if (this.getNode().getAdopted() != "") {
+            var r = PedigreeEditor.attributes.radius,
+                x1 = this.getX() - ((0.8) * r),
+                x2 = this.getX() + ((0.8) * r),
+                y = this.getY() - ((1.3) * r) + 2,
+                brackets = "M" + x1 + " " + y + "l" + r/(-2) +
+                    " " + 0 + "l0 " + (2.6 * r - 4) + "l" + (r)/2 + " 0M" + x2 +
+                    " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r - 4) + "l" +
+                    (r)/(-2) + " 0";
+            this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 2.5);
+            this._adoptedShape.toBack();
+        }
     },
 
     /**

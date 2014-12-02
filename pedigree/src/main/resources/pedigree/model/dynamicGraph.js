@@ -54,11 +54,18 @@ DynamicPositionedGraph.prototype = {
         return this.DG.GG.isPlaceholder(id);
     },
 
-    isAdopted: function( id )
+    isAdoptedIn: function( id )
     {
         if (!this.isPerson(id))
             throw "Assertion failed: isAdopted() is applied to a non-person";
-        return this.DG.GG.isAdopted(id);
+        return this.DG.GG.isAdoptedIn(id);
+    },
+
+    isAdoptedOut: function( id )
+    {
+        if (!this.isPerson(id))
+            throw "Assertion failed: isAdopted() is applied to a non-person";
+        return this.DG.GG.isAdoptedOut(id);
     },
 
     getGeneration: function( id )
@@ -364,7 +371,7 @@ DynamicPositionedGraph.prototype = {
         //console.log("Childtren: " + children);
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
-            if (!this.isPlaceholder(child) && !this.isAdopted(child)) {
+            if (!this.isPlaceholder(child) && !this.isAdoptedIn(child)) {
                 //console.log("child: " + child + ", isAdopted: " + this.isAdopted(child));
                 return true;
             }

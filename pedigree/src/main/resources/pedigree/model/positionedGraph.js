@@ -2271,7 +2271,7 @@ PositionedGraph.prototype = {
                 if (!this.GG.isPerson(v)) continue;
                 ancestors[v] = {};
                 ancestors[v][v] = 0;
-                if (this.GG.isAdopted(v)) continue; // TODO: assume adopted have no known parents
+                if (this.GG.isAdoptedIn(v)) continue; // TODO: assume adopted have no known parents
                 var parents = this.GG.getParents(v);
                 //console.log("v: " + v + ", parents: " + stringifyObject(parents));
                 for (var j = 0; j < parents.length; j++) {

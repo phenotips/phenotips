@@ -421,13 +421,6 @@ var PedigreeEditor = Class.create({
                 'function' : 'setCarrierStatus'
             },
             {
-                'name' : 'evaluated',
-                'label' : 'Documented evaluation',
-                'type' : 'checkbox',
-                'tab': 'Clinical',
-                'function' : 'setEvaluated'
-            },
-            {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
@@ -483,13 +476,13 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'deceased', 'displayed' : 'Deceased' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' },
-                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' },
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarried' },
                     { 'actual' : 'aborted', 'displayed' : 'Elective abortion' }],
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
                     { 'actual' : 'deceased', 'displayed' : 'Deceased', 'columnshiftPX': -2 },
-                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage', 'columnshiftPX': -2},
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarried', 'columnshiftPX': -2},
                     { 'actual' : 'unborn', 'displayed' : 'Unborn', 'columnshiftPX': 8 },
                     { 'actual' : 'aborted', 'displayed' : 'Aborted', 'columnshiftPX': 8 }],
                 'default' : 'alive',
@@ -515,9 +508,16 @@ var PedigreeEditor = Class.create({
             },
             {
                 'name' : 'adopted',
-                'label' : 'Adopted in',
-                'type' : 'checkbox',
+                'label' : 'Adopted status',
+                'type' : 'radio',
                 'tab': 'Personal',
+                'columns': 3,
+                'values' : [
+                    { 'actual' : '',           'displayed' : 'Not adopted' },
+                    { 'actual' : 'adoptedIn',  'displayed' : 'Adopted in' },
+                    { 'actual' : 'adoptedOut', 'displayed' : 'Adopted out' }
+                ],
+                'default' : '',
                 'function' : 'setAdopted'
             },
             {
@@ -548,6 +548,13 @@ var PedigreeEditor = Class.create({
                 'tab': 'Clinical',
                 'rows' : 4,
                 'function' : 'setComments'
+            },
+            {
+                'name' : 'evaluated',
+                'label' : 'Documented evaluation',
+                'type' : 'checkbox',
+                'tab': 'Clinical',
+                'function' : 'setEvaluated'
             }
         ], ["Personal", "Clinical"]);
     },
@@ -573,7 +580,8 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'identifier',
                 'label' : '',
-                'type'  : 'hidden'
+                'type'  : 'hidden',
+                'tab': 'Personal'
             },
             {
                 'name' : 'gender',
@@ -586,6 +594,7 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
+                'tab': 'Personal',
                 'function' : 'setGender'
             },
             {
@@ -595,24 +604,28 @@ var PedigreeEditor = Class.create({
                 'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
                             {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
                             {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],
+                'tab': 'Personal',
                 'function' : 'setNumPersons'
             },
             {
                 'name' : 'external_ids',
                 'label': 'External ID(s)',
                 'type' : 'text',
+                'tab': 'Personal',
                 'function' : 'setExternalID'
             },
             {
                 'name' : 'ethnicity',
                 'label' : 'Ethnicities<br>(common to all individuals in the group)',
                 'type' : 'ethnicity-picker',
+                'tab': 'Personal',
                 'function' : 'setEthnicities'
             },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders<br>(common to all individuals in the group)',
                 'type' : 'disease-picker',
+                'tab': 'Clinical',
                 'function' : 'setDisorders'
             },
             {
@@ -620,6 +633,7 @@ var PedigreeEditor = Class.create({
                 'label' : 'Comments',
                 'type' : 'textarea',
                 'rows' : 4,
+                'tab': 'Clinical',
                 'function' : 'setComments'
             },
             {
@@ -628,26 +642,37 @@ var PedigreeEditor = Class.create({
                 'type' : 'radio',
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
-                    { 'actual' : 'aborted', 'displayed' : 'Aborted' },
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted electively' },
                     { 'actual' : 'deceased', 'displayed' : 'Deceased' },
-                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarriage' }
+                    { 'actual' : 'miscarriage', 'displayed' : 'Miscarried' }
                 ],
                 'default' : 'alive',
+                'tab': 'Personal',
                 'function' : 'setLifeStatus'
             },
             {
                 'name' : 'evaluatedGrp',
                 'label' : 'Documented evaluation',
                 'type' : 'checkbox',
+                'tab': 'Clinical',
                 'function' : 'setEvaluated'
             },
             {
                 'name' : 'adopted',
-                'label' : 'Adopted in',
-                'type' : 'checkbox',
+                'label' : 'Adopted status',
+                'type' : 'radio',
+                'tab': 'Personal',
+                'columns': 3,
+                'values' : [
+                    { 'actual' : '',           'displayed' : 'Not adopted' },
+                    { 'actual' : 'adoptedIn',  'displayed' : 'Adopted in' },
+                    { 'actual' : 'adoptedOut', 'displayed' : 'Adopted out' }
+                ],
+                'default' : '',
+                'tab': 'Personal',
                 'function' : 'setAdopted'
             }
-        ], []);
+        ], ["Personal", "Clinical"]);
     },
 
     /**
@@ -787,6 +812,7 @@ PedigreeEditor.attributes = {
     partnershipHandleBreakY: 18,
     partnershipHandleLength: 36,
     partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
+    partnershipLinesAdoptedIn: {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "--"},
     consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
     noContactLines:            {"stroke-width": 1.75, stroke : '#333333', "stroke-dasharray": "."},
     childlessShapeAttr:            {"stroke-width": 2.5, stroke: "#3C3C3C"},

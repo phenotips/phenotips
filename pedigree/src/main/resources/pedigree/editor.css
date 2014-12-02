@@ -544,10 +544,10 @@
   padding: 0 0;
 }
 .menu-box .field-adopted {
-  padding: 0.26em 0;
+  padding: 0.6em 0;
 }
 .menu-box .field-monozygotic {
-  padding: 0.26em 0;
+  padding: 0.5em 0 0.26em 0;
 }
 .menu-box .field-nocontact {
   padding: 0.26em 0;
@@ -559,17 +559,17 @@
   padding: 0.45em 0;
 }
 .menu-box .field-evaluated {
-  padding-top: 0.7em;
+  padding-top: 0.26em;
   padding-bottom: 0.5em;
   padding-right: 0;
-  padding-left: 0.08em;
+  margin-left: -0.1em;
 }
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
 }
 .menu-box .field-carrier {
   padding-top: 0.8em;
-  padding-bottom: 0em;
+  padding-bottom: 0.6em;
   padding-right: 0;
   padding-left: 0;
 }

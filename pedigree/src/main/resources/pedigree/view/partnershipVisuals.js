@@ -387,14 +387,18 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (topLineX < leftmostX)
                 leftmostX = topLineX;
 
+            var lineAttr = PedigreeEditor.attributes.partnershipLines;
+            if (editor.getGraph().isAdoptedIn(child)) {
+                lineAttr = PedigreeEditor.attributes.partnershipLinesAdoptedIn;
+            }
             // draw regular child line - for all nodes which are not monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
             if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
-                editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+                editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, lineAttr);
             }
             else {                
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
-                editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+                editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, lineAttr);
             }
 
             var lostContact = editor.getGraph().isChildOfProband(child) && editor.getView().getNode(child).getLostContact();

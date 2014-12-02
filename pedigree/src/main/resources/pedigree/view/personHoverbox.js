@@ -37,7 +37,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         var nodeShapes = node.getGraphics().getGenderGraphics().flatten();
                 
         editor.getPaper().setStart();
-        
+
         if (PedigreeEditor.attributes.newHandles) {            
             var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
             
@@ -76,7 +76,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 }
             }
             
-            if (!node.isFetus()) {
+            if (!node.isFetus() && node.getAdopted() != "adoptedOut") {
                 
                 if (node.getChildlessStatus() === null) {
                     // children handle
@@ -100,7 +100,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             if (editor.getGraph().getParentRelationship(node.getID()) === null)
                 this.generateHandle('parent',   x, y, x, y - PedigreeEditor.attributes.personHandleLength, "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green)");
             
-            if (!node.isFetus()) {
+            if (!node.isFetus() && node.getAdopted() != "adoptedOut") {
                 if (node.getChildlessStatus() === null)
                     this.generateHandle('child',x, y, x, y + PedigreeEditor.attributes.personHandleLength, "Click to create a new child node or drag to an existing parentless node (valid choices will be highlighted in green)");            
                 this.generateHandle('partnerR', x, y, x + PedigreeEditor.attributes.personHandleLength, y, "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)");

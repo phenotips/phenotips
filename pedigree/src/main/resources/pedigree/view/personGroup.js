@@ -131,7 +131,7 @@ var PersonGroup = Class.create(Person, {
             external_ids: {value : this.getExternalID()},
             disorders:    {value : disorders},
             ethnicity:    {value : this.getEthnicities()},
-            adopted:      {value : this.isAdopted(), inactive: cantChangeAdopted},
+            adopted:      {value : this.getAdopted(), inactive: cantChangeAdopted},
             comments:     {value : this.getComments(), inactive: false},
             state:        {value : this.getLifeStatus()},
             numInGroup:   {value : this.getNumPersons()},

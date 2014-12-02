@@ -1038,7 +1038,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
                        }
                    }
                } else if (property == "ADOP") {
-                   properties["isAdopted"] = true;
+                   properties["adoptedStatus"] = "adoptedIn";
                } else if (property == "_INFO") {
                    if (!properties.hasOwnProperty("comments"))
                        properties["comments"] = "";
@@ -1191,7 +1191,7 @@ PedigreeImport.JSONToInternalPropertyMapping = {
         "comments":        "comments",
         "twingroup":       "twinGroup",
         "monozygotic":     "monozygotic",
-        "adoptedin":       "isAdopted",
+        "adoptedstatus":   "adoptedStatus",
         "evaluated":       "evaluated",
         "birthdate":       "dob",
         "deathdate":       "dod",
@@ -1214,12 +1214,12 @@ PedigreeImport.JSONToInternalPropertyMapping = {
  * support aliases for some terms and weed out unsupported terms.
  */
 PedigreeImport.convertProperty = function(externalPropertyName, value) {
-    
+
     if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName))
         return null;
-            
+
     var internalPropertyName = PedigreeImport.JSONToInternalPropertyMapping[externalPropertyName];
-        
+
     return {"propertyName": internalPropertyName, "value": value };
 }
 
