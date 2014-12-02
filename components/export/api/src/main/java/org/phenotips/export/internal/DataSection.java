@@ -19,7 +19,7 @@
  */
 package org.phenotips.export.internal;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class DataSection
 {
-    private Set<DataCell> cellList = new HashSet<DataCell>();
+    private Set<DataCell> cellList = new LinkedHashSet<>();
 
     /**
      * Eventually the {@link org.phenotips.export.internal.DataCell}s end up in this matrix, with x and y coordinates

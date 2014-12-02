@@ -71,7 +71,7 @@ public class SpreadsheetExporter
         }
         Set<String> enabledFields = new HashSet<String>(Arrays.asList(enabledFieldsArray));
         try {
-            this.wBook = new XSSFWorkbook();
+            this.wBook = createNewWorkbook();
             processMainSheet(enabledFields, patients);
             this.wBook.write(outputStream);
             outputStream.flush();
@@ -82,6 +82,11 @@ public class SpreadsheetExporter
                 //If this happens,something went very wrong.
             }
         }
+    }
+
+    protected Workbook createNewWorkbook()
+    {
+        return new XSSFWorkbook();
     }
 
     /**
@@ -112,6 +117,7 @@ public class SpreadsheetExporter
 
     /**
      * Commits cells row by row, sets row height and column width, and merges cells.
+     *
      * @param section usually is a single section encompassing all the data on a given sheet
      * @param sheet a workbook sheet to which the cells from the section will be written
      */

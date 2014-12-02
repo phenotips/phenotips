@@ -65,6 +65,7 @@ public class SheetAssembler
         for (List<DataSection> patientSections : bodySections) {
             for (DataSection section : patientSections) {
                 section.finalizeToMatrix();
+                Styler.disallowBodyStyles(section);
                 Styler.extendStyleHorizontally(section, StyleOption.FEATURE_SEPARATOR, StyleOption.YES_NO_SEPARATOR);
                 Styler.styleSectionBorder(section, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
             }

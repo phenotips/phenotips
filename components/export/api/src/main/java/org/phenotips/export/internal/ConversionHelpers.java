@@ -99,7 +99,7 @@ public class ConversionHelpers
 
         /* Gets a list of all categories, and maps each category's title to a list of HPO ids which represent it.
          * This step is necessary only if {@link #mapCategories} is true. */
-        ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
+        ComponentManager cm = getComponentManager();
         this.ontologyService = cm.getInstance(OntologyService.class, "hpo");
         PhenotypeMappingService mappingService = cm.getInstance(ScriptService.class, "phenotypeMapping");
         Object mappingObject = mappingService.get("phenotype");
@@ -113,6 +113,12 @@ public class ConversionHelpers
         } else {
             throw new Exception("The phenotype category list is not available");
         }
+    }
+
+    /** A necessary evil for testing. */
+    protected ComponentManager getComponentManager()
+    {
+        return ComponentManagerRegistry.getContextComponentManager();
     }
 
     /**
@@ -202,6 +208,10 @@ public class ConversionHelpers
                 }
             }
         }
+        for (Feature feature : features) {
+            this.sectionFeatureTree.put(feature.getId(), "No category");
+        }
+        sortedFeatures.addAll(features);
         return sortedFeatures;
     }
 

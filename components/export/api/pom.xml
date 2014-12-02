@@ -31,8 +31,7 @@
   <name>PhenoTips - Data export - Spreadsheet Export APIs</name>
 
   <properties>
-    <!-- FIXME -->
-    <coverage.instructionRatio>0.0</coverage.instructionRatio>
+    <coverage.instructionRatio>0.2</coverage.instructionRatio>
   </properties>
 
   <dependencies>

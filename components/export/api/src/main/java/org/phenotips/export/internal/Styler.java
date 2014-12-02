@@ -19,9 +19,11 @@
  */
 package org.phenotips.export.internal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +57,27 @@ public class Styler
 
     /** Cached font. */
     private Font defaultFont;
+
+    /**
+     * In some corner cases, some styles should be removed from cells to prevent conflicts with styles in other cells.
+     *
+     * @param section cannot be null
+     * @throws java.lang.Exception if the section was not finalized
+     */
+    public static void disallowBodyStyles(DataSection section) throws Exception
+    {
+        DataCell[][] cellMatrix = section.getMatrix();
+        if (cellMatrix == null) {
+            throw new Exception(NO_MATRIX_ERR_MSG);
+        }
+        List<StyleOption> disallowedStyles =
+            Arrays.asList(StyleOption.FEATURE_SEPARATOR, StyleOption.YES_NO_SEPARATOR);
+
+        for (int x = 0; x <= section.getMaxX(); x++) {
+            DataCell cell = cellMatrix[x][0];
+            cell.removeStyles(disallowedStyles);
+        }
+    }
 
     /**
      * Styles the bottom cells of the section. Creates new {@link org.phenotips.export.internal.DataCell}s, if missing.
@@ -228,6 +251,7 @@ public class Styler
 
     /**
      * Translates the internal styling into styling that {@link org.apache.poi.ss.usermodel.Workbook} can use.
+     *
      * @param dataCell from which the styling should be read
      * @param cell to which the styling should be applied
      * @param wBook in which the "cell" resides
