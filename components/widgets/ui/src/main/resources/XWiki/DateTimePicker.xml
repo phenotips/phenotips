@@ -1925,7 +1925,7 @@ CalendarDateSelect = Class.create({
         this.newElement("a", {
           parent :  parent,
           content : _translations[textKey],
-          attrs: {'href' : "#", "onClick" : "return false"},
+          attrs: {'href' : "#"},
           events : {'click' : clickListener}
         });
       }.bind(this);
@@ -1939,21 +1939,21 @@ CalendarDateSelect = Class.create({
       
       this.newElement('span', {parent : buttons_div, content : "&amp;#160;"});
       if (this.options.time == "mixed" || !this.options.time) {
-        _insertButton(buttons_div, "Today", function() {this.today(false); return false;}.bindAsEventListener(this));
+        _insertButton(buttons_div, "Today", function(event) {this.today(false); event.stop(); return false;}.bindAsEventListener(this));
       }
       if (this.options.time == "mixed") {
         _insertButtonSeparator(buttons_div);
       }
       if (this.options.time) {
-        _insertButton(buttons_div, "Now", function() {this.today(true); return false;}.bindAsEventListener(this));
+        _insertButton(buttons_div, "Now", function(event) {this.today(true); event.stop(); return false;}.bindAsEventListener(this));
       }
       if (!this.options.embedded &amp;&amp; !this.closeOnClick()) {
         _insertButtonSeparator(buttons_div);
-        _insertButton(buttons_div, "OK", function() {this.close(); return false;}.bindAsEventListener(this));
+        _insertButton(buttons_div, "OK", function(event) {this.close(); event.stop(); return false;}.bindAsEventListener(this));
       }
       if (this.options.clear_button) {
         _insertButtonSeparator(buttons_div);
-        _insertButton(buttons_div, "Clear", function() {this.clearDate(); if (!this.options.embedded) this.close(); return false;}.bindAsEventListener(this));
+        _insertButton(buttons_div, "Clear", function(event) {this.clearDate(); if (!this.options.embedded) this.close(); event.stop(); return false;}.bindAsEventListener(this));
       }
     }
   },
