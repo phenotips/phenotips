@@ -128,8 +128,6 @@
       (% class="background-search omim-search hidden" %)(((
         ==== Matching disorders in OMIM ====
         (% id="omim-search-results" class="background-suggestions" %)((()))
-        ==== Matching disorders in OMIM (Solr) ====
-        (% id="solr-omim-search-results" class="background-suggestions" %)((()))
       )))
     )))
   )))## ncbi-search-box
