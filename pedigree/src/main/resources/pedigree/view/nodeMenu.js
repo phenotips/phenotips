@@ -333,7 +333,11 @@ NodeMenu = Class.create({
 
     _generateEmptyField : function (data) {
         var result = new Element('div', {'class' : 'field-box field-' + data.name});
-        var label = new Element('label', {'class' : 'field-name'}).update(data.label);
+        var fieldNameClass = 'field-name';
+        if (data.type == "radio") {
+            fieldNameClass += ' field-no-user-select';
+        }
+        var label = new Element('label', {'class' : fieldNameClass}).update(data.label);
         result.inputsContainer = new Element('div', {'class' : 'field-inputs'});
         result.insert(label).insert(result.inputsContainer);
         this.fieldMap[data.name] = {
@@ -441,6 +445,7 @@ NodeMenu = Class.create({
         'radio' : function (data) {
             var result = this._generateEmptyField(data);
             var columnClass = data.columns ? "field-values-" + data.columns + "-columns" : "field-values";
+            columnClass += " field-no-user-select";
             var values = new Element('div', {'class' : columnClass});
             result.inputsContainer.insert(values);
             var _this = this;

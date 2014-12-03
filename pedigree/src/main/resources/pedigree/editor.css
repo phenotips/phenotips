@@ -474,6 +474,14 @@
   right: 0;
   display: inline !important;
 }
+.field-no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .field-values label {
   display: block;
 }
