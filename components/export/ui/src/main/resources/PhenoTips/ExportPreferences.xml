@@ -135,7 +135,9 @@
        'author' : "Last modified by",
        'date' : "Last modification date",
        'genes': "Candidate genes list.",
-       'rejectedGenes': "Previously investigated and/or excluded genes list"
+       'genes_comments': "Candidate genes list with comments",
+       'rejectedGenes': "Previously investigated genes.",
+       'rejectedGenes_comments': "Previously investigated genes with comments."
   })
   #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
   #set($metaFields = ['phenotype'])
