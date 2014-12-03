@@ -305,10 +305,16 @@ var Controller = Class.create({
 
                 if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
-                    if (propValue == "adoptedIn" || oldValue == "adoptedIn") {
+                    if (propValue == "adoptedIn") {
                         // if one twin is adopted in the other must be as well
                         if (!twinUpdate) twinUpdate = {};
                         twinUpdate[propertySetFunction] = propValue;
+                    }
+                    if (oldValue == "adoptedIn") {
+                        // if one twin was marked as adopted in the other must have been as well - but not
+                        // necesserily adopted out as this one
+                        if (!twinUpdate) twinUpdate = {};
+                        twinUpdate[propertySetFunction] = "";
                     }
                 }
 
