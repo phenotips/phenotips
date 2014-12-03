@@ -560,6 +560,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
             this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.commentLabel);
             this._commentsLabel.alignTop = true;
+            this._commentsLabel.addGap   = true;
         } else {
             this._commentsLabel = null;
         }
@@ -669,7 +670,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 3) : 0;
+            var shift = (labels[i].addGap && i != 0) ? 3 : 7;   // make a small gap between comments and other fields
+            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
             labels[i].transform(""); // clear all transofrms, using new real x
             labels[i].attr("x", this.getX());
             labels[i].attr("y", startY + offset);

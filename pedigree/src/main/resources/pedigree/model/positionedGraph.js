@@ -2916,8 +2916,8 @@ PositionedGraph.prototype = {
                 }
             }
         }
-        if (maxNumLinesInComments > 5) {
-            height += (maxNumLinesInComments - 5)*this.yCommentLineHeight;
+        if (maxNumLinesInComments > 4) {
+            height += (maxNumLinesInComments - 4)*this.yCommentLineHeight;
         }
         return height;
     },
