@@ -32,7 +32,6 @@ import java.util.List;
 @Role
 public interface DiagnosisService
 {
-
     /**
      * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
      * in the format {@code <ontology prefix>:<term id>}, for example

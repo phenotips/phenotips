@@ -52,7 +52,8 @@ public class DiagnosisScriptService implements ScriptService
      * @param limit a number of phenotypes to return
      * @return A list of suggested diagnosies
      */
-    public List<OntologyTerm> get(List<String> phenotypes, int limit) {
+    public List<OntologyTerm> get(List<String> phenotypes, int limit)
+    {
         return this.manager.getDiagnosis(phenotypes, limit);
     }
 }

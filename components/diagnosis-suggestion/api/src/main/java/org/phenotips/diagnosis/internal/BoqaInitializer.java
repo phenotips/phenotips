@@ -34,9 +34,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-
 /**
  * Hook into phenotips startup to pre-initialize BOQA.
+ *
  * @since 1.1M1
  * @version $Id$
  */
@@ -49,27 +49,21 @@ public class BoqaInitializer implements EventListener
     @Inject
     private DiagnosisService service;
 
-
-    /**
-     * @return the name of the eventlistener
-     */
-    public String getName() {
+    @Override
+    public String getName()
+    {
         return "boqainitializer";
     }
 
-    /**
-     * @return the events to listen to
-     */
-    public List<Event> getEvents() {
+    @Override
+    public List<Event> getEvents()
+    {
         return Arrays.<Event>asList(new ApplicationStartedEvent());
     }
 
-    /**
-     * @param event the event to handle
-     * @param o an object related to the event
-     * @param o2 another object related to the event
-     */
-    public void onEvent(Event event, Object o, Object o2) {
+    @Override
+    public void onEvent(Event event, Object o, Object o2)
+    {
         // don't do anything, just injecting the diagnosis service.
     }
 }

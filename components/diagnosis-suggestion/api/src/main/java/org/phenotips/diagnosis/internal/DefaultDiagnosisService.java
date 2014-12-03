@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -52,13 +51,13 @@ import org.slf4j.Logger;
 import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
 import ontologizer.types.ByteString;
-
 import sonumina.boqa.calculation.BOQA;
 import sonumina.boqa.calculation.Observations;
 
 /**
- * An implementation of Diagnosis Service using BOQA
- * see (http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract).
+ * An implementation of {@link DiagnosisService} using BOQA, see <a
+ * href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>
+ *
  * @since 1.1M1
  * @version $Id$
  */
@@ -70,6 +69,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     private Logger logger;
 
     private BOQA boqa;
+
     private Map<Integer, ByteString> omimMap;
 
     @Inject
@@ -79,18 +79,19 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     private Environment env;
 
     @Override
-    public void initialize() throws InitializationException {
-        //Initialize boqa
-        boqa = new BOQA();
-        boqa.setConsiderFrequenciesOnly(false);
-        boqa.setPrecalculateScoreDistribution(false);
-        boqa.setCacheScoreDistribution(false);
-        boqa.setPrecalculateItemMaxs(false);
-        boqa.setPrecalculateMaxICs(false);
-        boqa.setMaxFrequencyTerms(2);
-        boqa.setPrecalculateJaccard(false);
+    public void initialize() throws InitializationException
+    {
+        // Initialize boqa
+        this.boqa = new BOQA();
+        this.boqa.setConsiderFrequenciesOnly(false);
+        this.boqa.setPrecalculateScoreDistribution(false);
+        this.boqa.setCacheScoreDistribution(false);
+        this.boqa.setPrecalculateItemMaxs(false);
+        this.boqa.setPrecalculateMaxICs(false);
+        this.boqa.setMaxFrequencyTerms(2);
+        this.boqa.setPrecalculateJaccard(false);
 
-        String annotationPath  = null;
+        String annotationPath = null;
         String ontologyPath = null;
         try {
             annotationPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
@@ -109,10 +110,10 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             throw new InitializationException(e.getMessage());
         }
 
-        boqa.setup(df.graph, df.assoc);
+        this.boqa.setup(df.graph, df.assoc);
 
-        //Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
-        Set<Map.Entry<ByteString, Integer>> omimtonum = boqa.item2Index.entrySet();
+        // Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
+        Set<Map.Entry<ByteString, Integer>> omimtonum = this.boqa.item2Index.entrySet();
         this.omimMap = new HashMap<Integer, ByteString>(omimtonum.size());
 
         for (Map.Entry<ByteString, Integer> item : omimtonum) {
@@ -120,44 +121,32 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         }
     }
 
-    private void addTermAndAncestors(Term t, Observations o) {
-        int id = boqa.getTermIndex(t);
-        o.observations[id] = true;
-        boqa.activateAncestors(id, o.observations);
-    }
-
-    /**
-     * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
-     * in the format {@code <ontology prefix>:<term id>}, for example
-     *            {@code HP:0002066}
-     *
-     * @param phenotypes A List of String phenotypes observed in the patient
-     * @param limit a number of phenotypes to return
-     * @return A list of suggested diagnosies
-     */
-    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit) {
+    @Override
+    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit)
+    {
         Observations o = new Observations();
-        o.observations = new boolean[boqa.getOntology().getNumberOfTerms()];
+        o.observations = new boolean[this.boqa.getOntology().getNumberOfTerms()];
 
-        //Add all hpo terms with ancestors to array of booleans
+        // Add all hpo terms with ancestors to array of booleans
         for (String hpo : phenotypes) {
-            Term t = boqa.getOntology().getTerm(hpo);
+            Term t = this.boqa.getOntology().getTerm(hpo);
             addTermAndAncestors(t, o);
         }
 
-        //Get marginals
-        final BOQA.Result res = boqa.assignMarginals(o, false, 1);
+        // Get marginals
+        final BOQA.Result res = this.boqa.assignMarginals(o, false, 1);
 
-
-        //All of this is sorting diseases by marginals
+        // All of this is sorting diseases by marginals
         Integer[] order = new Integer[res.size()];
         for (int i = 0; i < order.length; i++) {
             order[i] = i;
         }
 
-        Arrays.sort(order, new Comparator<Integer>() {
+        Arrays.sort(order, new Comparator<Integer>()
+        {
             @Override
-            public int compare(Integer o1, Integer o2) {
+            public int compare(Integer o1, Integer o2)
+            {
                 if (res.getMarginal(o1) < res.getMarginal(o2)) {
                     return 1;
                 }
@@ -168,7 +157,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             }
         });
 
-        //Get top limit results
+        // Get top limit results
         List<OntologyTerm> results = new ArrayList<OntologyTerm>();
         for (int id : order) {
             if (results.size() >= limit) {
@@ -186,11 +175,11 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             // Strip 'O' in "OMIM"
             termId = termId.substring(1);
 
-            OntologyTerm term = ontology.resolveTerm(termId);
+            OntologyTerm term = this.ontology.resolveTerm(termId);
 
             if (term == null) {
-                logger.warn(String.format(
-                        "Unable to resolve OMIM term '%s' due to outdated OMIM ontology.", termId));
+                this.logger.warn(String.format(
+                    "Unable to resolve OMIM term '%s' due to outdated OMIM ontology.", termId));
                 continue;
             }
 
@@ -204,19 +193,28 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
 
         }
 
-        logger.debug(String.valueOf(results));
+        this.logger.debug(String.valueOf(results));
 
         return results;
     }
 
+    private void addTermAndAncestors(Term t, Observations o)
+    {
+        int id = this.boqa.getTermIndex(t);
+        o.observations[id] = true;
+        this.boqa.activateAncestors(id, o.observations);
+    }
+
     /**
      * Convert a stream into a file.
+     *
      * @param in an inputstream
      * @return a File
      * @throws IOException when we can't open file
      */
-    public File stream2file(InputStream in) throws IOException {
-        final File tempFile = File.createTempFile(env.getTemporaryDirectory().getPath(), ".tmp");
+    private File stream2file(InputStream in) throws IOException
+    {
+        final File tempFile = File.createTempFile(this.env.getTemporaryDirectory().getPath(), ".tmp");
         tempFile.deleteOnExit();
 
         FileOutputStream out = new FileOutputStream(tempFile);
