@@ -51,6 +51,7 @@
     <validationScript/>
     <AllowPushesFromNonListedServers>
       <disabled>0</disabled>
+      <defaultValue>0</defaultValue>
       <displayFormType>select</displayFormType>
       <name>AllowPushesFromNonListedServers</name>
       <number>1</number>
