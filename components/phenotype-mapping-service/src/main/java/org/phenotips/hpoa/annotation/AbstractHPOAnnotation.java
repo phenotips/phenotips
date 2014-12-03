@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm> implements HPOAnnotation
 {
     public static final Side HPO = BGraph.Side.R;
@@ -38,15 +41,17 @@ public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm> imple
 
     protected Ontology hpo;
 
-    @Override
-    public Ontology getOntology()
-    {
-        return this.hpo;
-    }
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public AbstractHPOAnnotation(Ontology hpo)
     {
         this.hpo = hpo;
+    }
+
+    @Override
+    public Ontology getOntology()
+    {
+        return this.hpo;
     }
 
     @Override
@@ -70,7 +75,7 @@ public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm> imple
             for (String nextTermId : front) {
                 IDAGNode nextNode = this.hpo.getTerm(nextTermId);
                 if (nextNode == null) {
-                    System.err.println("No matching term found in HPO for " + nextTermId + " (" + annTerm + ")");
+                    this.logger.warn("No matching term found in HPO for [{}] ({})", nextTermId, annTerm);
                     continue;
                 }
                 for (String parentTermId : nextNode.getParents()) {

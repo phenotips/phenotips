@@ -5,6 +5,10 @@
  *   if day is set   => all of {decade, year, month, day} are set
  *   if month is set => all of {decade, year, month} are set
  *   if year is set  => decade is also set
+ *
+ * Note:
+ *   month is from 1 to 12
+ *   day starts at 1
  */
 var PedigreeDate = Class.create({
 
@@ -34,7 +38,7 @@ var PedigreeDate = Class.create({
 
         if (jsDate !== null) {
             this.year   = jsDate.getFullYear();
-            this.month  = jsDate.getMonth() + 1;
+            this.month  = jsDate.getMonth() + 1;   // js Date's months are 0 to 11, this.month is 1 to 12
             this.day    = jsDate.getDate();
         }
         else if (typeof date === 'object') {
@@ -69,10 +73,27 @@ var PedigreeDate = Class.create({
         if (this.year === null && this.decade !== null) {
             return this.decade;
         }
+        if (this.year !== null && this.month == null) {
+            return this.year.toString();
+        }
+        if (this.year !== null && this.month !== null && this.day === null) {
+            return this.getMonthName() + " " + this.year;
+        }
         if (this.year !== null && this.month !== null && this.day !== null) {
-            var jsDate = new Date(this.year, this.month, this.day);
+            var jsDate = this.toJSDate();
             return jsDate.toDateString();
         }
+        return "";
+    },
+
+    getMonthName: function(locale) {
+        if (this.getMonth() == null) return "";
+
+        var localeMonthNames = {"en": ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] };
+
+        locale = locale && (locale in localeMonthNames) ? locale : 'en';
+
+        return localeMonthNames[locale][this.getMonth() - 1];
     },
 
     // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
@@ -112,8 +133,8 @@ var PedigreeDate = Class.create({
     // Aproximate dates (e.g. decades, or dates without a day or month) are set as 
     // oldest possible date satisfying the date set (e.g. first year of decade, first month of the year, etc.)
     toJSDate: function() {
-        var year  = this.getYear(true); // failsafe, get first year of decade if only decade is set
-        var month = this.getMonth(true);
+        var year  = this.getYear(true);       // true: failsafe, get first year of decade if only decade is set
+        var month = this.getMonth(true) - 1;  // "-1": js Date's months are 0 to 11, this.month is 1 to 12
         var day   = this.getDay(true);
         var jsDate = new Date(year, month, day);
         return jsDate;
@@ -122,7 +143,7 @@ var PedigreeDate = Class.create({
     // Returns either a decade or the year (both as string)
     getBestPrecisionStringYear: function() {
         if (!this.isSet()) return "";
-        if (!this.year) return this.decade;
+        if (this.year == null) return this.decade;
         return this.year.toString();
     },
 
@@ -134,7 +155,7 @@ var PedigreeDate = Class.create({
     // Returns an integer or null.
     // Iff "failsafe" returns first year of the decade if year is not set and decade is
     getYear: function(failsafe) {
-        if (this.isSet() && !this.year && failsafe) {
+        if (this.isSet() && this.year == null && failsafe) {
             // remove trailing "s" from the decade && convert to integer
             var year = parseInt( this.decade.slice(0,-1) );
             return year;
@@ -145,7 +166,7 @@ var PedigreeDate = Class.create({
     // Returns an integer or null
     // Iff "failsafe" returns 1 if month is not set but at least some date (with any precision) is
     getMonth: function(failsafe) {
-        if (this.isSet() && !this.month && failsafe) {
+        if (this.isSet() && this.month == null && failsafe) {
             return 1;
         }
         return this.month;
@@ -154,9 +175,42 @@ var PedigreeDate = Class.create({
     // Returns an integer or null
     // Iff "failsafe" returns 1 if day is not set but at least some date (with any precision) is
     getDay: function(failsafe) {
-        if (this.isSet() && !this.day && failsafe) {
+        if (this.isSet() && this.day == null && failsafe) {
             return 1;
         }
         return this.day;
+    },
+
+    canBeAfterDate: function(otherPedigreeDate) {
+        if (!this.isSet()) {
+            return true;
+        }
+        if (!otherPedigreeDate.isSet()) {
+            return true;
+        }
+        if (this.getTime() > otherPedigreeDate.getTime()) {
+            return true;
+        }
+        var leastOtherYear  = otherPedigreeDate.getYear(true);
+        var leastOtherMonth = otherPedigreeDate.getMonth(true);
+        var leastOtherDay   = otherPedigreeDate.getDay(true);
+
+        var maxThisYear  = this.year  ? this.year  : this.getYear(true) + 9;
+        var maxThisMonth = this.month ? this.month : 12;
+        var maxThisDay   = this.day   ? this.day   : 31;
+
+        if (maxThisYear > leastOtherYear) {
+            return true;
+        }
+        if (maxThisYear < leastOtherYear) {
+            return false;
+        }
+        if (maxThisMonth > leastOtherMonth) {
+            return true;
+        }
+        if (maxThisMonth < leastOtherMonth) {
+            return false;
+        }
+        return (maxThisDay >= leastOtherDay);
     }
 });

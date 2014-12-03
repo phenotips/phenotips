@@ -564,10 +564,17 @@ BaseGraph.prototype = {
         return (this.type[v] == TYPE.VIRTUALEDGE);  // also: v > getmaxRealVertexId()
     },
 
-    isAdopted: function(v)
+    isAdoptedIn: function(v)
     {
-        if (this.properties[v].hasOwnProperty("isAdopted"))
-            return this.properties[v]["isAdopted"];
+        if (this.properties[v].hasOwnProperty("adoptedStatus"))
+            return this.properties[v]["adoptedStatus"] == "adoptedIn";
+        return false;
+    },
+
+    isAdoptedOut: function(v)
+    {
+        if (this.properties[v].hasOwnProperty("adoptedStatus"))
+            return this.properties[v]["adoptedStatus"] == "adoptedOut";
         return false;
     },
 

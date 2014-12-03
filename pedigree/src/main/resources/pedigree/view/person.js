@@ -39,7 +39,7 @@ var Person = Class.create(AbstractPerson, {
         this._deathDate = null;
         this._conceptionDate = "";
         this._gestationAge = "";
-        this._isAdopted = false;
+        this._adoptedStatus = "";
         this._externalID = "";
         this._lifeStatus = 'alive';
         this._childlessStatus = null;
@@ -327,7 +327,7 @@ var Person = Class.create(AbstractPerson, {
 
             if(this.isFetus()) {
                 this.setBirthDate("");
-                this.setAdopted(false);
+                this.setAdopted("");
                 this.setChildlessStatus(null);
             }
             this.getGraphics().updateLifeStatusShapes(oldStatus);
@@ -425,7 +425,7 @@ var Person = Class.create(AbstractPerson, {
         if (!newDate.isSet()) {
             newDate = null;
         }
-        if (!newDate || !this.getDeathDate() || newDate.getTime() <= this.getDeathDate().getTime()) {
+        if (!newDate || !this.getDeathDate() || this.getDeathDate().canBeAfterDate(newDate)) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }
@@ -454,7 +454,7 @@ var Person = Class.create(AbstractPerson, {
             deathDate = null;
         }
         // only set death date if it happens ot be after the birth date, or there is no birth or death date
-        if(!deathDate || !this.getBirthDate() || deathDate.getTime() >= this.getBirthDate().getTime()) {
+        if(!deathDate || !this.getBirthDate() || deathDate.canBeAfterDate(this.getBirthDate())) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
@@ -848,19 +848,25 @@ var Person = Class.create(AbstractPerson, {
         });
 
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
+        // a person which has relationships can't be adopted out - we wouldn't know details in that case
+        if (!cantChangeAdopted && onceAlive) {
+            cantChangeAdopted = ["adoptedOut"];
+        }
 
         var inactiveMonozygothic = true;
         var disableMonozygothic  = true;
-        var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
-        if (twins.length > 1) {
-            // check that there are twins and that all twins
-            // have the same gender, otherwise can't be monozygothic
-            inactiveMonozygothic = false;
-            disableMonozygothic  = false;
-            for (var i = 0; i < twins.length; i++) {
-                if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
-                    disableMonozygothic = true;
-                    break;
+        if (this._twinGroup !== null) {
+            var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
+            if (twins.length > 1) {
+                // check that there are twins and that all twins
+                // have the same gender, otherwise can't be monozygothic
+                inactiveMonozygothic = false;
+                disableMonozygothic  = false;
+                for (var i = 0; i < twins.length; i++) {
+                    if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
+                        disableMonozygothic = true;
+                        break;
+                    }
                 }
             }
         }
@@ -892,7 +898,7 @@ var Person = Class.create(AbstractPerson, {
             disorders:     {value : disorders},
             ethnicity:     {value : this.getEthnicities()},
             candidate_genes: {value : this.getGenes()},
-            adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
+            adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates},
             date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
             comments:      {value : this.getComments(), inactive: false},
@@ -931,8 +937,8 @@ var Person = Class.create(AbstractPerson, {
             info['externalID'] = this.getExternalID();        
         if (this.getBirthDate() != null)
             info['dob'] = this.getBirthDate().getSimpleObject();
-        if (this.isAdopted())
-            info['isAdopted'] = this.isAdopted();
+        if (this.getAdopted() != "")
+            info['adoptedStatus'] = this.getAdopted();
         if (this.getLifeStatus() != 'alive')
             info['lifeStatus'] = this.getLifeStatus();
         if (this.getDeathDate() != null)
@@ -1004,8 +1010,8 @@ var Person = Class.create(AbstractPerson, {
             if(info.candidateGenes) {
                 this.setGenes(info.candidateGenes);
             }
-            if(info.hasOwnProperty("isAdopted") && this.isAdopted() != info.isAdopted) {
-                this.setAdopted(info.isAdopted);
+            if(info.hasOwnProperty("adoptedStatus") && this.getAdopted() != info.adoptedStatus) {
+                this.setAdopted(info.adoptedStatus);
             }
             if(info.hasOwnProperty("lifeStatus") && this.getLifeStatus() != info.lifeStatus) {
                 this.setLifeStatus(info.lifeStatus);

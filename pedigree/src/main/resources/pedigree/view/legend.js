@@ -12,6 +12,11 @@ var Legend = Class.create( {
 
         this._objectColors = {};       // for each object: the corresponding object color
 
+        this._preferredColors = {};    // in the future we'll have the ability to specify color
+                                       // schemes, e.g. "green" for "that and that cancer", even
+                                       // if that particular cancer is not yet present on the pedigree;
+                                       // also used to assign the same disorder colors after save and load
+
         var legendContainer = $('legend-container');
         if (legendContainer == undefined) {
             var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'});
@@ -64,6 +69,43 @@ var Legend = Class.create( {
         if (!this._objectColors.hasOwnProperty(id))
             return "#ff0000";
         return this._objectColors[id];
+    },
+
+    /*
+     * Returns the map id->color of all the currently used colors.
+     */
+    getAllColors: function() {
+        return this._objectColors;
+    },
+
+    /**
+     * Sets all preferred colors at once
+     */
+    setAllPreferredColors: function(allColors) {
+        for (id in allColors) {
+            if (allColors.hasOwnProperty(id)) {
+                this.addPreferredColor(id, allColors[id]);
+            }
+        }
+    },
+
+    /**
+     * Set the preferred color for object with the given id. No check is performed to make
+     * sure colors are unique.
+     */
+    addPreferredColor: function(id, color) {
+        this._preferredColors[id] = color;
+    },
+
+    /**
+     * Get the preferred color for object with the given id. If the color is already
+     * there is no guarantee as to what color will be used.
+     */
+    getPreferedColor: function(id) {
+        if (this._preferredColors.hasOwnProperty(id)) {
+            return this._preferredColors[id];
+        }
+        return null;
     },
 
     /**

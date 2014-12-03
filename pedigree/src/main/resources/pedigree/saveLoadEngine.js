@@ -20,7 +20,7 @@ function getSelectorFromXML(responseXML, selectorName, attributeName, attributeV
         // IE7 && IE8 && some other older browsers
         // http://www.w3schools.com/XPath/xpath_syntax.asp
         // http://msdn.microsoft.com/en-us/library/ms757846%28v=vs.85%29.aspx
-        var query = "//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
+        var query = ".//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
         try {
             return responseXML.selectSingleNode(query);
         } catch (e) {
@@ -62,6 +62,11 @@ var ProbandDataLoader = Class.create( {
         this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
         this.probandData.lastName  = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "last_name", "value"));
         this.probandData.gender    = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "gender", "value"));
+        try {
+          this.probandData.birthDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_birth", "value"));
+          this.probandData.deathDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_death", "value"));
+        } catch (err) {
+        }
         if (this.probandData.gender === undefined || this.probandData.gender == '')
             this.probandData.gender = 'U';
         console.log("Proband data: " + stringifyObject(this.probandData));
@@ -76,12 +81,16 @@ var SaveLoadEngine = Class.create( {
     },
 
     /**
-     * Saves the state of the graph
+     * Saves the state of the pedigree (including any user preferences and current color scheme)
      *
      * @return Serialization data for the entire graph
      */
     serialize: function() {
-        return editor.getGraph().toJSON();
+        var jsonObject = editor.getGraph().toJSONObject();
+
+        jsonObject["settings"] = editor.getView().getSettings();
+
+        return JSON.stringify(jsonObject);
     },
 
     createGraphFromSerializedData: function(JSONString, noUndo, centerAround0) {
@@ -89,7 +98,15 @@ var SaveLoadEngine = Class.create( {
         document.fire("pedigree:load:start");
 
         try {
-            var changeSet = editor.getGraph().fromJSON(JSONString);
+            var jsonObject = JSON.parse(JSONString);
+
+            // load the graph model of the pedigree & node data
+            var changeSet = editor.getGraph().fromJSONObject(jsonObject);
+
+            // load/process metadata such as pedigree options and color choices
+            if (jsonObject.hasOwnProperty("settings")) {
+                editor.getView().loadSettings(jsonObject.settings);
+            }
         }
         catch(err)
         {
@@ -102,10 +119,11 @@ var SaveLoadEngine = Class.create( {
 
         if (!noUndo) {
             var probandData = editor.getProbandDataFromPhenotips();
-            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName,
+                                                             probandData.gender, probandData.birthDate, probandData.deathDate );
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
-            JSONString = editor.getGraph().toJSON();
+            JSONString = this.serialize();
         }
 
         if (editor.getView().applyChanges(changeSet, false)) {
@@ -141,7 +159,7 @@ var SaveLoadEngine = Class.create( {
             var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with the imported pedigree. Setting proband gender to 'Unknown'");
-            JSONString = editor.getGraph().toJSON();
+            JSONString = this.serialize();
         }
 
         if (editor.getView().applyChanges(changeSet, false)) {
@@ -160,6 +178,8 @@ var SaveLoadEngine = Class.create( {
     save: function() {
         if (this._saveInProgress)
             return;   // Don't send parallel save requests
+
+        editor.getView().unmarkAll();
 
         var me = this;
 
@@ -181,8 +201,12 @@ var SaveLoadEngine = Class.create( {
             },
             onComplete: function() {
                 me._saveInProgress = false;
+                var actionAfterSave = editor.getAfterSaveAction();
+                actionAfterSave && actionAfterSave();
             },
-            onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
+            onSuccess: function() { editor.getActionStack().addSaveEvent();
+                                    savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));
+                                  },
             parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
         });
         backgroundParent.insertBefore(background, backgroundPosition);
@@ -191,7 +215,8 @@ var SaveLoadEngine = Class.create( {
     load: function() {
         console.log("initiating load process");
 
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/'), {
+        // IE caches AJAX requests, use a random URL to break that cache
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/?rand=' + Math.random()), {
             method: 'GET',
             onCreate: function() {
                 document.fire("pedigree:load:start");
@@ -207,6 +232,9 @@ var SaveLoadEngine = Class.create( {
                     jsonData = editor.getVersionUpdater().updateToCurrentVersion(jsonData);
 
                     this.createGraphFromSerializedData(jsonData);
+
+                    // since we just loaded data from disk data in memory is equivalent to data on disk
+                    editor.getActionStack().addSaveEvent();
                 } else {
                     new TemplateSelector(true);
                 }

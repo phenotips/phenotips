@@ -65,6 +65,18 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     @Named("ic")
     private Predictor predictor;
 
+    @Override
+    public void initialize() throws InitializationException
+    {
+        OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
+        if (ann.load(downloadToFile("http://compbio.charite.de/hudson/job/hpo.annotations/"
+            + "lastStableBuild/artifact/misc/phenotype_annotation.tab")) < 0) {
+            throw new InitializationException("Cannot load ontology mapping file, aborting.");
+        }
+
+        this.predictor.setAnnotation(ann);
+    }
+
     public List<SearchResult> getMatches(Collection<String> phenotypes)
     {
         return this.predictor.getMatches(phenotypes);
@@ -93,7 +105,21 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
         return results;
     }
 
-    public File getInputFileHandler(String inputLocation, boolean forceUpdate)
+    private File getTemporaryFile(String name)
+    {
+        return getInternalFile(name, "tmp");
+    }
+
+    private File getInternalFile(String name, String dir)
+    {
+        File parent = new File(this.environment.getPermanentDirectory(), dir);
+        if (!parent.exists()) {
+            parent.mkdirs();
+        }
+        return new File(parent, name);
+    }
+
+    private File downloadToFile(String inputLocation)
     {
         try {
             File result = new File(inputLocation);
@@ -114,31 +140,5 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
             this.logger.error("Mapping file [{}] not found", inputLocation);
             return null;
         }
-    }
-
-    protected File getTemporaryFile(String name)
-    {
-        return getInternalFile(name, "tmp");
-    }
-
-    protected File getInternalFile(String name, String dir)
-    {
-        File parent = new File(this.environment.getPermanentDirectory(), dir);
-        if (!parent.exists()) {
-            parent.mkdirs();
-        }
-        return new File(parent, name);
-    }
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
-        if (ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/"
-            + "lastStableBuild/artifact/misc/phenotype_annotation.tab", false)) < 0) {
-            throw new InitializationException("Cannot load ontology mapping file, aborting.");
-        }
-
-        this.predictor.setAnnotation(ann);
     }
 }

@@ -66,7 +66,7 @@ public class ConversionHelpers
 
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
     {
-        // Set to true to include, and false to not include
+        /* Set to true to include, and false to not include phenotypes with positive/negative status. */
         this.positive = positive;
         this.negative = negative;
         if (!mapCategories) {
@@ -89,21 +89,24 @@ public class ConversionHelpers
         }
     }
 
-    private List<Feature> sortFeaturesByPresentStatus(Set<? extends Feature> features, Boolean status)
+    private List<Feature> filterFeaturesByPresentStatus(Set<? extends Feature> features, Boolean status)
     {
-        List<Feature> sortedFeatures = new LinkedList<Feature>();
-        for (Feature feature : features) {
-            if (feature.isPresent() == status && this.positive) {
-                sortedFeatures.add(0, feature);
+        List<Feature> filteredFeatures = new LinkedList<Feature>();
+        boolean include = status ? this.positive : this.negative;
+        if (include) {
+            for (Feature feature : features) {
+                if (feature.isPresent() == status) {
+                    filteredFeatures.add(0, feature);
+                }
             }
         }
-        return sortedFeatures;
+        return filteredFeatures;
     }
 
     public List<Feature> sortFeaturesSimple(Set<? extends Feature> features)
     {
-        List<Feature> positiveList = sortFeaturesByPresentStatus(features, true);
-        List<Feature> negativeList = sortFeaturesByPresentStatus(features, false);
+        List<Feature> positiveList = filterFeaturesByPresentStatus(features, true);
+        List<Feature> negativeList = filterFeaturesByPresentStatus(features, false);
 
         positiveList.addAll(negativeList);
         return positiveList;
@@ -111,8 +114,8 @@ public class ConversionHelpers
 
     public List<Feature> sortFeaturesWithSections(Set<? extends Feature> features)
     {
-        List<Feature> positiveList = sortFeaturesBySection(sortFeaturesByPresentStatus(features, true));
-        List<Feature> negativeList = sortFeaturesBySection(sortFeaturesByPresentStatus(features, false));
+        List<Feature> positiveList = sortFeaturesBySection(filterFeaturesByPresentStatus(features, true));
+        List<Feature> negativeList = sortFeaturesBySection(filterFeaturesByPresentStatus(features, false));
 
         positiveList.addAll(negativeList);
         return positiveList;
@@ -187,32 +190,6 @@ public class ConversionHelpers
     public Map<String, String> getSectionFeatureTree()
     {
         return this.sectionFeatureTree;
-    }
-
-    /** No longer needed */
-    public static String wrapString(String string, Integer charactersPerLine)
-    {
-        if (string == null) {
-            return "";
-        }
-        StringBuilder returnString = new StringBuilder(string);
-        Integer counter = charactersPerLine;
-        Character nextChar = null;
-        while (counter < string.length()) {
-            Boolean found = false;
-            /* TODO. See if this breaks in Unicode */
-            while (nextChar == null || nextChar.compareTo(' ') != 0) {
-                nextChar = string.charAt(counter);
-                counter++;
-                found = true;
-            }
-            if (found) {
-                // returnString.insert(counter, "\n");
-            }
-
-            counter += charactersPerLine;
-        }
-        return returnString.toString();
     }
 
     public static String strIntegerToStrBool(String strInt)

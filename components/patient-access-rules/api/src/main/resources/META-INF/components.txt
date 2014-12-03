@@ -11,4 +11,5 @@ org.phenotips.data.permissions.internal.access.ViewAccessLevel
 org.phenotips.data.permissions.internal.visibility.HiddenVisibility
 org.phenotips.data.permissions.internal.visibility.PrivateVisibility
 org.phenotips.data.permissions.internal.visibility.PublicVisibility
+org.phenotips.data.permissions.internal.visibility.OpenVisibility
 org.phenotips.data.permissions.script.PermissionsManagerScriptService

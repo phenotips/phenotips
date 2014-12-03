@@ -30,19 +30,19 @@ import java.util.Set;
 @Role
 public interface Ontology
 {
-    public abstract int load(AbstractSolrScriptService source);
+    int load(AbstractSolrScriptService source);
 
-    public abstract int load(File source);
+    int load(File source);
 
-    public abstract String getRealId(String id);
+    String getRealId(String id);
 
-    public abstract OntologyTerm getTerm(String id);
+    OntologyTerm getTerm(String id);
 
-    public abstract String getName(String id);
+    String getName(String id);
 
-    public abstract String getRootId();
+    String getRootId();
 
-    public abstract IDAGNode getRoot();
+    IDAGNode getRoot();
 
-    public abstract Set<String> getAncestors(String termId);
+    Set<String> getAncestors(String termId);
 }

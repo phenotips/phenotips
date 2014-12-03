@@ -617,20 +617,20 @@ var AbstractHoverbox = Class.create({
     isMenuToggled: function() {
         return false;
     },
-    
+
     /*
      * Fades the hoverbox graphics in
      *
      * @method animateDrawHoverZone
      */
-    animateDrawHoverZone: function() {     
+    animateDrawHoverZone: function() {
         this._hidden = false;        
         if (editor.getView().getCurrentDraggable() !== null) return; // do not redraw when dragging
         //console.log("node: " + this.getNode().getID() + " -> show HB");
                 
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 200);
-        
+
         this.generateButtons();
         this.showButtons();
         this.getCurrentButtons().forEach(function(button) {

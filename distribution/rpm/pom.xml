@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -180,7 +181,7 @@ rendering.transformations=macro
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>rpm-maven-plugin</artifactId>
-        <version>2.1-alpha-4</version>
+        <version>2.1</version>
         <extensions>true</extensions>
         <configuration>
           <name>phenotips</name>

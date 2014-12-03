@@ -39,6 +39,9 @@ import java.util.regex.Pattern;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 @Named("gene-hpo")
 @Singleton
@@ -58,6 +61,8 @@ public class GeneHPOAnnotations extends AbstractHPOAnnotation
     private static final int ID_IDX = 2;
 
     private static final int LIST_IDX = 3;
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public GeneHPOAnnotations(Ontology hpo)
     {
@@ -99,14 +104,12 @@ public class GeneHPOAnnotations extends AbstractHPOAnnotation
             in.close();
             propagateHPOAnnotations();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            System.err.println("File does not exist");
+            this.logger.error("Annotations source file [{}] does not exist", source.getAbsolutePath(), ex);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+            this.logger.error("Could not locate annotations source file [{}]", source.getAbsolutePath());
         } catch (IOException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+            this.logger
+            .error("Cannot read annotations source file [{}]: {}", source.getAbsolutePath(), ex.getMessage());
         }
         return size();
     }

@@ -25,6 +25,29 @@ var View = Class.create({
     },
 
     /**
+     * Saves all pedigree-specific settings/user choices/color scheme into an object
+     */
+    getSettings: function() {
+        return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
+                           "genes": editor.getGeneLegend().getAllColors() },
+                "names": {"disorders": editor.getDisorderLegend().getAllNames() } };
+    },
+
+    /**
+     * Restores pedigree-specific settings/user choices/color scheme from an object
+     */
+    loadSettings: function(settingsObject) {
+        if (settingsObject.hasOwnProperty("colors")) {
+            if (settingsObject.colors.hasOwnProperty("disorders")) {
+                editor.getDisorderLegend().setAllPreferredColors(settingsObject.colors.disorders);
+            }
+            if (settingsObject.colors.hasOwnProperty("genes")) {
+                editor.getGeneLegend().setAllPreferredColors(settingsObject.colors.genes);
+            }
+        }
+    },
+
+    /**
      * Pre-generates paths and pre-computes bounding boxes for shapes which are commonly used in the graph.
      * Raphael is slow and re-computing each path/box for every node is noticeably slow
      *
@@ -512,6 +535,7 @@ var View = Class.create({
     applyChanges: function( changeSet, markNew ) {
         // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }
         console.log("Change set: " + stringifyObject(changeSet));
+        if (isObjectEmpty(changeSet)) return;
 
         var timer = new Timer();
         var timer2 = new Timer();

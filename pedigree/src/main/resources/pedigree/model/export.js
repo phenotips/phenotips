@@ -244,9 +244,9 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        }
        output += age + "\t" + yob + "\t";
 
-       output += "AU\tAU\tAU\tAU\tAU\t";   // unimplemented fields: age at cancer detection
+       output += "0\t0\t0\t0\t0\t";   // unimplemented fields: age at cancer detection
 
-       output += "0\t0\t";                 // unimplemented fields: Genetic test status + mutations
+       output += "0\t0\t";            // unimplemented fields: Genetic test status + mutations
 
        var ashkenazi = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("ethnicities")) {
@@ -283,7 +283,7 @@ PedigreeExport.internalToJSONPropertyMapping = {
         "comments":      "comments",
         "twinGroup":     "twinGroup",
         "monozygotic":   "monozygotic",
-        "isAdopted":     "adoptedIn",
+        "adoptedStatus": "adoptedStatus",
         "evaluated":     "evaluated",
         "dob":           "birthDate",
         "dod":           "deathDate",

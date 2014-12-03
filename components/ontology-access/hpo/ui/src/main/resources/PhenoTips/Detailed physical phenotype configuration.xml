@@ -53,7 +53,8 @@
         "title"  : "Weight for age",
         "data"   : [
           {"id"  : "HP:0004325", "title" : "Decreased body weight (&lt;-2SD)"},
-          {"id"  : "HP:0004324", "title" : "Increased body weight (&gt;+2SD)"}
+          {"id"  : "HP:0004324", "title" : "Increased body weight (&gt;+2SD)"},
+          {"id"  : "HP:0001513", "title" : "Obsesity (BMI&gt;30)"}
         ]
       },
       {
@@ -173,7 +174,8 @@
       {"id": "HP:0000561"},
       {"id": "HP:0000653"},
       {"id": "HP:0011231"},
-      {"id": "HP:0008496"}
+      {"id": "HP:0008496"},
+      {"id": "HP:0009743"}
     ]
   },
   {
@@ -185,7 +187,7 @@
       {"id": "HP:0000508"},
       {"id": "HP:0000286"},
       {"id": "HP:0000537"},
-      {"id": "HP:0012905", "title" : "Euryblepharon"},
+      {"id": "HP:0012905"},
       {
         "type"       : "subsection",
         "title"      : "Eyelid coloboma",
@@ -283,7 +285,8 @@
           {"id": "HP:0000322", "title" : "Short"}
         ]
       },
-      {"id": "HP:0005326", "title" : "Hypoplastic philtrum"}
+      {"id": "HP:0005326", "title" : "Hypoplastic philtrum"},
+      {"id": "HP:0000319", "title" : "Smooth philtrum"}
     ]
   },
   {
@@ -402,7 +405,7 @@
     "title"      : "Chest wall",
     "categories" : ["HP:0000765"],
     "data"       : [
-      {"id": "HP:0000914", "title" : "Broad chest"},
+      {"id": "HP:0000914", "title" : "Broad/shield chest"},
       {"id": "HP:0000774", "title" : "Narrow chest"},
       {"id": "HP:0005257", "title" : "Short chest"},
       {"id": "HP:0001552", "title" : "Barrel-shaped chest"},

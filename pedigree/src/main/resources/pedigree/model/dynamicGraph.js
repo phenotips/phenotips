@@ -54,11 +54,18 @@ DynamicPositionedGraph.prototype = {
         return this.DG.GG.isPlaceholder(id);
     },
 
-    isAdopted: function( id )
+    isAdoptedIn: function( id )
     {
         if (!this.isPerson(id))
             throw "Assertion failed: isAdopted() is applied to a non-person";
-        return this.DG.GG.isAdopted(id);
+        return this.DG.GG.isAdoptedIn(id);
+    },
+
+    isAdoptedOut: function( id )
+    {
+        if (!this.isPerson(id))
+            throw "Assertion failed: isAdopted() is applied to a non-person";
+        return this.DG.GG.isAdoptedOut(id);
     },
 
     getGeneration: function( id )
@@ -142,7 +149,7 @@ DynamicPositionedGraph.prototype = {
     },
 
     // returns false if this gender is incompatible with this pedigree; true otherwise
-    setProbandData: function( firstName, lastName, gender )
+    setProbandData: function( firstName, lastName, gender, birthDate, deathDate )
     {
         this.DG.GG.properties[0].fName = firstName;
         this.DG.GG.properties[0].lName = lastName;
@@ -152,6 +159,15 @@ DynamicPositionedGraph.prototype = {
         if (!possibleGenders.hasOwnProperty(gender) || !possibleGenders[gender])
             setGender = 'U'
         this.DG.GG.properties[0].gender = setGender;
+
+        if (birthDate) {
+            birthDate = new PedigreeDate(birthDate);
+            this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+        }
+        if (deathDate) {
+            deathDate = new PedigreeDate(deathDate);
+            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+        }
 
         return (gender == setGender);
     },
@@ -355,7 +371,7 @@ DynamicPositionedGraph.prototype = {
         //console.log("Childtren: " + children);
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
-            if (!this.isPlaceholder(child) && !this.isAdopted(child)) {
+            if (!this.isPlaceholder(child) && !this.isAdoptedIn(child)) {
                 //console.log("child: " + child + ", isAdopted: " + this.isAdopted(child));
                 return true;
             }
@@ -1201,6 +1217,24 @@ DynamicPositionedGraph.prototype = {
 
         return {"moved": movedNodes};
     },
+    
+    updateYPositioning: function ()
+    {
+        var positionsBefore  = this.DG.positions; //.slice(0); not changing, no need to copy
+        var ranksBefore      = this.DG.ranks;     //.slice(0); not changing, no need to copy
+        var vertLevelsBefore = this.DG.vertLevel; //.copy();   not changing, no need to copy
+        var rankYBefore      = this.DG.rankY.slice(0);
+        var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
+
+        this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
+
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, null, true );
+
+        if (movedNodes.length == 0) {
+            return {};
+        }
+        return {"moved": movedNodes};
+    },
 
     clearAll: function()
     {
@@ -1308,7 +1342,7 @@ DynamicPositionedGraph.prototype = {
         }
     },
     
-    toJSON: function ()
+    toJSONObject: function ()
     {
         this.stripUnusedProperties();
         
@@ -1327,26 +1361,24 @@ DynamicPositionedGraph.prototype = {
         console.log("JSON represenation: " + JSON.stringify(output));
         //timer.printSinceLast("=== to JSON: ");
 
-        return JSON.stringify(output);
+        return output;
     },
 
-    fromJSON: function (serializedAsJSON)
+    fromJSONObject: function (jsonData)
     {
         var removedNodes = this._getAllNodes();
 
-        var serializedData = JSON.parse(serializedAsJSON);
+        //console.log("Got serialization object: " + stringifyObject(jsonData));
 
-        //console.log("Got serialization object: " + stringifyObject(serializedData));
+        this.DG.GG = PedigreeImport.initFromPhenotipsInternal(jsonData["GG"]);
 
-        this.DG.GG = PedigreeImport.initFromPhenotipsInternal(serializedData["GG"]);
-
-        this.DG.ranks = serializedData["ranks"];
+        this.DG.ranks = jsonData["ranks"];
 
         this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
 
-        this.DG.order.deserialize(serializedData["order"]);
+        this.DG.order.deserialize(jsonData["order"]);
 
-        this.DG.positions = serializedData["positions"];
+        this.DG.positions = jsonData["positions"];
 
         this._updateauxiliaryStructures();
 
@@ -1492,7 +1524,7 @@ DynamicPositionedGraph.prototype = {
         return nodes;
     },
 
-    _findMovedNodes: function (maxOldID, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore)
+    _findMovedNodes: function (maxOldID, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore, fastCheck)
     {
         //console.log("Before: " + stringifyObject(vertLevelsBefore));
         //console.log("After:  " + stringifyObject(this.DG.vertLevel));
@@ -1538,10 +1570,12 @@ DynamicPositionedGraph.prototype = {
                         result[i] = true;
                         continue;
                     }
-                    var inEdges = this.DG.GG.getInEdges(i);
-                    if (inEdges[0] > this.DG.GG.maxRealVertexId || inEdges[1] > this.DG.GG.maxRealVertexId) {
-                        result[i] = true;
-                        continue;
+                    if (!fastCheck) {
+                        var inEdges = this.DG.GG.getInEdges(i);
+                        if (inEdges[0] > this.DG.GG.maxRealVertexId || inEdges[1] > this.DG.GG.maxRealVertexId) {
+                            result[i] = true;
+                            continue;
+                        }
                     }
                     // check vertical positioning changes
                     var parents = this.DG.GG.getParents(i);

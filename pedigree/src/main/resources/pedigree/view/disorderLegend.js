@@ -43,6 +43,19 @@ var DisorgerLegend = Class.create( Legend, {
     },
 
     /**
+     * Returns a map disorderID -> disorderName
+     */
+    getAllNames: function() {
+        var result = {};
+        for (var disorderID in this._affectedNodes) {
+            if (this._affectedNodes.hasOwnProperty(disorderID)) {
+                result[disorderID] = this.getDisorder(disorderID).getName();
+            }
+        }
+        return result;
+    },
+
+    /**
      * Registers an occurrence of a disorder. If disorder hasn't been documented yet,
      * designates a color for it.
      *
@@ -140,16 +153,15 @@ var DisorgerLegend = Class.create( Legend, {
             // [original yellow/blue] prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
             // [green]                prefColors = ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
         prefColors = ['#E0F8F8', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];
+        if (disorderID == "affected") {
+            prefColors = ["#FEE090", "#dbad71"];
+        }
+        if (this.getPreferedColor(disorderID) !== null) {
+            prefColors.unshift(this.getPreferedColor(disorderID));
+        }
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });
-        if (disorderID == "affected") {
-            if (usedColors.indexOf('#FEE090') > -1 ) {
-                return "#dbad71";
-            } else {
-                return "#FEE090";
-            }
-        }
         if(prefColors.length > 0) {
             return prefColors[0];
         }

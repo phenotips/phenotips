@@ -69,10 +69,14 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "phenotype_by_section"};
+            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+            "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
-        String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" },
-            { "negative" }, { "category" } };
+        String[][] headerIds =
+            { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
+                { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+                { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+                { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -88,7 +92,7 @@ public class DataToCellConverter
 
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -115,7 +119,7 @@ public class DataToCellConverter
 
         int counter = 0;
         int hX = 0;
-        if (present.contains("phenotype") && present.contains("negative")) {
+        if (present.contains("positive") && present.contains("negative")) {
             DataCell cell = new DataCell("Present", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
@@ -145,7 +149,7 @@ public class DataToCellConverter
             return null;
         }
 
-        Boolean bothTypes = present.contains("phenotype") && present.contains("negative");
+        Boolean bothTypes = present.contains("positive") && present.contains("negative");
         DataSection section = new DataSection(sectionName);
 
         int x;
@@ -201,29 +205,35 @@ public class DataToCellConverter
             }
             if (present.contains("meta") || present.contains("meta_code")) {
                 int mX = x;
-                int mCX = x + 1;
                 Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
                 Boolean metaPresent = featureMetadatum.size() > 0;
+                int offset = 0;
                 for (FeatureMetadatum meta : featureMetadatum) {
+                    offset = 0;
                     if (present.contains("meta")) {
-                        DataCell cell = new DataCell(meta.getName(), mX, y);
+                        DataCell cell = new DataCell(meta.getName(), mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell(meta.getId(), mCX, y);
+                        DataCell cell = new DataCell(meta.getId(), mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     y++;
                 }
                 // Because otherwise the section has smaller width than the header
+                offset = 0;
                 if (!metaPresent) {
                     if (present.contains("meta")) {
-                        DataCell cell = new DataCell("", mX, y);
+                        DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                     if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell("", mCX, y);
+                        DataCell cell = new DataCell("", mX + offset, y);
                         section.addCell(cell);
+                        offset += 1;
                     }
                 }
                 if (metaPresent) {
@@ -457,7 +467,6 @@ public class DataToCellConverter
         }
         if (present.contains("indication_for_referral")) {
             String indicationForReferral = patient.<String>getData("notes").get("indication_for_referral");
-            indicationForReferral = ConversionHelpers.wrapString(indicationForReferral, charactersPerLine);
             DataCell cell = new DataCell(indicationForReferral, x, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
@@ -556,7 +565,6 @@ public class DataToCellConverter
         if (present.contains("family_history")) {
             PatientData<String> notes = patient.<String>getData("notes");
             String familyConditions = notes != null ? notes.get("family_history") : "";
-            familyConditions = ConversionHelpers.wrapString(familyConditions, charactersPerLine);
             DataCell cell = new DataCell(familyConditions, x, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
@@ -675,7 +683,7 @@ public class DataToCellConverter
         if (present.contains("prenatal_development")) {
             PatientData<String> notes = patient.getData("notes");
             String prenatalNotes = notes != null ? notes.get("prenatal_development") : "";
-            DataCell cell = new DataCell(ConversionHelpers.wrapString(prenatalNotes, charactersPerLine), x, 0);
+            DataCell cell = new DataCell(prenatalNotes, x, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
             x++;
@@ -852,26 +860,6 @@ public class DataToCellConverter
                 section.addCell(cell);
                 x++;
             }
-            if (present.contains("meta") || present.contains("meta_code")) {
-                int mX = x;
-                int mCX = x + 1;
-                Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
-                Boolean metaPresent = featureMetadatum.size() > 0;
-                for (FeatureMetadatum meta : featureMetadatum) {
-                    if (present.contains("meta")) {
-                        DataCell cell = new DataCell(meta.getName(), mX, y);
-                        section.addCell(cell);
-                    }
-                    if (present.contains("meta_code")) {
-                        DataCell cell = new DataCell(meta.getId(), mCX, y);
-                        section.addCell(cell);
-                    }
-                    y++;
-                }
-                if (metaPresent) {
-                    y--;
-                }
-            }
             y++;
         }
         /* Creating empites */
@@ -946,7 +934,7 @@ public class DataToCellConverter
         for (Disorder disorder : disorders) {
             Integer x = 0;
             if (present.contains("disorder")) {
-                DataCell cell = new DataCell(ConversionHelpers.wrapString(disorder.getName(), charactersPerLine), x, y);
+                DataCell cell = new DataCell(disorder.getName(), x, y);
                 cell.setMultiline();
                 bodySection.addCell(cell);
                 x++;
@@ -976,8 +964,7 @@ public class DataToCellConverter
         if (present.contains("notes")) {
             PatientData<String> notes = patient.getData("notes");
             String diagnosisNotes = notes != null ? notes.get("diagnosis_notes") : "";
-            DataCell cell = new DataCell(ConversionHelpers.wrapString(diagnosisNotes, charactersPerLine),
-                bodySection.getMaxX() + 1, 0);
+            DataCell cell = new DataCell(diagnosisNotes, bodySection.getMaxX() + 1, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
         }
@@ -1040,7 +1027,7 @@ public class DataToCellConverter
         if (present.contains("medical_history")) {
             PatientData<String> notes = patient.getData("notes");
             String medicalNotes = notes != null ? notes.get("medical_history") : "";
-            DataCell cell = new DataCell(ConversionHelpers.wrapString(medicalNotes, charactersPerLine), x, 0);
+            DataCell cell = new DataCell(medicalNotes, x, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
             x++;

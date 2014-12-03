@@ -31,21 +31,21 @@ import java.util.Set;
 @Role
 public interface HPOAnnotation
 {
-    public int load(File source);
+    int load(File source);
 
-    public Ontology getOntology();
+    Ontology getOntology();
 
-    public Set<String> getAnnotationIds();
+    Set<String> getAnnotationIds();
 
-    public Set<String> getHPONodesIds();
+    Set<String> getHPONodesIds();
 
-    public Collection<AnnotationTerm> getAnnotations();
+    Collection<AnnotationTerm> getAnnotations();
 
-    public Collection<AnnotationTerm> getHPONodes();
+    Collection<AnnotationTerm> getHPONodes();
 
-    public AnnotationTerm getAnnotationNode(String annId);
+    AnnotationTerm getAnnotationNode(String annId);
 
-    public AnnotationTerm getHPONode(String id);
+    AnnotationTerm getHPONode(String id);
 
-    public Map<String, String> getPhenotypesWithAnnotation(String annId);
+    Map<String, String> getPhenotypesWithAnnotation(String annId);
 }

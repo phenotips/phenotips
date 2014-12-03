@@ -216,6 +216,8 @@ var Controller = Class.create({
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         var needUpdateAllRelationships = false;
+        var needUpdateYPositions = false;  // true iff: setting this property (e.g. extra long comments)
+                                           //           may force stuff to move around in Y direction
 
         var changedValue = false;
 
@@ -231,7 +233,7 @@ var Controller = Class.create({
                 var propertyGetFunction =  propertySetFunction.replace("set","get");
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
-                if (typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
+                if (oldValue && typeof(oldValue) === 'object' && typeof(propValue) === 'object' &&
                     (propertySetFunction == "setDeathDate" || propertySetFunction == "setBirthDate")) {
                     // compare Date objects
                     try {
@@ -303,8 +305,27 @@ var Controller = Class.create({
 
                 if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
-                    if (!twinUpdate) twinUpdate = {};
-                    twinUpdate[propertySetFunction] = propValue;
+                    if (propValue == "adoptedIn") {
+                        // if one twin is adopted in the other must be as well
+                        if (!twinUpdate) twinUpdate = {};
+                        twinUpdate[propertySetFunction] = propValue;
+                    }
+                    if (oldValue == "adoptedIn") {
+                        // if one twin was marked as adopted in the other must have been as well - but not
+                        // necesserily adopted out as this one
+                        if (!twinUpdate) twinUpdate = {};
+                        twinUpdate[propertySetFunction] = "";
+                    }
+                }
+
+                if (propertySetFunction == "setComments"  || propertySetFunction == "setExternalID" ||
+                    propertySetFunction == "setFirstName" || propertySetFunction == "setLastName" ||
+                    propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
+                    // all the methods which may result in addition ort deletion of person labels
+                    // (which may cause a shift up or down)
+                    if (numTextLines(oldValue) != numTextLines(propValue)) {
+                        needUpdateYPositions = true;
+                    }
                 }
 
                 if (propertySetFunction == "setMonozygotic") {
@@ -368,6 +389,11 @@ var Controller = Class.create({
             editor.getView().applyChanges(changeSet, true);
         }
 
+        if (needUpdateYPositions) {
+            var changeSet = editor.getGraph().updateYPositioning();
+            editor.getView().applyChanges(changeSet, true);
+        }
+
         editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
                                         // gets reverted back - need to select the correct one in the nodeMenu as well
 
@@ -396,6 +422,9 @@ var Controller = Class.create({
                     var numNewTwins = modValue - 1; // current node is one of the twins, so need to create one less
                     for (var i = 0; i < numNewTwins; i++ ) {
                         var twinProperty = { "gender": node.getGender() };
+                        if (node.getAdopted() == "adoptedIn") {
+                            twinProperty["adoptedStatus"] = node.getAdopted();
+                        }
                         var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );
                         editor.getView().applyChanges(changeSet, true);
                     }
@@ -431,7 +460,7 @@ var Controller = Class.create({
         }
 
         if (editor.getGraph().isChildless(parentID)) {
-            editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": true }, "noUndoRedo": true } } );
+            editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": "adoptedIn" }, "noUndoRedo": true } } );
         }
 
         try {
@@ -543,7 +572,7 @@ var Controller = Class.create({
         var numPersons  = event.memo.groupSize ? event.memo.groupSize : 0;
 
         if (editor.getGraph().isChildless(personID)) {
-            childParams["isAdopted"] = true;
+            childParams["adoptedStatus"] = "adoptedIn";
         }
 
         if (numPersons > 0) {
@@ -573,7 +602,7 @@ var Controller = Class.create({
 
         var childProperties = {};
         if (editor.getGraph().isChildless(personID) || editor.getGraph().isChildless(partnerID)) {
-            childProperties["isAdopted"] = true;
+            childProperties["adoptedStatus"] = "adoptedIn";
         }
 
         // when partnering up a node with unknown gender with a node of known gender
@@ -612,7 +641,7 @@ var Controller = Class.create({
 
         var childParams = cloneObject(event.memo.childParams);
         if (editor.getGraph().isInfertile(partnershipID)) {
-            childParams["isAdopted"] = true;
+            childParams["adoptedStatus"] = "adoptedIn";
         }
 
         var numPersons = event.memo.groupSize ? event.memo.groupSize : 0;

@@ -25,6 +25,11 @@ import java.util.Map;
 
 public class PrettyPrint
 {
+    private PrettyPrint()
+    {
+        // Nothing to do, just forbidding instantiation
+    }
+
     public static void printList(Collection<? extends Object> data, PrintStream out)
     {
         for (Object o : data) {

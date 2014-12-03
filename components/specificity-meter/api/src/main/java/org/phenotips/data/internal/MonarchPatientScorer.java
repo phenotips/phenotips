@@ -32,6 +32,8 @@ import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSource;
+
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -70,6 +72,12 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
 {
     private static final String SCORER_NAME = "monarchinitiative.org";
 
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configuration;
+
+    private String scorerURL;
+
     /** The HTTP client used for contacting the MONARCH server. */
     private CloseableHttpClient client = HttpClients.createSystem();
 
@@ -82,6 +90,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     public void initialize() throws InitializationException
     {
         try {
+            scorerURL = this.configuration
+                .getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score");
             CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
             this.cache = this.cacheManager.createNewCache(config);
         } catch (CacheException ex) {
@@ -133,7 +143,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             data.put("features", features);
 
             HttpGet method =
-                new HttpGet(new URIBuilder("http://monarchinitiative.org/score").addParameter("annotation_profile",
+                new HttpGet(new URIBuilder(scorerURL).addParameter("annotation_profile",
                     data.toString()).build());
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);

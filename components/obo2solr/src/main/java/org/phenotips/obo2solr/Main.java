@@ -40,29 +40,24 @@ public class Main
 
     public static final String HELP_OPTION = "h";
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         Options options = generateOptions();
-        try {
-            CommandLineParser parser = new PosixParser();
-            CommandLine cmd = parser.parse(options, args);
-            if (!cmd.hasOption(OBO_DB_LOCATION_OPTION) || cmd.hasOption(HELP_OPTION)) {
-                showUsage(options);
-                System.exit(cmd.hasOption(HELP_OPTION) ? 0 : 1);
-            }
-            ParameterPreparer paramPrep = new ParameterPreparer();
-            SolrUpdateGenerator generator = new SolrUpdateGenerator();
-            File input = paramPrep.getInputFileHandler(cmd.getOptionValue(OBO_DB_LOCATION_OPTION));
-            File output =
-                paramPrep.getOutputFileHandler(cmd.getOptionValue(OUTPUT_XML_LOCATION_OPTION,
-                    DEFAULT_OUTPUT_XML_LOCATION));
-            Map<String, Double> fieldSelection =
-                paramPrep.getFieldSelection(cmd.getOptionValue(INDEX_FILEDS_OPTION, ""));
-            generator.transform(input, output, fieldSelection);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        CommandLineParser parser = new PosixParser();
+        CommandLine cmd = parser.parse(options, args);
+        if (!cmd.hasOption(OBO_DB_LOCATION_OPTION) || cmd.hasOption(HELP_OPTION)) {
+            showUsage(options);
+            return;
         }
-
+        ParameterPreparer paramPrep = new ParameterPreparer();
+        SolrUpdateGenerator generator = new SolrUpdateGenerator();
+        File input = paramPrep.getInputFileHandler(cmd.getOptionValue(OBO_DB_LOCATION_OPTION));
+        File output =
+            paramPrep.getOutputFileHandler(cmd.getOptionValue(OUTPUT_XML_LOCATION_OPTION,
+                DEFAULT_OUTPUT_XML_LOCATION));
+        Map<String, Double> fieldSelection =
+            paramPrep.getFieldSelection(cmd.getOptionValue(INDEX_FILEDS_OPTION, ""));
+        generator.transform(input, output, fieldSelection);
     }
 
     protected static Options generateOptions()
@@ -82,11 +77,5 @@ public class Main
     {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("java " + Main.class.getName() + " [options]", options);
-    }
-
-    protected static void failWithMessage(String message)
-    {
-        System.err.println(message);
-        System.exit(1);
     }
 }

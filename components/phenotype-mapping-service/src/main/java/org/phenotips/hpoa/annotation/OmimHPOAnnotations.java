@@ -37,6 +37,9 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 @Named("omim-hpo")
 @Singleton
@@ -49,6 +52,8 @@ public class OmimHPOAnnotations extends AbstractHPOAnnotation
     private static final String SEPARATOR = "\t";
 
     private static final int MIN_EXPECTED_FIELDS = 8;
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public OmimHPOAnnotations(Ontology hpo)
     {
@@ -72,12 +77,14 @@ public class OmimHPOAnnotations extends AbstractHPOAnnotation
                 if (!line.startsWith(OMIM_ANNOTATION_MARKER)) {
                     continue;
                 }
-                String pieces[] = line.split(SEPARATOR, MIN_EXPECTED_FIELDS);
+                String[] pieces = line.split(SEPARATOR, MIN_EXPECTED_FIELDS);
                 if (pieces.length != MIN_EXPECTED_FIELDS) {
                     continue;
                 }
-                final String omimId = OMIM_ANNOTATION_MARKER + ":" + pieces[1], omimName = pieces[2], hpoId =
-                    this.hpo.getRealId(pieces[4]), rel = pieces[3];
+                final String omimId = OMIM_ANNOTATION_MARKER + ":" + pieces[1];
+                final String omimName = pieces[2];
+                final String hpoId = this.hpo.getRealId(pieces[4]);
+                final String rel = pieces[3];
                 if (!"NOT".equals(rel)) {
                     connection.clear();
                     connection.put(OMIM, new AnnotationTerm(omimId, omimName));
@@ -88,14 +95,12 @@ public class OmimHPOAnnotations extends AbstractHPOAnnotation
             in.close();
             propagateHPOAnnotations();
         } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            System.err.println("File does not exist");
+            this.logger.error("Annotations source file [{}] does not exist", source.getAbsolutePath(), ex);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+            this.logger.error("Could not locate annotations source file [{}]", source.getAbsolutePath());
         } catch (IOException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
+            this.logger
+                .error("Cannot read annotations source file [{}]: {}", source.getAbsolutePath(), ex.getMessage());
         }
         return size();
     }

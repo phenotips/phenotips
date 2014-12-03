@@ -17,17 +17,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.hpoa.utils.maps;
+package org.phenotips.data.permissions.internal.visibility;
 
-public class SubtractMapOperator<K> extends AbstractMapOperator<K, Number>
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.internal.AbstractVisibility;
+
+import org.xwiki.component.annotation.Component;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+/**
+ * @version $Id$
+ * @since 1.1M1
+ */
+@Component
+@Named("open")
+@Singleton
+public class OpenVisibility extends AbstractVisibility
 {
-    @Override
-    protected Double applyToValues(Number a, Number b)
+    @Inject
+    @Named("edit")
+    private AccessLevel access;
+
+    public OpenVisibility()
     {
-        try {
-            return (Double) a - (Double) b;
-        } catch (ClassCastException ex) {
-            return null;
-        }
+        super(80);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "open";
+    }
+
+    @Override
+    public AccessLevel getDefaultAccessLevel()
+    {
+        return this.access;
     }
 }

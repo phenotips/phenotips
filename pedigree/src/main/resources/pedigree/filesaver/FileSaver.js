@@ -260,11 +260,15 @@ var saveTextAs = saveTextAs
         }
 
         var doc = saveTxtWindow.document;
-        doc.open('text/plain', 'replace');
         doc.charset = charset;
-        fileName += '.txt';
+        if (browser.versionMajor <= 8) {
+          doc.open('text/plain', 'replace');
+        } else {
+          doc.open();
+        }
         doc.write(textContent);
         doc.close();
+        fileName += '.txt';
         var retValue = doc.execCommand('SaveAs', null, fileName);
         saveTxtWindow.close();
         return retValue;

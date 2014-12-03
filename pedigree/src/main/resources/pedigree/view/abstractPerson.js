@@ -17,7 +17,7 @@ var AbstractPerson = Class.create(AbstractNode, {
     initialize: function($super, x, y, gender, id) {
     	//console.log("abstract person");            
         this._gender = this.parseGender(gender);
-        this._isAdopted = false;
+        this._adoptedStatus = "";
         !this._type && (this._type = "AbstractPerson");
         $super(x, y, id);
         //console.log("abstract person end");
@@ -82,34 +82,28 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /**
-     * Changes the adoption status of this Person to isAdopted. Updates the graphics.
+     * Changes the adoption status of this Person to adoptedStatus. Updates the graphics.
      *
      * @method setAdopted
-     * @param {Boolean} isAdopted Set to true if you want to mark the Person adopted
+     * @param {Boolean} adoptedStatus one of "", "adoptedIn" and "adoptedOut"
      */
-    setAdopted: function(isAdopted) {
-        this._isAdopted = isAdopted;
-        //TODO: implement adopted and social parents
-        if(isAdopted)
-            this.getGraphics().drawAdoptedShape();
-        else
-            this.getGraphics().removeAdoptedShape();
+    setAdopted: function(adoptedStatus) {
+        if (adoptedStatus != "" && adoptedStatus != "adoptedIn" && adoptedStatus != "adoptedOut") {
+            adoptedStatus = "";
+        }
+        this._adoptedStatus = adoptedStatus;
+        this.getGraphics().drawAdoptedShape();
+        this.getGraphics().getHoverBox().regenerateHandles();
     },
 
     /**
      * Returns true if this Person is marked adopted
      *
-     * @method isAdopted
-     * @return {Boolean}
+     * @method getAdopted
+     * @return {String} one of "", "adoptedIn" and "adoptedOut"
      */
-    isAdopted: function() {
-        return this._isAdopted;
-    },
-    
-    // TODO: for automated setMethod -> getMethod used for undo/redo 
     getAdopted: function() {
-        //console.log("GET ADOPTED: " + this.isAdopted()); 
-        return this.isAdopted();
+        return this._adoptedStatus;
     },
 
     /**

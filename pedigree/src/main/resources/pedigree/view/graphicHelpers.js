@@ -217,6 +217,35 @@ function getElementHalfHeight(t) {
     return Math.floor(t.getBBox().height/2);
 }
 
+function getCaretPosition(elem) {
+    if (elem.selectionEnd) {
+        return elem.selectionEnd;
+    } else if (elem.createTextRange) {
+		var r = document.selection.createRange();
+		r.moveStart('character', -elem.value.length);
+		return r.text.length;
+	} else return null;
+}
+
+function setCaretPosition(ctrl, pos)
+{
+    if (pos == null || pos <= 0) {
+        return;
+    }
+    if(ctrl.setSelectionRange)
+    {
+        ctrl.focus();
+        ctrl.setSelectionRange(pos,pos);
+    }
+    else if (ctrl.createTextRange) {
+        var range = ctrl.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', pos);
+        range.moveStart('character', pos);
+        range.select();
+    }
+}
+
 /**
  * Joins all the subsets into one set and returns it.
  * @return {Raphael.st}

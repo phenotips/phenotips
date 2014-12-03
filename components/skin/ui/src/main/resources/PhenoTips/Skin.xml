@@ -246,6 +246,7 @@
 #mainContentArea, #mainEditArea {
   overflow: visible;
   padding: 10px;
+  position: relative;
 }
 
 .actionmenu {
@@ -388,13 +389,15 @@ thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter in
 }
 
 input[type=text], textarea {
-  border-color: $theme.pageContentBackgroundColor;
+  border-color: $theme.borderColor;
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0,0,0,.4) inset !important;
   width: 100%;
 }
 textarea {
-  width: 98%;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
 }
 input[type=text]:focus, textarea:focus {
   border-color: $theme.linkColor;

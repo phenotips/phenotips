@@ -240,6 +240,7 @@
     </class>
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+{{include document="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
@@ -262,6 +263,7 @@
   #end## action == edit
   #if ("$!image" != '')
     (% class="pedigree-wrapper" %)((({{html clean="false"}}$!image{{/html}})))
+    (% class="pedigree-wrapper" %)((({{html clean="false"}}#pedigreeLegend($data, "Legend:"){{/html}})))
   #end
 #end## action == edit || data
 {{/velocity}}</content>

@@ -269,7 +269,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 350px;
+  width: 360px;
   color: #000000;
   z-index: 100000;
 }
@@ -341,7 +341,7 @@
 .menu-box .tabs-content > .content.active {
   display: block;
   float: none;
-  padding: .3em 1.3em 0.8em;
+  padding: .3em 1.2em 0.8em;
 }
 .menu-box form {
   border: 1px solid #F5F5F5;
@@ -397,6 +397,9 @@
 }
 .menu-box .field-box .textarea-3-rows {
   height: 4.3em;
+}
+.menu-box .field-box .textarea-4-rows {
+  height: 5.5em;
 }
 .import-upload {
   display: block;
@@ -471,6 +474,14 @@
   right: 0;
   display: inline !important;
 }
+.field-no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .field-values label {
   display: block;
 }
@@ -488,17 +499,13 @@
   display: block;
 }
 .field-values-3-columns .state_deceased {
-  margin-left: -2px;
 }
 .field-values-3-columns .state_miscarriage {
-  margin-left: -2px;
   margin-bottom: 1px;  /* otherwise the bottom pixel of the letter "g" in "miscarriage" is displayed at the top of the next column in Chrome */
 }
 .field-values-3-columns .state_unborn {
-  margin-left: 8px;
 }
 .field-values-3-columns .state_aborted {
-  margin-left: 8px;
 }
 .field-inputs {
   display: table;
@@ -530,11 +537,13 @@
 .menu-box .field-date_of_birth {
   width: 48%;
   float: left;
+  margin-bottom: 6px;
 }
 .menu-box .field-date_of_death {
   width: 48%;
   float: right;
   margin-top: -5px; /* TODO: investigate why elements float below its intended position */
+  margin-bottom: 6px;
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;
@@ -543,10 +552,10 @@
   padding: 0 0;
 }
 .menu-box .field-adopted {
-  padding: 0.26em 0;
+  padding: 0.6em 0;
 }
 .menu-box .field-monozygotic {
-  padding: 0.26em 0;
+  padding: 0.5em 0 0.26em 0;
 }
 .menu-box .field-nocontact {
   padding: 0.26em 0;
@@ -558,17 +567,17 @@
   padding: 0.45em 0;
 }
 .menu-box .field-evaluated {
-  padding-top: 0.7em;
+  padding-top: 0.26em;
   padding-bottom: 0.5em;
   padding-right: 0;
-  padding-left: 0.08em;
+  margin-left: -0.1em;
 }
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
 }
 .menu-box .field-carrier {
   padding-top: 0.8em;
-  padding-bottom: 0em;
+  padding-bottom: 0.6em;
   padding-right: 0;
   padding-left: 0;
 }
@@ -728,12 +737,12 @@
 }
 
 .msdialog-modal-container .pedigree-template-chooser {
-    width: 500px;
+    width: 720px;
 }
 .picture-box {
     display: inline-block;
     box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
-    margin: 10px;
+    margin: 14px;
 }
 .picture-box:hover {
     cursor: pointer;
@@ -786,6 +795,9 @@
 */
 
 /* Datepicker style */
+.fuzzy-date-picker {
+  margin-right: -2px;
+}
 .fuzzy-date-picker .year {
   font-size: 14px;
 }
@@ -800,9 +812,9 @@
   opacity: .5;
 }
 .fuzzy-date-picker .year option {
-  text-indent: 1em;
+  /*text-indent: 1em;*/
 }
 .fuzzy-date-picker .year .decade {
   font-weight: bold;
-  text-indent: 0;
+  /*text-indent: 0;*/
 }

@@ -455,8 +455,8 @@ return XWiki;
 }
 
 .profile-menu .group.user-menu-title{
-  #set ($menuIcon = "url(${escapetool.S}$xwiki.getSkinFile('icons/silk/user.png')${escapetool.S})")
-  #css3_backgroundIconAndLinearGradient($menuIcon, {
+  background-position: left center;
+  #css3_backgroundLinearGradient($menuIcon, {
     'to': 'bottom',
     'colors': [
       {'color':$theme.menuContentGradientColor,    'position': '0%'},

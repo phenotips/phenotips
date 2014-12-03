@@ -33,7 +33,6 @@ var PhenoTips = (function (PhenoTips) {
 
     enable : function () {
       this.dropdown.enable();
-      this.dropdown.focus();
       if (this.dropdown.selectedIndex <= 0 && this._tmpSelectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = this._tmpSelectedIndex;
       }
@@ -51,9 +50,13 @@ var PhenoTips = (function (PhenoTips) {
 
     onSelect : function(callback) {
       var _this = this;
-      this.dropdown.observe('change',function() {
-        callback();
-        _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+      var events = ['change'];
+      browser.isGecko && events.push('keyup');
+      events.each(function(eventName) {
+        _this.dropdown.observe(eventName, function() {
+          callback();
+          _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+        });
       });
     },
 
@@ -114,11 +117,11 @@ var PhenoTips = (function (PhenoTips) {
         values.push({"value" : y});
         if (y % 10 == 0) {
             values.push({"value" : (y + "s"), "cssClass" : "decade", "text" : (y + 's')});
-        }        
+        }
       }
-      values.push({"value": "1800s"});
-      values.push({"value": "1700s"});
-      values.push({"value": "1600s"});
+      values.push({"value": "1800s", "cssClass" : "decade"});
+      values.push({"value": "1700s", "cssClass" : "decade"});
+      values.push({"value": "1600s", "cssClass" : "decade"});
 
       this.yearSelector.populate(values);
       this.yearSelector.onSelect(this.yearSelected.bind(this));
@@ -189,11 +192,11 @@ var PhenoTips = (function (PhenoTips) {
       } else {
           for (var v = end; v <= start; --v) {
               values.push({'value': v, 'text' : ("0" + v).slice(-2)});
-          }          
+          }
       }
       return values;
     },
-    
+
     updateDate : function () {
         var dateObject = {};
 
@@ -210,7 +213,7 @@ var PhenoTips = (function (PhenoTips) {
             var m = this.monthSelector.getSelectedValue();
             if (m > 0) {
                 dateObject["month"] = this.monthSelector.getSelectedOption();
-            
+
                 var d = this.daySelector.getSelectedValue();
                 if (d > 0) {
                     dateObject["day"] = this.daySelector.getSelectedOption();
@@ -220,7 +223,7 @@ var PhenoTips = (function (PhenoTips) {
 
         var newValue = JSON.stringify(dateObject);
         if (newValue != this.__input.value) {
-            this.__input.value = JSON.stringify(dateObject);        
+            this.__input.value = JSON.stringify(dateObject);
             this.__input.fire("xwiki:date:changed");
         }
     }

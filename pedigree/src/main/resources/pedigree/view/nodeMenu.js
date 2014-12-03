@@ -333,7 +333,11 @@ NodeMenu = Class.create({
 
     _generateEmptyField : function (data) {
         var result = new Element('div', {'class' : 'field-box field-' + data.name});
-        var label = new Element('label', {'class' : 'field-name'}).update(data.label);
+        var fieldNameClass = 'field-name';
+        if (data.type == "radio") {
+            fieldNameClass += ' field-no-user-select';
+        }
+        var label = new Element('label', {'class' : fieldNameClass}).update(data.label);
         result.inputsContainer = new Element('div', {'class' : 'field-inputs'});
         result.insert(label).insert(result.inputsContainer);
         this.fieldMap[data.name] = {
@@ -351,6 +355,7 @@ NodeMenu = Class.create({
       var _this = this;
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
+          _this._saveCursorPositionIfNecessary(field);
           if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
           var target = _this.targetNode;
           if (!target) return;
@@ -375,6 +380,25 @@ NodeMenu = Class.create({
           field.fire('pedigree:change');
         });
       });
+    },
+
+    _saveCursorPositionIfNecessary: function(field) {
+        this.__lastSelectedField  = field.name;
+        this.__lastNodeID         = this.targetNode;
+        // for text fields in all browsers, and textarea only in IE9
+        if (field.type == "text" || (document.selection && field.type == "textarea")) {
+            this.__lastCursorPosition = getCaretPosition(field);
+        }
+    },
+
+    _restoreCursorPositionIfNecessary: function(field) {
+        if (this.targetNode == this.__lastNodeID &&
+            field.name      == this.__lastSelectedField) {
+            // for text fields in all browsers, and textarea only in IE9
+            if (field.type == "text" || (document.selection && field.type == "textarea")) {
+                setCaretPosition(field, this.__lastCursorPosition);
+            }
+        }
     },
 
     update: function(newTarget) {
@@ -421,11 +445,15 @@ NodeMenu = Class.create({
         'radio' : function (data) {
             var result = this._generateEmptyField(data);
             var columnClass = data.columns ? "field-values-" + data.columns + "-columns" : "field-values";
+            columnClass += " field-no-user-select";
             var values = new Element('div', {'class' : columnClass});
             result.inputsContainer.insert(values);
             var _this = this;
             var _generateRadioButton = function(v) {
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
+                if (v.hasOwnProperty("columnshiftPX")) {
+                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"}); 
+                }
                 var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
                 radioLabel.insert({'top': radioButton});
                 radioButton._getValue = function() { return [this.value]; }.bind(radioButton);
@@ -433,7 +461,11 @@ NodeMenu = Class.create({
                 _this._attachFieldEventListeners(radioButton, ['click']);
                 _this._attachDependencyBehavior(radioButton, data);
             };
-            data.values.each(_generateRadioButton);
+            if (data.hasOwnProperty("valuesIE9") && navigator && navigator.appVersion.indexOf("MSIE 9") != -1) {
+                data.valuesIE9.each(_generateRadioButton);
+            } else {
+                data.values.each(_generateRadioButton);
+            }
 
             return result;
         },
@@ -669,9 +701,15 @@ NodeMenu = Class.create({
           y = Math.floor(y);
       } else {
           if (this.menuBox.style.top.length > 0) {
-              y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+              try {
+                y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+              } catch (err) {
+                // ignore: strange style or negative y, y will b set to 0
+              }
           }
-          if (y === undefined || !isFinite(y) || y < 0) y = 0;
+      }
+      if (y === undefined || !isFinite(y) || y < 0) {
+          y = 0;
       }
 
       // Make sure the menu fits inside the screen
@@ -741,12 +779,14 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value;
             }
+            this._restoreCursorPositionIfNecessary(target);
         },
         'textarea' : function (container, value) {
             var target = container.down('textarea');
             if (target) {
                 target.value = value;
             }
+            this._restoreCursorPositionIfNecessary(target);
         },
         'date-picker' : function (container, value) {
             if (!value) {
@@ -796,7 +836,7 @@ NodeMenu = Class.create({
                     updated = true;
                 }
             }
-            // TODO: review if event firing is necessary
+            // TODO: replace the code above with an even request to change year-month-date
             if (updated) {
                 var updateElement = container.down('.fuzzy-date-picker');
                 if (updateElement) {

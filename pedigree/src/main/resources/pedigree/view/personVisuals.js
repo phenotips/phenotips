@@ -351,12 +351,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     text = "b. " + person.getBirthDate().getDecade();
                 } else {
                     var age = getAge(person.getBirthDate(), null);
-                    if (age.indexOf("day") != -1) {
-                        text = age;                                                                // 5 days
-                    } else if (age.indexOf(" y") == -1) {
-                        text = "b. " + person.getBirthDate().getYear() + " (" + age + ")";     // b. 2014 (3 wk)
+                    if (person.getBirthDate().getMonth() == null) {
+                        text = "b. " + person.getBirthDate().getYear();                         // b. 1972
                     } else {
-                        text = "b. " + person.getBirthDate().getYear();                        // b. 1972
+                        if (person.getBirthDate().getDay() == null) {
+                            text = "b. " + person.getBirthDate().getMonthName() + " " +         // b. Jan 1972
+                            person.getBirthDate().getYear();
+                        } else {
+                            text = "b. " + person.getBirthDate().getMonthName() + " " +
+                            person.getBirthDate().getDay() + ", " +
+                            person.getBirthDate().getYear();                                    // b. Jan 13, 1972
+                            if (age.indexOf("day") != -1 || age.indexOf("wk") != -1) {
+                                text += " (" + age + ")";                                       // b. Jan 13, 1972 (5 days)
+                            }
+                        }
                     }
                 }
             }
@@ -364,7 +372,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else {
             if(person.getDeathDate() && person.getBirthDate()) {
                 var age = getAge(person.getBirthDate(), person.getDeathDate());
-                if (person.getDeathDate().getYear() != null && age.indexOf("day") != -1 || age.indexOf("wk") != -1 || age.indexOf("mo") != -1) {
+                if (person.getDeathDate().getYear() != null && person.getDeathDate().getMonth() != null &&
+                    (age.indexOf("day") != -1 || age.indexOf("wk") != -1 || age.indexOf("mo") != -1) ) {
                     text = "d. " + person.getDeathDate().getYear(true) + " (" + age + ")";
                 } else {
                     text = person.getBirthDate().getBestPrecisionStringYear() + " – " + person.getDeathDate().getBestPrecisionStringYear();
@@ -545,10 +554,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateCommentsLabel: function() {
         this.getCommentsLabel() && this.getCommentsLabel().remove();        
-        if (this.getNode().getComments() != "") {       
-            var text = this.getNode().getComments(); //.replace(/\n/g, '<br />');
+        if (this.getNode().getComments() != "") {
+            // note: raphael positions text which starts with a new line in a strange way
+            //       also, blank lines are ignored unless replaced with a space
+            var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
             this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.commentLabel);
             this._commentsLabel.alignTop = true;
+            this._commentsLabel.addGap   = true;
         } else {
             this._commentsLabel = null;
         }
@@ -634,7 +646,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @return {Raphael.st}
      */
     getLabels: function() {
-        var labels = editor.getPaper().set();        
+        var labels = editor.getPaper().set();
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());        
@@ -658,13 +670,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 7) : 0;
-            labels[i].attr("y", startY + offset);                      
+            var shift = (labels[i].addGap && i != 0) ? 3 : 7;   // make a small gap between comments and other fields
+            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
+            labels[i].transform(""); // clear all transofrms, using new real x
+            labels[i].attr("x", this.getX());
+            labels[i].attr("y", startY + offset);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
-            startY = labels[i].getBBox().y2 + 11;
+            labels[i].toBack();
+            if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
+                startY = labels[i].getBBox().y2 + 11;
+            }
         }
-        if(!editor.isUnsupportedBrowser())
-            labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
+        //if(!editor.isUnsupportedBrowser())
+        //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
     
     _labelSelectionOffset: function() {

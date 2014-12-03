@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,18 +18,20 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-package org.phenotips.hpoa.utils.maps;
+-->
 
-public class AddMapOperator<K> extends AbstractMapOperator<K, Number>
-{
-    @Override
-    protected Double applyToValues(Number a, Number b)
-    {
-        try {
-            return (Double) a + (Double) b;
-        } catch (ClassCastException ex) {
-            return null;
-        }
-    }
-}
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<!-- =========================================================== -->
+<!-- Jetty lifecycle listener that opens a browser when the      -->
+<!-- server is started.                                          -->
+<!-- =========================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+  <Call name="addLifeCycleListener">
+    <Arg>
+      <New class="org.phenotips.tools.jetty.listener.OpenBrowserListener" />
+    </Arg>
+  </Call>
+
+</Configure>

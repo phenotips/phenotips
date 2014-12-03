@@ -131,6 +131,10 @@
       element._name = geneNames[i];
       ++i;
     });
+    geneNames = geneNames.findAll(function(n){return n;});
+    if (geneNames.size() == 0) {
+      return;
+    }
     var queryString = '?outputSyntax=plain&amp;g=' + geneNames.join("&amp;g=");
     new Ajax.Request(new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get') + queryString,
        {
@@ -148,7 +152,7 @@
            geneRefs.each(function(element) {
              var data = response.responseJSON;
              var geneName = element._name;
-             var info = data.response[geneName] &amp;&amp; data.response[geneName].external_ids;
+             var info = data &amp;&amp; data.response[geneName] &amp;&amp; data.response[geneName].external_ids;
              if (info) {
 
                 var geneLinks = element.next('div.gene-links') || new Element('div', {'class' : 'gene-links'});
@@ -179,11 +183,6 @@
                             window.open(item.href);
                          })
                 });
-                element.observe('ms:suggest:selected', function(event) {
-                  if (event.memo &amp;&amp; event.memo.value) {
-                    fetchGeneDetails([element], [event.memo.value]);
-                  }
-                })
                 if (!element.__handleEmptyValue) {
                    element.__handleEmptyValue = true;
                    ['keyup', 'change', 'keypress'].each(function(eventName) {
@@ -541,7 +540,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === List of candidate genes ===
 
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'rejectToClass' : "RejectedGenesClass"})
 #end
 {{/velocity}}</content>
     </property>

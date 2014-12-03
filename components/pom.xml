@@ -60,5 +60,6 @@
     <module>medsavant-client</module>
     <module>integration</module>
     <module>diagnosis-suggestion</module>
+    <module>proxy-authentication</module>
   </modules>
 </project>

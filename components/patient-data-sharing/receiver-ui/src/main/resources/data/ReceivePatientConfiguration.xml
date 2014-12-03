@@ -73,6 +73,10 @@ $xwiki.ssx.use($displayDocumentName)##
   Allow pushes from servers not listed below: ##
 {{/html}}##
     #set ($targetObj = $doc.getObject($mainConfigurationClassname))
+    #if (!$targetObj)
+        #set ($targetObj = $doc.newObject($mainConfigurationClassname))
+        $doc.save('Added receive patient configuration', true)
+    #end
     $doc.display("AllowPushesFromNonListedServers", "edit", $targetObj)
     ##
 {{html clean="false"}}

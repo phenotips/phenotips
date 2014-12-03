@@ -3986,7 +3986,7 @@ document.observe("xwiki:dom:loaded", function() {
                                        .insert(elt('span', 'value').update(json.name))
                   );
 
-          var labels = {'alias_symbol' : 'Aliases', 'gene_family' : 'Gene family'};
+          var labels = {'alias_symbol' : 'Aliases', 'prev_symbol' : 'Previous symbols', 'gene_family' : 'Gene family'};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
@@ -4453,10 +4453,11 @@ div.suggestItems .hide-button-wrapper {
   border-bottom: 1px dotted;
 }
 div.suggestItems .hide-button {
+  color: $theme.linkColor;
   cursor: pointer;
   font-size: 0.8em;
   font-style: italic;
-  opacity: .4;
+  opacity: 1;
   padding: 0 0.5em;
   margin: 0 4px;
 }

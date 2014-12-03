@@ -53,9 +53,9 @@ public class AnnotationTerm extends Node
     {
         Ontology hpo = HPO.getInstance();
         StringBuilder str = new StringBuilder();
-        str.append(this.id).append(" ").append(this.name).append("\n");
+        str.append(this.id).append(' ').append(this.name).append('\n');
         for (String nodeId : this.getNeighbors()) {
-            str.append("            ").append(nodeId).append("\t").append(hpo.getName(nodeId)).append("\n");
+            str.append("            ").append(nodeId).append('\t').append(hpo.getName(nodeId)).append('\n');
         }
         return str.toString();
     }

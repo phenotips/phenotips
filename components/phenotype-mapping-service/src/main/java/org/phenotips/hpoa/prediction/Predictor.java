@@ -36,7 +36,7 @@ public interface Predictor
      * @param phenotypes A set of HPO ids
      * @return A list of {@link SearchResult}s which map OMIM ids to fitness scores, ordered descending by score.
      */
-    public List<SearchResult> getMatches(Collection<String> phenotypes);
+    List<SearchResult> getMatches(Collection<String> phenotypes);
 
     /**
      * Obtains a list of phenotypes that are likely to be useful in a differential diagnosis. These are basically
@@ -46,7 +46,7 @@ public interface Predictor
      * @param phenotypes A set of HPO ids
      * @return A list of {@link SearchResult}s which map HPO ids to fitness scores, ordered descending by score.
      */
-    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes);
+    List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes);
 
-    public void setAnnotation(HPOAnnotation annotation);
+    void setAnnotation(HPOAnnotation annotation);
 }

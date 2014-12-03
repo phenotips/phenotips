@@ -18,6 +18,7 @@ org.phenotips.data.internal.controller.PrenatalPhenotypeController
 org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.EthnicityController
 org.phenotips.data.internal.controller.GeneListController
+org.phenotips.data.internal.controller.RejectedGeneListController
 org.phenotips.data.internal.controller.ClinicalStatusController
 org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
