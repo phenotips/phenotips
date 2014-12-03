@@ -22,24 +22,27 @@ package org.phenotips.diagnosis;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.List;
 
 /**
+ * Service that suggests plausible diagnoses for a set of features.
+ *
  * @since 1.1M1
  * @version $Id$
  */
+@Unstable
 @Role
 public interface DiagnosisService
 {
     /**
-     * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
-     * in the format {@code <ontology prefix>:<term id>}, for example
-     *            {@code HP:0002066}
+     * Get a list of plausible diagnoses given a list of present phenotypes.
      *
-     * @param phenotypes A List of String phenotypes observed in the patient
-     * @param limit a number of phenotypes to return
-     * @return A list of suggested diagnosies
+     * @param phenotypes a list of phenotype term IDs observed in the patient; each phenotype is represented as a String
+     *            in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
+     * @param limit the maximum number of diagnoses to return; must be a positive number
+     * @return a list of suggested diagnoses
      */
     List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit);
 }

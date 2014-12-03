@@ -32,6 +32,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
+ * Service that suggests plausible diagnoses for a set of features.
+ *
+ * @see DiagnosisService
  * @since 1.1M1
  * @version $Id$
  */
@@ -41,19 +44,18 @@ import javax.inject.Singleton;
 public class DiagnosisScriptService implements ScriptService
 {
     @Inject
-    private DiagnosisService manager;
+    private DiagnosisService service;
 
     /**
-     * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
-     * in the format {@code <ontology prefix>:<term id>}, for example
-     * {@code HP:0002066}
+     * Get a list of plausible diagnoses given a list of present phenotypes.
      *
-     * @param phenotypes A List of String phenotypes observed in the patient
-     * @param limit a number of phenotypes to return
-     * @return A list of suggested diagnosies
+     * @param phenotypes a list of phenotype term IDs observed in the patient; each phenotype is represented as a String
+     *            in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
+     * @param limit the maximum number of diagnoses to return; must be a positive number
+     * @return a list of suggested diagnoses
      */
     public List<OntologyTerm> get(List<String> phenotypes, int limit)
     {
-        return this.manager.getDiagnosis(phenotypes, limit);
+        return this.service.getDiagnosis(phenotypes, limit);
     }
 }

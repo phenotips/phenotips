@@ -46,6 +46,7 @@ import javax.inject.Singleton;
 @Singleton
 public class BoqaInitializer implements EventListener
 {
+    @SuppressWarnings("unused")
     @Inject
     private DiagnosisService service;
 
