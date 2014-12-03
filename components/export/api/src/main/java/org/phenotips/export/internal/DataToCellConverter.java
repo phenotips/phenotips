@@ -255,6 +255,116 @@ public class DataToCellConverter
         return section;
     }
 
+    public void genesSetup(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "genes";
+        String[] fieldIds = { "genes", "genes_comments", "rejectedGenes", "rejectedGenes_comments" };
+        // FIXME These will not work properly in different configurations
+        String[][] headerIds =
+        { { "genes", "candidate" }, { "genes", "comments", "candidate" }, { "genes", "rejected" },
+            { "genes", "rejected_comments", "rejected" } };
+        Set<String> present = new HashSet<String>();
+
+        int counter = 0;
+        for (String fieldId : fieldIds) {
+            if (enabledFields.remove(fieldId)) {
+                for (String headerId : headerIds[counter]) {
+                    present.add(headerId);
+                }
+            }
+            counter++;
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+    }
+
+    public DataSection genesHeader() throws Exception
+    {
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataSection section = new DataSection(sectionName);
+
+        int hX = 0;
+        DataCell cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        cell = new DataCell("Gene Name", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        if (present.contains("comments") || present.contains("rejected_comments")) {
+            cell = new DataCell("Comments", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        DataCell sectionHeader = new DataCell("Genotype", 0, 0, StyleOption.HEADER);
+        sectionHeader.addStyle(StyleOption.LARGE_HEADER);
+        section.addCell(sectionHeader);
+
+        return section;
+    }
+
+    public DataSection genesBody(Patient patient) throws Exception
+    {
+        String sectionName = "genes";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+
+        DataSection section = new DataSection(sectionName);
+        int Y = 0;
+
+        if (present.contains("candidate")) {
+            PatientData<Map<String, String>> candidateGenes = patient.getData("genes");
+            if (candidateGenes != null && candidateGenes.isIndexed()) {
+                for (Map<String, String> candidateGene : candidateGenes) {
+                    DataCell cell = new DataCell("candidate", 0, Y);
+                    section.addCell(cell);
+
+                    String geneName = candidateGene.get("gene");
+                    cell = new DataCell(geneName, 1, Y);
+                    section.addCell(cell);
+
+                    if (present.contains("comments")) {
+                        String comment = candidateGene.get("comments");
+                        cell = new DataCell(comment, 2, Y);
+                        section.addCell(cell);
+                    }
+                    Y++;
+                }
+            }
+        }
+        if (present.contains("rejected")) {
+            PatientData<Map<String, String>> rejectedGenes = patient.getData("rejectedGenes");
+            if (rejectedGenes != null && rejectedGenes.isIndexed()) {
+                for (Map<String, String> rejectedGene : rejectedGenes) {
+                    DataCell cell = new DataCell("Previously tested", 0, Y);
+                    section.addCell(cell);
+
+                    String geneName = rejectedGene.get("gene");
+                    cell = new DataCell(geneName, 1, Y);
+                    section.addCell(cell);
+
+                    if (present.contains("rejected_comments")) {
+                        String comment = rejectedGene.get("comments");
+                        cell = new DataCell(comment, 2, Y);
+                        section.addCell(cell);
+                    }
+                    Y++;
+                }
+            }
+        }
+
+        return section;
+    }
+
     public DataSection idHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "id";
