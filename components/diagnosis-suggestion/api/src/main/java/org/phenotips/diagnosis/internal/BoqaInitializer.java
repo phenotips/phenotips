@@ -18,9 +18,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.phenotips.boqa.internal;
+package org.phenotips.diagnosis.internal;
 
-import org.phenotips.boqa.DiagnosisService;
+import org.phenotips.diagnosis.DiagnosisService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;

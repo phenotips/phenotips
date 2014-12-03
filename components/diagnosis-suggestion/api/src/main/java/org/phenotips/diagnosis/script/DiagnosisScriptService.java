@@ -17,30 +17,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.boqa;
+package org.phenotips.diagnosis.script;
 
+import org.phenotips.diagnosis.DiagnosisService;
 import org.phenotips.ontology.OntologyTerm;
 
-import org.xwiki.component.annotation.Role;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.script.service.ScriptService;
 
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @since 1.1M1
  * @version $Id$
  */
-@Role
-public interface DiagnosisService
+@Component
+@Named("diagnosis")
+@Singleton
+public class DiagnosisScriptService implements ScriptService
 {
+    @Inject
+    private DiagnosisService manager;
 
     /**
      * Get a list of suggest diagnosies given a list of present phenotypes. Each phenotype is represented as a String
      * in the format {@code <ontology prefix>:<term id>}, for example
-     *            {@code HP:0002066}
+     * {@code HP:0002066}
      *
      * @param phenotypes A List of String phenotypes observed in the patient
      * @param limit a number of phenotypes to return
      * @return A list of suggested diagnosies
      */
-    List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit);
+    public List<OntologyTerm> get(List<String> phenotypes, int limit) {
+        return this.manager.getDiagnosis(phenotypes, limit);
+    }
 }

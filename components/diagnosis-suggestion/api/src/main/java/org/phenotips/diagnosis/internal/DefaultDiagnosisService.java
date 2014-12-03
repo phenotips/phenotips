@@ -17,9 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.boqa.internal;
+package org.phenotips.diagnosis.internal;
 
-import org.phenotips.boqa.DiagnosisService;
+import org.phenotips.diagnosis.DiagnosisService;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
