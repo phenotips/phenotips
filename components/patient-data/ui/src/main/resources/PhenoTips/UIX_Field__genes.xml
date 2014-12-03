@@ -183,11 +183,6 @@
                             window.open(item.href);
                          })
                 });
-                element.observe('ms:suggest:selected', function(event) {
-                  if (event.memo &amp;&amp; event.memo.value) {
-                    fetchGeneDetails([element], [event.memo.value]);
-                  }
-                })
                 if (!element.__handleEmptyValue) {
                    element.__handleEmptyValue = true;
                    ['keyup', 'change', 'keypress'].each(function(eventName) {
