@@ -56,7 +56,7 @@ import sonumina.boqa.calculation.Observations;
 
 /**
  * An implementation of {@link DiagnosisService} using BOQA, see <a
- * href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>
+ * href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>.
  *
  * @since 1.1M1
  * @version $Id$
