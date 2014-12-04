@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,26 +16,28 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.phenotips.obo2solr;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>ontology-access</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Ontology Access</name>
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-  <modules>
-    <module>api</module>
-    <module>ui</module>
-    <module>hpo</module>
-    <module>omim</module>
-    <module>hgnc</module>
-    <module>chebi</module>
-    <module>ethnicity</module>
-  </modules>
-</project>
+public class SolrUpdateGenerator
+{
+    public void transform(File input, File output, Map<String, Double> fieldSelection)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<String, TermData> transform(String ontologyUrl, Map<String, Double> fieldSelection)
+    {
+        return new HashMap<String, TermData>();
+    }
+
+    public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
+    {
+        throw new UnsupportedOperationException();
+    }
+}

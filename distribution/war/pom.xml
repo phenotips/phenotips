@@ -548,6 +548,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-chebi-access-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>ontology-omim-access-api</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -40,8 +40,14 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ("$!{request.url}" != '')
-  #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
+#if ("$!{request.url}" != '' &amp;&amp; "$!{request.ontology}" != '')
+  #set($result = "")
+  #if("$!{request.ontology}" == 'hpo')
+    #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
+  #elseif ("$!{request.ontology}" == 'chebi')
+    #set($result = $services.ontologies.chebi.reindex("$!{request.url}"))
+  #end
+
   #if ("$!{request.ajax}" == '1')
     #if ($result == 0)
       Indexing succeeded.
@@ -66,7 +72,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
-&lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
+&lt;label for="ontology-url"&gt;Human Phenotype Ontology&lt;/label&gt;
 #set ($version = $services.ontologies.hpo.Version)
 &lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
 &lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
@@ -74,6 +80,23 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
+&lt;input type="hidden" name="ontology" value="hpo"&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;/form&gt;
+
+&lt;form class="xform solr-admin" action='' method="post"&gt;
+&lt;dl&gt;
+&lt;dt&gt;
+&lt;label for="ontology-url"&gt;Chemical Entities of Biological Interest Ontology&lt;/label&gt;
+#set ($version = $services.ontologies.chebi.Version)
+&lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
+&lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
+&lt;/dt&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.chebi.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;div&gt;
+&lt;input type="hidden" name="ontology" value="chebi"&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
