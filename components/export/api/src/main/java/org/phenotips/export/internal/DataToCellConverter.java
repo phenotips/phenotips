@@ -245,7 +245,7 @@ public class DataToCellConverter
         /* Creating empites */
         if (sortedFeatures.size() == 0) {
             Integer emptyX = 0;
-            for (String header : present) {
+            for (int i = 0; i < (present.size() - 1); i++) {
                 DataCell cell = new DataCell("", emptyX, 0);
                 section.addCell(cell);
                 emptyX++;
@@ -319,45 +319,43 @@ public class DataToCellConverter
         }
 
         DataSection section = new DataSection(sectionName);
-        int Y = 0;
+        int y = 0;
 
         if (present.contains("candidate")) {
             PatientData<Map<String, String>> candidateGenes = patient.getData("genes");
             if (candidateGenes != null && candidateGenes.isIndexed()) {
+                DataCell cell = new DataCell("Candidate", 0, y);
+                section.addCell(cell);
                 for (Map<String, String> candidateGene : candidateGenes) {
-                    DataCell cell = new DataCell("candidate", 0, Y);
-                    section.addCell(cell);
-
                     String geneName = candidateGene.get("gene");
-                    cell = new DataCell(geneName, 1, Y);
+                    cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
 
                     if (present.contains("comments")) {
                         String comment = candidateGene.get("comments");
-                        cell = new DataCell(comment, 2, Y);
+                        cell = new DataCell(comment, 2, y);
                         section.addCell(cell);
                     }
-                    Y++;
+                    y++;
                 }
             }
         }
         if (present.contains("rejected")) {
             PatientData<Map<String, String>> rejectedGenes = patient.getData("rejectedGenes");
             if (rejectedGenes != null && rejectedGenes.isIndexed()) {
+                DataCell cell = new DataCell("Previously tested", 0, y, StyleOption.YES_NO_SEPARATOR);
+                section.addCell(cell);
                 for (Map<String, String> rejectedGene : rejectedGenes) {
-                    DataCell cell = new DataCell("Previously tested", 0, Y);
-                    section.addCell(cell);
-
                     String geneName = rejectedGene.get("gene");
-                    cell = new DataCell(geneName, 1, Y);
+                    cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
 
                     if (present.contains("rejected_comments")) {
                         String comment = rejectedGene.get("comments");
-                        cell = new DataCell(comment, 2, Y);
+                        cell = new DataCell(comment, 2, y);
                         section.addCell(cell);
                     }
-                    Y++;
+                    y++;
                 }
             }
         }
