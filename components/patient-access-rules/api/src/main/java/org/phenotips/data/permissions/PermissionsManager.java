@@ -22,6 +22,7 @@ package org.phenotips.data.permissions;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 
@@ -29,6 +30,7 @@ import java.util.Collection;
  * @version $Id$
  * @since 1.0M9
  */
+@Unstable
 @Role
 public interface PermissionsManager
 {

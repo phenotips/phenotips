@@ -24,11 +24,13 @@ import org.phenotips.Constants;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 1.0M9
  */
+@Unstable
 @Role
 public interface Visibility extends Comparable<Visibility>
 {
