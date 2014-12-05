@@ -366,6 +366,12 @@
               <differenceType>8001</differenceType>
               <className>**/hpoa/utils/maps/*MapOperator</className>
             </difference>
+            <!-- New method in interface to facilitate patient comparisons -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/permissions/Visibility</className>
+              <method>int getPermissiveness()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
