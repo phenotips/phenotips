@@ -43,6 +43,15 @@ public interface Visibility extends Comparable<Visibility>
 
     String getDescription();
 
+    /**
+     * The level of access this visibility grants to non-collaborators; lower values mean more restrictions, higher
+     * values mean more permissions. Should be a number between 0 (no access) and 100 (full access). If a visibility
+     * {@code V80} has a higher permissiveness than another visibility {@code V60}, then it must grant all the access
+     * that {@code V60} grants, plus some more, thus the visibility options are strictly comparable.
+     *
+     * @return a number between {@code 0} and {@code 100}
+     * @since 1.1M1
+     */
     int getPermissiveness();
 
     AccessLevel getDefaultAccessLevel();

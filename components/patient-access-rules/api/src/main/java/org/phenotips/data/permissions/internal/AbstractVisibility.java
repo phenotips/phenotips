@@ -38,10 +38,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractVisibility implements Visibility
 {
-    /**
-     * The level of permission this level grants to non-collaborators; lower values mean more restrictions, higher
-     * values mean more permissions. Should be a number between 0 (no access) and 100 (full access).
-     */
+    /** @see #getPermissiveness() */
     private int permissiveness;
 
     @Inject
