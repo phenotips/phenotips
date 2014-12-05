@@ -23,6 +23,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.ontology.SolrCoreContainerHandler;
 
 import org.xwiki.component.annotation.Component;
@@ -73,6 +74,9 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Inject
     private PatientRepository patientRepository;
 
+    @Inject
+    private PermissionsManager permissions;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -93,6 +97,8 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
         }
+        input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
+        input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
         try {
             this.server.add(input);
         } catch (SolrServerException ex) {

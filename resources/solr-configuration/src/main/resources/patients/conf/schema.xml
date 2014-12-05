@@ -49,6 +49,8 @@
       </analyzer>
     </fieldType>
 
+    <fieldType name="int" class="solr.TrieIntField"  precisionStep="0" positionIncrementGap="0" />
+
     <!-- Since fields of this type are by default not stored or indexed,
          any data added to them will be ignored outright.  -->
     <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
@@ -57,6 +59,8 @@
   <fields>
     <field name="document" type="string" indexed="true" stored="true" required="true" />
     <field name="reporter" type="string" indexed="false" stored="true" required="true" />
+    <field name="visibility" type="string" indexed="true" stored="true" required="false" />
+    <field name="accessLevel" type="int" indexed="true" stored="true" required="false" />
 
     <!-- Index all fields ending in "phenotype", only store those that start with "actual_" -->
     <dynamicField name="actual_*" type="text_ws" indexed="true" stored="true" multiValued="true"/>
