@@ -41,5 +41,7 @@ public interface Visibility extends Comparable<Visibility>
 
     String getDescription();
 
+    int getPermissiveness();
+
     AccessLevel getDefaultAccessLevel();
 }

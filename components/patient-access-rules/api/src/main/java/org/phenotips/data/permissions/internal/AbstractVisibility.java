@@ -124,4 +124,10 @@ public abstract class AbstractVisibility implements Visibility
     {
         return getName();
     }
+
+    @Override
+    public int getPermissiveness()
+    {
+        return this.permissiveness;
+    }
 }
