@@ -44,7 +44,7 @@
   #set($result = "")
   #if("$!{request.ontology}" == 'hpo' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
     #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
-  #elseif ("$!{request.ontology}" == 'chebi')
+  #elseif ("$!{request.ontology}" == 'chebi' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
     #set($result = $services.ontologies.chebi.reindex("$!{request.url}"))
   #end
 
@@ -81,7 +81,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="hpo"/&gt;
-&lt; type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
+&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
@@ -98,6 +98,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="chebi"/&gt;
+&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
