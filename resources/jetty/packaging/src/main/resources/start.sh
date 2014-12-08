@@ -101,6 +101,9 @@ START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 # Optional: enable remote debugging
 # START_OPTS="$START_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 
+# Temporary: sets the parent cache directory for ontologizer
+export APPDATA="/tmp"
+
 # In order to avoid getting a "java.lang.IllegalStateException: Form too large" error
 # when editing large page in XWiki we need to tell Jetty to allow for large content
 # since by default it only allows for 20K. We do this by passing the
