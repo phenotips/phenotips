@@ -45,7 +45,7 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>sonumina</groupId>
+      <groupId>de.charite.compbio</groupId>
       <artifactId>boqa</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
