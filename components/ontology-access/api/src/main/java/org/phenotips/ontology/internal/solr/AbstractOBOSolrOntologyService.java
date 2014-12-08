@@ -63,7 +63,7 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
     {
         OntologyTerm result = super.getTerm(id);
         if (result == null) {
-            Map<String, String> queryParameters = new HashMap<String, String>();
+            Map<String, String> queryParameters = new HashMap<>();
             queryParameters.put(ALTERNATIVE_ID_FIELD_NAME, id);
             Set<OntologyTerm> results = search(queryParameters);
             if (results != null && !results.isEmpty()) {
