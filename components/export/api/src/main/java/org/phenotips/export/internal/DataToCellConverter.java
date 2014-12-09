@@ -286,7 +286,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
 
         int hX = 0;
         DataCell cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
@@ -318,7 +318,7 @@ public class DataToCellConverter
             return null;
         }
 
-        DataSection section = new DataSection(sectionName);
+        DataSection section = new DataSection();
         int y = 0;
 
         if (present.contains("candidate")) {
