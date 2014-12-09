@@ -133,7 +133,11 @@
        'referrer' : "Referrer (report creator)",
        'creationDate' : "Report creation date",
        'author' : "Last modified by",
-       'date' : "Last modification date"
+       'date' : "Last modification date",
+       'genes': "Candidate genes list.",
+       'genes_comments': "Candidate genes list with comments",
+       'rejectedGenes': "Previously investigated genes.",
+       'rejectedGenes_comments': "Previously investigated genes with comments."
   })
   #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
   #set($metaFields = ['phenotype'])
