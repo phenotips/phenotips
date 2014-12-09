@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -172,14 +171,13 @@ public class R54690PhenoTips1195DataMigration extends AbstractHibernateDataMigra
             boolean modified = false;
             String value = property.getValue();
 
-            for (Map.Entry<String, String> translation : this.translations.entrySet()) {
-                if (StringUtils.equals(value, translation.getKey())) {
-                    R54690PhenoTips1195DataMigration.this.logger.debug(
-                        "Replacing {} with {}", translation.getKey(), translation.getValue());
-                    property.setValue(translation.getValue());
-                    modified = true;
-                }
+            if (this.translations.containsKey(value)) {
+                R54690PhenoTips1195DataMigration.this.logger.debug(
+                    "Replacing {} with {}", value, this.translations.get(value));
+                property.setValue(this.translations.get(value));
+                modified = true;
             }
+
             return modified;
         }
     }
