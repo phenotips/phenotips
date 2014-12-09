@@ -127,7 +127,9 @@ var Partnership = Class.create(AbstractNode, {
             childlessInactive = true;
             childlessTextInactive = true;
         } else {
-            childlessInactive = ['none'];
+            if (editor.getGraph().hasNoNonPlaceholderChildren(this.getID())) {
+                childlessInactive = ['none'];
+            }
         }
         return {
             identifier:    {value : this.getID()},

@@ -969,7 +969,21 @@ NodeMenu = Class.create({
             this._toggleFieldVisibility(container, inactive);
         },
         'select' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            if (inactive === true) {
+                container.addClassName('hidden');
+            } else {
+                container.removeClassName('hidden');
+                container.select('option').each(function(item) {
+                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]') {
+                        if (inactive.indexOf(item.value) >= 0)
+                            item.addClassName('hidden');
+                        else
+                            item.removeClassName('hidden');
+                    } else if (!inactive) {
+                        item.removeClassName('hidden');
+                    }
+                });
+            }
         },
         'hidden' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
