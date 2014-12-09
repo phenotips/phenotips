@@ -31,7 +31,7 @@
   <name>PhenoTips - Data export - Spreadsheet Export APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.2</coverage.instructionRatio>
+    <coverage.instructionRatio>0.24</coverage.instructionRatio>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
 
