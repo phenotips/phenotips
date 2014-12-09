@@ -50,7 +50,6 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         return "http://purl.obolibrary.org/obo/hp.obo";
     }
 
-    /** The number of documents to be added and committed to Solr at a time. */
     @Override
     protected int getSolrDocsPerBatch()
     {
