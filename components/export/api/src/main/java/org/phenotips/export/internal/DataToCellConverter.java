@@ -245,7 +245,7 @@ public class DataToCellConverter
         /* Creating empites */
         if (sortedFeatures.size() == 0) {
             Integer emptyX = 0;
-            for (int i = 0; i < (present.size() - 1); i++) {
+            for (String header : present) {
                 DataCell cell = new DataCell("", emptyX, 0);
                 section.addCell(cell);
                 emptyX++;
