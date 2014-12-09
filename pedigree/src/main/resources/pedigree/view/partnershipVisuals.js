@@ -143,7 +143,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         if (nodeConsangrPreference == "Y")
             consangr = true;
             
-        var lineAttr = consangr ? PedigreeEditor.attributes.consangrPartnershipLines : PedigreeEditor.attributes.partnershipLines;
+        var lineAttr          = consangr ? PedigreeEditor.attributes.consangrPartnershipLines : PedigreeEditor.attributes.partnershipLines;
+        var lineAttrNoContact = consangr ? PedigreeEditor.attributes.noContactLinesConsangr   : PedigreeEditor.attributes.noContactLines;
         
         var partnerPaths = positionedGraph.getPathToParents(id);  // partnerPaths = [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
         
@@ -276,23 +277,20 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 vertical = newVertical;
                 wasAngle = angled;
             }
-            
-            if (yFrom >= finalPosition.y + cornerRadius*2) {
-                editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
-            }
-            else {
-                // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
-                // It may be a line if all y are the same, a line with one bend or a line with two bends
-                editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
-            }
 
             var lostContact = !editor.getView().getNode(person).isProband() &&
                               editor.getView().getNode(person).getLostContact() &&
                               editor.getGraph().isPartnershipRelatedToProband(id);
-            if (lostContact) {
-                var xCross = goesLeft ? this.getX() - 20 : this.getX() + 20;
-                var lineSize = PedigreeEditor.attributes.notInContactLineSize;
-                editor.getPaper().path("M " + (xCross) + " " + (this.getY() - lineSize) + " L " + (xCross) + " " + (this.getY() + lineSize)).attr(PedigreeEditor.attributes.noContactLines).toBack();
+
+            var thisLineAttr = lostContact ? lineAttrNoContact : lineAttr;
+
+            if (yFrom >= finalPosition.y + cornerRadius*2) {
+                editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, thisLineAttr, consangr, false);
+            }
+            else {
+                // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
+                // It may be a line if all y are the same, a line with one bend or a line with two bends
+                editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, thisLineAttr, consangr, goesLeft );
             }
         }
         
@@ -342,6 +340,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
         var numPregnancies = 0;
 
+        var allChildrenLostContact = true;
+
         for ( var j = 0; j < children.length; j++ ) {
             var child  = children[j];
             
@@ -387,10 +387,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (topLineX < leftmostX)
                 leftmostX = topLineX;
 
-            var lineAttr = PedigreeEditor.attributes.partnershipLines;
-            if (editor.getGraph().isAdoptedIn(child)) {
-                lineAttr = PedigreeEditor.attributes.partnershipLinesAdoptedIn;
+            var lostContact = editor.getGraph().isChildOfProband(child) && editor.getView().getNode(child).getLostContact();
+
+            if (!lostContact) {
+                allChildrenLostContact = false;
             }
+
+            var lineAttr = lostContact ? PedigreeEditor.attributes.noContactLines : PedigreeEditor.attributes.partnershipLines;
+            if (editor.getGraph().isAdoptedIn(child)) {
+                lineAttr = lostContact ? PedigreeEditor.attributes.noContactAdoptedIn : PedigreeEditor.attributes.partnershipLinesAdoptedIn;
+            }
+
             // draw regular child line - for all nodes which are not monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
             if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
@@ -400,20 +407,13 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
                 editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, lineAttr);
             }
-
-            var lostContact = editor.getGraph().isChildOfProband(child) && editor.getView().getNode(child).getLostContact();
-            if (lostContact) {
-                if (twinGroupId == null) {
-                    var lineSize = PedigreeEditor.attributes.notInContactLineSize;
-                    editor.getPaper().path("M " + (topLineX - lineSize) + " " + (topLineY + 20) + " L " + (topLineX + lineSize) + " " + (topLineY + 20)).attr(PedigreeEditor.attributes.noContactLines).toBack();
-                } else {
-                }
-            }
         }
 
-        editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, PedigreeEditor.attributes.partnershipLines);        
-        editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, PedigreeEditor.attributes.partnershipLines);
-        
+        var lineAttr = allChildrenLostContact ? PedigreeEditor.attributes.noContactLines : PedigreeEditor.attributes.partnershipLines;
+
+        editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, lineAttr);
+        editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, lineAttr);
+
         //draw small non-functional childhub junction orb
         if (numPregnancies > 1)
             editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#666666', stroke: '#888888', 'stroke-width':1, 'opacity': 1});
