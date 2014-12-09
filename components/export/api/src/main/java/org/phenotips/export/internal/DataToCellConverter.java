@@ -242,10 +242,12 @@ public class DataToCellConverter
             }
             y++;
         }
-        /* Creating empites */
+        /* Creating empties */
         if (sortedFeatures.size() == 0) {
+            // offset is included to account for the presence of both "positive" and "negative" in "present"
+            int offset = bothTypes ? 1 : 0;
             Integer emptyX = 0;
-            for (String header : present) {
+            for (int i = 0; i < present.size() - offset; i++) {
                 DataCell cell = new DataCell("", emptyX, 0);
                 section.addCell(cell);
                 emptyX++;
