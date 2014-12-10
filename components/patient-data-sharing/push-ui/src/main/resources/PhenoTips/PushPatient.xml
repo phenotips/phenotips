@@ -1268,8 +1268,8 @@
                     }
                 });
 
-                // 2) get the list of filtered patients from the Export page
-                var url = "$xwiki.getURL('PhenoTips.Export', 'get')?list=true&amp;" + form.serialize();
+                // 2) get the list of filtered patients from the ExportFilter page
+                var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?list=true&amp;" + form.serialize();
                 var ajx = new Ajax.Request(url, {
                     method: 'get',
                     onSuccess: function(response) {
