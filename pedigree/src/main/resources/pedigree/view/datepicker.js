@@ -35,7 +35,9 @@ var PhenoTips = (function (PhenoTips) {
       this.dropdown.enable();
       if (this.dropdown.selectedIndex <= 0 && this._tmpSelectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = this._tmpSelectedIndex;
+        return (this._tmpSelectedIndex > 0);
       }
+      return false;
     },
 
     disable : function () {
@@ -131,7 +133,9 @@ var PhenoTips = (function (PhenoTips) {
 
     yearSelected : function() {
       if (this.yearSelector.getSelectedValue() > 0) {
-        this.monthSelector.enable();
+        if (this.monthSelector.enable()) {
+            this.monthSelected();
+        }
       } else {
         this.monthSelector.disable();
         this.daySelector.disable();

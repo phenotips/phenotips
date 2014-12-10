@@ -25,8 +25,14 @@ function getAge(birthDate, deathDate)
 
     var age = now.getTime() - birthDate.getTime();
 
-    if (age < 0) {
-        return "not born yet"
+    if (age <= 0) {
+        if (deathDate == null) {
+            if (age < 0) {
+                return "not born yet"
+            }
+        } else {
+            return "";
+        }
     }
 
     var years = (new Date(now.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear()

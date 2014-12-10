@@ -319,13 +319,16 @@ var Controller = Class.create({
                 }
 
                 if (propertySetFunction == "setComments"  || propertySetFunction == "setExternalID" ||
-                    propertySetFunction == "setFirstName" || propertySetFunction == "setLastName" ||
-                    propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
+                    propertySetFunction == "setFirstName" || propertySetFunction == "setLastName") {
                     // all the methods which may result in addition ort deletion of person labels
                     // (which may cause a shift up or down)
                     if (numTextLines(oldValue) != numTextLines(propValue)) {
                         needUpdateYPositions = true;
                     }
+                }
+                if (propertySetFunction == "setBirthDate" || propertySetFunction == "setDeathDate") {
+                    // the number of lines may vary depending on age etc., it is easier to just recompute it
+                    needUpdateYPositions = true;
                 }
 
                 if (propertySetFunction == "setMonozygotic") {

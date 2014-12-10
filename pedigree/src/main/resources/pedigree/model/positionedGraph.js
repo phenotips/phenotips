@@ -2902,8 +2902,21 @@ PositionedGraph.prototype = {
                     // count number of new lines
                     numLabelLines += ((comments.match(/\n/g) || []).length + 1);
                 }
-                if (this.GG.properties[person].hasOwnProperty("dob") || this.GG.properties[person].hasOwnProperty("dod")) {
+                var dob = this.GG.properties[person].hasOwnProperty("dob") ? new PedigreeDate(this.GG.properties[person].dob) : null;
+                var dod = this.GG.properties[person].hasOwnProperty("dod") ? new PedigreeDate(this.GG.properties[person].dod) : null;
+                if (dob !== null && dob.isComplete()) {
                     numLabelLines++;
+                }
+                if (dod !== null && dod.isComplete()) {
+                    numLabelLines++;
+                }
+                // if both DOB and DOD is goven 2 lines are assumed. However this only happens
+                // when age is in years (and thus is displayed as e.g. "45 y")
+                if (dob !== null && dob.isComplete() && dod !== null && dod.isComplete()) {
+                    var age = getAge(dob, dod);
+                    if (age.length < 2 || age.indexOf(" y") < 0) {
+                        numLabelLines--;
+                    }
                 }
                 if (this.GG.properties[person].hasOwnProperty("lName") || this.GG.properties[person].hasOwnProperty("fName")) {
                     numLabelLines++;

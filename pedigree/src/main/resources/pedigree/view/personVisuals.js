@@ -341,6 +341,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     updateAgeLabel: function() {
         var text,
             person = this.getNode();
+        var multiLine = false;
         if (person.isFetus()) {
             var date = person.getGestationAge();
             text = (date) ? date + " weeks" : null;
@@ -377,6 +378,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     text = "d. " + person.getDeathDate().getYear(true) + " (" + age + ")";
                 } else {
                     text = person.getBirthDate().getBestPrecisionStringYear() + " – " + person.getDeathDate().getBestPrecisionStringYear();
+                    if (age !== "") {
+                        text += "\n" + age;
+                        multiLine = true;
+                    }
                 }
             }
             else if (person.getDeathDate()) {
@@ -388,6 +393,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         this.getAgeLabel() && this.getAgeLabel().remove();
         this._ageLabel = text ? editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.label) : null;
+        if (this._ageLabel && multiLine) {
+            this._ageLabel.alignTop = true;
+        }
         this.drawLabels();
     },
 
@@ -670,7 +678,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            var shift = (labels[i].addGap && i != 0) ? 3 : 7;   // make a small gap between comments and other fields
+            var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
             var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
             labels[i].transform(""); // clear all transofrms, using new real x
             labels[i].attr("x", this.getX());
