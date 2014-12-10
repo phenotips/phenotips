@@ -27,6 +27,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.model.reference.DocumentReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -358,7 +359,7 @@ public class DataToCellConverter
         DataSection bodySection = new DataSection(sectionName);
         Integer x = 0;
         if (present.contains("referrer")) {
-            String creator = patientDoc.getCreatorReference().getName();
+            String creator = getUsername(patientDoc.getCreatorReference());
             DataCell cell = new DataCell(creator, x, 0);
             bodySection.addCell(cell);
             x++;
@@ -371,7 +372,7 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("author")) {
-            String lastModifiedBy = patientDoc.getAuthorReference().getName();
+            String lastModifiedBy = getUsername(patientDoc.getAuthorReference());
             DataCell cell = new DataCell(lastModifiedBy, x, 0);
             bodySection.addCell(cell);
             x++;
@@ -1081,5 +1082,13 @@ public class DataToCellConverter
         }
 
         return bodySection;
+    }
+
+    private String getUsername(DocumentReference reference)
+    {
+        if (reference == null) {
+            return "Unknown user";
+        }
+        return reference.getName();
     }
 }
