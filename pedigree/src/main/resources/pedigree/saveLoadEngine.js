@@ -64,7 +64,7 @@ var ProbandDataLoader = Class.create( {
         this.probandData.gender    = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "gender", "value"));
         try {
           this.probandData.birthDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_birth", "value"));
-          this.probandData.deathDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_death", "value"));
+          this.probandData.deathDate = null;
         } catch (err) {
         }
         if (this.probandData.gender === undefined || this.probandData.gender == '')
