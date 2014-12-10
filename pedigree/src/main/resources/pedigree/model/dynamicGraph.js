@@ -380,6 +380,28 @@ DynamicPositionedGraph.prototype = {
         return false;
     },
 
+    hasNoNonPlaceholderChildren: function( v )
+    {
+        var children = [];
+        if (this.isRelationship(v)) {
+            children = this.getRelationshipChildrenSortedByOrder(v);
+        }
+        else if (this.isPerson(v)) {
+            children = this.getAllChildren(v);
+        }
+
+        //console.log("Childtren: " + children);
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (!this.isPlaceholder(child)) {
+                //console.log("child: " + child + ", isAdopted: " + this.isAdopted(child));
+                return false;
+            }
+        }
+
+        return true;
+    },
+
     getParentRelationship: function( v )
     {
         if (!this.isPerson(v))
