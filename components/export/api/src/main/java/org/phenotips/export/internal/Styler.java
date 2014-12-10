@@ -75,7 +75,9 @@ public class Styler
 
         for (int x = 0; x <= section.getMaxX(); x++) {
             DataCell cell = cellMatrix[x][0];
-            cell.removeStyles(disallowedStyles);
+            if (cell != null) {
+                cell.removeStyles(disallowedStyles);
+            }
         }
     }
 
