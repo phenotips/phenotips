@@ -195,7 +195,7 @@ var Workspace = Class.create({
             });
         };
         var _createMenuItem = function(data) {
-            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'menu-item ' + data.key}).insert(new Element('span', {'class' : 'fa fa-' + data.icon})).insert(' ').insert(data.label);
+            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(new Element('span', {'class' : 'fa fa-' + data.icon})).insert(' ').insert(data.label);
             if (data.callback && typeof(this[data.callback]) == 'function') {
                 mi.observe('click', function() {
                     this[data.callback]();

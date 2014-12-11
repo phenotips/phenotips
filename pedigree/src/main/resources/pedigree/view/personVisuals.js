@@ -177,6 +177,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {
             this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.nameLabels);
+            this._nameLabel.node.setAttribute("class", "field-no-user-select");
         }
         else {
             this._nameLabel = null;
@@ -393,8 +394,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         this.getAgeLabel() && this.getAgeLabel().remove();
         this._ageLabel = text ? editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.label) : null;
-        if (this._ageLabel && multiLine) {
-            this._ageLabel.alignTop = true;
+        if (this._ageLabel) {
+            this._ageLabel.node.setAttribute("class", "field-no-user-select");
+            if (multiLine) {
+                this._ageLabel.alignTop = true;
+            }
         }
         this.drawLabels();
     },
@@ -567,6 +571,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             //       also, blank lines are ignored unless replaced with a space
             var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
             this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.commentLabel);
+            this._commentsLabel.node.setAttribute("class", "field-no-user-select");
             this._commentsLabel.alignTop = true;
             this._commentsLabel.addGap   = true;
         } else {

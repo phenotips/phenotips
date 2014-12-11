@@ -198,11 +198,19 @@ var SaveLoadEngine = Class.create( {
             method: 'POST',
             onCreate: function() {
                 me._saveInProgress = true;
+                var closeButton = $('action-close');
+                Element.addClassName(closeButton, "disabled-menu-item");
+                Element.removeClassName(closeButton, "menu-item");
+                Element.addClassName(closeButton, "no-mouse-interaction");
             },
             onComplete: function() {
                 me._saveInProgress = false;
                 var actionAfterSave = editor.getAfterSaveAction();
                 actionAfterSave && actionAfterSave();
+                var closeButton = $('action-close');
+                Element.addClassName(closeButton, "menu-item");
+                Element.removeClassName(closeButton, "disabled-menu-item");
+                Element.removeClassName(closeButton, "no-mouse-interaction");
             },
             onSuccess: function() { editor.getActionStack().addSaveEvent();
                                     savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));
