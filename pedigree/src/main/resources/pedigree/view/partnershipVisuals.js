@@ -19,14 +19,14 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
         if (editor.isReadOnlyMode()) {
             this._hoverBox = new ReadOnlyHoverbox(partnership, x, y, this.getShapes());
-        } else {        
+        } else {
             this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
         }
         this.updateIDLabel();
-        
+
         this._childhubConnection = null;
         this._partnerConnections = null;
-        
+
         this.updatePartnerConnections();
         this.updateChildhubConnection();
         //console.log("partnership visuals end");
@@ -38,17 +38,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this._idLabel && this._idLabel.remove();
         this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
     },
-    
+
     /**
      * Updates whatever needs to change when node id changes (e.g. id label) 
      *
      * @method onSetID
-     */    
+     */
     onSetID: function($super, id) {
         $super(id);
         this.updateIDLabel();
     },
-    
+
     /**
      * Expands the partnership circle
      *
@@ -59,14 +59,14 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.area = this.getJunctionShape().clone().flatten().insertBefore(this.getJunctionShape().flatten());
         this.area.attr({'fill': 'green', stroke: 'none'});
         this.area.ot = this.area.transform();
-        this.area.animate(Raphael.animation({transform : "...S2"}, 400, 'bounce'));
+        this.area.attr({transform : "...S2"});
     },
-    
+
     /**
      * Shrinks node graphics to the original size
      *
      * @method shrink
-     */    
+     */
     shrink: function() {
         this.area && this.area.remove();
         delete this.area;
@@ -82,17 +82,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         if (this.mark) return;
         this.mark = this.getJunctionShape().glow({width: 10, fill: true, opacity: 0.3, color: "blue"}).insertBefore(this.getJunctionShape().flatten());
     },
-    
+
     /**
      * Unmarks the node
      *
      * @method unmark
-     */    
+     */
     unmarkPregnancy: function() {
         this.mark && this.mark.remove();
         delete this.mark;
     },
-    
+
     markPermanently: function() {
         if (this.mark2) return;
         this.mark2 = this.getJunctionShape().glow({width: 18, fill: true, opacity: 0.4, color: "#ee8d00"}).insertBefore(this.getJunctionShape().flatten());
@@ -101,7 +101,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.mark2 && this.mark2.remove();
         delete this.mark2;
     },
-    
+
     /**
      * Returns the circle that joins connections
      *
@@ -111,17 +111,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     getJunctionShape: function() {
         return this._junctionShape;
     },
-    
+
     /**
      * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
      *
      * @method getY
      * @return {Number} The y coordinate
-     */      
+     */
     getBottomY: function() {
         return this._absoluteY + PedigreeEditor.attributes.partnershipRadius + PedigreeEditor.attributes.parnershipChildlessLength;
-    },    
-        
+    },
+
     /**
      * Updates the path of all connections to all partners
      *
@@ -129,27 +129,27 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     updatePartnerConnections: function() {
         this._partnerConnections && this._partnerConnections.remove();
-        
+
         editor.getPaper().setStart();
-        
+
         var positionedGraph = editor.getGraph();
-        
+
         var id = this.getNode().getID();
-        
+
         var consangr = positionedGraph.isConsangrRelationship(id);
         var nodeConsangrPreference = this.getNode().getConsanguinity();
         if (nodeConsangrPreference == "N")
             consangr = false;
         if (nodeConsangrPreference == "Y")
             consangr = true;
-            
+
         var lineAttr          = consangr ? PedigreeEditor.attributes.consangrPartnershipLines : PedigreeEditor.attributes.partnershipLines;
         var lineAttrNoContact = consangr ? PedigreeEditor.attributes.noContactLinesConsangr   : PedigreeEditor.attributes.noContactLines;
-        
+
         var partnerPaths = positionedGraph.getPathToParents(id);  // partnerPaths = [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
-        
+
         // TODO: a better curve algo for the entire curve at once?
-        var smoothCorners = true;                                   
+        var smoothCorners = true;
         var cornerRadius  = PedigreeEditor.attributes.curvedLinesCornerRadius;
 
         for (var p = 0; p < partnerPaths.length; p++) {
@@ -190,23 +190,23 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
                 var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
                 //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + stringifyObject(nodePos) + ", position: " + stringifyObject(position) );
-                                
+
                 if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions
                     goesLeft = true;
                 else if (position.x > xFrom)
                     goesLeft = false;
-                                                                                                         
-                var newVertical = (prevY != position.y);                    
-                                
+
+                var newVertical = (prevY != position.y);
+
                 var angled = (prevX != position.x && prevY != position.y);
-                                
+
                 var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;
 
                 if (i == path.length-1 && prevY == yTop) {
                     angled = false;
                     changesDirection = (xFrom != xTo || yFrom != yTo);
                     newVertical = false;
-                }                
+                }
 
                 // if necessary, mark first segment on the left as broken
                 if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
@@ -214,29 +214,29 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     editor.getPaper().path("M " + (xFrom-29) + " " + (yFrom+9) + " L " + (xFrom-15) + " " + (yFrom-9)).attr(lineAttr).toBack();
                     editor.getPaper().path("M " + (xFrom-24) + " " + (yFrom+9) + " L " + (xFrom-10) + " " + (yFrom-9)).attr(lineAttr).toBack();
                     xFrom -= 23;
-                }                
-                
+                }
+
                 //console.log("angled: " + angled + ", changes: " + changesDirection);
-                        
+
                 if (changesDirection) {  // finish drawing the current segment
                     editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, goesLeft);
                     xFrom = xTo;
                     yFrom = yTo;
                 }
-                                
+
                 xTo      = position.x;
                 yTo      = (i >= path.length - 2) ? yTop : position.y;
-                prevY    = position.y;                
+                prevY    = position.y;
                 prevX    = position.x;
-                                                
+
                 //------------------
                 // note: assume that we always draw bottom to top, as relationship nodes are always at or below partner level                
-                
+
                 if (smoothCorners && ( (!wasAngle && !angled) || (i >= path.length - 2 && path.length > 1)) ) {
                     //console.log("corner from " + xFrom + "," + yFrom + ", newVert: " + newVertical );
                     if (newVertical && !vertical) {
                         // was horizontal, now vertical - draw the smooth corner Horiz->Vert (curve bends down)
-                        if (xTo < xFrom) {                            
+                        if (xTo < xFrom) {
                             drawCornerCurve( xFrom, yFrom, xFrom - cornerRadius, yFrom - cornerRadius, true, lineAttr, consangr, +2.5, -2.5, -2.5, +2.5 );
                             xFrom -= cornerRadius;
                             yFrom -= cornerRadius;
@@ -256,10 +256,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                         else {
                             drawCornerCurve( xFrom, yFrom, xFrom + cornerRadius, yFrom - cornerRadius, false, lineAttr, consangr, 2.5, 2.5, -2.5, -2.5 );
                             xFrom += cornerRadius;
-                            yFrom -= cornerRadius;                            
-                        }                        
-                    } else if (!newVertical)                    
-                    {   
+                            yFrom -= cornerRadius;
+                        }
+                    } else if (!newVertical)
+                    {
                         // horizontal: stop the line a bit earlier so that we can draw a smooth corner
                         if (i != path.length-1) {
                             if (position.x > xFrom)
@@ -273,7 +273,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     }
                 }
                 //------------------
-                                
+
                 vertical = newVertical;
                 wasAngle = angled;
             }
@@ -293,7 +293,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, thisLineAttr, consangr, goesLeft );
             }
         }
-        
+
         this._partnerConnections = editor.getPaper().setFinish().toBack(); 
         if (this.getNode().getGraphics()) {
             this.getHoverBox().regenerateHandles();
@@ -344,14 +344,14 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
         for ( var j = 0; j < children.length; j++ ) {
             var child  = children[j];
-            
+
             var twinGroupId = positionedGraph.getTwinGroupId(child);
-            
+
             if (twinGroupId != currentTwinGroup) {
                 numPregnancies++;
-                
+
                 currentTwinGroup = twinGroupId;
-                
+
                 var allTwins  = positionedGraph.getAllTwinsSortedByOrder(child);
                 var positionL = editor.getView().getNode(allTwins[0]).getX();
                 var positionR = editor.getView().getNode(allTwins[allTwins.length-1]).getX();
@@ -360,9 +360,9 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 if (allTwins.length == 3)
                     currentTwinGroupCenterX = editor.getView().getNode(allTwins[1]).getX();
                 editor.getView().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
-                
+
                 currentIsMonozygothic = editor.getView().getNode(allTwins[0]).getMonozygotic();
-                
+
                 // draw the monozygothinc line, if necessary
                 if (currentIsMonozygothic) {
                     var twinlineY   = childlineY+PedigreeEditor.attributes.twinMonozygothicLineShiftY;
@@ -375,13 +375,13 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 numPregnancies++;
                 currentIsMonozygothic = false;
             }
-            
+
             var childX = editor.getView().getNode(child).getX();
             var childY = editor.getView().getNode(child).getY();
-            
+
             var topLineX = (currentTwinGroup === null) ? childX     : currentTwinGroupCenterX;
             var topLineY = (currentTwinGroup === null) ? childlineY : childlineY + twinCommonVerticalPieceLength;
-                
+
             if (topLineX > rightmostX)
                 rightmostX = topLineX;
             if (topLineX < leftmostX)
@@ -403,7 +403,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
                 editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, lineAttr);
             }
-            else {                
+            else {
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
                 editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, lineAttr);
             }
@@ -417,10 +417,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         //draw small non-functional childhub junction orb
         if (numPregnancies > 1)
             editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#666666', stroke: '#888888', 'stroke-width':1, 'opacity': 1});
-        
-        this._childhubConnection = editor.getPaper().setFinish();        
-    },   
-    
+
+        this._childhubConnection = editor.getPaper().setFinish();
+    },
+
     /**
      * Changes the position of the junction to the coordinate (x,y) and updates all surrounding connections.
      *
@@ -431,20 +431,20 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @param {Function} callback Executed at the end of the animation
      */
     setPos: function($super, x, y, animate, callback) {
-        
+
         this.getHoverBox().removeHandles();
         this.getHoverBox().removeButtons();
-        
+
         if(animate) {
             throw "Can't animate a partnership node";
         }
-        
+
         this.mark && this.mark.remove();
         this.mark2 && this.mark2.remove();
 
         this.getAllGraphics().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
         $super(x,y, animate, callback);
-                
+
         this.updatePartnerConnections();
         this.updateChildhubConnection();
         this.updateChildlessStatusLabel();
@@ -489,7 +489,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     getAllGraphics: function($super) {
         return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel, this._childlessShape).concat($super()).push(this.getHoverBox().getFrontElements());
     },
-    
+
     /**
      * Displays all the appropriate labels for this Partnership in the correct layering order
      *

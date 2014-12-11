@@ -754,10 +754,9 @@ NodeMenu = Class.create({
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
-            _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
+            _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
-            //console.log("name = " + name + ", data = " + stringifyObject(data[name]) + ", inactive: " + stringifyObject(_this.fieldMap[name].inactive));            
         });
     },
 
@@ -932,13 +931,26 @@ NodeMenu = Class.create({
                 container.removeClassName('hidden');
                 container.select('input[type=radio]').each(function(item) {
                     if (inactive && Object.prototype.toString.call(inactive) === '[object Array]') {
-                        item.disabled = (inactive.indexOf(item.value) >= 0);
-                        if (item.disabled)
-                            item.up().addClassName('hidden');
-                        else
-                            item.up().removeClassName('hidden');
+                        var disableViaOpacity = (inactive.indexOf("disableViaOpacity") >= 0);
+                        if (inactive.indexOf(item.value) >= 0) {
+                            item.disable();
+                            if (disableViaOpacity) {
+                                Element.setOpacity(item.up(), 0);
+                            } else {
+                                item.up().addClassName('hidden');
+                            }
+                        }
+                        else {
+                            item.enable();
+                            if (disableViaOpacity) {
+                                Element.setOpacity(item.up(), 1);
+                            } else {
+                                item.up().removeClassName('hidden');
+                            }
+                        }
                     } else if (!inactive) {
-                        item.disabled = false;
+                        item.enable();
+                        Element.setOpacity(item.up(), 1);
                         item.up().removeClassName('hidden');
                     }
                 });

@@ -123,7 +123,7 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateNameLabel();
         return lastName;
     },
-    
+
     /**
      * Returns the externalID of this Person
      *
@@ -164,8 +164,8 @@ var Person = Class.create(AbstractPerson, {
     setExternalID: function(externalID) {
         this._externalID = externalID;
         this.getGraphics().updateExternalIDLabel();
-    },    
-    
+    },
+
     /**
      * Returns the last name at birth of this Person
      *
@@ -194,14 +194,14 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method setComments
      * @param comment
-     */    
+     */
     setComments: function($super, comment) {
         if (comment != this.getComments()) {
             $super(comment);
             this.getGraphics().updateCommentsLabel();
         }
     },
-    
+
     /**
      * Sets the type of twin
      *
@@ -211,7 +211,7 @@ var Person = Class.create(AbstractPerson, {
         if (monozygotic == this._monozygotic) return; 
         this._monozygotic = monozygotic;
     },
-    
+
     /**
      * Returns the documented evaluation status
      *
@@ -221,7 +221,7 @@ var Person = Class.create(AbstractPerson, {
     getEvaluated: function() {
         return this._evaluated;
     },
-    
+
     /**
      * Sets the documented evaluation status
      *
@@ -253,7 +253,7 @@ var Person = Class.create(AbstractPerson, {
         if (lostContact == this._lostContact) return;
         this._lostContact = lostContact;
     },
-    
+
     /**
      * Returns the type of twin: monozygotic or not
      * (always false for non-twins)
@@ -263,7 +263,7 @@ var Person = Class.create(AbstractPerson, {
      */
     getMonozygotic: function() {
         return this._monozygotic;
-    },    
+    },
 
     /**
      * Assigns this node to the given twin group
@@ -466,7 +466,7 @@ var Person = Class.create(AbstractPerson, {
         return (status == '' || status == 'carrier'
             || status == 'affected' || status == 'presymptomatic');
     },
-    
+
     /**
      * Sets the global disorder carrier status for this Person
      *
@@ -486,9 +486,9 @@ var Person = Class.create(AbstractPerson, {
                 }
             }
         }
-        
+
         if (!this._isValidCarrierStatus(status)) return;
-                
+
         if (numDisorders > 0 && status == '') {
             if (numDisorders == 1 && this.getDisorders()[0] == "affected") {
                 this.removeDisorder("affected");
@@ -500,7 +500,7 @@ var Person = Class.create(AbstractPerson, {
             this.addDisorder("affected");
             this.getGraphics().updateDisorderShapes();
         }
-        
+
         if (status != this._carrierStatus) {
             this._carrierStatus = status;
             this.getGraphics().updateCarrierGraphic();
@@ -512,7 +512,7 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method getCarrier
      * @return {String} Dissorder carrier status
-     */    
+     */
     getCarrierStatus: function() {
         return this._carrierStatus;
     },
@@ -544,7 +544,7 @@ var Person = Class.create(AbstractPerson, {
         //console.log("Get disorders: " + stringifyObject(this._disorders)); 
         return this._disorders;
     },
-    
+
     /**
      * Returns a list of disorders of this person, with non-scrambled IDs
      *
@@ -850,7 +850,7 @@ var Person = Class.create(AbstractPerson, {
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
         // a person which has relationships can't be adopted out - we wouldn't know details in that case
         if (!cantChangeAdopted && onceAlive) {
-            cantChangeAdopted = ["adoptedOut"];
+            cantChangeAdopted = ["adoptedOut", "disableViaOpacity"];
         }
 
         var inactiveMonozygothic = true;
@@ -934,7 +934,7 @@ var Person = Class.create(AbstractPerson, {
         if (this.getLastNameAtBirth() != "")
             info['lNameAtB'] = this.getLastNameAtBirth();
         if (this.getExternalID() != "")
-            info['externalID'] = this.getExternalID();        
+            info['externalID'] = this.getExternalID();
         if (this.getBirthDate() != null)
             info['dob'] = this.getBirthDate().getSimpleObject();
         if (this.getAdopted() != "")
@@ -981,7 +981,7 @@ var Person = Class.create(AbstractPerson, {
       */
      assignProperties: function($super, info) {
         this._setDefault();
-        
+
         if($super(info)) {
             if(info.fName && this.getFirstName() != info.fName) {
                 this.setFirstName(info.fName);
@@ -1036,7 +1036,7 @@ var Person = Class.create(AbstractPerson, {
             }
             if(info.hasOwnProperty("evaluated") && this._evaluated != info.evaluated) {
                 this.setEvaluated(info.evaluated);
-            }            
+            }
             if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
                 this.setCarrierStatus(info.carrierStatus);
             }

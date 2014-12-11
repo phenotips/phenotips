@@ -487,6 +487,7 @@ DynamicPositionedGraph.prototype = {
            if (this.isPersonGroup(i)) continue;
            if (this.isPlaceholder(i)) continue;
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
+           if (this.isPerson(i) && this.isAdoptedOut(i)) continue;
            result.push(i);
         }
         return result;
@@ -498,7 +499,7 @@ DynamicPositionedGraph.prototype = {
         var oppositeGender  = this.DG.GG.getOppositeGender(v);
         var validGendersSet = (oppositeGender == 'U') ? ['M','F','U'] : [oppositeGender,'U'];
 
-        var result = this._getAllPersonsOfGenders(validGendersSet);
+        var result = this._getAllPersonsOfGenders(validGendersSet, true);
 
         var partners = this.DG.GG.getAllPartners(v);
         partners.push(v);
@@ -2088,7 +2089,7 @@ DynamicPositionedGraph.prototype = {
 
     //=============================================================
 
-    _getAllPersonsOfGenders: function (validGendersSet)
+    _getAllPersonsOfGenders: function (validGendersSet, excludeAdoptedOut)
     {
         // all person nodes whose gender matches one of genders in the validGendersSet array
 
@@ -2105,6 +2106,7 @@ DynamicPositionedGraph.prototype = {
             if (!this.isPerson(i)) continue;
             if (this.isPersonGroup(i)) continue;
             if (this.isPlaceholder(i)) continue;
+            if (excludeAdoptedOut && this.isAdoptedOut(i)) continue;
             var gender = this.getProperties(i)["gender"].toLowerCase();
             //console.log("trying: " + i + ", gender: " + gender + ", validSet: " + stringifyObject(validGendersSet));
             if (arrayContains(validGendersSet, gender))

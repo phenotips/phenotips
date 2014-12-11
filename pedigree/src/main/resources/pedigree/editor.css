@@ -269,7 +269,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 26.2em;
+  width: 27em;
   color: #000000;
   z-index: 100000;
 }
@@ -497,6 +497,12 @@
 }
 .field-values-3-columns label {
   display: block;
+}
+.field-adopted .field-values-3-columns {
+ display: table-row;
+}
+.field-adopted .field-values-3-columns label {
+ display: table-cell;
 }
 .field-values-3-columns .state_deceased {
 }
