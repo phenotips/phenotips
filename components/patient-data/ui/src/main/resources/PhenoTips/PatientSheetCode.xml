@@ -338,6 +338,12 @@ document.observe('xwiki:dom:loaded', function() {
         }
         element.__validation.add(Validate.Presence, {failureMessage: 'Please enter a value'});
       });
+      element.select(".mandatory input[type='checkbox']").each(function(element) {
+        if (!element.__validation) {
+          element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
+        }
+        element.__validation.add(Validate.Acceptance, {failureMessage: 'Please tick this checkbox'});
+      });
     });
     return true;
   };
@@ -4582,7 +4588,9 @@ input.LV_invalid_field {
   border: 1px solid $theme.notificationErrorColor;
   color: $theme.textColor !important;
 }
-</code>
+input[type="checkbox"] + .LV_validation_message {
+  float: right;
+}</code>
     </property>
     <property>
       <name>Form Validation</name>
