@@ -1912,7 +1912,7 @@ To write a custom message, you can remove the existing code and write your messa
       <position>1,2</position>
     </property>
     <property>
-      <title>Active groups (% style="float: right;" %)[[Read more »&gt;&gt;Groups.WebHome]]</title>
+      <title>$services.localization.render('phenotips.homepage.groups.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.groups.moreGroups') »&gt;&gt;Groups.WebHome]]</title>
     </property>
   </object>
   <object>

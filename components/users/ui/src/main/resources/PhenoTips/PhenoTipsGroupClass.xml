@@ -878,11 +878,11 @@ $xwiki.jsx.use($groupClassName)
 #if ($groupSortedData.size() == 0)
 #if ($isFilterActive)
 
-{{info}}No matching groups{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.groups.noMatches'){{/info}}
 
 #else
 
-{{info}}No groups have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.groups.noGroupsMessage')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.homepage.groups.noGroupsMessage') »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
 #end
 #else
