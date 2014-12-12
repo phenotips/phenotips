@@ -24,6 +24,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientScorer;
 import org.phenotips.data.PatientSpecificity;
 import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -33,6 +34,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -132,7 +134,11 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
         int i = 0;
 
         while (ic == 0 && ++i < 5) {
-            toSearch = this.hpo.getTerm(toSearch).getParents().iterator().next().getId();
+            Set<OntologyTerm> parents = this.hpo.getTerm(toSearch).getParents();
+            if (parents.isEmpty()) {
+                break;
+            }
+            toSearch = parents.iterator().next().getId();
             ic = informationContent(this.omim.count(Collections.singletonMap(SEARCH_FOR, toSearch)));
         }
         return ic * (1 + i / 5);

@@ -170,4 +170,21 @@ public class OmimInformationContentPatientScorerTest
 
         Assert.assertEquals(0.0, this.mocker.getComponentUnderTest().getScore(this.patient), 0.0);
     }
+
+    @Test
+    public void getScoreWithParentlessTermDoesntThrowException() throws ComponentLookupException
+    {
+        OntologyTerm hp10 = mock(OntologyTerm.class);
+        when(this.hpo.getTerm("HP:10")).thenReturn(hp10);
+        when(hp10.getId()).thenReturn("HP:10");
+        when(hp10.getParents()).thenReturn(Collections.<OntologyTerm>emptySet());
+        when(this.omim.count(Collections.singletonMap("symptom", "HP:10"))).thenReturn(0L);
+
+        Feature feature = mock(Feature.class);
+        when(feature.getId()).thenReturn("HP:10");
+        when(feature.isPresent()).thenReturn(true);
+        Mockito.doReturn(Collections.singleton(feature)).when(this.patient).getFeatures();
+
+        Assert.assertEquals(0.0, this.mocker.getComponentUnderTest().getScore(this.patient), 0.0);
+    }
 }
