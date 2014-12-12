@@ -53,7 +53,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>band</name>
-      <number>2</number>
+      <number>3</number>
       <picker>0</picker>
       <prettyName>Cytoband</prettyName>
       <size>30</size>
@@ -69,7 +69,7 @@
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>chr</name>
-      <number>1</number>
+      <number>2</number>
       <picker>0</picker>
       <prettyName>Chr</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -90,7 +90,7 @@
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>classification</name>
-      <number>6</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Classification</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -109,7 +109,7 @@
       <disabled>0</disabled>
       <editor>Text</editor>
       <name>comments</name>
-      <number>7</number>
+      <number>8</number>
       <picker>0</picker>
       <prettyName>Comments</prettyName>
       <rows>3</rows>
@@ -123,7 +123,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>end</name>
-      <number>4</number>
+      <number>5</number>
       <numberType>long</numberType>
       <prettyName>End</prettyName>
       <size>30</size>
@@ -136,7 +136,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>start</name>
-      <number>3</number>
+      <number>4</number>
       <numberType>long</numberType>
       <prettyName>Start</prettyName>
       <size>30</size>
@@ -152,7 +152,7 @@
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>type</name>
-      <number>5</number>
+      <number>6</number>
       <picker>0</picker>
       <prettyName>Type</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -166,5 +166,26 @@
       <values>del=Deletion|dup=Duplication</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </type>
+    <reference_genome>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>reference_genome</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Reference genome</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </reference_genome>
   </class>
 </xwikidoc>
