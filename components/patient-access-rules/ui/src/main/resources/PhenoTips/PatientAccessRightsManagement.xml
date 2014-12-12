@@ -811,7 +811,7 @@ $xwiki.ssx.use($serviceDocName)
   #end
   #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
   #if ($owner.isGroup())
-    #set ($adminGroup = $context.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
+    #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
     #if (!$xwiki.getUser().isUserInGroup($adminGroup))
       #set ($canTransfer = false)
     #end
