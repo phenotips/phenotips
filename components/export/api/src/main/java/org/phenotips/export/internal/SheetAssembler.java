@@ -96,6 +96,9 @@ public class SheetAssembler
     {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
+            if (patient == null) {
+                continue;
+            }
             /* To weed out null sections */
             List<DataSection> patientSections = new LinkedList<DataSection>();
             patientSections.add(converter.idBody(patient));
