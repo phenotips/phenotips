@@ -523,6 +523,9 @@ table.withLabel tr:first-child th {
   background-color: $theme.pageContentBackgroundColor;
   bottom: 0;
   padding: 5px;
+}
+.variant-info .extradata-list td {
+  text-align: left;
 }</code>
     </property>
     <property>
