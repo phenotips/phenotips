@@ -20,6 +20,7 @@
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
+import org.phenotips.diagnosis.Utils;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
@@ -48,7 +49,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
 import ontologizer.types.ByteString;
 import sonumina.boqa.calculation.BOQA;
@@ -78,6 +78,9 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     @Inject
     private Environment env;
 
+    @Inject
+    private Utils utils;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -101,16 +104,15 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         }
 
         // Load datafiles
-        Datafiles df = null;
         try {
-            df = new Datafiles(ontologyPath, annotationPath);
+            utils.loadDataFiles(ontologyPath, annotationPath);
         } catch (InterruptedException e) {
             throw new InitializationException(e.getMessage());
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
         }
 
-        this.boqa.setup(df.graph, df.assoc);
+        this.boqa.setup(utils.getGraph(), utils.getDataAssociation());
 
         // Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
         Set<Map.Entry<ByteString, Integer>> omimtonum = this.boqa.item2Index.entrySet();
