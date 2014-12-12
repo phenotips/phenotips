@@ -1640,7 +1640,7 @@ $xwiki.ssx.use('PhenoTips.PushPatient')##
 #foreach ($mapEntry in $configuredServers.entrySet())
   ## make sure PhenomeCentral is enabled/configured, and if it is list it as the first push target
   #if ($mapEntry.key.getServerID() == "PhenomeCentral")
-    (% id="push-patient-pc" name="PhenomeCentral" %)((([[Push to PhenomeCentral&gt;&gt;path:#]])))
+    (% id="push-patient-pc" name="PhenomeCentral" %)((([[$services.localization.render('patient.header.more.pushPhenomeCentral')&gt;&gt;path:#]])))
   #end
 #end
 #set ($counter = 0)
