@@ -744,6 +744,22 @@ BaseGraph.prototype = {
         return this.properties[v]['twinGroup'];
     },
 
+    getAllSiblingsOf: function(v)
+    {
+        // note: includes v itself
+
+        if (!this.isPerson(v))
+            throw "Assertion failed: incorrect v in getAllSiblingsOf()";
+
+        if (this.inedges[v].length == 0) {
+            return [v];
+        }
+
+        var childhubId = this.inedges[v][0];
+        var children = this.v[childhubId];
+        return children.slice(0);
+    },
+
     getAllTwinsOf: function(v)
     {
         if (!this.isPerson(v))

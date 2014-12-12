@@ -289,6 +289,13 @@ DynamicPositionedGraph.prototype = {
         return false;
     },
 
+    isSiblingOfProband: function( v )
+    {
+        var siblings = this.DG.GG.getAllSiblingsOf(v);
+        if (arrayContains(siblings,0)) return true;
+        return false;
+    },
+
     isPartnershipRelatedToProband: function( v )
     {
         var parents = this.DG.GG.getParents(v);
@@ -2521,6 +2528,8 @@ Heuristics.prototype = {
             if (multiRankEdges.length == 0) continue;
 
             // sort all by their xcoordinate if to the left of parent, and in reverse order if to the right of parent
+            // e.g. [1] [2] [3] NODE [4] [5] [6] gets sorted into [1,2,3, 6,5,4], so that edges that end up closer
+            // to the node can be inserted closer as wel, and end up below other edges thus eliminating any intersections
             var _this = this;
             byXcoord = function(v1,v2) {
                     var rel1      = _this.DG.GG.downTheChainUntilNonVirtual(v1);
@@ -2530,9 +2539,9 @@ Heuristics.prototype = {
                     var parentPos = _this.DG.positions[parent];
                     //console.log("v1: " + v1 + ", pos: " + position1 + ", v2: " + v2 + ", pos: " + position2 + ", parPos: " + parentPos);
                     if (position1 >= parentPos && position2 >= parentPos)
-                        return position1 < position2;
+                        return position2 - position1;
                     else
-                        return position1 > position2;
+                        return position1 - position2;
                 };
             multiRankEdges.sort(byXcoord);
 

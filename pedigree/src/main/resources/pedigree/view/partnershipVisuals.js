@@ -387,7 +387,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (topLineX < leftmostX)
                 leftmostX = topLineX;
 
-            var lostContact = editor.getGraph().isChildOfProband(child) && editor.getView().getNode(child).getLostContact();
+            var lostContact = (editor.getGraph().isChildOfProband(child) || editor.getGraph().isSiblingOfProband(child))
+                              && editor.getView().getNode(child).getLostContact();
 
             if (!lostContact) {
                 allChildrenLostContact = false;
