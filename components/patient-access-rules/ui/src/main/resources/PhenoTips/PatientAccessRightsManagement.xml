@@ -1098,6 +1098,16 @@ $xwiki.ssx.use($serviceDocName)
           #set ($toProcess = $collectionstool.queue)
           #set ($discard = $toProcess.add($xcontext.userReference.toString()))
           #set ($groups = $collectionstool.sortedMap)
+
+        #if ($hasAdmin)
+          #set ($groupClassName = 'PhenoTips.PhenoTipsGroupClass')
+          #set ($groupTemplateName = 'PhenoTips.PhenoTipsGroupTemplate')
+          #set ($query = $services.query.xwql("from doc.object(${groupClassName}) as grp where doc.fullName &lt;&gt; :template").bindValue('template', $groupTemplateName))
+          #set ($groupDocs = $xwiki.wrapDocs($query.execute()))
+          #foreach ($groupDoc in $groupDocs)
+               #set ($discard = $groups.put($groupDoc.documentReference, $groupDoc.title))
+          #end
+        #else
           #foreach ($iteration in [0..1000])
             #if ($toProcess.empty)
               #break
@@ -1119,6 +1129,7 @@ $xwiki.ssx.use($serviceDocName)
               #end
             #end
           #end
+        #end
           #if (!$groups.isEmpty())
           &lt;select name="owner" id="new-owner-group-select"&gt;
             &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
