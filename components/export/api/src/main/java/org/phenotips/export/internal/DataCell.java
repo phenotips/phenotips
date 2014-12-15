@@ -52,14 +52,14 @@ public class DataCell
 
     public DataCell(String value, Integer x, Integer y)
     {
-        this.value = value;
+        this.value = value != null ? value : "";
         this.x = x;
         this.y = y;
     }
 
     public DataCell(String value, Integer x, Integer y, StyleOption style)
     {
-        this.value = value;
+        this.value = value != null ? value : "";
         this.x = x;
         this.y = y;
         addStyle(style);
