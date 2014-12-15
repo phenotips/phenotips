@@ -76,7 +76,10 @@ public class PatientBirthdateUpdater extends AbstractEventListener
         int month = getParameter("date_of_birth_month", patientRecordObj.getNumber());
         int day = getParameter("date_of_birth_day", patientRecordObj.getNumber());
         if (year == -1 || month == -1) {
-            // No values specified in the request, skip this step
+            return;
+        }
+        if (year == -2 || month == -2) {
+            patientRecordObj.setDateValue(targetPropertyName, null);
             return;
         }
         if (day <= 0) {
@@ -105,7 +108,10 @@ public class PatientBirthdateUpdater extends AbstractEventListener
             return -1;
         }
         String value = (String) request.getProperty(parameterName);
-        if (StringUtils.isEmpty(value)) {
+        if ("-".equals(value)) {
+            return -2;
+        }
+        if (!StringUtils.isNumeric(value)) {
             return -1;
         }
         return Integer.valueOf(value);
