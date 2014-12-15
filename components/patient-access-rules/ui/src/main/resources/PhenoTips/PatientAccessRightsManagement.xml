@@ -1074,6 +1074,9 @@ $xwiki.ssx.use($serviceDocName)
       #set ($canTransfer = false)
     #end
   #end
+  #if($hasAdmin)
+    #set ($canTransfer = true)
+  #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
   (% id="access-rights-summary" %)(((
     This case is owned by (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="user"/}}&lt;span class="owner"&gt;$ownerName&lt;/span&gt;{{/html}}(%%)##
