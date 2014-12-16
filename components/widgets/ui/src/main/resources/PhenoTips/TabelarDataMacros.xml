@@ -526,6 +526,9 @@ table.withLabel tr:first-child th {
 }
 .variant-info .extradata-list td {
   text-align: left;
+}
+.variant-info .extradata-list td.chr {
+  text-align: center;
 }</code>
     </property>
     <property>
