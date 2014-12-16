@@ -122,8 +122,7 @@
 ## Detect compatible image "format" based on the current browser
 ## ---------------------------------------------------------
 #macro(_detectChartFormat)
-  #set($userAgentStr = $request.getHeader("User-Agent"))
-  #if ($userAgentStr.contains('MSIE'))
+  #if ($request.getHeader('User-Agent').matches('.*MSIE\s[6-8]\..*'))
     #set($format = 'raster')
   #else
     #set($format = 'vector')
