@@ -240,6 +240,7 @@
     </class>
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+
 {{include document="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
