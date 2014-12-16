@@ -76,9 +76,11 @@ public class PatientBirthdateUpdater extends AbstractEventListener
         int month = getParameter("date_of_birth_month", patientRecordObj.getNumber());
         int day = getParameter("date_of_birth_day", patientRecordObj.getNumber());
         if (year == -1 || month == -1) {
+            // No values specified in the request, skip this step
             return;
         }
         if (year == -2 || month == -2) {
+            // Clear value specified in request, clear birth date.
             patientRecordObj.setDateValue(targetPropertyName, null);
             return;
         }
