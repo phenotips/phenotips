@@ -181,7 +181,7 @@ $format##
         ((($svg)))
       #end
     #else
-      #if ($options.format == 'raster')
+      #if ($options.format == 'raster' || "#_detectChartFormat()" == 'raster')
         #set ($img = "&lt;img style='width:100%' title='$chartConfiguration.chartTitle' src='$src'/&gt;")
       #else
         #set ($img = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
