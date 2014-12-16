@@ -178,8 +178,8 @@ $format##
       #elseif($doc != $service || $xcontext.action != 'get')
         $response.sendRedirect($service.getURL('get', $queryString))
       #else
-        $response.setContentType('image/svg+xml')
-        $svg
+        $response.setContentType('text/html')
+        ((($svg)))
       #end
     #else
       #if ($options.format == 'raster')
