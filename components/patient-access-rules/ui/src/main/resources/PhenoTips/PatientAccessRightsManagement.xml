@@ -1065,7 +1065,11 @@ $xwiki.ssx.use($serviceDocName)
   #elseif ($ownerReference.equals($xcontext.userReference))
     #set ($ownerName = 'you')
   #else
-    #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
+    #if($owner.isGroup())
+      #set ($ownerName = $xwiki.getDocument($ownerReference.toString()).getTitle())
+    #else
+      #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
+    #end
   #end
   #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
   #if ($owner.isGroup())
