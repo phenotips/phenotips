@@ -79,6 +79,11 @@ public class PatientBirthdateUpdater extends AbstractEventListener
             // No values specified in the request, skip this step
             return;
         }
+        if (year == -2 || month == -2) {
+            // Clear value specified in request, clear birth date.
+            patientRecordObj.setDateValue(targetPropertyName, null);
+            return;
+        }
         if (day <= 0) {
             day = 1;
         }
@@ -105,7 +110,10 @@ public class PatientBirthdateUpdater extends AbstractEventListener
             return -1;
         }
         String value = (String) request.getProperty(parameterName);
-        if (StringUtils.isEmpty(value)) {
+        if ("-".equals(value)) {
+            return -2;
+        }
+        if (!StringUtils.isNumeric(value)) {
             return -1;
         }
         return Integer.valueOf(value);
