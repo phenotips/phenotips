@@ -111,8 +111,10 @@
     #end
   #end
   #set ($ages = $request.getParameterValues('a'))
-  #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
-    #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
+  #if ("$!{ages}" != "")
+    #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+      #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
+    #end 
   #end
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end
