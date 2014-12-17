@@ -147,16 +147,16 @@
     <!-- Default Rendering Macros we want available by default in XE.
          Please keep them in alphabetical order -->
     <dependency>
-       <groupId>org.xwiki.rendering</groupId>
-       <artifactId>xwiki-rendering-macro-box</artifactId>
-       <version>${xwiki.version}</version>
-       <scope>runtime</scope>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-box</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-       <groupId>org.xwiki.rendering</groupId>
-       <artifactId>xwiki-rendering-macro-comment</artifactId>
-       <version>${xwiki.version}</version>
-       <scope>runtime</scope>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-comment</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.rendering</groupId>
@@ -257,8 +257,8 @@
       <!-- Incompatible with the version of plexus used by Extension Manager aether module -->
       <exclusions>
         <exclusion>
-            <artifactId>plexus-container-default</artifactId>
-            <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+          <groupId>org.codehaus.plexus</groupId>
         </exclusion>
       </exclusions>
     </dependency>
