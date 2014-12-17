@@ -1067,6 +1067,9 @@ $xwiki.ssx.use($serviceDocName)
   #else
     #if($owner.isGroup())
       #set ($ownerName = $xwiki.getDocument($ownerReference.toString()).getTitle())
+      #if ($ownerName=="" || !$ownerName)
+        #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
+      #end
     #else
       #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
     #end
