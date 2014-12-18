@@ -120,6 +120,7 @@ public class DefaultDiagnosisServiceTest
             }
         }).when(ontology).resolveTerm(anyString());
 
+        doReturn(tempSpy).when(env).getTemporaryDirectory();
         doReturn(workingUtilsComponent.getGraph()).when(utils).getGraph();
         doReturn(workingUtilsComponent.getDataAssociation()).when(utils).getDataAssociation();
         DiagnosisService diagnosisService = mocker.getComponentUnderTest();

@@ -97,8 +97,11 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         String annotationPath = null;
         String ontologyPath = null;
         try {
-            annotationPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
-            ontologyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
+            annotationPath =
+                stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz"), "annotation")
+                    .getPath();
+            ontologyPath =
+                stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz"), "ontology").getPath();
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
         }
@@ -214,15 +217,14 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
      * @return a File
      * @throws IOException when we can't open file
      */
-    private File stream2file(InputStream in) throws IOException
+    private File stream2file(InputStream in, String nameRoot) throws IOException
     {
-        String suffix = ".tmp";
         File tempDir = this.env.getTemporaryDirectory();
         final File tempFile;
         if (tempDir != null) {
-            tempFile = new File(suffix);
+            tempFile = new File(tempDir, String.format("phenotips_boqa_%s.tmp", nameRoot));
         } else {
-            tempFile = File.createTempFile("phenotips", suffix);
+            tempFile = File.createTempFile("phenotips_boqa", ".tmp");
         }
         tempFile.deleteOnExit();
 
