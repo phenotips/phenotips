@@ -216,7 +216,14 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
      */
     private File stream2file(InputStream in) throws IOException
     {
-        final File tempFile = File.createTempFile(this.env.getTemporaryDirectory().getPath(), ".tmp");
+        String suffix = ".tmp";
+        File tempDir = this.env.getTemporaryDirectory();
+        final File tempFile;
+        if (tempDir != null) {
+            tempFile = new File(suffix);
+        } else {
+            tempFile = File.createTempFile("phenotips", suffix);
+        }
         tempFile.deleteOnExit();
 
         FileOutputStream out = new FileOutputStream(tempFile);
