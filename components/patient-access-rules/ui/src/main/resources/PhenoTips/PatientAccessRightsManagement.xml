@@ -689,7 +689,7 @@
                 }
               }
               if (newOwner) {
-                owner.update(newOwner);
+                owner.replaceChild(document.createTextNode(newOwner), owner.lastChild);
               }
             }
             var visibility = _this._element.down('.visibility');
@@ -705,7 +705,7 @@
             var collaborators = _this._element.down('.collaborators');
             var collaboratorsCount = formData.collaborator ? (formData.collaborator.size &amp;&amp; formData.collaborator.size() || 1) : 0;
             if (collaborators) {
-              collaborators.update(collaboratorsCount + ' collaborator' + (collaboratorsCount != 1 ? 's' : ''));
+              collaborators.replaceChild(document.createTextNode(collaboratorsCount + ' collaborator' + (collaboratorsCount != 1 ? 's' : '')), collaborators.lastChild);
             }
             _this._dialog.closeDialog();
           },
@@ -1079,11 +1079,11 @@ $xwiki.ssx.use($serviceDocName)
   #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
   (% id="access-rights-summary" %)(((
-    This case is owned by (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="user"/}}&lt;span class="owner"&gt;$ownerName&lt;/span&gt;{{/html}}(%%)##
+    This case is owned by (% class="access-rights-info owner" %){{icon name="user"/}}$ownerName(%%)##
     #if ($canManage),#else and#end it is (% class="access-rights-info visibility" title="$!{visibility.description}" %){{icon name="$visibility"/}}${visibility.label}(%%)##
     #if ($canManage) ##
-      and it is shared with (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="group"/}}&lt;span class="collaborators"&gt;$collaboratorsCount collaborator#if ($collaboratorsCount != 1)s#{end}&lt;/span&gt;{{/html}}. ##
-      (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="Modify visibility and collaborations" /}} Modify permissions&gt;&gt;path:#||class="button"]]##
+      and it is shared with (% class="access-rights-info collaborators" %){{icon name="group"/}}$collaboratorsCount collaborator#if ($collaboratorsCount != 1)s#{end}(%%)##
+      (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench"/}} Modify permissions&gt;&gt;path:#||class="button" title="Modify visibility and collaborations"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
         #foreach ($l in $_service.listAccessLevels())
