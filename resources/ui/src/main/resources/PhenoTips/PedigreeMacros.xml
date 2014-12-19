@@ -62,7 +62,7 @@
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em; margin-bottom: .5em;">
       #foreach ($color in $disorderColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
-          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">●&lt;/span>
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">⬤&lt;/span>
           &lt;span class="pedigree-disorder-name">$disorderNames[$color.key]&lt;/span>
         &lt;/li>
       #end
@@ -73,7 +73,7 @@
       &lt;ul class="pedigree-legend-list" style="margin-top: .4em">
       #foreach ($color in $geneColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
-          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">●&lt;/span>
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">⬤&lt;/span>
           &lt;span class="pedigree-disorder-name">$color.key&lt;/span>
         &lt;/li>
       #end
