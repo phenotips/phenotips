@@ -608,10 +608,11 @@ document.observe('xwiki:dom:loaded', function() {
              return this.down('.summary-group .summary-item .' + type + ' input[value="' + value + '"]');
         }.bind(selectionSummary);
 
-        selectionSummary._silentRemove = function(value, type) {
+        selectionSummary._silentRemove = function(value, type, sectionId) {
              var exists = this._find(value,type);
              if (exists) {
                var group = exists.up('.summary-group');
+               if (sectionId &amp;&amp; this._getGroup(sectionId) != group) {return;}
                exists.up('.summary-item').remove();
                if (!group) {return;}
                group._updateGroupVisibility();
@@ -883,7 +884,7 @@ document.observe('xwiki:dom:loaded', function() {
                Event.fire(document, "summary-item:added", {element: newItem});
              }
           } else {
-             this._silentRemove(inputElt.value, type);
+             this._silentRemove(inputElt.value, type, sectionId);
           }
         }.bind(selectionSummary);
 
