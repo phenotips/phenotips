@@ -20,7 +20,6 @@
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.diagnosis.Utils;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 

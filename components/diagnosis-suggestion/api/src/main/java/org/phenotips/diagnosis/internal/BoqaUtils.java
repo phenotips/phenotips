@@ -19,8 +19,6 @@
  */
 package org.phenotips.diagnosis.internal;
 
-import org.phenotips.diagnosis.Utils;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.environment.Environment;
 
