@@ -639,7 +639,7 @@
              var name = event.memo.info;
              var type = event.findElement('input').name;
              var newCollaborator = {'id' : id , 'name' : name , 'type' : type};
-             _this._addCollaborator (newCollaborator, true);
+             _this._addCollaborator(newCollaborator, true);
              event.findElement().value = '';
            }
          }
