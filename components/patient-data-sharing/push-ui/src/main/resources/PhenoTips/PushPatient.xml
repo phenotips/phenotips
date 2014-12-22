@@ -499,8 +499,13 @@
           _this._disableInputs();
         },
         onSuccess : function (response) {
-          console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-          _this._lastLoginResponse = response.responseJSON;    // TODO: store per user+server locally, so that there is no need to AJAX again for the same user if selected again?
+          if (response.hasOwnProperty("responseJSON") && response.responseJSON) {
+            console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
+            _this._lastLoginResponse = response.responseJSON;    // TODO: store per user+server locally, so that there is no need to AJAX again for the same user if selected again?
+          } else {
+            console.log("PUSH: No response from local service");
+            _this._lastLoginResponse =  {"status":"error", "nolocalresponse":true};
+          }
         },
         onFailure : function(response) {
           console.log("PUSH: unable to get a response from remote server");
@@ -563,6 +568,10 @@
 
     _updateUserList: function(selectedUserName, lastLoginResponse, user_when_failed, password_when_failed) {
       if (lastLoginResponse) {
+        if (this._lastLoginResponse.nolocalresponse) {
+          this._userManager.update(this._generateCantConnectToServerMessage("Can't connect to local service. Make sure you are currently logged in.", user_when_failed, password_when_failed));
+          return;
+        }
         if (this._lastLoginResponse.unauthorizedserver) {
           this._userManager.update(this._generateCantConnectToServerMessage("This server is not authorized to push patients to the selected server.&lt;br/&gt;"+
                                                                             "please contact your administrator", user_when_failed, password_when_failed));
