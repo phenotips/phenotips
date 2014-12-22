@@ -24,9 +24,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>pedigree-editor</artifactId>
-  <name>PhenoTips - Pedigree editor</name>
+  <artifactId>phenotips-pedigree</artifactId>
+  <packaging>pom</packaging>
+  <name>PhenoTips - Pedigree</name>
+
+  <modules>
+    <module>resources</module>
+    <module>ui</module>
+  </modules>
 </project>

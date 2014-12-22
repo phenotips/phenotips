@@ -1015,7 +1015,6 @@
   <modules>
     <module>resources</module>
     <module>components</module>
-    <module>pedigree</module>
     <module>distribution</module>
   </modules>
 </project>
