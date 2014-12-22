@@ -676,7 +676,7 @@ $content
   if (typeof (FileReader) == 'undefined' || typeof (FormData) == 'undefined') {return XWiki;}
   XWiki.FileUploader = Class.create({
     options : {
-      maxFilesize : 5*1048576, // 5MB
+      maxFilesize : 1073741824, // 1GB
       fileFilter  : /^(image\/gif|image\/jpeg|image\/png|image\/tiff)$/i,
       enablePreview : true,
       enableFileInfo : true,
