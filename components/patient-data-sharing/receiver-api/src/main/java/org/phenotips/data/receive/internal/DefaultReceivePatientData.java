@@ -29,6 +29,7 @@ import org.phenotips.data.receive.ReceivePatientData;
 import org.phenotips.data.securestorage.LocalLoginToken;
 import org.phenotips.data.securestorage.SecureStorageManager;
 import org.phenotips.data.shareprotocol.ShareProtocol;
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -42,6 +43,7 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
+import org.xwiki.security.authorization.Right;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -136,6 +138,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     @Inject
     private PermissionsManager permisionManager;
+
+    @Inject
+    private AuthorizationService authService;
 
     @Override
     public boolean isServerTrusted()
@@ -621,16 +626,18 @@ public class DefaultReceivePatientData implements ReceivePatientData
     private boolean userCanAccessPatient(String userName, Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
+            String owner = this.permisionManager.getPatientAccess(patient).getOwner().getUsername();
+            if (owner.equals(userName)) {
+                return true;
+            }
 
-            if ((doc.getCreatorReference() == null || !doc.getCreatorReference().getName().equals(userName)) &&
-                (doc.getAuthorReference() == null || !doc.getAuthorReference().getName().equals(userName))) {
-                return false;
+            boolean hasEditRights = this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT, patient.getDocument());
+            if (hasEditRights) {
+                return true;
             }
         } catch (Exception ex) {
-            return false;
         }
-        return true;
+        return false;
     }
 
     /**
