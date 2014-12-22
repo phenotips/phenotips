@@ -499,7 +499,7 @@
           _this._disableInputs();
         },
         onSuccess : function (response) {
-          if (response.hasOwnProperty("responseJSON") && response.responseJSON) {
+          if (response.hasOwnProperty("responseJSON") &amp;&amp; response.responseJSON) {
             console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
             _this._lastLoginResponse = response.responseJSON;    // TODO: store per user+server locally, so that there is no need to AJAX again for the same user if selected again?
           } else {
