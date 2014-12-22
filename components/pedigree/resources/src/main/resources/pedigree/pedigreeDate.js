@@ -30,7 +30,19 @@ var PedigreeDate = Class.create({
                 this.decade = date;
             }
             else if (!isNaN(Date.parse(date))) {  // empty string also parses to NaN
-                jsDate = new Date(date);
+                // deal with timezone differences: treat all dates as being in the same timezone.
+                // for that need to parse input string, if posible, and extract day/month/year
+                // "as is", regardless of the timezone attached
+                // As of now, expected/supported format is "Tue Dec 09 00:00:00 UTC 2014"
+                var parsed = date.match(/\w\w\w (\w\w\w) (\d\d) \d\d:\d\d:\d\d \w\w\w (\d\d\d\d)/);
+                if (parsed !== null) {
+                    // use Date("Dec 09, 2014") constructor
+                    var timezonelessDate = parsed[1] + " " + parsed[2] + ", " + parsed[3];
+                    jsDate = new Date(timezonelessDate);
+                } else {
+                    // parse any other format
+                    jsDate = new Date(date);
+                }
             }
         } else if (Object.prototype.toString.call(date) === '[object Date]') {
             jsDate = date;
