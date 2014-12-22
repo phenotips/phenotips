@@ -79,7 +79,8 @@
   'id' : "$!term.id",
   'label' : $names,
   'symptoms' : $symptoms,
-  'not_symptoms' : $not_symptoms
+  'not_symptoms' : $not_symptoms,
+  'gene_reviews_link' : "$!term.get('gene_reviews_link')"
 })
 $response.setContentType('application/json')
 $jsontool.serialize($result)

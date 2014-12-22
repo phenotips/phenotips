@@ -3969,6 +3969,14 @@ document.observe("xwiki:dom:loaded", function() {
             event.stop();
             window.open(viewButton.href);
           });
+          if (json.gene_reviews_link) {
+            var geneReviewsButton = new Element('a', {'class' : 'button', href : json.gene_reviews_link, 'target' : '_blank'}).update('Read about it on Gene Reviews...');
+            c.insert(elt('div', 'term-tools').insert(geneReviewsButton.wrap('span', {'class' : 'buttonwrapper'})));
+            geneReviewsButton.observe('click', function(event) {
+              event.stop();
+              window.open(geneReviewsButton.href);
+            });
+          }
         }
       },
       'gene-info' : {
