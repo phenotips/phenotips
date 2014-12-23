@@ -49,32 +49,32 @@ $xwiki.ssx.use('PhenoTips.ImageDisplayer')##
 $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
-; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
-: (% class="xHint" %)The group's name, as it should appear on the group's presentation page and anywhere else this group is referenced.
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.name')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.nameHint')
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
-; {{html}}&lt;label&gt;Image&lt;/label&gt;{{/html}}
-: (% class="xHint" %)Upload a logo or any other type of graphic representation for this group. The optimal image size is {{{200px x 200px}}}. If the logo is missing, a default image will be displayed instead.
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.image')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.imageHint')
 : $doc.display('image')
-; {{html}}&lt;label&gt;Group description&lt;/label&gt;{{/html}}
-: (% class="xHint" %)A short presentation to inform visitors what this group's purpose is.
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.description')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.descriptionHint')
 : $doc.display('description')
-; {{html}}&lt;label&gt;Contact&lt;/label&gt;{{/html}}
-: (% class="xHint" %)An email address where one (or more) of the admins can be contacted
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.contact')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.contactHint')
 : $doc.display('contact')
-; {{html}}&lt;label&gt;Public information&lt;/label&gt;{{/html}}
-: (% class="xHint" %)What else will be shown to visitors landing on this group's presentation page?
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.publicInfo')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.publicInfoHint')
 : $doc.display('public_sections')
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-; {{html}}&lt;label&gt;Studies&lt;/label&gt;{{/html}}
-: (% class="xHint" %)Research studies in which this group is involved
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.studies')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.studiesHint')
 : $doc.display('studies')
 #end
 
 )))
 (% class="xform" %)(((
-== Manage group members ==
+== $services.localization.render('phenotips.groups.manageMembers') ==
 
-(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Manage group administrators&gt;&gt;path:$xwiki.getURL("${doc.fullName} Administrators", 'edit')||rel="__blank" class="button" style="float: right" id="manage-administrators"]]
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.groups.manageAdmins')&gt;&gt;path:$xwiki.getURL("${doc.fullName} Administrators", 'edit')||rel="__blank" class="button" style="float: right" id="manage-administrators"]]
 
 {{include reference='XWiki.XWikiGroupSheet'/}}
 
@@ -83,7 +83,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="group-logo" %)(((#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end})))$doc.display('description')
 
 #set ($isMyGroup = $xwiki.user.isUserInGroup($doc.fullName) || $xwiki.user.isUserInGroup("${doc.fullName} Administrators"))
-#if ($isMyGroup){{info}}You are a member of this group.{{/info}}#end
+#if ($isMyGroup){{info}}$services.localization.render('phenotips.groups.selfMembership').{{/info}}#end
 (% class="clearfloats" %)((()))
 #end
 
@@ -423,7 +423,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
     <property>
       <content>{{velocity}}
 $xwiki.ssx.use('PhenoTips.PhenoTipsGroupSheet')##
-#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; ($doc.getObject('PhenoTips.PhenoTipsGroupClass') || $doc.getObject('XWiki.XWikiGroups') &amp;&amp; $doc.space == 'Groups'))(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="Edit" class="doc-tool edit button"]])))#end{{/velocity}}</content>
+#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; ($doc.getObject('PhenoTips.PhenoTipsGroupClass') || $doc.getObject('XWiki.XWikiGroups') &amp;&amp; $doc.space == 'Groups'))(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="$services.localization.render('phenotips.groups.edit')" class="doc-tool edit button"]])))#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.xwiki.platform.content.top</extensionPointId>
