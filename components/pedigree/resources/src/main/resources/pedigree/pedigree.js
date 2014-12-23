@@ -98,16 +98,20 @@ var PedigreeEditor = Class.create({
             var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
                                                editor.getSaveLoadEngine().save(); }
 
-            window.onbeforeunload = undefined;
-
-            if (editor.getActionStack().hasUnsavedChanges()) {
-                editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
-                                                             'Save before closing?',
-                                                             "Save", saveAndQuitFunc,
-                                                             "Don't save", quitFunc,
-                                                             "Don't quit", dontQuitFunc, true );
-            } else {
+            if (editor.isReadOnlyMode()) {
                 quitFunc();
+            } else {
+                window.onbeforeunload = undefined;
+
+                if (editor.getActionStack().hasUnsavedChanges()) {
+                    editor.getOkCancelDialogue().showCustomized( 'There are unsaved changes, do you want to save the pedigree before closing the pedigree editor?',
+                                                                 'Save before closing?',
+                                                                 "Save", saveAndQuitFunc,
+                                                                 "Don't save", quitFunc,
+                                                                 "Don't quit", dontQuitFunc, true );
+                } else {
+                    quitFunc();
+                }
             }
         });
 

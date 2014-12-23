@@ -765,10 +765,15 @@
 
 .msdialog-box {
     /*overflow:auto;*/
-    width: 650px;
+    width: 60% !important;
+    min-width: 650px !important;
+    max-width: 720px !important;
 }
 .msdialog-box .content {
     text-align: center;
+}
+.pedigree-okcancel {
+    width: 680px !important;
 }
 .no-mouse-interaction {
     pointer-events: none;

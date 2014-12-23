@@ -33,7 +33,7 @@ var OkCancelDialogue = Class.create( {
         mainDiv.insert(buttons);
 
         var closeShortcut = ['Esc'];
-        this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "?", displayCloseButton: false});
+        this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-okcancel", title: "?", displayCloseButton: false});
     },
 
     /**
