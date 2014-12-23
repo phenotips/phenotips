@@ -88,6 +88,7 @@ public class GroupSetupEventListener implements EventListener
         return Collections.<Event>singletonList(new DocumentCreatingEvent());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
@@ -109,6 +110,7 @@ public class GroupSetupEventListener implements EventListener
             XWikiDocument adminsDoc = xwiki.getDocument(adminsReference, context);
             setMembers(this.dab.getCurrentUserReference(), adminsDoc, context);
             setRights(adminsReference, adminsDoc, context);
+            adminsDoc.setParent(docReference.toString());
             xwiki.saveDocument(adminsDoc, "Automatically created administrative group", true, context);
 
             // Setup the new group
