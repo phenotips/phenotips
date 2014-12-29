@@ -109,6 +109,7 @@ public class GroupSetupEventListener implements EventListener
             XWikiDocument adminsDoc = xwiki.getDocument(adminsReference, context);
             setMembers(this.dab.getCurrentUserReference(), adminsDoc, context);
             setRights(adminsReference, adminsDoc, context);
+            adminsDoc.setParentReference(new EntityReference(docReference));
             xwiki.saveDocument(adminsDoc, "Automatically created administrative group", true, context);
 
             // Setup the new group
