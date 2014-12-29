@@ -302,8 +302,12 @@
     {{html clean=false}}$services.rendering.render($uix.execute(), 'xhtml/1.0'){{/html}}
   #end
 #else
-  #if($displayContentMenu)
+  #if ($xcontext.action == 'edit' &amp;&amp; ($editor == 'wiki' || $editor == 'wysiwyg') &amp;&amp; !$request.section)
     {{html clean=false}}
+      #template('editmeta.vm')
+    {{/html}}
+  #end
+  #if($displayContentMenu)
     #if ($xcontext.action == 'edit')
       #set ($menuName = 'editmenu')
     #else
@@ -313,6 +317,7 @@
     #if ("$!editor" == 'inline')
       #set ($menuTemplate = 'contentmenu.vm')
     #end
+    {{html clean=false}}
     &lt;div id="${menuName}" class="actionmenu"&gt;
       #template($menuTemplate)
     &lt;/div&gt;
