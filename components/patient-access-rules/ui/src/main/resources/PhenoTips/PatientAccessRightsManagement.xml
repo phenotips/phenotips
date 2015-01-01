@@ -73,7 +73,7 @@
       #set ($collaborator = {})
       #set ($discard = $collaborator.put('id', $c.user.toString()))
       #set ($discard = $collaborator.put('type', $c.type))
-      #if($c.type == 'user')
+      #if ($c.type == 'user')
         #set ($discard = $collaborator.put('name', $xwiki.getUserName("${c.user}", false)))
       #else
         #set ($discard = $collaborator.put('name', "$!{xwiki.getDocument($c.user).plainTitle}"))
@@ -1065,13 +1065,10 @@ $xwiki.ssx.use($serviceDocName)
   #elseif ($ownerReference.equals($xcontext.userReference))
     #set ($ownerName = 'you')
   #else
-    #if($owner.isGroup())
-      #set ($ownerName = $xwiki.getDocument($ownerReference.toString()).getTitle())
-      #if ("$!ownerName"=='')
-        #set ($ownerName = $ownerReference.name)
-      #end
-    #else
+    #if ($owner.isUser())
       #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
+    #else
+      #set ($ownerName = $xwiki.getDocument($ownerReference).plainTitle)
     #end
   #end
   #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
@@ -1081,7 +1078,7 @@ $xwiki.ssx.use($serviceDocName)
       #set ($canTransfer = false)
     #end
   #end
-  #if($hasAdmin)
+  #if ($hasAdmin)
     #set ($canTransfer = true)
   #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
