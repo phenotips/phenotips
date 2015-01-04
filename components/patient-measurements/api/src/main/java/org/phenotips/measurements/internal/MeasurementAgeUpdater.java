@@ -91,9 +91,7 @@ public class MeasurementAgeUpdater extends AbstractEventListener
                 continue;
             }
             Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
-            if (measurementDate == null) {
-                measurement.removeField(AGE_PROPERTY_NAME);
-            } else if (birthDate == null) {
+            if (measurementDate == null || birthDate == null) {
                 measurement.removeField(AGE_PROPERTY_NAME);
             } else {
                 int age = Months.monthsBetween(new DateTime(birthDate), new DateTime(measurementDate)).getMonths();
