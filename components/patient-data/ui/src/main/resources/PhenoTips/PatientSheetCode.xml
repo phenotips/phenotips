@@ -1609,9 +1609,12 @@ document.observe('xwiki:dom:loaded', function() {
       if (!birthDate || !crtDate) {return ''}
       var bDateObj = Date.parseISO_8601(birthDate.alt || '');
       var cDateObj = Date.parseISO_8601(crtDate.alt || '');
-      if (!bDateObj || !cDateObj) {return ''}
-      var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
-      if (age &gt;= 0) {
+      if (bDateObj &amp;&amp; cDateObj) {
+        var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
+      } else {
+        age=null;
+      }
+      if (age != null &amp;&amp; age &gt;= 0) {
         var displayedAge = '';
         if (age == 0) {
           displayedAge = '0';
@@ -1631,6 +1634,16 @@ document.observe('xwiki:dom:loaded', function() {
           }
           if (target.down('.displayed-value')) {
             target.down('.displayed-value').update(displayedAge);
+          }
+        }
+      } else if (age == null){
+        var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');
+        if (target) {
+          if (target.down('input')) {
+            target.down('input').value = age;
+          }
+          if (target.down('.displayed-value')) {
+            target.down('.displayed-value').update("-");
           }
         }
       }
