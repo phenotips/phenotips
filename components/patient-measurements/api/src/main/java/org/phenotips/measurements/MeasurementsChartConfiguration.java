@@ -19,6 +19,8 @@
  */
 package org.phenotips.measurements;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Configuration for a measurements chart, specifying settings such as age limits, the range of displayed values, labels
  * for the axes, etc.
@@ -26,6 +28,7 @@ package org.phenotips.measurements;
  * @version $Id$
  * @since 1.0M3
  */
+@Unstable
 public interface MeasurementsChartConfiguration
 {
     /**

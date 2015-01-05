@@ -20,6 +20,7 @@
 package org.phenotips.measurements;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ import java.util.List;
  * @version $Id$
  * @since 1.0M3
  */
+@Unstable
 @Role
 public interface MeasurementsChartConfigurationsFactory
 {
