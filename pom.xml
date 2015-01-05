@@ -372,6 +372,22 @@
               <className>**/data/permissions/Visibility</className>
               <method>int getPermissiveness()</method>
             </difference>
+            <!-- New methods in interface for linking to the chart source -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/measurements/MeasurementsChartConfiguration</className>
+              <method>java.lang.String getChartSource()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/measurements/MeasurementsChartConfiguration</className>
+              <method>java.net.URL getChartSourceLink()</method>
+            </difference>
+            <!-- Moved to the .script subpackage -->
+            <difference>
+              <differenceType>8001</differenceType>
+              <className>**/measurements/MeasurementsScriptService</className>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
