@@ -94,12 +94,39 @@
   #set ($collaborators = $request.getParameterValues('collaborator'))
   #set ($accessLevels = $request.getParameterValues('accessLevel'))
   #set ($owner = "$!{request.get('owner')}")
+  #if ("$!{owner}" != "")
+    ##check the validity of the new owner
+    #set($ownerDoc = $services.model.resolveDocument($owner))
+    #set($ownerDocRef = $services.model.resolveDocument("$owner"))
+    #if ($xwiki.getDocument($ownerDocRef).getObject("PhenoTips.PhenoTipsGroupClass"))
+      #set($validGroup = true)
+      ##check to see if user has permission to transfer ownership
+      #set ($adminGroup = $owner + " Administrators")
+      #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup))
+        #set ($cannotTransfer = true)
+     #end
+     #if ($hasAdmin)
+       #set($cannotTransfer = false)
+     #end
+   #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").execute() != "[]")
+      #set($validUser = true)
+   #end
+   #if ( !($validUser || $validGroup))
+      #set($invalidOwner = true)
+   #end
+  #end
   #if (!$patient)
     #set ($discard = $response.setStatus(400))## no patient : bad request
     Could not find patient with identifier "$!{request.patient}", cannot complete the update action.
-  #elseif($collaborators.size() != $accessLevels.size())
+  #elseif ($collaborators.size() != $accessLevels.size())
     #set ($discard = $response.setStatus(400))## mismatched user/level parameters, bad request
     The request is malformed: could not match each collaborator with exactly one level of access.
+  #elseif ($invalidOwner)
+    #set ($discard = $response.setStatus(400))## No user found to transfer ownership to
+    Could not find the user or group: "$!owner".
+  #elseif ($cannotTransfer)
+    #set ($discard = $response.setStatus(400))## The user cannot make the specified transfer
+    Sorry, you do not have permission to transfer to that user or group.
   #else
     #set ($patientAccess = $_service.getPatientAccess($patient))
     #foreach ($collaborator in $collaborators)
