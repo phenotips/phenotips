@@ -36,6 +36,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+
 import com.xpn.xwiki.api.Document;
 
 /**
@@ -51,6 +53,9 @@ public class PhenotypeDisplayTools implements ScriptService
     private static final String CONTEXT_KEY = "pdt.data";
 
     private static final String MESSAGES_KEY = "pdt.messages";
+
+    @Inject
+    Logger logger;
 
     @Inject
     private Execution execution;
@@ -116,7 +121,12 @@ public class PhenotypeDisplayTools implements ScriptService
     public String display(Collection<Map<String, ?>> template)
     {
         FormData formData = this.replaceOldTerms(this.getFormData());
-        return new PropertyDisplayer(template, formData, this.ontologyService).display();
+        try {
+            return new PropertyDisplayer(template, formData, this.ontologyService).display();
+        } catch (Exception ex) {
+            logger.error("An error has occurred while trying to display phenotypes. {}", ex.getMessage(), ex);
+            return "";
+        }
     }
 
     public void clear()
