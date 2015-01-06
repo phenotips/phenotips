@@ -55,7 +55,7 @@
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$iname"&gt;
 #foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
-  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val) for today)&lt;/option&gt;
+  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val $services.localization.render('phenotips.DBConfigurationClass.dateExample',[$xwiki.formatDate($util.date, $val)])&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
@@ -67,7 +67,7 @@ $!value
       <name>dateOfBirthFormat</name>
       <number>5</number>
       <picker>0</picker>
-      <prettyName>Date of birth format</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.dateOfBirthFormat')</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -82,7 +82,7 @@ $!value
       <displayType/>
       <name>enableImperialUnitSystem</name>
       <number>6</number>
-      <prettyName>Enable imperial unit system for entering measurements</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.enableImperialUnitSystem')</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -121,7 +121,7 @@ $!value
       <name>livetableColumns</name>
       <number>8</number>
       <picker>0</picker>
-      <prettyName>Livetable columns</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livetableColumns')</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -139,7 +139,7 @@ $!value
       <name>livetableRows</name>
       <number>10</number>
       <numberType>integer</numberType>
-      <prettyName>Number of rows to display by default</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livatebleRows')</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -164,7 +164,7 @@ $!value
       <name>livetableSortColumn</name>
       <number>9</number>
       <picker>0</picker>
-      <prettyName>Column to sort by default</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livetableSortColumn')</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -175,7 +175,7 @@ $!value
       <cache>0</cache>
       <customDisplay>{{velocity}}
 #if ($value != 'imperial')#set ($value = 'metric')#end
-{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;metric&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;imperial&lt;/label&gt;&lt;/p&gt;
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('phenotips.DBConfigurationClass.metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('phenotips.DBConfigurationClass.imperial')&lt;/label&gt;&lt;/p&gt;
 &lt;br/&gt;
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
@@ -184,7 +184,7 @@ $!value
       <name>measurementUnitSystem</name>
       <number>7</number>
       <picker>0</picker>
-      <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.measurementUnitSystem')</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -193,7 +193,7 @@ $!value
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>metric|imperial</values>
+      <values>metric=$services.localization.render('phenotips.DBConfigurationClass.metric')|imperial=$services.localization.render('phenotips.DBConfigurationClass.imperial')</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </measurementUnitSystem>
     <phenotypeMapping>
@@ -207,7 +207,7 @@ $!value
       <name>phenotypeMapping</name>
       <number>4</number>
       <picker>0</picker>
-      <prettyName>Phenotype configuration document</prettyName>
+      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.phenotypeMapping')Phenotype configuration document</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
