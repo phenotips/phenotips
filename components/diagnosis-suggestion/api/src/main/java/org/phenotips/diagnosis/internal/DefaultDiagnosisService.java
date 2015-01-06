@@ -48,7 +48,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import ontologizer.benchmark.Datafiles;
 import ontologizer.go.Term;
 import ontologizer.types.ByteString;
 import sonumina.boqa.calculation.BOQA;
@@ -78,6 +77,9 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     @Inject
     private Environment env;
 
+    @Inject
+    private Utils utils;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -94,23 +96,25 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         String annotationPath = null;
         String ontologyPath = null;
         try {
-            annotationPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
-            ontologyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
+            annotationPath =
+                stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz"), "annotation")
+                    .getPath();
+            ontologyPath =
+                stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz"), "ontology").getPath();
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
         }
 
         // Load datafiles
-        Datafiles df = null;
         try {
-            df = new Datafiles(ontologyPath, annotationPath);
+            utils.loadDataFiles(ontologyPath, annotationPath);
         } catch (InterruptedException e) {
             throw new InitializationException(e.getMessage());
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
         }
 
-        this.boqa.setup(df.graph, df.assoc);
+        this.boqa.setup(utils.getGraph(), utils.getDataAssociation());
 
         // Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
         Set<Map.Entry<ByteString, Integer>> omimtonum = this.boqa.item2Index.entrySet();
@@ -212,9 +216,15 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
      * @return a File
      * @throws IOException when we can't open file
      */
-    private File stream2file(InputStream in) throws IOException
+    private File stream2file(InputStream in, String nameRoot) throws IOException
     {
-        final File tempFile = File.createTempFile(this.env.getTemporaryDirectory().getPath(), ".tmp");
+        File tempDir = this.env.getTemporaryDirectory();
+        final File tempFile;
+        if (tempDir != null) {
+            tempFile = new File(tempDir, String.format("phenotips_boqa_%s.tmp", nameRoot));
+        } else {
+            tempFile = File.createTempFile("phenotips_boqa", ".tmp");
+        }
         tempFile.deleteOnExit();
 
         FileOutputStream out = new FileOutputStream(tempFile);

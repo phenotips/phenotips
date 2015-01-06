@@ -142,9 +142,7 @@
   #if ("$!xwiki.getUserPreference('timezone')" != '')
     #set ($discard = $date.setZone($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
   #end
-  #if (!$value)
-    #set ($value = $date)
-  #else
+  #if ($value)
     #set ($value = $services.jodatime.getMutableDateTime($value.time))
     #if ("$!xwiki.getUserPreference('timezone')" != '')
       #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
@@ -152,13 +150,14 @@
   #end
   #if ($format.indexOf('d') &lt; 0)
     &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value.toDate())"/&gt;
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#if($value)#formatdateISO($value.toDate())#end"/&gt;
       #set ($selMonth = $value.monthOfYear)
       #set ($selYear= $value.year)
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
       &lt;select name="$prefix${name}_month" class="month"&gt;
+      &lt;option value="-" #if (!$selMonth) selected="selected"#end&gt; &lt;/option&gt;
       #foreach ($val in [1..12])
         #set ($date.monthOfYear = $val)
         &lt;option value="$mathtool.sub($val, 1)"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $mFormat)&lt;/option&gt;
@@ -169,6 +168,7 @@
       #set ($endYear = $date.year + 1)
 
       &lt;select name="$prefix${name}_year" class="year"&gt;
+      &lt;option value="-" #if (!$selYear) selected="selected"#end&gt; &lt;/option&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
         &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $yFormat)&lt;/option&gt;
@@ -176,7 +176,7 @@
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#formatdateISO($value.toDate())"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#if($value)#formatdateISO($value.toDate())#end"/&gt;
   #end
 #else
 #if ($value)
@@ -190,7 +190,7 @@
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>yyyy-MM-dd</dateFormat>
       <disabled>0</disabled>
-      <emptyIsToday>1</emptyIsToday>
+      <emptyIsToday>0</emptyIsToday>
       <name>date_of_birth</name>
       <number>6</number>
       <picker>1</picker>

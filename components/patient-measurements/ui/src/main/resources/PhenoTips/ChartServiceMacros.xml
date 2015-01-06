@@ -111,8 +111,10 @@
     #end
   #end
   #set ($ages = $request.getParameterValues('a'))
-  #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
-    #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
+  #if ("$!{ages}" != "")
+    #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+      #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
+    #end 
   #end
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end
@@ -122,8 +124,7 @@
 ## Detect compatible image "format" based on the current browser
 ## ---------------------------------------------------------
 #macro(_detectChartFormat)
-  #set($userAgentStr = $request.getHeader("User-Agent"))
-  #if ($userAgentStr.contains('MSIE'))
+  #if ($request.getHeader('User-Agent').matches('.*MSIE\s[6-8]\..*'))
     #set($format = 'raster')
   #else
     #set($format = 'vector')
@@ -178,11 +179,11 @@ $format##
       #elseif($doc != $service || $xcontext.action != 'get')
         $response.sendRedirect($service.getURL('get', $queryString))
       #else
-        $response.setContentType('image/svg+xml')
-        $svg
+        $response.setContentType('text/html')
+        ((($svg)))
       #end
     #else
-      #if ($options.format == 'raster')
+      #if ($options.format == 'raster' || "#_detectChartFormat()" == 'raster')
         #set ($img = "&lt;img style='width:100%' title='$chartConfiguration.chartTitle' src='$src'/&gt;")
       #else
         #set ($img = $svg.replaceAll('\{\{/?html.*?}}', '').trim())

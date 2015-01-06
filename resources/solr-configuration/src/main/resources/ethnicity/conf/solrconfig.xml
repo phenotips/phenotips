@@ -153,9 +153,9 @@
          (DocList) based on a query, a sort, and the range of documents requested.
       -->
     <queryResultCache class="solr.LRUCache"
-                     size="1024"
-                     initialSize="512"
-                     autowarmCount="0"/>
+                      size="1024"
+                      initialSize="512"
+                      autowarmCount="0"/>
 
     <!-- Document Cache
 
@@ -189,66 +189,65 @@
          if the usual case is to not load all stored fields,
          especially if the skipped fields are large compressed text
          fields.
-    -->
+      -->
     <enableLazyFieldLoading>true</enableLazyFieldLoading>
 
-   <!-- Use Filter For Sorted Query
+    <!-- Use Filter For Sorted Query
 
-        A possible optimization that attempts to use a filter to
-        satisfy a search.  If the requested sort does not include
-        score, then the filterCache will be checked for a filter
-        matching the query. If found, the filter will be used as the
-        source of document ids, and then the sort will be applied to
-        that.
+         A possible optimization that attempts to use a filter to
+         satisfy a search.  If the requested sort does not include
+         score, then the filterCache will be checked for a filter
+         matching the query. If found, the filter will be used as the
+         source of document ids, and then the sort will be applied to
+         that.
 
-        For most situations, this will not be useful unless you
-        frequently get the same search repeatedly with different sort
-        options, and none of them ever use "score"
+         For most situations, this will not be useful unless you
+         frequently get the same search repeatedly with different sort
+         options, and none of them ever use "score"
+      -->
+    <!--
+    <useFilterForSortedQuery>true</useFilterForSortedQuery>
+      -->
+
+    <!-- Result Window Size
+
+         An optimization for use with the queryResultCache.  When a search
+         is requested, a superset of the requested number of document ids
+         are collected.  For example, if a search for a particular query
+         requests matching documents 10 through 19, and queryWindowSize is 50,
+         then documents 0 through 49 will be collected and cached.  Any further
+         requests in that range can be satisfied via the cache.
+      -->
+    <queryResultWindowSize>20</queryResultWindowSize>
+
+    <!-- Maximum number of documents to cache for any entry in the
+         queryResultCache.
+      -->
+    <queryResultMaxDocsCached>1024</queryResultMaxDocsCached>
+
+    <!-- Query Related Event Listeners
+
+         Various IndexSearcher related events can trigger Listeners to
+         take actions.
+
+         newSearcher - fired whenever a new searcher is being prepared
+         and there is a current searcher handling requests (aka
+         registered).  It can be used to prime certain caches to
+         prevent long request times for certain requests.
+
+         firstSearcher - fired whenever a new searcher is being
+         prepared but there is no current registered searcher to handle
+         requests or to gain autowarming data from.
      -->
-   <!--
-      <useFilterForSortedQuery>true</useFilterForSortedQuery>
-     -->
 
-   <!-- Result Window Size
-
-        An optimization for use with the queryResultCache.  When a search
-        is requested, a superset of the requested number of document ids
-        are collected.  For example, if a search for a particular query
-        requests matching documents 10 through 19, and queryWindowSize is 50,
-        then documents 0 through 49 will be collected and cached.  Any further
-        requests in that range can be satisfied via the cache.
-     -->
-   <queryResultWindowSize>20</queryResultWindowSize>
-
-   <!-- Maximum number of documents to cache for any entry in the
-        queryResultCache.
-     -->
-   <queryResultMaxDocsCached>1024</queryResultMaxDocsCached>
-
-   <!-- Query Related Event Listeners
-
-        Various IndexSearcher related events can trigger Listeners to
-        take actions.
-
-        newSearcher - fired whenever a new searcher is being prepared
-        and there is a current searcher handling requests (aka
-        registered).  It can be used to prime certain caches to
-        prevent long request times for certain requests.
-
-        firstSearcher - fired whenever a new searcher is being
-        prepared but there is no current registered searcher to handle
-        requests or to gain autowarming data from.
-
-
-     -->
     <!-- QuerySenderListener takes an array of NamedList and executes a
          local query request for each NamedList in sequence.
       -->
     <listener event="newSearcher" class="solr.QuerySenderListener">
       <arr name="queries">
         <!--
-           <lst><str name="q">solr</str><str name="sort">price asc</str></lst>
-           <lst><str name="q">rocks</str><str name="sort">weight asc</str></lst>
+        <lst><str name="q">solr</str><str name="sort">price asc</str></lst>
+        <lst><str name="q">rocks</str><str name="sort">weight asc</str></lst>
           -->
       </arr>
     </listener>
@@ -411,11 +410,11 @@
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
       -->
-     <lst name="defaults">
-       <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">text</str>
-     </lst>
+    <lst name="defaults">
+      <str name="echoParams">explicit</str>
+      <int name="rows">10</int>
+      <str name="df">text</str>
+    </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
          multi-val params from the query (or the existing "defaults").
@@ -430,32 +429,11 @@
          <str>nameOfCustomComponent2</str>
        </arr>
       -->
-     <arr name="last-components">
-       <str>spellcheck</str>
-     </arr>
-    </requestHandler>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
 
-
-  <!-- Update Request Handler.
-
-       http://wiki.apache.org/solr/UpdateXmlMessages
-
-       The canonical Request Handler for Modifying the Index through
-       commands specified using XML, JSON, CSV, or JAVABIN
-
-       Note: Since solr1.1 requestHandlers requires a valid content
-       type header if posted in the body. For example, curl now
-       requires: -H 'Content-type:text/xml; charset=utf-8'
-
-       To override the request content type and force a specific
-       Content-type, use the request parameter:
-         ?update.contentType=text/csv
-
-       This handler will pick a response format to match the input
-       if the 'wt' parameter is not explicit
-    -->
-  <requestHandler name="/update"
-                  class="solr.UpdateRequestHandler" />
 
   <!-- ping/healthcheck -->
   <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
@@ -495,9 +473,4 @@
       -->
     </lst>
   </searchComponent>
-
-  <!-- Legacy config for the admin interface -->
-  <admin>
-    <defaultQuery>*:*</defaultQuery>
-  </admin>
 </config>

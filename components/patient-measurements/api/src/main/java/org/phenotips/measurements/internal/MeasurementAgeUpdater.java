@@ -77,9 +77,7 @@ public class MeasurementAgeUpdater extends AbstractEventListener
             return;
         }
         Date birthDate = patientRecordObj.getDateValue("date_of_birth");
-        if (birthDate == null) {
-            return;
-        }
+
         List<BaseObject> objects = doc.getXObjects(CLASS_REFERENCE);
         if (objects == null || objects.isEmpty()) {
             return;
@@ -93,7 +91,7 @@ public class MeasurementAgeUpdater extends AbstractEventListener
                 continue;
             }
             Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
-            if (measurementDate == null) {
+            if (measurementDate == null || birthDate == null) {
                 measurement.removeField(AGE_PROPERTY_NAME);
             } else {
                 int age = Months.monthsBetween(new DateTime(birthDate), new DateTime(measurementDate)).getMonths();

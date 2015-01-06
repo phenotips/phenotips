@@ -44,7 +44,7 @@ require(['jquery'], function ($)
                 }
                 if (position > windowScroll && position < lowerVisibilityBound) {
                     /* Only one section can be expanded at a time. Expands only if the fields inside fail validation. */
-                    if (fieldObject['field'][0].__validation.validate() == false) {
+                    if (fieldObject['field'][0].__validation && fieldObject['field'][0].__validation.validate() == false) {
                         sectionToExpand == null ? sectionToExpand = fieldObject['parent'] : null;
                     }
                 }

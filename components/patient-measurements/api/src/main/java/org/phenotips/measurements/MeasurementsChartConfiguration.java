@@ -19,6 +19,10 @@
  */
 package org.phenotips.measurements;
 
+import org.xwiki.stability.Unstable;
+
+import java.net.URL;
+
 /**
  * Configuration for a measurements chart, specifying settings such as age limits, the range of displayed values, labels
  * for the axes, etc.
@@ -26,6 +30,7 @@ package org.phenotips.measurements;
  * @version $Id$
  * @since 1.0M3
  */
+@Unstable
 public interface MeasurementsChartConfiguration
 {
     /**
@@ -133,4 +138,19 @@ public interface MeasurementsChartConfiguration
      * @return a non-empty string, usually the same as {@link #getRightLabel() the left label}
      */
     String getRightLabel();
+
+    /**
+     * The name of the source for this chart.
+     *
+     * @return the official reference, or {@code null} if the source is not known / unspecified.
+     */
+    String getChartSource();
+
+    /**
+     * A URL where the original data for this chart, or more information about it, can be found.
+     *
+     * @return a proper URL, or {@code null} if the source is not known / unspecified.
+     */
+    URL getChartSourceLink();
+
 }

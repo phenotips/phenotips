@@ -28,6 +28,10 @@
   <artifactId>diagnosis-suggestion-api</artifactId>
   <name>PhenoTips - Diagnosis Suggestion Java Code</name>
 
+  <properties>
+    <coverage.instructionRatio>0.81</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -71,6 +75,13 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

@@ -1,0 +1,837 @@
+#template("colorThemeInit.vm")
+/* =========================================
+ * GENERAL
+ */
+#body {
+  overflow: hidden;
+}
+/* =========================================
+ * NOTIFICATIONS
+ */
+#body .xnotification-container {
+  right: 0 !important;
+  left: auto !important;
+  width: 250px;
+}
+#body .xnotification {
+  background: $theme.pageContentBackgroundColor none 2px .7em no-repeat !important;
+  border: 2px solid $theme.borderColor;
+  box-shadow: 0 0 6px #AAA, 0 0 25px #DDD inset;
+  color: $theme.textColor !important;
+  display: block;
+  font-weight: normal;
+  margin: 2px;
+  padding: 0.5em 22px;
+  text-align: left;
+  width: 200px;
+}
+#body .xnotification-inprogress {
+  background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')") !important;
+}
+#body .xnotification-error {
+  background-image: url("$xwiki.getSkinFile('icons/silk/delete.png')") !important;
+  color: $theme.notificationErrorColor !important;
+  border-color: $theme.notificationErrorColor !important;
+}
+#body .xnotification-warning {
+  background-image: url("$xwiki.getSkinFile('icons/silk/error.png')") !important;
+  color: $theme.notificationWarningColor !important;
+  border-color: $theme.notificationWarningColor !important;
+}
+#body .xnotification-info {
+  background-image: url("$xwiki.getSkinFile('icons/silk/information.png')") !important;
+  color: $theme.notificationInfoColor !important;
+  border-color: $theme.notificationInfoColor !important;
+}
+#body .xnotification-done {
+  background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
+  color: $theme.notificationSuccessColor !important;
+  border-color: $theme.notificationSuccessColor !important;
+}
+/* =========================================
+ * MENU
+ */
+#editor-menu {
+  background: #444;
+  padding: 5px;
+}
+#editor-menu .action-group {
+  display: inline-block;
+}
+#editor-menu span {
+  font-family: Arial,Verdana,sans-serif;
+}
+#editor-menu .action-group:not(:last-of-type) {
+  border-right: 1px solid #777;
+  margin-right: 1em;
+  padding-right: 1em;
+}
+#editor-menu .menu-item {
+  border-radius: 4px;
+  color: #fff;
+  padding: .35em;
+  margin: 0 .7em 0 0;
+  cursor: pointer;
+  display: inline-block;
+  white-space: nowrap;
+}
+#editor-menu .menu-item:last-of-type {
+  margin: 0;
+}
+#editor-menu .disabled-menu-item {
+  color: #777;
+  padding: .35em;
+  margin: 0 .7em 0 0;
+  cursor: default;
+  display: inline-block;
+  white-space: nowrap;
+}
+#editor-menu .disabled-menu-item:last-of-type {
+  margin: 0;
+}
+.loading-indicator {
+    background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100px;
+    width: 200px;
+}
+#editor-menu .menu-item:hover {
+  box-shadow: #fff 0 0 5px 0;
+}
+
+
+/* =========================================
+ * CONTROLS
+ */
+.view-controls {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px;
+  opacity: .8;
+  z-index: 100000;
+}
+.view-controls:hover {
+  ##opacity: 1;
+}
+/* ----------------------------------------
+ * Pan
+ */
+.view-controls-pan {
+  width: 60px;
+  height: 60px;
+  left: 0;
+  top: 0;
+  position: absolute;
+  border: 1px solid #aaa;
+  background: #FFF;
+  border-radius: 30px;
+  box-shadow: 0 0 6px #AAAAAA;
+}
+.view-controls-pan * {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  cursor: pointer;
+  line-height: 16px;
+}
+.view-control-pan:hover, .view-controls-zoom .zoom-button:hover {
+  color: $theme.linkColor;
+}
+.view-controls-pan .pan-up {
+  top: 4px;
+  left: 22px;
+}
+.view-controls-pan .pan-right {
+  top: 22px;
+  right: 4px;
+}
+.view-controls-pan .pan-down {
+  bottom: 4px;
+  left: 22px;
+}
+.view-controls-pan .pan-left {
+  top: 22px;
+  left: 4px;
+}
+.view-controls-pan .pan-home {
+  top: 22px;
+  left: 22px;
+  font-size: 12px;
+}
+/* ----------------------------------------
+ * Zoom
+ */
+.view-controls-zoom {
+  width: 60px;
+  left: 0;
+  top: 70px;
+  position: absolute;
+  text-align: center;
+}
+.view-controls-zoom * {
+  background: #FFF;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-shadow: 0 0 6px #AAAAAA;
+  margin: auto;
+}
+.view-controls-zoom .zoom-track {
+  width: 4px;
+  height: 200px;
+  position: relative;
+}
+.view-controls-zoom .zoom-button {
+  cursor: pointer;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+  padding: 2px 2px;
+}
+.view-controls-zoom .zoom-handle {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 10px;
+  margin-left: -9px;
+}
+.view-controls-zoom .zoom-crt-value {
+  background: transparent;
+  border: 0 none;
+  box-shadow: none;
+}
+/* =========================================
+ * CANVAS
+ */
+#canvas {
+  overflow: hidden;
+
+  /* fallback */
+  background-color: #F8F8F8;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  background: -o-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: -webkit-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: radial-gradient(circle, #FBFBFB, #DFDFDF);
+}
+/* ===========================================
+ * LEGEND
+ */
+#work-area {
+  position: relative;
+}
+.legend-box {
+  background: #FFF;
+  border-radius: 0 0 0 4px;
+  padding: .5em .5em .5em 1em;
+}
+.legend-container {
+  top:5px;
+  position: absolute;
+  right: 0;
+  z-index: 10000;
+  min-width: 140px;
+  max-width: 250px;
+}
+.legend-container span {
+  font-family: Arial,Verdana,sans-serif;
+}
+.legend-box .legend-title {
+  font-size: 1.1em;
+  margin: 0 0 0.3em;
+}
+.legend-box .disorder-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.disorder-color {
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin: 0 .5em .2em 0;
+  border-radius: .4em;
+  background-color: #DDD;
+  vertical-align: middle;
+}
+.disorder-cases-container {
+  font-size: .8em;
+  font-style: italic;
+  color: #777;
+}
+/* ===========================================
+ * NODE MENU
+ */
+.menu-box {
+  position: absolute;
+  width: 27em;
+  color: #000000;
+  z-index: 100000;
+}
+/* fix weird default styling for radiobuttons in Chrome on Windows */
+.menu-box input[type="radio"] {
+  outline-style: none;
+}
+.calendar_date_select {
+  z-index: 100000 !important;
+}
+.width80px {
+  width: 80px;
+}
+.relationship-menu {
+  width: 290px;
+}
+.menu-box .tabs {
+  margin-bottom: 0 !important;
+  margin-left: 2px;
+  display: inline-block;
+}
+.menu-box .tabs dd, .tabs .tab-title {
+  position: relative;
+  margin-bottom: -3px !important;
+  list-style: none;
+  float: left;
+  border-radius: 0.8em 0.8em 0 0;
+}
+.menu-box .tabs dd.active {
+  box-shadow: none;
+  background-color: #E1E1E1;
+}
+.menu-box .tabs dd:not(.active) {
+  box-shadow: none;
+  background-color: #EFEFEF;
+  box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+}
+.menu-box .tabs dd a  {
+  text-decoration: none;
+}
+.menu-box .tabs dd.active a, .tabs .tab-title.active a {
+  color: #222222;
+  font-weight: bold;
+  pointer-events: none;
+  box-shadow: none;
+}
+.menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover {
+  background-color: #D1D1D1;
+  cursor:pointer;
+}
+.menu-box .tabs dd > a, .tabs .tab-title > a {
+  display: block;
+  color: #222222;
+  padding: 0.88889em 1.77778em;
+  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+  font-size: 0.88889rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.menu-box .tabs-content > .content {
+  display: none;
+  float: left;
+  padding: 0;
+}
+.menu-box .tabs-content > .content.active {
+  display: block;
+  float: none;
+  padding: .3em 1.2em 0.8em;
+}
+.menu-box form {
+  border: 1px solid #F5F5F5;
+  border-top-width: 0;
+  border-radius: 0 0 .75em .75em;
+  background: #EEE;
+  box-shadow: 0 0 6px #DDD, 0 -1px 25px #DDDDDD inset;
+}
+.menu-box form:not(.content){
+  padding: 0 0 0 0;
+}
+.menu-box form.content {
+  padding: .3em 1.3em 0.8em !important;
+}
+.menu-box .close-button {
+  cursor: pointer;
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+  height: 12px;
+  line-height: 9px;
+  margin: 3em .3em 0 -1em;
+  text-align: center;
+  width: 12px;
+}
+.menu-box .close-button:hover {
+  text-shadow: 0.5px 0.5px #CCCCCC;
+}
+.menu-box .close-button-old {
+  margin: 0.3em .3em 0 .3em !important;
+}
+.menu-box .field-box {
+  padding: .5em 0;
+}
+.menu-box .field-gender {
+  padding: .8em 0;
+}
+.menu-box .field-box input[type=text] {
+  width: 99%;
+}
+.menu-box .field-box input[type=text]:focus {
+  border: 1px solid #DDD;
+}
+.menu-box .field-box textarea {
+  width: 99%;
+  resize: none;
+  border: 1px solid #E8E8E8;
+}
+/* 3.3em height is set because firefox does not respect the rows qualifier for the textarea,
+   displaying one more line than most other browsers. Less than 3.3em and there is no scrollbar in FF */
+.menu-box .field-box .textarea-2-rows {
+  height: 3.3em;
+}
+.menu-box .field-box .textarea-3-rows {
+  height: 4.3em;
+}
+.menu-box .field-box .textarea-4-rows {
+  height: 5.5em;
+}
+.import-upload {
+  display: block;
+  margin: 0.2em 0 0.75em 7.5em;
+  text-align: left;
+}
+/*
+.import-selector {
+  overflow: auto;
+}*/
+.import-selector .import-textarea {
+  height: 10em;
+  resize: none;
+  width: 84%;
+  /*border: 1px solid #E8E8E8;*/
+  margin: .2em .2em 0 7.5em;
+  display: block;
+}
+.import-block {
+  margin: 0.75em 0 0.5em 0;
+  display: block;
+}
+.import-block-bottom {
+  margin: 1.25em 0 0.5em 0;
+}
+.import-section {
+  font-weight: bold;
+  float: left;
+}
+.import-type-label {
+  float: left;
+  margin: 0 1em 0 0.8em;
+}
+.import-config-label {
+  float: left;
+  margin: 0 1em 0 2.5em;
+}
+.export-config-header {
+  float: left;
+  margin: 0 1em 0 2.95em;
+}
+.export-subconfig-label {
+  float: left;
+  margin: 0 1em 0 3.5em;
+}
+.import-mark-label1 {
+  float: left;
+  margin: 0.25em 1em 0 2.5em;
+}
+.import-mark-label2 {
+  float: left;
+  margin: 0 1em 0 2.5em;
+}
+.menu-box .field-box textarea:focus {
+  border: 1px solid #DDD;
+}
+.menu-box .field-name {
+  display: block;
+  font-weight: bold;
+}
+.menu-box .accepted-suggestions li {
+  line-height: 1em;
+  padding: .2em 1em .1em 0;
+  font-size: 85%
+}
+.menu-box .accepted-suggestions li:hover {
+  background-color: #FFEE99;
+}
+.menu-box .accepted-suggestions li .delete-tool {
+  position: absolute;
+  top: .4em;
+  right: 0;
+  display: inline !important;
+}
+.field-no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.field-values label {
+  display: block;
+}
+.field-values {
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+}
+.field-values-3-columns {
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+}
+.field-values-3-columns label {
+  display: block;
+}
+.field-adopted .field-values-3-columns {
+ display: table-row;
+}
+.field-adopted .field-values-3-columns label {
+ display: table-cell;
+}
+.field-values-3-columns .state_deceased {
+}
+.field-values-3-columns .state_miscarriage {
+  margin-bottom: 1px;  /* otherwise the bottom pixel of the letter "g" in "miscarriage" is displayed at the top of the next column in Chrome */
+}
+.field-values-3-columns .state_unborn {
+}
+.field-values-3-columns .state_aborted {
+}
+.field-inputs {
+  display: table;
+  width: 100%;
+  padding-top: 0.2em;
+}
+.field-inputs>span {
+  display: table-cell;
+}
+.field-inputs label {
+  font-family: Arial,Verdana,sans-serif;
+}
+
+.menu-box .field-first_name {
+  width: 48%;
+  float: left;
+}
+.menu-box .field-last_name {
+  width: 48%;
+  float: right;
+}
+.menu-box .field-last_name_birth {
+  width: 48%;
+  float: left;
+  padding: .5em 0 0.9em;
+}
+.menu-box .field-external_id {
+  width: 48%;
+  float: right;
+  padding: .5em 0 0.9em;
+}
+.menu-box .field-date_of_birth {
+  width: 48%;
+  float: left;
+  margin-bottom: 6px;
+}
+.menu-box .field-date_of_death {
+  width: 48%;
+  float: right;
+  margin-top: -5px; /* TODO: investigate why elements float below its intended position */
+  margin-bottom: 6px;
+}
+.menu-box .accepted-suggestions {
+  margin: 0px 0px 0.3em !important;
+}
+.menu-box .field-childlessText {
+  padding: 0 0;
+}
+.menu-box .field-adopted {
+  padding: 0.6em 0;
+}
+.menu-box .field-monozygotic {
+  padding: 0.5em 0 0.26em 0;
+}
+.menu-box .field-nocontact {
+  padding: 0.26em 0;
+}
+.menu-box .field-placeholder {
+  padding: 0.26em 0;
+}
+.menu-box .field-gestation_age {
+  padding: 0.45em 0;
+}
+.menu-box .field-evaluated {
+  padding-top: 0.26em;
+  padding-bottom: 0.5em;
+  padding-right: 0;
+  margin-left: -0.1em;
+}
+.menu-box .field-evaluated .field-name {
+  font-weight: normal;
+}
+.menu-box .field-carrier {
+  padding-top: 0.8em;
+  padding-bottom: 0.6em;
+  padding-right: 0;
+  padding-left: 0;
+}
+.menu-box .field-hpo_positive {
+  padding: 1em 0;
+}
+/* Disable the "browse ontology" button, as ontology browser events are not supported (yet) */
+.tooltip-phenotype-info .term-tools {
+  display: none;
+}
+.menu-box .field-disorders {
+  padding: 0.6em 0;
+}
+.menu-box .field-candidate_genes {
+  padding: 0.6em 0;
+}
+.menu-box .field-identifier {
+  padding: 0 0;
+}
+.menu-box .field-childlessSelect {
+  padding: 0.5em 0 0.5em;
+}
+
+/* ===========================================
+ * NODE TYPE OPTIONS
+ */
+.callout {
+  position: absolute;
+  width: auto;
+  padding: 3px 0;
+  border: 1px solid #F5F5F5;
+  border-radius: 4px;
+  background: #EEE;
+  text-align: center;
+  white-space: nowrap !important;
+  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+}
+.callout .callout-handle {
+  position: absolute;
+  top: -8px;
+  border: 10px solid #e5e5e5;
+  border-top-width: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  display: block;
+  width: 0;
+  z-index: 10;
+  margin-left: -10px;
+}
+.callout.upside .callout-handle {
+  border-top-width: 10px;
+  border-bottom-width: 0;
+  top: auto;
+  bottom: -8px;
+}
+.node-type-options {
+  position: relative;
+}
+.node-type-options .separator {
+  display: inline-block;
+  width: 0;
+  margin: 0 8px;
+  overflow: hidden;
+}
+.node-type-options .node-type-option {
+  background: transparent none center center no-repeat;
+  border: 1px solid #F5F5F5;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 3px;
+  height: 24px;
+  width: 24px;
+  box-shadow: 0 0 9px #DDDDDD inset;
+  color: black !important;
+  vertical-align: middle;
+  text-decoration: none !important;
+ /*
+  TODO: Keep this:
+  overflow: hidden;
+  text-indent: 48px;
+  line-height: 48px;
+  font-size: 1px;
+  TODO: remove this
+  */
+  text-align: center;
+  line-height: 24px;
+}
+/* The unicode symbols we use for different node types have disproportionate sizes.
+   Adjusting the font size for a cleaner look:
+*/
+.fa-rotate-45 {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  display: inline-block !important;
+  font-size: 90%;
+}
+.expand-arrow {
+  cursor: pointer;
+  font-size: 15px;
+  margin-left: -1px;
+  margin-right: 2px;
+}
+.expand-arrow:hover {
+  color: #6666CC;
+}
+.node-type-options .expandable-node-type-option {
+    background: transparent none center center no-repeat;
+    border: 1px solid #F5F5F5;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 3px;
+    height: 24px;
+    width: 24px;
+    box-shadow: 0 0 9px #DDDDDD inset;
+    color: black !important;
+    vertical-align: middle;
+    text-decoration: none !important;
+    /*
+    TODO: Keep this:
+    overflow: hidden;
+    text-indent: 48px;
+    line-height: 48px;
+    font-size: 1px;
+    TODO: remove this
+    */
+    text-align: center;
+    line-height: 24px;
+}
+.node-type-options-extended * {
+    vertical-align: middle;
+}
+
+.value-control-button {
+  border: 1px solid #FFF;
+  border-radius: 3px;
+  box-shadow: 0 0 5px #DDD inset;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.1em;
+  font-weight: bold;
+  height: 1em;
+  line-height: 1em;
+  margin: 3px;
+  padding: 3px;
+  text-align: center;
+  width: 1em;
+}
+.minus-button {
+  color: #C00;
+}
+
+.plus-button {
+  color: #080;
+}
+
+.msdialog-modal-container .pedigree-template-chooser {
+    width: 720px;
+}
+.picture-box {
+    display: inline-block;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
+    margin: 14px;
+}
+.picture-box:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
+}
+
+.template-picture-container {
+    display: inline-block;
+    margin: 3px;
+}
+
+.msdialog-box {
+    /*overflow:auto;*/
+    width: 60% !important;
+    min-width: 650px !important;
+    max-width: 720px !important;
+}
+.msdialog-box .content {
+    text-align: center;
+}
+.pedigree-okcancel {
+    width: 680px !important;
+}
+.no-mouse-interaction {
+    pointer-events: none;
+}
+/* Make sure the tooltips fit nicely in the suggest box in the pedigree editor: */
+.suggestItem .xTooltip {
+  left: 4px;
+  margin: 1.4em 0 0;
+}
+
+/* TODO: add icons to each option type:
+.node-type-options .node-type-M {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-F {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-U {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-T {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-m {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-i {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-n {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+*/
+
+/* Datepicker style */
+.fuzzy-date-picker {
+  margin-right: -2px;
+}
+.fuzzy-date-picker select {
+  font-family: Arial,Verdana,sans-serif;
+}
+.fuzzy-date-picker .year {
+  font-size: 14px;
+}
+.fuzzy-date-picker .month {
+  font-size: 14px;
+}
+.fuzzy-date-picker .day {
+  font-size: 14px;
+}
+.fuzzy-date-picker .empty {
+  font-size: .7em;
+  opacity: .5;
+}
+.fuzzy-date-picker .year option {
+  /*text-indent: 1em;*/
+}
+.fuzzy-date-picker .year .decade {
+  font-weight: bold;
+  /*text-indent: 0;*/
+}

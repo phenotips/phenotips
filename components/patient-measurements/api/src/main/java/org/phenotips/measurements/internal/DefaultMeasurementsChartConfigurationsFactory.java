@@ -24,6 +24,8 @@ import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
 
 import org.xwiki.component.annotation.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,6 +100,12 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
         /** @see #getRightLabel() */
         private String rightLabel;
+
+        /** @see #getChartSource() */
+        private String chartSource;
+
+        /** @see #getChartSourceLink() */
+        private URL chartSourceLink;
 
         /**
          * Private constructor.
@@ -201,6 +209,18 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
             }
             return this.rightLabel;
         }
+
+        @Override
+        public String getChartSource()
+        {
+            return this.chartSource;
+        }
+
+        @Override
+        public URL getChartSourceLink()
+        {
+            return this.chartSourceLink;
+        }
     }
 
     @Override
@@ -250,6 +270,15 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
                 configuration);
         result.leftLabel = getStringSetting(prefix + "leftLabel", result.leftLabel, configuration);
         result.rightLabel = getStringSetting(prefix + "rightLabel", result.rightLabel, configuration);
+        result.chartSource = getStringSetting(prefix + "chartSource", result.chartSource, configuration);
+        String url = getStringSetting(prefix + "chartSourceLink", null, configuration);
+        if (url != null) {
+            try {
+                result.chartSourceLink = new URL(url);
+            } catch (MalformedURLException e) {
+                this.logger.warn("Invalid URL configured for chart [{}]: [{}]", prefix, url);
+            }
+        }
         return result;
     }
 
