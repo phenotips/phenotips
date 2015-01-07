@@ -35,8 +35,7 @@ function getAge(birthDate, deathDate)
         }
     }
 
-    var years = (new Date(now.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear()
-                - (new Date(birthDate.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear();
+    var years = now.getFullYear() - birthDate.getFullYear() - (now.getDayOfYear() < birthDate.getDayOfYear() ? 1 : 0);
 
     var agestr = "";
 

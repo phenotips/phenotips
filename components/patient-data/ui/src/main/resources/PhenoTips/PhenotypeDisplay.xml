@@ -71,7 +71,14 @@
     #end
     $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
-  {{html clean=false}}$phenotypeDisplayTools.display($data){{/html}}##
+  #set($displayHtml = $phenotypeDisplayTools.display($data))
+  {{html clean=false}}
+    #if('$!{displayHtml}' != "")
+      {{error}}An error has occurred while attempting to display the list of phenotypes. Please check if the Human Phenotype Ontology is indexed or contact an administrator.{{/error}}
+    #else
+      $displayHtml
+    #end
+  {{/html}}##
   $!phenotypeDisplayTools.clear()##
 #end
 {{/velocity}}</content>
