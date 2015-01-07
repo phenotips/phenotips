@@ -102,18 +102,15 @@
       #set($validGroup = true)
       ##check to see if user has permission to transfer ownership
       #set ($adminGroup = $owner + " Administrators")
-      #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup))
+      #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$hasAdmin)
         #set ($cannotTransfer = true)
-     #end
-     #if ($hasAdmin)
-       #set($cannotTransfer = false)
-     #end
-   #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").execute() != "[]")
+      #end
+    #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").execute() != "[]")
       #set($validUser = true)
-   #end
-   #if ( !($validUser || $validGroup))
+    #end
+    #if ( !($validUser || $validGroup))
       #set($invalidOwner = true)
-   #end
+    #end
   #end
   #if (!$patient)
     #set ($discard = $response.setStatus(400))## no patient : bad request
