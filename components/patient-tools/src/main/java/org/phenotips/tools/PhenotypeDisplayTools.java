@@ -55,7 +55,7 @@ public class PhenotypeDisplayTools implements ScriptService
     private static final String MESSAGES_KEY = "pdt.messages";
 
     @Inject
-    Logger logger;
+    private Logger logger;
 
     @Inject
     private Execution execution;
@@ -120,8 +120,8 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public String display(Collection<Map<String, ?>> template)
     {
-        FormData formData = this.replaceOldTerms(this.getFormData());
         try {
+            FormData formData = this.replaceOldTerms(this.getFormData());
             return new PropertyDisplayer(template, formData, this.ontologyService).display();
         } catch (Exception ex) {
             logger.error("An error has occurred while trying to display phenotypes. {}", ex.getMessage(), ex);
