@@ -38,6 +38,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 
 /**
@@ -175,7 +176,7 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
                 firstDoc = termList.get(0);
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
-        } catch (SolrServerException ex) {
+        } catch (SolrServerException | SolrException ex) {
             this.logger.warn("Failed to query ontology version {}", ex.getMessage());
         }
         return null;
