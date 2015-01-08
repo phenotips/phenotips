@@ -177,7 +177,7 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
                 return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology version {}", ex.getMessage());
+            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
         }
         return null;
     }
