@@ -593,9 +593,10 @@ public class DataToCellConverter
         }
         if (present.contains("indication_for_referral")) {
             String indicationForReferral = patient.<String>getData("notes").get("indication_for_referral");
-            DataCell cell = new DataCell(indicationForReferral, x, 0);
-            cell.setMultiline();
-            bodySection.addCell(cell);
+            for (DataCell cell : ConversionHelpers.preventOverflow(indicationForReferral, x, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
             x++;
         }
 
@@ -691,9 +692,10 @@ public class DataToCellConverter
         if (present.contains("family_history")) {
             PatientData<String> notes = patient.<String>getData("notes");
             String familyConditions = notes != null ? notes.get("family_history") : "";
-            DataCell cell = new DataCell(familyConditions, x, 0);
-            cell.setMultiline();
-            bodySection.addCell(cell);
+            for (DataCell cell : ConversionHelpers.preventOverflow(familyConditions, x, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("maternal_ethnicity")) {
@@ -809,9 +811,10 @@ public class DataToCellConverter
         if (present.contains("prenatal_development")) {
             PatientData<String> notes = patient.getData("notes");
             String prenatalNotes = notes != null ? notes.get("prenatal_development") : "";
-            DataCell cell = new DataCell(prenatalNotes, x, 0);
-            cell.setMultiline();
-            bodySection.addCell(cell);
+            for (DataCell cell : ConversionHelpers.preventOverflow(prenatalNotes, x, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("assistedReproduction_fertilityMeds")) {
@@ -1090,9 +1093,10 @@ public class DataToCellConverter
         if (present.contains("notes")) {
             PatientData<String> notes = patient.getData("notes");
             String diagnosisNotes = notes != null ? notes.get("diagnosis_notes") : "";
-            DataCell cell = new DataCell(diagnosisNotes, bodySection.getMaxX() + 1, 0);
-            cell.setMultiline();
-            bodySection.addCell(cell);
+            for (DataCell cell : ConversionHelpers.preventOverflow(diagnosisNotes, bodySection.getMaxX() + 1, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
         }
 
         return bodySection;
@@ -1153,9 +1157,10 @@ public class DataToCellConverter
         if (present.contains("medical_history")) {
             PatientData<String> notes = patient.getData("notes");
             String medicalNotes = notes != null ? notes.get("medical_history") : "";
-            DataCell cell = new DataCell(medicalNotes, x, 0);
-            cell.setMultiline();
-            bodySection.addCell(cell);
+            for (DataCell cell : ConversionHelpers.preventOverflow(medicalNotes, x, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
             x++;
         }
 
