@@ -34,7 +34,7 @@
   <date>1410399468000</date>
   <contentUpdateDate>1410399468000</contentUpdateDate>
   <version>1.1</version>
-  <title>VCF file upload</title>
+  <title>$services.localization.render('phenotips.vcf.title')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -196,7 +196,7 @@
 
 {{velocity}}
 #if ($xcontext.action == 'edit')
-=== Variants ===
+=== $services.localization.render('phenotips.vcf.sheetTitle') ===
 
 #set ($originalObj = $obj)
 #set ($originalClass = $class)
@@ -214,7 +214,7 @@
 #set ($discard = $doc.use($obj))
 (% class="clearfloats" %)((()))
 #elseif ($xcontext.action == 'view' &amp;&amp; $doc.getObject('PhenoTips.VCF').getProperty('filename').value.isEmpty() == false)
-=== Variants ===
+=== $services.localization.render('phenotips.vcf.sheetTitle') ===
 
 [[attach:${doc.getObject('PhenoTips.VCF').getProperty('filename').value}]] (reference genome ${doc.getObject('PhenoTips.VCF').getProperty('reference_genome').value})
 #elseif ($xcontext.action == 'export')
@@ -229,7 +229,7 @@
       <name>org.phenotips.patientSheet.field.vcf</name>
     </property>
     <property>
-      <parameters>title=VCF file upload
+      <parameters>title=$services.localization.render('phenotips.vcf.title')
 enabled=true
 required=
 order=2

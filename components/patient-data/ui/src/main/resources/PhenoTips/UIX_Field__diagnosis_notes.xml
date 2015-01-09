@@ -34,7 +34,7 @@
   <date>1401822210000</date>
   <contentUpdateDate>1401822210000</contentUpdateDate>
   <version>1.1</version>
-  <title>Additional comments</title>
+  <title>$services.localization.render('phenotips.UIXField.diagnosisNotes')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -123,7 +123,7 @@
       <name>org.phenotips.patientSheet.field.diagnosis_notes</name>
     </property>
     <property>
-      <parameters>title=Additional comments
+      <parameters>title=$services.localization.render('phenotips.UIXField.diagnosisNotes')
 enabled=true
 required=
 order=2

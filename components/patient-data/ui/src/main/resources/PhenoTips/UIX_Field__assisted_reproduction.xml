@@ -34,7 +34,7 @@
   <date>1401822217000</date>
   <contentUpdateDate>1401822217000</contentUpdateDate>
   <version>1.1</version>
-  <title>Assisted reproduction</title>
+  <title>$services.localization.render('phenotips.UIXField.assistedReproduction')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -131,7 +131,7 @@ $displayedContent
       <name>org.phenotips.patientSheet.assistedReproduction</name>
     </property>
     <property>
-      <parameters>title=Assisted reproduction
+      <parameters>title=$services.localization.render('phenotips.UIXField.assistedReproduction')
 enabled=true
 required=
 order=2

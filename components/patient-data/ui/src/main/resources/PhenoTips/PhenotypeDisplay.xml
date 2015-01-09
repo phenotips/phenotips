@@ -73,8 +73,8 @@
   #end
   #set($displayHtml = $phenotypeDisplayTools.display($data))
   {{html clean=false}}
-    #if('$!{displayHtml}' != "")
-      {{error}}An error has occurred while attempting to display the list of phenotypes. Please check if the Human Phenotype Ontology is indexed or contact an administrator.{{/error}}
+    #if("$!{displayHtml}" == '')
+      {{error}}$services.localization.render('phenotips.PhenotypeDisplay.error'){{/error}}
     #else
       $displayHtml
     #end

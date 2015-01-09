@@ -336,13 +336,13 @@ document.observe('xwiki:dom:loaded', function() {
         if (!element.__validation) {
           element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
         }
-        element.__validation.add(Validate.Presence, {failureMessage: 'Please enter a value'});
+        element.__validation.add(Validate.Presence, {failureMessage: "$services.localization.render('phenotips.PatientSheetCode.failureEnterValue')"});
       });
       element.select(".mandatory input[type='checkbox']").each(function(element) {
         if (!element.__validation) {
           element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
         }
-        element.__validation.add(Validate.Acceptance, {failureMessage: 'Please tick this checkbox'});
+        element.__validation.add(Validate.Acceptance, {failureMessage: "$services.localization.render('phenotips.PatientSheetCode.failureTickCheck')"});
       });
     });
     return true;
@@ -360,7 +360,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Form validation</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -872,7 +872,7 @@ document.observe('xwiki:dom:loaded', function() {
                      }
                    },
                    {
-                      confirmationText : "Are you sure you wish to delete this information?"
+                      confirmationText : "$services.localization.render('phenotips.PatientSheetCode.deleteConfirmation')"
                    });
                  }
                });// clearTool.observe('click'
@@ -2390,12 +2390,12 @@ document.observe('xwiki:dom:loaded', function() {
                  service.suggestFor._suggestPicker.silent = true;
                  service.suggestFor._suggestPicker.acceptSuggestion({'id' : id, 'value' : name, 'category' : categoryClone, 'negative' : negative});
                  service.suggestFor._suggestPicker.silent = false;
-                 new XWiki.widgets.Notification('Added "' + name + '"', 'done');
+                 new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.added')".replace("__name__", name), 'done');
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
                    existingValue.checked = false;
-                   new XWiki.widgets.Notification('Removed "' + name + '"', 'done');
+                   new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.removed')".replace("__name__", name), 'done');
                  }
                }
             });
@@ -2418,12 +2418,12 @@ document.observe('xwiki:dom:loaded', function() {
                  service.suggestFor._suggestPicker.silent = true;
                  service.suggestFor._suggestPicker.acceptSuggestion(input.__suggestion);
                  service.suggestFor._suggestPicker.silent = false;
-                 new XWiki.widgets.Notification('Added "' + input.__suggestion.value + '"', 'done');
+                 new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.added')".replace("__name__", input.__suggestion.value ), 'done');
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
                    existingValue.up('li').remove();
-                   new XWiki.widgets.Notification('Removed "' + input.__suggestion.value + '"', 'done');
+                   new XWiki.widgets.Notification("$services.localization.render('phenotips.PatientSheetCode.removed')".replace("__name__", input.__suggestion.value), 'done');
                  }
                }
             });
@@ -2561,7 +2561,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Instant searches in the Diagnosis zone</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -3131,7 +3131,7 @@ document.observe('xwiki:dom:loaded', function() {
     },
     validate : function(value) {
       if (this.state == 'DONE') {
-        this.value == value &amp;&amp; (this.valid || Validate.fail("This identifier already exists"));
+        this.value == value &amp;&amp; (this.valid || Validate.fail("$services.localization.render('phenotips.PatientSheetCode.identifierExists')"));
       }
       this.check();
       return true;
@@ -3176,7 +3176,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>ID uniqueness validation</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -3370,8 +3370,7 @@ document.observe('xwiki:dom:loaded', function() {
     </class>
     <property>
       <footer>{{velocity}}{{html clean="false"}}Page &lt;span class="page-number"&gt;&lt;/span&gt; of &lt;span class="page-total"&gt;&lt;/span&gt;
-&lt;div style="margin-top: 1em;font-size: 69.444%"&gt;Patient record last modified by $xwiki.getUserName($tdoc.author, false) on $!xwiki.formatDate($tdoc.date), exported by $xwiki.getUserName($xcontext.user, false)&lt;br/&gt;
-This is a PDF of the PhenoTips record on $xwiki.formatDate($util.date) which may have since been modified. For the latest record please check &lt;a href="$doc.getExternalURL()"&gt;PhenoTips&lt;/a&gt;.&lt;/div&gt;{{/html}}{{/velocity}}</footer>
+&lt;div style="margin-top: 1em;font-size: 69.444%"&gt;$services.localization.render('phenotips.PatientSheetCode.PDFFooterDocInfo', [$xwiki.getUserName($tdoc.author, false), $!xwiki.formatDate($tdoc.date), $xwiki.getUserName($xcontext.user, false)]) &lt;br/&gt; $services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', [$xwiki.formatDate($util.date)])&lt;a href="$doc.getExternalURL()"&gt;PhenoTips&lt;/a&gt;.&lt;/div&gt;{{/html}}{{/velocity}}</footer>
     </property>
     <property>
       <fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;

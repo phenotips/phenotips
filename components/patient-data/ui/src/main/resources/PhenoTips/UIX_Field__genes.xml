@@ -34,7 +34,7 @@
   <date>1401822202000</date>
   <contentUpdateDate>1401822202000</contentUpdateDate>
   <version>1.1</version>
-  <title>Known affected genes</title>
+  <title>$services.localization.render('phenotips.UIXField.genes')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -320,11 +320,11 @@
   var geneSuggestOptions = {
             script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",
             varname: "q",
-            noresults: "No matching gene names",
+            noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",
             json: true,
             resultsParameter : "docs",
-            resultId : "symbol",
-            resultValue : "symbol",
+            resultId : "$services.localization.render('phenotips.UIXField.genes.symbol')",
+            resultValue : "$services.localization.render('phenotips.UIXField.genes.symbol')",
             resultAltName : "alias_symbol",
             enableHierarchy: false,
             tooltip : 'gene-info',
@@ -355,7 +355,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -538,7 +538,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #set ($targetClassName = 'PhenoTips.InvestigationClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
-  === List of candidate genes ===
+  === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
 
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'rejectToClass' : "RejectedGenesClass"})
 #end
@@ -551,7 +551,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
       <name>org.phenotips.patientSheet.field.genes</name>
     </property>
     <property>
-      <parameters>title=Candidate genes
+      <parameters>title=$services.localization.render('phenotips.UIXField.genes')
 enabled=true
 required=
 order=1

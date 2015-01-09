@@ -34,7 +34,7 @@
   <date>1416544855000</date>
   <contentUpdateDate>1416514204000</contentUpdateDate>
   <version>1.1</version>
-  <title>UIX_Field__rejected_genes</title>
+  <title>$services.localization.render('phenotips.UIXField.rejectedGenes')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -284,7 +284,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__rejected_genes')##
 #set ($targetClassName = 'PhenoTips.RejectedGenesClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
-  === List of rejected genes ===
+  === $services.localization.render('phenotips.UIXField.rejectedGenes.list') ===
 
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
@@ -297,7 +297,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__rejected_genes')##
       <name>org.phenotips.patientSheet.field.rejected_genes</name>
     </property>
     <property>
-      <parameters>title=Rejected genes
+      <parameters>title=$services.localization.render('phenotips.UIXField.rejectedGenes')
 enabled=true
 required=
 order=2
