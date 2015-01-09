@@ -309,4 +309,68 @@ public class ConversionHelpers
             return NA;
         }
     }
+
+    /**
+     * MS excel is unable to open a spreadsheet with cells containing more than 32k characters. To prevent that, the
+     * cell's contents are split into several cells, which are positioned under each other.
+     *
+     * @param value the value for a {@link org.phenotips.export.internal.DataCell}, which is checked to be shorter than
+     * 32k characters. Can be {@link null}
+     * @param x the initial x position for the returned cells
+     * @param y the initial y position for the returned cells
+     * @return a list of {@link org.phenotips.export.internal.DataCell}s, which in combination will contain the whole
+     * string passed in under `value` parameter
+     */
+    public static List<DataCell> preventOverflow(String value, int x, int y)
+    {
+        // 30000 instead of 32000; just to be on the safe side
+        final int maxSize = 30000;
+        List<DataCell> processed = new LinkedList<>();
+        if (value == null || value.length() < maxSize) {
+            processed.add(new DataCell(value, x, y));
+        } else {
+            int iY = y;
+            List<String> chunks = new LinkedList<>();
+            determineSplit(value, maxSize, chunks);
+            for (String chunk : chunks) {
+                processed.add(new DataCell(chunk, x, iY));
+                iY++;
+            }
+        }
+        return processed;
+    }
+
+    /**
+     * Splits a sting into chunks with size equal or smaller than the specified guided by paragraphs and sentences.
+     */
+    private static void determineSplit(String value, int chunkSizeLimit, List<String> holder)
+    {
+        final int tailSize = 1000;
+        final String newline = "\n";
+        final String period = ".";
+        // Relative to the tail start
+        int chunkEndIndex;
+        String chunkTail = value.substring(chunkSizeLimit - tailSize, chunkSizeLimit);
+
+        if (chunkTail.contains(newline)) {
+            chunkEndIndex = chunkTail.lastIndexOf(newline) + newline.length();
+        } else if (chunkTail.contains(period)) {
+            chunkEndIndex = chunkTail.lastIndexOf(period) + period.length();
+        } else {
+            chunkEndIndex = chunkTail.lastIndexOf(" ") + 1;
+        }
+        /* In case all checks failed, splitting at maximum length */
+        chunkEndIndex = chunkEndIndex < 0 ? tailSize : chunkEndIndex;
+
+        int chunkSize = chunkSizeLimit - tailSize + chunkEndIndex;
+        String chunk = value.substring(0, chunkSize);
+        String chunkOverflow = value.substring(chunkSize);
+
+        holder.add(chunk.trim());
+        if (chunkOverflow.length() > chunkSizeLimit) {
+            determineSplit(chunkOverflow, chunkSizeLimit, holder);
+        } else {
+            holder.add(chunkOverflow.trim());
+        }
+    }
 }
