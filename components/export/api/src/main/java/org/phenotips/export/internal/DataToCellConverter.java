@@ -1082,9 +1082,6 @@ public class DataToCellConverter
                 cell.setMultiline();
                 bodySection.addCell(cell);
             }
-//            DataCell cell = new DataCell(diagnosisNotes, bodySection.getMaxX() + 1, 0);
-//            cell.setMultiline();
-//            bodySection.addCell(cell);
         }
 
         return bodySection;
@@ -1149,9 +1146,6 @@ public class DataToCellConverter
                 cell.setMultiline();
                 bodySection.addCell(cell);
             }
-//            DataCell cell = new DataCell(medicalNotes, x, 0);
-//            cell.setMultiline();
-//            bodySection.addCell(cell);
             x++;
         }
 

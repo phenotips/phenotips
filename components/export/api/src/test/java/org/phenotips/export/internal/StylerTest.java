@@ -226,6 +226,7 @@ public class StylerTest
         verify(dataCell).getStyles();
         verify(style, times(1)).setWrapText(true);
         verify(style, times(1)).setFont(any(Font.class));
+        verify(style, times(1)).setVerticalAlignment(any(short.class));
         verify(cell, times(1)).setCellStyle(style);
         verifyNoMoreInteractions(style);
         /* This is the only one that's important. */

@@ -342,6 +342,7 @@ public class ConversionHelpers
 
     /**
      * Splits a sting into chunks with size equal or smaller than the specified guided by paragraphs and sentences.
+     * @param holder there are side effects on this variable; chunks are recursively added into this list
      */
     private static void determineSplit(String value, int chunkSizeLimit, List<String> holder)
     {
@@ -349,7 +350,7 @@ public class ConversionHelpers
         final String newline = "\n";
         final String period = ".";
         // Relative to the tail start
-        int chunkEndIndex;
+        int chunkEndIndex = -1;
         String chunkTail = value.substring(chunkSizeLimit - tailSize, chunkSizeLimit);
 
         if (chunkTail.contains(newline)) {

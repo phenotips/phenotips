@@ -268,6 +268,7 @@ public class Styler
             this.defaultFont = createDefaultFont(wBook);
         }
         cellStyle.setFont(this.defaultFont);
+        cellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
 
         /* If the DataCell's styles is not set, gives default style, and indicates that this function should return. */
         if (this.setDefaultStyle(styles, cell, cellStyle)) {
