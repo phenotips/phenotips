@@ -264,8 +264,7 @@ public class DataToCellConverter
         String[] fieldIds = { "genes", "genes_comments", "rejectedGenes", "rejectedGenes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "genes", "candidate" }, { "genes", "comments", "candidate" }, { "genes", "rejected" },
-            { "genes", "rejected_comments", "rejected" } };
+        { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -320,6 +319,8 @@ public class DataToCellConverter
         if (present == null || present.isEmpty()) {
             return null;
         }
+        // empties should be created in the case that there are no genes to write
+        boolean hasGenes = false;
 
         DataSection section = new DataSection();
         int y = 0;
@@ -330,6 +331,7 @@ public class DataToCellConverter
                 DataCell cell = new DataCell("Candidate", 0, y);
                 section.addCell(cell);
                 for (Map<String, String> candidateGene : candidateGenes) {
+                    hasGenes = true;
                     String geneName = candidateGene.get("gene");
                     cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
@@ -349,6 +351,7 @@ public class DataToCellConverter
                 DataCell cell = new DataCell("Previously tested", 0, y, StyleOption.YES_NO_SEPARATOR);
                 section.addCell(cell);
                 for (Map<String, String> rejectedGene : rejectedGenes) {
+                    hasGenes = true;
                     String geneName = rejectedGene.get("gene");
                     cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
@@ -360,6 +363,18 @@ public class DataToCellConverter
                     }
                     y++;
                 }
+            }
+        }
+
+        /* Creating empties */
+        if (!hasGenes) {
+            /* Status, and gene name columns are always present */
+            int columns = present.contains("comments") || present.contains("rejected_comments") ? 3 : 2;
+            Integer emptyX = 0;
+            for (int i = 0; i < columns; i++) {
+                DataCell cell = new DataCell("", emptyX, 0);
+                section.addCell(cell);
+                emptyX++;
             }
         }
 
