@@ -95,7 +95,7 @@
   #foreach ($entry in $valueMapping)
     #if ("$!entry.evaluation" != '')
       #set ($dValue = $entry.evaluation)
-    #elseif ("$!entry.value" == '' || $entry.percentile &lt; 0)
+    #elseif ("$!entry.value" == '' || $entry.percentile &lt; 0 || "$!{entry.percentile}" == '' || "$!{entry.deviation}" == '')
       #set ($dValue = '-')
     #else
       #set ($pValue = $entry.percentile)
