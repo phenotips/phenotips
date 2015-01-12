@@ -1531,6 +1531,7 @@ document.observe('xwiki:dom:loaded', function() {
     _updateDataRow : function(row) {
       // Generate the query string to pass to the measurement evaluation service
       var qs = this._createRowQueryString(row);
+      if (qs == '') {return;}
 
       var sex = $(document.documentElement).down('input[name$=gender]:checked');
       var requestID = ++this.lastRequestID;

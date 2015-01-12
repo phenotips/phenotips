@@ -172,7 +172,6 @@
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
-
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -531,7 +530,6 @@
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
-
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -910,7 +908,6 @@
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
-
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
