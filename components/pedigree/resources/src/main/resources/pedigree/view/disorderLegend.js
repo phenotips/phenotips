@@ -12,12 +12,6 @@ var DisorgerLegend = Class.create( Legend, {
         $super('Disorders', true);
 
         this._disorderCache = {};
-        
-        this._specialDisordersRegexps = [new RegExp("^1BrCa", "i"),
-                                         new RegExp("^2BrCa", "i"),
-                                         new RegExp("^OvCa",  "i"),
-                                         new RegExp("^ProCa", "i"),
-                                         new RegExp("^PanCa", "i") ];
     },
 
     _getPrefix: function(id) {
@@ -133,19 +127,6 @@ var DisorgerLegend = Class.create( Legend, {
     _generateColor: function(disorderID) {
         if(this._objectColors.hasOwnProperty(disorderID)) {
             return this._objectColors[disorderID];
-        }
-
-        // check special disorder prefixes
-        for (var i = 0; i < this._specialDisordersRegexps.length; i++) {
-            if (disorderID.match(this._specialDisordersRegexps[i]) !== null) {
-                for (var disorder in this._objectColors) {
-                    if (this._objectColors.hasOwnProperty(disorder)) {
-                        if (disorder.match(this._specialDisordersRegexps[i]) !== null)
-                            return this._objectColors[disorder];
-                    }
-                }
-                break;
-            }
         }
 
         var usedColors = Object.values(this._objectColors),

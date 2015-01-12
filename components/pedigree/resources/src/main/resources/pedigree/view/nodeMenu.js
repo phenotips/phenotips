@@ -507,7 +507,7 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var datePicker = new Element('input', {type: 'text', 'class': 'fuzzy-date', name: data.name, 'title': data.format, alt : '' });
             result.inputsContainer.insert(datePicker);
-            datePicker._getValue = function() { console.log("DATE UPDATE: " + this.value); return [new PedigreeDate(JSON.parse(this.value))]; }.bind(datePicker);
+            datePicker._getValue = function() { /*console.log("DATE UPDATE: " + this.value);*/ return [new PedigreeDate(JSON.parse(this.value))]; }.bind(datePicker);
             this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
             return result;
         },
@@ -616,10 +616,12 @@ NodeMenu = Class.create({
             var select = new Element('select', {'name' : data.name});
             result.inputsContainer.insert(select);
             select.wrap('span');
+            // using raw HTML for options for performace reasons: generating e.g. 50 different gestation week
+            // options is noticeably slow when using more generic methods (e.g. new Element("option"))
+            var optionHTML = "";
             var _generateSelectOption = function(v) {
-              var option = new Element('option', {'value' : v.actual}).update(v.displayed);
-              select.insert(option);
-            };
+                optionHTML += '<option value="' + v.actual + '">' + v.displayed + '</option>';
+              };
             if(data.nullValue) {
                 _generateSelectOption({'actual' : '', displayed : '-'});
             }
@@ -628,8 +630,118 @@ NodeMenu = Class.create({
             } else if (data.range) {
                 $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
             }
+            select.innerHTML = optionHTML;
             select._getValue = function() { return [(this.selectedIndex >= 0) && this.options[this.selectedIndex].value || '']; }.bind(select);
             this._attachFieldEventListeners(select, ['change']);
+            return result;
+        },
+        'cancerlist' : function (data) {
+            //var timer = new Timer();
+            var result = this._generateEmptyField(data);
+            var cancerList = editor.getCancerLegend()._getAllSupportedCancers();
+
+            var div = new Element('div', {'class': 'cancer_field cancer-header'} );
+            var label1 = new Element('label', {'class': 'cancer_label_field'} ).update("Name");
+            var label2 = new Element('label', {'class': 'cancer_status_select'} ).update("Status");
+            var label3 = new Element('label', {'class': ''} ).update("Age at diagnosis");
+            div.insert(label1).insert(label2).insert(label3);
+            result.inputsContainer.insert(div);
+
+            // create once and clone for each cancer - it takes too much time to create all elements anew each time
+            // (for performace reasons also using raw HTML for options)
+            var selectAgeProto = new Element('select', {'name': data.name});
+            var optionsHTML = "<option value=''></option>";
+            var maxAge = 100;
+            for (var age = 1; age <= maxAge; age++) {
+                if (age % 10 == 0 || age == 1) {
+                    optionsHTML += '<option value="before_' + age + '">before age ' + age + '</option>';
+                }
+                optionsHTML += '<option value="' + age + '">at age ' + age + '</option>';
+            }
+            optionsHTML += '<option value="after_' + maxAge + '">after age ' + maxAge + '</option>';
+            selectAgeProto.innerHTML = optionsHTML;
+            selectAgeProto.disable();
+
+            var selectProto = new Element('select', {'name': data.name, "class": "cancer_status_select"});
+            selectProto.innerHTML = "<option value=''>Not tested</option>" +
+                                    "<option value='affected'>Affected</option>" +
+                                    "<option value='unaffected'>Unaffected</option>";
+
+            var cancersUIElements = [];
+            for (var i = 0; i < cancerList.length; i++) {
+                var cancerName = cancerList[i];
+                var div = new Element('div', {'class': 'cancer_field'} );
+                var label = new Element('label', {'class': 'cancer_label_field'} ).update(cancerName);
+
+                var selectAge = selectAgeProto.cloneNode(true);
+                selectAge.id = "cancer_age_" + cancerName;
+
+                var select = selectProto.cloneNode(true);
+                select.id = "cancer_status_" + cancerName;
+
+                cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge});
+
+                select._getValue = function() {
+                    var data = {};
+                    for (var i = 0; i < cancersUIElements.length; i++) {
+                        var nextCancer = cancersUIElements[i];
+
+                        var statusTxt = (nextCancer.status.selectedIndex >= 0) ? nextCancer.status.options[nextCancer.status.selectedIndex].value : '';
+                        var ageTxt    = (nextCancer.age.selectedIndex >= 0) ? nextCancer.age.options[nextCancer.age.selectedIndex].value : '';
+
+                        if (statusTxt && statusTxt != "") {
+
+                            var status = (statusTxt == "affected") ? true : false;
+
+                            var ageNumeric = 0;
+                            if (isInt(ageTxt)) {
+                                ageNumeric = parseInt(ageTxt);
+                            } else {
+                                var before = ageTxt.match(/before_(\d+)/);
+                                if (before) {
+                                    ageNumeric = before[1] - 5;
+                                    if (ageNumeric < 0) ageNumeric = 0;
+                                }
+                                var after = ageTxt.match(/after_(\d+)/);
+                                if (after) {
+                                    ageNumeric = after[1];
+                                }
+                            }
+
+                            data[nextCancer.name] = { "affected": status,
+                                                      "ageAtDiagnosis": ageTxt,
+                                                      "numericAgeAtDiagnosis": ageNumeric };
+                        }
+                    }
+                    return [ data ];
+                };
+                selectAge._getValue = select._getValue;
+
+                this._attachFieldEventListeners(select, ['change']);
+                this._attachFieldEventListeners(selectAge, ['change']);
+
+                var genSelectFunction = function(select, selectAge) {
+                    return function() {
+                        if (select.selectedIndex > 0) {
+                            selectAge.enable();
+                        } else {
+                            selectAge.selectedIndex = 0;
+                            selectAge.disable();
+                        }
+                    }
+                }
+                var events = ['change'];
+                browser.isGecko && events.push('keyup');
+                events.each(function(eventName) {
+                    var selFunc = genSelectFunction(select, selectAge);
+                    select.observe(eventName, function() {
+                        selFunc();
+                    });
+                });
+                div.insert(label).insert(select).insert(selectAge);
+                result.inputsContainer.insert(div);
+            }
+            //console.log( "=== Generate cancers time: " + timer.report() + "ms ==========" );
             return result;
         },
         'hidden' : function (data) {
@@ -749,13 +861,13 @@ NodeMenu = Class.create({
 
     _setCrtData : function (data) {
         var _this = this;
-        Object.keys(this.fieldMap).each(function (name) {            
+        Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
-            _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
+            _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
         });
     },
@@ -814,6 +926,10 @@ NodeMenu = Class.create({
             var yearSelect = container.down('select.year');
             if (yearSelect) {
                 var option = yearSelect.down('option[value=' + year + ']');
+                if (!option) {
+                    option = new Element("option", {"value": year}).update(year.toString());
+                    yearSelect.insert(option);
+                }
                 if (option && !option.selected) {
                     option.selected = true;
                     updated = true;
@@ -907,6 +1023,44 @@ NodeMenu = Class.create({
                 target.selected = 'selected';
             }
         },
+        'cancerlist': function (container, value) {
+            var cancerList = editor.getCancerLegend()._getAllSupportedCancers();
+
+            for (var i = 0; i < cancerList.length; i++) {
+                var cancerName   = cancerList[i];
+
+                var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
+                var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
+
+                if (value.hasOwnProperty(cancerName)) {
+                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) { 
+                        var optionStatus = statusSelect.down('option[value="affected"]');
+                    } else {
+                        var optionStatus = statusSelect.down('option[value="unaffected"]');
+                    }
+
+                    if (value[cancerName].hasOwnProperty("ageAtDiagnosis")) {
+                        var ageOption = ageSelect.down('option[value="' + value[cancerName].ageAtDiagnosis + '"]');
+                    } else {
+                        var ageOption = ageSelect.down('option[value=""]');
+                    }
+
+                    ageSelect.enable();
+                } else {
+                    var optionStatus = statusSelect.down('option[value=""]');
+
+                    var ageOption = ageSelect.down('option[value=""]');
+
+                    ageSelect.disable();
+                }
+                if (optionStatus) {
+                    optionStatus.selected = 'selected';
+                }
+                if (ageOption) {
+                    ageOption.selected = 'selected';
+                }
+            }
+        },
         'hidden' : function (container, value) {
             var target = container.down('input[type=hidden]');
             if (target) {
@@ -997,6 +1151,9 @@ NodeMenu = Class.create({
                 });
             }
         },
+        'cancerlist' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
         'hidden' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         }
@@ -1004,15 +1161,9 @@ NodeMenu = Class.create({
 
     _setFieldDisabled : {
         'radio' : function (container, disabled) {
-            if (disabled === true) {
-                container.addClassName('hidden');
-            } else {
-                container.removeClassName('hidden');
-                container.select('input[type=radio]').each(function(item) {
-                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')
-                        item.disabled = (disabled.indexOf(item.value) >= 0);
-                    if (!disabled)
-                        item.disabled = false;
+            if (disabled && Object.prototype.toString.call(disabled) === '[object Array]') {
+                    container.select('input[type=radio]').each(function(item) {
+                    item.disabled = (disabled.indexOf(item.value) >= 0);
                 });
             }
         },
@@ -1047,6 +1198,9 @@ NodeMenu = Class.create({
             // FIXME: Not implemented
         },
         'select' : function (container, inactive) {
+            // FIXME: Not implemented
+        },
+        'cancerlist' : function (container, inactive) {
             // FIXME: Not implemented
         },
         'hidden' : function (container, inactive) {

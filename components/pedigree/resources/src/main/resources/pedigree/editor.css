@@ -784,6 +784,22 @@
   margin: 1.4em 0 0;
 }
 
+.cancer_field {
+  margin-top: 0.7em;
+}
+.cancer-header {
+  margin-bottom: 1em;
+  color: #888;
+}
+.cancer_label_field {
+  display: inline-block;
+  width: 100px;
+}
+.cancer_status_select {
+  display: inline-block;
+  width: 100px;
+  margin-right: 15px;
+}
 /* TODO: add icons to each option type:
 .node-type-options .node-type-M {
   background-image: url("$xwiki.getSkinFile('.png')");

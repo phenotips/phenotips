@@ -177,7 +177,7 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
 PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
 {
    var output = "BOADICEA import pedigree file format 2.0\n";
-   output    += "FamilyID\tName\tTarget\tIndivID\tFathID\tMothID\tSex\tTwin\tDead\tAge\tYob\tNot_implemented_yet_except_Ahkenazi\n";
+   output    += "FamilyID\tName\tTarget\tIndivID\tFathID\tMothID\tSex\tTwin\tDead\tAge\tYob\t1BrCa\t2BrCa\tOvCa\tProCa\tPanCa\tGtest\tMutn\tAshkn\tNot_implemented_yet\n";
 
    var familyID = XWiki.currentDocument.page;
 
@@ -244,9 +244,48 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        }
        output += age + "\t" + yob + "\t";
 
-       output += "0\t0\t0\t0\t0\t";   // unimplemented fields: age at cancer detection
+       // TODO: Contralateral breast cancer export/field?
+       var cancerSequence = [ "Breast", "", "Ovarian", "Prostate", "Pancreatic" ];
 
-       output += "0\t0\t";            // unimplemented fields: Genetic test status + mutations
+       for (var c = 0; c < cancerSequence.length; c++) {
+           cancer = cancerSequence[c];
+           if (cancer == "" || !pedigree.GG.properties[i].hasOwnProperty("cancers")) {
+               output += "AU\t";
+               continue;
+           }
+
+           if (pedigree.GG.properties[i].cancers.hasOwnProperty(cancer)) {
+               var cancerData = pedigree.GG.properties[i].cancers[cancer];
+               if (!cancerData.affected) {
+                   output += "0\t";
+               } else {
+                   var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") ? cancerData.numericAgeAtDiagnosis : 1;
+                   output += ageAtDetection.toString() + "\t";
+               }
+           }
+       }
+
+       output += "0\t"; // TODO: Genetic test status
+
+       // BRCA1/BRCA2 mutations
+       if (pedigree.GG.properties[i].hasOwnProperty("candidateGenes")) {
+           var genes = pedigree.GG.properties[i].candidateGenes;
+           var status = "0";
+           if (arrayIndexOf(genes, "BRCA1") >= 0) {
+               status = "1";
+           }
+           if (arrayIndexOf(genes, "BRCA2") >= 0) {
+               if (status == "1") {
+                   status = "3";
+               } else {
+                   status = "2";
+               }
+           }
+           // TODO: if BRCA1 and/or BRCA2 are among rejected genes set status to "N"
+           output += status + "\t";
+       } else {
+           output += "0\t";
+       }
 
        var ashkenazi = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("ethnicities")) {
@@ -298,7 +337,8 @@ PedigreeExport.internalToJSONPropertyMapping = {
         "hpoTerms":      "hpoTerms",
         "candidateGenes":"candidateGenes",
         "lostContact":   "lostContact",
-        "nodeNumber":    "nodeNumber"
+        "nodeNumber":    "nodeNumber",
+        "cancers":       "cancers"
     };
 
 /*
