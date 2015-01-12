@@ -303,7 +303,7 @@ $xwiki.ssx.use($displayDocumentName)##
       <displayInCategory>phenotips</displayInCategory>
     </property>
     <property>
-      <displayInSection>Receive Patient configuration</displayInSection>
+      <displayInSection>receivepatientconfig</displayInSection>
     </property>
     <property>
       <heading/>

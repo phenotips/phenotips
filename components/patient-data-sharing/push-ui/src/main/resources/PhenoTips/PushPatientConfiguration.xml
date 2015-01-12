@@ -279,7 +279,7 @@ $xwiki.ssx.use($displayDocumentName)##
       <displayInCategory>phenotips</displayInCategory>
     </property>
     <property>
-      <displayInSection>Push Patient configuration</displayInSection>
+      <displayInSection>pushpatientconfig</displayInSection>
     </property>
     <property>
       <heading>Target servers</heading>
