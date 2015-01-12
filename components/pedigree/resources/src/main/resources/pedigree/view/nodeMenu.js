@@ -613,12 +613,10 @@ NodeMenu = Class.create({
         },
         'select' : function (data) {
             var result = this._generateEmptyField(data);
-            var select = new Element('select', {'name' : data.name});
-            result.inputsContainer.insert(select);
-            select.wrap('span');
+            var span = new Element('span');
             // using raw HTML for options for performace reasons: generating e.g. 50 different gestation week
             // options is noticeably slow when using more generic methods (e.g. new Element("option"))
-            var optionHTML = "";
+            var optionHTML = '<select name="' + data.name + '">';
             var _generateSelectOption = function(v) {
                 optionHTML += '<option value="' + v.actual + '">' + v.displayed + '</option>';
               };
@@ -630,7 +628,10 @@ NodeMenu = Class.create({
             } else if (data.range) {
                 $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
             }
-            select.innerHTML = optionHTML;
+            optionHTML += "</select>";
+            span.innerHTML = optionHTML;
+            select = span.firstChild;
+            result.inputsContainer.insert(span);
             select._getValue = function() { return [(this.selectedIndex >= 0) && this.options[this.selectedIndex].value || '']; }.bind(select);
             this._attachFieldEventListeners(select, ['change']);
             return result;
@@ -648,9 +649,10 @@ NodeMenu = Class.create({
             result.inputsContainer.insert(div);
 
             // create once and clone for each cancer - it takes too much time to create all elements anew each time
-            // (for performace reasons also using raw HTML for options)
-            var selectAgeProto = new Element('select', {'name': data.name});
-            var optionsHTML = "<option value=''></option>";
+            // (Note1: for performace reasons also using raw HTML for options)
+            // (Note2: using span around select because IE9 does not allow setting innerHTML of <select>-s)
+            var spanAgeProto = new Element('span');
+            var optionsHTML = '<select name="' + data.name + '"><option value=""></option>';
             var maxAge = 100;
             for (var age = 1; age <= maxAge; age++) {
                 if (age % 10 == 0 || age == 1) {
@@ -658,14 +660,14 @@ NodeMenu = Class.create({
                 }
                 optionsHTML += '<option value="' + age + '">at age ' + age + '</option>';
             }
-            optionsHTML += '<option value="after_' + maxAge + '">after age ' + maxAge + '</option>';
-            selectAgeProto.innerHTML = optionsHTML;
-            selectAgeProto.disable();
+            optionsHTML += '<option value="after_' + maxAge + '">after age ' + maxAge + '</option></select>';
+            spanAgeProto.innerHTML = optionsHTML;
 
-            var selectProto = new Element('select', {'name': data.name, "class": "cancer_status_select"});
-            selectProto.innerHTML = "<option value=''>Not tested</option>" +
-                                    "<option value='affected'>Affected</option>" +
-                                    "<option value='unaffected'>Unaffected</option>";
+            var spanSelectProto = new Element('span');
+            spanSelectProto.innerHTML = "<select name='"+data.name+"' class='cancer_status_select'>" +
+                                        "<option value=''>Not tested</option>" +
+                                        "<option value='affected'>Affected</option>" +
+                                        "<option value='unaffected'>Unaffected</option></select>";
 
             var cancersUIElements = [];
             for (var i = 0; i < cancerList.length; i++) {
@@ -673,10 +675,13 @@ NodeMenu = Class.create({
                 var div = new Element('div', {'class': 'cancer_field'} );
                 var label = new Element('label', {'class': 'cancer_label_field'} ).update(cancerName);
 
-                var selectAge = selectAgeProto.cloneNode(true);
+                var spanAge   = spanAgeProto.cloneNode(true);
+                var selectAge = spanAge.firstChild;
+                selectAge.disable();
                 selectAge.id = "cancer_age_" + cancerName;
 
-                var select = selectProto.cloneNode(true);
+                var spanSelect = spanSelectProto.cloneNode(true);
+                var select = spanSelect.firstChild;
                 select.id = "cancer_status_" + cancerName;
 
                 cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge});
@@ -738,7 +743,7 @@ NodeMenu = Class.create({
                         selFunc();
                     });
                 });
-                div.insert(label).insert(select).insert(selectAge);
+                div.insert(label).insert(spanSelect).insert(spanAge);
                 result.inputsContainer.insert(div);
             }
             //console.log( "=== Generate cancers time: " + timer.report() + "ms ==========" );
@@ -1031,6 +1036,12 @@ NodeMenu = Class.create({
 
                 var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                 var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
+
+                if (!statusSelect) {
+                    // unsupported cancer?
+                    alert("This patient is reported to have an unsupported cancer '" + cancerName + "'");
+                    continue;
+                }
 
                 if (value.hasOwnProperty(cancerName)) {
                     if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) { 
