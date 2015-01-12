@@ -296,6 +296,10 @@
   margin-bottom: -3px !important;
   list-style: none;
   float: left;
+  -webkit-border-top-left-radius: 0.8em;
+  -webkit-border-top-right-radius: 0.8em;
+  -webkit-border-bottom-right-radius: 0;
+  -webkit-border-bottom-left-radius: 0;
   border-radius: 0.8em 0.8em 0 0;
 }
 .menu-box .tabs dd.active {
