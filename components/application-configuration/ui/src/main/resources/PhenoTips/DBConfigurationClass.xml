@@ -67,7 +67,7 @@ $!value
       <name>dateOfBirthFormat</name>
       <number>5</number>
       <picker>0</picker>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.dateOfBirthFormat')</prettyName>
+      <prettyName>Date of birth format</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -82,7 +82,7 @@ $!value
       <displayType/>
       <name>enableImperialUnitSystem</name>
       <number>6</number>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.enableImperialUnitSystem')</prettyName>
+      <prettyName>Enable imperial unit system for entering measurements</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -121,7 +121,7 @@ $!value
       <name>livetableColumns</name>
       <number>8</number>
       <picker>0</picker>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livetableColumns')</prettyName>
+      <prettyName>Livetable columns</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -139,7 +139,7 @@ $!value
       <name>livetableRows</name>
       <number>10</number>
       <numberType>integer</numberType>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livatebleRows')</prettyName>
+      <prettyName>Number of rows to display by default</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -164,7 +164,7 @@ $!value
       <name>livetableSortColumn</name>
       <number>9</number>
       <picker>0</picker>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.livetableSortColumn')</prettyName>
+      <prettyName>Column to sort by default</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -175,7 +175,7 @@ $!value
       <cache>0</cache>
       <customDisplay>{{velocity}}
 #if ($value != 'imperial')#set ($value = 'metric')#end
-{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('phenotips.DBConfigurationClass.metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('phenotips.DBConfigurationClass.imperial')&lt;/label&gt;&lt;/p&gt;
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
 &lt;br/&gt;
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
@@ -184,7 +184,7 @@ $!value
       <name>measurementUnitSystem</name>
       <number>7</number>
       <picker>0</picker>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.measurementUnitSystem')</prettyName>
+      <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -193,7 +193,7 @@ $!value
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>metric=$services.localization.render('phenotips.DBConfigurationClass.metric')|imperial=$services.localization.render('phenotips.DBConfigurationClass.imperial')</values>
+      <values>metric=Metric|imperial=Imperial</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </measurementUnitSystem>
     <phenotypeMapping>
@@ -207,7 +207,7 @@ $!value
       <name>phenotypeMapping</name>
       <number>4</number>
       <picker>0</picker>
-      <prettyName>$services.localization.render('phenotips.DBConfigurationClass.phenotypeMapping')Phenotype configuration document</prettyName>
+      <prettyName>Phenotype configuration document</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>

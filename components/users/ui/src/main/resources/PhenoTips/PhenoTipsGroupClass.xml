@@ -882,7 +882,7 @@ $xwiki.jsx.use($groupClassName)
 
 #else
 
-{{info}}$services.localization.render('phenotips.homepage.groups.noGroupsMessage')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.homepage.groups.noGroupsMessage') »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.groups.noGroupsMessage')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.homepage.groups.manageGroups')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
 #end
 #else

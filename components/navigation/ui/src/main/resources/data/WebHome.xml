@@ -1912,7 +1912,7 @@ To write a custom message, you can remove the existing code and write your messa
       <position>1,2</position>
     </property>
     <property>
-      <title>$services.localization.render('phenotips.homepage.groups.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.groups.moreGroups') »&gt;&gt;Groups.WebHome]]</title>
+      <title>$services.localization.render('phenotips.homepage.groups.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.groups.moreGroups')&gt;&gt;Groups.WebHome]]</title>
     </property>
   </object>
   <object>
@@ -2024,7 +2024,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('mypatients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}$services.localization.render('phenotips.homepage.myData.configurationMissing'){{/warning}}
+{{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}
 #end
 #else
 {{info}}$services.localization.render('phenotips.homepage.myData.noDataMessage'){{/info}}
@@ -2172,7 +2172,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('sharedpatients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}$services.localization.render('phenotips.homepage.sharedData.configurationMissing'){{/warning}}
+{{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}
 #end
 #else
 {{info}}$services.localization.render('phenotips.homepage.sharedData.noDataMessage'){{/info}}
@@ -2186,7 +2186,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>2,2</position>
     </property>
     <property>
-      <title>$services.localization.render('phenotips.homepage.sharedData.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.sharedData.allData') »&gt;&gt;data.AllData]]</title>
+      <title>$services.localization.render('phenotips.homepage.sharedData.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.sharedData.allData')&gt;&gt;data.AllData]]</title>
     </property>
   </object>
   <object>
@@ -2399,7 +2399,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
-          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.searchPlaceHolder')" size="20"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.search.placeholder')" size="20"/&gt;
         &lt;/div&gt;
       #end
     &lt;/div&gt;

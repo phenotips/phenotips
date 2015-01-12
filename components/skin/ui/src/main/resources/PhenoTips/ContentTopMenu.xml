@@ -387,7 +387,7 @@
   // Warn users when they navigate away from this page without submitting the form, if the data changed
   /*window.onbeforeunload = function(uEvent) {
     if (originalFormData != form.serialize()) {
-      return "There are unsaved changes on this page. Are you sure you wish to leave?";
+      return "$services.localization.render('phenotips.contentTopMenu.unsavedDataWarning')";
     }
   };
   form.observe('submit', function(event) {
@@ -480,7 +480,7 @@
       <name>Fix uncancellable object changes</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -685,7 +685,7 @@
          }
       },
       /* Interaction parameters */
-      { confirmationText: "Save before exporting?", showCancelButton: true }
+      { confirmationText: "$services.localization.render('phenotips.contentTopMenu.saveBeforeExport')", showCancelButton: true }
     );
   });
 });</code>
@@ -694,7 +694,7 @@
       <name>Prompt to save before exporting in edit mode</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>currentPage</use>
@@ -1131,20 +1131,20 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 * [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
 #end## HAS DELETE
 #else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
-* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="$services.localization.render('patient.header.save')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="$services.localization.render('phenotips.contentTopMenu.save')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="$services.localization.render('saveandcontinue')" title="$services.localization.render('saveandcontinue')" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
 ** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="$services.localization.render('saveandview')" title="$services.localization.render('saveandview')" name="action_save"/&gt;&lt;/label&gt;{{/html}}
-* {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('patient.header.cancel')" title="$services.localization.render('patient.header.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
+* {{html clean="false"}}&lt;span class="fa fa-fw fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="$services.localization.render('phenotips.contentTopMenu.cancel')" title="$services.localization.render('phenotips.contentTopMenu.cancel.title')" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
 #end## DONE WITH EDIT MODE SPECIFIC ACTIONS
-* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-list"&gt; &lt;/span&gt;&lt;span id="toc-entry"&gt;$services.localization.render('patient.header.navigation')&lt;/span&gt;{{/html}}
+* (% class="xDropdown" %){{html clean="false"}}&lt;span class="fa fa-fw fa-list"&gt; &lt;/span&gt;&lt;span id="toc-entry"&gt;$services.localization.render('phenotips.contentTopMenu.jumpMenu')&lt;/span&gt;{{/html}}
 ##The ToC will be populated by JS
 ** ----
-* (% class="xDropdown" %)#__icon("cog") $services.localization.render('patient.header.more')
+* (% class="xDropdown" %)#__icon("cog") $services.localization.render('phenotips.contentTopMenu.moreActionsMenu')
 #if ($xcontext.action != 'view' || $viewer != 'content')
-** [[$services.localization.render('patient.header.more.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('patient.header.more.viewMode.title')" target="__blank"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="__blank"]]
 #end
 #if ($isAdvancedUser &amp;&amp; $xcontext.action != 'view' || $viewer != 'history')
-** [[$services.localization.render('patient.header.more.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="__blank" title="$services.localization.render('patient.header.more.history.title')"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="__blank" title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
 #end
 #if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
   #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
@@ -1152,10 +1152,10 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
   #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
 #end
 ** (% class="empty" %)----
-** [[$services.localization.render('patient.header.more.exportPDF')&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportPDF')&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
 #if($isAdvancedUser)
-** [[$services.localization.render('patient.header.more.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
-** [[$services.localization.render('patient.header.more.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportXAR')&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
 #end
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
 #if ($foreach.index == 0)
