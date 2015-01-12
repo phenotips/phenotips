@@ -489,13 +489,12 @@ $content
         });
         newList.insert({bottom: lItem});
       });
-      // is there at least one
+      // If there's no attachment available, copy the "no image available" message
       if (!newList.down('.attachment-item')) {
         newList.update(this.list.innerHTML);
-      } else {
-        this.sourceList.replace(newList);
-        this.sourceList = newList;
       }
+      this.sourceList.replace(newList);
+      this.sourceList = newList;
     },
 
     addCloseListener : function () {

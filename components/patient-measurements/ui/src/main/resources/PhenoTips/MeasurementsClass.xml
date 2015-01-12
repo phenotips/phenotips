@@ -164,7 +164,7 @@
 #set ($hValue = $object.getProperty('height').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0')
+#if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0' || "$!{age}" == '')
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.bmi.valueToPercentile($male, $age, $wValue, $hValue))
@@ -228,7 +228,7 @@
 #set ($dValue = $object.getProperty('ear').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
@@ -270,7 +270,7 @@
 #set ($dValue = $object.getProperty('ear_right').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
@@ -312,7 +312,7 @@
 #set ($dValue = $object.getProperty('foot').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
@@ -354,7 +354,7 @@
 #set ($dValue = $object.getProperty('foot').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
@@ -396,7 +396,7 @@
 #set ($dValue = $object.getProperty('hand').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
@@ -438,7 +438,7 @@
 #set ($dValue = $object.getProperty('hand_right').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
@@ -480,7 +480,7 @@
 #set ($dValue = $object.getProperty('hc').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.hc.valueToPercentile($male, $age, $dValue))
@@ -522,7 +522,7 @@
 #set ($dValue = $object.getProperty('height').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '')
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.height.valueToPercentile($male, $age, $dValue))
@@ -564,7 +564,7 @@
 #set ($dValue = $object.getProperty('icd').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.icd.valueToPercentile($male, $age, $dValue))
@@ -606,7 +606,7 @@
 #set ($dValue = $object.getProperty('ipd').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.ipd.valueToPercentile($male, $age, $dValue))
@@ -648,7 +648,7 @@
 #set ($dValue = $object.getProperty('ocd').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.ocd.valueToPercentile($male, $age, $dValue))
@@ -690,7 +690,7 @@
 #set ($dValue = $object.getProperty('palm').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
@@ -732,7 +732,7 @@
 #set ($dValue = $object.getProperty('palm_right').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
@@ -774,7 +774,7 @@
 #set ($dValue = $object.getProperty('pfl').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '')
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.pfl.valueToPercentile($male, $age, $dValue))
@@ -816,7 +816,7 @@
 #set ($dValue = $object.getProperty('philtrum').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.philtrum.valueToPercentile($male, $age, $dValue))
@@ -858,7 +858,7 @@
 #set ($dValue = $object.getProperty('sitting').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.sitting.valueToPercentile($male, $age, $dValue))
@@ -900,7 +900,7 @@
 #set ($dValue = $object.getProperty('weight').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
+#if ("$!dValue" == '' || "$!{age}" == '' )
   #set ($dValue = '-')
 #else
   #set ($pValue = $services.measurements.weight.valueToPercentile($male, $age, $dValue))

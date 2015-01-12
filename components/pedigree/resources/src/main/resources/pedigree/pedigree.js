@@ -16,15 +16,16 @@ var PedigreeEditor = Class.create({
 
         //initialize the elements of the app
         this._workspace = new Workspace();
+        this._disorderLegend = new DisorgerLegend();
+        this._geneLegend = new GeneLegend();
+        this._hpoLegend = new HPOLegend();
+        this._cancerLegend = new CancerLegend();
         this._nodeMenu = this.generateNodeMenu();
         this._nodeGroupMenu = this.generateNodeGroupMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
         this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
         this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
         this._okCancelDialogue = new OkCancelDialogue();
-        this._disorderLegend = new DisorgerLegend();
-        this._geneLegend = new GeneLegend();
-        this._hpoLegend = new HPOLegend();
 
         this._view = new View();
 
@@ -243,6 +244,14 @@ var PedigreeEditor = Class.create({
      */
     getGeneLegend: function() {
         return this._geneLegend;
+    },
+
+    /**
+     * @method getCancerLegend
+     * @return {Legend} Responsible for managing and displaying the common cancers legend
+     */
+    getCancerLegend: function() {
+        return this._cancerLegend;
     },
 
     /**
@@ -559,8 +568,14 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'tab': 'Clinical',
                 'function' : 'setEvaluated'
+            },
+            {   'name' : 'cancers',
+                'label' : 'Common Cancers',
+                'type' : 'cancerlist',
+                'tab' : 'Cancers',
+                'function' : 'setCancers'
             }
-        ], ["Personal", "Clinical"]);
+        ], ["Personal", "Clinical", "Cancers"]);
     },
 
     /**

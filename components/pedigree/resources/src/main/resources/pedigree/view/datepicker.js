@@ -3,29 +3,33 @@ var PhenoTips = (function (PhenoTips) {
 
   widgets.FuzzyDatePickerDropdown = Class.create({
     initialize : function(options) {
-      this.dropdown = new Element('select', {
-        "name"        : options.name     || '',
-        "class"       : options.cssClass || options.name || '',
-        "placeholder" : options.hint     || options.name || '',
-        "title"       : options.hint     || options.name || ''
-      });
+      this.span    = new Element('span');
+      this.options = options;
     },
 
     populate : function(values) {
-      var selectedIndex = this.dropdown.selectedIndex || this._tmpSelectedIndex;
-      this.dropdown.update(new Element('option', {'value' : "", "class" : "empty"}));
+      var selectedIndex = this.dropdown ? (this.dropdown.selectedIndex || this._tmpSelectedIndex) : 0;
+
+      // using raw HTML for performance reasons: generating many years takes a noticeable time using
+      // more proper methods (e.g. new Element()...)
+      // (Note: using span around select because IE9 does not allow setting innerHTML of <select>-s)
+      var optionsHTML = '<select name="' + this.options.name +
+                             '" class="' + (this.options.cssClass || this.options.name || '') +
+                             '" placeholder="' + (this.options.hint || this.options.name || '') +
+                             '" title="'       + (this.options.hint || this.options.name || '') + '">';
+
+      optionsHTML += '<option value="" class="empty"></option>';
       var _this = this;
       values.each(function (item) {
-         var optionData = {};
-         optionData.value = item.value;
+         optionsHTML += '<option value="' + item.value + '"';
          if (item.cssClass) {
-            optionData["class"] = item.cssClass;
+             optionsHTML += 'class="' + item.cssClass + '"';
          }
-         //if (item.value == selectedValue) {
-         //   optionData.selected = "selected";
-         //}
-         _this.dropdown.insert(new Element('option', optionData).update(item.text || item.value || ''));
+         optionsHTML += '>' + (item.text || item.value || '') + '</option>';
       });
+      optionsHTML += "</select>";
+      this.span.innerHTML = optionsHTML;
+      this.dropdown = this.span.firstChild;
       if (this.dropdown.selectedIndex <= 0 && selectedIndex >= 0 && selectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = selectedIndex;
       }
@@ -47,7 +51,7 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     getElement : function() {
-      return this.dropdown;
+      return this.span;
     },
 
     onSelect : function(callback) {
@@ -108,6 +112,7 @@ var PhenoTips = (function (PhenoTips) {
     },
     
     createYearDropdown : function() {
+      //var timer = new Timer();
       this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year"});
 
       var today = new Date();
@@ -128,14 +133,14 @@ var PhenoTips = (function (PhenoTips) {
       this.yearSelector.populate(values);
       this.yearSelector.onSelect(this.yearSelected.bind(this));
 
+      //console.log( "=== Generate year dropdown time: " + timer.report() + "ms ==========" );
       return this.yearSelector.getElement();
     },
 
     yearSelected : function() {
       if (this.yearSelector.getSelectedValue() > 0) {
-        if (this.monthSelector.enable()) {
-            this.monthSelected();
-        }
+        this.monthSelector.enable();
+        this.monthSelected();
       } else {
         this.monthSelector.disable();
         this.daySelector.disable();
@@ -163,8 +168,8 @@ var PhenoTips = (function (PhenoTips) {
 
     createDayDropdown : function() {
       this.daySelector = new widgets.FuzzyDatePickerDropdown({name: "day"});
-      this.daySelector.disable();
       this.daySelector.populate(this.getZeroPaddedValueRange(1,31));
+      this.daySelector.disable();
       this.daySelector.onSelect(this.updateDate.bind(this));
       return this.daySelector.getElement();
     },

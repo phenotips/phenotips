@@ -1890,10 +1890,11 @@ document.observe('xwiki:dom:loaded', function() {
       var displayed = target.down('.displayed-value');
       input &amp;&amp; (input.value = value);
       displayed.update(value || '-');
+
+      ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
+        displayed.removeClassName(cssClass);
+      });
       if (fuzzyValue) {
-        ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
-          displayed.removeClassName(cssClass);
-        });
         displayed.addClassName(fuzzyValue);
       }
     },

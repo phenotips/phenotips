@@ -46,6 +46,7 @@ var Person = Class.create(AbstractPerson, {
         this._childlessReason = "";
         this._carrierStatus = "";
         this._disorders = [];
+        this._cancers = {};
         this._hpo = [];
         this._ethnicities = [];
         this._candidateGenes = [];
@@ -531,6 +532,13 @@ var Person = Class.create(AbstractPerson, {
         for (var i = 0; i < this.getGenes().length; i++) {
             result.push(editor.getGeneLegend().getObjectColor(this.getGenes()[i]));
         }
+        for (var cancer in this.getCancers()) {
+            if (this.getCancers().hasOwnProperty(cancer)) {
+                if (this.getCancers()[cancer].hasOwnProperty("affected") && this.getCancers()[cancer].affected) {
+                    result.push(editor.getCancerLegend().getObjectColor(cancer));
+                }
+            }
+        }
         return result;
     },
 
@@ -773,6 +781,64 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Adds cancer to the list of this node's common cancers
+     *
+     * @param cancerName String
+     * @param cancerDetails Object {affected: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String}
+     * @method addCancer
+     */
+    addCancer: function(cancerName, cancerDetails) {
+        if (!this.getCancers().hasOwnProperty(cancerName)) {
+            if (cancerDetails.hasOwnProperty("affected") && cancerDetails.affected) {
+                editor.getCancerLegend().addCase(cancerName, cancerName, this.getID());
+            }
+            this.getCancers()[cancerName] = cancerDetails;
+        }
+    },
+
+    /**
+     * Removes cancer from the list of this node's common cancers
+     *
+     * @method removeCancer
+     */
+    removeCancer: function(cancerName) {
+        if (this.getCancers().hasOwnProperty(cancerName)) {
+            editor.getCancerLegend().removeCase(cancerName, this.getID());
+            delete this._cancers[cancerName];
+        }
+    },
+
+    /**
+     * Sets the set of common cancers affecting this person to the given set
+     *
+     * @method setCancers
+     * @param {Object} { Name: {affected: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String} }
+     */
+    setCancers: function(cancers) {
+        for (var cancerName in this.getCancers()) {
+            if (this.getCancers().hasOwnProperty(cancerName)) {
+                this.removeCancer(cancerName);
+            }
+        }
+        for (var cancerName in cancers) {
+            if (cancers.hasOwnProperty(cancerName)) {
+                this.addCancer(cancerName, cancers[cancerName]);
+            }
+        }
+        this.getGraphics().updateDisorderShapes();
+    },
+
+    /**
+     * Returns a list of common cancers affecting this person.
+     *
+     * @method getCancers
+     * @return {Object}  { Name: {affected: Boolean, numericAgeAtDiagnosis: Number, ageAtDiagnosis: String, comments: String} }
+     */
+    getCancers: function() {
+        return this._cancers;
+    },
+
+    /**
      * Removes the node and its visuals.
      *
      * @method remove
@@ -782,6 +848,7 @@ var Person = Class.create(AbstractPerson, {
         this.setDisorders([]);  // remove disorders form the legend
         this.setHPO([]);
         this.setGenes([]);
+        this.setCancers([]);
         $super();
     },
 
@@ -908,8 +975,9 @@ var Person = Class.create(AbstractPerson, {
             placeholder:   {value : false, inactive: true },
             monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
             evaluated:     {value : this.getEvaluated() },
-            hpo_positive:  {value : hpoTerms},
-            nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact}
+            hpo_positive:  {value : hpoTerms },
+            nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
+            cancers:       {value : this.getCancers() }
         };
     },
 
@@ -951,6 +1019,8 @@ var Person = Class.create(AbstractPerson, {
         }
         if (this.getDisorders().length > 0)
             info['disorders'] = this.getDisordersForExport();
+        if (!isObjectEmpty(this.getCancers()))
+            info['cancers'] = this.getCancers();
         if (this.getHPO().length > 0)
             info['hpoTerms'] = this.getHPOForExport();
         if (this.getEthnicities().length > 0)
@@ -1000,6 +1070,9 @@ var Person = Class.create(AbstractPerson, {
             }
             if(info.disorders) {
                 this.setDisorders(info.disorders);
+            }
+            if(info.cancers) {
+                this.setCancers(info.cancers);
             }
             if(info.hpoTerms) {
                 this.setHPO(info.hpoTerms);

@@ -431,9 +431,9 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
           gender = "F";
         }
         var name = parts[1];
-        if (isInt(name)) {
-          name = "";
-        }
+        //if (isInt(name)) {
+        //  name = "";
+        //}
         var properties = {"gender": gender, "fName": name};
 
         if (saveIDAsExternalID) {
@@ -446,9 +446,17 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
         }
 
         var yob = parts[10];
-        if (yob != "0") {
-          var dob = yob + "-01-01T00:00:00.000Z";
-          properties["dob"] = dob;
+        if (yob != "0" && isInt(yob)) {
+          properties["dob"] = {"decade": yob + "s", "year": parseInt(yob)};
+        }
+
+        var addCommentToProperties = function(properties, line) {
+            if (!line || line == "") return;
+            if (!properties.hasOwnProperty("comments")) {
+                properties["comments"] = line;
+            } else {
+                properties["comments"] += "\n" + line;
+            }
         }
 
         // TODO: handle all the columns and proper cancer handling
@@ -458,31 +466,57 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
         // 13: OvCa:  Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
         // 14: ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
         // 15: PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
-        var cancers = [ { "column": 11, "label": "Breast cancer",           "disorder": "1BrCa"},
-                        { "column": 12, "label": "Contralateral breast c.", "disorder": "2BrCa"},
-                        { "column": 13, "label": "Ovarian cancer",          "disorder": "OvCa"},
-                        { "column": 14, "label": "Prostate cancer",         "disorder": "ProCa"},
-                        { "column": 15, "label": "Pancreatic cancer",       "disorder": "PanCa"} ];
+        var cancers = [ { "column": 11, "label": "Breast",     "comment": ""},
+                        { "column": 12, "label": "Breast",     "comment": "Contralateral breast cancer", "onlySetComment": true},
+                        { "column": 13, "label": "Ovarian",    "comment": ""},
+                        { "column": 14, "label": "Prostate",   "comment": ""},
+                        { "column": 15, "label": "Pancreatic", "comment": ""} ];
 
         for (var c = 0; c < cancers.length; c++) {
           var cancer = cancers[c];
           if (parts[cancer["column"]].toUpperCase() != "AU") {
-            if (!properties.hasOwnProperty("comments")) {
-              properties["comments"] = "";
-            } else {
-              properties["comments"] += "\n";
+
+            if (!properties.hasOwnProperty("cancers")) {
+              properties["cancers"] = {};
             }
 
+            var cancerData = {};
             if (parts[cancer["column"]] == "0") {
-              properties["comments"] += "[-] " + cancer["label"] + ": unaffected";
-            } else {
-              properties["comments"] += "[+] " + cancer["label"] + ": at age " + parts[cancer["column"]];
-              if (!properties.hasOwnProperty("disorders")) {
-                properties["disorders"] = [];
+              if (!cancer.hasOwnProperty("onlySetComment") || !cancer.onlySetComment) {
+                  cancerData["affected"] = false;
               }
-              properties["disorders"].push(cancer["disorder"]);
+            } else {
+              cancerData["affected"] = true;
+              var age = parts[cancer["column"]];
+              if (isInt(age)) {
+                  var numericAge = parseInt(age);
+                  cancerData["numericAgeAtDiagnosis"] = numericAge;
+                  if (numericAge > 100) {
+                      age = "after_100";
+                  }
+                  cancerData["ageAtDiagnosis"] = age;
+              }
+
+              addCommentToProperties(properties, cancer["comment"]);
+            }
+            if (!cancer.onlySetComment) {
+                properties["cancers"][cancer.label] = cancerData;
             }
           }
+        }
+
+        // Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
+        var mutations = parts[17];
+        if (mutations == "1" || mutations == "2" || mutations == "3") {
+            properties["candidateGenes"] = [];
+            if (mutations == 1 || mutations == 3) {
+                properties["candidateGenes"].push("BRCA1");
+            }
+            if (mutations == 2 || mutations == 3) {
+                properties["candidateGenes"].push("BRCA2");
+            }
+        } else if (mutations == "N") {
+            addCommentToProperties(properties, "BRCA tested: no mutations");
         }
 
         var ashkenazi = parts[18];
@@ -1004,7 +1038,9 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
            }
 
            if (gedcomDate == "?") return null;
-           
+
+           // TODO: can handle approx. dates (i.e. "ABT" and "EST") better using new Pedigree fuzzy dates
+           //       conversion below would convert "ABT JAN 1999" to "JAN 1 1999" instead of fuzzy date "Jan 1999"
            var timestamp=Date.parse(gedcomDate)
            if (isNaN(timestamp)==false) {
                return new PedigreeDate(new Date(timestamp));
@@ -1024,7 +1060,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
                    if (nextPerson[property][0].hasOwnProperty("DATE")) {
                        var date = parseDate(nextPerson[property][0]["DATE"]);
                        if (date !== null) {
-                           properties["dob"] = date;
+                           properties["dob"] = new PedigreeDate(date).getSimpleObject()
                        }
                    }
                } else if (property == "DEAT") {
@@ -1034,7 +1070,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
                    if (nextPerson[property][0].hasOwnProperty("DATE")) {
                        var date = parseDate(nextPerson[property][0]["DATE"]);
                        if (date !== null) {
-                           properties["dod"] = date;
+                           properties["dod"] = new PedigreeDate(date).getSimpleObject();
                        }
                    }
                } else if (property == "ADOP") {
@@ -1205,7 +1241,8 @@ PedigreeImport.JSONToInternalPropertyMapping = {
         "externalid":      "externalID",
         "numpersons":      "numPersons",
         "lostcontact":     "lostContact",
-        "nodenumber":      "nodeNumber"
+        "nodenumber":      "nodeNumber",
+        "cancers":         "cancers"
     };
 
 

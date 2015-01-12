@@ -42,6 +42,7 @@
   <content>{{velocity}}
 #set($phenotypeDisplayTools = $services.phenotype)
 #set ($data = $services.phenotypeMapping.get($name))
+## If $data is empty, then either the mapping is broken, or there really is no data for this type of phenotypes...
 #if ("$!{data}" != '')
   $phenotypeDisplayTools.setMode($xcontext.action)##
   $phenotypeDisplayTools.setDocument($doc)##
@@ -71,14 +72,17 @@
     #end
     $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
-  #set($displayHtml = $phenotypeDisplayTools.display($data))
-  {{html clean=false}}
-    #if("$!{displayHtml}" == '')
-      {{error}}$services.localization.render('phenotips.PhenotypeDisplay.error'){{/error}}
-    #else
-      $displayHtml
-    #end
-  {{/html}}##
+  #if ($services.ontologies.hpo.size() &lt;= 0)
+    {{error}}{{translation key="phenotips.patientRecord.phenotypes.error.hpoNotIndexed"/}}{{/error}}
+
+  #end
+  #set ($displayHtml = $phenotypeDisplayTools.display($data))
+  #set ($hasPhenotype = !($object.getProperty($name).value.empty &amp;&amp; $object.getProperty("negative_${name}").value.empty))
+  #if ("$!displayHtml" == '' &amp;&amp; ($hasPhenotype || $type == 'edit'))
+    {{error}}{{translation key="phenotips.patientRecord.phenotypes.error.failedDisplay"/}}{{/error}}
+  #else
+    {{html clean=false}}$displayHtml{{/html}}##
+  #end
   $!phenotypeDisplayTools.clear()##
 #end
 {{/velocity}}</content>
