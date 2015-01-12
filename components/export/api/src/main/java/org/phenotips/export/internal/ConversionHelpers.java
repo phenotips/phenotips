@@ -351,17 +351,24 @@ public class ConversionHelpers
         final String period = ".";
         // Relative to the tail start
         int chunkEndIndex = -1;
+        boolean foundBreakIndex = false;
         String chunkTail = value.substring(chunkSizeLimit - tailSize, chunkSizeLimit);
 
         if (chunkTail.contains(newline)) {
-            chunkEndIndex = chunkTail.lastIndexOf(newline) + newline.length();
+            chunkEndIndex = chunkTail.lastIndexOf(newline);
+            foundBreakIndex = chunkEndIndex >= 0;
+            chunkEndIndex += newline.length();
         } else if (chunkTail.contains(period)) {
-            chunkEndIndex = chunkTail.lastIndexOf(period) + period.length();
+            chunkEndIndex = chunkTail.lastIndexOf(period);
+            foundBreakIndex = chunkEndIndex >= 0;
+            chunkEndIndex += period.length();
         } else {
-            chunkEndIndex = chunkTail.lastIndexOf(" ") + 1;
+            chunkEndIndex = chunkTail.lastIndexOf(" ");
+            foundBreakIndex = chunkEndIndex >= 0;
+            chunkEndIndex += 1;
         }
         /* In case all checks failed, splitting at maximum length */
-        chunkEndIndex = chunkEndIndex < 0 ? tailSize : chunkEndIndex;
+        chunkEndIndex = foundBreakIndex ? chunkEndIndex : tailSize;
 
         int chunkSize = chunkSizeLimit - tailSize + chunkEndIndex;
         String chunk = value.substring(0, chunkSize);
