@@ -13,19 +13,18 @@ var PhenoTips = (function (PhenoTips) {
 
     populate : function(values) {
       var selectedIndex = this.dropdown.selectedIndex || this._tmpSelectedIndex;
-      this.dropdown.update(new Element('option', {'value' : "", "class" : "empty"}));
+      // using raw HTML for performance reasons: generating many years takes a noticeable time using
+      // more proper methods (e.g. new Element()...)
+      var optionsHTML = '<option value="" class="empty"></option>';
       var _this = this;
       values.each(function (item) {
-         var optionData = {};
-         optionData.value = item.value;
+         optionsHTML += '<option value="' + item.value + '"';
          if (item.cssClass) {
-            optionData["class"] = item.cssClass;
+             optionsHTML += 'class="' + item.cssClass + '"';
          }
-         //if (item.value == selectedValue) {
-         //   optionData.selected = "selected";
-         //}
-         _this.dropdown.insert(new Element('option', optionData).update(item.text || item.value || ''));
+         optionsHTML += '>' + (item.text || item.value || '') + '</option>';
       });
+      _this.dropdown.innerHTML = optionsHTML;
       if (this.dropdown.selectedIndex <= 0 && selectedIndex >= 0 && selectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = selectedIndex;
       }
@@ -108,6 +107,7 @@ var PhenoTips = (function (PhenoTips) {
     },
     
     createYearDropdown : function() {
+      //var timer = new Timer();
       this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year"});
 
       var today = new Date();
@@ -128,6 +128,7 @@ var PhenoTips = (function (PhenoTips) {
       this.yearSelector.populate(values);
       this.yearSelector.onSelect(this.yearSelected.bind(this));
 
+      //console.log( "=== Generate year dropdown time: " + timer.report() + "ms ==========" );
       return this.yearSelector.getElement();
     },
 

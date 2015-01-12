@@ -189,6 +189,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
                 var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
                 var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
+
+                if (editor.DEBUG_MODE) {
+                    var _idLabel = editor.getPaper().text(position.x, position.y, nextNodeOnPath).attr(PedigreeEditor.attributes.dragMeLabel).toFront();
+                    _idLabel.node.setAttribute("class", "no-mouse-interaction");
+                }
                 //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + stringifyObject(nodePos) + ", position: " + stringifyObject(position) );
 
                 if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions

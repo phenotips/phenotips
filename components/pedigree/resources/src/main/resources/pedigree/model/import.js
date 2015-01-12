@@ -1039,6 +1039,8 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
 
            if (gedcomDate == "?") return null;
 
+           // TODO: can handle approx. dates (i.e. "ABT" and "EST") better using new Pedigree fuzzy dates
+           //       conversion below would convert "ABT JAN 1999" to "JAN 1 1999" instead of fuzzy date "Jan 1999"
            var timestamp=Date.parse(gedcomDate)
            if (isNaN(timestamp)==false) {
                return new PedigreeDate(new Date(timestamp));
@@ -1058,7 +1060,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
                    if (nextPerson[property][0].hasOwnProperty("DATE")) {
                        var date = parseDate(nextPerson[property][0]["DATE"]);
                        if (date !== null) {
-                           properties["dob"] = date;
+                           properties["dob"] = new PedigreeDate(date).getSimpleObject()
                        }
                    }
                } else if (property == "DEAT") {
@@ -1068,7 +1070,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
                    if (nextPerson[property][0].hasOwnProperty("DATE")) {
                        var date = parseDate(nextPerson[property][0]["DATE"]);
                        if (date !== null) {
-                           properties["dod"] = date;
+                           properties["dod"] = new PedigreeDate(date).getSimpleObject();
                        }
                    }
                } else if (property == "ADOP") {
