@@ -53,30 +53,30 @@
 #end
 ##
 #macro (__filters_dateField $label $field_name $value)
-{{html clean="false"}}&lt;label&gt;$label &lt;span class="xHint"&gt;(empty means no constraint)&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
+{{html clean="false"}}&lt;label&gt;$label &lt;span class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.generalEmptyHint')&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
 #macro(__filters_display $cssClass)
 (% class="filters $!cssClass" %)
 #if ($activeFields.contains('external_id'))
-* By **external identifier**: {{html clean=false}}&lt;p class="xHint"&gt;(The hospital ID manually entered)&lt;/p&gt;&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.externalID.hint')&lt;/p&gt;&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
 #end
-* By **referrer**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all referrers are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
-* By **owner**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all are considered)&lt;/p&gt;&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="owner" value=""/&gt;{{/html}}
-* By **last author**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all authors are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
-* By **creation date**: #__filters_dateRange("doc.creationDate")
-* By **last modification date**: #__filters_dateRange("doc.date")
+* $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.referrer.hint')&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.owner') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.owner.hint')&lt;/p&gt;&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="owner" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.author.hint')&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
+* $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
+* $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
 #if ($activeFields.contains('date_of_birth'))
-  * By **date of birth** of the patient: #__filters_dateRange("date_of_birth")
+  * $services.localization.render('phenotips.databaseFilters.dateOfBirth') #__filters_dateRange("date_of_birth")
 #end
 #if ($activeFields.contains('omim_id'))
-  * By **disease**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all diseases are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggestOmim generateCheckboxes" name="omim_id" value=""/&gt;{{/html}}
-  ** Filter records presenting {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="AND"/&gt;all&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
+  * $services.localization.render('phenotips.databaseFilters.disease') {{html clean=false}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.disease.hint')&lt;/p&gt;&lt;input type="text" class="suggest multi suggestOmim generateCheckboxes" name="omim_id" value=""/&gt;{{/html}}
+  ** $services.localization.render('phenotips.databaseFilters.disease.presentingFilter', [ "{{html clean='false'}}&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='omim_id/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;{{/html}}"])
 #end
 #if ($activeFields.contains('phenotype'))
-  * By **phenotype**: {{html clean="false"}}&lt;p class="xHint"&gt;(an empty value list means all phenotypes are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggestHpo generateCheckboxes" name="phenotype" value=""/&gt;{{/html}}
-  ** Filter records presenting {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="AND"/&gt;all&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
-  ** Filter records {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="no"/&gt;only matching exactly &lt;/label&gt;{{/html}} the selected phenotypes.
+  * $services.localization.render('phenotips.databaseFilters.phenotype') {{html clean="false"}}&lt;p class="xHint"&gt;$services.localization.render('phenotips.databaseFilters.phenotype.hint')&lt;/p&gt;&lt;input type="text" class="suggest multi suggestHpo generateCheckboxes" name="phenotype" value=""/&gt;{{/html}}
+  ** $services.localization.render('phenotips.databaseFilters.phenotype.oneOrAllSelection', ["{{html clean='false'}}&lt;label&gt;&lt;input type='radio' name='phenotype/join_mode' value='AND'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='phenotype/join_mode' value='OR' checked='checked'/&gt;", "&lt;/label&gt;{{/html}}"])
+  ** $services.localization.render('phenotips.databaseFilters.phenotype.subcategoryOption', ["{{html clean='false'}}&lt;label&gt;&lt;input type='radio' name='phenotype_subterms' value='yes' checked='checked'/&gt;", "&lt;/label&gt;", "&lt;label&gt;&lt;input type='radio' name='phenotype_subterms' value='no'/&gt;", "&lt;/label&gt;{{/html}}"])
 #end
 #end
 {{/velocity}}</content>
