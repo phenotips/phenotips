@@ -2005,18 +2005,20 @@ document.observe('xwiki:dom:loaded', function() {
       new PhenoTips.widgets.ChartGenerator($('charts'), chartDataSources);
     });
 
-    //create a warning when measurements are being entered buyt no birth date is specified
-    var dateOfBirth=$(document.documentElement).down('input[name$=date_of_birth]');
-    var previousElement= $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
-    if (dateOfBirth &amp;&amp; previousElement){
+    //  Create a warning when measurements are being entered but no birth date is specified
+    var dateOfBirth = $(document.documentElement).down('input[name$=date_of_birth]');
+    //var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
+    if (dateOfBirth){
         _updateNoBirthDateWarning();
         dateOfBirth.observe('blur', _updateNoBirthDateWarning);
     }
     function _updateNoBirthDateWarning(){
       birthdate = dateOfBirth.value;
-      if (!birthdate &amp;&amp; !$('no-birth-date-warning')){
-        previousElement.insert({
-          after:"&lt;div id='no-birth-date-warning' class='box warningmessage'&gt;No birth date has been specified.&lt;/div&gt;"
+      var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
+      if (!warningInsertionPoint) { return; }
+      if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
+        warningInsertionPoint.insert({
+          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;No birth date has been specified.&lt;/div&gt;"
         });
       } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
         $('no-birth-date-warning').remove();
