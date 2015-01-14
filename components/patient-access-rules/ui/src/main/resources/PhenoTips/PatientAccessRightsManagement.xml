@@ -96,20 +96,19 @@
   #set ($owner = "$!{request.get('owner')}")
   #if ("$!{owner}" != "")
     ##check the validity of the new owner
-    #set($ownerDoc = $services.model.resolveDocument($owner))
-    #set($ownerDocRef = $services.model.resolveDocument("$owner"))
+    #set ($ownerDocRef = $services.model.resolveDocument("$owner"))
     #if ($xwiki.getDocument($ownerDocRef).getObject("PhenoTips.PhenoTipsGroupClass"))
-      #set($validGroup = true)
-      ##check to see if user has permission to transfer ownership
+      #set ($validGroup = true)
+      ## Check to see if user has permission to transfer ownership
       #set ($adminGroup = $owner + " Administrators")
       #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$hasAdmin)
         #set ($cannotTransfer = true)
       #end
-    #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").execute() != "[]")
-      #set($validUser = true)
+    #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").execute().count() &gt; 0)
+      #set ($validUser = true)
     #end
-    #if ( !($validUser || $validGroup))
-      #set($invalidOwner = true)
+    #if (!($validUser || $validGroup))
+      #set ($invalidOwner = true)
     #end
   #end
   #if (!$patient)
