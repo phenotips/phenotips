@@ -24,15 +24,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>studies</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>studies</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Studies</name>
-
-  <modules>
-    <module>ui</module>
-    <module>api</module>
-  </modules>
+  <artifactId>studies-api</artifactId>
+  <name>PhenoTips - Studies - API</name>
 </project>
