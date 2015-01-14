@@ -2005,12 +2005,11 @@ document.observe('xwiki:dom:loaded', function() {
       new PhenoTips.widgets.ChartGenerator($('charts'), chartDataSources);
     });
 
-    //  Create a warning when measurements are being entered but no birth date is specified
+    // Create a warning when measurements are being entered but no birth date is specified
     var dateOfBirth = $(document.documentElement).down('input[name$=date_of_birth]');
-    //var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
-    if (dateOfBirth){
-        _updateNoBirthDateWarning();
-        dateOfBirth.observe('blur', _updateNoBirthDateWarning);
+    if (dateOfBirth) {
+      _updateNoBirthDateWarning();
+      dateOfBirth.observe('xwiki:date:changed', _updateNoBirthDateWarning);
     }
     function _updateNoBirthDateWarning(){
       birthdate = dateOfBirth.value;
