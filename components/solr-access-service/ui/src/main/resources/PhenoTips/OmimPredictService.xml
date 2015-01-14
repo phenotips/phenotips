@@ -111,7 +111,7 @@
 #end## get action
 ##
 #if (!$hasOutput)
-(% class="hint" %)No matches found
+(% class="hint" %)$services.localization.render('phenotips.solrAccessService.noMatches')
 #end
 {{/velocity}}</content>
 </xwikidoc>
