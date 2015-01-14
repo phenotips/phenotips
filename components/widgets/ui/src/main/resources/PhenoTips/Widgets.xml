@@ -3864,13 +3864,13 @@ document.observe("xwiki:dom:loaded", function() {
 
     infoServices : {
       'xHelpButton' : {
-         'hint'     : 'How to enter this information',
+         'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.xHelpButton.hint')",
          'callback' : function (helpButton) {
            helpButton.helpBox.content.update(helpButton._information || '');
          }
        },
       'phenotype-info' : {
-        'hint'     : 'About this phenotype',
+        'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3885,7 +3885,7 @@ document.observe("xwiki:dom:loaded", function() {
                   );
           json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
 
-          var labels = {'synonym' : 'Also known as', 'is_a' : 'Is a type of'};
+          var labels = {'synonym' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.synonym')", 'is_a' : "$services.localization.render('phenotips.widgets.helpButtons.phenotype.typeOf')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l]) {
@@ -3900,7 +3900,7 @@ document.observe("xwiki:dom:loaded", function() {
           }
 
           if (PhenoTips.widgets.OntologyBrowser) {
-            var browseButton = new Element('a', {'class' : 'button', href : '#'}).update('Browse related terms...');
+            var browseButton = new Element('a', {'class' : 'button', href : '#'}).update("$services.localization.render('phenotips.widgets.helpButtons.phenotype.browseRelated')");
             browseButton._id = json.id;
             browseButton.observe('click', function(event){
               event.stop();
@@ -3920,7 +3920,7 @@ document.observe("xwiki:dom:loaded", function() {
         }
       },
       'phenotype-qualifier-info' : {
-        'hint'     : 'About this phenotype qualifier',
+        'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.phenotypeQualifier.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3936,7 +3936,7 @@ document.observe("xwiki:dom:loaded", function() {
         }
       },
       'omim-disease-info' : {
-        'hint' : 'About this disease',
+        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.OmimInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3950,7 +3950,7 @@ document.observe("xwiki:dom:loaded", function() {
                                        .insert(elt('span', 'value').update(json.label.splice(0, 1)[0]))
                   );
 
-          var labels = {'label' : '', 'symptoms' : 'This disorder is typically characterized by', 'not_symptoms' : 'This disorder does not typically cause'};
+          var labels = {'label' : '', 'symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')", 'not_symptoms' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
@@ -3963,7 +3963,7 @@ document.observe("xwiki:dom:loaded", function() {
           if (advancedInfo.firstDescendant()) {
             c.insert(advancedInfo);
           }
-          var viewButton = new Element('a', {'class' : 'button', href : 'http://www.omim.org/entry/' + json.id, 'target' : '_blank'}).update('Read about it on OMIM.org...');
+          var viewButton = new Element('a', {'class' : 'button', href : 'http://www.omim.org/entry/' + json.id, 'target' : '_blank'}).update("$services.localization.render('phenotips.widgets.helpButtons.omimDisease.linkToOmim')");
           c.insert(elt('div', 'term-tools').insert(viewButton.wrap('span', {'class' : 'buttonwrapper'})));
           viewButton.observe('click', function(event) {
             event.stop();
@@ -3972,7 +3972,7 @@ document.observe("xwiki:dom:loaded", function() {
         }
       },
       'gene-info' : {
-        'hint' : 'About this gene',
+        'hint' : "$services.localization.render('phenotips.widgets.helpButtons.gene.hint')",
         'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3986,7 +3986,7 @@ document.observe("xwiki:dom:loaded", function() {
                                        .insert(elt('span', 'value').update(json.name))
                   );
 
-          var labels = {'alias_symbol' : 'Aliases', 'prev_symbol' : 'Previous symbols', 'gene_family' : 'Gene family'};
+          var labels = {'alias_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.alias')", 'prev_symbol' : "$services.localization.render('phenotips.widgets.helpButtons.gene.previousSymbols')", 'gene_family' : "$services.localization.render('phenotips.widgets.helpButtons.gene.family')"};
           var advancedInfo = elt('dl');
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
@@ -4116,7 +4116,7 @@ document.observe("xwiki:dom:loaded", function() {
       new Ajax.Request(_this._builder.service, {
         parameters: {'id' : _this._information},
         onCreate : function () {
-          _this.helpBox.content.update(new Element('span', {'class' : 'hint temporary'}).update('Loading...'));
+          _this.helpBox.content.update(new Element('span', {'class' : 'hint temporary'}).update("$services.localization.render('phenotips.widgets.helpButtons.loading')"));
         },
         onSuccess: function (response) {
           _this._builder.callback(_this, response.responseJSON);
@@ -4124,7 +4124,7 @@ document.observe("xwiki:dom:loaded", function() {
         onFailure: function (response) {
           _this.helpBox.addClassName('error');
           _this.helpBox.down('.temporary').remove();
-          _this.helpBox.insert("Failed to retrieve information about " + _this._information + " : " + response.statusText);
+          _this.helpBox.insert("$services.localization.render('phenotips.widgets.helpButtons.failedToLoad')".replace("__subject__", _this._information) + " : "+ response.statusText);
         }
       });
     }
