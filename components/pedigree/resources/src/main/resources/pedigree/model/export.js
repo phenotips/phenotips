@@ -262,6 +262,8 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
                    var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") ? cancerData.numericAgeAtDiagnosis : 1;
                    output += ageAtDetection.toString() + "\t";
                }
+           } else {
+               output += "AU\t";
            }
        }
 

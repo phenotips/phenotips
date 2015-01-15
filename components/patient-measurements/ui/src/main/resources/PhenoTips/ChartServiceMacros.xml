@@ -100,13 +100,15 @@
     #foreach ($m in $request.getParameterValues($measurementName))
       #if ("$!{m}" != '')
         #set ($age = $mathtool.toInteger($ages.get($foreach.index)))
-        #if (!($ageLimits.get($measurementName).min &lt;= $age))
-          #set ($ageLimits.get($measurementName).min = $age)
+        #if ("$!age" != '')
+          #if (!($ageLimits.get($measurementName).min &lt;= $age))
+            #set ($ageLimits.get($measurementName).min = $age)
+          #end
+          #if (!($ageLimits.get($measurementName).max &gt;= $age))
+            #set ($ageLimits.get($measurementName).max = $age)
+          #end
+          #set ($discard = $measurements.add({'a': $age, 'x' : $mathtool.toDouble($m)}))
         #end
-        #if (!($ageLimits.get($measurementName).max &gt;= $age))
-          #set ($ageLimits.get($measurementName).max = $age)
-        #end
-        #set ($discard = $measurements.add({'a': $age, 'x' : $mathtool.toDouble($m)}))
       #end
     #end
   #end

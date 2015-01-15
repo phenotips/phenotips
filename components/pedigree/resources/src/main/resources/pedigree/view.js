@@ -29,7 +29,8 @@ var View = Class.create({
      */
     getSettings: function() {
         return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
-                           "genes": editor.getGeneLegend().getAllColors() },
+                           "genes": editor.getGeneLegend().getAllColors(),
+                           "cancers": editor.getCancerLegend().getAllColors() },
                 "names": {"disorders": editor.getDisorderLegend().getAllNames() } };
     },
 

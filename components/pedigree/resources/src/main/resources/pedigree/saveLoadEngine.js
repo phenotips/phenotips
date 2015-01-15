@@ -67,8 +67,15 @@ var ProbandDataLoader = Class.create( {
           this.probandData.deathDate = null;
         } catch (err) {
         }
-        if (this.probandData.gender === undefined || this.probandData.gender == '')
+        if (this.probandData.gender === undefined || this.probandData.gender == '') {
             this.probandData.gender = 'U';
+        }
+        if (this.probandData.firstName === undefined) {    // in some browsers when there is no name
+            this.probandData.firstName = "";
+        }
+        if (this.probandData.lastName === undefined) {
+            this.probandData.lastName = "";
+        }
         console.log("Proband data: " + stringifyObject(this.probandData));
     },
 });
