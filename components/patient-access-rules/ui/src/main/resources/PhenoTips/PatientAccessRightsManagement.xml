@@ -94,17 +94,18 @@
   #set ($collaborators = $request.getParameterValues('collaborator'))
   #set ($accessLevels = $request.getParameterValues('accessLevel'))
   #set ($owner = "$!{request.get('owner')}")
-  #if ("$!{owner}" != "")
-    ##check the validity of the new owner
+  #if ("$!{owner}" != '')
+    ## Check the validity of the new owner
     #set ($invalidOwner = false)
     #set ($validGroup = false)
     #set ($validUser = false)
     #set ($cannotTransfer = false)
-    #set ($ownerDocRef = $services.model.resolveDocument("$owner"))
-    #if ($xwiki.getDocument($ownerDocRef).getObject("PhenoTips.PhenoTipsGroupClass"))
+    #set ($ownerDocRef = $services.model.resolveDocument($owner))
+    #if ($xwiki.getDocument($ownerDocRef).getObject('PhenoTips.PhenoTipsGroupClass'))
       #set ($validGroup = true)
+      ## Non-admin users can only transfer ownership to their own groups
       ## Check to see if user has permission to transfer ownership
-      #set ($adminGroup = $owner + " Administrators")
+      #set ($adminGroup = $owner + ' Administrators')
       #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$hasAdmin)
         #set ($cannotTransfer = true)
       #end
