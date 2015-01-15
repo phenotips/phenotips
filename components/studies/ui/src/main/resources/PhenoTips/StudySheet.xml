@@ -47,23 +47,23 @@ $xwiki.ssx.use('PhenoTips.StudySheet')##
 
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
-; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
-: (% class="xHint" %)The study's name, as it should appear on the presentation page and anywhere else this study is referenced.
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyName')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyName.hint')
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
-; {{html}}&lt;label&gt;Description&lt;/label&gt;{{/html}}
-: (% class="xHint" %)A short presentation to inform visitors what this study's purpose is (optional).
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyDescription')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
-(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Patient form configuration&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||target="_blank" class="button"]]
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.studySheet.formConfigButton')&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||target="_blank" class="button"]]
 
 )))
 #else
 $!doc.content
 #if ($xcontext.action == 'view')
 #set ($sections = [
-  {'id' : 'members', 'name' : "Participating groups ($groupsCount)", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
-  {'id' : 'cases',   'name' : "Cases ($casesCount)",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
-  {'id' : 'form' ,   'name' : "Form configuration",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.studySheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
 #set ($menu = [])
 #set ($contents = {})
@@ -90,10 +90,6 @@ $!doc.content
 #end
 )))
 (% class="menu-section" id="content-${crtItem}" %)#end((($crtContent)))
-#else
-
-{{info}}There #if($groupsCount == 1)is#{else}are#{end} #if($groupsCount == 0)no#{else}$groupsCount#end group#if($groupsCount != 1)s#end participating in this study and #if($casesCount == 0)no#{else}$casesCount#end case#if($casesCount != 1)s#end #if($casesCount == 1)has#{else}have#{end} been entered.{{/info}}
-
 #end
 #end
 {{/velocity}}</content>

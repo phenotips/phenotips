@@ -347,11 +347,11 @@
       <codeToExecute>#set ($errorMessage = '')
 #if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
   #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter a study name')
+    #set ($errorMessage = "$services.localization.render('phenotips.studyClass.errorMessage.blankName')")
   #else
     #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
     #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "A document named //${request.name}// already exists. Please choose a different name")
+      #set ($errorMessage = "$services.localization.render('phenotips.studyClass.errorMessage.nameExists', [${request.name}])")
     #else
       $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
       #break
@@ -373,7 +373,7 @@
   &lt;input type="hidden" name="classTemplate" value="$studyTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${studiesHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${studiesHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New study: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.studyClass.newStudy.label') &lt;input type="text" name="name" placeholder="$services.localization.render('phenotips.studyClass.newStudy.placeHolder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
@@ -522,7 +522,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "Are you sure you wish to delete this study?"
+          confirmationText: "$services.localization.render('phenotips.studyClass.deleteStudy.confirmation')"
         }
       );
     }
@@ -544,7 +544,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
