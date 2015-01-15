@@ -23,7 +23,7 @@ var Legend = Class.create( {
             editor.getWorkspace().getWorkArea().insert(legendContainer);
         }
 
-        this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
+        this._legendBox = new Element('div', {'class' : 'legend-box', id: this._getPrefix() + '-legend-box'});
         this._legendBox.hide();
         legendContainer.insert(this._legendBox);
 
