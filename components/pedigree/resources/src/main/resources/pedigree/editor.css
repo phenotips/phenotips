@@ -244,13 +244,13 @@
   font-size: 1.1em;
   margin: 0 0 0.3em;
 }
-.legend-box .disorder-list {
+.legend-box .abnormality-list {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-.disorder-color {
+.abnormality-color {
   display: inline-block;
   width: .8em;
   height: .8em;
@@ -259,7 +259,7 @@
   background-color: #DDD;
   vertical-align: middle;
 }
-.disorder-cases-container {
+.abnormality-cases-container {
   font-size: .8em;
   font-style: italic;
   color: #777;
