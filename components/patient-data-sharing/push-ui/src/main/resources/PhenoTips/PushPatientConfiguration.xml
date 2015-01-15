@@ -282,7 +282,7 @@ $xwiki.ssx.use($displayDocumentName)##
       <displayInSection>pushpatientconfig</displayInSection>
     </property>
     <property>
-      <heading>Target servers</heading>
+      <heading>$services.localization.render('phenotips.pushPatientConfiguration.heading')</heading>
     </property>
     <property>
       <iconAttachment/>
