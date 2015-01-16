@@ -132,8 +132,8 @@
   $$('.chapter .browser .browser-title').each(function(item) {
     item.insert({after: new Element('span', {'class' : 'expand-tools'})});
   });
-  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
-  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
+  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.expand')");
+  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.collapse')");
   var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll);
 
   $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
@@ -235,7 +235,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

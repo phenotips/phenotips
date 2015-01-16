@@ -119,7 +119,7 @@
 #end
 #set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)")
 #if ($displayedContent.trim() != '')
-**Assisted reproduction:**
+**$services.localization.render('phenotips.UIXField.assistedReproduction.label')**
 $displayedContent
 #end
 {{/velocity}}</content>

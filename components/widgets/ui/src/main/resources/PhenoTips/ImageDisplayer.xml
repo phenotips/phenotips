@@ -122,7 +122,7 @@
 #macro (__displaySelectableAttachmentList $targetDocument $selection)
   (% class="attachment-list" %)(((
   #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
-  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
+  #if ($sortedAttachments.size() == 0)(% class="hint" %)$services.localization.render('phenotips.imageDisplayer.noneAvailable')(%%)#end
   #foreach ($attachment in $sortedAttachments)
     #set ($extension = "#__getExtension($attachment.getFilename())")
     #if ($options.filter.size() == 0 || $options.filter.contains($extension))

@@ -115,7 +115,7 @@
 {{velocity}}
 #if ($xcontext.action == 'edit' || "$!{doc.display('last_name')}$!{doc.display('first_name')}" != '')
   (% class="fieldset" %)(((
-    #__label('last_name' 'section clear' 'Patient name:') ##
+    #__label('last_name' 'section clear' "$services.localization.render('phenotips.UIXField.patientName.label')") ##
     #if ($xcontext.action == 'edit')
       #__displayFormatted('half-width' 'last_name')
       #__displayFormatted('half-width' 'first_name')

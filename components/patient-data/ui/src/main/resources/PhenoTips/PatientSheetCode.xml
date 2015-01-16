@@ -679,7 +679,7 @@ document.observe('xwiki:dom:loaded', function() {
                noPreview = new Element('dd', {'class' : 'no-preview preview' });
                pdItem.insert({bottom: noPreview});
             }
-            noPreview.update('No additional information.');
+            noPreview.update("$services.localization.render('phenotips.patientSheetCode.termSuggest.noAdditionalInfo')");
           } else {
             noPreview &amp;&amp; noPreview.update('');
           }
@@ -747,11 +747,11 @@ document.observe('xwiki:dom:loaded', function() {
                   })
                );
                if (isCustomEntry) {
-                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "This is not a standardized phenotype"}).update(' ')})
+                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardPhenotype')"}).update(' ')})
                }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
-               var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
+               var deleteTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')");
                tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
@@ -763,14 +763,14 @@ document.observe('xwiki:dom:loaded', function() {
                });
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
-               var detailsTool = new Element('span', {'class' : 'tool'}).update('Add details');
-               var clearTool = new Element('span', {'class' : 'tool'}).update('Clear details');
-               var editTool = new Element('span', {'class' : 'tool'}).update('Edit details');
+               var detailsTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')");
+               var clearTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')");
+               var editTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')");
                var editClearTools = new Element('span').insert(editTool).insert(' · ').insert(clearTool);
                tools.insert(' · ').insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
-                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update('Loading...');
+                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.loading')");
                  source.insert(detailsElt);
                  event.findElement().hide();
                  clearTool.__target = detailsElt;
@@ -1269,7 +1269,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Term suggest</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2329,7 +2329,7 @@ document.observe('xwiki:dom:loaded', function() {
        if (obj) {
           var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text);
           elt.__key = obj.key;
-          elt.title = obj.disabled &amp;&amp; 'Click to enable' || 'Click to disable';
+          elt.title = obj.disabled &amp;&amp; "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable')" || "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable')";
           if (obj.disabled) {
             elt.addClassName('disabled');
           }
@@ -2338,7 +2338,7 @@ document.observe('xwiki:dom:loaded', function() {
              var target = event.element();
              target.toggleClassName('disabled');
              cache.all[target.__key].disabled = target.hasClassName('disabled');
-             target.title = cache.all[target.__key].disabled &amp;&amp; 'Click to enable' || 'Click to disable';
+             target.title = cache.all[target.__key].disabled &amp;&amp; "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToEnable')" || "$services.localization.render('phenotips.patientSheetCode.diagnosisZone.clickToDisable')";
              updateSearchValue();
           })
        }

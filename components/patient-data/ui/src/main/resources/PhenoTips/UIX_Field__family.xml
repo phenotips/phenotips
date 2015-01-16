@@ -118,7 +118,7 @@
 #set ($targetClassName = 'PhenoTips.RelativeClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   (% class="clear relatives-info" %)(((
-    === Family study ===
+    === $services.localization.render('phenotips.UIXField.family.heading') ===
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
   )))
 #end

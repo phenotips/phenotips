@@ -224,7 +224,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         }
       },
       {
-         confirmationText : "Are you sure you wish to delete this row?"
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
       });
     },
     ajaxAddData : function (event) {
@@ -242,7 +242,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       }
       var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
       if (!dataTable) {
-        new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');
       }
       var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
       var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
@@ -320,7 +320,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         }
       },
       {
-         confirmationText : "Are you sure you wish to reject this row?"
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rejectConfirmation')"
       });    
     },
   });
@@ -335,7 +335,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
