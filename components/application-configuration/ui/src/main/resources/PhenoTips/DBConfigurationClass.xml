@@ -90,9 +90,7 @@ $!value
     </enableImperialUnitSystem>
     <livetableColumns>
       <cache>0</cache>
-      <customDisplay>//Meta information: //
-
-{{velocity output=false}}
+      <customDisplay>{{velocity output=false}}
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
@@ -105,15 +103,15 @@ $!value
 {{/velocity}}
 
 {{velocity}}{{html wiki=false clean=false}}
+&lt;p&gt;&lt;em&gt;$services.localization.render('phenotips.DBConfigurationClass.metaInfo')&lt;/em&gt;&lt;/p&gt;
 &lt;ul style="list-style-type: none; margin: 0 0 0 16px"&gt;
 #foreach ($option in $docFields)
   #__xclass__displayLivetableColOption($option $value)
 #end
 &lt;/ul&gt;
+&lt;br/&gt;
+&lt;p&gt;&lt;em&gt;$services.localization.render('phenotips.DBConfigurationClass.patientInfo')&lt;/em&gt;&lt;/p&gt;
 {{/html}}{{/velocity}}
-
-//Patient information: //
-
 {{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
