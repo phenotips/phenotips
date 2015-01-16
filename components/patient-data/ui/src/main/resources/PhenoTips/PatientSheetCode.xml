@@ -2020,6 +2020,24 @@ document.observe('xwiki:dom:loaded', function() {
       new PhenoTips.widgets.ChartGenerator($('charts'), chartDataSources);
     });
 
+    // Create a warning when measurements are being entered but no birth date is specified
+    var dateOfBirth = $(document.documentElement).down('input[name$=date_of_birth]');
+    if (dateOfBirth) {
+      _updateNoBirthDateWarning();
+      dateOfBirth.observe('xwiki:date:changed', _updateNoBirthDateWarning);
+    }
+    function _updateNoBirthDateWarning(){
+      birthdate = dateOfBirth.value;
+      var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
+      if (!warningInsertionPoint) { return; }
+      if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
+        warningInsertionPoint.insert({
+          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;No birth date has been specified.&lt;/div&gt;"
+        });
+      } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
+        $('no-birth-date-warning').remove();
+      }
+    };
     // ------------------------------------------------------------------------------------------
     // And one more thing (not exactly related to measurements directly:
     // If we're collecting data about gestational age, select premature birth for low gestational ages

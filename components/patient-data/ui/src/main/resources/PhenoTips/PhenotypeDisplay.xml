@@ -77,7 +77,7 @@
 
   #end
   #set ($displayHtml = $phenotypeDisplayTools.display($data))
-  #set ($hasPhenotype = !($object.getProperty($name).value.empty &amp;&amp; $object.getProperty("negative_${name}").value.empty))
+  #set ($hasPhenotype = ($object.getProperty($name).value &amp;&amp; !$object.getProperty($name).value.empty) || ($object.getProperty("negative_${name}").value &amp;&amp; !$object.getProperty("negative_${name}").value.empty))
   #if ("$!displayHtml" == '' &amp;&amp; ($hasPhenotype || $type == 'edit'))
     {{error}}{{translation key="phenotips.patientRecord.phenotypes.error.failedDisplay"/}}{{/error}}
   #else

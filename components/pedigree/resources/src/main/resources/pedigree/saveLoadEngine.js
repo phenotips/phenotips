@@ -205,7 +205,12 @@ var SaveLoadEngine = Class.create( {
             method: 'POST',
             onCreate: function() {
                 me._saveInProgress = true;
+                // Disable save and close buttons during a save
                 var closeButton = $('action-close');
+                var saveButton = $('action-save');
+                Element.addClassName(saveButton, "disabled-menu-item");
+                Element.removeClassName(saveButton, "menu-item");
+                Element.addClassName(saveButton, "no-mouse-interaction");
                 Element.addClassName(closeButton, "disabled-menu-item");
                 Element.removeClassName(closeButton, "menu-item");
                 Element.addClassName(closeButton, "no-mouse-interaction");
@@ -214,7 +219,12 @@ var SaveLoadEngine = Class.create( {
                 me._saveInProgress = false;
                 var actionAfterSave = editor.getAfterSaveAction();
                 actionAfterSave && actionAfterSave();
+                // Enable save and close buttons after a save
                 var closeButton = $('action-close');
+                var saveButton = $('action-save');
+                Element.addClassName(saveButton, "menu-item");
+                Element.removeClassName(saveButton, "disabled-menu-item");
+                Element.removeClassName(saveButton, "no-mouse-interaction");
                 Element.addClassName(closeButton, "menu-item");
                 Element.removeClassName(closeButton, "disabled-menu-item");
                 Element.removeClassName(closeButton, "no-mouse-interaction");

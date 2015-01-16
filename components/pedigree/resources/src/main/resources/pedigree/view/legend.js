@@ -19,18 +19,29 @@ var Legend = Class.create( {
 
         var legendContainer = $('legend-container');
         if (legendContainer == undefined) {
-            var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'});
-            editor.getWorkspace().getWorkArea().insert(legendContainer);
+          this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
+             new Element('div', {'class' : 'infomessage'}).insert(
+               "You can drag and drop ").insert(
+               new Element('span', {'class' : 'entity-type'}).update((title || "").toLowerCase())).insert(
+               " from the list(s) below onto individuals in the pedigree to mark them as affected.")
+          );
+
+          var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'}).insert(this._legendInfo);
+          this._legendInfo.hide();
+          editor.getWorkspace().getWorkArea().insert(legendContainer);
+        } else {
+          this._legendInfo = legendContainer.down('#legend-info');
+          this._legendInfo && this._legendInfo.down('.entity-type:last-of-type').insert({after: new Element('span', {'class' : 'entity-type'}).update((title || "").toLowerCase())}).insert({after: ", "});
         }
 
-        this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
+        this._legendBox = new Element('div', {'class' : 'legend-box', id: this._getPrefix() + '-legend-box'});
         this._legendBox.hide();
         legendContainer.insert(this._legendBox);
 
         var legendTitle= new Element('h2', {'class' : 'legend-title'}).update(title);
         this._legendBox.insert(legendTitle);
 
-        this._list = new Element('ul', {'class' : 'disorder-list'});
+        this._list = new Element('ul', {'class' : this._getPrefix() +'-list abnormality-list'});
         this._legendBox.insert(this._list);
 
         Element.observe(this._legendBox, 'mouseover', function() {
@@ -130,6 +141,7 @@ var Legend = Class.create( {
     addCase: function(id, name, nodeID) {
         if(Object.keys(this._affectedNodes).length == 0) {
             this._legendBox.show();
+            this._legendInfo.show();
         }
         if(!this._hasAffectedNodes(id)) {
             this._affectedNodes[id] = [nodeID];
@@ -159,6 +171,9 @@ var Legend = Class.create( {
                 htmlElement.remove();
                 if(Object.keys(this._affectedNodes).length == 0) {
                     this._legendBox.hide();
+                    if (this._legendBox.up().select('.abnormality').size() == 0) {
+                      this._legendInfo.hide();
+                    }
                 }
             }
             else {
@@ -179,7 +194,7 @@ var Legend = Class.create( {
      * @private
      */
     _updateCaseNumbersForObject : function(id) {
-      var label = this._legendBox.down('li#' + this._getPrefix() + '-' + id + ' .disorder-cases');
+      var label = this._legendBox.down('li#' + this._getPrefix() + '-' + id + ' .abnormality-cases');
       if (label) {
         var cases = this._affectedNodes.hasOwnProperty(id) ? this._affectedNodes[id].length : 0;
         label.update(cases + "&nbsp;case" + ((cases - 1) && "s" || ""));
@@ -196,12 +211,12 @@ var Legend = Class.create( {
      */
     _generateElement: function(id, name) {
         var color = this.getObjectColor(id);
-        var item = new Element('li', {'class' : 'disorder '+'drop-'+this._getPrefix(), 'id' : this._getPrefix() + '-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
-        var bubble = new Element('span', {'class' : 'disorder-color'});
+        var item = new Element('li', {'class' : 'abnormality '+'drop-'+this._getPrefix(), 'id' : this._getPrefix() + '-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
+        var bubble = new Element('span', {'class' : 'abnormality-color'});
         bubble.style.backgroundColor = color;
         item.insert({'top' : bubble});
-        var countLabel = new Element('span', {'class' : 'disorder-cases'});
-        var countLabelContainer = new Element('span', {'class' : 'disorder-cases-container'}).insert("(").insert(countLabel).insert(")");
+        var countLabel = new Element('span', {'class' : 'abnormality-cases'});
+        var countLabelContainer = new Element('span', {'class' : 'abnormality-cases-container'}).insert("(").insert(countLabel).insert(")");
         item.insert(" ").insert(countLabelContainer);
         var me = this;
         Element.observe(item, 'mouseover', function() {

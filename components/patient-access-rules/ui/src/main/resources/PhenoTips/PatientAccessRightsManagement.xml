@@ -94,12 +94,40 @@
   #set ($collaborators = $request.getParameterValues('collaborator'))
   #set ($accessLevels = $request.getParameterValues('accessLevel'))
   #set ($owner = "$!{request.get('owner')}")
+  #if ("$!{owner}" != '')
+    ## Check the validity of the new owner
+    #set ($invalidOwner = false)
+    #set ($validGroup = false)
+    #set ($validUser = false)
+    #set ($cannotTransfer = false)
+    #set ($ownerDocRef = $services.model.resolveDocument($owner))
+    #if ($xwiki.getDocument($ownerDocRef).getObject('PhenoTips.PhenoTipsGroupClass'))
+      #set ($validGroup = true)
+      ## Non-admin users can only transfer ownership to their own groups
+      ## Check to see if user has permission to transfer ownership
+      #set ($adminGroup = $owner + ' Administrators')
+      #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$hasAdmin)
+        #set ($cannotTransfer = true)
+      #end
+    #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").count() &gt; 0)
+      #set ($validUser = true)
+    #end
+    #if (!($validUser || $validGroup))
+      #set ($invalidOwner = true)
+    #end
+  #end
   #if (!$patient)
     #set ($discard = $response.setStatus(400))## no patient : bad request
     $services.localization.render("phenotips.patientAccessRightsManagement.noPatientError",[$!{request.patient}])
   #elseif($collaborators.size() != $accessLevels.size())
     #set ($discard = $response.setStatus(400))## mismatched user/level parameters, bad request
     $services.localization.render('phenotips.patientAccessRightsManagement.malformedRequest')
+  #elseif ($invalidOwner)
+    #set ($discard = $response.setStatus(400))## No user found to transfer ownership to
+    $services.localization.render('phenotips.patientAccessRightsManagement.invalidNewOwner', ["$!owner"])
+  #elseif ($cannotTransfer)
+    #set ($discard = $response.setStatus(400))## The user cannot make the specified transfer
+    $services.localization.render('phenotips.patientAccessRightsManagement.noPermissionError')
   #else
     #set ($patientAccess = $_service.getPatientAccess($patient))
     #foreach ($collaborator in $collaborators)
