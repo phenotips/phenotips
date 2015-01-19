@@ -46,9 +46,9 @@
 ##
 #macro (__filters_dateRange $field_name $dateStart $dateEnd)
 (% class="date-range" %)(((
-#__filters_dateField ("after: " "${field_name}/after" $dateStart)
+#__filters_dateField ("$services.localization.render('phenotips.databaseFilters.after.label') " "${field_name}/after" $dateStart)
 
-#__filters_dateField ("before: " "${field_name}/before" $dateEnd)
+#__filters_dateField ("$services.localization.render('phenotips.databaseFilters.before.label') " "${field_name}/before" $dateEnd)
 )))
 #end
 ##

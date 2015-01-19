@@ -113,7 +113,7 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
+#__displayFormatted('2-col' 'gender' '' 'gender' 'group-title')
 {{/velocity}}</content>
     </property>
     <property>
