@@ -80,9 +80,7 @@
   &lt;/results&gt;
 #else
 {{info}}
-This service allows to retrieve search results for the suggest UI component.
-Examples:
-* [[$doc.getExternalURL('get', 'outputSyntax=plain&amp;query=__INPUT__*&amp;input=test')]]
+$services.localization.render('phenotips.SuggestPatientService.serviceInfo',["[[$doc.getExternalURL('get', 'outputSyntax=plain&amp;query=__INPUT__*&amp;input=test')]]"])
 {{/info}}
 #end
 {{/velocity}}

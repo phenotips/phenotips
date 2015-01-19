@@ -24,16 +24,23 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-pedigree</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-pedigree</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Pedigree</name>
+  <artifactId>phenotips-pedigree-api</artifactId>
+  <name>PhenoTips - Pedigree - Java APIs</name>
 
-  <modules>
-    <module>resources</module>
-    <module>ui</module>
-    <module>api</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- This would speed up build time, but we're playing with the singleton ComponentManagerRegistry and this causes concurrency issues. -->
+          <parallel>none</parallel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

@@ -852,11 +852,11 @@ $xwiki.jsx.use($studyClassName)
 #if ($studySortedData.size() == 0)
 #if ($isFilterActive)
 
-{{info}}No matching studies{{/info}}
+{{info}}$services.localization.render('phenotips.studyClass.filter.noMatches'){{/info}}
 
 #else
 
-{{info}}No studies have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage studies »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
+{{info}}$services.localization.render('phenotips.studyClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.studyClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
 
 #end
 #else
@@ -864,8 +864,8 @@ $xwiki.jsx.use($studyClassName)
 |(% class="name" %) [[$studyDatum.get('name')&gt;&gt;$studyDatum.get('doc.fullName')]] \\(% class="members"%)$studyDatum.get('groups') group#if($studyDatum.get('groups') != 1)s#end(%%) \\(% class="patients"%)$studyDatum.get('cases') case#if($studyDatum.get('cases') != 1)s#end(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{studyDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($studyDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-  [[{{icon name="pencil" title="Edit this study"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
-  [[{{icon name="times" title="Delete this study"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
+  [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
+  [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
 #end#end
 #end
