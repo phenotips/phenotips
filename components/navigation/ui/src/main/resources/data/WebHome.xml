@@ -2302,7 +2302,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
+  #xwikitopmenuentry($adminspaceaction "$services.localization.render('admin')" 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;

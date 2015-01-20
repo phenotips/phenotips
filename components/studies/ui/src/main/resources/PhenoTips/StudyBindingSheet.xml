@@ -40,7 +40,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-; Please select one of the available studies
+; $services.localization.render('phenotips.studyBindingSheet.selectStudy')
 #if ($doc.getObject('PhenoTips.StudyBindingClass'))
 : $doc.getObject('PhenoTips.StudyBindingClass').studyReference
 #else
