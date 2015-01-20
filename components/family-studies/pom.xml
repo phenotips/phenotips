@@ -24,44 +24,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-components</artifactId>
+  <artifactId>family-studies</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Various Java components</name>
+  <name>PhenoTips - Family Studies</name>
 
   <modules>
-    <module>base-war</module>
-    <module>constants</module>
-    <module>component-registry</module>
-    <module>jodatime-service</module>
-    <module>widgets</module>
-    <module>skin</module>
-    <module>navigation</module>
-    <module>export</module>
-    <module>family-studies</module>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>ontology-access</module>
-    <module>patient-data</module>
-    <module>security</module>
-    <module>patient-access-rules</module>
-    <module>patient-data-sharing</module>
-    <module>patient-measurements</module>
-    <module>xwiki-platform-users</module>
-    <module>studies</module>
-    <module>users</module>
-    <module>user-profile-ui</module>
-    <module>application-configuration</module>
-    <module>patient-tools</module>
-    <module>storage-migrators</module>
-    <module>ncbieutils-services</module>
-    <module>phenotype-mapping-service</module>
-    <module>specificity-meter</module>
-    <module>medsavant-client</module>
-    <module>diagnosis-suggestion</module>
-    <module>pedigree</module>
-    <module>proxy-authentication</module>
+    <module>api</module>
+    <module>ui</module>
   </modules>
 </project>

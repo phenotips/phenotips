@@ -49,18 +49,31 @@ $!response.setContentType('application/json')##
 #else
   {{html wiki="false" clean="false"}}
 #end
+#set($isFamily = false)
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
+  #if (!$patient &amp;&amp; $request.id.startsWith("FAM"))
+    #set ($isFamily = true)
+    #set ($familyId = "$!request.id")
+  #end
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #if (!$patient &amp;&amp; $request.eid.startsWith("FAM"))
+    #set ($isFamily = true)
+    #set ($familyId = "$!request.eid")
+  #end
 #end
-#if (!$patient)
+#if (!$patient &amp;&amp; !$isFamily)
   $response.setStatus(404)
   {"error" : "Identifier not found."}
   #break
 #end
 #if ("$!{request.data}" == 'pedigree')
-  #set ($pedigreeObj  = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
+  #if (!$isFamily)
+    #set ($pedigreeObj  = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
+  #else
+    #set ($pedigreeObj  = $!xwiki.getDocument("data.$familyId").getObject('PhenoTips.PedigreeClass'))
+  #end
   #if ($pedigreeObj)
     #set ($pedigreeData = $pedigreeObj.getProperty('data'))
     #if ($pedigreeData)
