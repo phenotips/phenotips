@@ -117,7 +117,7 @@
   (% class="ncbi-search-box" %)(((
     === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
     (% class="expand-tools" %)(((
-      (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
+      (% class="tool show" %)$services.localization.render('phenotips.patientSheet.expandSection')(%%) (% class="tool hide" %)$services.localization.render('phenotips.patientSheet.collapseSection')(%%)
     )))
     (% class="ncbi-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)

@@ -499,7 +499,7 @@ $content
 
     addCloseListener : function () {
       this.dialog.__controller = this;
-      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : 'Done'});
+      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : "$services.localization.render('phenotips.imageDisplayer.done')"});
       this.gallery.down('.content').insert({bottom : closeButton});
       closeButton.observe('click', this.dialog.closeDialog.bindAsEventListener(this.dialog));
     }
@@ -789,10 +789,10 @@ $content
       }
 
       this.MESSAGE_CONTAINER      = _getElt('');
-      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsupported format.');
-      this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
-      this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
-      this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
+      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', "$services.localization.render('phenotips.imageDisplayer.error.invalidFile')");
+      this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', "$services.localization.render('phenotips.imageDisplayer.error.general')");
+      this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , "$services.localization.render('phenotips.imageDisplayer.error.abort')");
+      this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , "$services.localization.render('phenotips.imageDisplayer.error.size')".replace("__maxSize__", this.bytesToSize(this.options.maxFilesize)));
 
       this.form.insert({top : this.MESSAGE_CONTAINER});
     },
@@ -1001,7 +1001,7 @@ $content
       <name>HTML5 file upload</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

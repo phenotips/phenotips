@@ -388,7 +388,7 @@
   &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt; $services.localization.render('phenotips.groups.create.newGroupInput')&lt;input type="text" name="name" placeholder=" $services.localization.render('phenotips.groups.create.newGroupInputPlaceholder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt; $services.localization.render('phenotips.groups.create.newGroupInput')&lt;input type="text" name="name" placeholder=" $services.localization.render('phenotips.groups.create.newGroupInputPlaceholder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="$services.localization.render('phenotips.groups.create.submit')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
@@ -888,7 +888,7 @@ $xwiki.jsx.use($groupClassName)
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
 |(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end##
-|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%)##
+|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$services.localization.render('phenotips.group.info.members', [$groupDatum.get('members')])(%%) \\(% class="patients"%)$services.localization.render('phenotips.group.info.cases', [$groupDatum.get('cases')])(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
   [[{{icon name="pencil" title="$services.localization.render('phenotips.groups.edit')"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##

@@ -2032,7 +2032,7 @@ document.observe('xwiki:dom:loaded', function() {
       if (!warningInsertionPoint) { return; }
       if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
         warningInsertionPoint.insert({
-          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;No birth date has been specified.&lt;/div&gt;"
+          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;$services.localization.render('phenotips.patientSheetCode.noBirthdateWarning')&lt;/div&gt;"
         });
       } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
         $('no-birth-date-warning').remove();
@@ -2087,7 +2087,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Automatic computation of growth parameters</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2188,8 +2188,8 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
 
   $$('.chapter &gt; h2').each(function(item){
-    var chapterShow = new Element('span', {'class' : 'tool show'}).update('Show');
-    var chapterHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
+    var chapterShow = new Element('span', {'class' : 'tool show'}).update("$services.localization.render('phenotips.patientSheet.expandSection')");
+    var chapterHide = new Element('span', {'class' : 'tool hide'}).update("$services.localization.render('phenotips.patientSheet.collapseSection')");
     var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShow).insert(chapterHide);
     item.insert({after: chapterExpandTools});
     [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
@@ -2207,7 +2207,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Expand/collapse sections</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

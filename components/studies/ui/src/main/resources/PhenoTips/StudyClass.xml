@@ -373,7 +373,7 @@
   &lt;input type="hidden" name="classTemplate" value="$studyTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${studiesHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${studiesHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.studyClass.newStudy.label') &lt;input type="text" name="name" placeholder="$services.localization.render('phenotips.studyClass.newStudy.placeHolder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.studyClass.newStudy.label') &lt;input type="text" name="name" placeholder="$services.localization.render('phenotips.studyClass.newStudy.placeHolder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="$services.localization.render('phenotips.studyClass.newStudy.submit')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 

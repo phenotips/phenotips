@@ -118,7 +118,7 @@
   (% class="growth-charts-section" %)(((
     === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
     (% class="expand-tools" %)(((
-      (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
+      (% class="tool show" %)$services.localization.render('phenotips.patientSheet.expandSection')(%%) (% class="tool hide" %)$services.localization.render('phenotips.patientSheet.collapseSection')(%%)
     )))
     (% id="charts"%)(((
       #_measurementCharts({'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})

@@ -90,11 +90,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #if ($xcontext.action == 'view')
 #set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
 #set ($sections = [
-  {'id' : 'members', 'name' : "Group members", 'icon' : 'users',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
-  {'id' : 'cases',   'name' : "Cases",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'}
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.groups.menu.groupMembers')", 'icon' : 'users',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
+  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.groups.menu.cases')",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'}
 ])
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "Studies",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='$doc.fullName' /}})))"}))
+  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='$doc.fullName' /}})))"}))
 #end
 #set ($menu = [])
 #set ($contents = {})
