@@ -300,11 +300,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #macro(_formDesigner__displayExtensionTools $extension $tools)
 {{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
 #if ($globalConfig)
-#if ($tools.required)&lt;label class="extension-tool flag" title="Required?"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
-#if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' 'Modify this extension' $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
-#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' 'Delete this extension' $extension.doc.getURL('delete') 'target="_blank"')#end
+#if ($tools.required)&lt;label class="extension-tool flag" title="$services.localization.render('phenotips.formDesigner.requiredExtension')"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
+#if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' "$services.localization.render('phenotips.formDesigner.editExtension')" $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
+#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' "$services.localization.render('phenotips.formDesigner.deleteExtension')" $extension.doc.getURL('delete') 'target="_blank"')#end
 #end
-#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'arrows' 'Drag and drop to reorganize' '#')#end
+#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'arrows' "$services.localization.render('phenotips.formDesigner.moveExtension')" '#')#end
 &lt;/div&gt;{{/html}}
 #end
 
@@ -407,7 +407,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 (% class="designer-panel sections" %)(((
 #_formDesigner__displaySections()
 #if ($globalConfig)
-(% id="new-section" class="new-section xformInline" %)((((% class="section-title" %)(((New section...))){{html clean=false wiki=false}}
+(% id="new-section" class="new-section xformInline" %)((((% class="section-title" %)((($services.localization.render('phenotips.formDesigner.newSection')))){{html clean=false wiki=false}}
   &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
   &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
   &lt;input class="button" type="button" name="${formSubmit}" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;{{/html}}

@@ -187,7 +187,7 @@
 	                  }
 	                },
 	                /* Interaction parameters */
-	                { confirmationText: "Save before exporting?", showCancelButton: true }
+	                { confirmationText: "$services.localization.render('phenotips.PushPatient.confirmationText')", showCancelButton: true }
 	              );
 	            } else {
 	              _this._launchUI();
@@ -962,9 +962,9 @@
       var buttons = new Element('div', {'class' : 'buttons'});
       buttons.insert(new Element('input', {type: 'hidden', name : 'xaction', 'value': 'push'}));
       buttons.insert(new Element('input', {type: 'hidden', name : 'patient', 'value': this._patientId}));
-      var pushButtonTitle = this._pushManyPatients ? 'Next: Select patients and data fields to be pushed' : 'Push';
+      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.submit')" : "$services.localization.render('phenotips.PushPatient.button.push')";
       buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': pushButtonTitle, 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
-      buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+      buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$services.localization.render('phenotips.PushPatient.button.cancel')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(buttons);
 
       this._pushResultSection = new Element ('div', {'class' : 'section-contents'});
@@ -1216,7 +1216,7 @@
         }
         var exportTool = $('phenotips_export');
         if (!exportTool) return;
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.exportTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content

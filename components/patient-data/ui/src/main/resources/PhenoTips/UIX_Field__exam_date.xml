@@ -127,7 +127,7 @@
       <name>org.phenotips.patientSheet.field.exam_date</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.examDate')Exam date
+      <parameters>title=$services.localization.render('phenotips.UIXField.examDate')
 enabled=false
 required=
 order=3

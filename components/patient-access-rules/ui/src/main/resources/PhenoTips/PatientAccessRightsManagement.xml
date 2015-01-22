@@ -546,7 +546,7 @@
       this._initVisibilityManager();
       this._initCollaboratorsManager();
       this._initManagerActions();
-      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': 'Access rights for ' + this.patientId, 'verticalPosition': 'top', 'removeOnClose': false});
+      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': "$services.localization.render('phenotips.patientAccessRightsManagement.heading')".replace("__patientID__", this.patientId), 'verticalPosition': 'top', 'removeOnClose': false});
       //document.fire('xwiki:dom:updated', {'elements' : [this._container]});
     },
     _generateSection : function(id, title, intro) {

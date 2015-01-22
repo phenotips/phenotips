@@ -60,30 +60,30 @@
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || true) checked="checked" #end /&gt;
-          ${field.prettyName}
+          ${field.translatedPrettyName}
         &lt;/li&gt;
         #if ($codeFields.contains(${field.name}) &amp;&amp; !${simple})
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_code"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term ID)
+          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.ID')
         &lt;/li&gt;
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term ID and term name)
+          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.IDandName')
         &lt;/li&gt;
         #end
         #if ($metaFields.contains(${field.name}) &amp;&amp; !${simple})
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_code_meta"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code_meta" value="${field.name}_code_meta" #if($valueList.contains("${field.name}_code_meta")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term and metadata IDs)
+          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.termAndMetaID')
         &lt;/li&gt;
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || true) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term and metadata names)
+          ${field.translatedPrettyName} $services.localization.render('phenotips.exportPreferences.field.termAndMetaNames')
         &lt;/li&gt;
         #end
         #end
@@ -114,7 +114,7 @@
   #set($metaFields = [])
   #set($selectedValues = [])
   #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues false $activeFields)
-  #set($exportTitle = "Push to " + $request.remoteserver)
+  #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
   #set($exportButtonID = "push-multiple-patients")
 #else
 === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
@@ -143,13 +143,13 @@
   #set($metaFields = ['phenotype'])
   #set($selectedValues = ['phenotype'])
   #__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $simple)
-  #set($exportTitle = "Export")
+  #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.export')")
   #set($exportButtonID = "export-multiple-patients")
 #end
 )))##section columns
 
 (% class="buttons"%)(((
-{{html clean="false"}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" id="$exportButtonID" value="$exportTitle" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
+{{html clean="false"}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" id="$exportButtonID" value="$exportTitle" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="$services.localization.render('phenotips.exportPreferences.cancel')" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
 {{html clean="false"}}&lt;/div&gt;&lt;/form&gt;{{/html}}
 )))
 {{/velocity}}</content>

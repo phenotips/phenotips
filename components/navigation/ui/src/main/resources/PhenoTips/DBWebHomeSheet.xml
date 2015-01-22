@@ -533,7 +533,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     exportTools.each(function(exportTool) {
       exportTool.observe('click', function(event) {
         event.stop();
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title':"$services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content
