@@ -370,6 +370,12 @@ var PedigreeEditor = Class.create({
                 'tab': 'Personal'
             },
             {
+                'name' : 'phenotips_identifier',
+                'label' : '',
+                'type'  : 'hidden',
+                'tab': 'Personal'
+            },
+            {
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
@@ -407,7 +413,7 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'external_id',
                 'label': 'External ID',
-                'type' : 'text',
+                'type' : 'id-picker',
                 'tab': 'Personal',
                 'function' : 'setExternalID'
             },

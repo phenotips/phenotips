@@ -150,6 +150,34 @@ NodeMenu = Class.create({
                 });
             }
         });
+        // ids (external)
+        this.form.select('input.suggest-id').each(function(item) {
+            if (!item.hasClassName('initialized')) {
+                var ethnicityServiceURL = new XWiki.Document('WebHome', 'data').getURL("get", "xpage=suggest&classname=PhenoTips.RelativeClass&fieldname=relative_of&firCol=eid.value&secCol=%2D");
+                //console.log("Ethnicity URL: " + ethnicityServiceURL);
+                item._suggest = new PhenoTips.widgets.Suggest(item, {
+                    script: ethnicityServiceURL + "&",
+                    varname: "input",
+                    noresults: "No matching terms",
+                    resultsParameter : "results",
+                    json: false,
+                    resultId : "id",
+                    resultValue : "rs",
+                    //resultValue : "ethnicity",
+                    resultInfo : {},
+                    enableHierarchy: false,
+                    fadeOnClear : false,
+                    timeout : 30000,
+                    parentContainer : $('body')
+                });
+                item.addClassName('initialized');
+                document.observe('ms:suggest:containerCreated', function(event) {
+                    if (event.memo && event.memo.suggest === item._suggest) {
+                        item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                    }
+                });
+            }
+        });
         // ethnicities
         this.form.select('input.suggest-ethnicity').each(function(item) {
             if (!item.hasClassName('initialized')) {
@@ -534,6 +562,30 @@ NodeMenu = Class.create({
               }
             });
             this._attachFieldEventListeners(diseasePicker, ['custom:selection:changed']);
+            return result;
+        },
+        'id-picker' : function (data) {
+            var _this = this;
+            var result = this._generateEmptyField(data);
+            var idPicker = new Element('input', {type: 'text', 'class': 'suggest suggest-id', name: data.name});
+            result.inputsContainer.insert(idPicker);
+            idPicker.wrap('span');
+
+            idPicker._getValue = function() {
+                return [this.value];
+            }.bind(idPicker);
+            document.observe('ms:suggest:selected', function(event) {
+                if (event.memo && event.memo.suggest && event.memo.suggest.fld == idPicker) {
+                    /* fixme. probably shouldn't be here. */
+                    var phenotipsId = Selector.findElement(_this.form, 'input[name="phenotips_identifier"]');
+                    phenotipsId.value = event.memo.value;
+                    idPicker.value = event.memo.value;
+                    Event.fire(event.memo.suggest.fld, 'ms:suggest:selected');
+                    _this.reposition();
+                }
+            });
+
+            this._attachFieldEventListeners(idPicker, ['keyup', 'ms:suggest:selected'], [true]);
             return result;
         },
         'ethnicity-picker' : function (data) {
@@ -979,6 +1031,13 @@ NodeMenu = Class.create({
                 target._silent = false;
             }
         },
+        'id-picker' : function (container, value) {
+            var target = container.down('input[type=text].suggest-id');
+            if (target) {
+                target.value = value;
+            }
+            this._restoreCursorPositionIfNecessary(target);
+        },
         'ethnicity-picker' : function (container, values) {
             var _this = this;
             var target = container.down('input[type=text].suggest-ethnicity');
@@ -1136,6 +1195,9 @@ NodeMenu = Class.create({
         'disease-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
+        'id-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
         'ethnicity-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
@@ -1197,6 +1259,9 @@ NodeMenu = Class.create({
             // FIXME: Not implemented
         },
         'disease-picker' : function (container, inactive) {
+            // FIXME: Not implemented
+        },
+        'id-picker' : function (container, inactive) {
             // FIXME: Not implemented
         },
         'ethnicity-picker' : function (container, inactive) {
