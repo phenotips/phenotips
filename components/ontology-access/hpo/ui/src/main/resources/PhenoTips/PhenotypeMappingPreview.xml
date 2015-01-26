@@ -55,8 +55,8 @@ $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
   #set ($mapping = $doc)
 #end
 #if ($mapping.getObject('PhenoTips.PhenotypeMappingClass'))
-  #set ($def = $mapping.content.replaceAll('\{\{/?velocity[^}]*}}', ''))
-  #set ($discard = "#evaluate($def)")
+  #set ($mappings = $jsontool.parse($mapping.content))
+  #set ($phenotype = $mappings.phenotype)
   #if ("$!{phenotype}" != '')
     #set($phenotypeDisplayTools = $services.phenotype)
     $phenotypeDisplayTools.setMode('edit')##

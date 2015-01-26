@@ -58,6 +58,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 
+import net.sf.json.JSONObject;
+
 /**
  * Provides access to the phenotype mappings configured for the current space. The field mappings are defined by a
  * Groovy script contained in a document. The name of that document must be configured in the "phenotypeMapping" field
@@ -226,13 +228,9 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
         DocumentReference mappingDoc = getMappingDocument();
         Object result = getMapping(mappingDoc, mappingName);
         if (result == null) {
-            Map<String, Object> mappings;
             try {
-                if (this.bridge.getDocumentContentForDefaultLanguage(mappingDoc).contains("{{velocity")) {
-                    mappings = parseVelocityMapping(mappingDoc);
-                } else {
-                    mappings = parseGroovyMapping(mappingDoc);
-                }
+                JSONObject mappings =
+                    JSONObject.fromObject(this.bridge.getDocumentContentForDefaultLanguage(mappingDoc));
                 result = mappings.get(mappingName);
             } catch (Exception ex) {
                 this.logger.warn("Failed to access mapping: {}", ex.getMessage());

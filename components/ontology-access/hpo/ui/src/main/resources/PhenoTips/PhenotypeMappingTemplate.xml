@@ -39,8 +39,8 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-#set($phenotype = [
+  <content>{
+"phenotype" : [
   {
     "type"       : "section",
     "title"      : "Growth parameters",
@@ -97,12 +97,8 @@
     "categories" : ["HP:0000118"],
     "data"       : []
   }
-])
-
-#set ($mappings = {
-  'phenotype': $phenotype
-})
-{{/velocity}}</content>
+]
+}</content>
   <object>
     <name>PhenoTips.PhenotypeMappingTemplate</name>
     <number>0</number>
