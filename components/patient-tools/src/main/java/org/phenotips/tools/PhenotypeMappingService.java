@@ -229,9 +229,14 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
         Object result = getMapping(mappingDoc, mappingName);
         if (result == null) {
             try {
-                JSONObject mappings =
-                    JSONObject.fromObject(this.bridge.getDocumentContentForDefaultLanguage(mappingDoc));
-                result = mappings.get(mappingName);
+                String mappingContent = this.bridge.getDocumentContentForDefaultLanguage(mappingDoc);
+                if (mappingContent.startsWith("{{velocity")) {
+                    result = parseVelocityMapping(mappingDoc).get(mappingName);
+                } else if (mappingContent.startsWith("{{groovy")) {
+                    result = parseGroovyMapping(mappingDoc).get(mappingName);
+                } else {
+                    result = JSONObject.fromObject(mappingContent).get(mappingName);
+                }
             } catch (Exception ex) {
                 this.logger.warn("Failed to access mapping: {}", ex.getMessage());
             }
