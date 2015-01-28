@@ -56,7 +56,7 @@
     #end
 #if ("$!{request.format}" == 'html')
 #set ($results = $services.diagnosis.get($data, $limit))
-#if ($results &amp;&amp; $results.size() &gt; 0)
+#if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
 #foreach($term in $results)
