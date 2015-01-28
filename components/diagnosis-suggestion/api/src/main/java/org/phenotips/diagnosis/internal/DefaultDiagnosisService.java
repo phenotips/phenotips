@@ -138,6 +138,10 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         }
 
         // Get marginals
+        if (o.isEmpty()) {
+            return null;
+        }
+
         final BOQA.Result res = this.boqa.assignMarginals(o, false, 1);
 
         // All of this is sorting diseases by marginals
@@ -204,9 +208,14 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
 
     private void addTermAndAncestors(Term t, Observations o)
     {
-        int id = this.boqa.getTermIndex(t);
-        o.observations[id] = true;
-        this.boqa.activateAncestors(id, o.observations);
+        try {
+            int id = this.boqa.getTermIndex(t);
+            o.observations[id] = true;
+            this.boqa.activateAncestors(id, o.observations);
+        } catch (NullPointerException e) {
+            this.logger.warn(String.format(
+                "Unable to find the boqa index of '%s'.", t));
+        }
     }
 
     /**
