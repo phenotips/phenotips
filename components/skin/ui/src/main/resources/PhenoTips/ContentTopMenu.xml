@@ -675,12 +675,12 @@
     new XWiki.widgets.ConfirmationBox(
       {
         onYes : function() {
-          function exportAfterSave() {
+          var exportAfterSave = function() {
             window.self.location = event.findElement().href;
+            document.stopObserving('xwiki:document:saved', exportAfterSave);
           };
+          document.observe('xwiki:document:saved', exportAfterSave);
           document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-          document.observe('xwiki:document:saved', exportAfterSave() );
-          document.stopObserving('xwiki:document:saved', exportAfterSave());
         },
         onNo : function() {
           window.self.location = event.findElement().href;
