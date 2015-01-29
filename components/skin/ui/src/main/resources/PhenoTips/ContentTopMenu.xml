@@ -674,15 +674,17 @@
     event.stop();
     new XWiki.widgets.ConfirmationBox(
       {
-         onYes : function() {
-           document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-           document.observe('xwiki:document:saved', function () {
-             window.self.location = event.findElement().href;
-           });
-         },
-         onNo : function() {
-           window.self.location = event.findElement().href;
-         }
+        onYes : function() {
+          function exportAfterSave() {
+            window.self.location = event.findElement().href;
+          };
+          document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+          document.observe('xwiki:document:saved', exportAfterSave() );
+          document.stopObserving('xwiki:document:saved', exportAfterSave());
+        },
+        onNo : function() {
+          window.self.location = event.findElement().href;
+        }
       },
       /* Interaction parameters */
       { confirmationText: "Save before exporting?", showCancelButton: true }
