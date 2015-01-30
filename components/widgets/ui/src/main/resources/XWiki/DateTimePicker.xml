@@ -1443,7 +1443,9 @@ Date.prototype.getOrdinal = function () {
  */
 Date.ISO8601Format = 'yyyy-MM-ddTHH:mm:ssZ';
 Date.prototype.toISO8601 = function() {
-   return this.toString(Date.ISO8601Format);
+  var result =  this.toString(Date.ISO8601Format);
+  if (result.indexOf("NaN")&gt;-1) {result="";}
+  return result;
 };
 Date.prototype.toUTC = function() {
    return new Date(
@@ -2614,9 +2616,9 @@ var SimpleDateFormat;
 	};
 
 	SimpleDateFormat.prototype.format = function(date) {
-		var formattedString = "";
+    if (date=="Invalid Date") {return "";}
+    var formattedString = "";
 		var result;
-
 		var padWithZeroes = function(str, len) {
 			while (str.length &lt; len) {
 				str = "0" + str;
