@@ -151,7 +151,8 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         OntologyTerm result = this.cache.get(id);
         if (result == null) {
-            HttpGet method = new HttpGet(fetchServiceURL + "symbol/" + id);
+            id = id.replaceAll("\\s", "");
+            HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + id);
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
