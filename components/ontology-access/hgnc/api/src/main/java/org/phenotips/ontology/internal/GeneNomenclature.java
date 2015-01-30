@@ -129,11 +129,11 @@ public class GeneNomenclature implements OntologyService, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            baseServiceURL =
-                configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
-            searchServiceURL = baseServiceURL + "search/";
-            infoServiceURL = baseServiceURL + "info";
-            fetchServiceURL = baseServiceURL + "fetch/";
+            this.baseServiceURL =
+                this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
+            this.searchServiceURL = this.baseServiceURL + "search/";
+            this.infoServiceURL = this.baseServiceURL + "info";
+            this.fetchServiceURL = this.baseServiceURL + "fetch/";
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
             EntryEvictionConfiguration infoConfig = new LRUEvictionConfiguration(1);
             infoConfig.setTimeToLive(300);
@@ -151,7 +151,12 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         OntologyTerm result = this.cache.get(id);
         if (result == null) {
-            id = id.replaceAll("\\s", "");
+            try {
+                id = URLEncoder.encode(id, Consts.UTF_8.name());
+            } catch (UnsupportedEncodingException e) {
+                id = id.replaceAll("\\s", "");
+                this.logger.warn("Could not find the encoding: {}", Consts.UTF_8.name());
+            }
             HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + id);
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
@@ -196,7 +201,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         try {
             HttpGet method =
-                new HttpGet(searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
+                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
@@ -237,7 +242,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         try {
             HttpGet method =
-                new HttpGet(searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
+                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
@@ -294,7 +299,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     @Override
     public String getDefaultOntologyLocation()
     {
-        return baseServiceURL;
+        return this.baseServiceURL;
     }
 
     @Override
@@ -310,7 +315,7 @@ public class GeneNomenclature implements OntologyService, Initializable
         if (info != null) {
             return info;
         }
-        HttpGet method = new HttpGet(infoServiceURL);
+        HttpGet method = new HttpGet(this.infoServiceURL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
