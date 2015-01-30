@@ -54,7 +54,9 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 ; {{html}}&lt;label&gt;Description&lt;/label&gt;{{/html}}
 : (% class="xHint" %)A short presentation to inform visitors what this study's purpose is (optional).
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+
 (% class="buttonwrapper" %)[[{{icon name="wrench" /}} Patient form configuration&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||class="button" id="patientConfigurationLink"]]
+
 )))
 #else
 $!doc.content
@@ -180,8 +182,8 @@ $!doc.content
   (function(link) {
     var saveAfterClick = function() {
       event.stop();
-      document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
       document.observe('xwiki:document:saved', followLinkAfterSave);
+      document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
     };
     var followLinkAfterSave = function() {
       document.stopObserving('xwiki:document:saved', followLinkAfterSave);
@@ -194,13 +196,13 @@ $!doc.content
 });</code>
     </property>
     <property>
-      <name>save study before open configuration file</name>
+      <name>Save study before opening configuration file</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
