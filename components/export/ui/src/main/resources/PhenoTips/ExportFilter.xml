@@ -200,6 +200,7 @@
   #set ($discard = $parameters.add("$request.get('external_id')%"))
 #end
 #set ($patientIds = $services.query.hql($query).bindValues($parameters))
+#set ($discard = $patientIds.addFilter('unique'))
 #if ($request.count)
   #set ($discard = $patientIds.addFilter('count'))
   $patientIds.execute()[0]
