@@ -72,10 +72,10 @@ $response.setContentType('application/json')##
     #if ($enabledFields.contains('date'))#set ($discard = $JSON.put("last_modification_date", $!{xwiki.formatDate($patientDoc.date, 'MM/dd/yyyy')}))#end
     #if ($isFirst)
       #set($isFirst = false)
-      $JSON
     #else
-      ,$JSON
+      ,
     #end
+    $JSON
   #end## Patient is accessible
 #end
 ]## Closing JSON array brace

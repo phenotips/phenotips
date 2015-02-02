@@ -199,13 +199,10 @@
   #set ($query = ", StringProperty externalId $query and externalId.id.id = obj.id and externalId.id.name = 'external_id' and upper(externalId.value) like upper(?)")
   #set ($discard = $parameters.add("$request.get('external_id')%"))
 #end
-#set ($query = "select distinct doc from com.xpn.xwiki.doc.XWikiDocument as doc" + $query)
 #set ($patientIds = $services.query.hql($query).bindValues($parameters))
 #if ($request.count)
-  #set($queryResult = $patientIds.execute())
-  #if ($queryResult)
-    $queryResult.size()
-  #end
+  #set ($discard = $patientIds.addFilter('count'))
+  $patientIds.execute()[0]
   #break
 #end
 #set ($patientIds = $patientIds.execute())
