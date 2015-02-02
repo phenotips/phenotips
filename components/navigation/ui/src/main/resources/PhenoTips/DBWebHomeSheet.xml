@@ -506,7 +506,8 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     // Live updates
     var liveMatchCounter = $('filter-match-count');
     var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
-    if (liveMatchCounter &amp;&amp; form) {
+    if (liveMatchCounter &amp;&amp; form &amp;&amp; !liveMatchCounter.initialized) {
+      liveMatchCounter.initialized = true;
       var lastRequestID = 0;
       var updateMatchCounter = function(event) {
         var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?count=true&amp;" + form.serialize();
