@@ -22,7 +22,6 @@ package org.phenotips.data.internal;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -67,11 +66,6 @@ public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigra
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
-
-    /** Serializes the class name without the wiki prefix, to be used in the database query. */
-    @Inject
-    @Named("compactwiki")
-    private EntityReferenceSerializer<String> serializer;
 
     @Override
     public String getDescription()
