@@ -150,14 +150,15 @@ public class GeneNomenclature implements OntologyService, Initializable
     public OntologyTerm getTerm(String id)
     {
         OntologyTerm result = this.cache.get(id);
+        String safeID;
         if (result == null) {
             try {
-                id = URLEncoder.encode(id, Consts.UTF_8.name());
+                safeID = URLEncoder.encode(id, Consts.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
-                id = id.replaceAll("\\s", "");
+                safeID = id.replaceAll("\\s", "");
                 this.logger.warn("Could not find the encoding: {}", Consts.UTF_8.name());
             }
-            HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + id);
+            HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + safeID);
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
