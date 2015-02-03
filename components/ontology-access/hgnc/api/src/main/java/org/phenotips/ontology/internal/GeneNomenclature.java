@@ -61,6 +61,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.params.CommonParams;
 import org.slf4j.Logger;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -467,6 +468,13 @@ public class GeneNomenclature implements OntologyService, Initializable
         public String toString()
         {
             return "HGNC:" + getId();
+        }
+
+        @Override
+        public JSON toJson() {
+            JSONObject json = new JSONObject();
+            json.put("id", this.getId());
+            return json;
         }
     }
 }

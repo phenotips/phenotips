@@ -23,6 +23,8 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Set;
 
+import net.sf.json.JSON;
+
 /**
  * A term from an {@link OntologyService ontology}. A few common properties are available as explicit individual
  * methods, and any property defined for the term can be accessed using the generic {@link #get(String)} method. As a
@@ -101,4 +103,9 @@ public interface OntologyTerm
      * @return the owner ontology
      */
     OntologyService getOntology();
+
+    /**
+     * @return near-complete information contained in this term, in JSON format
+     */
+    JSON toJson();
 }

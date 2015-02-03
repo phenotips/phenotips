@@ -50,35 +50,41 @@
       #end
       #set ($discard = $parameters.put($param.key, $foreach.value))
     #end
-    #set ($results = $services.hpo.customSearch($parameters))
+    #set ($query = {})
+    #set ($concatedQuery = $parameters.remove("q"))
+    #set ($queryParts = $concatedQuery.split(" "))
+    #foreach ($part in $queryParts)
+      #set ($kv = $part.split(":"))
+      #if ($kv.size() == 2) 
+        #set ($discard = $query.put($kv[0], $kv[1]))
+      #end
+    #end
+    #set ($results = $services.ontologies.hpo.search($query, $parameters))
   #end
 $response.setContentType('application/json')
 {
    "returnedrows" : "$results.size()",
    "rows" : [
 #foreach ($result in $results)
-     {
-    #foreach ($field in $result.fieldNames)
-      #set ($values = $result.getFieldValues($field))
-      #if ($values.size() &gt; 0)
+  {
+  #foreach ($field in $result.fieldNames)
+    #set ($values = $result.getFieldValues($field))
+    #if ($values.size() &gt; 0)
       #if ($values.size() == 1)
         "$field" : "$escapetool.javascript($values.get(0)).replace('\''', '''')"##
       #else
         "$field" : [
         #foreach ($value in $values)
           "$escapetool.javascript($value).replace('\''', '''')"#if($foreach.hasNext()),#end
-
         #end
-        ]##
+      ]##
       #end
       #if($foreach.hasNext()),#end
-
-      #end
     #end
-     }#if($foreach.hasNext()),#end
-
+  #end
+  }#if($foreach.hasNext()),#end
 #end
-   ]## docs array
+  ]## docs array
 }
 #end## Done handling get action
 {{/html}}{{/velocity}}</content>

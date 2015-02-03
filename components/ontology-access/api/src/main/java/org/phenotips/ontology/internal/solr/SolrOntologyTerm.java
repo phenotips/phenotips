@@ -33,6 +33,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * Implementation for {@link OntologyTerm} based on an indexed Solr document.
  *
@@ -217,6 +221,33 @@ public class SolrOntologyTerm implements OntologyTerm
         sourceUnprocessedAncestors.addAll(nextLevel);
 
         return minDistance;
+    }
+
+    @Override
+    public JSON toJson() {
+        String SYNONYM = "synonym";
+        JSONObject json = new JSONObject();
+
+        Object synonymObject = this.get("synonym");
+        Object isaObject = this.get("is_a");
+        try {
+            JSONArray synonym = new JSONArray();
+            synonym.addAll((Collection<String>) synonymObject);
+            json.put(SYNONYM, synonym);
+        } catch (Exception ex) {
+            try {
+                json.put(SYNONYM, (String) synonymObject);
+            } catch (Exception e) {
+                // do nothing. If all failed then it's not likely that there are synonyms.
+            }
+        }
+
+        json.put("id", this.getId());
+        json.put("name", this.getName());
+        json.put("def", this.getDescription());
+//        json.put("is_a", this.)
+
+        return json;
     }
 
     @Override

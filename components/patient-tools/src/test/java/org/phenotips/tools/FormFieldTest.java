@@ -45,6 +45,9 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -336,6 +339,13 @@ public class FormFieldTest
                 return this.synonyms;
             }
             return null;
+        }
+
+        @Override
+        public JSON toJson() {
+            JSONObject json = new JSONObject();
+            json.put("id", this.getId());
+            return json;
         }
     }
 }
