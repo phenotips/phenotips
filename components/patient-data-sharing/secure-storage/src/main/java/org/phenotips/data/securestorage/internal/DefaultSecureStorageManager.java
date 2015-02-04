@@ -62,36 +62,53 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         if (existing != null) {
             Session session = this.sessionFactory.getSessionFactory().openSession();
             Transaction t = session.beginTransaction();
-            t.begin();
-            this.logger.debug("Removing stored token for [{}@{}]", localUserName, serverName);
-            session.delete(existing);
-            t.commit();
+            try {
+                t.begin();
+                this.logger.info("Removing stored token for [{}@{}]", localUserName, serverName);
+                session.delete(existing);
+                t.commit();
+            } catch (HibernateException ex) {
+                this.logger.error("Error removing stored token for [{}@{}]: [{}]", localUserName, serverName, ex);
+                if (t!=null) {
+                    t.rollback();
+                }
+            } finally {
+                session.close();
+            }
         }
     }
 
     @Override
-    public void storeRemoteLoginData(String localUserName, String serverName, String remoteUserName,
-        String remoteLoginToken)
+    public void storeRemoteLoginData(String localUserName, String serverName,
+        String remoteUserName, String remoteLoginToken)
     {
         RemoteLoginData existing = getRemoteLoginData(localUserName, serverName);
 
         Session session = this.sessionFactory.getSessionFactory().openSession();
         Transaction t = session.beginTransaction();
-        t.begin();
-
-        if (existing != null)
-        {
-            // this.logger.warn("DEBUG: Updating token");
-            existing.setRemoteUserName(remoteUserName);
-            existing.setLoginToken(remoteLoginToken);
-            session.update(existing);
+        try {
+            t.begin();
+            if (existing != null)
+            {
+                // this.logger.debug("DEBUG: Updating token");
+                existing.setRemoteUserName(remoteUserName);
+                existing.setLoginToken(remoteLoginToken);
+                session.update(existing);
+            }
+            else
+            {
+                // this.logger.debug("DEBUG: Saving new token");
+                session.save(new RemoteLoginData(localUserName, serverName, remoteUserName, remoteLoginToken));
+            }
+            t.commit();
+        } catch (HibernateException ex) {
+            this.logger.error("Error storing remote login for [{}@{}]: [{}]", localUserName, serverName, ex);
+            if (t!=null) {
+                t.rollback();
+            }
+        } finally {
+            session.close();
         }
-        else
-        {
-            // this.logger.warn("DEBUG: Saving new token");
-            session.save(new RemoteLoginData(localUserName, serverName, remoteUserName, remoteLoginToken));
-        }
-        t.commit();
     }
 
     @Override
@@ -101,20 +118,28 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         Session session = this.sessionFactory.getSessionFactory().openSession();
         Transaction t = session.beginTransaction();
-        t.begin();
-
-        if (existing != null)
-        {
-            // this.logger.warn("DEBUG: Updating token");
-            existing.setLoginToken(loginToken);
-            session.update(existing);
+        try {
+            t.begin();
+            if (existing != null)
+            {
+                this.logger.info("Updating token for [{}@{}]", userName, sourceServerName);
+                existing.setLoginToken(loginToken);
+                session.update(existing);
+            }
+            else
+            {
+                this.logger.info("Saving new token for [{}@{}]", userName, sourceServerName);
+                session.save(new LocalLoginToken(userName, sourceServerName, loginToken));
+            }
+            t.commit();
+        } catch (HibernateException ex) {
+            this.logger.error("Error storing local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
+            if (t!=null) {
+                t.rollback();
+            }
+        } finally {
+            session.close();
         }
-        else
-        {
-            // this.logger.warn("DEBUG: Saving new token: [{}]-[{}]-[{}]", userName, sourceServerName, loginToken);
-            session.save(new LocalLoginToken(userName, sourceServerName, loginToken));
-        }
-        t.commit();
     }
 
     @Override
@@ -125,18 +150,25 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         }
 
         Session session = this.sessionFactory.getSessionFactory().openSession();
-        RemoteLoginData data = (RemoteLoginData) session.createCriteria(RemoteLoginData.class)
-            .add(Restrictions.eq("localUserName", localUserName))
-            .add(Restrictions.eq("serverName", serverName))
-            .uniqueResult();
+        try {
+            RemoteLoginData data = (RemoteLoginData) session.createCriteria(RemoteLoginData.class)
+                .add(Restrictions.eq("localUserName", localUserName))
+                .add(Restrictions.eq("serverName", serverName))
+                .uniqueResult();
 
-        if (data == null) {
-            this.logger.debug("Token not found or more than one found for [{}@{}]", localUserName, serverName);
-            return null;
+            if (data == null) {
+                this.logger.info("Remote login token not found or more than one found for [{}@{}]", localUserName, serverName);
+                return null;
+            }
+
+            this.logger.debug("Token found for [{}@{}]", localUserName, serverName);
+            return data;
+        } catch (HibernateException ex) {
+            this.logger.error("Error getting remote login token for [{}@{}]: [{}]", localUserName, serverName, ex);
+        } finally {
+            session.close();
         }
-
-        this.logger.debug("Token found for [{}@{}]", localUserName, serverName);
-        return data;
+        return null;
     }
 
     @Override
@@ -147,18 +179,25 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         }
 
         Session session = this.sessionFactory.getSessionFactory().openSession();
-        LocalLoginToken data = (LocalLoginToken) session.createCriteria(LocalLoginToken.class)
-            .add(Restrictions.eq("localUserName", userName))
-            .add(Restrictions.eq("sourceServerName", sourceServerName))
-            .uniqueResult();
+        try {
+            LocalLoginToken data = (LocalLoginToken) session.createCriteria(LocalLoginToken.class)
+                .add(Restrictions.eq("localUserName", userName))
+                .add(Restrictions.eq("sourceServerName", sourceServerName))
+                .uniqueResult();
 
-        if (data == null) {
-            this.logger.debug("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
-            return null;
+            if (data == null) {
+                this.logger.info("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
+                return null;
+            }
+
+            //this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
+            return data;
+        } catch (HibernateException ex) {
+            this.logger.error("Error getting local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
+        } finally {
+            session.close();
         }
-
-        this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
-        return data;
+        return null;
     }
 
     @Override
@@ -184,10 +223,16 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         {
             Session session = this.sessionFactory.getSessionFactory().openSession();
             Transaction t = session.beginTransaction();
-            t.begin();
-            this.logger.debug("Saving remote source server for [{}] = [{}]", patientGUID, sourceServerName);
-            session.save(new PatientSourceServerInfo(patientGUID, sourceServerName));
-            t.commit();
+            try {
+                t.begin();
+                this.logger.info("Saving remote source server for [{}] = [{}]", patientGUID, sourceServerName);
+                session.save(new PatientSourceServerInfo(patientGUID, sourceServerName));
+                t.commit();
+            } catch (HibernateException ex) {
+                this.logger.error("Error saving remote soource server for [{}]: [{}]", patientGUID, ex);
+            } finally {
+                session.close();
+            }
         }
     }
 
