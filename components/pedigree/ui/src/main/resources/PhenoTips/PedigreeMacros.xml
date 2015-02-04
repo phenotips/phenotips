@@ -49,7 +49,7 @@
   #set ($geneColors = $pedigreeDataJSON.settings.colors.genes)
   #set ($cancerColors = $pedigreeDataJSON.settings.colors.cancers)
 
-  #if (($disorderColors &amp;&amp; $disorderColors.size() > 0) || $geneColors &amp;&amp; $geneColors.size() > 0)
+  #if (($disorderColors &amp;&amp; $disorderColors.size() > 0) || ($geneColors &amp;&amp; $geneColors.size() > 0) || ($cancerColors &amp;&amp; $cancerColors.size() > 0))
     #set ($listyle="margin: 0 .5em 0 0; font-family: FreeSerif, serif;")
     #set ($divstyle="")
     #if ($header)
