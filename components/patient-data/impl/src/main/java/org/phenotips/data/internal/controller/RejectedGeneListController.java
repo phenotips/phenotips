@@ -41,6 +41,8 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -145,7 +147,7 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
                 container = json.getJSONArray(getJsonPropertyName());
             }
 
-            if (item != null && "".equals(item.get(COMMENTS_KEY))) {
+            if (item != null && StringUtils.isBlank(item.get(COMMENTS_KEY))) {
                 item.remove(COMMENTS_KEY);
             }
 
