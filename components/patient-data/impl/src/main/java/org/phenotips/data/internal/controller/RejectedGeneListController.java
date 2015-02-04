@@ -63,6 +63,8 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
     private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("RejectedGenesClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
+    private static final String COMMENTS_KEY = "comments";
+
     @Override
     public String getName()
     {
@@ -78,7 +80,7 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("gene", "comments");
+        return Arrays.asList("gene", COMMENTS_KEY);
     }
 
     @Override
@@ -142,8 +144,12 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
                 json.put(getJsonPropertyName(), new JSONArray());
                 container = json.getJSONArray(getJsonPropertyName());
             }
+
+            if (item != null && "".equals(item.get(COMMENTS_KEY))) {
+                item.remove(COMMENTS_KEY);
+            }
+            container.add(item);
             container.add(item);
         }
     }
 }
-

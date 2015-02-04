@@ -63,6 +63,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
+    private static final String COMMENTS_KEY = "comments";
+
     @Override
     public String getName()
     {
@@ -78,7 +80,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("gene", "comments");
+        return Arrays.asList("gene", COMMENTS_KEY);
     }
 
     @Override
@@ -141,6 +143,10 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 // put() is placed here because we want to create the property iff at least one field is set/enabled
                 json.put(getJsonPropertyName(), new JSONArray());
                 container = json.getJSONArray(getJsonPropertyName());
+            }
+
+            if (item != null && "".equals(item.get(COMMENTS_KEY))) {
+                item.remove(COMMENTS_KEY);
             }
             container.add(item);
         }
