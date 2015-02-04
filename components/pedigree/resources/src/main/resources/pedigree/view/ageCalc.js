@@ -6,11 +6,18 @@
  */
 function getAge(birthDate, deathDate)
 {
+    if (birthDate.onlyDecadeAvailable()) {
+        return "";
+    }
+
     var now;
     if (deathDate == null){
         now = new Date();
     }
     else {
+        if (deathDate.onlyDecadeAvailable()) {
+            return "";
+        }
         now = deathDate.toJSDate();
     }
 
