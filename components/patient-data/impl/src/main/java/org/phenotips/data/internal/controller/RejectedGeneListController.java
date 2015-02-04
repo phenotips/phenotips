@@ -148,7 +148,7 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
             if (item != null && "".equals(item.get(COMMENTS_KEY))) {
                 item.remove(COMMENTS_KEY);
             }
-            container.add(item);
+
             container.add(item);
         }
     }
