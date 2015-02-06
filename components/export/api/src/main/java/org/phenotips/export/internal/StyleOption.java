@@ -31,7 +31,7 @@ public enum StyleOption
     HEADER,
     /** Phenotypes present. */
     YES,
-    /** Phenotypes not present. */
+    /** Phenotypes not present or rejected genes. */
     NO,
     /** Left border between logical field sections, such as Identifiers, Patient Information, etc. */
     SECTION_BORDER_LEFT,

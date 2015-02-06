@@ -349,6 +349,7 @@ public class DataToCellConverter
             PatientData<Map<String, String>> rejectedGenes = patient.getData("rejectedGenes");
             if (rejectedGenes != null && rejectedGenes.isIndexed()) {
                 DataCell cell = new DataCell("Previously tested", 0, y, StyleOption.YES_NO_SEPARATOR);
+                cell.addStyle(StyleOption.NO);
                 section.addCell(cell);
                 for (Map<String, String> rejectedGene : rejectedGenes) {
                     hasGenes = true;
