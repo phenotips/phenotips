@@ -3794,7 +3794,8 @@ window.Raphael.svg && function (R) {
             }
         } else {
             el = R._g.doc.createElementNS("http://www.w3.org/2000/svg", el);
-            el.style && (el.style.webkitTapHighlightColor = "rgba(0,0,0,0)");
+            // Disabled temporarily, see https://github.com/phenotips/phenotips/issues/1414
+            // el.style && (el.style.webkitTapHighlightColor = "rgba(0,0,0,0)");
         }
         return el;
     },
