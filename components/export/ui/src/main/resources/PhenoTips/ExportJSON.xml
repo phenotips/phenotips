@@ -67,9 +67,9 @@ $response.setContentType('application/json')##
     #set ($JSON = $patient.toJSON($displayedFields))
     #if ($enabledFields.contains('doc.name'))#set ($discard = $JSON.put("report_id", ${patientDoc.documentReference.name}))#end
     #if ($enabledFields.contains('referrer'))#set ($discard = $JSON.put("referrer", ${xwiki.getUserName($patientDoc.creator, false)}))#end
-    #if ($enabledFields.contains('creationDate'))#set ($discard = $JSON.put("date", $!{xwiki.formatDate($patientDoc.creationDate, 'MM/dd/yyyy')}))#end
+    #if ($enabledFields.contains('creationDate'))#set ($discard = $JSON.put("date", $!{services.jodatime.ISODateTimeFormatter.print($patientDoc.creationDate)}))#end
     #if ($enabledFields.contains('author'))#set ($discard = $JSON.put("last_modified_by", ${xwiki.getUserName($patientDoc.author, false)}))#end
-    #if ($enabledFields.contains('date'))#set ($discard = $JSON.put("last_modification_date", $!{xwiki.formatDate($patientDoc.date, 'MM/dd/yyyy')}))#end
+    #if ($enabledFields.contains('date'))#set ($discard = $JSON.put("last_modification_date", $!{services.jodatime.ISODateTimeFormatter.print($patientDoc.date)}))#end
     #if ($isFirst)
       #set($isFirst = false)
     #else
