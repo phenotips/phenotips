@@ -30,6 +30,7 @@ import org.xwiki.component.annotation.Component;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
