@@ -11,4 +11,3 @@ org.phenotips.data.internal.R54593PhenoTips949DataMigration
 org.phenotips.data.internal.R54594PhenoTips994DataMigration
 org.phenotips.data.internal.R54595PhenoTips1151DataMigration
 org.phenotips.data.internal.R54690PhenoTips1195DataMigration
-org.phenotips.data.internal.R54691PhenoTips1378DataMigration
