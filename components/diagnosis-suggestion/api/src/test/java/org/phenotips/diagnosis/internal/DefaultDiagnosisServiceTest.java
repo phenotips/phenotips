@@ -73,6 +73,8 @@ public class DefaultDiagnosisServiceTest
         /** This test is prone to outdated ontologies. */
         List<List<String>> phenotypes = new LinkedList<>();
         List<List<String>> disorderIds = new LinkedList<>();
+        phenotypes.add(Arrays.asList(new String[0]));
+        disorderIds.add(Arrays.asList(new String[0]));
         phenotypes.add(
             Arrays.asList("HP:0000028", "HP:0000049", "HP:0000202", "HP:0000204", "HP:0000316", "HP:0001869"));
         disorderIds.add(Arrays.asList("MIM:100050"));
@@ -86,6 +88,14 @@ public class DefaultDiagnosisServiceTest
         disorderIds.add(Arrays.asList("MIM:308600"));
         phenotypes.add(Arrays.asList("HP:0011495", "HP:0000502", "HP:0001005", "HP:0000534"));
         disorderIds.add(Arrays.asList("MIM:308800"));
+        /* An empty/invalid HPO term will fail to find a boqa index and should be handled correctly */
+        phenotypes.add(Arrays.asList("HP:"));
+        disorderIds.add(Arrays.asList(new String[0]));
+        phenotypes.add(
+            Arrays.asList("HP:0000028", "HP:0000049", "HP:", "HP:0000202", "HP:0000204", "HP:0000316", "HP:0001869"));
+        disorderIds.add(Arrays.asList("MIM:100050"));
+
+        int invalidPhenotypes = 2;
 
         OntologyManager ontology = mocker.getInstance(OntologyManager.class);
         Environment env = mocker.getInstance(Environment.class);
@@ -135,7 +145,7 @@ public class DefaultDiagnosisServiceTest
             assertTrue(diagnosisIds.containsAll(disorderIds.get(i)));
             i++;
         }
-        verify(ontology, times(limit * i)).resolveTerm(anyString());
+        verify(ontology, times(limit * (i - invalidPhenotypes))).resolveTerm(anyString());
     }
 
     private File stream2file(InputStream in) throws IOException

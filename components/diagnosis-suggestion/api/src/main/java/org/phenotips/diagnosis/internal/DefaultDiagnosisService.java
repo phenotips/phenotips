@@ -208,7 +208,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         return results;
     }
 
-    private Boolean addTermAndAncestors(Term t, Observations o)
+    private boolean addTermAndAncestors(Term t, Observations o)
     {
         try {
             int id = this.boqa.getTermIndex(t);
