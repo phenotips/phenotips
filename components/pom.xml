@@ -58,7 +58,6 @@
     <module>phenotype-mapping-service</module>
     <module>specificity-meter</module>
     <module>medsavant-client</module>
-    <module>integration</module>
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>proxy-authentication</module>
