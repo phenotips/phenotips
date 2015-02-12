@@ -149,27 +149,36 @@ DynamicPositionedGraph.prototype = {
     },
 
     // returns false if this gender is incompatible with this pedigree; true otherwise
-    setProbandData: function( firstName, lastName, gender, birthDate, deathDate )
+    setProbandData: function( patientObject )
     {
-        this.DG.GG.properties[0].fName = firstName;
-        this.DG.GG.properties[0].lName = lastName;
+        // TODO: separate patient object parser/data loader
 
-        var setGender = gender;
-        var possibleGenders = this.getPossibleGenders(0);
-        if (!possibleGenders.hasOwnProperty(gender) || !possibleGenders[gender])
-            setGender = 'U'
-        this.DG.GG.properties[0].gender = setGender;
+        if (patientObject.hasOwnProperty("patient_name")) {
+            if (patientObject.patient_name.hasOwnProperty("first_name")) {
+                this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
+            }
+            if (patientObject.patient_name.hasOwnProperty("last_name")) {
+                this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
+            }
+        }
 
-        if (birthDate) {
-            birthDate = new PedigreeDate(birthDate);
+        var genderOK = true;
+        if (patientObject.hasOwnProperty("sex")) {
+            var probandSex = patientObject.sex;
+            var possibleGenders = this.getPossibleGenders(0);
+            if (!possibleGenders.hasOwnProperty(probandSex) || !possibleGenders[probandSex]) {
+                probandSex = 'U';
+                genderOK = false;
+            }
+            this.DG.GG.properties[0].gender = probandSex;
+        }
+
+        if (patientObject.hasOwnProperty("date_of_birth")) {
+            var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
         }
-        if (deathDate) {
-            deathDate = new PedigreeDate(deathDate);
-            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
-        }
 
-        return (gender == setGender);
+        return genderOK;
     },
 
     getPosition: function( v )
@@ -2787,7 +2796,6 @@ Heuristics.prototype = {
                 // findAffectedSet: function(v_list, dontmove_set, noUp_set, noDown_set, forbidden_set, shiftSize, xcoord, stopAtVirtual, minimizeMovement, stopAtPersons, stopAtRels)
                 var affectedInfoParentShift = this._findAffectedSet(shiftList, {}, noUpSet, toObjectWithTrue(shiftList), toObjectWithTrue(childInfo.orderedChildren),
                                                                     misalignment, xcoord, true, false, 7, 3);
-                //console.log("["+id+"] affectedInfoParentShift: " + stringifyObject(affectedInfoParentShift));
 
                 var shiftList = childInfo.orderedChildren;
                 var forbiddenList = [v, childhub];
@@ -2796,7 +2804,8 @@ Heuristics.prototype = {
 
                 var parentShiftAcceptable = this._isShiftSizeAcceptable( affectedInfoParentShift, false, 7, 3);
                 var childShiftAcceptable  = this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 7, 3);
-                //console.log("Nodes to shift: " + stringifyObject(affectedInfoChildShift) + ", acceptable: " + childShiftAcceptable);
+                //console.log("["+id+"] affectedInfoParentShift: " + stringifyObject(affectedInfoParentShift) + ", acceptable: " + parentShiftAcceptable);
+                //console.log("["+id+"] affectedInfoChildShift:  " + stringifyObject(affectedInfoChildShift) + ", acceptable: " + childShiftAcceptable);
 
                 if (parentShiftAcceptable || childShiftAcceptable) {
                     improved = true;   // at least one of the shifts is OK

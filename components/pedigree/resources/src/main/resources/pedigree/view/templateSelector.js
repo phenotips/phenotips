@@ -113,3 +113,44 @@ var TemplateSelector = Class.create( {
         this.dialog.closeDialog();
     }
 });
+
+
+// TODO: replace XML loading with a service providing JSONs
+
+function unescapeRestData (data) {
+    // http://stackoverflow.com/questions/4480757/how-do-i-unescape-html-entities-in-js-change-lt-to
+    var tempNode = document.createElement('div');
+    tempNode.innerHTML = data.replace(/&amp;/, '&');
+    return tempNode.innerText || tempNode.text || tempNode.textContent;
+}
+
+function getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue) {
+    if (responseXML.querySelector) {
+        // modern browsers
+        return responseXML.querySelector(selectorName + "[" + attributeName + "='" + attributeValue + "']");
+    } else {
+        // IE7 && IE8 && some other older browsers
+        // http://www.w3schools.com/XPath/xpath_syntax.asp
+        // http://msdn.microsoft.com/en-us/library/ms757846%28v=vs.85%29.aspx
+        var query = ".//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
+        try {
+            return responseXML.selectSingleNode(query);
+        } catch (e) {
+            // Firefox v3.0-
+            alert("your browser is unsupported");
+            window.stop && window.stop();
+            throw "Unsupported browser";
+        }
+    }
+}
+
+function getSubSelectorTextFromXML(responseXML, selectorName, attributeName, attributeValue, subselectorName) {
+    var selector = getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue);
+
+    var value = selector.innerText || selector.text || selector.textContent;
+
+    if (!value)     // fix IE behavior where (undefined || "" || undefined) == undefined
+        value = "";
+
+    return value;
+}

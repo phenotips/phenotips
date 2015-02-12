@@ -5,51 +5,17 @@
  * @constructor
  */
 
-function unescapeRestData (data) {
-    // http://stackoverflow.com/questions/4480757/how-do-i-unescape-html-entities-in-js-change-lt-to
-    var tempNode = document.createElement('div');
-    tempNode.innerHTML = data.replace(/&amp;/, '&');
-    return tempNode.innerText || tempNode.text || tempNode.textContent;
-}
-
-function getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue) {
-    if (responseXML.querySelector) {
-        // modern browsers
-        return responseXML.querySelector(selectorName + "[" + attributeName + "='" + attributeValue + "']");        
-    } else {
-        // IE7 && IE8 && some other older browsers
-        // http://www.w3schools.com/XPath/xpath_syntax.asp
-        // http://msdn.microsoft.com/en-us/library/ms757846%28v=vs.85%29.aspx
-        var query = ".//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
-        try {
-            return responseXML.selectSingleNode(query);
-        } catch (e) {
-            // Firefox v3.0-
-            alert("your browser is unsupported");
-            window.stop && window.stop();
-            throw "Unsupported browser";
-        }
-    }
-}
-
-function getSubSelectorTextFromXML(responseXML, selectorName, attributeName, attributeValue, subselectorName) {
-    var selector = getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue);
-
-    var value = selector.innerText || selector.text || selector.textContent;
-
-    if (!value)     // fix IE behavior where (undefined || "" || undefined) == undefined
-        value = "";
-
-    return value;
-}
-
 var ProbandDataLoader = Class.create( {
     initialize: function() {
-        this.probandData = undefined;
+        this.probandData = {};
     },
 
     load: function(callWhenReady) {
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PatientClass/0'), {
+        var probandID = XWiki.currentDocument.page;
+        var patientJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
+        // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
+        patientJsonURL += "&rand=' + Math.random()";
+        new Ajax.Request(patientJsonURL, {
             method: "GET",
             onSuccess: this.onProbandDataReady.bind(this),
             onComplete: callWhenReady ? callWhenReady : {}
@@ -57,24 +23,10 @@ var ProbandDataLoader = Class.create( {
     },
 
     onProbandDataReady : function(response) {
-        var responseXML = response.responseXML;  //documentElement.
-        this.probandData = {};
-        this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
-        this.probandData.lastName  = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "last_name", "value"));
-        this.probandData.gender    = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "gender", "value"));
-        try {
-          this.probandData.birthDate = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "date_of_birth", "value"));
-          this.probandData.deathDate = null;
-        } catch (err) {
-        }
-        if (this.probandData.gender === undefined || this.probandData.gender == '') {
-            this.probandData.gender = 'U';
-        }
-        if (this.probandData.firstName === undefined) {    // in some browsers when there is no name
-            this.probandData.firstName = "";
-        }
-        if (this.probandData.lastName === undefined) {
-            this.probandData.lastName = "";
+        if (response.responseJSON) {
+            this.probandData = response.responseJSON;
+        } else {
+            console.log("[!] Error parsing patient JSON");
         }
         console.log("Proband data: " + stringifyObject(this.probandData));
     },
@@ -125,9 +77,8 @@ var SaveLoadEngine = Class.create( {
         }
 
         if (!noUndo) {
-            var probandData = editor.getProbandDataFromPhenotips();
-            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName,
-                                                             probandData.gender, probandData.birthDate, probandData.deathDate );
+            var probandJSONObject = editor.getProbandDataFromPhenotips();
+            var genderOk = editor.getGraph().setProbandData(probandJSONObject);
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
             JSONString = this.serialize();
@@ -241,22 +192,24 @@ var SaveLoadEngine = Class.create( {
         console.log("initiating load process");
 
         // IE caches AJAX requests, use a random URL to break that cache
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/?rand=' + Math.random()), {
+        var probandID = XWiki.currentDocument.page;
+        var pedigreeJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
+        pedigreeJsonURL += "&data=pedigree";
+        // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
+        pedigreeJsonURL += "&rand=' + Math.random()";
+        new Ajax.Request(pedigreeJsonURL, {
             method: 'GET',
             onCreate: function() {
                 document.fire("pedigree:load:start");
             },
             onSuccess: function (response) {
-                //console.log("Data from LOAD: " + stringifyObject(response));
-                //console.log("[Data from LOAD]");
-                var rawdata  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");
-                var jsonData = unescapeRestData(rawdata);
-                if (jsonData.trim()) {
-                    console.log("[LOAD] recived JSON: " + stringifyObject(jsonData));
+                //console.log("Data from LOAD: >>" + response.responseText + "<<");
+                if (response.responseJSON) {
+                    console.log("[LOAD] recived JSON: " + stringifyObject(response.responseJSON));
 
-                    jsonData = editor.getVersionUpdater().updateToCurrentVersion(jsonData);
+                    var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
 
-                    this.createGraphFromSerializedData(jsonData);
+                    this.createGraphFromSerializedData(updatedJSONData);
 
                     // since we just loaded data from disk data in memory is equivalent to data on disk
                     editor.getActionStack().addSaveEvent();

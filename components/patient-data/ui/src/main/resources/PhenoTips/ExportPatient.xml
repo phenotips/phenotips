@@ -59,7 +59,22 @@ $!response.setContentType('application/json')##
   {"error" : "Identifier not found."}
   #break
 #end
-$jsontool.serialize($patient.toJSON())
+#if ("$!{request.data}" == 'pedigree')
+  #set ($pedigreeObj  = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
+  #if ($pedigreeObj)
+    #set ($pedigreeData = $pedigreeObj.getProperty('data'))
+    #if ($pedigreeData)
+      #set ($pedigreeJSON = $pedigreeObj.getProperty('data').value)
+      $pedigreeJSON
+    #else
+      ## no pedigree
+    #end
+  #else
+    ## no pedigree
+  #end
+#else
+  $jsontool.serialize($patient.toJSON())
+#end
 #if ("$!{request.outputSyntax}" == 'plain')
   {{/content}}
 #else
