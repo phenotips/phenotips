@@ -191,7 +191,7 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
 
        var id = idToBoadId[i];
 
-       var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8) : id;
+       var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/\s/g, '_') : id;
 
        var proband = (i == 0) ? "1" : "0";
 
