@@ -160,11 +160,11 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
  *   Dead: The current status of the family member, 0 = alive, 1 = dead
  *   Age: Age at last follow up, 0 = unspecified, integer = age at last follow up
  *   Yob: Year of birth, 0 = unspecified, or integer (consistent with Age if the person is alive)
- *   1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   OvCa: Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   OvCa: Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
  *   Gtest: Genetic test status, 0 = untested, S = mutation search, T = direct gene test
  *   Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
  *   Ashkn: 0 = not Ashkenazi, 1 = Ashkenazi
@@ -174,16 +174,22 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
  *   CK14: Cytokeratin 14 status, 0 = unspecified, N = negative, P = positive
  *   CK56: Cytoke ratin 56 status, 0 = unspecified, N = negative, P = positive
  */
-PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
+PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreference)
 {
+   var pedigree = dynamicPedigree.DG;
+
    var output = "BOADICEA import pedigree file format 2.0\n";
-   output    += "FamilyID\tName\tTarget\tIndivID\tFathID\tMothID\tSex\tTwin\tDead\tAge\tYob\t1BrCa\t2BrCa\tOvCa\tProCa\tPanCa\tGtest\tMutn\tAshkn\tNot_implemented_yet\n";
+   output    += "FamID\t\tName\tTarget\tIndivID\tFathID\tMothID\tSex\tTwin\tDead\tAge\tYob\t1BrCa\t2BrCa\tOvCa\tProCa\tPanCa\tGtest\tMutn\tAshkn\tNot_implemented_yet\n";
+
+   // note: a bug in BOADICEA online app requires that the column header line starts with "FamID" followed by a space.
+   //       Anything else, including "FamilyID ..." will be reported as an error in pedigree.
 
    var familyID = XWiki.currentDocument.page;
 
-   var idToBoadId = PedigreeExport.createNewIDs(pedigree, idGenerationPreference, 7 /* max ID length */);
+   var idToBoadId = PedigreeExport.createNewIDs(pedigree, idGenerationPreference, 7 /* max ID length */, true /* forbid non-alphanum */);
 
    var alertUnknownGenderFound = false; // BOADICEA does not support unknown genders
+   var warnAboutMissingDOB     = false; // BOADICEA seem to require all individuals with cancer to have some age specified
 
    for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
        if (!pedigree.GG.isPerson(i)) continue;
@@ -191,7 +197,7 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
 
        var id = idToBoadId[i];
 
-       var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/\s/g, '_') : id;
+       var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : id;
 
        var proband = (i == 0) ? "1" : "0";
 
@@ -200,6 +206,13 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        // mother & father
        var parents = pedigree.GG.getParents(i);
        if (parents.length > 0) {
+           if ( pedigree.GG.properties[parents[0]]["gender"] == "U" &&
+                pedigree.GG.properties[parents[1]]["gender"] == "U" ) {
+               editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format when both parents of any node are of unknown gender",
+                                                           "Can't export: missing gender data", "OK", null );
+               return "";
+           }
+
            var father = parents[0];
            var mother = parents[1];
 
@@ -217,6 +230,22 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        if (pedigree.GG.properties[i]["gender"] == "F") {
            sex = "F";
        } else if (pedigree.GG.properties[i]["gender"] == "U") {
+           // check partner gender(s) and if possible assign the opposite gender
+           var possibleGenders = dynamicPedigree.getPossibleGenders(i);
+           if (!possibleGenders["F"] && !possibleGenders["M"]) {
+               // there is a person which can't be assigned both M and F because both conflict with other partner genders
+               editor.getOkCancelDialogue().showCustomized("Unable to export in BOADICEA format since gender assignment in pedigree is inconsistent",
+                                                           "Can't export: gender inconsistency in pedigree", "OK", null );
+               return "";
+           }
+           if (possibleGenders["F"] && !possibleGenders["M"]) {
+               sex = "F";
+           } else if (possibleGenders["M"] && !possibleGenders["F"]) {
+               sex = "M";
+           } else {
+               // can be both, no restrictions: assign "M"
+               sex = "M";
+           }
            alertUnknownGenderFound = true;
        }
        output += sex + "\t";
@@ -239,7 +268,8 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        var yob = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("dob")) {
            var date = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
-           yob = date.getBestPrecisionStringYear();
+           // BOADICEA file format does not support fuzzy dates, so get an estimate if only decade is available
+           yob = parseInt(date.getMostConservativeYearEstimate());
            age = new Date().getFullYear() - yob;
        }
        output += age + "\t" + yob + "\t";
@@ -250,7 +280,7 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        for (var c = 0; c < cancerSequence.length; c++) {
            cancer = cancerSequence[c];
            if (cancer == "" || !pedigree.GG.properties[i].hasOwnProperty("cancers")) {
-               output += "AU\t";
+               output += "0\t";
                continue;
            }
 
@@ -259,11 +289,15 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
                if (!cancerData.affected) {
                    output += "0\t";
                } else {
-                   var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") ? cancerData.numericAgeAtDiagnosis : 1;
+                   var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") && (cancerData.numericAgeAtDiagnosis > 0)
+                                        ? cancerData.numericAgeAtDiagnosis : "AU";
                    output += ageAtDetection.toString() + "\t";
+                   if (yob == "0") {
+                       warnAboutMissingDOB = true;
+                   }
                }
            } else {
-               output += "AU\t";
+               output += "0\t";
            }
        }
 
@@ -306,8 +340,25 @@ PedigreeExport.exportAsBOADICEA = function(pedigree, idGenerationPreference)
        output += "\n";
    }
 
-   if (alertUnknownGenderFound) {
-       alert("BOADICEA format does not support unknown genders. All persons of unknown gender were saved as male in the export file");
+   if (alertUnknownGenderFound || warnAboutMissingDOB) {
+       var warningText = "Pedigree can be exported, but there are warnings:\n\n\n";
+
+       var numberWarnings = false;
+       if (alertUnknownGenderFound && warnAboutMissingDOB) {
+           numberWarnings = true;
+       }
+       if (alertUnknownGenderFound) {
+           warningText += (numberWarnings ? "1) " : "") +
+                           "BOADICEA format does not support unknown genders.\n\n" +
+                          "All persons of unknown gender were either assigned a gender "+
+                          "opposite to their partner's gender or saved as male in the export file";
+       }
+       if (warnAboutMissingDOB) {
+           warningText += (numberWarnings ? "\n\n\n2) " : "") +
+                          "BOADICEA requires that all individuals with cancer have their age specified or estimated.\n\n" +
+                          "A person with cancer is missing age data, data willl be exported but may not be accepted by BOADICEA";
+       }
+       alert(warningText);
    }
 
    return output;
@@ -366,7 +417,7 @@ PedigreeExport.convertProperty = function(internalPropertyName, value) {
     return {"propertyName": externalPropertyName, "value": value };
 }
 
-PedigreeExport.createNewIDs = function(pedigree, idGenerationPreference, maxLength) {
+PedigreeExport.createNewIDs = function(pedigree, idGenerationPreference, maxLength, forbidNonAlphaNum) {
     var idToNewId = {};
     var usedIDs   = {};
 
@@ -384,15 +435,25 @@ PedigreeExport.createNewIDs = function(pedigree, idGenerationPreference, maxLeng
             nextUnusedID--;
             id = pedigree.GG.properties[i]["fName"].replace(/\s/g, '_');
         }
+        id = String(id);
+        if (forbidNonAlphaNum) {
+            id = id.replace(/[^A-Za-z0-9]/g, '');  // can't use \W since that allows "_"
+        }
         if (maxLength && id.length > maxLength) {
             id = id.substring(0, maxLength);
         }
+        var baseID     = id;
+        var numSimilar = 2;
         while ( usedIDs.hasOwnProperty(id) ) {
-            if (!maxLength || id.length < maxLength) {
-                id = "_" + id;
+            if (maxLength) {
+                var length = baseID.length + String(numSimilar).length;
+                var cutSize = length - maxLength;
+                id = baseID.substring(0, id.length - cutSize);
             } else {
-                id = nextUnusedID++;
+                id = baseID;
             }
+            id = id + String(numSimilar);
+            numSimilar++;
         }
 
         idToNewId[i] = id;

@@ -52,11 +52,11 @@ var ExportSelector = Class.create( {
         configListElementJSON.insert(_addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
 
         var configListElementPED = new Element('table', {"id": "pedOptions"});
-        var label = new Element('label', {'class': 'export-config-header'}).insert("Which of the following fields should be used to generate person IDs?");
+        var label = new Element('label', {'class': 'export-config-header'}).insert("How should person IDs be assigned in the generated file?");
         configListElementPED.insert(label.wrap('td').wrap('tr'));         
-        configListElementPED.insert(_addConfigOption(true,  "ped-options", "export-subconfig-label", "External ID", "external"));
-        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Name", "name"));
-        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "None, generate new numeric ID for everyone", "newid"));
+        configListElementPED.insert(_addConfigOption(true,  "ped-options", "export-subconfig-label", "Using External IDs (when available)", "external"));
+        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Generate new numeric IDs", "newid"));
+        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Using Names (when available)", "name"));        
 
         var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
         var dataSection3 = new Element('div', {'class': 'import-block'});        
@@ -92,6 +92,16 @@ var ExportSelector = Class.create( {
         
         if (exportType == "ped" || exportType == "BOADICEA") {
             pedOptionsTable.show();
+            var idgenerator = $$('input[type=radio][name="ped-options"]')[2];
+            // disable using names as IDs - not necessary for BOADICEA which suports a dedicated column for the name
+            if (exportType == "BOADICEA") {
+                if (idgenerator.checked) {
+                    $$('input[type=radio][name="ped-options"]')[0].checked = true;
+                }
+                idgenerator.up().hide();
+            } else {
+                idgenerator.up().show();
+            }
             jsonOptionsTable.hide();
         } else {
             pedOptionsTable.hide();
@@ -125,14 +135,16 @@ var ExportSelector = Class.create( {
                 var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
                 var fileName = patientDocument + ".ped";
             } else if (exportType == "BOADICEA") {
-                var exportString = PedigreeExport.exportAsBOADICEA(editor.getGraph().DG, idGenerationSetting);
-                var fileName = patientDocument + ".dat";
+                var exportString = PedigreeExport.exportAsBOADICEA(editor.getGraph(), idGenerationSetting);
+                var fileName = patientDocument + ".txt";
             }
             var mimeType = "text/plain";
         }
 
         console.log("Export data: >>" + exportString + "<<");
-        saveTextAs(exportString, fileName);
+        if (exportString != "") {
+            saveTextAs(exportString, fileName);
+        }
     },
 
     /**

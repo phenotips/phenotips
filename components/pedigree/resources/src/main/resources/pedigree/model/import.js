@@ -365,11 +365,11 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
  *   Dead: The current status of the family member, 0 = alive, 1 = dead
  *   Age: Age at last follow up, 0 = unspecified, integer = age at last follow up
  *   Yob: Year of birth, 0 = unspecified, or integer (consistent with Age if the person is alive)
- *   1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   OvCa: Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
- *   PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   OvCa: Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
+ *   PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected, age unknown)
  *   Gtest: Genetic test status, 0 = untested, S = mutation search, T = direct gene test
  *   Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
  *   Ashkn: 0 = not Ashkenazi, 1 = Ashkenazi
@@ -473,8 +473,7 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
                         { "column": 15, "label": "Pancreatic", "comment": ""} ];
 
         for (var c = 0; c < cancers.length; c++) {
-          var cancer = cancers[c];
-          if (parts[cancer["column"]].toUpperCase() != "AU") {
+            var cancer = cancers[c];
 
             if (!properties.hasOwnProperty("cancers")) {
               properties["cancers"] = {};
@@ -496,13 +495,11 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
                   }
                   cancerData["ageAtDiagnosis"] = age;
               }
-
               addCommentToProperties(properties, cancer["comment"]);
             }
             if (!cancer.onlySetComment) {
                 properties["cancers"][cancer.label] = cancerData;
             }
-          }
         }
 
         // Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
