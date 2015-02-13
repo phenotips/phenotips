@@ -356,7 +356,7 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        if (warnAboutMissingDOB) {
            warningText += (numberWarnings ? "\n\n\n2) " : "") +
                           "BOADICEA requires that all individuals with cancer have their age specified or estimated.\n\n" +
-                          "A person with cancer is missing age data, data willl be exported but may not be accepted by BOADICEA";
+                          "A person with cancer is missing age data, data will be exported but may not be accepted by BOADICEA";
        }
        alert(warningText);
    }
