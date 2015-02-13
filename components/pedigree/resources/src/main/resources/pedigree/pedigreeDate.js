@@ -40,8 +40,17 @@ var PedigreeDate = Class.create({
                     var timezonelessDate = parsed[1] + " " + parsed[2] + ", " + parsed[3];
                     jsDate = new Date(timezonelessDate);
                 } else {
-                    // parse any other format
-                    jsDate = new Date(date);
+                    // Also suport the PhenoTips patient JSON format "yyyy-mm-dd"
+                    var parsed = date.match(/(\d\d\d\d)-(\d\d)-(\d\d)/);
+                    if (parsed !== null) {
+                        // use Date("Dec 09, 2014") constructor
+                        var month0based = parseInt(parsed[2]) - 1;
+                        var timezonelessDate = this._getMonthName("en",month0based) + " " + parsed[3] + ", " + parsed[1];
+                        jsDate = new Date(timezonelessDate);
+                    } else {
+                        // parse any other format
+                        jsDate = new Date(date);
+                    }
                 }
             }
         } else if (Object.prototype.toString.call(date) === '[object Date]') {
@@ -100,12 +109,13 @@ var PedigreeDate = Class.create({
 
     getMonthName: function(locale) {
         if (this.getMonth() == null) return "";
-
-        var localeMonthNames = {"en": ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] };
-
         locale = locale && (locale in localeMonthNames) ? locale : 'en';
+        return this._getMonthName(locale, this.getMonth() - 1);
+    },
 
-        return localeMonthNames[locale][this.getMonth() - 1];
+    _getMonthName: function(locale, month0based) {
+        var localeMonthNames = {"en": ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] };
+        return localeMonthNames[locale][month0based];
     },
 
     // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
@@ -161,6 +171,11 @@ var PedigreeDate = Class.create({
         if (!this.isSet()) return "";
         if (this.year == null) return this.decade;
         return this.year.toString();
+    },
+
+    getMostConservativeYearEstimate: function() {
+        // for any year returns the year;l for decades returns the first year of the decade
+        return this.getBestPrecisionStringYear().replace(/s^/,"");
     },
 
     // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime()) 
