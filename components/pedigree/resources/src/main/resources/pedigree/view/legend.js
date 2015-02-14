@@ -19,19 +19,22 @@ var Legend = Class.create( {
 
         var legendContainer = $('legend-container');
         if (legendContainer == undefined) {
-          this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
-             new Element('div', {'class' : 'infomessage'}).insert(
-               "You can drag and drop ").insert(
-               new Element('span', {'class' : 'entity-type'}).update((title || "").toLowerCase())).insert(
-               " from the list(s) below onto individuals in the pedigree to mark them as affected.")
-          );
-
+          if (!editor.isReadOnlyMode()) {
+              this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
+                 new Element('div', {'class' : 'infomessage'}).insert(
+                   "You can drag and drop all items from the list(s) below onto individuals in the pedigree to mark them as affected.")
+              );
+              this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
+              this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
+              this._legendInfo.insert({'top': this.closeButton});
+              this._legendInfo.hide();
+          }
           var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'}).insert(this._legendInfo);
-          this._legendInfo.hide();
           editor.getWorkspace().getWorkArea().insert(legendContainer);
         } else {
-          this._legendInfo = legendContainer.down('#legend-info');
-          this._legendInfo && this._legendInfo.down('.entity-type:last-of-type').insert({after: new Element('span', {'class' : 'entity-type'}).update((title || "").toLowerCase())}).insert({after: ", "});
+          if (!editor.isReadOnlyMode()) {
+              this._legendInfo = legendContainer.down('#legend-info');
+          }
         }
 
         this._legendBox = new Element('div', {'class' : 'legend-box', id: this._getPrefix() + '-legend-box'});
@@ -67,6 +70,11 @@ var Legend = Class.create( {
     _getPrefix: function(id) {
         // To be overwritten in derived classes
         throw "prefix not defined";
+    },
+
+    hideDragHint: function() {
+        editor.preferences["hideDraggingHint"] = true;
+        this._legendInfo.hide();
     },
 
     /**
@@ -141,7 +149,7 @@ var Legend = Class.create( {
     addCase: function(id, name, nodeID) {
         if(Object.keys(this._affectedNodes).length == 0) {
             this._legendBox.show();
-            this._legendInfo.show();
+            !editor.preferences.hasOwnProperty("hideDraggingHint") && this._legendInfo && this._legendInfo.show();
         }
         if(!this._hasAffectedNodes(id)) {
             this._affectedNodes[id] = [nodeID];
@@ -172,7 +180,7 @@ var Legend = Class.create( {
                 if(Object.keys(this._affectedNodes).length == 0) {
                     this._legendBox.hide();
                     if (this._legendBox.up().select('.abnormality').size() == 0) {
-                      this._legendInfo.hide();
+                        this._legendInfo && this._legendInfo.hide();
                     }
                 }
             }

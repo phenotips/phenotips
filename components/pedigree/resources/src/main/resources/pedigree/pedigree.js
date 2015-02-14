@@ -11,6 +11,8 @@ var PedigreeEditor = Class.create({
         //this.DEBUG_MODE = true;
         window.editor = this;
 
+        this.preferences = {};
+
         // initialize main data structure which holds the graph structure
         this._graphModel = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
 

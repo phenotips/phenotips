@@ -238,7 +238,7 @@
   right: 0;
   z-index: 10000;
   min-width: 140px;
-  max-width: 250px;
+  max-width: 255px;
 }
 .legend-container span {
   font-family: Arial,Verdana,sans-serif;
@@ -252,7 +252,16 @@
   margin: 0;
   padding: 0;
 }
-
+.legend-box .close-button {
+  cursor: pointer;
+  float: right;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0.4em .3em 0 -1em;
+}
+.legend-box .infomessage {
+  padding-right: 24px;
+}
 .abnormality-color {
   display: inline-block;
   width: .8em;
