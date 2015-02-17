@@ -380,6 +380,7 @@
             <!-- Remove the following excludes after we release the current version as final -->
             <!-- Poor choice of visibility -->
             <exclude>**/phenotips/hpoa/PhenotypeMappingScriptService</exclude>
+            <exclude>**/phenotips/measurements/MeasurementHandler</exclude>
           </excludes>
         </configuration>
       </plugin>

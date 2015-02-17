@@ -44,7 +44,7 @@ public interface MeasurementHandler
      * @param value the measured value, usually in centimeters or kilograms
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
-    int valueToPercentile(boolean male, int ageInMonths, double value);
+    int valueToPercentile(boolean male, float ageInMonths, double value);
 
     /**
      * Get the standard deviation for the given measured value and age.
@@ -54,7 +54,7 @@ public interface MeasurementHandler
      * @param value the measured value, usually in centimeters or kilograms
      * @return a number specifying how many standard deviations does this measurement deviate from the mean
      */
-    double valueToStandardDeviation(boolean male, int ageInMonths, double value);
+    double valueToStandardDeviation(boolean male, float ageInMonths, double value);
 
     /**
      * Get the measurement that would correspond to the given percentile.
@@ -66,7 +66,7 @@ public interface MeasurementHandler
      *         with the exception of the open ended 0 and 100 percentiles, for which the value corresponding to the
      *         0.25, respectively 99.75 percentage is returned
      */
-    double percentileToValue(boolean male, int ageInMonths, int targetPercentile);
+    double percentileToValue(boolean male, float ageInMonths, int targetPercentile);
 
     /**
      * Get the measurement that would correspond to the given standard deviation.
@@ -76,7 +76,7 @@ public interface MeasurementHandler
      * @param targetDeviation a number specifying the target deviation
      * @return the measurement (usually in centimeters or kilograms) that falls on the target standard deviation
      */
-    double standardDeviationToValue(boolean male, int ageInMonths, double targetDeviation);
+    double standardDeviationToValue(boolean male, float ageInMonths, double targetDeviation);
 
     /**
      * Some measurements should be taken on both sides of the body, since they can differ, for example different left
