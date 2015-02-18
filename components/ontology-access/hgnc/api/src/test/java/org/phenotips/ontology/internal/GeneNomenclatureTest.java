@@ -21,6 +21,7 @@ package org.phenotips.ontology.internal;
 
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
@@ -61,6 +62,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.CapturingMatcher;
 
 import net.sf.json.JSONArray;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -463,5 +465,31 @@ public class GeneNomenclatureTest
     {
         String location = this.mocker.getComponentUnderTest().getDefaultOntologyLocation();
         Assert.assertEquals("http://rest.genenames.org/", location);
+    }
+
+    @Test
+    public void invalidResponseReturnsEmptySearch() throws ComponentLookupException, ClientProtocolException,
+    IOException
+    {
+        when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
+        when(this.response.getEntity()).thenReturn(this.responseEntity);
+        when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream(""));
+        Map<String, Object> search = new LinkedHashMap<>();
+        search.put("status", "Approved");
+        Map<String, String> queryOptions = new LinkedHashMap<>();
+
+        queryOptions.put("start", "three");
+        queryOptions.put("rows", "");
+        Assert.assertEquals(Collections.emptySet(), this.mocker.getComponentUnderTest().search(search, queryOptions));
+    }
+
+    @Test
+    public void invalidOrEmptyResponseReturnsNoInfo() throws ComponentLookupException, ClientProtocolException,
+        IOException
+    {
+        when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
+        when(this.response.getEntity()).thenReturn(this.responseEntity);
+        when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream(""));
+        Assert.assertEquals("", this.mocker.getComponentUnderTest().getVersion());
     }
 }
