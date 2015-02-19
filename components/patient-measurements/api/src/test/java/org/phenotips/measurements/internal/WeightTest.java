@@ -38,13 +38,13 @@ public class WeightTest
 {
     @Rule
     public final MockitoComponentMockingRule<MeasurementHandler> mocker =
-        new MockitoComponentMockingRule<MeasurementHandler>(WeightMeasurementHandler.class);
+    new MockitoComponentMockingRule<MeasurementHandler>(WeightMeasurementHandler.class);
 
     @Test
     public void testValueToPercentile() throws ComponentLookupException
     {
-        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 0, 4.0));
-        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(false, 0, 3.8));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 0, 3.35));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(false, 0, 3.23));
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToPercentile(true, 0, 0));
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().valueToPercentile(true, 0, 1000));
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToPercentile(false, 0, 0));
@@ -58,8 +58,8 @@ public class WeightTest
     @Test
     public void testValueToStandardDeviation() throws ComponentLookupException
     {
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 0, 4.0), 1.0E-2);
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 0, 3.8), 1.0E-2);
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 0, 3.35), 1.0E-2);
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 0, 3.23), 1.0E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 70.6), 1.0E-2);
         Assert.assertEquals(-0.332, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 349, 67.0),
             1.0E-2);
@@ -71,12 +71,12 @@ public class WeightTest
     @Test
     public void testPercentileToValue() throws ComponentLookupException
     {
-        Assert.assertEquals(4.0, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 50), 1.0E-2);
-        Assert.assertEquals(3.8, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 50), 1.0E-2);
-        Assert.assertEquals(2.09, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 0), 1.0E-2);
-        Assert.assertEquals(5.5, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 100), 1.0E-2);
-        Assert.assertEquals(2.2, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 0), 1.0E-2);
-        Assert.assertEquals(5.18, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 100), 1.0E-2);
+        Assert.assertEquals(3.35, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(3.23, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 50), 1.0E-2);
+        Assert.assertEquals(2.15, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(4.91, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(2.1, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 0), 1.0E-2);
+        Assert.assertEquals(4.68, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 100), 1.0E-2);
         Assert.assertEquals(70.6, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
         Assert.assertEquals(67.0, this.mocker.getComponentUnderTest().percentileToValue(true, 349, 37), 1.0E-2);
         Assert.assertEquals(49.04, this.mocker.getComponentUnderTest().percentileToValue(false, 359, 12), 1.0E-2);
@@ -85,15 +85,15 @@ public class WeightTest
     @Test
     public void testStandardDeviationToValue() throws ComponentLookupException
     {
-        Assert.assertEquals(4.0, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 0), 1.0E-2);
-        Assert.assertEquals(3.8, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 0), 1.0E-2);
+        Assert.assertEquals(3.35, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(3.23, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 0), 1.0E-2);
         Assert
-            .assertEquals(2.09, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, -2.807), 1.0E-2);
-        Assert.assertEquals(5.5, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 2.807), 1.0E-2);
+        .assertEquals(2.15, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, -2.807), 1.0E-2);
+        Assert.assertEquals(4.91, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 2.807), 1.0E-2);
         Assert
-            .assertEquals(2.2, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, -2.807), 1.0E-2);
+        .assertEquals(2.1, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, -2.807), 1.0E-2);
         Assert
-            .assertEquals(5.18, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807), 1.0E-2);
+        .assertEquals(4.68, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807), 1.0E-2);
         Assert.assertEquals(70.6, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
         Assert.assertEquals(67.0, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
             1.0E-2);

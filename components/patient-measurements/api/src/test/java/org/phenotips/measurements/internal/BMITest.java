@@ -129,8 +129,8 @@ public class BMITest
         Assert.assertEquals(0, getComponent().valueToPercentile(false, 0, 1, 1000));
         Assert.assertEquals(100, getComponent().valueToPercentile(false, 0, 1000, 1));
         Assert.assertEquals(0, getComponent().valueToPercentile(false, 0, 0, 0));
-        Assert.assertEquals(10, getComponent().valueToPercentile(true, 42, 14.49, 100.0));
-        Assert.assertEquals(90, getComponent().valueToPercentile(false, 42, 17.36, 100.0));
+        Assert.assertEquals(21, getComponent().valueToPercentile(true, 42, 14.49, 100.0));
+        Assert.assertEquals(92, getComponent().valueToPercentile(false, 42, 17.36, 100.0));
         Assert.assertEquals(0, getComponent().valueToPercentile(true, 100, 18, 130.0));
         Assert.assertEquals(100, getComponent().valueToPercentile(true, 100, 90, 110.0));
         Assert.assertEquals(16, getComponent().valueToPercentile(true, 349, 67.0, 181.0));
@@ -142,12 +142,12 @@ public class BMITest
     {
         Assert.assertEquals(0, getComponent().valueToStandardDeviation(true, 0, 3.34, 49.9), 1.0E-2);
         Assert.assertEquals(0, getComponent().valueToStandardDeviation(false, 0, 3.32, 49.9), 1.0E-2);
-        Assert.assertEquals(-1, getComponent().valueToStandardDeviation(true, 42, 14.76, 100.0), 1.0E-2);
-        Assert.assertEquals(1, getComponent().valueToStandardDeviation(true, 42, 17.02, 100.0), 1.0E-2);
-        Assert.assertEquals(-2, getComponent().valueToStandardDeviation(true, 42, 13.87, 100.0), 1.0E-2);
-        Assert.assertEquals(2, getComponent().valueToStandardDeviation(true, 42, 18.54, 100.0), 1.0E-2);
-        Assert.assertEquals(-3, getComponent().valueToStandardDeviation(true, 42, 13.10, 100.0), 1.0E-2);
-        Assert.assertEquals(3, getComponent().valueToStandardDeviation(true, 42, 20.40, 100.0), 1.0E-2);
+        Assert.assertEquals(-1, getComponent().valueToStandardDeviation(true, 42, 14.26, 100.0), 1.0E-2);
+        Assert.assertEquals(1, getComponent().valueToStandardDeviation(true, 42, 16.76, 100.0), 1.0E-2);
+        Assert.assertEquals(-2, getComponent().valueToStandardDeviation(true, 42, 13.19, 100.0), 1.0E-2);
+        Assert.assertEquals(2, getComponent().valueToStandardDeviation(true, 42, 18.21, 100.0), 1.0E-2);
+        Assert.assertEquals(-3, getComponent().valueToStandardDeviation(true, 42, 12.22, 100.0), 1.0E-2);
+        Assert.assertEquals(3, getComponent().valueToStandardDeviation(true, 42, 19.85, 100.0), 1.0E-2);
     }
 
     @Test

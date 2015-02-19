@@ -43,7 +43,7 @@
 #if ($xcontext.action == 'get')
   #macro (dashIfEmpty $val)#if ("$!val" == '' || ($val.class.getName().endsWith('Integer') &amp;&amp; $val &lt; 0) || ($val.class.getName().endsWith('Double') &amp;&amp; $val.isNaN($val)))-#elseif ($val.class.getName().endsWith('Integer'))$val#else$mathtool.roundTo(2, $val)#end#end
   $response.setContentType('application/json')
-  #set ($age = $mathtool.toInteger("$!request.a"))
+  #set ($age = $mathtool.toDouble("$!request.a"))
   #set ($sex = ("$!request.s" != 'F'))
 ##
   #set ($valueMapping = [])

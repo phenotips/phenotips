@@ -1610,21 +1610,21 @@ document.observe('xwiki:dom:loaded', function() {
       var bDateObj = Date.parseISO_8601(birthDate.alt || '');
       var cDateObj = Date.parseISO_8601(crtDate.alt || '');
       if (bDateObj &amp;&amp; cDateObj) {
+        var daysInMonth = 30.4375;
         var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
+        var ageOffset = (cDateObj.getDate() &lt; bDateObj.getDate()) ? (daysInMonth+cDateObj.getDate()-bDateObj.getDate())/daysInMonth : (cDateObj.getDate() - bDateObj.getDate())/daysInMonth;
+        var age = age + ageOffset;
       } else {
         age=null;
       }
       if (age != null &amp;&amp; age &gt;= 0) {
         var displayedAge = '';
-        if (age == 0) {
-          displayedAge = '0';
-        }
         var y = Math.floor(age / 12);
-        var m = age % 12;
+        var m = Math.floor(age % 12);
         if (y &gt; 0) {
           displayedAge = y + 'y ';
         }
-        if (m &gt; 0) {
+        if (m &gt;= 0) {
           displayedAge += m + 'm ';
         }
         var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');

@@ -116,21 +116,21 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     public abstract String getName();
 
     @Override
-    public int valueToPercentile(boolean male, int ageInMonths, double value)
+    public int valueToPercentile(boolean male, float ageInMonths, double value)
     {
         LMS lms = getLMSForAge(getLMSList(male), ageInMonths);
         return valueToPercentile(value, lms);
     }
 
     @Override
-    public double valueToStandardDeviation(boolean male, int ageInMonths, double value)
+    public double valueToStandardDeviation(boolean male, float ageInMonths, double value)
     {
         LMS lms = getLMSForAge(getLMSList(male), ageInMonths);
         return valueToStandardDeviation(value, lms);
     }
 
     @Override
-    public double percentileToValue(boolean male, int ageInMonths, int targetPercentile)
+    public double percentileToValue(boolean male, float ageInMonths, int targetPercentile)
     {
         LMS lms = getLMSForAge(getLMSList(male), ageInMonths);
         if (lms == null) {
@@ -140,7 +140,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     @Override
-    public double standardDeviationToValue(boolean male, int ageInMonths, double targetDeviation)
+    public double standardDeviationToValue(boolean male, float ageInMonths, double targetDeviation)
     {
         LMS lms = getLMSForAge(getLMSList(male), ageInMonths);
         if (lms == null) {
@@ -196,26 +196,26 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
                 if (tokens.length < 5) {
                     continue;
                 }
-                int month = Integer.parseInt(tokens[1], 10);
+                int day = Integer.parseInt(tokens[1], 10);
                 double l = Double.parseDouble(tokens[2]);
                 double m = Double.parseDouble(tokens[3]);
                 double s = Double.parseDouble(tokens[4]);
                 LMS lms = new LMS(l, m, s);
                 if ("1".equals(tokens[0])) {
-                    while (month >= this.measurementsForAgeBoys.size()) {
+                    while (day >= this.measurementsForAgeBoys.size()) {
                         this.measurementsForAgeBoys.add(null);
                     }
-                    this.measurementsForAgeBoys.set(month, lms);
+                    this.measurementsForAgeBoys.set(day, lms);
                 } else {
-                    while (month >= this.measurementsForAgeGirls.size()) {
+                    while (day >= this.measurementsForAgeGirls.size()) {
                         this.measurementsForAgeGirls.add(null);
                     }
-                    this.measurementsForAgeGirls.set(month, lms);
+                    this.measurementsForAgeGirls.set(day, lms);
                 }
             }
         } catch (IOException ex) {
             // This shouldn't happen
-            this.logger.error("Failed to read data table [{}]: {}", new Object[] {filename, ex.getMessage(), ex});
+            this.logger.error("Failed to read data table [{}]: {}", new Object[] { filename, ex.getMessage(), ex });
         }
     }
 
@@ -230,30 +230,33 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      * @param ageInMonths the target age (in months) for which to compute the LMS triplet
      * @return a LMS triplet computed according to the rules above, possibly {@code null}
      */
-    protected LMS getLMSForAge(List<LMS> list, int ageInMonths)
+    protected LMS getLMSForAge(List<LMS> list, float ageInMonths)
     {
-        if (ageInMonths < 0) {
+        // LMS data is stored per day, currently but input is given as a float for months
+        int ageInDays = (int) Math.round(ageInMonths * 30.4375);
+        if (ageInDays < 0) {
             return null;
-        } else if (ageInMonths >= list.size()) {
+        } else if (ageInDays >= list.size()) {
             return list.get(list.size() - 1);
         }
+
         LMS result;
-        result = list.get(ageInMonths);
+        result = list.get(ageInDays);
         if (result == null) {
-            int lowerAge = ageInMonths - 1;
+            int lowerAge = ageInDays - 1;
             while (lowerAge >= 0 && list.get(lowerAge) == null) {
                 --lowerAge;
             }
             if (lowerAge < 0) {
                 return null;
             }
-            int upperAge = ageInMonths + 1;
+            int upperAge = ageInDays + 1;
             while (upperAge < list.size() && list.get(upperAge) == null) {
                 ++upperAge;
             }
             LMS lowerLMS = list.get(lowerAge);
             LMS upperLMS = list.get(upperAge);
-            double delta = ((double) ageInMonths - lowerAge) / (upperAge - lowerAge);
+            double delta = ((double) ageInDays - lowerAge) / (upperAge - lowerAge);
             result =
                 new LMS(lowerLMS.l + (upperLMS.l - lowerLMS.l) * delta, lowerLMS.m + (upperLMS.m - lowerLMS.m) * delta,
                     lowerLMS.s + (upperLMS.s - lowerLMS.s) * delta);
