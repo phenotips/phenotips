@@ -62,6 +62,7 @@ import org.apache.solr.common.params.CommonParams;
 import org.slf4j.Logger;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
@@ -231,6 +232,10 @@ public class GeneNomenclature implements OntologyService, Initializable
                 }
             } catch (IOException ex) {
                 this.logger.warn("Failed to search gene names: {}", ex.getMessage());
+            } catch (JSONException ex) {
+                this.logger.warn(
+                    "Failed to search gene names. Check that '{}' is correct and available.",
+                    this.baseServiceURL);
             }
         } catch (UnsupportedEncodingException ex) {
             // This will not happen, UTF-8 is always available
@@ -325,6 +330,10 @@ public class GeneNomenclature implements OntologyService, Initializable
             return responseJSON;
         } catch (IOException ex) {
             this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
+        } catch (JSONException ex) {
+            this.logger.warn(
+                "Failed to get HGNC information. Check that '{}' is correct and available.",
+                this.baseServiceURL);
         }
         return new JSONObject(true);
     }
