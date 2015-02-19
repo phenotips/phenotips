@@ -36,7 +36,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.joda.time.DateTime;
-import org.joda.time.Months;
+import org.joda.time.Days;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -86,7 +86,7 @@ public class MeasurementAgeUpdater extends AbstractEventListener
             if (measurement == null) {
                 continue;
             } else if ("birth".equals(measurement.getStringValue("type"))) {
-                measurement.setIntValue(AGE_PROPERTY_NAME, 0);
+                measurement.setFloatValue(AGE_PROPERTY_NAME, 0);
                 measurement.removeField(DATE_PROPERTY_NAME);
                 continue;
             }
@@ -94,8 +94,8 @@ public class MeasurementAgeUpdater extends AbstractEventListener
             if (measurementDate == null || birthDate == null) {
                 measurement.removeField(AGE_PROPERTY_NAME);
             } else {
-                int age = Months.monthsBetween(new DateTime(birthDate), new DateTime(measurementDate)).getMonths();
-                measurement.setIntValue(AGE_PROPERTY_NAME, age);
+                measurement.setFloatValue(AGE_PROPERTY_NAME,
+                    Days.daysBetween(new DateTime(birthDate), new DateTime(measurementDate)).getDays() / 30.4375f);
             }
         }
     }
