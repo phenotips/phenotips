@@ -96,6 +96,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateDisorderShapes();
         this.updateCarrierGraphic();
         this.updateEvaluationLabel();
+        if (this.getNode().getLifeStatus() == "unborn"){
+            this.updateLifeStatusShapes("unborn");
+        }
     },
 
     generateProbandArrow: function() {
