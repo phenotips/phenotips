@@ -69,7 +69,7 @@ public class R54691PhenoTips1428DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Searches for all measurement objects and updates their age property to a float
+     * Searches for all measurement objects and updates their age property to a float.
      */
     private class MigrateAgePropertyCallback implements HibernateCallback<Object>
     {
