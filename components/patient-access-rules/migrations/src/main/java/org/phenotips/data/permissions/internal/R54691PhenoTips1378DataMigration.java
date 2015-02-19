@@ -52,9 +52,9 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * better implemented if all patients have a visibility object which until now they do not.
  *
  * @version $Id$
- * @since 1.1M2
+ * @since 1.1RC1
  */
-@Component(roles = { HibernateDataMigration.class })
+@Component
 @Named("R54691PhenoTips#1378")
 @Singleton
 public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigration
