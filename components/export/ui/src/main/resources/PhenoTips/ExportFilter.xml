@@ -201,23 +201,20 @@
 #end
 #set ($visibilities = $request.getParameterValues('visibility'))
 #if ("$!visibilities" != '')
-  #set ($query = ",StringProperty visibilityProperty, BaseObject visibilityObj $query and visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityProperty.id.id=visibilityObj.id and visibilityProperty.name='visibility' and (")
-  #set ($isFirstVis = true)
+  #set ($query = ", StringProperty visibilityProperty, BaseObject visibilityObj $query and visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityProperty.id.id = visibilityObj.id and visibilityProperty.name = 'visibility' and (")
   #foreach ($visibility in $request.getParameterValues('visibility'))
-    #if ($isFirstVis)
-      #set ($query = "$query visprop.value=?")
-      #set ($discard = $parameters.add("$visibility"))
+    #if ($foreach.index == 0)
+      #set ($query = "${query}visprop.value = ?")
     #else
-      #set ($query = "$query or visprop.value=?")
-      #set ($discard = $parameters.add("$visibility"))
+      #set ($query = "${query} or visprop.value = ?")
     #end
-    #set ($isFirstVis = false)
+    #set ($discard = $parameters.add($visibility))
   #end
-  #set ($query = "$query)")
+  #set ($query = "${query})")
 #else
   #set ($query = '')
 #end
-#if ("$!query"! = '')
+#if ($query != '')
   #set ($patientIds = $services.query.hql($query).bindValues($parameters))
   #set ($discard = $patientIds.addFilter('unique'))
   #if ($request.count)
