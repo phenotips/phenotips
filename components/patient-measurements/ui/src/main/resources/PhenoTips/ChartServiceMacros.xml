@@ -73,15 +73,8 @@
       #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($measurementName).value}))
     #end
   #end
-  #set ($bDate = $services.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
   #foreach ($o in $doc.getObjects($targetClassName))
-    #if ($o.getProperty('date') &amp;&amp; $o.getProperty('date').value)
-      #set ($mDate = $services.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
-      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($services.jodatime.getUTCTimezone()))
-      #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
-    #else
-      #set ($age = $o.getProperty('age').value)
-    #end
+    #set ($age = $o.getProperty('age').value)
     #if ($age &gt;= 0)
       #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
         #_updateMeasurements($measurements.get($measurementName) $o $measurementName $age)
@@ -99,7 +92,7 @@
   #macro (_buildMeasurementFromRequest $measurements $measurementName)
     #foreach ($m in $request.getParameterValues($measurementName))
       #if ("$!{m}" != '')
-        #set ($age = $mathtool.toInteger($ages.get($foreach.index)))
+        #set ($age = $mathtool.toDouble($ages.get($foreach.index)))
         #if ("$!age" != '')
           #if (!($ageLimits.get($measurementName).min &lt;= $age))
             #set ($ageLimits.get($measurementName).min = $age)

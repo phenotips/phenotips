@@ -260,11 +260,11 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   #end
   #foreach ($p in [3, 10, 25, 50, 75, 90, 97])
     #getPercentileValue($chartConfiguration.lowerAgeLimit $p)
-    &lt;path clip-path="url(#border${chartCounter})" class="chart-percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
+    &lt;path clip-path="url(#border${chartCounter})" class="chart-percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M0 $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
     #foreach ($i in [1..$xlines])
       #set ($age = $mathtool.add($mathtool.mul($i, $chartConfiguration.ageTickStep), $chartConfiguration.lowerAgeLimit))
       #getPercentileValue($age $p)
-      $mathtool.mul($mathtool.add(0.5, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
+      $mathtool.mul($foreach.count, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
       #if ($age == 23 &amp;&amp; ($chartConfiguration.measurementType == 'height' || $chartConfiguration.measurementType == 'bmi') &amp;&amp; $chartConfiguration.lowerAgeLimit &lt; 24 &amp;&amp; $chartConfiguration.upperAgeLimit &gt; 24)
         #set ($v2 = $v)
         #getPercentileValue($mathtool.sub($age, 1) $p)
@@ -285,11 +285,11 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   #end
   #foreach ($d in [-3..3])
     #getSDValue($chartConfiguration.lowerAgeLimit $d)
-    &lt;path clip-path="url(#border${chartCounter})" class="chart-deviation-curve#if ($d == -2 || $d == 2) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
+    &lt;path clip-path="url(#border${chartCounter})" class="chart-deviation-curve#if ($d == -2 || $d == 2) bold#end" d="M0 $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
     #foreach ($i in [1..$xlines])
       #set ($age = $mathtool.add($mathtool.mul($i, $chartConfiguration.ageTickStep), $chartConfiguration.lowerAgeLimit))
       #getSDValue($age $d)
-      $mathtool.mul($mathtool.add(0.5, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
+      $mathtool.mul($foreach.count, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
       #if ($age == 23 &amp;&amp; ($chartConfiguration.measurementType == 'height' || $chartConfiguration.measurementType == 'bmi') &amp;&amp; $chartConfiguration.lowerAgeLimit &lt; 24 &amp;&amp; $chartConfiguration.upperAgeLimit &gt; 24)
         #set ($v2 = $v)
         #getSDValue($mathtool.sub($age, 1) $d)
@@ -313,11 +313,11 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
     #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.a &lt; $chartConfiguration.upperAgeLimit)
       #getValuePercentile($m.a $m.x)
       #getPercentileValue($chartConfiguration.lowerAgeLimit $p)
-      &lt;path class="chart-percentile-curve guideline" d="M$mathtool.add($mathtool.mul(0, 20), 10) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
+      &lt;path class="chart-percentile-curve guideline" d="M0 $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale))L##
       #foreach ($i in [1..$xlines])
         #set ($age = $mathtool.add($mathtool.mul($i, $chartConfiguration.ageTickStep), $chartConfiguration.lowerAgeLimit))
         #getPercentileValue($age $p)
-        $mathtool.mul($mathtool.add(0.5, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
+        $mathtool.mul($foreach.count, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $chartConfiguration.lowerValueLimit), $yscale)) ##
         #if ($age == 23 &amp;&amp; ($chartConfiguration.measurementType == 'height' || $chartConfiguration.measurementType == 'bmi') &amp;&amp; $chartConfiguration.lowerAgeLimit &lt; 24 &amp;&amp; $chartConfiguration.upperAgeLimit &gt; 24)
           #set ($v2 = $v)
           #getPercentileValue($mathtool.sub($age, 1) $p)
@@ -352,7 +352,7 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
       #getValuePercentile($m.a $m.x)
       #getValueSD($m.a $m.x)
       #set ($d = $mathtool.roundTo(2, $d))
-      #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $chartConfiguration.lowerAgeLimit)), $xscale))
+      #set ($x = $mathtool.mul($mathtool.sub($m.a, $chartConfiguration.lowerAgeLimit), $xscale))
       #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($m.x, $chartConfiguration.lowerValueLimit), $yscale)))
       #if ($y &gt; $mathtool.sub($graphHeight, 10))
         #set ($y = $graphHeight - 4)
