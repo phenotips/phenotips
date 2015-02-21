@@ -131,7 +131,7 @@
       element._name = geneNames[i];
       ++i;
     });
-    geneNames = geneNames.findAll(function(n){return n;});
+    geneNames = geneNames.findAll(function(n){return encodeURIComponent(n);});
     if (geneNames.size() == 0) {
       return;
     }
@@ -152,7 +152,7 @@
            geneRefs.each(function(element) {
              var data = response.responseJSON;
              var geneName = element._name;
-             var info = data &amp;&amp; data.response[geneName] &amp;&amp; data.response[geneName].external_ids;
+             var info = data &amp;&amp; data.response &amp;&amp; data.response[geneName] &amp;&amp; data.response[geneName].external_ids;
              if (info) {
 
                 var geneLinks = element.next('div.gene-links') || new Element('div', {'class' : 'gene-links'});
