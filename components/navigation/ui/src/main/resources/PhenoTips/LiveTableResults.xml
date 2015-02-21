@@ -370,6 +370,7 @@
  #set ($colname = $stringtool.substringBefore($colname, '/'))
  #if ($processedColumns.add($colname))
   #set ($filterValue = "$!{request.get($colname)}")
+  #set ($filterValueList = $request.getParameterValues($colname))
   #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}")
   #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}")
   #set($tableAlias = $colname)
@@ -521,6 +522,13 @@
             #set ($whereSql = "${whereSql})")
           #end
         #end
+      #end
+    #elseif ($filterValueList.size() &gt; 1)
+      #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value in (${stringtool.repeat('?', ', ', $filterValueList.size())})")
+      #set($discard = $whereParams.add("${colname}"))
+      #foreach ($value in $filterValueList)
+        #set($discard = $whereParams.add($value))
       #end
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
