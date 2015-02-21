@@ -489,7 +489,7 @@
 #elseif ($value == 40)
   {{translation key="PhenoTips.PatientClass_gestation_term" /}} ##
 #else
-  $value
+  $!value
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
