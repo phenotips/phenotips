@@ -3262,7 +3262,8 @@ return PhenoTips;
         this.suggestOptions = {
           script : suggestInfoSource.value,
           shownoresults : false,
-          varname: "input"
+          varname: "input",
+          timeout : 0
         }
       }
 
