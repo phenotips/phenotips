@@ -204,9 +204,9 @@
   #set ($query = ", StringProperty visibilityProperty, BaseObject visibilityObj $query and visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityProperty.id.id = visibilityObj.id and visibilityProperty.name = 'visibility' and (")
   #foreach ($visibility in $request.getParameterValues('visibility'))
     #if ($foreach.index == 0)
-      #set ($query = "${query}visprop.value = ?")
+      #set ($query = "${query}visibilityProperty.value = ?")
     #else
-      #set ($query = "${query} or visprop.value = ?")
+      #set ($query = "${query} or visibilityProperty.value = ?")
     #end
     #set ($discard = $parameters.add($visibility))
   #end
