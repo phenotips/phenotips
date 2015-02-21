@@ -1444,8 +1444,8 @@ Date.prototype.getOrdinal = function () {
 Date.ISO8601Format = 'yyyy-MM-ddTHH:mm:ssZ';
 Date.prototype.toISO8601 = function() {
   var result = this.toString(Date.ISO8601Format);
-  if (result.indexOf("NaN")&gt;-1) {
-    result="";
+  if (result.indexOf("NaN") &gt; -1) {
+    result = "";
   }
   return result;
 };
