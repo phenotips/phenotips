@@ -171,7 +171,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 } else {
                     this.cache.set(id, EMPTY_MARKER);
                 }
-            } catch (IOException ex) {
+            } catch (IOException | JSONException ex) {
                 this.logger.warn("Failed to fetch gene definition: {}", ex.getMessage());
             }
         }
@@ -230,12 +230,8 @@ public class GeneNomenclature implements OntologyService, Initializable
                     // This is too slow, for the moment only return summaries
                     // return getTerms(ids);
                 }
-            } catch (IOException ex) {
+            } catch (IOException | JSONException ex) {
                 this.logger.warn("Failed to search gene names: {}", ex.getMessage());
-            } catch (JSONException ex) {
-                this.logger.warn(
-                    "Failed to search gene names. Check that '{}' is correct and available.",
-                    this.baseServiceURL);
             }
         } catch (UnsupportedEncodingException ex) {
             // This will not happen, UTF-8 is always available
@@ -255,7 +251,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 return docs.size();
-            } catch (IOException ex) {
+            } catch (IOException | JSONException ex) {
                 this.logger.warn("Failed to count matching gene names: {}", ex.getMessage());
             }
         } catch (UnsupportedEncodingException ex) {
@@ -328,12 +324,8 @@ public class GeneNomenclature implements OntologyService, Initializable
             JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
             this.infoCache.set("", responseJSON);
             return responseJSON;
-        } catch (IOException ex) {
+        } catch (IOException | JSONException ex) {
             this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
-        } catch (JSONException ex) {
-            this.logger.warn(
-                "Failed to get HGNC information. Check that '{}' is correct and available.",
-                this.baseServiceURL);
         }
         return new JSONObject(true);
     }
