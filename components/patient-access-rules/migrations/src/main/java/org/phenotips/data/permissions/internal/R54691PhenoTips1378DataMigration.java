@@ -54,7 +54,7 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @version $Id$
  * @since 1.1RC1
  */
-@Component
+@Component(roles = { HibernateDataMigration.class })
 @Named("R54691PhenoTips#1378")
 @Singleton
 public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigration
