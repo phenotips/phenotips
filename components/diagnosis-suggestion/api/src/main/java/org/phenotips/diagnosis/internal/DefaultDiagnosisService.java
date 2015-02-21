@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -130,11 +131,16 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     {
         Observations o = new Observations();
         o.observations = new boolean[this.boqa.getOntology().getNumberOfTerms()];
+        boolean searchIsEmpty = true;
 
         // Add all hpo terms with ancestors to array of booleans
         for (String hpo : phenotypes) {
             Term t = this.boqa.getOntology().getTerm(hpo);
-            addTermAndAncestors(t, o);
+            searchIsEmpty = !addTermAndAncestors(t, o) && searchIsEmpty;
+        }
+
+        if (searchIsEmpty) {
+            return Collections.emptyList();
         }
 
         // Get marginals
@@ -202,11 +208,17 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         return results;
     }
 
-    private void addTermAndAncestors(Term t, Observations o)
+    private boolean addTermAndAncestors(Term t, Observations o)
     {
-        int id = this.boqa.getTermIndex(t);
-        o.observations[id] = true;
-        this.boqa.activateAncestors(id, o.observations);
+        try {
+            int id = this.boqa.getTermIndex(t);
+            o.observations[id] = true;
+            this.boqa.activateAncestors(id, o.observations);
+        } catch (Exception e) {
+            this.logger.warn("Unable to find the boqa index of [{}].", t);
+            return false;
+        }
+        return true;
     }
 
     /**
