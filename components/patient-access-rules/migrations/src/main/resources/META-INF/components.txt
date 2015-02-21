@@ -1,2 +1,2 @@
 org.phenotips.data.permissions.internal.R54590PhenoTips931DataMigration
-org.phenotips.data.permissions.internal.R54691PhenoTips1378DataMigration
+org.phenotips.data.permissions.internal.R54692PhenoTips1378DataMigration

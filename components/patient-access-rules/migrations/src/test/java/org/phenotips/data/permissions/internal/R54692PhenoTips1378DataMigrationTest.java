@@ -61,11 +61,11 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-public class R54691PhenoTips1378DataMigrationTest
+public class R54692PhenoTips1378DataMigrationTest
 {
     @Rule
     public final MockitoComponentMockingRule<HibernateDataMigration> mocker =
-        new MockitoComponentMockingRule<HibernateDataMigration>(R54691PhenoTips1378DataMigration.class);
+        new MockitoComponentMockingRule<HibernateDataMigration>(R54692PhenoTips1378DataMigration.class);
 
     /** Sending an event with a non-patient document doesn't alter the document. */
     @Test
@@ -199,7 +199,7 @@ public class R54691PhenoTips1378DataMigrationTest
     @Test
     public void getVersion() throws Exception
     {
-        Assert.assertEquals(54691, this.mocker.getComponentUnderTest().getVersion().getVersion());
+        Assert.assertEquals(54692, this.mocker.getComponentUnderTest().getVersion().getVersion());
     }
 
     /**
@@ -210,6 +210,6 @@ public class R54691PhenoTips1378DataMigrationTest
     public void shouldExecute() throws Exception
     {
         Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(54689)));
-        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(54692)));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().shouldExecute(new XWikiDBVersion(54693)));
     }
 }

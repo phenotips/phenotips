@@ -55,9 +55,9 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
  * @since 1.1RC1
  */
 @Component(roles = { HibernateDataMigration.class })
-@Named("R54691PhenoTips#1378")
+@Named("R54692PhenoTips#1378")
 @Singleton
-public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigration
+public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigration
 {
     /** Logging helper object. */
     @Inject
@@ -78,7 +78,7 @@ public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(54691);
+        return new XWikiDBVersion(54692);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigra
         public Object doInHibernate(Session session) throws HibernateException, XWikiException
         {
 
-            XWikiContext context = R54691PhenoTips1378DataMigration.this.getXWikiContext();
+            XWikiContext context = R54692PhenoTips1378DataMigration.this.getXWikiContext();
             XWiki xwiki = context.getWiki();
             Query q = session.createQuery("select doc.fullName from XWikiDocument as doc, BaseObject "
                 + "as patobj where doc.fullName=patobj.name "
@@ -105,20 +105,20 @@ public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigra
                 + " doc.fullName=visobj.name");
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
-            R54691PhenoTips1378DataMigration.this.logger.debug("Found {} documents with no visibility object",
+            R54692PhenoTips1378DataMigration.this.logger.debug("Found {} documents with no visibility object",
                 documents.size());
             for (String docName : documents) {
                 try {
-                    R54691PhenoTips1378DataMigration.this.logger.debug("Checking [{}]", docName);
+                    R54692PhenoTips1378DataMigration.this.logger.debug("Checking [{}]", docName);
                     XWikiDocument doc =
-                        xwiki.getDocument(R54691PhenoTips1378DataMigration.this.resolver.resolve(docName), context);
+                        xwiki.getDocument(R54692PhenoTips1378DataMigration.this.resolver.resolve(docName), context);
                     if (doc == null) {
                         continue;
                     }
                     BaseObject visobj = doc.newXObject(Visibility.CLASS_REFERENCE, context);
                     visobj.set("visibility", "private", context);
 
-                    doc.setComment(R54691PhenoTips1378DataMigration.this.getDescription());
+                    doc.setComment(R54692PhenoTips1378DataMigration.this.getDescription());
                     doc.setMinorEdit(true);
 
                     // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
@@ -126,7 +126,7 @@ public class R54691PhenoTips1378DataMigration extends AbstractHibernateDataMigra
                     session.clear();
                     ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                     session.flush();
-                    R54691PhenoTips1378DataMigration.this.logger.debug("Updated [{}]", docName);
+                    R54692PhenoTips1378DataMigration.this.logger.debug("Updated [{}]", docName);
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
                 }
