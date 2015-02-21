@@ -1188,7 +1188,7 @@
         value    : inputData.value || this.iHighlighted.down(".suggestValue").innerHTML,
         info     : inputData.info || this.iHighlighted.down(".suggestInfo").innerHTML,
         icon     : inputData.icon || (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
-        category : inputData.category || this.iHighlighted.down(".suggestCategory").innerHTML
+        category : this.iHighlighted.down(".suggestCategory").innerHTML
       };
       this.acceptEntry(data, selection, newFieldValue);
     }

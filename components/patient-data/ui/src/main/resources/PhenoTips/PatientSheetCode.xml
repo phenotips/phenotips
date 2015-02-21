@@ -743,7 +743,7 @@ document.observe('xwiki:dom:loaded', function() {
                var newItem = new Element('div', {'class' : 'summary-item' + (isCustomEntry ? ' custom-entry': '')}).update(
                   new Element('label', {'class' : type}).insert({
                      'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
-                     'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
+                     'bottom' : inputElt.title.escapeHTML() || inputElt.nextSibling.nodeValue.escapeHTML() || inputElt.nextSibling.firstChild.nodeValue.escapeHTML() || inputElt.value.escapeHTML()
                   })
                );
                if (isCustomEntry) {
