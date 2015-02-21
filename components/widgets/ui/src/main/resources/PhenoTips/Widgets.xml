@@ -963,9 +963,9 @@
       displayNode.insert(new Element("img", {'src' : data.icon, 'class' : 'icon' }));
     }
     if (this.options.displayId) {
-        displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
+        displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id.escapeHTML()));
     }
-    displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+    displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value.escapeHTML()));
 
     if (this.options.tooltip &amp;&amp; !disableTooltip) {
       var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id});
@@ -975,20 +975,20 @@
     var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
     displayNode.insert(displayInfo);
     if(data.altName){
-        displayInfo.insert({'top' : new Element('span', {'class':'matching-alternative-name'}).update(data.altName)});
+        displayInfo.insert({'top' : new Element('span', {'class':'matching-alternative-name'}).update(data.altName.escapeHTML())});
     }
 
     var valueNode = new Element('div')
-            .insert(new Element('span', {'class':'suggestId'}).update(data.id))
-            .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
+            .insert(new Element('span', {'class':'suggestId'}).update(data.id.escapeHTML()))
+            .insert(new Element('span', {'class':'suggestValue'}).update(data.value.escapeHTML()))
             .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
+    valueNode.store('itemData', data);
 
     var item = new PhenoTips.widgets.XListItem( displayNode , {
         containerClasses: 'suggestItem ' + (cssClass || ''),
         value: valueNode,
         noHighlight: true // we do the highlighting ourselves
     });
-
 
     Event.fire(this.fld, "ms:suggest:suggestionCreated", {element: item.getElement(), suggest: this});
 
@@ -1181,13 +1181,14 @@
           selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
       }
 
+      var inputData = this.iHighlighted.down('.value div').retrieve('itemData');
       var data = {
         suggest  : this,
-        id       : this.iHighlighted.down(".suggestId").innerHTML,
-        value    : this.iHighlighted.down(".suggestValue").innerHTML,
-        info     : this.iHighlighted.down(".suggestInfo").innerHTML,
-        icon     : (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
-        category : this.iHighlighted.down(".suggestCategory").innerHTML
+        id       : inputData.id || this.iHighlighted.down(".suggestId").innerHTML,
+        value    : inputData.value || this.iHighlighted.down(".suggestValue").innerHTML,
+        info     : inputData.info || this.iHighlighted.down(".suggestInfo").innerHTML,
+        icon     : inputData.icon || (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
+        category : inputData.category || this.iHighlighted.down(".suggestCategory").innerHTML
       };
       this.acceptEntry(data, selection, newFieldValue);
     }
