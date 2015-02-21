@@ -2042,7 +2042,9 @@ document.observe('xwiki:dom:loaded', function() {
     // And one more thing (not exactly related to measurements directly:
     // If we're collecting data about gestational age, select premature birth for low gestational ages
     var gaInput = $$('input[type="text"][name$="_gestation"]');
+    var gaTermInput = $$('input[type="checkbox"][name$="_gestation"]');
     gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
+    gaTermInput = gaTermInput.size() &gt; 0 &amp;&amp; gaTermInput[0] || '';
     var pbInput = findFormElementForPhenotype('HP:0001622', false, 'prenatal');
     if (gaInput &amp;&amp; pbInput) {
       gaInput.observe('blur', function (event) {
@@ -2069,6 +2071,16 @@ document.observe('xwiki:dom:loaded', function() {
             targetElt._ynpicker._onNA();
             highlightChecked(targetElt);
           }
+        }
+      });
+    }
+    // FIXME This code is a bit fragile... Both inputs should be handled in the same method
+    if (gaTermInput &amp;&amp; pbInput) {
+      gaTermInput.observe('blur', function (event) {
+        var targetElt = pbInput;
+        if (gaTermInput.checked &amp;&amp; targetElt._ynpicker) {
+          targetElt._ynpicker._onClick(false, 'no');
+          highlightChecked(targetElt);
         }
       });
     }

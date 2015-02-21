@@ -483,7 +483,15 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </gender>
     <gestation>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type == 'edit')
+  {{html clean="false"}}&lt;div class="controlled-group complete-hide"&gt;&lt;div class="controller exclude"&gt;&lt;label for="${prefix}${name}_term"&gt;&lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_term" value="40"#if($value == 40) checked="checked"#end /&gt; {{/html}}{{translation key="PhenoTips.PatientClass_gestation_term" /}}{{html clean="false"}}&lt;/label&gt;&lt;/div&gt;&lt;div class="controlled"&gt;&lt;input type="text" name="${prefix}${name}" value="$!{escapetool.xml($value)}" /&gt;&lt;/div&gt;&lt;/div&gt;{{/html}}
+#elseif ($value == 40)
+  {{translation key="PhenoTips.PatientClass_gestation_term" /}} ##
+#else
+  $value
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>gestation</name>
       <number>26</number>
