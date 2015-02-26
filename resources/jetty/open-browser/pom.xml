@@ -27,8 +27,8 @@
     <artifactId>jetty</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>jetty-startup-listener-mac</artifactId>
-  <name>PhenoTips - Jetty Lifecycle Listener - Mac</name>
+  <artifactId>jetty-open-browser</artifactId>
+  <name>PhenoTips - Jetty Lifecycle Listener - Open Browser</name>
   <description>Includes a lifecycle listener that opens PhenoTips in a browser after the server started.</description>
 
   <properties>

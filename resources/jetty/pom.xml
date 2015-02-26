@@ -35,23 +35,8 @@
     <jetty.version>8.1.16.v20140903</jetty.version>
   </properties>
   <modules>
-    <module>startup-listener</module>
+    <module>log-writer</module>
+    <module>open-browser</module>
     <module>packaging</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-          <name>mac os x</name>
-        </os>
-      </activation>
-      <modules>
-        <module>startup-listener-mac</module>
-      </modules>
-    </profile>
-  </profiles>
 </project>

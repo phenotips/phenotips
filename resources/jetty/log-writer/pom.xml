@@ -27,9 +27,9 @@
     <artifactId>jetty</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>jetty-startup-listener</artifactId>
-  <name>PhenoTips - Jetty Lifecycle Listener</name>
-  <description>Includes a lifecycle listener that notifies users that they should open PhenoTips in a browser after the server started.</description>
+  <artifactId>jetty-log-writer</artifactId>
+  <name>PhenoTips - Jetty Lifecycle Listener - Log Writer</name>
+  <description>Includes a lifecycle listener that prints helpful log messages.</description>
 
   <properties>
     <!-- Re-enable Checkstyle checks in Java module -->

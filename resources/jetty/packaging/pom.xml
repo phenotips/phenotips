@@ -34,7 +34,12 @@
   <dependencies>
     <dependency>
       <groupId>org.phenotips</groupId>
-      <artifactId>jetty-startup-listener</artifactId>
+      <artifactId>jetty-log-writer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.phenotips</groupId>
+      <artifactId>jetty-open-browser</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -91,41 +96,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>mac</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <os>
-          <family>mac</family>
-          <name>mac os x</name>
-        </os>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.phenotips</groupId>
-          <artifactId>jetty-startup-listener-mac</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>resources</id>
-                <configuration>
-                  <descriptors>
-                    <descriptor>${basedir}/src/main/assembly/distribution-mac.xml</descriptor>
-                  </descriptors>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
