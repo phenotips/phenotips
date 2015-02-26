@@ -27,26 +27,6 @@
     <artifactId>studies</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>studies-ui</artifactId>
-  <name>PhenoTips - Studies - Wiki Documents</name>
-  <packaging>xar</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-studies-api</artifactId>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.version}</version>
-      </extension>
-    </extensions>
-  </build>
+  <artifactId>phenotips-studies-api</artifactId>
+  <name>PhenoTips - Studies - Java APIs</name>
 </project>
