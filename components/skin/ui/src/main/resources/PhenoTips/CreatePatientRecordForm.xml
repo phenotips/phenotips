@@ -50,7 +50,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
     #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
       ## Is there more than one sheet option?
       ## Check out all the groups this user is part of
-      #set ($studiesVisibilityPreference = $doc.getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
+      #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
       #if ($studiesVisibilityPreference == 'unrestricted')
         #set ($studyClassName = 'PhenoTips.StudyClass')
         #set ($studyTemplateName = 'PhenoTips.StudyTemplate')

@@ -56,7 +56,7 @@
 
 {{velocity}}{{html clean="false" wiki="true"}}
 #if ($mode == 'edit')
-#set ($studiesVisibilityPreference = $doc.getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
+#set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
 #if ($studiesVisibilityPreference == 'unrestricted')
   #set ($studyClassName = 'PhenoTips.StudyClass')
   #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
@@ -634,7 +634,7 @@ $xwiki.ssx.use($className)
 {{/velocity}}
 
 {{velocity}}
-#set ($studiesVisibilityPreference = $doc.getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
+#set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
 #if ($studiesVisibilityPreference == 'unrestricted')
   #set ($studyClassName = 'PhenoTips.StudyClass')
   #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
