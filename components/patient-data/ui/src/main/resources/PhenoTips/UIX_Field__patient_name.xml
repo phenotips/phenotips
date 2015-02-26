@@ -121,7 +121,7 @@
       #__displayFormatted('half-width' 'first_name')
      (% class="clear" %)((()))
     #else
-      (% class="displayed-value"%)${doc.display('last_name')}, ${doc.display('first_name')}(%%)##
+      (% class="displayed-value"%)${doc.display('last_name').replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}, ${doc.display('first_name').replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}(%%)##
     #end
   )))##fieldset
 #end

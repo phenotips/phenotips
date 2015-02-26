@@ -248,7 +248,8 @@
       #set($propType = "$!propClass.get($colname).type")
     #end
     #set($fieldValue = "$!itemDoc.getValue($colname)")
-    #if ($propClass.get($colname).getProperty('customDisplay').value != '' || $!propClass.get($colname).getClassType() == 'TextArea')
+    ## Custom displayers generate HTML, TextAreas do the same, and there's a default custom displayer for String fields
+    #if ($propClass.get($colname).getProperty('customDisplay').value != '' || $!propClass.get($colname).getClassType() == 'TextArea' || $!propClass.get($colname).getClassType() == 'String')
       #set($fieldDisplayValue = "$!services.rendering.render($services.rendering.parse($itemDoc.display($colname, 'view'), 'html/4.01'), 'plain/1.0')")
     #else
       #set($fieldDisplayValue = "$!itemDoc.display($colname, 'view')")
