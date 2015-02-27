@@ -23,6 +23,8 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Set;
 
+import net.sf.json.JSON;
+
 /**
  * A term from an {@link OntologyService ontology}. A few common properties are available as explicit individual
  * methods, and any property defined for the term can be accessed using the generic {@link #get(String)} method. As a
@@ -101,4 +103,30 @@ public interface OntologyTerm
      * @return the owner ontology
      */
     OntologyService getOntology();
+
+    /**
+     * @since 1.1-rc1
+     * @return near-complete information contained in this term, in JSON format. Example:
+     * {
+     *    "term_category":[
+     *      "HP:0004325",
+     *      "HP:0004323",
+     *      "HP:0000001",
+     *      "HP:0001507",
+     *      "HP:0000118"
+     *    ],
+     *    "xref":[
+     *      "MeSH:D015431 \"Weight Loss\"",
+     *      "UMLS:C0043096 \"Decreased body weight\""
+     *    ],
+     *      "is_a":[
+     *      "HP:0004325 ! Decreased body weight"
+     *    ],
+     *    "id":"HP:0001824",
+     *    "name":"Weight loss",
+     *    "def":"Reduction inexisting body weight."
+     * }
+     * @throws java.lang.Exception could happen if casting fails
+     */
+    JSON toJson() throws Exception;
 }

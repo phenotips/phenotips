@@ -291,4 +291,10 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         }
         return query.toString();
     }
+
+    @Override
+    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    {
+        throw new UnsupportedOperationException();
+    }
 }
