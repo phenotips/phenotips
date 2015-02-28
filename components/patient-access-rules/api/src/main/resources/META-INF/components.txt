@@ -3,6 +3,7 @@ org.phenotips.data.permissions.internal.DefaultPatientAccessHelper
 org.phenotips.data.permissions.internal.DefaultPermissionsManager
 org.phenotips.data.permissions.internal.OwnerUpdateEventListener
 org.phenotips.data.permissions.internal.RightsUpdateEventListener
+org.phenotips.data.permissions.internal.VCFAccessRestrictionEventListener
 org.phenotips.data.permissions.internal.access.EditAccessLevel
 org.phenotips.data.permissions.internal.access.ManageAccessLevel
 org.phenotips.data.permissions.internal.access.NoAccessLevel
