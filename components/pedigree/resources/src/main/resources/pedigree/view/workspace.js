@@ -246,16 +246,16 @@ var Workspace = Class.create({
                     _this.centerAroundNode(0);
                 }
                 else if(direction == 'up') {
-                    _this.panTo(_this.viewBoxX, _this.viewBoxY - 300);
+                    _this.panTo(_this.viewBoxX, _this.viewBoxY - 150);
                 }
                 else if(direction == 'down') {
-                    _this.panTo(_this.viewBoxX, _this.viewBoxY + 300);
+                    _this.panTo(_this.viewBoxX, _this.viewBoxY + 150);
                 }
                 else if(direction == 'left') {
-                    _this.panTo(_this.viewBoxX - 300, _this.viewBoxY);
+                    _this.panTo(_this.viewBoxX - 150, _this.viewBoxY);
                 }
                 else {
-                    _this.panTo(_this.viewBoxX + 300, _this.viewBoxY);
+                    _this.panTo(_this.viewBoxX + 150, _this.viewBoxY);
                 }
             })
         });

@@ -43,7 +43,7 @@ var Controller = Class.create({
         // Assigns user-visible node labels for all person nodes, based on generation and order
         // ("I-1","I-2","I-3", "II-1", "II-2", etc.)
 
-        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
 
         var check      = event.memo.hasOwnProperty("check");
         var clear      = false;
@@ -88,9 +88,9 @@ var Controller = Class.create({
 
         var renumberButton = $('action-number');
         if (clear) {
-            renumberButton.className = renumberButton.className.replace("disabled-menu-item", "menu-item");
+            renumberButton.className = renumberButton.className.replace(" disabled-menu-item", " menu-item");
         } else {
-            renumberButton.className = renumberButton.className.replace(/^menu-item/, "disabled-menu-item");
+            renumberButton.className = renumberButton.className.replace(/ menu-item/, " disabled-menu-item");
         }
 
         if (!event.memo.noUndoRedo && needRedraw) {

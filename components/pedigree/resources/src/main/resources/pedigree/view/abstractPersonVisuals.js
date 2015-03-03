@@ -270,11 +270,11 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;            
         if (this.getNode().isPersonGroup())
             this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;            
-        
+
         var shape;
         var x      = this.getX(),
             y      = this.getY(),
-            radius = this._shapeRadius;        
+            radius = this._shapeRadius;
 
         if (this.getNode().getGender() == 'F') {
             shape = editor.getPaper().circle(x, y, radius);
@@ -282,27 +282,27 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         else {
             //console.log("x: " + x + ", y: " + y + ", rad: " + radius + ", shape: " + this._genderShape);
             shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
-            //if (this.getNode().getGender() == 'M') {
-            //    shape.node.setAttribute("shape-rendering","crispEdges");
-            //}
         }        
-                
+
         if (this.getNode().getGender() == 'U') {
             shape.attr(PedigreeEditor.attributes.nodeShapeDiag);
-            shape.attr({transform: "...R45"});            
-        } else {
-            shape.attr(PedigreeEditor.attributes.nodeShape);
+            shape.attr({transform: "...R45"});
+        } else if (this.getNode().getGender() == 'M') {
+            shape.attr(PedigreeEditor.attributes.nodeShapeMale);
+            //shape.node.setAttribute("shape-rendering","crispEdges");
+        } else if (this.getNode().getGender() == 'F') {
+            shape.attr(PedigreeEditor.attributes.nodeShapeFemale);
         }
-        
+
         if (!editor.isUnsupportedBrowser()) {
             //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
             var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
             shadow.translate(3,3);
             shadow.insertBefore(shape);
         }
-        
+
         this._genderShape = shape;
-        
+
         this._genderGraphics = editor.getPaper().set(shadow, shape);
     },
 

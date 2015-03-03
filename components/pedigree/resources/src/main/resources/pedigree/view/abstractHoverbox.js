@@ -659,6 +659,7 @@ var AbstractHoverbox = Class.create({
         this.getBoxOnHover().stop().animate({opacity:0}, 200);
 
         this.hideButtons();
+        //this.removeHandles();  // does not work, since hideHoverZone is triggered when a mouse is over an orb (to fix?)
         this.hideHandles();
     },
 
