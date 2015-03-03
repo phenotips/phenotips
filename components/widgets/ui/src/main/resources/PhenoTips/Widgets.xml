@@ -3467,6 +3467,7 @@ document.observe("xwiki:dom:loaded", function() {
   widgets.VisibilityController =  Class.create({
     initialize : function(element) {
       this.element = element;
+      this.reverse = this.element.hasClassName("exclude");
       this.controller = this.element.down(".controller input[type=checkbox]");
       if (!this.controller) {
         // No controller, nothing else to do...
@@ -3484,7 +3485,7 @@ document.observe("xwiki:dom:loaded", function() {
       this.controller.observe("change", this.controlVisibility.bindAsEventListener(this));
     },
     controlVisibility : function() {
-      if (this.controller.checked) {
+      if (this.controller.checked ^ this.reverse) {
          this.controlled.invoke("setStyle", this.hiddenStyle);
          this.element.select(".controlled input").invoke("disable");
       } else {
