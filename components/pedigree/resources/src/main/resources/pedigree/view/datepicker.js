@@ -3,8 +3,9 @@ var PhenoTips = (function (PhenoTips) {
 
   widgets.FuzzyDatePickerDropdown = Class.create({
     initialize : function(options) {
-      this.span    = new Element('span');
-      this.options = options;
+      this.span     = new Element('span');
+      this.options  = options;
+      this.callback = null;
     },
 
     populate : function(values) {
@@ -30,6 +31,7 @@ var PhenoTips = (function (PhenoTips) {
       optionsHTML += "</select>";
       this.span.innerHTML = optionsHTML;
       this.dropdown = this.span.firstChild;
+      this.callback && this.onSelect(this.callback);
       if (this.dropdown.selectedIndex <= 0 && selectedIndex >= 0 && selectedIndex < this.dropdown.options.length) {
         this.dropdown.selectedIndex = selectedIndex;
       }
@@ -56,6 +58,7 @@ var PhenoTips = (function (PhenoTips) {
 
     onSelect : function(callback) {
       var _this = this;
+      this.callback = callback;
       var events = ['change'];
       browser.isGecko && events.push('keyup');
       events.each(function(eventName) {
