@@ -464,7 +464,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     _isValidCarrierStatus: function(status) {
-        return (status == '' || status == 'carrier'
+        return (status == '' || status == 'carrier' || status == 'uncertain'
             || status == 'affected' || status == 'presymptomatic');
     },
 
@@ -472,7 +472,7 @@ var Person = Class.create(AbstractPerson, {
      * Sets the global disorder carrier status for this Person
      *
      * @method setCarrier
-     * @param status One of {'', 'carrier', 'affected', 'presymptomatic'}
+     * @param status One of {'', 'carrier', 'affected', 'presymptomatic', 'uncertain'}
      */    
     setCarrierStatus: function(status) {
         var numDisorders = this.getDisorders().length;

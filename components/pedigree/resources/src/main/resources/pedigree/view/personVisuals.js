@@ -61,7 +61,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 x = this.getX() - height,
                 y = this.getY();
             var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
-            shape.attr(PedigreeEditor.attributes.nodeShape);
+            shape.attr(PedigreeEditor.attributes.nodeShapeAborted);
             this._genderShape = shape;
             shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
 
@@ -481,13 +481,24 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if (status != '' && status != 'affected') {
             if (status == 'carrier') {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
-                    x = this.getX();
-                    y = this.getY() - this._radius/2;
+                    var x = this.getX();
+                    var y = this.getY() - this._radius/2;
                 } else {
-                    x = this.getX();
-                    y = this.getY();
+                    var x = this.getX();
+                    var y = this.getY();
                 }
                 this._carrierGraphic = editor.getPaper().circle(x, y, PedigreeEditor.attributes.carrierDotRadius).attr(PedigreeEditor.attributes.carrierShape);
+            } else if (status == 'uncertain') {
+                if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
+                    var x = this.getX();
+                    var y = this.getY() - this._radius/2;
+                    var fontAttr = PedigreeEditor.attributes.uncertainSmallShape;
+                } else {
+                    var x = this.getX();
+                    var y = this.getY();
+                    var fontAttr = PedigreeEditor.attributes.uncertainShape;
+                }
+                this._carrierGraphic = editor.getPaper().text(x, y, "?").attr(fontAttr);
             } else if (status == 'presymptomatic') {
                 if (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                     this._carrierGraphic = null;
