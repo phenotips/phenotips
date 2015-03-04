@@ -584,6 +584,27 @@ BaseGraph.prototype = {
         return this.properties[v]["gender"];
     },
 
+    getLastName: function(v) {
+        if (!this.isPerson(v))
+            throw "Assertion failed: attempting to get gender of a non-person";
+        if (!this.properties[v].hasOwnProperty("lName")) {
+            if (!this.properties[v].hasOwnProperty("lNameAtB")) {
+                return "";
+            } else {
+                return this.properties[v]["lNameAtB"];
+            }
+        }
+        return this.properties[v]["lName"];
+    },
+
+    getLastNameAtBirth: function(v) {
+        if (!this.isPerson(v))
+            throw "Assertion failed: attempting to get gender of a non-person";
+        if (!this.properties[v].hasOwnProperty("lNameAtB"))
+            return "";
+        return this.properties[v]["lNameAtB"];
+    },
+
     getOppositeGender: function(v) {
         if (!this.isPerson(v))
             throw "Assertion failed: attempting to get gender of a non-person";

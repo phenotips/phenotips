@@ -288,6 +288,38 @@ DynamicPositionedGraph.prototype = {
         return {"x": x, "y": y};
     },
 
+    getRelationshipChildLastName: function( v )
+    {
+        // 1) use father's last name, if available. If not return null.
+        // 2) if all children have either no lastNameAtBirth or it matches fathers l-name, return fathers l-name;
+        //    otherwise return null.
+
+        if (!this.isRelationship(v))
+            throw "Assertion failed: getRelationshipChildLastName() is applied to a non-relationship";
+
+        var fatherLastName = null;
+
+        var parents = this.DG.GG.getParents(v);
+        if (this.getGender(parents[0]) == "M") {
+            fatherLastName = this.DG.GG.getLastName(parents[0]);
+        } else if (this.getGender(parents[1]) == "M") {
+            fatherLastName = this.DG.GG.getLastName(parents[1]);
+        } else {
+            return null;
+        }
+        if (fatherLastName == "") return null;
+
+        var childhubId = this.DG.GG.getRelationshipChildhub(v);
+        var children = this.DG.GG.getOutEdges(childhubId);
+        for (var i = 0; i < children.length; i++) {
+            var childLastName = this.DG.GG.getLastNameAtBirth(children[i]);
+            if (childLastName != "" && childLastName != fatherLastName) {
+                return null;
+            }
+        }
+        return fatherLastName;
+    },
+
     getRelationshipChildhubPosition: function( v )
     {
         if (!this.isRelationship(v))
@@ -595,7 +627,6 @@ DynamicPositionedGraph.prototype = {
     {
         if (!this.isPerson(v))
             throw "Assertion failed: getOppositeGender() is applied to a non-person";
-
         return this.DG.GG.getOppositeGender(v);
     },
 
@@ -603,8 +634,14 @@ DynamicPositionedGraph.prototype = {
     {
         if (!this.isPerson(v))
             throw "Assertion failed: getGender() is applied to a non-person";
-
         return this.DG.GG.getGender(v);
+    },
+
+    getLastName: function( v )
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: getGender() is applied to a non-person";
+        return this.DG.GG.getLastName(v);
     },
 
     getDisconnectedSetIfNodeRemoved: function( v )

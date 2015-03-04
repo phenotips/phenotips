@@ -309,11 +309,9 @@ var Controller = Class.create({
                 if (propertySetFunction == "setLastName") {
                     if (PedigreeEditor.attributes.propagateLastName) {
                         if (node.getGender(nodeID) == 'M') {
-                            if (propValue != "") {
-                                // propagate last name as "last name at birth" to all descendants (by the male line)
-                                Controller._propagateLastNameAtBirth(nodeID, propValue, oldValue);
-                                undoEvent = null; // there is no easy undo other than just remember the previous graph state
-                            }
+                            // propagate last name as "last name at birth" to all descendants (by the male line)
+                            Controller._propagateLastNameAtBirth(nodeID, propValue, oldValue);
+                            undoEvent = null; // there is no easy undo other than just remember the previous graph state
                         }
                     }
                 }
@@ -608,6 +606,14 @@ var Controller = Class.create({
             childParams["numPersons"] = numPersons;
         }
 
+        var lastName = null;
+        if (editor.getGraph().getGender(personID) == "M") {
+            lastName = editor.getGraph().getLastName(personID);
+        }
+        if (lastName && lastName != "") {
+            childParams["lNameAtB"] = lastName;
+        }
+
         var changeSet = editor.getGraph().addNewRelationship(personID, childParams, preferLeft, numTwins);
         editor.getView().applyChanges(changeSet, true);
 
@@ -650,6 +656,16 @@ var Controller = Class.create({
             editor.getGraph().setProperties( partnerID, node2.getProperties() );
         }
 
+        var lastName = null;
+        if (node1.getGender() == "M") {
+            lastName = editor.getGraph().getLastName(personID);
+        } else if (node2.getGender() == "M") {
+            lastName = editor.getGraph().getLastName(partnerID);
+        }
+        if (lastName && lastName != "") {
+            childProperties["lNameAtB"] = lastName;
+        }
+
         // TODO: propagate change of gender down the partnership chain
 
         var changeSet = editor.getGraph().assignPartner(personID, partnerID, childProperties);
@@ -676,6 +692,11 @@ var Controller = Class.create({
         var numPersons = event.memo.groupSize ? event.memo.groupSize : 0;
         if (numPersons > 0) {
             childParams["numPersons"] = numPersons;
+        }
+
+        var lastName = editor.getGraph().getRelationshipChildLastName(partnershipID);
+        if (lastName) {
+            childParams["lNameAtB"] = lastName;
         }
 
         // check if there is a placeholder child which has to be replaced by the selected child type
