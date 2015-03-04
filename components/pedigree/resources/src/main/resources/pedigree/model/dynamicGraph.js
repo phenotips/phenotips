@@ -513,19 +513,19 @@ DynamicPositionedGraph.prototype = {
 
     getPossibleGenders: function( v )
     {
+        // returns: - any gender if no partners or all partners are of unknown genders;
+        //          - opposite of the partner gender if partner genders do not conflict
+        //          - "U" if has partners of different genders (for now this is suported)
         var possible = {"M": true, "F": true, "U": true};
-        // any if no partners or all partners are of unknown genders; opposite of the partner gender otherwise
+
         var partners = this.DG.GG.getAllPartners(v);
 
-        var knownGenderPartner = undefined;
         for (var i = 0; i < partners.length; i++) {
             var partnerGender = this.getGender(partners[i]);
             if (partnerGender != "U") {
                 possible[partnerGender] = false;
-                break;
             }
         }
-
         //console.log("Possible genders for " + v + ": " + stringifyObject(possible));
         return possible;
     },
@@ -3154,7 +3154,7 @@ Heuristics.prototype = {
         //                            persons/relationships has been added to the move set
         //
         // minimizeMovement: minimal propagation is used, and all nodes on the same rank opposite to the
-        //                   moveme nt direction are added to the dontmove_set
+        //                   movement direction are added to the dontmove_set
 
         var nodes = toObjectWithTrue(v_list);
 
@@ -3323,6 +3323,9 @@ Heuristics.prototype = {
                 //if (noUp_set.hasOwnProperty(nextV) || this.DG.GG.isPlaceholder(nextV)) continue;
                 if (noUp_set.hasOwnProperty(nextV)) continue;
 
+                // TODO: commenting out the piece below produces generally better layout, but for some reason
+                //       adds too much space in some cases, e.g. check testcase 4F (or MS_004, where layout
+                //       is better, but node "w1" is moved when it should not be
                 var inEdges = this.DG.GG.getInEdges(nextV);
                 if (inEdges.length > 0) {
                     var chhub = inEdges[0];
@@ -3341,7 +3344,7 @@ Heuristics.prototype = {
 
                     nodes[chhub] = true;
                     toMove.push(chhub);
-                }
+                }/**/
             }
             else
             if (this.DG.GG.isVirtual(nextV)) {

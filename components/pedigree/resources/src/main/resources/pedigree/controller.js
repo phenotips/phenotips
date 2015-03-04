@@ -14,6 +14,7 @@ var Controller = Class.create({
         document.observe("pedigree:undo",                      this.handleUndo);
         document.observe("pedigree:redo",                      this.handleRedo);
         document.observe("pedigree:renumber",                  this.handleRenumber);
+        document.observe("pedigree:historychange",             this.handleUndoHistoryChange);
         document.observe("pedigree:node:remove",               this.handleRemove);
         document.observe("pedigree:node:setproperty",          this.handleSetProperty);
         document.observe("pedigree:node:modify",               this.handleModification);
@@ -88,14 +89,35 @@ var Controller = Class.create({
 
         var renumberButton = $('action-number');
         if (clear) {
-            renumberButton.className = renumberButton.className.replace(" disabled-menu-item", " menu-item");
+            renumberButton.removeClassName("disabled-menu-item");
+            renumberButton.addClassName("menu-item");
         } else {
-            renumberButton.className = renumberButton.className.replace(/ menu-item/, " disabled-menu-item");
+            renumberButton.removeClassName("menu-item");
+            renumberButton.addClassName("disabled-menu-item");
         }
 
         if (!event.memo.noUndoRedo && needRedraw) {
             editor.getView().unmarkAll();
             editor.getActionStack().addState( event );
+        }
+    },
+
+    handleUndoHistoryChange: function() {
+        var redoButton = $('action-redo');
+        if (editor.getActionStack().hasRedo()) {
+            redoButton.removeClassName("disabled-menu-item");
+            redoButton.addClassName("menu-item");
+        } else {
+            redoButton.removeClassName("menu-item");
+            redoButton.addClassName("disabled-menu-item");
+        }
+        var undoButton = $('action-undo');
+        if (editor.getActionStack().hasUndo()) {
+            undoButton.removeClassName("disabled-menu-item");
+            undoButton.addClassName("menu-item");
+        } else {
+            undoButton.removeClassName("menu-item");
+            undoButton.addClassName("disabled-menu-item");
         }
     },
 

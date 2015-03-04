@@ -23,6 +23,16 @@ var ActionStack = Class.create({
         return true;
     },
 
+    hasRedo: function() {
+        if (this._getNextState()) return true;
+        return false;
+    },
+
+    hasUndo: function() {
+        if (this._getPreviousState()) return true;
+        return false;
+    },
+
     addSaveEvent: function() {
         var state = this._getCurrentState();
         if (state == null) {
@@ -40,16 +50,15 @@ var ActionStack = Class.create({
         //console.log("Next state: " + stringifyObject(nextState));
         if (!nextState) return;
 
+        this._currentState++;
         if (nextState.eventToGetToThisState) {
             var memo = nextState.eventToGetToThisState.memo;
             memo["noUndoRedo"] = true;  // so that this event is not added to the undo/redo stack again
             document.fire( nextState.eventToGetToThisState.eventName, memo );
-            this._currentState++;
-            return;
+        } else {
+            editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */ );
         }
-
-        editor.getSaveLoadEngine().createGraphFromSerializedData( nextState.serializedState, true /* do not re-add to undo/redo stack */ );
-        this._currentState++;
+        document.fire("pedigree:historychange", null);
     },
 
     /**
@@ -62,19 +71,19 @@ var ActionStack = Class.create({
         if(!prevState) return;
 
         // it may be more efficient to undo the current state instead of full prev state restore
-        var currentState = this._getCurrentState();   
+        var currentState = this._getCurrentState();
         //console.log("Current state: " + stringifyObject(currentState));
+
+        this._currentState--;
         if (currentState.eventToUndo) {
             var memo = currentState.eventToUndo.memo;
             memo["noUndoRedo"] = true; // so that this event is not added to the undo/redo stack again
             document.fire( currentState.eventToUndo.eventName, memo );
-            this._currentState--;
-            return;
+        } else {
+            // no easy way - have to recreate the graph from serialization
+            editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */);
         }
-
-        // no easy way - have to recreate the graph from serialization
-        editor.getSaveLoadEngine().createGraphFromSerializedData( prevState.serializedState, true /* do not re-add to undo/redo stack */);
-        this._currentState--;
+        document.fire("pedigree:historychange", null);
     },
 
     /**
@@ -135,6 +144,7 @@ var ActionStack = Class.create({
         if (this._size() > this._MAXUNDOSIZE)
             this._removeOldest();
         
+        document.fire( "pedigree:historychange", null );
         //this._debug_print_states();
     },
 

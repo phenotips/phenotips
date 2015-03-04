@@ -46,7 +46,7 @@ PositionedGraph.prototype = {
     yDistanceChildhubToNode:        14,
     yExtraPerHorizontalLine:         4,
     yAttachPortHeight:             1.5,
-    yCommentLineHeight:            2.5,
+    yCommentLineHeight:            2.9,
 
     initialize: function( baseG,
                           horizontalPersonSeparationDist,
@@ -2910,7 +2910,7 @@ PositionedGraph.prototype = {
                 if (dod !== null && dod.isComplete()) {
                     numLabelLines++;
                 }
-                // if both DOB and DOD is goven 2 lines are assumed. However this only happens
+                // if both DOB and DOD is given 2 lines are assumed. However this only happens
                 // when age is in years (and thus is displayed as e.g. "45 y")
                 if (dob !== null && dob.isComplete() && dod !== null && dod.isComplete()) {
                     var age = getAge(dob, dod);

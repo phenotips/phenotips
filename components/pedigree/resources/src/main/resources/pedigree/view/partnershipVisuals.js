@@ -420,6 +420,12 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, lineAttr);
         editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, lineAttr);
 
+        if (editor.DEBUG_MODE) {
+            var childhubID = positionedGraph.DG.GG.getOutEdges(id)[0];
+            var _idLabel = editor.getPaper().text(this.getX(), childlineY, childhubID).attr(PedigreeEditor.attributes.dragMeLabel).toFront();
+            _idLabel.node.setAttribute("class", "no-mouse-interaction");
+        }
+
         //draw small non-functional childhub junction orb
         if (numPregnancies > 1)
             editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#666666', stroke: '#888888', 'stroke-width':1, 'opacity': 1});
