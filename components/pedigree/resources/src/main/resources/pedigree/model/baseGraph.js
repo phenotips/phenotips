@@ -586,7 +586,7 @@ BaseGraph.prototype = {
 
     getLastName: function(v) {
         if (!this.isPerson(v))
-            throw "Assertion failed: attempting to get gender of a non-person";
+            throw "Assertion failed: attempting to get last name of a non-person";
         if (!this.properties[v].hasOwnProperty("lName")) {
             if (!this.properties[v].hasOwnProperty("lNameAtB")) {
                 return "";
@@ -599,7 +599,7 @@ BaseGraph.prototype = {
 
     getLastNameAtBirth: function(v) {
         if (!this.isPerson(v))
-            throw "Assertion failed: attempting to get gender of a non-person";
+            throw "Assertion failed: attempting to get last name at birth of a non-person";
         if (!this.properties[v].hasOwnProperty("lNameAtB"))
             return "";
         return this.properties[v]["lNameAtB"];

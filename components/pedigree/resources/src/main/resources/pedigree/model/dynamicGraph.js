@@ -640,7 +640,7 @@ DynamicPositionedGraph.prototype = {
     getLastName: function( v )
     {
         if (!this.isPerson(v))
-            throw "Assertion failed: getGender() is applied to a non-person";
+            throw "Assertion failed: getLastName() is applied to a non-person";
         return this.DG.GG.getLastName(v);
     },
 
