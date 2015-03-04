@@ -153,6 +153,8 @@ DynamicPositionedGraph.prototype = {
     {
         // TODO: separate patient object parser/data loader
 
+        this.DG.GG.properties[0] = {};
+
         if (patientObject.hasOwnProperty("patient_name")) {
             if (patientObject.patient_name.hasOwnProperty("first_name")) {
                 this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
@@ -176,6 +178,70 @@ DynamicPositionedGraph.prototype = {
         if (patientObject.hasOwnProperty("date_of_birth")) {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+        }
+
+        if (patientObject.hasOwnProperty("ethnicity")) {
+            // e.g.: "ethnicity":{"maternal_ethnicity":["Yugur"],"paternal_ethnicity":[]}
+            var ethnicities = [];
+            if (patientObject.ethnicity.hasOwnProperty("maternal_ethnicity")) {
+                ethnicities = patientObject.ethnicity.maternal_ethnicity.slice(0);
+            }
+            if (patientObject.ethnicity.hasOwnProperty("paternal_ethnicity")) {
+                ethnicities = ethnicities.concat(patientObject.ethnicity.paternal_ethnicity.slice(0));
+            }
+            if (ethnicities.length > 0) {
+                this.DG.GG.properties[0].ethnicities = filterUnique(ethnicities);
+            }
+        }
+
+        if (patientObject.hasOwnProperty("external_id")) {
+            this.DG.GG.properties[0].externalID = patientObject.external_id;
+        }
+
+        var hpoTerms = [];
+        if (patientObject.hasOwnProperty("features")) {
+            // e.g.: "features":[{"id":"HP:0000359","label":"Abnormality of the inner ear","type":"phenotype","observed":"yes"},{"id":"HP:0000639","label":"Nystagmus","type":"phenotype","observed":"yes"}]
+            for (var i = 0; i < patientObject.features.length; i++) {
+                if (patientObject.features[i].observed && patientObject.features[i].type == "phenotype") {
+                    hpoTerms.push(patientObject.features[i].id);
+                }
+            }
+        }
+        if (patientObject.hasOwnProperty("nonstandard_features")) {
+            //e.g.: "nonstandard_features":[{"label":"freetext","type":"phenotype","observed":"yes","categories":[{"id":"HP:0001507","label":"Growth abnormality"},{"id":"HP:0000240","label":"Abnormality of skull size"}]}]
+            for (var i = 0; i < patientObject.nonstandard_features.length; i++) {
+                if (patientObject.nonstandard_features[i].observed && patientObject.nonstandard_features[i].type == "phenotype") {
+                    hpoTerms.push(patientObject.nonstandard_features[i].label);
+                }
+            }
+        }
+        if (hpoTerms.length > 0) {
+            this.DG.GG.properties[0].hpoTerms = hpoTerms;
+        }
+
+        var disorders = [];
+        if (patientObject.hasOwnProperty("disorders")) {
+            // e.g.: "disorders":[{"id":"MIM:120970","label":"#120970 CONE-ROD DYSTROPHY 2; CORD2 ;;CONE-ROD DYSTROPHY; CORD;; CONE-ROD RETINAL DYSTROPHY; CRD; CRD2;; RETINAL CONE-ROD DYSTROPHY; RCRD2"},{"id":"MIM:190685","label":"#190685 DOWN SYNDROME TRISOMY 21, INCLUDED;; DOWN SYNDROME CHROMOSOME REGION, INCLUDED; DCR, INCLUDED;; DOWN SYNDROME CRITICAL REGION, INCLUDED; DSCR, INCLUDED;; TRANSIENT MYELOPROLIFERATIVE DISORDER OF DOWN SYNDROME, INCLUDED;; LEUKEMIA, MEGAKARYOBLASTIC, OF DOWN SYNDROME, INCLUDED"}]
+            for (var i = 0; i < patientObject.disorders.length; i++) {
+                var disorderID = patientObject.disorders[i].id;
+                var match = disorderID.match(/^MIM:(\d+)$/);
+                match && (disorderID = match[1]);
+                disorders.push(disorderID);
+            }
+        }
+        if (disorders.length > 0) {
+            this.DG.GG.properties[0].disorders = disorders;
+        }
+
+        var genes = [];
+        if (patientObject.hasOwnProperty("genes")) {
+            // e.g.: "genes":[{"gene":"E2F2","comments":""}]
+            for (var i = 0; i < patientObject.genes.length; i++) {
+                genes.push(patientObject.genes[i].gene);
+            }
+        }
+        if (genes.length > 0) {
+            this.DG.GG.properties[0].candidateGenes = genes;
         }
 
         return genderOK;
