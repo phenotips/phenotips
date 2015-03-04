@@ -143,6 +143,7 @@
     <field name="keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="not_keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="GENE" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+    <field name="gene_reviews_link" type="text_general" indexed="false" stored="true"/>
 
     <!-- Catchall field, containing all other searchable text fields (implemented
          via copyField further on in this schema).  -->

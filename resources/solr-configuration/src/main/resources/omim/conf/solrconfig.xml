@@ -464,9 +464,13 @@
     <lst name="spellchecker">
       <str name="name">default</str>
       <str name="classname">solr.IndexBasedSpellChecker</str>
-      <str name="field">textSpell</str>
-      <str name="spellcheckIndexDir">spellchecker</str>
+      <str name="field">nameSpell</str>
+      <str name="spellcheckIndexDir">./spellchecker</str>
       <str name="buildOnCommit">true</str>
+      <str name="classname">solr.WordBreakSolrSpellChecker</str>
+      <str name="combineWords">true</str>
+      <str name="breakWords">true</str>
+      <float name="thresholdTokenFrequency">0.0</float>
       <!-- Could be tried out:
       <str name="distanceMeasure">org.apache.lucene.search.spell.NGramDistance</str>
       <str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
