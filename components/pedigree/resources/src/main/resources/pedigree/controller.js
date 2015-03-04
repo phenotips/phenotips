@@ -324,6 +324,10 @@ var Controller = Class.create({
                         twinUpdate[propertySetFunction] = propValue;
                     }
                 }
+                if (propertySetFunction == "setBirthDate") {
+                    if (!twinUpdate) twinUpdate = {};
+                    twinUpdate[propertySetFunction] = propValue;
+                }
 
                 if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
