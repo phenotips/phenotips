@@ -14,7 +14,7 @@ var ProbandDataLoader = Class.create( {
         var probandID = XWiki.currentDocument.page;
         var patientJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
         // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
-        patientJsonURL += "&rand=' + Math.random()";
+        patientJsonURL += "&rand=" + Math.random();
         new Ajax.Request(patientJsonURL, {
             method: "GET",
             onSuccess: this.onProbandDataReady.bind(this),
@@ -196,7 +196,7 @@ var SaveLoadEngine = Class.create( {
         var pedigreeJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
         pedigreeJsonURL += "&data=pedigree";
         // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
-        pedigreeJsonURL += "&rand=' + Math.random()";
+        pedigreeJsonURL += "&rand=" + Math.random();
         new Ajax.Request(pedigreeJsonURL, {
             method: 'GET',
             onCreate: function() {
