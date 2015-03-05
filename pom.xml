@@ -145,7 +145,7 @@
     <slf4j.version>1.7.10</slf4j.version>
     <buildtools.version>1.0</buildtools.version>
     <testframework.version>1.0-milestone-3</testframework.version>
-    <solr.version>4.10.3</solr.version>
+    <solr.version>4.10.4</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
