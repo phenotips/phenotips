@@ -321,6 +321,12 @@ var Controller = Class.create({
                         if (!twinUpdate) twinUpdate = {};
                         twinUpdate[propertySetFunction] = propValue;
                     }
+                    if (oldValue == 'U' && propValue == 'M' && node.getLastName() == '' && node.getLastNameAtBirth() != '') {
+                        //undoEvent.memo.properties["setLastName"] = "";
+                        node.setLastName(node.getLastNameAtBirth());
+                        node.setLastNameAtBirth("");
+                        undoEvent = null; // there is no easy undo other than just remember the previous graph state
+                    }
                 }
                 if (propertySetFunction == "setBirthDate") {
                     if (!twinUpdate) twinUpdate = {};
@@ -696,7 +702,11 @@ var Controller = Class.create({
 
         var lastName = editor.getGraph().getRelationshipChildLastName(partnershipID);
         if (lastName) {
-            childParams["lNameAtB"] = lastName;
+            if (childParams.gender == "M") {
+                childParams["lName"] = lastName;
+            } else {
+                childParams["lNameAtB"] = lastName;
+            }
         }
 
         // check if there is a placeholder child which has to be replaced by the selected child type
@@ -740,9 +750,13 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
         var childID   = children[i];
         var childNode = editor.getView().getNode(childID);
 
-        if (childNode.getLastName() == "" &&
+        if ((childNode.getLastName() == "" || (childNode.getGender() == 'M' && childNode.getLastName() == changeIfEqualTo)) &&
             (childNode.getLastNameAtBirth() == "" || childNode.getLastNameAtBirth() == changeIfEqualTo)) {
-            childNode.setLastNameAtBirth(parentLastName);
+            if (childNode.getGender() == 'M') {
+                childNode.setLastName(parentLastName);
+            } else {
+                childNode.setLastNameAtBirth(parentLastName);
+            }
             var allProperties = childNode.getProperties();
             editor.getGraph().setProperties( childID, allProperties );
             if (childNode.getGender() == 'M') {

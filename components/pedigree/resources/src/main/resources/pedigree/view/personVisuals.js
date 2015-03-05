@@ -172,7 +172,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 
         if (this.getNode().getLastName()) {
             text += ' ' + this.getNode().getLastName();
-            this.getNode().getLastNameAtBirth() && (text += ' (' + this.getNode().getLastNameAtBirth() + ')');
+            this.getNode().getLastNameAtBirth() &&
+                (this.getNode().getLastNameAtBirth() != this.getNode().getLastName()) &&
+                (text += ' (' + this.getNode().getLastNameAtBirth() + ')');
         }
         else
             this.getNode().getLastNameAtBirth() && (text += ' ' + this.getNode().getLastNameAtBirth());
