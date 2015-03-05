@@ -541,9 +541,9 @@ PositionedGraph.prototype = {
             var v = leafAndRootlessInfo.parentlessNodes[i];
 
             if ( this.GG.getOutEdges(v).length == 1 && this.GG.getOutEdges(v).length > 0) {
-                var relationShipNode = this.GG.getOutEdges(v)[0];
+                var relationShipNode = this.GG.downTheChainUntilNonVirtual(this.GG.getOutEdges(v)[0]);
 
-                var parents = this.GG.getInEdges(relationShipNode);
+                var parents = this.GG.getParents(relationShipNode);
 
                 var otherParent = (parents[0] == v) ? parents[1] : parents[0];
 
@@ -926,8 +926,9 @@ PositionedGraph.prototype = {
 
             // essy grouping: place parents which are only connected to the same relationship in the same bucket
             if ( this.GG.getOutEdges(v).length == 1 ) {
-                var rel     = this.GG.getOutEdges(v)[0];
-                var parents = this.GG.getInEdges(rel);
+
+                var rel     = this.GG.downTheChainUntilNonVirtual(this.GG.getOutEdges(v)[0]);
+                var parents = this.GG.getParents(rel);
 
                 var otherPartner = (parents[0] == v) ? parents[1] : parents[0];
 
