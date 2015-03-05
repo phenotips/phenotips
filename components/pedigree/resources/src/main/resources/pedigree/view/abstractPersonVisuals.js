@@ -193,14 +193,21 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
         if (this.getNode().getAdopted() != "") {
-            var r = PedigreeEditor.attributes.radius,
-                x1 = this.getX() - ((0.8) * r),
-                x2 = this.getX() + ((0.8) * r),
-                y = this.getY() - ((1.3) * r) + 2,
-                brackets = "M" + x1 + " " + y + "l" + r/(-2) +
-                    " " + 0 + "l0 " + (2.6 * r - 4) + "l" + (r)/2 + " 0M" + x2 +
-                    " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r - 4) + "l" +
-                    (r)/(-2) + " 0";
+            var r = PedigreeEditor.attributes.radius;
+            var y = this.getY() - ((1.3) * r) + 2;
+            if (this.getNode().getAdopted() == "adoptedOut" && editor.preferences.nonStandardAdoptedOutGraphic) {
+                var x1    = this.getX() - ((1.7) * r);
+                var x2    = this.getX() + ((1.7) * r);
+                var coeff = 2.5;
+            } else {
+                var x1    = this.getX() - ((0.9) * r);
+                var x2    = this.getX() + ((0.9) * r);
+                var coeff = -2.5;
+            }
+            brackets = "M" + x1 + " " + y + "l" + r/(coeff) +
+                " " + 0 + "l0 " + (2.6 * r - 4) + "l" + r/(-coeff) + " 0M" + x2 +
+                " " + y + "l" + r/(-coeff) + " 0" + "l0 " + (2.6 * r - 4) + "l" +
+                (r)/(coeff) + " 0";
             this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 2.5);
             this._adoptedShape.toBack();
         }

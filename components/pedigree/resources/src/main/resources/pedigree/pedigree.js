@@ -11,7 +11,12 @@ var PedigreeEditor = Class.create({
         //this.DEBUG_MODE = true;
         window.editor = this;
 
-        this.preferences = {};
+        // Available options:
+        //
+        //  nonStandardAdoptedOutGraphic: {true|false}   - use out-brackets for adopted out persons
+        //  hideDraggingHint:             {true|false}   - do not display the hint on top of the legend
+        //
+        this.preferences = { nonStandardAdoptedOutGraphic: true };
 
         // initialize main data structure which holds the graph structure
         this._graphModel = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
