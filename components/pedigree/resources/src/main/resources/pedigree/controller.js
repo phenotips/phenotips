@@ -321,8 +321,10 @@ var Controller = Class.create({
                         if (!twinUpdate) twinUpdate = {};
                         twinUpdate[propertySetFunction] = propValue;
                     }
-                    if (oldValue == 'U' && propValue == 'M' && node.getLastName() == '' && node.getLastNameAtBirth() != '') {
-                        //undoEvent.memo.properties["setLastName"] = "";
+                    if (oldValue == 'U' && propValue == 'M' &&
+                        node.getLastName() == '' && node.getLastNameAtBirth() != '' &&
+                        editor.getGraph().getAllChildren(nodeID).length == 0)
+                    {
                         node.setLastName(node.getLastNameAtBirth());
                         node.setLastNameAtBirth("");
                         undoEvent = null; // there is no easy undo other than just remember the previous graph state

@@ -1680,6 +1680,10 @@ DynamicPositionedGraph.prototype = {
         var newMin = Math.min.apply( Math, this.DG.positions );
         if (newMin > oldMin) {
             var oldMinNodeID = arrayIndexOf(positionsBefore, oldMin);
+            if (oldMinNodeID > maxOldID) {
+                // minNodeID is a virtual edge, its ID may have increased due to new real node insertions
+                oldMinNodeID += (this.DG.GG.getMaxRealVertexId() - maxOldID);
+            }
             var newMinValue  = this.DG.positions[oldMinNodeID];
             var shiftAmount  = newMinValue - oldMin;
 
@@ -2881,6 +2885,7 @@ Heuristics.prototype = {
                 // as far as parents can go without pushing other nodes
 
                 //var id = id ? (id+1) : 1; // DEBUG
+                //console.log("Analizing for childhub " + childhub);
 
                 var leftParent  = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
                 var rightParent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[1] : parents[0];
