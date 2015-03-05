@@ -619,7 +619,11 @@ var Controller = Class.create({
             lastName = editor.getGraph().getLastName(personID);
         }
         if (lastName && lastName != "") {
-            childParams["lNameAtB"] = lastName;
+            if (childParams.hasOwnProperty("gender") && childParams.gender == 'M') {
+                childParams["lName"] = lastName;
+            } else {
+                childParams["lNameAtB"] = lastName;
+            }
         }
 
         var changeSet = editor.getGraph().addNewRelationship(personID, childParams, preferLeft, numTwins);
@@ -752,9 +756,11 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
         var childID   = children[i];
         var childNode = editor.getView().getNode(childID);
 
-        if ((childNode.getLastName() == "" || (childNode.getGender() == 'M' && childNode.getLastName() == changeIfEqualTo)) &&
-            (childNode.getLastNameAtBirth() == "" || childNode.getLastNameAtBirth() == changeIfEqualTo)) {
-            if (childNode.getGender() == 'M') {
+        if (childNode.getLastNameAtBirth() == changeIfEqualTo ||
+            (childNode.getLastNameAtBirth() == "" &&
+             (childNode.getLastName() == "" || (childNode.getGender() == 'M' && childNode.getLastName() == changeIfEqualTo))
+           )) {
+            if (childNode.getGender() == 'M' && childNode.getLastNameAtBirth() != changeIfEqualTo) {
                 childNode.setLastName(parentLastName);
             } else {
                 childNode.setLastNameAtBirth(parentLastName);
