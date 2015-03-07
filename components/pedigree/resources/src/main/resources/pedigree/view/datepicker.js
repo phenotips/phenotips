@@ -24,7 +24,7 @@ var PhenoTips = (function (PhenoTips) {
       values.each(function (item) {
          optionsHTML += '<option value="' + item.value + '"';
          if (item.cssClass) {
-             optionsHTML += 'class="' + item.cssClass + '"';
+             optionsHTML += ' class="' + item.cssClass + '"';
          }
          optionsHTML += '>' + (item.text || item.value || '') + '</option>';
       });
