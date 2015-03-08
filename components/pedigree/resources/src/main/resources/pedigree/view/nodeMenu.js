@@ -505,7 +505,7 @@ NodeMenu = Class.create({
         },
         'date-picker' : function (data) {
             var result = this._generateEmptyField(data);
-            var datePicker = new Element('input', {type: 'text', 'class': 'fuzzy-date', name: data.name, 'title': data.format, alt : '' });
+            var datePicker = new Element('input', {type: 'text', 'class': 'fuzzy-date', name: data.name, 'title': data.format || '', alt : '' });
             result.inputsContainer.insert(datePicker);
             datePicker._getValue = function() { /*console.log("DATE UPDATE: " + this.value);*/ return [new PedigreeDate(JSON.parse(this.value))]; }.bind(datePicker);
             this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);

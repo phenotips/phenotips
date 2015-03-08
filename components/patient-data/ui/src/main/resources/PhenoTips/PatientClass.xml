@@ -138,48 +138,32 @@
 #set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
-  #set ($date = $services.jodatime.mutableDateTime)
-  #if ("$!xwiki.getUserPreference('timezone')" != '')
-    #set ($discard = $date.setZone($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-  #end
   #if ($value)
     #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #if ("$!xwiki.getUserPreference('timezone')" != '')
-      #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-    #end
+    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
   #end
-  #if ($format.indexOf('d') &lt; 0)
-    &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#if($value)#formatdateISO($value.toDate())#end"/&gt;
-      #set ($selMonth = $value.monthOfYear)
-      #set ($selYear= $value.year)
-      #set ($mFormat = $format.replaceAll("[^M]", ''))
-      #set ($yFormat = $format.replaceAll("[^y]", ''))
-
-      &lt;select name="$prefix${name}_month" class="month"&gt;
-      &lt;option value="-" #if (!$selMonth) selected="selected"#end&gt; &lt;/option&gt;
-      #foreach ($val in [1..12])
-        #set ($date.monthOfYear = $val)
-        &lt;option value="$mathtool.sub($val, 1)"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $mFormat)&lt;/option&gt;
-      #end
-      &lt;/select&gt;
-
-      #set ($startYear = $date.year - 99)
-      #set ($endYear = $date.year + 1)
-
-      &lt;select name="$prefix${name}_year" class="year"&gt;
-      &lt;option value="-" #if (!$selYear) selected="selected"#end&gt; &lt;/option&gt;
-      #foreach ($val in [$startYear..$endYear])
-        #set ($date.year = $val)
-        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $yFormat)&lt;/option&gt;
-      #end
-      &lt;/select&gt;
-    &lt;/span&gt;
-  #else
-    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#if($value)#formatdateISO($value.toDate())#end"/&gt;
-  #end
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!xwiki.formatDate($value.toDate(), $definedFormat)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
 #else
-#if ($value)
+#set ($enteredValue = $object.getProperty("${name}_entered").value)
+#if ("$!enteredValue" != '')
+  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #if ($enteredValue.decade)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #else
+    #set ($displayedValue = $format)
+    #if ($enteredValue.year)
+      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
+      #if ($enteredValue.month)
+        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
+        #if ($enteredValue.day)
+          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
+        #end
+      #end
+    #end
+    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
+  #end
+#elseif ($value)
   #set ($value = $services.jodatime.getMutableDateTime($value.time))
   #if ("$!xwiki.getUserPreference('timezone')" != '')
     #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
@@ -201,6 +185,84 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
     </date_of_birth>
+    <date_of_birth_entered>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>date_of_birth_entered</name>
+      <number>45</number>
+      <picker>0</picker>
+      <prettyName>date_of_birth_entered</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </date_of_birth_entered>
+    <date_of_death>
+      <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+  #if ($value)
+    #set ($value = $services.jodatime.getMutableDateTime($value.time))
+    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  #end
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!xwiki.formatDate($value.toDate(), $definedFormat)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
+#else
+#set ($enteredValue = $object.getProperty("${name}_entered").value)
+#if ("$!enteredValue" != '')
+  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #if ($enteredValue.decade)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #else
+    #set ($displayedValue = $format)
+    #if ($enteredValue.year)
+      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
+      #if ($enteredValue.month)
+        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
+        #if ($enteredValue.day)
+          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
+        #end
+      #end
+    #end
+    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
+  #end
+#elseif ($value)
+  #set ($value = $services.jodatime.getMutableDateTime($value.time))
+  #if ("$!xwiki.getUserPreference('timezone')" != '')
+    #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+  #end
+  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
+#end
+#end
+{{/html}}{{/velocity}}</customDisplay>
+      <dateFormat>yyyy-MM-dd</dateFormat>
+      <disabled>0</disabled>
+      <emptyIsToday>0</emptyIsToday>
+      <name>date_of_death</name>
+      <number>43</number>
+      <picker>1</picker>
+      <prettyName>Date of death</prettyName>
+      <size>20</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+    </date_of_death>
+    <date_of_death_entered>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>date_of_death_entered</name>
+      <number>44</number>
+      <picker>0</picker>
+      <prettyName>date_of_death_entered</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </date_of_death_entered>
     <diagnosis_notes>
       <customDisplay/>
       <disabled>0</disabled>

@@ -126,7 +126,7 @@
       <parameters>title=Sex
 enabled=true
 required=
-order=6
+order=7
 fields=gender</parameters>
     </property>
     <property>

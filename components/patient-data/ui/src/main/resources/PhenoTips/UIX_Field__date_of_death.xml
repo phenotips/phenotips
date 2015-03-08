@@ -22,29 +22,29 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__health_card</name>
+  <name>UIX_Field__date_of_death</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822197000</creationDate>
+  <creationDate>1424228958000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822197000</date>
-  <contentUpdateDate>1401822197000</contentUpdateDate>
+  <date>1425711017000</date>
+  <contentUpdateDate>1425327202000</contentUpdateDate>
   <version>1.1</version>
-  <title>Health card information</title>
+  <title>Date of death</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__health_card</name>
+    <name>PhenoTips.UIX_Field__date_of_death</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>8e67e399-35b2-43c9-bff5-50499ae1bc07</guid>
+    <guid>1774d7e3-0783-4c20-a962-071a535e4bb4</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -113,21 +113,21 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayFormatted('2-col' 'health_card' '' '' '')
+#__displayFormatted('2-col' 'date_of_death' '' 'date' '')
 {{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.health_card</name>
+      <name>org.phenotips.patientSheet.field.date_of_death</name>
     </property>
     <property>
-      <parameters>title=Health card information
-enabled=false
+      <parameters>title=Date of death
+enabled=true
 required=
-order=8
-fields=health_card
+order=6
+fields=date_of_death
 contains_PII=true</parameters>
     </property>
     <property>
