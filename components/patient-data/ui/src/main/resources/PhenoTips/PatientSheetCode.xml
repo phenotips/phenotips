@@ -3644,7 +3644,7 @@ hr {
 .xwiki-form-listclass {
   display: inline-block;
 }
-.xwiki-form-listclass input[type="radio"][value=""], option[value=""] {
+.xwiki-form-listclass input[type="radio"][value=""], .xwiki-form-listclass option[value=""] {
   display: none;
 }
 .buttonwrapper, .button {

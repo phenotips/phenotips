@@ -1166,7 +1166,7 @@ $xwiki.ssx.use($serviceDocName)
           #end
           #if (!$groups.isEmpty())
           &lt;select name="owner" id="new-owner-group-select"&gt;
-            &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
+            &lt;option value="" selected="selected" class="hidden"&gt;New owner group&lt;/option&gt;
             &lt;optgroup label="New owner group"&gt;
             #foreach ($g in $groups.entrySet())
               &lt;option value="${g.key}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${g.value}&lt;/option&gt;
