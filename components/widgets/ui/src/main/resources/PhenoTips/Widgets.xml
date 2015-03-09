@@ -4476,6 +4476,10 @@ document.observe("xwiki:dom:loaded", function() {
       return this.getZeroPaddedValueRange(1, lastDayOfMonth);
     },
 
+    getZeroPaddedValue : function (value) {
+      return value ? ("0" + value).slice(-2) : "01";
+    },
+
     getZeroPaddedValueRange : function (start, end, selected) {
       var values = [];
       if (start &lt;= end) {
@@ -4519,13 +4523,15 @@ document.observe("xwiki:dom:loaded", function() {
           var oldValue = this.__fuzzyInput.value;
           if (newValue != oldValue) {
             this.__fuzzyInput.value = JSON.stringify(dateObject);
-            this.__input.value = (y &amp;&amp; !y.match(/\d\d\d\ds$/)) ? (y + "-" + (m ? m : "01") + "-" + (d ? d : "01")) : "";
+            this.__input.value = (y &amp;&amp; !y.match(/\d\d\d\ds$/)) ? (y + "-" + this.getZeroPaddedValue(m) + "-" + this.getZeroPaddedValue(d)) : "";
+            this.__input.alt = (y &amp;&amp; !y.match(/\d\d\d\ds$/)) ? (y + "-" + this.getZeroPaddedValue(m) + "-" + this.getZeroPaddedValue(d) + "T00:00:00Z") : "";
             this.__input.fire("xwiki:date:changed");
           }
         } else {
           var oldValue = this.__input.value;
           if (newValue != oldValue) {
             this.__input.value = JSON.stringify(dateObject);
+            this.__input.alt = (y &amp;&amp; !y.match(/\d\d\d\ds$/)) ? (y + "-" + this.getZeroPaddedValue(m) + "-" + this.getZeroPaddedValue(d) + "T00:00:00Z") : "";
             this.__input.fire("xwiki:date:changed");
           }
         }
