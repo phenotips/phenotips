@@ -362,11 +362,11 @@
       <codeToExecute>#set ($errorMessage = '')
 #if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
   #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter a group name')
+    #set ($errorMessage = $services.localization.render('phenotips.groups.create.noName'))
   #else
     #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
     #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "A group named //${request.name}// already exists. Please choose a different name")
+      #set ($errorMessage = " $services.localization.render('phenotips.groups.create.nameExists', [${request.name}])")
     #else
       $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
       #break
@@ -388,7 +388,7 @@
   &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt; $services.localization.render('phenotips.groups.create.newGroupInput')&lt;input type="text" name="name" placeholder=" $services.localization.render('phenotips.groups.create.newGroupInputPlaceholder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="$services.localization.render('phenotips.groups.create.submit')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
@@ -407,7 +407,7 @@
       <displayInSection>workgroups</displayInSection>
     </property>
     <property>
-      <heading>Work groups</heading>
+      <heading>$services.localization.render('phenotips.groups.adminTitle')</heading>
     </property>
     <property>
       <iconAttachment/>
@@ -537,7 +537,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "Are you sure you wish to delete this group?"
+          confirmationText: " $services.localization.render('phenotips.groups.deleteConfirmation')"
         }
       );
     }
@@ -559,7 +559,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -878,21 +878,21 @@ $xwiki.jsx.use($groupClassName)
 #if ($groupSortedData.size() == 0)
 #if ($isFilterActive)
 
-{{info}}No matching groups{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.groups.noMatches'){{/info}}
 
 #else
 
-{{info}}No groups have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.groups.noGroupsMessage')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.homepage.groups.manageGroups')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
 #end
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
 |(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end##
-|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%)##
+|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$services.localization.render('phenotips.group.info.members', [$groupDatum.get('members')])(%%) \\(% class="patients"%)$services.localization.render('phenotips.group.info.cases', [$groupDatum.get('cases')])(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-  [[{{icon name="pencil" title="Edit this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
-  [[{{icon name="times" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
+  [[{{icon name="pencil" title="$services.localization.render('phenotips.groups.edit')"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
+  [[{{icon name="times" title="$services.localization.render('phenotips.groups.delete')"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
 #end#end
 #end

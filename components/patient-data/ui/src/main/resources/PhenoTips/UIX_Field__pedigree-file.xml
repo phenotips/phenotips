@@ -34,7 +34,7 @@
   <date>1401822201000</date>
   <contentUpdateDate>1401822201000</contentUpdateDate>
   <version>1.1</version>
-  <title>Pedigree (file upload)</title>
+  <title>$services.localization.render('phenotips.UIXField.pedigreeFile')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -115,7 +115,7 @@
 {{velocity}}
 #__hasDataToDisplay('pedigree' $showPedigree)
 #if ($showPedigree)
-  === Pedigree ===
+  ===$services.localization.render('phenotips.UIXField.pedigreeFile.sheetTitle')===
   $doc.display('pedigree')
 #end
 {{/velocity}}</content>
@@ -127,7 +127,7 @@
       <name>org.phenotips.patientSheet.field.pedigree-file</name>
     </property>
     <property>
-      <parameters>title=Pedigree (file upload)
+      <parameters>title=$services.localization.render('phenotips.UIXField.pedigreeFile')
 enabled=false
 required=
 order=15

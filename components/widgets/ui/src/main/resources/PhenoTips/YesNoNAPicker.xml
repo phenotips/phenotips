@@ -44,7 +44,7 @@ $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
 #set ($doDisplay = ($xcontext.action == 'edit' || "$!value" != ''))
 {{html clean=false wiki=false}}##
-#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na" title="NA (irrelevant or unknown)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes" title="YES (investigated and observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no" title="NO (investigated and NOT observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
+#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na" title="$services.localization.render('phenotips.yesNoNAPicker.NA.title')"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes" title="$services.localization.render('phenotips.yesNoNAPicker.yes.title')"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no" title="$services.localization.render('phenotips.yesNoNAPicker.no.title')"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
 </content>
   <object>
     <name>PhenoTips.YesNoNAPicker</name>
@@ -129,9 +129,9 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
       <code>var YesNoPicker = Class.create({
 
   hints : {
-    yes : {unselectedTitle : "Select as present", selectedTitle : "Unselect as present", labelTitle : "YES (investigated and observed)"},
-    no  : {unselectedTitle : "Select as absent",  selectedTitle : "Unselect as absent", labelTitle : "NO (investigated and NOT observed)"},
-    na  : {unselectedTitle : "Unselect", selectedTitle : "", labelTitle : "NA (irrelevant or unknown)"}
+    yes : {unselectedTitle : "$services.localization.render('phenotips.yesNoNAPicker.yes.unselectedTitle')", selectedTitle : "$services.localization.render('phenotips.yesNoNAPicker.yes.selectedTitle')", labelTitle : "$services.localization.render('phenotips.yesNoNAPicker.yes.title')"},
+    no  : {unselectedTitle : "$services.localization.render('phenotips.yesNoNAPicker.no.unselectedTitle')",  selectedTitle : "$services.localization.render('phenotips.yesNoNAPicker.no.selectedTitle')", labelTitle : "$services.localization.render('phenotips.yesNoNAPicker.no.title')"},
+    na  : {unselectedTitle : "$services.localization.render('phenotips.yesNoNAPicker.NA.unselectedTitle')", selectedTitle : "", labelTitle : "$services.localization.render('phenotips.yesNoNAPicker.NA.title')"}
   },
 
   initialize : function(element, label, isLabelActive) {
@@ -319,9 +319,9 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
 
 YesNoPicker.generatePickerElement = function(buttons, value, title, activate, label) {
   var supportedValues = {
-      yes : {label: 'Y', title : 'YES (investigated and observed)'},
-      no  : {label: 'N', title : 'NO (investigated and NOT observed)'},
-      na  : {label: 'NA', title : 'NA (irrelevant or unknown)'}
+      yes : {label: 'Y', title : "$services.localization.render('phenotips.yesNoNAPicker.yes.title')"},
+      no  : {label: 'N', title : "$services.localization.render('phenotips.yesNoNAPicker.no.title')"},
+      na  : {label: 'NA', title : "$services.localization.render('phenotips.yesNoNAPicker.NA.title')"}
   };
   var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
   buttons.each(function(b) {
@@ -350,7 +350,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

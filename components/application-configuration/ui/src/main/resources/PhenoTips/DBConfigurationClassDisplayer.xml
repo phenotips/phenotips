@@ -62,7 +62,7 @@
     #if ($targetFieldType == 'select')
       &lt;select name="${targetFieldName}" id="${targetFieldName}_${field.name}"&gt;
       #foreach ($field in $xclass.properties)
-        &lt;option  value="${field.name}" #if($value == ${field.name}) selected="selected" #end&gt;${field.prettyName}&lt;/option&gt;
+        &lt;option  value="${field.name}" #if($value == ${field.name}) selected="selected" #end&gt;${field.translatedPrettyName}&lt;/option&gt;
       #end
       &lt;/select&gt;
     #else
@@ -71,7 +71,7 @@
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}"&gt;
           &lt;input type="$targetFieldType" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($targetFieldType == 'radio' &amp;&amp; $value == ${field.name} || $value.contains(${field.name})) checked="checked" #end /&gt;
-          ${field.prettyName}
+          ${field.translatedPrettyName}
         &lt;/li&gt;
       #end
       &lt;/ul&gt;

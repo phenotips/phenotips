@@ -153,7 +153,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
+  #xwikitopmenuentry($adminspaceaction "$services.localization.render('admin')" 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;
@@ -250,11 +250,11 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
-          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.search.placeholder')" size="20"/&gt;
         &lt;/div&gt;
       #end
     &lt;/div&gt;
-    &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;Browse All Data&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
+    &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;$services.localization.render('phenotips.globalHeader.allData')&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
     #if ($hasCreatePage)
       &lt;div class="topmenuentry add"&gt;
 {{/html}}

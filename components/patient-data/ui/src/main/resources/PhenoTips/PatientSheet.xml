@@ -105,7 +105,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 )))
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)
-{{warning}}This form should **not** be used for recording **personally identifiable information**.{{/warning}}
+{{warning}}$services.localization.render('phenotips.PatientSheet.noPIIWarning'){{/warning}}
 
 #end
 ##

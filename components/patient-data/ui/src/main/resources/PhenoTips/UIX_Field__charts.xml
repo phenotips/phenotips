@@ -34,7 +34,7 @@
   <date>1401822214000</date>
   <contentUpdateDate>1401822214000</contentUpdateDate>
   <version>1.1</version>
-  <title>Growth charts</title>
+  <title>$services.localization.render('phenotips.UIXField.growthCharts')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -116,9 +116,9 @@
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% class="growth-charts-section" %)(((
-    === Growth charts ===
+    === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
     (% class="expand-tools" %)(((
-      (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
+      (% class="tool show" %)$services.localization.render('phenotips.patientSheet.expandSection')(%%) (% class="tool hide" %)$services.localization.render('phenotips.patientSheet.collapseSection')(%%)
     )))
     (% id="charts"%)(((
       #_measurementCharts({'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
@@ -135,7 +135,7 @@
       <name>org.phenotips.patientSheet.field.charts</name>
     </property>
     <property>
-      <parameters>title=Growth charts
+      <parameters>title=$services.localization.render('phenotips.UIXField.growthCharts')
 enabled=true
 required=
 order=4

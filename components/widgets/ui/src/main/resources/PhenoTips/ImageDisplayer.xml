@@ -112,17 +112,17 @@
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
   {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
-  &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;&lt;/a&gt;##
+  &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
   #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
- &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
+ &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
 
 #macro (__displaySelectableAttachmentList $targetDocument $selection)
   (% class="attachment-list" %)(((
   #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
-  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
+  #if ($sortedAttachments.size() == 0)(% class="hint" %)$services.localization.render('phenotips.imageDisplayer.noneAvailable')(%%)#end
   #foreach ($attachment in $sortedAttachments)
     #set ($extension = "#__getExtension($attachment.getFilename())")
     #if ($options.filter.size() == 0 || $options.filter.contains($extension))
@@ -149,14 +149,14 @@
   &lt;form action="$targetDocument.getURL('upload')" enctype="multipart/form-data" method="post" id="${fieldName}-upload2" class="upload-attachment xform"&gt;
   &lt;div&gt;
     #if (${options.rawfilter} != '')
-      &lt;span class="xHint"&gt;Accepted file formats: ${options.rawfilter}&lt;/span&gt;
+      &lt;span class="xHint"&gt;$services.localization.render('phenotips.imageDisplayer.acceptedFormats') ${options.rawfilter}&lt;/span&gt;
     #end
     &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
     &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
     &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
     &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="submit" name="action_upload" class="button" value='Upload and select'  title='Upload and select'/&gt;
+    &lt;input type="submit" name="action_upload" class="button" value="$services.localization.render('phenotips.imageDisplayer.uploadAndSelect')"  title="$services.localization.render('phenotips.imageDisplayer.uploadAndSelect')"/&gt;
   &lt;/div&gt;
   &lt;/form&gt;
   {{/html}}
@@ -201,7 +201,7 @@ $content
         #__displayUploadForm($targetDoc)
       #else
         #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
-        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
       #end
       #__displaySelectableAttachmentList($targetDoc $propValue)
       )))
@@ -364,7 +364,7 @@ $content
         // -------------------------------------------------------
         // The browser does not support AJAX file upload. Do what you can...
         // -------------------------------------------------------
-        new XWiki.widgets.Notification("This feature works better in more advanced browsers (Mozilla Firefox 4.0+, Google Chrome). Please consider upgrading.", 'info');
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.imageDisplayer.AJAXnotSuportedMessage')", 'info');
         // Setup the allowed extensions for each file input
         this.form.select('.upload-attachment input[type=file]').each(function(fileInput) {
           fileInput.__allowedExtensions = fileInput.title.toLowerCase().replace(/\s*[,|; ]\s*/g, " ").strip();
@@ -499,7 +499,7 @@ $content
 
     addCloseListener : function () {
       this.dialog.__controller = this;
-      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : 'Done'});
+      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : "$services.localization.render('phenotips.imageDisplayer.done')"});
       this.gallery.down('.content').insert({bottom : closeButton});
       closeButton.observe('click', this.dialog.closeDialog.bindAsEventListener(this.dialog));
     }
@@ -789,10 +789,10 @@ $content
       }
 
       this.MESSAGE_CONTAINER      = _getElt('');
-      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsupported format.');
-      this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
-      this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
-      this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
+      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', "$services.localization.render('phenotips.imageDisplayer.error.invalidFile')");
+      this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', "$services.localization.render('phenotips.imageDisplayer.error.general')");
+      this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , "$services.localization.render('phenotips.imageDisplayer.error.abort')");
+      this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , "$services.localization.render('phenotips.imageDisplayer.error.size')".replace("__maxSize__", this.bytesToSize(this.options.maxFilesize)));
 
       this.form.insert({top : this.MESSAGE_CONTAINER});
     },
@@ -1001,7 +1001,7 @@ $content
       <name>HTML5 file upload</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

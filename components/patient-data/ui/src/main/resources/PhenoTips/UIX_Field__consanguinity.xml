@@ -34,7 +34,7 @@
   <date>1401822205000</date>
   <contentUpdateDate>1401822205000</contentUpdateDate>
   <version>1.1</version>
-  <title>Consanguinity</title>
+  <title>$services.localization.render('phenotips.UIXField.consanguinity')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -127,7 +127,7 @@
       <name>org.phenotips.patientSheet.field.consanguinity</name>
     </property>
     <property>
-      <parameters>title=Consanguinity
+      <parameters>title=$services.localization.render('phenotips.UIXField.consanguinity')
 enabled=true
 required=
 order=8

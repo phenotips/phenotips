@@ -39,7 +39,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{error}}The server encountered an unexpected error.{{/error}}</content>
+  <content>{{error}}{{translation key=data.serverError}}{{/error}}</content>
   <object>
     <name>data.ServerError</name>
     <number>0</number>

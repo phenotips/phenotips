@@ -85,7 +85,7 @@
 #if ($identifier != '')
   #set ($patientDoc = $xwiki.getDocument($services.model.createDocumentReference('', 'data', $identifier)))
   #if (!$patientDoc || $patientDoc.isNew())
-    {{error}}Requested patient not found.{{/error}}
+    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
   #else
     #fixMode()
     #if ($canEditPatientRecord)
@@ -114,13 +114,13 @@
       #end
       $response.sendRedirect($xwiki.getURL($patientDoc, $mode))
     #else
-    {{error}}You don't have the permission to create a new patient record.{{/error}}
+    {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPermission'){{/error}}
     #end
   #else
-    {{error}}Requested patient not found.{{/error}}
+    {{error}}$services.localization.render('phenotips.OpenPatientRecord.patientNotFound'){{/error}}
   #end
 #else
-  {{error}}No patient requested{{/error}}
+  {{error}}$services.localization.render('phenotips.OpenPatientRecord.noPatient'){{/error}}
 #end
 {{/velocity}}</content>
 </xwikidoc>

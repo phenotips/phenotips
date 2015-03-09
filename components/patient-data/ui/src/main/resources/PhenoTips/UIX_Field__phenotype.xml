@@ -34,7 +34,7 @@
   <date>1401822210000</date>
   <contentUpdateDate>1401822210000</contentUpdateDate>
   <version>1.1</version>
-  <title>Clinical symptoms &amp; physical findings</title>
+  <title>$services.localization.render('phenotips.UIXField.phenotype')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -132,8 +132,8 @@
   $$('.chapter .browser .browser-title').each(function(item) {
     item.insert({after: new Element('span', {'class' : 'expand-tools'})});
   });
-  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
-  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
+  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.expand')");
+  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.collapse')");
   var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll);
 
   $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
@@ -235,7 +235,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -689,8 +689,8 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     {{html clean="false" wiki="false"}}
     &lt;fieldset&gt;
       &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="icon"&gt;&lt;label for="quick-phenotype-search"&gt;&lt;span class="fa fa-search fa-3x"&gt; &lt;/span&gt;&lt;/label&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;
-      &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose from the suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;$services.localization.render('phenotips.UIXField.phenotype.quickSearch')&lt;/label&gt;
+      &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder="$services.localization.render('phenotips.UIXField.phenotype.quickSearch.placeholder')" size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
       &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     &lt;/fieldset&gt;
     {{/html}}
@@ -710,7 +710,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #if ($xcontext.action == 'edit')
     $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
-    (% class="hint controlled" %)Or select observed phenotypes:(%%) {{icon name="question-circle" cssClass="xHelpButton controlled" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint").replace('"', '~~~"')"/}}
+    (% class="hint controlled" %)$services.localization.render('phenotips.UIXField.phenotype.selectPhenotypes')(%%) {{icon name="question-circle" cssClass="xHelpButton controlled" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint").replace('"', '~~~"')"/}}
   #else
     #if ($showUnaffected)$class.get('unaffected').prettyName#end
   #end
@@ -721,7 +721,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
     #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
     (% class="browser-title"%)
-    === **Browse categories** ===
+    === **$services.localization.render('phenotips.UIXField.phenotype.browseCategories')** ===
   #end
   (% class="phenotype" %)(((
     #if ($xcontext.action == 'edit' || !$showUnaffected)$doc.display('phenotype')#end##
@@ -731,14 +731,14 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     )))## browse-phenotype-categories
     (% class="half-width selector-panel current-phenotype-selection"%)(((
     (% class='sub-panel'%)(((
-    === **Current selection** ===
+    === **$services.localization.render('phenotips.UIXField.phenotype.currentSelection')** ===
     (% id="current-phenotype-selection"%)(((
     {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
     )))
     )))
     (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden sub-panel" %)(((
-    === You may want to investigate... ===
-    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
+    === $services.localization.render('phenotips.UIXField.phenotype.suggestedPhenotypes') ===
+    (% class="hint" %)$services.localization.render('phenotips.UIXField.phenotype.suggestedPhenotypes.hint')
     (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
     )))
     )))
@@ -757,7 +757,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
       <name>org.phenotips.patientSheet.field.phenotype</name>
     </property>
     <property>
-      <parameters>title=Clinical symptoms &amp; physical findings
+      <parameters>title=$services.localization.render('phenotips.UIXField.phenotype')
 enabled=true
 required=
 order=1

@@ -90,11 +90,11 @@ Sort UI extensions alphabetically by: ##
 #set ($errorMessage = '')
 #if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
   #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter an extension name')
+    #set ($errorMessage = "$services.localization.render('phenotips.UIXDirectory.noNameError')")
   #else
     #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
     #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "An extension named //${request.name}// already exists. Please choose a different name")
+      #set ($errorMessage = "$services.localization.render('phenotips.UIXDirectory.nameExistsError', [${request.name}])")
     #else
       #set ($uixPoint = 'org.phenotips.patientSheet.section.none')
       #set ($uixName = "org.phenotips.widget.$!{request.name.trim().toLowerCase().replaceAll(' +', '-')}")
@@ -117,27 +117,27 @@ Sort UI extensions alphabetically by: ##
   &lt;input type="hidden" name="classTemplate" value="$uixTemplate" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${uixTemplate}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${xwiki.getDocument($uixTemplate).space}.WebHome" /&gt;
-  &lt;label for="extension-name"&gt;New extension name:&lt;/label&gt;&lt;input type="text" name="name" id="extension-name" placeholder="E.g. My widget"/&gt;&lt;input class="button" type="submit" value="Create"/&gt;
+  &lt;label for="extension-name"&gt;$services.localization.render('phenotips.UIXDirectory.newExtension.label')&lt;/label&gt;&lt;input type="text" name="name" id="extension-name" placeholder="$services.localization.render('phenotips.UIXDirectory.newExtension.placeholder')"/&gt;&lt;input class="button" type="submit" value="$services.localization.render('phenotips.UIXDirectory.newExtension.create')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
 #foreach ($o in $orders.keySet())
   #if ($o == $order)
-|= Sorted by **$orders.get($o)**##
+|= $services.localization.render('phenotips.UIXDirectory.sortedBy', ["**$orders.get($o)**"])  ##
   #else
-|= Sort by [[$orders.get($o)&gt;&gt;$doc.fullName||queryString="$!{request.queryString.replaceAll('[&amp;]?order=[^&amp;]*', '')}&amp;order=${o}"]]##
+|= $services.localization.render('phenotips.UIXDirectory.sortBy', ["[[$orders.get($o)&gt;&gt;$doc.fullName||queryString='$!{request.queryString.replaceAll('[&amp;]?order=[^&amp;]*', '')}&amp;order=${o}']]"]) ##
   #{end}#if (!$foreach.hasNext())
 |=
 #end
 #end
 #foreach ($uixDatum in $uixSortedData)
 | [[$uixDatum.get('doc.fullName')]] | $uixDatum.get('doc.space') | $uixDatum.extensionId | $uixDatum.extensionPointId | (% class="tools" %)(((##
-  [[{{icon name="pencil" title="Edit this extension"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('edit', "editor=object&amp;object=${uixDatum.obj.number}&amp;classname=${uixClassName}")]] ##
-  [[{{icon name="history" title="View change history"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "viewer=history")]] ##
-  [[{{icon name="copy" title="Copy"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=copy")]] ##
-  [[{{icon name="file" title="Rename"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=rename")]] ##
-  [[{{icon name="download" title="Export this extension as xar"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('export', "format=xar&amp;pages=${uixDatum.get('doc.fullName')}&amp;name=${uixDatum.get('doc.fullName')}")]] ##
-  [[{{icon name="times" title="Delete this extension"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('delete')]] ##
+  [[{{icon name="pencil" title="$services.localization.render('phenotips.UIXDirectory.options.edit')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('edit', "editor=object&amp;object=${uixDatum.obj.number}&amp;classname=${uixClassName}")]] ##
+  [[{{icon name="history" title="$services.localization.render('phenotips.UIXDirectory.options.history')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "viewer=history")]] ##
+  [[{{icon name="copy" title="$services.localization.render('phenotips.UIXDirectory.options.copy')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=copy")]] ##
+  [[{{icon name="file" title="$services.localization.render('phenotips.UIXDirectory.options.rename')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=rename")]] ##
+  [[{{icon name="download" title="$services.localization.render('phenotips.UIXDirectory.options.download')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('export', "format=xar&amp;pages=${uixDatum.get('doc.fullName')}&amp;name=${uixDatum.get('doc.fullName')}")]] ##
+  [[{{icon name="times" title="$services.localization.render('phenotips.UIXDirectory.options.delete')"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('delete')]] ##
 )))\\
 #end
 #end## Has Admin

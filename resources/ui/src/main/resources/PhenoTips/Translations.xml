@@ -53,5 +53,26 @@ phenotips.profile.preferences.mapping=Preferred mapping
 XWiki.XWikiUsers_company=Affiliation
 XWiki.XWikiUsers_comment=About
 
-core.widgets.confirmationBox.button.cancel=Cancel</content>
+core.widgets.confirmationBox.button.cancel=Cancel
+
+phenotips.globalHeader.allData=Browse All Data
+phenotips.globalHeader.search.placeholder=Search for a patient record...
+
+phenotips.OmimPredictService.linkToDisorder=Read about this disorder on OMIM
+phenotips.OmimPredictService.noMatches=No matches found
+phenotips.PatientPhenotyoeExportService.cantFindPatientError=Identifier not found.
+phenotips.SuggestPatientService.serviceInfo=This service allows to retrieve search results for the suggest UI component. Example: {0}
+phenotips.UIXDirectory.noNameError=Please enter an extension name
+phenotips.UIXDirectory.nameExistsError=An extension named "{0}" already exists. Please choose a different name
+phenotips.UIXDirectory.newExtension.label=New extension name:
+phenotips.UIXDirectory.newExtension.placeholder=E.g. My widget
+phenotips.UIXDirectory.options.edit=Edit this extension
+phenotips.UIXDirectory.options.history=View change history
+phenotips.UIXDirectory.options.copy=Copy
+phenotips.UIXDirectory.options.rename=Rename
+phenotips.UIXDirectory.options.download=Export this extension as xar
+phenotips.UIXDirectory.options.delete=Delete this extension
+phenotips.UIXDirectory.newExtension.create=Create
+phenotips.UIXDirectory.sortedBy= Sorted by {0}
+phenotips.UIXDirectory.sortBy= Sort by {0}</content>
 </xwikidoc>

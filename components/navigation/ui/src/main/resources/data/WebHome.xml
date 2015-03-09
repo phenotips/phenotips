@@ -60,7 +60,7 @@
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$iname"&gt;
 #foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
-  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val) for today)&lt;/option&gt;
+  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val $services.localization.render('phenotips.DBConfigurationClass.dateExample',[$xwiki.formatDate($util.date, $val)])&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
@@ -180,7 +180,7 @@ $!value
         <cache>0</cache>
         <customDisplay>{{velocity}}
 #if ($value != 'imperial')#set ($value = 'metric')#end
-{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;metric&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;imperial&lt;/label&gt;&lt;/p&gt;
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
 &lt;br/&gt;
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -198,7 +198,7 @@ $!value
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>metric|imperial</values>
+        <values>metric=Metric|imperial=Imperial</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </measurementUnitSystem>
       <phenotypeMapping>
@@ -811,7 +811,7 @@ $!value
       <displayInSection>tablesconfig</displayInSection>
     </property>
     <property>
-      <heading>Data tables</heading>
+      <heading>$services.localization.render('phenotips.navigation.webHome.dataTables.heading')</heading>
     </property>
     <property>
       <iconAttachment>clinicaldata.png</iconAttachment>
@@ -1035,7 +1035,7 @@ $!value
       <displayInSection>FormConfig</displayInSection>
     </property>
     <property>
-      <heading>Organize the patient form</heading>
+      <heading>$services.localization.render('phenotips.navigation.webHome.formConfig.heading')</heading>
     </property>
     <property>
       <iconAttachment/>
@@ -1250,18 +1250,18 @@ $!value
 {{html clean=false}}
 &lt;form id="welcome_${targetDocName}" method="post" action="$targetDoc.getURL('save')" class="xform half"&gt;
 &lt;fieldset&gt;&lt;dl&gt;
-&lt;dt&gt;&lt;label for="${targetDocName}title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${targetDocName}title"&gt;$services.localization.render('phenotips.navigation.webHome.homepage.label')&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!escapetool.xml($targetDoc.title)"&gt;&lt;/input&gt;&lt;/dd&gt;
-&lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;$services.localization.render('phenotips.navigation.webHome.welcomeMessage.label')&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!escapetool.xml($gadgetObj.getProperty('title').value)"&gt;&lt;/input&gt;&lt;/dd&gt;
-&lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;Welcome message content&lt;/label&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;$services.localization.render('phenotips.navigation.webHome.welcomeMessageContent.label')&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="10"&gt;$!escapetool.xml($gadgetObj.getProperty('content').value)&lt;/textarea&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$escapetool.xml($doc.getURL($xcontext.action, $request.queryString))" /&gt;
 &lt;input type="hidden" name="form_token" value="$!{escapetool.xml($services.csrf.token)}" /&gt;
 &lt;/fieldset&gt;
 &lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="Save" /&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="$services.localization.render('phenotips.navigation.webHome.save')" /&gt;&lt;/span&gt;
 &lt;/p&gt;&lt;/div&gt;
 &lt;/form&gt;
 {{/html}}</codeToExecute>
@@ -1484,17 +1484,17 @@ $!value
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute>{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose the configuration document to use from the options listed below. A preview of the selected configuration will be displayed on the right.{{/info}}
+      <codeToExecute>{{info}}$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.info'){{/info}}
 
 #if ($isAdvancedUser)
 #set ($errorMessage = '')
 #if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
   #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter a phenotype configuration name')
+    #set ($errorMessage = "$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.error.noName')")
   #else
     #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
     #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "A document named //${request.name}// already exists. Please choose a different name")
+      #set ($errorMessage = "$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.error.nameExists', [${request.name}])")
     #else
       $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
       #break
@@ -1514,7 +1514,7 @@ $!value
   &lt;input type="hidden" name="classTemplate" value="PhenoTips.PhenotypeMappingTemplate" /&gt;
   &lt;input type="hidden" name="space" value="PhenoTips" /&gt;
   &lt;input type="hidden" name="parent" value="data.WebHome" /&gt;
-  &lt;label for="config-name"&gt;New configuration name:&lt;/label&gt;&lt;input type="text" name="name" id="config-name" placeholder="E.g. My configuration"/&gt;&lt;input class="button" type="submit" value="Create"/&gt;
+  &lt;label for="config-name"&gt;$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.newConfig.label') &lt;/label&gt;&lt;input type="text" name="name" id="config-name" placeholder="$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.newConfig.placeholder')"/&gt;&lt;input class="button" type="submit" value="$services.localization.render('phenotips.navigation.webHome.create')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 #end
@@ -1542,7 +1542,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
       <displayInSection>mapping</displayInSection>
     </property>
     <property>
-      <heading>Phenotypes displayed by default</heading>
+      <heading>$services.localization.render('phenotips.navigation.webHome.defaultPhenotypes.heading')</heading>
     </property>
     <property>
       <iconAttachment/>
@@ -1764,7 +1764,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
       <displayInSection>dataformats</displayInSection>
     </property>
     <property>
-      <heading>Data formats</heading>
+      <heading>$services.localization.render('phenotips.navigation.webHome.dataFormats.heading')</heading>
     </property>
     <property>
       <iconAttachment/>
@@ -1912,7 +1912,7 @@ To write a custom message, you can remove the existing code and write your messa
       <position>1,2</position>
     </property>
     <property>
-      <title>Active groups (% style="float: right;" %)[[Read more »&gt;&gt;Groups.WebHome]]</title>
+      <title>$services.localization.render('phenotips.homepage.groups.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.groups.moreGroups')&gt;&gt;Groups.WebHome]]</title>
     </property>
   </object>
   <object>
@@ -2024,10 +2024,10 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('mypatients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}**Configuration missing.**{{/warning}}
+{{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}
 #end
 #else
-{{info}}You are not the owner of any data.{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.myData.noDataMessage'){{/info}}
 #end
 {{/velocity}}</content>
     </property>
@@ -2035,7 +2035,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>2,1</position>
     </property>
     <property>
-      <title>My Data#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record" style="float:right;cursor:pointer;color:$theme.linkColor;"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New patient record&lt;/label&gt;{{/html}}#end</title>
+      <title>{{translation key="phenotips.homepage.myData.title"/}}#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt;&lt;/span&gt;$services.localization.render('phenotips.homepage.myData.createPatient')&lt;/label&gt;#end</title>
     </property>
   </object>
   <object>
@@ -2172,13 +2172,13 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable('sharedpatients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
-{{warning}}**Configuration missing.**{{/warning}}
+{{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}
 #end
 #else
-{{info}}No data has been shared with you.{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.sharedData.noDataMessage'){{/info}}
 #end
 #else
-{{info}}No data has been shared with you.{{/info}}
+{{info}}$services.localization.render('phenotips.homepage.sharedData.noDataMessage'){{/info}}
 #end
 {{/velocity}}</content>
     </property>
@@ -2186,7 +2186,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>2,2</position>
     </property>
     <property>
-      <title>Data shared with me (% style="float: right;" %)[[Browse all data »&gt;&gt;data.AllData]]</title>
+      <title>$services.localization.render('phenotips.homepage.sharedData.title') (% style="float: right;" %)[[$services.localization.render('phenotips.homepage.sharedData.allData')&gt;&gt;data.AllData]]</title>
     </property>
   </object>
   <object>
@@ -2302,7 +2302,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
+  #xwikitopmenuentry($adminspaceaction "$services.localization.render('admin')" 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;
@@ -2399,11 +2399,11 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
-          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="$services.localization.render('phenotips.globalHeader.search.placeholder')" size="20"/&gt;
         &lt;/div&gt;
       #end
     &lt;/div&gt;
-    &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;Browse All Data&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
+    &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;$services.localization.render('phenotips.globalHeader.allData')&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
     #if ($hasCreatePage)
       &lt;div class="topmenuentry add"&gt;
 {{/html}}
@@ -2680,7 +2680,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
       <allow>1</allow>
     </property>
     <property>
-      <groups>XWiki.XWikiAdminGroup</groups>
+      <groups>XWiki.XWikiAdminGroup,</groups>
     </property>
     <property>
       <levels>edit,delete</levels>

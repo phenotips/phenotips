@@ -92,8 +92,8 @@
   #end
 #end
 &lt;div class="form-template-option"&gt;
-&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;None&lt;/label&gt;
-&lt;p class="xHint"&gt;Use the system's default form configuration: a generic form covering basic patient information and covering phenotypes related to major anatomic systems.&lt;/p&gt;
+&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
+&lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
     #set ($s = $xwiki.getDocument($sName))
@@ -259,11 +259,11 @@
      }
    });
    formDataWrapper.insert(templateSelectionContainer);
-   var submitButton = new Element('input', {type : 'submit', value : 'Create', 'class' : 'button'});
+   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.createButton')", 'class' : 'button'});
    formDataWrapper.insert(submitButton);
-   var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
+   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
@@ -281,9 +281,9 @@
         onFailure : function(response) {
           var failureReason = response.responseText || response.statusText;
           if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-             failureReason = 'Server not responding';
+             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
           }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update('Failed to retrieve the list of available configurations. ' + failureReason));
+          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
         },
         on0 : function (response) {
           response.request.options.onFailure(response);
@@ -392,11 +392,11 @@
    var formDataWrapper = new Element('div');
    templateSelectionForm.insert(formDataWrapper);
    formDataWrapper.insert(templateSelectionContainer);
-   var submitButton = new Element('input', {type : 'submit', value : 'Save', 'class' : 'button'});
+   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.saveButton')", 'class' : 'button'});
    formDataWrapper.insert(submitButton);
-   var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
+   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
@@ -425,9 +425,9 @@
         onFailure : function(response) {
           var failureReason = response.responseText || response.statusText;
           if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-             failureReason = 'Server not responding';
+             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
           }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update('Failed to retrieve the list of available configurations. ' + failureReason));
+          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
         },
         on0 : function (response) {
           response.request.options.onFailure(response);
@@ -688,7 +688,7 @@ $xwiki.ssx.use($className)
     #set($displayedValue = "(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${configTitle}&gt;&gt;${value}||rel='__blank' class='button secondary']]")
   #end
   #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
-(% class="study-assignment-config" %)(((Study: $displayedValue (% class="buttonwrapper" %)[[ {{icon name="edit" title="Move to a different study" /}} {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}&gt;&gt;path:$doc.getURL('get', "sheet=$!{sheetName}&amp;faction=$!{faction}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]])))
+(% class="study-assignment-config" %)(((Study: $displayedValue (% class="buttonwrapper" %)[[ {{icon name="edit" title="$services.localization.render('phenotips.studyBindingClass.changeStudyButton.title')" /}} {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}&gt;&gt;path:$doc.getURL('get', "sheet=$!{sheetName}&amp;faction=$!{faction}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]])))
 #end
 {{/velocity}}</content>
     </property>

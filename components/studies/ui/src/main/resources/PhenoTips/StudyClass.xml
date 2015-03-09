@@ -347,11 +347,11 @@
       <codeToExecute>#set ($errorMessage = '')
 #if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
   #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter a study name')
+    #set ($errorMessage = "$services.localization.render('phenotips.studyClass.errorMessage.blankName')")
   #else
     #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
     #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "A document named //${request.name}// already exists. Please choose a different name")
+      #set ($errorMessage = "$services.localization.render('phenotips.studyClass.errorMessage.nameExists', [${request.name}])")
     #else
       $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
       #break
@@ -373,7 +373,7 @@
   &lt;input type="hidden" name="classTemplate" value="$studyTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${studiesHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${studiesHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New study: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.studyClass.newStudy.label') &lt;input type="text" name="name" placeholder="$services.localization.render('phenotips.studyClass.newStudy.placeHolder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="$services.localization.render('phenotips.studyClass.newStudy.submit')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 
@@ -608,7 +608,7 @@
 &lt;form action="$doc.getURL('save')" method="post" class="xform half" id="study-visibility-option"&gt;
 &lt;fieldset&gt;
 &lt;dl&gt;
-  &lt;dt&gt;Study submission preference&lt;/dt&gt;
+  &lt;dt&gt;${services.localization.render('phenotips.studies.visibility')}&lt;/dt&gt;
 #foreach ($option in ['unrestricted', 'group-subscription'])
   &lt;dd&gt;&lt;label for="${prefix}_${option}"&gt;&lt;input type="radio" name="${prefix}" value="${option}" id="${prefix}_${option}"#if ($option == $preferenceObject.getProperty('value').value) checked="checked"#end /&gt; $services.localization.render("phenotips.studies.visibility.${option}")&lt;/label&gt;&lt;/dd&gt;
 #end
@@ -765,7 +765,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "Are you sure you wish to delete this study?"
+          confirmationText: "$services.localization.render('phenotips.studyClass.deleteStudy.confirmation')"
         }
       );
     }
@@ -787,7 +787,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -1095,11 +1095,11 @@ $xwiki.jsx.use($studyClassName)
 #if ($studySortedData.size() == 0)
 #if ($isFilterActive)
 
-{{info}}No matching studies{{/info}}
+{{info}}$services.localization.render('phenotips.studyClass.filter.noMatches'){{/info}}
 
 #else
 
-{{info}}No studies have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage studies »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
+{{info}}$services.localization.render('phenotips.studyClass.noneDefined')#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[$services.localization.render('phenotips.studyClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
 
 #end
 #else
@@ -1107,8 +1107,8 @@ $xwiki.jsx.use($studyClassName)
 |(% class="name" %) [[$studyDatum.get('name')&gt;&gt;$studyDatum.get('doc.fullName')]] \\(% class="members"%)$studyDatum.get('groups') group#if($studyDatum.get('groups') != 1)s#end(%%) \\(% class="patients"%)$studyDatum.get('cases') case#if($studyDatum.get('cases') != 1)s#end(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{studyDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($studyDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-  [[{{icon name="pencil" title="Edit this study"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
-  [[{{icon name="times" title="Delete this study"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
+  [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
+  [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($studyDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
 #end#end
 #end

@@ -34,7 +34,7 @@
   <date>1401822209000</date>
   <contentUpdateDate>1401822209000</contentUpdateDate>
   <version>1.1</version>
-  <title>Diagnosis suggestions</title>
+  <title>$services.localization.render('phenotips.UIXField.diagnosisSuggestions')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -115,18 +115,18 @@
 {{velocity}}
 #if ($xcontext.action == 'edit')
   (% class="ncbi-search-box" %)(((
-    === Instant OMIM search ===
+    === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
     (% class="expand-tools" %)(((
-      (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
+      (% class="tool show" %)$services.localization.render('phenotips.patientSheet.expandSection')(%%) (% class="tool hide" %)$services.localization.render('phenotips.patientSheet.collapseSection')(%%)
     )))
     (% class="ncbi-search-box-content"%)(((
-      (% class="hint"%)The following terms are extracted from the phenotypic description and used automatically in searches. You can disable or re-enable their contribution in the search results by clicking on them.(%%)
+      (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)
       {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}
       (% id="defaultSearchTerms" %)((()))
-      ##(% class="hint"%)Include the following custom terms in your search:(%%)
+      ##(% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.defaultTerms')(%%)
       ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
       (% class="background-search omim-search hidden" %)(((
-        ==== Matching disorders in OMIM ====
+        ====$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.matchingDisorders')====
         (% id="omim-search-results" class="background-suggestions" %)((()))
       )))
     )))
@@ -142,7 +142,7 @@
       <name>org.phenotips.patientSheet.field.omim_suggestions</name>
     </property>
     <property>
-      <parameters>title=Diagnosis suggestions
+      <parameters>title=$services.localization.render('phenotips.UIXField.diagnosisSuggestions')
 enabled=true
 required=
 order=4

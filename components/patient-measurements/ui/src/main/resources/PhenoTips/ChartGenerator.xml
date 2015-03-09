@@ -144,7 +144,7 @@
   width="100%" ##
 #end
 preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="optimizeLegibility"&gt;
-  &lt;title&gt;${chartConfiguration.chartTitle}, #if ($sex)boys#{else}girls#end&lt;/title&gt;
+  &lt;title&gt;${chartConfiguration.chartTitle}, #if ($sex)$services.localization.render('phenotips.chartGenerator.chartTitle.male')#{else}$services.localization.render('phenotips.chartGenerator.chartTitle.female')#end&lt;/title&gt;
   &lt;style type="text/css"&gt;
 .chart-background {
   fill: white;
@@ -224,15 +224,15 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
     &lt;/clipPath&gt;
   &lt;/defs&gt;
   &lt;rect x="-60" y="-80" width="$mathtool.sub($chartWidth, 1)" height="$mathtool.sub($chartHeight, 1)" class="chart-background" /&gt;
-  &lt;g transform="translate(0, 10)" class="#if ($sex)boy#{else}girl#{end}"&gt;
+  &lt;g transform="translate(0, 10)" class="#if ($sex)$services.localization.render('phenotips.chartGenerator.chartTitle.male')#{else}$services.localization.render('phenotips.chartGenerator.chartTitle.female')#{end}"&gt;
   #foreach ($i in [0..$xlines])
     #set ($age = $mathtool.add($mathtool.mul($i, $chartConfiguration.ageTickStep), $chartConfiguration.lowerAgeLimit))
     #set ($isMajorLine = $mathtool.abs($mathtool.sub($mathtool.div($age, $chartConfiguration.ageLabelStep), $mathtool.round($mathtool.div($age, $chartConfiguration.ageLabelStep)))) &lt;= 0.0001)
     #set ($x = $mathtool.mul($i, $xstep))
     &lt;line x1="$x" y1="0" x2="$x" y2="$graphHeight" class="chart-grid#if ($isMajorLine) bold#end" /&gt;
     #if ($age == 0)
-      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom chart-label bold" dy="1ex"&gt;Birth&lt;/text&gt;
-      &lt;text x="$x" y="-4" class="top chart-label bold"&gt;Birth&lt;/text&gt;
+      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom chart-label bold" dy="1ex"&gt;$services.localization.render('phenotips.chartGenerator.birth')&lt;/text&gt;
+      &lt;text x="$x" y="-4" class="top chart-label bold"&gt;$services.localization.render('phenotips.chartGenerator.birth')&lt;/text&gt;
     #elseif ($isMajorLine)
       #if ($ageInYears)
         #set ($age = $age / 12)
@@ -367,7 +367,7 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   #end
   &lt;/g&gt;
   &lt;rect x="0" y="0" width="$graphWidth" height="$graphHeight" class="chart-border" /&gt;
-  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="chart-title"&gt;${chartConfiguration.chartTitle}, #if ($sex)boys#{else}girls#end&lt;/text&gt;
+  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="chart-title"&gt;${chartConfiguration.chartTitle}, #if ($sex)$services.localization.render('phenotips.chartGenerator.chartTitle.male')#{else}$services.localization.render('phenotips.chartGenerator.chartTitle.female')#end&lt;/text&gt;
   &lt;text y="$mathtool.div($graphHeight, 2)" x="-33" class="left side chart-label" transform="rotate(270 -33 $mathtool.div($graphHeight, 2))"&gt;${chartConfiguration.leftLabel}&lt;/text&gt;
   &lt;text y="$mathtool.div($graphHeight, 2)" x="$mathtool.add($graphWidth, 33)" class="right side chart-label" transform="rotate(90 $mathtool.add($graphWidth, 33) $mathtool.div($graphHeight, 2))"&gt;${chartConfiguration.rightLabel}&lt;/text&gt;
   &lt;text y="-20" x="$mathtool.div($graphWidth, 2)" class="top side chart-label"&gt;${chartConfiguration.topLabel}&lt;/text&gt;

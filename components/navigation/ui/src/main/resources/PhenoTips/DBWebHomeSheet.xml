@@ -122,7 +122,7 @@
     <property>
       <code>document.observe('xwiki:livetable:displayComplete', function(tableEvent){
   $(tableEvent.memo.tableId).select("tr.xwiki-livetable-display-filters td input").each(function(item) {
-    item.placeholder = "Type to filter...";
+    item.placeholder = "$services.localization.render('phenotips.livetable.filter.placeholder')";
   });
 });
 document.observe('xwiki:livetable:newrow', function(tableEvent){
@@ -277,7 +277,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
                            'term_category': ['HP:0000118']
                          }),
             varname: "q",
-            noresults: "No matching terms",
+            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
             json: true,
             resultsParameter : "rows",
             resultId : "id",
@@ -302,7 +302,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
                            '-nameSort': ['\\**', '\\+*', '\\^*']
                          }),
             varname: "q",
-            noresults: "No matching terms",
+            noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
             json: true,
             resultsParameter : "rows",
             resultId : "id",
@@ -469,11 +469,11 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     // Column selection
     var columnList = content.down('.section.columns ul');
     if (columnList) {
-      var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update('Select: ');
-      var all = new Element('span', {'class' : 'selection-tool select-all'}).update('All');
-      var none = new Element('span', {'class' : 'selection-tool select-none'}).update('None');
-      var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update('Invert selection');
-      var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update('Restore initial values');
+      var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') ");
+      var all = new Element('span', {'class' : 'selection-tool select-all'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')");
+      var none = new Element('span', {'class' : 'selection-tool select-none'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')");
+      var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')");
+      var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')");
       selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
 
       columnList.select('input[type=checkbox]').each(function(elt) {elt._originallyChecked = elt.checked});
@@ -535,7 +535,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     exportTools.each(function(exportTool) {
       exportTool.observe('click', function(event) {
         event.stop();
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title':"$services.localization.render('phenotips.DBWebHomeSheet.exportPreferences.title')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content

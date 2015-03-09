@@ -40,14 +40,12 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}{{html clean=false wiki=false}}
-#if ($doc.getObject('PhenoTips.PatientClass'))
-&lt;div id="document-authors"&gt;
-  &lt;span class="document-meta document-creation"&gt; ## Creation
-     Reported by &lt;span class="document-creator document-author"&gt;$xwiki.getUserName($doc.creator, false)&lt;/span&gt; on $xwiki.formatDate($doc.creationDate)
-  &lt;/span&gt;
-  #if ($doc.date != $doc.creationDate)
-  &lt;span class="sep"&gt;·&lt;/span&gt; &lt;span class="document-meta document-last-modification"&gt; ## Creation
-     Last modified #if ($doc.author != $doc.creator) by &lt;span class="document-author"&gt;$xwiki.getUserName($tdoc.author, false)&lt;/span&gt;#end on $xwiki.formatDate($tdoc.date)
+#if ($doc.getObject('PhenoTips.PatientClass'))&lt;div id="document-authors"&gt;&lt;span class="document-meta document-creation"&gt; ## Creation
+    $services.localization.render('phenotips.patientRecord.header.creation', ["
+    <span class="document-creator document-author">$xwiki.getUserName($doc.creator, false)</span>", $xwiki.formatDate($doc.creationDate)])&lt;/span&gt;
+  #if ($doc.date != $doc.creationDate)&lt;span class="sep"&gt;·&lt;/span&gt;&lt;span class="document-meta document-last-modification"&gt; ## Creation
+     #if ($doc.author != $doc.creator) $services.localization.render('phenotips.patientRecord.header.modificationWithModifier',["
+    <span class="document-author">$xwiki.getUserName($tdoc.author, false)</span>", $xwiki.formatDate($tdoc.date)]) #else $services.localization.render('phenotips.patientRecord.header.modificationWithoutModifier', [$xwiki.formatDate($doc.creationDate)])#end
   &lt;/span&gt;
   #end
 &lt;/div&gt;##document-authors

@@ -69,7 +69,7 @@ $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
     $!phenotypeDisplayTools.use('', $name, "negative_${name}")##
     #if ($mapping != $doc)
 
-{{info}}Showing preview of [[$mapping||target="_blank"]]:{{/info}}
+{{info}}$services.localization.render('phenotips.phenotypeMappingPreview.title') [[$mapping||target="_blank"]]{{/info}}
 
     #end
     {{html clean=false}}$phenotypeDisplayTools.display($phenotype){{/html}}##
@@ -326,7 +326,7 @@ var init = function(event) {
         label.insert({after : container});
         container.insert(
                  new Element('a', {'class': 'button', 'href' : url, 'id' : 'customizeMapping', 'target' : '_blank'})
-                            .update('Customize')
+                            .update("$services.localization.render('phenotips.phenotypeMappingPreview.customizeButton')")
                             .wrap('span', {'class' : 'buttonwrapper customize-button'}
                  )
         );
@@ -345,7 +345,7 @@ var init = function(event) {
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

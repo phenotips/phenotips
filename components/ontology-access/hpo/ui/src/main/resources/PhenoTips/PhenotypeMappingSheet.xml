@@ -42,11 +42,11 @@
   <content>{{velocity}}
 #if ($xcontext.action == 'edit')
 {{html wiki=true}}
-; Title
+; $services.localization.render('phenotips.phenotypeMappingSheet.title')
 : &lt;input type="text" name="title" value="$!doc.title"/&gt;
-; Description
+; $services.localization.render('phenotips.phenotypeMappingSheet.description')
 : $doc.display('description')
-; Mapping
+; $services.localization.render('phenotips.phenotypeMappingSheet.mapping')
 : &lt;textarea name="content" rows="20" cols="80"&gt;{{html wiki="false" clean="false"}}$!escapetool.html($doc.content){{/html}}&lt;/textarea&gt;
 {{/html}}
 #else

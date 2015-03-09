@@ -59,14 +59,14 @@
 #if (!$patient)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
-  {"error" : "Patient not found."}
+  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPatient')"}
   #break
 #end
 #set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
-  {"error" : "Pedigree not found."}
+  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPedigree')"}
   #break
 #end
 #if ($request.legend)
@@ -81,7 +81,7 @@
   #if (!$pedigree)
     $response.setStatus(404)##
     $response.setContentType('application/json')##
-    {"error" : "Pedigree image not found."}
+    {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPedigreeImage')"}
     #break
   #end
   #if ("$!request.format" == 'raster')

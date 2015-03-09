@@ -34,7 +34,7 @@
   <date>1401822207000</date>
   <contentUpdateDate>1401822207000</contentUpdateDate>
   <version>1.1</version>
-  <title>Additional images</title>
+  <title>$services.localization.render('phenotips.UIXField.additionalImages')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -131,7 +131,7 @@ $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
       <name>org.phenotips.patientSheet.field.additional-images</name>
     </property>
     <property>
-      <parameters>title=Additional images
+      <parameters>title=$services.localization.render('phenotips.UIXField.additionalImages')
 enabled=true
 required=
 order=3

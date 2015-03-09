@@ -71,7 +71,7 @@ $xwiki.ssx.use($displayDocumentName)##
   #__extradata_displayTable($serverConfigurationClassname, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
 {{html clean="false"}}
   &lt;div class="buttons"&gt;
-    &lt;input class="button" type="submit" value="Save changes" /&gt;
+    &lt;input class="button" type="submit" value="$services.localization.render('phenotips.PushPatientConfiguration.save')" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}
@@ -282,7 +282,7 @@ $xwiki.ssx.use($displayDocumentName)##
       <displayInSection>pushpatientconfig</displayInSection>
     </property>
     <property>
-      <heading>Target servers</heading>
+      <heading>$services.localization.render('phenotips.pushPatientConfiguration.heading')</heading>
     </property>
     <property>
       <iconAttachment/>

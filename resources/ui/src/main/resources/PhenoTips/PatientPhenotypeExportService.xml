@@ -59,7 +59,7 @@ $!response.setContentType('application/json')##
   #set ($result.source = $patient.externalId)
 #end
 #if (!$patient)
-  #set ($discard = $result.put('error', 'Identifier not found.'))
+  #set ($discard = $result.put('error', "$services.localization.render('phenotips.PatientPhenotyoeExportService.cantFindPatientError')"))
   $jsontool.serialize($result)
   #break
 #end

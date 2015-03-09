@@ -34,7 +34,7 @@
   <date>1401822218000</date>
   <contentUpdateDate>1401822218000</contentUpdateDate>
   <version>1.1</version>
-  <title>Global mode of inheritance</title>
+  <title>$services.localization.render('phenotips.UIXField.globalModeOfInheritance')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -123,7 +123,7 @@
       <name>org.phenotips.patientSheet.field.global_mode_of_inheritance</name>
     </property>
     <property>
-      <parameters>title=Global mode of inheritance
+      <parameters>title=$services.localization.render('phenotips.UIXField.globalModeOfInheritance')
 enabled=true
 required=
 order=12

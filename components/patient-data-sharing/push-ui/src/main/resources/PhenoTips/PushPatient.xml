@@ -187,7 +187,7 @@
 	                  }
 	                },
 	                /* Interaction parameters */
-	                { confirmationText: "Save before exporting?", showCancelButton: true }
+	                { confirmationText: "$services.localization.render('phenotips.PushPatient.confirmationText')", showCancelButton: true }
 	              );
 	            } else {
 	              _this._launchUI();
@@ -209,25 +209,22 @@
                     .insert(new Element ('div', {'class' : 'section-contents'}));
       };
 
-      var serverTitle = this._pushManyPatients ? 'Where to send all the patient data to?' :
-                                                 'Where to send this patient profile?';
-      var serverDesc  = this._pushManyPatients ? 'Remote PhenoTips server where all the data will be sent' :
-                                                 'Remote PhenoTips server where this patient\'s data will be sent';
+      var serverTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.titleAllPaitents')":
+                                                "$services.localization.render('phenotips.PushPatient.titleOnePaitent')";
+      var serverDesc  = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.serverAllPaitents')":
+                                                 "$services.localization.render('phenotips.PushPatient.serverOnePaitent')";
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
       this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
-                     .insert(generateSection('user-selection','Authentication on remote server','Please choose the user name to be used to authenticate on the server and '+
-                                                   'send the data; this user will be marked as the reporter on the remote server.'))
-                     .insert(generateSection('group-selection','Remote PhenoTips group','The PhenoTips group you would like to share this patient with on the remote server. ' +
-                                                                       'If a group is selected, the group would be the owner and the given remote user will be a collaborator. ' +
-                                                                       'If no group is selected, the given remote user will be the only owner.'));
+                     .insert(generateSection('user-selection', "$services.localization.render('phenotips.PushPatient.authenticationTitle')","$services.localization.render('phenotips.PushPatient.authenticationHint')"))
+                     .insert(generateSection('group-selection',"$services.localization.render('phenotips.PushPatient.remoteGroupTitle')","$services.localization.render('phenotips.PushPatient.remoteGroupHint')"));
       if (!this._pushManyPatients) {
-          this._container.insert(generateSection('fields-selection','Patient data preview','Please review the data that will be sent to the server'));
+          this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.PushPatient.previewTitle')","$services.localization.render('phenotips.PushPatient.previewHint')"));
       }
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
       var labelApprove = new Element('label', {'id':'approve-label'});
-      var approveMessage = this._pushManyPatients ? " I agree to push patient data to this server" :
-                                                    " I agree to push this data to the server";
+      var approveMessage = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.approveMessageMany')":
+                                                    "$services.localization.render('phenotips.PushPatient.approveMessageOne')";
       labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
@@ -244,41 +241,38 @@
       this._initServerSelector();
       this._initMainFormActions();
 
-      var title = this._pushManyPatients ? 'Pushing patient data to a remote PhenoTips instance...' :
-                                           'Pushing ' + this._patientId + ' to a remote database...';
-
+      var title = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.titleMany')" : "$services.localization.render('phenotips.PushPatient.titleOne')".replace("__patientID__", this._patientId);
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
     _generateServerFirstMessage: function() {
-      return new Element('div', {'class' : 'warningmessage'}).update("Please select server first");
+      return new Element('div', {'class' : 'warningmessage'}).update("$services.localization.render('phenotips.PushPatient.serverFirstMessage')");
     },
 
     _generateServerAndUserFirstMessage: function() {
-      return new Element('div', {'class' : 'warningmessage'}).update("Please select server and valid user first");
+      return new Element('div', {'class' : 'warningmessage'}).update("$services.localization.render('phenotips.PushPatient.serverAndUserFirstMessage')");
     },
 
     _generateNoPatientJSONMessage: function(fieldList) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Retry', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._generateDataPreview(fieldList);
       });
-      return new Element('div', {'class' : 'errormessage'}).update("Failed to generate preview of the patient data").insert(retryButton);
+      return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noPatientMessage')").insert(retryButton);
     },
 
     _generateNoServerListMessage: function() {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Retry', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._launchUI();
       });
-      return new Element('div', {'class' : 'errormessage'}).update("Can not access the list of remote servers. " +
-                                                                   "Please contact your administrator for further details.").insert(retryButton);
+      return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noServerListMessage')").insert(retryButton);
     },
 
     _generateCantConnectToServerMessage: function(failMessage, username, password) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Retry', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._loginAndGetConfig(username, password);
@@ -287,12 +281,11 @@
     },
 
     _generateNoPushServerConfiguredMessage: function() {
-          return new Element('div', {'class' : 'errormessage'}).update("No remote PhenoTips target servers are configured in your system.&lt;br/&gt;" +
-                                                                       "Please contact your administrator for further details.");
+          return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noPushServerConfiguredMessage')");
     },
 
     _generateIncorrectCredentialsMessage: function() {
-          return new Element('div', {'class' : 'errormessage'}).update("Unable to authenticate user: incorrect credentials");
+          return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noPushServerConfiguredMessage')");
     },
 
     _generateFailedToPushPatient: function(errorMessage, retryButton, retryAsNew) {
@@ -300,7 +293,7 @@
 
       if (retryButton)
       {
-        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Retry', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryButton.observe('click', function(event) {
           _this._pushPatient();
@@ -309,7 +302,7 @@
       }
       if (retryAsNew)
       {
-        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Push as a new patient', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retryAsNew')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryAsNewButton.observe('click', function(event) {
           _this._selectPushNewPatient();
@@ -399,7 +392,7 @@
 
       this._onNoServerSelected();
 
-      this._serverLoadMessages.update(new Element('div', {'class' : 'infomessage'}).update("Retrieving server list..."));
+      this._serverLoadMessages.update(new Element('div', {'class' : 'infomessage'}).update("$services.localization.render('phenotips.PushPatient.retrievingListMessage')"));
       this._serverLoadMessages.show();
       this._serverSelector.hide();
       this._container.addClassName('loading');
@@ -569,16 +562,15 @@
     _updateUserList: function(selectedUserName, lastLoginResponse, user_when_failed, password_when_failed) {
       if (lastLoginResponse) {
         if (this._lastLoginResponse.nolocalresponse) {
-          this._userManager.update(this._generateCantConnectToServerMessage("Can't connect to local service. Make sure you are currently logged in.", user_when_failed, password_when_failed));
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.noLocalResponse')", user_when_failed, password_when_failed));
           return;
         }
         if (this._lastLoginResponse.unauthorizedserver) {
-          this._userManager.update(this._generateCantConnectToServerMessage("This server is not authorized to push patients to the selected server.&lt;br/&gt;"+
-                                                                            "please contact your administrator", user_when_failed, password_when_failed));
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.unauthorizedServer')", user_when_failed, password_when_failed));
           return;
         }
         if (this._lastLoginResponse.serverconnectproblem) {
-          this._userManager.update(this._generateCantConnectToServerMessage("Cannot connect to selected PhenoTips server.", user_when_failed, password_when_failed));
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.serverConnectProblem')", user_when_failed, password_when_failed));
           return;
         }
       }
@@ -633,12 +625,12 @@
       var preApprovedChecked = false;
       if (this._lastApprovedUser) {
         preApprovedChecked = !selectedUserName || (this._lastApprovedUser == selectedUserName);
-        var forgetmeBox = new Element('input', {type: 'button', name : 'logout', 'value': 'Log out', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var forgetmeBox = new Element('input', {type: 'button', name : 'logout', 'value': "$services.localization.render('phenotips.PushPatient.logOut')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
         forgetmeBox.observe('click', function(event) {
            this._onUnapprovedUser();
            this._logoutUser();
         }.bind(this));
-        var preApprovedOption = _addUserOption(preApprovedChecked, "check", "Currently authenticated user: &lt;strong&gt;" + this._lastApprovedUser + "&lt;/strong&gt;&amp;nbsp;",
+        var preApprovedOption = _addUserOption(preApprovedChecked, "check", "$services.localization.render('phenotips.PushPatient.currentlyAuthenticatedMessage')".replace("__lastApprovedUser__", "&lt;strong&gt;"+this._lastApprovedUser+"&lt;/strong&gt; &amp;nbsp;"),
                                                function(){
                                                  this._userLoginError.hide();
                                                  this._onUnapprovedUser();
@@ -649,18 +641,18 @@
 
       // add an option to enter username &amp; password manually
       var userPasswrodBox = new Element("span", {'class' : 'user-password-box'});
-      var userNameBox = new Element("input", {type: 'text', "id": "newusername", "value": "", "placeholder": 'user name', size: 12});
+      var userNameBox = new Element("input", {type: 'text', "id": "newusername", "value": "", "placeholder": "$services.localization.render('phenotips.PushPatient.userName')", size: 12});
       if (selectedUserName) {
         userNameBox.value = selectedUserName;
       }
-      var passwordBox = new Element("input", {type:'password', "id": "password", "value": "", "placeholder": 'password', size: 12});
-      var authorizeButton = new Element('input', {type: 'button', id:"authorizenewuser", 'name':'authorize', 'value':'Log in', 'class':'button secondary'});
+      var passwordBox = new Element("input", {type:'password', "id": "password", "value": "", "placeholder": "$services.localization.render('phenotips.PushPatient.password')", size: 12});
+      var authorizeButton = new Element('input', {type: 'button', id:"authorizenewuser", 'name':'authorize', 'value':"$services.localization.render('phenotips.PushPatient.logIn')", 'class':'button secondary'});
       authorizeButton.observe('click', function(event) {
          if (passwordBox.value != "") {
              this._userLoginError.hide();
              this._loginAndGetConfig(userNameBox.value, passwordBox.value);
          } else {
-             this._userLoginError.update("No password provided");
+             this._userLoginError.update("$services.localization.render('phenotips.PushPatient.noPassword')");
              this._userLoginError.show();
          }
       }.bind(this));
@@ -677,7 +669,7 @@
                      .insert(authorizeButton.wrap('span', {'class' : 'buttonwrapper'}));
 
       if (this._lastApprovedUser) {
-          userList.insert(_addUserOption(!preApprovedChecked, "user", "Another remote user: ", this._onUnapprovedUser.bind(this), userPasswrodBox));
+          userList.insert(_addUserOption(!preApprovedChecked, "user", "$services.localization.render('phenotips.PushPatient.addAnotherUser')", this._onUnapprovedUser.bind(this), userPasswrodBox));
       } else {
           userList.insert(userPasswrodBox.wrap('td', {'class' : 'controlled-element'}).wrap('tr'));
       }
@@ -688,7 +680,7 @@
 
       if (lastLoginResponse) {
         if (this._lastLoginResponse.loginfailed &amp;&amp; password_when_failed != "") {   // ignore unseccessful passwrodless logins - maybe token has expired, it is OK
-          this._userLoginError.update("Unable to authorize user: incorrect credentials");
+          this._userLoginError.update("$services.localization.render('phenotips.PushPatient.cantAuthorizeUser')");
           this._userLoginError.show();
         }
       }
@@ -734,9 +726,9 @@
       };
 
       if (!this._updatingExistingPatient())  {
-          var noGroupMessage = "None";
+          var noGroupMessage = "&lt;span class ='hint'&gt;$services.localization.render('phenotips.PushPatient.noGroupMessage')&lt;/span&gt;";
           if (groupList.length == 0) {
-            noGroupMessage += " &lt;span class ='hint'&gt;(user " + this._lastApprovedUser + " does not belong to any PhenoTips groups on the selected server)&lt;/span&gt;";
+            noGroupMessage += " $services.localization.render('phenotips.PushPatient.noGroupMessageHint')".replace("__lastApprovedUser__", this._lastApprovedUser);
           }
           groupListElement.insert(_addGroupOption(true, "user", noGroupMessage, "__self"));
 
@@ -744,8 +736,8 @@
                 groupListElement.insert(_addGroupOption(false, "group", group, group));
             });
       } else {
-          var msg = "Keep existing group(s)";
-          msg += " &lt;span class ='hint'&gt;(the group can't be changed when updating an existing patient)&lt;/span&gt;";
+          var msg = "$services.localization.render('phenotips.PushPatient.keepGroupMessage')";
+          msg += " &lt;span class ='hint'&gt;$services.localization.render('phenotips.PushPatient.keepGroupMessageHint')&lt;/span&gt;"
           groupListElement.insert(_addGroupOption(true, "check", msg, "__self"));
       }
 
@@ -802,22 +794,22 @@
         var dataCategories = [
            {
               'name'     : 'external_id',
-              'title'    : 'Identifier',
+              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewIdentifier')",
               'callback' : '__displayId'
            },
            {
               'name'     : 'sex',
-              'title'    : 'Sex',
+              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewSex')",
               'callback' : '__displaySex'
            },
            {
               'name'     : 'features',
-              'title'    : 'Phenotipic features',
+              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewFeatures')",
               'callback' : '__displayFeatures'
            },
            {
               'name'     : 'disorders',
-              'title'    : 'Known disorders',
+              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewDisorders')",
               'callback' : '__displayFeatures'
            },
         ];
@@ -833,13 +825,13 @@
         return new Element('dd').insert(id);
     },
     __displaySex : function(sex) {
-        return new Element('dd').insert((sex == "F") ? "Female" : (sex == "M" ? "Male" : "Unknown"));
+        return new Element('dd').insert((sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" : (sex == "M" ? "$services.localization.render('phenotips.PushPatient.male')" : "$services.localization.render('phenotips.PushPatient.unknown')"));
     },
 
     __displayFeatures : function(features) {
         var result = new Element('dd');
         features.each(function (f) {
-          result.insert(new Element('div', {'class' : (f.observed == "no" ? "negative" : "")}).update((f.observed == "no" ? "NO " : "") + f.label).insert(f.id &amp;&amp; new Element('span', {'class' : 'hint'}).update(' (' + f.id + ')')  || '') );
+          result.insert(new Element('div', {'class' : (f.observed == "no" ? "negative" : "")}).update((f.observed == "no" ? "$services.localization.render('phenotips.PushPatient.negative')" : "") + f.label).insert(f.id &amp;&amp; new Element('span', {'class' : 'hint'}).update(' (' + f.id + ')')  || '') );
         });
         return result;
     },
@@ -887,7 +879,7 @@
         var serverLink = new Element('a', {'href' : serverData.url, 'target' : '_blank', 'class' : 'remote-server-name'}).update(this._selectedServer);
 
         if (this._numAvailableServers == 1) {
-            this._serverInfo.update("There is only one configured remote server: ");
+            this._serverInfo.update("$services.localization.render('phenotips.PushPatient.oneServerMessage')");
         }
 
         var existingPatientDataInfo = '';
@@ -897,19 +889,19 @@
 
            var description = new Element('p', {'id': 'server-description'});
            var lastUpdated = serverData.pushAgeHours;
-           description.insert("This patient has been uploaded to this server ");
+           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')");
            if (lastUpdated &lt; 1) {
-              description.insert(" less than an hour ago");
+              description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour')");
            } else {
               if (lastUpdated &gt;= 48) {
-                  description.insert(" " + Math.floor(lastUpdated/24) + " days ago");
+                  description.insert(" " + Math.floor(lastUpdated/24) + " $services.localization.render('phenotips.PushPatient.patientUploadedDays')");
               } else {
-                  description.insert(" " + lastUpdated + " hours ago");
+                  description.insert(" " + lastUpdated + " $services.localization.render('phenotips.PushPatient.patientUploadedHours')");
               }
            }
 
-           description.insert(" as ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
-           description.insert("&lt;br/&gt;Further pushes will attempt to update the patient on the remote server.")
+           description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedAsID') ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
+           description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')")
            existingPatientDataInfo.insert(description);
 
            var _this = this;
@@ -917,10 +909,10 @@
            var radio1 = new Element('input', {"type" : "radio", "value": "update", "id":"choice-update-patient", "name": "new-or-update"});
            radio1.checked = true;
            radio1.observe('change', function() { _this._displayGroupPicker() });
-           var label1 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("Update remote patient");
+           var label1 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("$services.localization.render('phenotips.PushPatient.updateRemotePatient')");
            var radio2 = new Element('input', {"type" : "radio", "value": "new", "id":"choice-new-patient", "name": "new-or-update"});
            radio2.observe('change', function() { _this._displayGroupPicker() } );
-           var label2 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-plus-square'}).update(' ')).insert(radio2).insert("Create new remote patient");
+           var label2 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-plus-square'}).update(' ')).insert(radio2).insert("$services.localization.render('phenotips.PushPatient.createRemotePatient')");
            existingPatientDataInfo.insert(label1).insert(label2);
         }
 
@@ -950,7 +942,7 @@
       this._serverLoadMessages.hide();
 
       var options = new Element('select', {id: 'server-selector'});
-      options.insert(new Element('option', {value: "none"}).update("Loading server list..."));
+      options.insert(new Element('option', {value: "none"}).update("$services.localization.render('phenotips.PushPatient.loadingServers')"));
       options.observe('change', this._onServerOptionChange.bind(this));   // on server selection: enable &amp; repopulate user/group lists
 
       this._serverSelector = new Element('div', {id: 'server-selector-div'});
@@ -970,9 +962,9 @@
       var buttons = new Element('div', {'class' : 'buttons'});
       buttons.insert(new Element('input', {type: 'hidden', name : 'xaction', 'value': 'push'}));
       buttons.insert(new Element('input', {type: 'hidden', name : 'patient', 'value': this._patientId}));
-      var pushButtonTitle = this._pushManyPatients ? 'Next: Select patients and data fields to be pushed' : 'Push';
+      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.submit')" : "$services.localization.render('phenotips.PushPatient.button.push')";
       buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': pushButtonTitle, 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
-      buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+      buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$services.localization.render('phenotips.PushPatient.button.cancel')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(buttons);
 
       this._pushResultSection = new Element ('div', {'class' : 'section-contents'});
@@ -1030,7 +1022,7 @@
         var radioSelectUpdate = document.getElementById('choice-update-patient-label');
         if (radioSelectUpdate) {
             var serverDesc = document.getElementById('server-description');
-            serverDesc.insert("&lt;p&gt;Selected server does not allow updating existing patients, so can only push again to a new patient record.&lt;/p&gt;");
+            serverDesc.insert("&lt;p&gt;$services.localization.render('phenotips.PushPatient.serverDesc')&lt;/p&gt;");
             radioSelectUpdate.hide()
         }
     },
@@ -1089,11 +1081,11 @@
 
                     if (_this._updatingExistingPatient()) {
                         var linkToOld = "(&lt;a href='" + newURL + "' target='_blank'&gt;click here to open remote patient&lt;/a&gt;)";
-                        _this._pushResultSection.update(new Element('div', {'class' : 'infomessage'}).update("Updated patient successfully. " + linkToOld));
+                        _this._pushResultSection.update(new Element('div', {'class' : 'infomessage'}).update("$services.localization.render('phenotips.PushPatient.successfulUpdate') " + linkToOld));
                     } else {
                         var linkToNew = "&lt;a href='" + newURL + "' target='_blank'&gt;" + res.patientid + "&lt;/a&gt;";
                         _this._pushResultSection.update(new Element('div', {'class' : 'infomessage'})
-                                                .update("Pushed patient successfully, ID of the new patient on the remote server is " + linkToNew));
+                                                .update("$services.localization.render('phenotips.PushPatient.successfulPush') " + linkToNew));
                     }
 
                     // update UI to reflect that we have already pushed this patient: default option
@@ -1102,29 +1094,27 @@
                     _this._displayGroupPicker();
                 } else {
                     if (res.updatesdisabled) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient - updates are disbaled on the remote server."));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedUpdatesDisabled')"));
                     } else
                     if (res.invalidguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient - stored remote GUID is incorrect. "+
-                                                                                           "Maybe the patient was deleted on the remote server.&amp;nbsp;", false, true));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedInvalidGuid')&amp;nbsp;", false, true));
                     } else
                     if (res.accessdeniedguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient - access denied. "+
-                                                                                           "Check if the given remote user has access rights to update the patient."));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedAccessDeniedGuid')"));
                     } else
                     if (res.accessdeniedguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient: access denied"));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedAccessDenied')"));
                     } else
                     if (res.cantconnect) {
-                      _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to connect to server", true));
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedCantConnect')", true));
                     } else {
-                      _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient", true));
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailed')", true));
                     }
                 }
                 //_this._dialog.closeDialog();
               } catch (e) {
                 console.log("EXCEPTION: " + e);
-                _this._pushResultSection.update(_this._generateFailedToPushPatient("Error updating patient (" + e + ")", true));
+                _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedException')".replace("__e__", e), true));
               }
           },
           onFailure : function(response) {
@@ -1179,27 +1169,27 @@
                    if (previousPushResult.status != "success") {
                        pushResult.className = "multi-push-results errormessage";
                        if (previousPushResult.cantconnect) {
-                           pushResult.insert(" unable to connect to the remote server.");
+                           pushResult.insert(" $services.localization.render('phenotips.PushPatient.pushFailedCantConnect')");
                            return;
                        }
                        var reason = "failed.";
                        if (previousPushResult.invalidguid) {
-                           reason = "unable to update: stored remote GUID is incorrect.";
+                           reason = "$services.localization.render('phenotips.PushPatient.incorrectGuid')";
                        } else if (previousPushResult.accessdeniedguid) {
-                           reason = "unable to update: access denied.";
+                           reason = "$services.localization.render('phenotips.PushPatient.accessDenied')";
                        }
                        pushResult.insert(' ' + reason + "&lt;br/&gt;");
                    } else {
                        pushResult.innerHTML = pushResult.innerHTML.replace(/Pushing (\w+?)\.\.\.$/, "");
                        var newURL       = _this._remoteServers[_this._selectedServer].url + previousPushResult.patienturl;
                        var linkToRemote = "&lt;a href='" + newURL + "' target='_blank'&gt;" + previousPushResult.patientid + "&lt;/a&gt;";
-                       pushResult.insert("&lt;div class='pushed-ok-message'&gt;Pushed " + prevPatientID + " successfully, remote patient ID is " + linkToRemote + "&lt;/div&gt;");
+                       pushResult.insert("&lt;div class='pushed-ok-message'&gt;" + "$services.localization.render('phenotips.PushPatient.successfulPushWithId')".replace("__prevPatientID__", prevPatientID).replace("__linkToRemote__", linkToRemote) + "&lt;/div&gt;");
                    }
                }
                // push next
                if (next &lt; patients.length) {
                    var nextPatientID = patients[next++];
-                   pushResult.insert("Pushing " + nextPatientID + "...");
+                   pushResult.insert("$services.localization.render('phenotips.PushPatient.pushing')".replace("__nextPatientID__", nextPatientID));
                    _this._pushPatient(nextPatientID, pushSingleFunc, columns);
                }
             }
@@ -1210,8 +1200,7 @@
             if (patients.length == 0) {
                 return;
             }
-            var confirmMessage = "Do you want to push the following " + patients.length + " patients to " + _this._selectedServer + "?"+
-                                 "&lt;br/&gt;&lt;div class='plainmessage multi-push-patient-list'&gt;&lt;ol&gt;";
+            var confirmMessage = "$services.localization.render('phenotips.PushPatient.confirmMessage')".replace("__numPatients__", patients.length).replace("__selectServer__",  _this._selectedServer)+ "&lt;br/&gt;&lt;div class='plainmessage multi-push-patient-list'&gt;&lt;ol&gt;";
             patients.each(function(item) {
                 confirmMessage += "&lt;li&gt;" + item + "&lt;/li&gt;";
             });
@@ -1227,7 +1216,7 @@
         }
         var exportTool = $('phenotips_export');
         if (!exportTool) return;
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.exportTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content
@@ -1649,14 +1638,14 @@ $xwiki.ssx.use('PhenoTips.PushPatient')##
 #foreach ($mapEntry in $configuredServers.entrySet())
   ## make sure PhenomeCentral is enabled/configured, and if it is list it as the first push target
   #if ($mapEntry.key.getServerID() == "PhenomeCentral")
-    (% id="push-patient-pc" name="PhenomeCentral" %)((([[Push to PhenomeCentral&gt;&gt;path:#]])))
+    (% id="push-patient-pc" name="PhenomeCentral" %)((([[$services.localization.render('phenotips.PushPatient.pushPhenomeCentral')&gt;&gt;path:#]])))
   #end
 #end
 #set ($counter = 0)
 #foreach ($mapEntry in $configuredServers.entrySet())
   #set ($serverName = $mapEntry.key.getServerID())
   #if ($serverName != "PhenomeCentral")
-    (% id="push-patient-$counter" name="$serverName" %)((([[Push to $serverName&gt;&gt;path:#]])))
+    (% id="push-patient-$counter" name="$serverName" %)((([[$services.localization.render('phenotips.PushPatient.pushToAnotherServer', [$serverName])&gt;&gt;path:#]])))
     #set( $counter = $counter + 1 )
   #end
 #end

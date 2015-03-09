@@ -300,11 +300,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #macro(_formDesigner__displayExtensionTools $extension $tools)
 {{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
 #if ($globalConfig)
-#if ($tools.required)&lt;label class="extension-tool flag" title="Required?"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
-#if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' 'Modify this extension' $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
-#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' 'Delete this extension' $extension.doc.getURL('delete') 'target="_blank"')#end
+#if ($tools.required)&lt;label class="extension-tool flag" title="$services.localization.render('phenotips.formDesigner.requiredExtension')"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
+#if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' "$services.localization.render('phenotips.formDesigner.editExtension')" $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
+#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' "$services.localization.render('phenotips.formDesigner.deleteExtension')" $extension.doc.getURL('delete') 'target="_blank"')#end
 #end
-#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'arrows' 'Drag and drop to reorganize' '#')#end
+#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'arrows' "$services.localization.render('phenotips.formDesigner.moveExtension')" '#')#end
 &lt;/div&gt;{{/html}}
 #end
 
@@ -389,9 +389,9 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
   &lt;input type="hidden" name="create_extension" value="1"/&gt;
   &lt;input type="hidden" name="xredirect" value="$doc.getURL('get', 'showsection=')"/&gt;
-  &lt;input type="text" name="extension_id" value="" placeholder='Section identifier (e.g. "new-section")' title="Alphanumeric characters and dashes only" size="32"/&gt;
-  &lt;input type="text" name="extension_name" value="" placeholder="Section title" size="32"/&gt;
-  &lt;input class="button" type="button" name="create_extension" value="Create"/&gt;
+  &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
+  &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
+  &lt;input class="button" type="button" name="create_extension" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;
 &lt;/div&gt;&lt;/form&gt;{{/html}}
 
 #end
@@ -407,10 +407,10 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 (% class="designer-panel sections" %)(((
 #_formDesigner__displaySections()
 #if ($globalConfig)
-(% id="new-section" class="new-section xformInline" %)((((% class="section-title" %)(((New section...))){{html clean=false wiki=false}}
-  &lt;input type="text" name="extension_id" value="" placeholder='Section identifier (e.g. "new-section")' title="Alphanumeric characters and dashes only" size="32"/&gt;
-  &lt;input type="text" name="extension_name" value="" placeholder="Section title" size="32"/&gt;
-  &lt;input class="button" type="button" name="${formSubmit}" value="Create"/&gt;{{/html}}
+(% id="new-section" class="new-section xformInline" %)((((% class="section-title" %)((($services.localization.render('phenotips.formDesigner.newSection')))){{html clean=false wiki=false}}
+  &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
+  &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
+  &lt;input class="button" type="button" name="${formSubmit}" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;{{/html}}
 )))## new section
 #end
 )))
@@ -419,11 +419,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ##
 ## Only enable reorganization for global config
 ##
-(% class="designer-panel hint" %)(((Drag and drop to organize the form)))
+(% class="designer-panel hint" %)((($services.localization.render('phenotips.formDesigner.dragDrop.hint'))))
 (% class="designer-panel extensions" %)(((
 #set ($defaultSectionData = {
   "id" : "${fieldExtensionPointIdPrefix}none",
-  "title" : "Available information to display in the form's sections",
+  "title" : "$services.localization.render('phenotips.formDesigner.availableInfo')",
   "enabled" : true
 })
 #_formDesigner__displaySection($defaultSectionData false)
@@ -433,16 +433,16 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## Enable mapping configuration as well
 ##
 (% class="mappingPreviewContainer" %)(((
-== Phenotypes to display by default ==
+== $services.localization.render('phenotips.formDesigner.defaultPhenotypes.heading') ==
 
-{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose below the configuration document to use.{{/info}}
-; Phenotype configuration document
+{{info}}$services.localization.render('phenotips.formDesigner.defaultPhenotypes.info'){{/info}}
+; $services.localization.render('phenotips.formDesigner.configurationDocs.title')
 : (((
-{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{studyConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;None (use the global default)&lt;/label&gt;{{/html}}
+{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{studyConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;$services.localization.render('phenotips.formDesigner.defaultPhenotypes.defaultOption')&lt;/label&gt;{{/html}}
 $doc.display('mapping', 'edit')
 )))
 
-(% class="hint under" %)(((Preview)))
+(% class="hint under" %)((($services.localization.render('phenotips.formDesigner.preview'))))
 
 (% id="mappingPreview"%)((()))
 )))
@@ -464,11 +464,11 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 #end
 &lt;/div&gt;
 &lt;div class="buttons"&gt;
- &lt;input class="button" type="submit" name="${formSubmit}" value="Save patient form configuration"/&gt;
+ &lt;input class="button" type="submit" name="${formSubmit}" value="$services.localization.render('phenotips.formDesigner.save')"/&gt;
 &lt;/div&gt;
 &lt;/form&gt;{{/html}}
 #else
-{{warning}}You don't have permission to access this configuration.{{/warning}}
+{{warning}}$services.localization.render('phenotips.formDesigner.noPermissionWarning'){{/warning}}
 #end
 #end
 {{/velocity}}

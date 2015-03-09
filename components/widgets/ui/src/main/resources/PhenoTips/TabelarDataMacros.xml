@@ -48,15 +48,15 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;{{/html}}##
 #end
 
 #macro (__extradata_rejectTool $object $anchor $options)
-  {{html clean="false"}}&lt;a class="action reject" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" data-bind="$!{options.rejectToClass}" title="Reject"&gt;&lt;i class="fa fa-level-down"&gt;&lt;/i&gt;&lt;/a&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action reject" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" data-bind="$!{options.rejectToClass}" title="$services.localization.render('phenotips.tableMacros.reject')"&gt;&lt;i class="fa fa-level-down"&gt;&lt;/i&gt;&lt;/a&gt;{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.newEntry')"&gt;$services.localization.render('phenotips.tableMacros.newEntry')&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
 #end
 
 #macro (__extradata_displayTable $dataClassName $options)
@@ -67,7 +67,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   #if ($dataClass)
     #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
     #if ($options.mode != 'edit' &amp;&amp; $dataObjects.size() == 0)
-      (% class="hint" %)None specified
+      (% class="hint" %)$services.localization.render('phenotips.tableMacros.noObjects')
     #elseif ($options.mode == 'export')
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end#if ("$!{options.rejectToClass}" != '') withReject#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #set ($disableLabels = true)
@@ -224,7 +224,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         }
       },
       {
-         confirmationText : "Are you sure you wish to delete this row?"
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
       });
     },
     ajaxAddData : function (event) {
@@ -242,7 +242,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       }
       var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
       if (!dataTable) {
-        new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');
       }
       var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
       var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
@@ -320,7 +320,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         }
       },
       {
-         confirmationText : "Are you sure you wish to reject this row?"
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rejectConfirmation')"
       });    
     },
   });
@@ -335,7 +335,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

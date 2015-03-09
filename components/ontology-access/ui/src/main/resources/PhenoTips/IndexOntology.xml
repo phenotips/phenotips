@@ -50,61 +50,69 @@
 
   #if ("$!{request.ajax}" == '1')
     #if ($result == 0)
-      Indexing succeeded.
+      $services.localization.render('phenotips.IndexOntology.success')
     #else
       $response.setStatus(500)##
-      Indexing failed.
+      $services.localization.render('phenotips.IndexOntology.failure')
     #end
 
   #else
     #if ($result == 0)
-      #set ($indexMessage = "{{info}}Indexing of $!{request.url} succeeded.{{/info}}")
+      #set ($indexMessage = "{{info}}$services.localization.render('phenotips.IndexOntology.successMessage', [$!{request.url}]){{/info}}")
     #else
-      #set ($indexMessage = "{{error}}Indexing of $!{request.url} failed.{{/error}}")
+      #set ($indexMessage = "{{error}}$services.localization.render('phenotips.IndexOntology.failureMessage', [$!{request.url}]){{/error}}")
     #end
   #end
 #end
 #if ("$!{request.ajax}" != '1')
 $xwiki.jsx.use('PhenoTips.IndexOntology')##
-== Index an ontology ==
+== $services.localization.render('phenotips.indexOntology.heading') ==
 (% class="half" %)(((
 {{html wiki=false clean=false}}
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
-&lt;label for="ontology-hpo-url"&gt;Human Phenotype Ontology&lt;/label&gt;
+&lt;label for="ontology-hpo-url"&gt;$services.localization.render('phenotips.IndexOntology.hpo')&lt;/label&gt;
 #set ($version = $services.ontologies.hpo.Version)
-&lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
-&lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
+#if (!$version)
+  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
+#else
+  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.version',[$version])&lt;/span&gt;
+#end
+&lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
 &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="hpo"/&gt;
 &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="$services.localization.render('phenotips.IndexOntology.startReindex')"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
 
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
-&lt;label for="ontology-chebi-url"&gt;Chemical Entities of Biological Interest Ontology&lt;/label&gt;
+&lt;label for="ontology-chebi-url"&gt;$services.localization.render('phenotips.IndexOntology.chebi')&lt;/label&gt;
 #set ($version = $services.ontologies.chebi.Version)
-&lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
-&lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
+#if (!$version)
+  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
+#else
+  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.version',[$version])&lt;/span&gt;
+#end
+&lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
 &lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.ontologies.chebi.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="chebi"/&gt;
 &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="$services.localization.render('phenotips.IndexOntology.startReindex')"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}
 
-{{warning}}Indexing may take a while, please be patient.{{/warning}}
+{{warning}}$services.localization.render('phenotips.IndexOntology.longWaitWarning'){{/warning}}
 
 )))
 #end
@@ -419,7 +427,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
         formData.set('outputSyntax', 'plain');
         formData.set('ajax', '1');
         // Create a notification message to display to the user when the submit is being sent
-        form._x_notification = new XWiki.widgets.Notification("Indexing in progress...", "inprogress");
+        form._x_notification = new XWiki.widgets.Notification("$services.localization.render('phenotips.IndexOntology.inProgress')", "inprogress");
         form.disable();
         // FIXME Use the XWiki.Document JS API after upgrading to XWiki 6.0
         new Ajax.Request("$xwiki.getURL('PhenoTips.IndexOntology', 'get')", {
@@ -431,7 +439,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
             onFailure : function (response) {
               var failureReason = response.statusText;
               if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-                failureReason = 'Server not responding';
+                failureReason = "$services.localization.render('phenotips.IndexOntology.noResponse')";
               }
               form._x_notification.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
             }.bind(this),

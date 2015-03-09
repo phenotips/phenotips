@@ -441,6 +441,11 @@ h1:target, h2:target, h3:target {
 }
 .main {
   padding-bottom: 0;
+}
+.gadget label[for=create-patient-record] {
+  color: $theme.linkColor;
+  cursor: pointer;
+  float: right;
 }</code>
     </property>
     <property>
