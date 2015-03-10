@@ -408,9 +408,9 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #_formDesigner__displaySections()
 #if ($globalConfig)
 (% id="new-section" class="new-section xformInline" %)((((% class="section-title" %)((($services.localization.render('phenotips.formDesigner.newSection')))){{html clean=false wiki=false}}
-  &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
-  &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
-  &lt;input class="button" type="button" name="${formSubmit}" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;{{/html}}
+  &lt;input type="text" name="extension_id" value="" placeholder="$escapetool.xml($services.localization.render('phenotips.formDesigner.sectionID.placeholder'))" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
+  &lt;input type="text" name="extension_name" value="" placeholder="$escapetool.xml($services.localization.render('phenotips.formDesigner.sectionTitle.placeholder'))" size="32"/&gt;
+  &lt;input class="button" type="button" name="${formSubmit}" value="$escapetool.xml($services.localization.render('phenotips.formDesigner.createButton'))"/&gt;{{/html}}
 )))## new section
 #end
 )))

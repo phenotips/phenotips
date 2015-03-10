@@ -2035,7 +2035,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>2,1</position>
     </property>
     <property>
-      <title>{{translation key="phenotips.homepage.myData.title"/}}#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt;&lt;/span&gt;$services.localization.render('phenotips.homepage.myData.createPatient')&lt;/label&gt;#end</title>
+      <title>{{translation key="phenotips.homepage.myData.title"/}}#if($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.homepage.myData.createPatient')&lt;/label&gt;#end</title>
     </property>
   </object>
   <object>
