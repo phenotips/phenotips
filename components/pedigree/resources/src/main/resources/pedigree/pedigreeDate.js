@@ -128,7 +128,7 @@ var PedigreeDate = Class.create({
     },
 
     isSet: function() {
-        return (this.decade !== null);
+        return (this.decade !== null || this.year !== null || this.month !== null || this.day !== null);
     },
 
     isComplete: function() {
@@ -168,7 +168,7 @@ var PedigreeDate = Class.create({
 
     // Returns either a decade or the year (both as string)
     getBestPrecisionStringYear: function() {
-        if (!this.isSet()) return "";
+        if (!this.isComplete()) return "";
         if (this.year == null) return this.decade;
         return this.year.toString();
     },
@@ -178,6 +178,19 @@ var PedigreeDate = Class.create({
         return this.getBestPrecisionStringYear().replace(/s^/,"");
     },
 
+    getBestPrecisionStringDDMMYYY: function() {
+        if (!this.isComplete()) return "";
+        if (this.year == null) return this.decade;
+        var dateStr = this.getYear().toString();
+        if (this.getMonth() != null) {
+            dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
+            if (this.getDay() != null) {
+                dateStr = ("0" + this.getDay()).slice(-2) + "-" + dateStr;
+            }
+        }
+        return dateStr;
+     },
+
     // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime()) 
     getTime: function() {
         return this.toJSDate().getTime();
@@ -186,7 +199,7 @@ var PedigreeDate = Class.create({
     // Returns an integer or null.
     // Iff "failsafe" returns first year of the decade if year is not set and decade is
     getYear: function(failsafe) {
-        if (this.isSet() && this.year == null && failsafe) {
+        if (this.isComplete() && this.year == null && failsafe) {
             // remove trailing "s" from the decade && convert to integer
             var year = parseInt( this.decade.slice(0,-1) );
             return year;
@@ -197,7 +210,7 @@ var PedigreeDate = Class.create({
     // Returns an integer or null
     // Iff "failsafe" returns 1 if month is not set but at least some date (with any precision) is
     getMonth: function(failsafe) {
-        if (this.isSet() && this.month == null && failsafe) {
+        if (this.isComplete() && this.month == null && failsafe) {
             return 1;
         }
         return this.month;
@@ -206,17 +219,17 @@ var PedigreeDate = Class.create({
     // Returns an integer or null
     // Iff "failsafe" returns 1 if day is not set but at least some date (with any precision) is
     getDay: function(failsafe) {
-        if (this.isSet() && this.day == null && failsafe) {
+        if (this.isComplete() && this.day == null && failsafe) {
             return 1;
         }
         return this.day;
     },
 
     canBeAfterDate: function(otherPedigreeDate) {
-        if (!this.isSet()) {
+        if (!this.isComplete()) {
             return true;
         }
-        if (!otherPedigreeDate.isSet()) {
+        if (!otherPedigreeDate.isComplete()) {
             return true;
         }
         if (this.getTime() > otherPedigreeDate.getTime()) {

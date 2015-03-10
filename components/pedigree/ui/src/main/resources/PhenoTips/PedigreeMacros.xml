@@ -49,51 +49,51 @@
   #set ($geneColors = $pedigreeDataJSON.settings.colors.genes)
   #set ($cancerColors = $pedigreeDataJSON.settings.colors.cancers)
 
-  #if (($disorderColors &amp;&amp; $disorderColors.size() > 0) || ($geneColors &amp;&amp; $geneColors.size() > 0) || ($cancerColors &amp;&amp; $cancerColors.size() > 0))
+  #if (($disorderColors &amp;&amp; $disorderColors.size() &gt; 0) || ($geneColors &amp;&amp; $geneColors.size() &gt; 0) || ($cancerColors &amp;&amp; $cancerColors.size() &gt; 0))
     #set ($listyle="margin: 0 .5em 0 0; font-family: FreeSerif, serif;")
     #set ($divstyle="")
     #if ($header)
-      &lt;strong>$header&lt;/strong>
+      &lt;strong&gt;$header&lt;/strong&gt;
       #set ($divstyle="margin-top: 1em; margin-left: 2em;")
     #end
-    &lt;div class="pedigree-legend" style="$divstyle">
+    &lt;div class="pedigree-legend" style="$divstyle"&gt;
     #set ($disorderNames = $pedigreeDataJSON.settings.names.disorders)
-    #if ($disorderColors &amp;&amp; $disorderNames &amp;&amp; $disorderColors.size() > 0)
+    #if ($disorderColors &amp;&amp; $disorderNames &amp;&amp; $disorderColors.size() &gt; 0)
       Disorders:
-      &lt;ul class="pedigree-legend-list" style="margin-top: .4em; margin-bottom: .5em;">
+      &lt;ul class="pedigree-legend-list" style="margin-top: .4em; margin-bottom: .5em;"&gt;
       #foreach ($color in $disorderColors.entrySet())
-        &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
-          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">⬤&lt;/span>
-          &lt;span class="pedigree-disorder-name">$disorderNames[$color.key]&lt;/span>
-        &lt;/li>
+        &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;⬤&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$disorderNames[$color.key]&lt;/span&gt;
+        &lt;/li&gt;
       #end
-      &lt;/ul>
+      &lt;/ul&gt;
     #end
-    #if ($geneColors &amp;&amp; $geneColors.size() > 0)
+    #if ($geneColors &amp;&amp; $geneColors.size() &gt; 0)
       Candidate Genes:
-      &lt;ul class="pedigree-legend-list" style="margin-top: .4em">
+      &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
       #foreach ($color in $geneColors.entrySet())
-        &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
-          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">⬤&lt;/span>
-          &lt;span class="pedigree-disorder-name">$color.key&lt;/span>
-        &lt;/li>
+        &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;⬤&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;
+        &lt;/li&gt;
       #end
-      &lt;/ul>
+      &lt;/ul&gt;
     #end
-    #if ($cancerColors &amp;&amp; $cancerColors.size() > 0)
+    #if ($cancerColors &amp;&amp; $cancerColors.size() &gt; 0)
       Cancers:
-      &lt;ul class="pedigree-legend-list" style="margin-top: .4em">
+      &lt;ul class="pedigree-legend-list" style="margin-top: .4em"&gt;
       #foreach ($color in $cancerColors.entrySet())
-        &lt;li class="pedigree-disorder-item" style="list-style-type: none;">
-          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle">⬤&lt;/span>
-          &lt;span class="pedigree-disorder-name">$color.key&lt;/span>
-        &lt;/li>
+        &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
+          &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;⬤&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$color.key&lt;/span&gt;
+        &lt;/li&gt;
       #end
-      &lt;/ul>
+      &lt;/ul&gt;
     #end
 
 
-    &lt;/div>
+    &lt;/div&gt;
   #end
 #end
 {{/velocity}}</content>

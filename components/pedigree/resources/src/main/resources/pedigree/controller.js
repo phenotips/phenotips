@@ -307,7 +307,7 @@ var Controller = Class.create({
                 changedValue = true;
 
                 if (propertySetFunction == "setLastName") {
-                    if (PedigreeEditor.attributes.propagateLastName) {
+                    if (editor.getPreferencesManager().getConfigurationOption("propagateFatherLastName")) {
                         if (node.getGender(nodeID) == 'M') {
                             // propagate last name as "last name at birth" to all descendants (by the male line)
                             Controller._propagateLastNameAtBirth(nodeID, propValue, oldValue);
@@ -614,15 +614,17 @@ var Controller = Class.create({
             childParams["numPersons"] = numPersons;
         }
 
-        var lastName = null;
-        if (editor.getGraph().getGender(personID) == "M") {
-            lastName = editor.getGraph().getLastName(personID);
-        }
-        if (lastName && lastName != "") {
-            if (childParams.hasOwnProperty("gender") && childParams.gender == 'M') {
-                childParams["lName"] = lastName;
-            } else {
-                childParams["lNameAtB"] = lastName;
+        if (editor.getPreferencesManager().getConfigurationOption("propagateFatherLastName")) {
+            var lastName = null;
+            if (editor.getGraph().getGender(personID) == "M") {
+                lastName = editor.getGraph().getLastName(personID);
+            }
+            if (lastName && lastName != "") {
+                if (childParams.hasOwnProperty("gender") && childParams.gender == 'M') {
+                    childParams["lName"] = lastName;
+                } else {
+                    childParams["lNameAtB"] = lastName;
+                }
             }
         }
 
@@ -668,14 +670,16 @@ var Controller = Class.create({
             editor.getGraph().setProperties( partnerID, node2.getProperties() );
         }
 
-        var lastName = null;
-        if (node1.getGender() == "M") {
-            lastName = editor.getGraph().getLastName(personID);
-        } else if (node2.getGender() == "M") {
-            lastName = editor.getGraph().getLastName(partnerID);
-        }
-        if (lastName && lastName != "") {
-            childProperties["lNameAtB"] = lastName;
+        if (editor.getPreferencesManager().getConfigurationOption("propagateFatherLastName")) {
+            var lastName = null;
+            if (node1.getGender() == "M") {
+                lastName = editor.getGraph().getLastName(personID);
+            } else if (node2.getGender() == "M") {
+                lastName = editor.getGraph().getLastName(partnerID);
+            }
+            if (lastName && lastName != "") {
+                childProperties["lNameAtB"] = lastName;
+            }
         }
 
         // TODO: propagate change of gender down the partnership chain
@@ -706,12 +710,14 @@ var Controller = Class.create({
             childParams["numPersons"] = numPersons;
         }
 
-        var lastName = editor.getGraph().getRelationshipChildLastName(partnershipID);
-        if (lastName) {
-            if (childParams.gender == "M") {
-                childParams["lName"] = lastName;
-            } else {
-                childParams["lNameAtB"] = lastName;
+        if (editor.getPreferencesManager().getConfigurationOption("propagateFatherLastName")) {
+            var lastName = editor.getGraph().getRelationshipChildLastName(partnershipID);
+            if (lastName) {
+                if (childParams.gender == "M") {
+                    childParams["lName"] = lastName;
+                } else {
+                    childParams["lNameAtB"] = lastName;
+                }
             }
         }
 

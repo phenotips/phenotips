@@ -245,11 +245,11 @@ public class SolrOntologyTerm implements OntologyTerm
     {
         JSONObject json = new JSONObject();
 
-        Iterator<Map.Entry<String, Object>> docIterator = this.doc.iterator();
+        Iterator<Map.Entry<String, Object>> fieldIterator = this.doc.iterator();
 
-        while (docIterator.hasNext()) {
-            Map.Entry<String, Object> param = docIterator.next();
-            addAsCorrectType(json, param.getKey(), param.getValue());
+        while (fieldIterator.hasNext()) {
+            Map.Entry<String, Object> field = fieldIterator.next();
+            addAsCorrectType(json, field.getKey(), field.getValue());
         }
 
         return json;

@@ -154,6 +154,7 @@ public interface OntologyService
      * @param sort an optional sort parameter corresponding exactly to Solr format. Could be {@link null}
      * @param customFq a custom filter query for ids that can replace the default. Could be {@link null}
      * @return suggestions found given the parameters produced by SolrParams set of functions
+     * @since 1.1-rc-1
      */
     Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq);
 }

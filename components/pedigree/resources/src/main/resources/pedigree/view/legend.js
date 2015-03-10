@@ -73,7 +73,7 @@ var Legend = Class.create( {
     },
 
     hideDragHint: function() {
-        editor.preferences["hideDraggingHint"] = true;
+        editor.getPreferencesManager().setConfigurationOption("user", "hideDraggingHint", true);
         this._legendInfo.hide();
     },
 
@@ -149,7 +149,8 @@ var Legend = Class.create( {
     addCase: function(id, name, nodeID) {
         if(Object.keys(this._affectedNodes).length == 0) {
             this._legendBox.show();
-            !editor.preferences.hasOwnProperty("hideDraggingHint") && this._legendInfo && this._legendInfo.show();
+            !editor.getPreferencesManager().getConfigurationOption("hideDraggingHint") &&
+                this._legendInfo && this._legendInfo.show();
         }
         if(!this._hasAffectedNodes(id)) {
             this._affectedNodes[id] = [nodeID];
