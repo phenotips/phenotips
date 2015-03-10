@@ -1170,6 +1170,96 @@
   <object>
     <name>XWiki.XWikiPreferences</name>
     <number>0</number>
+    <className>PhenoTips.PedigreeGlobalSettings</className>
+    <guid>9fd37c41-b39b-41ce-8824-f45111f46987</guid>
+    <class>
+      <name>PhenoTips.PedigreeGlobalSettings</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <nonStandardAdoptedOutGraphic>
+        <disabled>0</disabled>
+        <defaultValue>0</defaultValue>
+        <displayFormType>select</displayFormType>
+        <name>nonStandardAdoptedOutGraphic</name>
+        <number>1</number>
+        <prettyName>Brackets-out adopted-out symbol</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </nonStandardAdoptedOutGraphic>
+      <propagateFatherLastName>
+        <disabled>0</disabled>
+        <defaultValue>1</defaultValue>
+        <displayFormType>select</displayFormType>
+        <name>propagateFatherLastName</name>
+        <number>2</number>
+        <prettyName>Propagate father's last name</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </propagateFatherLastName>
+      <dateInputFormat>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>dateInputFormat</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Date input format</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </dateInputFormat>
+      <dateDisplayFormat>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>dateDisplayFormat</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Date input format</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </dateDisplayFormat>
+    </class>
+    <property>
+      <nonStandardAdoptedOutGraphic>0</nonStandardAdoptedOutGraphic>
+    </property>
+    <property>
+      <propagateFatherLastName>1</propagateFatherLastName>
+    </property>
+    <property>
+      <dateInputFormat>YMD</dateInputFormat>
+    </property>
+    <property>
+      <dateDisplayFormat>MDY</dateDisplayFormat>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.XWikiPreferences</name>
+    <number>0</number>
     <className>PhenoTips.ReceivePatientSettings</className>
     <guid>9fd37c41-b39b-4bce-8824-f45161f36987</guid>
     <class>

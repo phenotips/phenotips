@@ -21,6 +21,19 @@ var CancerLegend = Class.create( Legend, {
                                "Brain": "#F5DEB3",     // (?) wheat
                                "Oesophagus": "#BC8F8F" // (?) rosybrown
                              };
+        this._cancerLabels = { "Breast": "Breast cancer",
+                               "Ovarian": "Ovarian cancer",
+                               "Colon": "Colon cancer",
+                               "Uterus": "Uterus cancer",
+                               "Prostate": "Prostate cancer",
+                               "Pancreatic": "Pancreatic cancer",
+                               "Melanoma": "Melanoma",
+                               "Kidney": "Kidney cancer",
+                               "Gastric": "Gastric cancer",
+                               "Lung": "Lung cancer",
+                               "Brain": "Brain cancer",
+                               "Oesophagus": "Oesophagus cancer",
+                             };
         $super('Cancers', true);
     },
 
@@ -36,6 +49,11 @@ var CancerLegend = Class.create( Legend, {
             }
         }
         return clist;
+    },
+
+    addCase: function($super, id, name, nodeID) {
+        var name = this._cancerLabels.hasOwnProperty(name)? this._cancerLabels[name] : name;
+        $super(id, name, nodeID);
     },
 
     /**

@@ -38,18 +38,22 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     enable : function () {
-      this.dropdown.enable();
-      if (this.dropdown.selectedIndex <= 0 && this._tmpSelectedIndex < this.dropdown.options.length) {
-        this.dropdown.selectedIndex = this._tmpSelectedIndex;
-        return (this._tmpSelectedIndex > 0);
+      if (!this.options.alwaysEnabled) {
+          this.dropdown.enable();
+          if (this.dropdown.selectedIndex <= 0 && this._tmpSelectedIndex < this.dropdown.options.length) {
+            this.dropdown.selectedIndex = this._tmpSelectedIndex;
+            return (this._tmpSelectedIndex > 0);
+          }
       }
       return false;
     },
 
     disable : function () {
-      this.dropdown.disable();
-      this._tmpSelectedIndex = this.dropdown.selectedIndex;
-      this.dropdown.selectedIndex = 0;
+      if (!this.options.alwaysEnabled) {
+          this.dropdown.disable();
+          this._tmpSelectedIndex = this.dropdown.selectedIndex;
+          this.dropdown.selectedIndex = 0;
+      }
     },
 
     getElement : function() {
@@ -92,17 +96,26 @@ var PhenoTips = (function (PhenoTips) {
   });
 
   widgets.FuzzyDatePicker = Class.create({
-    initialize : function (input) {
+    initialize : function (input, inputFormat) {
+      this.inputFormat = inputFormat ? inputFormat : "YMD";
+
       if (!input) {return};
       this.__input = input;
       this.__input.hide();
-      
+
       this.container = new Element('div', {'class' : 'fuzzy-date-picker'});
-      this.__input.insert({after : this.container});      
-      this.container.insert(this.createYearDropdown());
-      this.container.insert(this.createMonthDropdown());
-      this.container.insert(this.createDayDropdown());
-      
+      this.__input.insert({after : this.container});
+
+      if (this.inputFormat == "DMY") {
+          this.container.insert(this.createDayDropdown());
+          this.container.insert(this.createMonthDropdown());
+          this.container.insert(this.createYearDropdown());
+      } else {
+          this.container.insert(this.createYearDropdown());
+          this.container.insert(this.createMonthDropdown());
+          this.container.insert(this.createDayDropdown());
+      }
+
       // TODO: yearSelector's (and month's & day's) .onSelect() does not seem to fire
       //       upon programmatic update if a substitute is found can remove these hackish events
       this.container.observe("datepicker:date:changed", this.onProgrammaticUpdate.bind(this));
@@ -113,10 +126,10 @@ var PhenoTips = (function (PhenoTips) {
         this.monthSelected();
         this.updateDate();
     },
-    
+
     createYearDropdown : function() {
       //var timer = new Timer();
-      this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year"});
+      this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year", alwaysEnabled: (this.inputFormat == "DMY")});
 
       var today = new Date();
       var crtYear = today.getYear() + 1900;
@@ -152,7 +165,7 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     createMonthDropdown : function() {
-      this.monthSelector = new widgets.FuzzyDatePickerDropdown({name: "month"});
+      this.monthSelector = new widgets.FuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat == "DMY")});
       this.monthSelector.populate(this.getZeroPaddedValueRange(1,12));
       this.monthSelector.disable();
       this.monthSelector.onSelect(this.monthSelected.bind(this));
@@ -164,13 +177,18 @@ var PhenoTips = (function (PhenoTips) {
         this.daySelector.populate(this.getAvailableDays());
         this.daySelector.enable();
       } else {
-        this.daySelector.disable();
+        if (this.inputFormat == "DMY") {
+            // in "DMY" mode let user pick any day if no month is selected
+            this.daySelector.populate(this.getZeroPaddedValueRange(1,31));
+        } else {
+            this.daySelector.disable();
+        }
       }
       this.updateDate();
     },
 
     createDayDropdown : function() {
-      this.daySelector = new widgets.FuzzyDatePickerDropdown({name: "day"});
+      this.daySelector = new widgets.FuzzyDatePickerDropdown({name: "day", alwaysEnabled: (this.inputFormat == "DMY")});
       this.daySelector.populate(this.getZeroPaddedValueRange(1,31));
       this.daySelector.disable();
       this.daySelector.onSelect(this.updateDate.bind(this));
@@ -221,11 +239,13 @@ var PhenoTips = (function (PhenoTips) {
             }
         }
 
-        if (y > 0) {
+        if (y > 0 || this.inputFormat == "DMY") {
             var m = this.monthSelector.getSelectedValue();
             if (m > 0) {
                 dateObject["month"] = this.monthSelector.getSelectedOption();
+            }
 
+            if (m > 0 || this.inputFormat == "DMY") {
                 var d = this.daySelector.getSelectedValue();
                 if (d > 0) {
                     dateObject["day"] = this.daySelector.getSelectedOption();

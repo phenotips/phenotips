@@ -179,6 +179,10 @@ DynamicPositionedGraph.prototype = {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
         }
+        if (patientObject.hasOwnProperty("date_of_death")) {
+            var deathDate = new PedigreeDate(patientObject.date_of_death);
+            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+        }
 
         if (patientObject.hasOwnProperty("ethnicity")) {
             // e.g.: "ethnicity":{"maternal_ethnicity":["Yugur"],"paternal_ethnicity":[]}
@@ -1741,6 +1745,16 @@ DynamicPositionedGraph.prototype = {
                         continue;
                     }
                 }
+            }
+        }
+
+        // check virtual edges: even if relationshipo node is not moved if the rank on which virtual edges reside moves
+        // the relationship should redraw the virtual edges
+        for (var i = this.DG.GG.getMaxRealVertexId() + 1; i <= this.DG.GG.getNumVertices(); i++) {
+            var rank    = this.DG.ranks[i];
+            if (rankYBefore && rankYBefore.length >= rank && this.DG.rankY[rank] != rankYBefore[rank]) {
+                var relationship = this.DG.GG.downTheChainUntilNonVirtual(i);
+                result[relationship] = true;
             }
         }
 

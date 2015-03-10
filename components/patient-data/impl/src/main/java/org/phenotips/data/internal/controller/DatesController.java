@@ -143,6 +143,6 @@ public class DatesController implements PatientDataController<Date>
 
     protected List<String> getProperties()
     {
-        return Arrays.asList("date_of_birth", "exam_date");
+        return Arrays.asList("date_of_birth", "date_of_death", "exam_date");
     }
 }

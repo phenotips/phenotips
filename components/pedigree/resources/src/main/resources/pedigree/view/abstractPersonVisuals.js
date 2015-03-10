@@ -195,7 +195,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         if (this.getNode().getAdopted() != "") {
             var r = PedigreeEditor.attributes.radius;
             var y = this.getY() - ((1.3) * r) + 2;
-            if (this.getNode().getAdopted() == "adoptedOut" && editor.preferences.nonStandardAdoptedOutGraphic) {
+            if (this.getNode().getAdopted() == "adoptedOut" &&
+                editor.getPreferencesManager().getConfigurationOption("nonStandardAdoptedOutGraphic")) {
                 var x1    = this.getX() - ((1.7) * r);
                 var x2    = this.getX() + ((1.7) * r);
                 var coeff = 2.5;
