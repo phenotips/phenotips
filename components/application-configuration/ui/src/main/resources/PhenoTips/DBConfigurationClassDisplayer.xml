@@ -90,13 +90,13 @@
 #end
 {{/velocity}}
 
-{{velocity filter="indent"}}
+{{velocity}}
 {{html wiki=false clean=false}}#__xclass__displayCustomClassOption(){{/html}}
 
 #if ($name.indexOf('section__') == 0 &amp;&amp; "$!{hideClassFields}" != 'true')
-//Select the fields that will be displayed in this section: //
-#end
+//Select the fields that will be displayed in this section://
 
+#end
 {{html wiki=false clean=false}}#__xclass__displayFieldList('PhenoTips.PatientClass' "$prefix$name" $displayType $value){{/html}}
 {{/velocity}}</content>
 </xwikidoc>
