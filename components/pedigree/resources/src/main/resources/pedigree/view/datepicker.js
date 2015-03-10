@@ -1,7 +1,7 @@
 var PhenoTips = (function (PhenoTips) {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
-  widgets.FuzzyDatePickerDropdown = Class.create({
+  widgets.PedigreeFuzzyDatePickerDropdown = Class.create({
     initialize : function(options) {
       this.span     = new Element('span');
       this.options  = options;
@@ -95,7 +95,7 @@ var PhenoTips = (function (PhenoTips) {
     }
   });
 
-  widgets.FuzzyDatePicker = Class.create({
+  widgets.PedigreeFuzzyDatePicker = Class.create({
     initialize : function (input, inputFormat) {
       this.inputFormat = inputFormat ? inputFormat : "YMD";
 
@@ -129,7 +129,7 @@ var PhenoTips = (function (PhenoTips) {
 
     createYearDropdown : function() {
       //var timer = new Timer();
-      this.yearSelector = new widgets.FuzzyDatePickerDropdown({name: "year", alwaysEnabled: (this.inputFormat == "DMY")});
+      this.yearSelector = new widgets.PedigreeFuzzyDatePickerDropdown({name: "year", alwaysEnabled: (this.inputFormat == "DMY")});
 
       var today = new Date();
       var crtYear = today.getYear() + 1900;
@@ -165,7 +165,7 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     createMonthDropdown : function() {
-      this.monthSelector = new widgets.FuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat == "DMY")});
+      this.monthSelector = new widgets.PedigreeFuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat == "DMY")});
       this.monthSelector.populate(this.getZeroPaddedValueRange(1,12));
       this.monthSelector.disable();
       this.monthSelector.onSelect(this.monthSelected.bind(this));
@@ -188,7 +188,7 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     createDayDropdown : function() {
-      this.daySelector = new widgets.FuzzyDatePickerDropdown({name: "day", alwaysEnabled: (this.inputFormat == "DMY")});
+      this.daySelector = new widgets.PedigreeFuzzyDatePickerDropdown({name: "day", alwaysEnabled: (this.inputFormat == "DMY")});
       this.daySelector.populate(this.getZeroPaddedValueRange(1,31));
       this.daySelector.disable();
       this.daySelector.onSelect(this.updateDate.bind(this));
@@ -260,20 +260,6 @@ var PhenoTips = (function (PhenoTips) {
         }
     }
   });
-
-  var init = function(event) {
-    ((event && event.memo.elements) || [$('body')]).each(function(element) {
-      (element.hasClassName("fuzzy-date") ? [element] : element.select(".fuzzy-date")).each(function(dateInput) {
-        if (!dateInput.__datePicker) {
-          dateInput.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(dateInput);
-        }
-      });
-    });
-    return true;
-  };
-
-  (XWiki.domIsLoaded && init()) || document.observe("xwiki:dom:loaded", init);
-  document.observe("xwiki:dom:updated", init);
 
   // End augmentation.
 

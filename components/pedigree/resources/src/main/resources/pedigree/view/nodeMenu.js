@@ -99,7 +99,7 @@ NodeMenu = Class.create({
         this.form.select('.fuzzy-date').each(function(item) {
           if (!item.__datePicker) {
             var inputMode = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
-            item.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(item, inputMode);
+            item.__datePicker = new PhenoTips.widgets.PedigreeFuzzyDatePicker(item, inputMode);
           }
         });
         // disease
