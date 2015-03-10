@@ -142,7 +142,7 @@
     #set ($value = $services.jodatime.getMutableDateTime($value.time))
     #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
   #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!xwiki.formatDate($value.toDate(), $definedFormat)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
 #else
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '')
@@ -165,10 +165,8 @@
   #end
 #elseif ($value)
   #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #if ("$!xwiki.getUserPreference('timezone')" != '')
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-  #end
-  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
+  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
 #end
 #end
 {{/html}}{{/velocity}}</customDisplay>
@@ -207,7 +205,7 @@
     #set ($value = $services.jodatime.getMutableDateTime($value.time))
     #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
   #end
-  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!xwiki.formatDate($value.toDate(), $definedFormat)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
 #else
 #set ($enteredValue = $object.getProperty("${name}_entered").value)
 #if ("$!enteredValue" != '')
@@ -230,10 +228,8 @@
   #end
 #elseif ($value)
   #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #if ("$!xwiki.getUserPreference('timezone')" != '')
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-  #end
-  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
+  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
 #end
 #end
 {{/html}}{{/velocity}}</customDisplay>
