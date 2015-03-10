@@ -1,0 +1,88 @@
+$response.setContentType("application/x-json")
+#set ($offset = $mathtool.toInteger($request.get('offset')))
+## offset starts from 0 in velocity and 1 in javascript
+#set ($off = $offset - 1)
+#set ($limit = $mathtool.toInteger($request.get('limit')))
+
+#set( $rm = $xwiki.rightsmanager.usersApi )
+
+#### get all the request parameters which are filters
+#set( $params = $request.getParameterMap() )
+#set( $keys = $params.keySet() )
+#set( $defaultKeys = ["xpage", "offset", "limit", "wiki", "reqNo", "sort", "dir"] )
+#set( $docProps = ["fullName", "name"] )
+#set ($filterMap = {})
+#set ($orderList = [])
+
+#foreach( $key in $keys )
+  #if(! $defaultKeys.contains( $key ) )
+     ## build the filters map
+     #foreach( $i in $params.get( $key ) ) #set( $value = $i ) #end
+     #if( $docProps.contains( $key )) 
+        #set ($arr = [])
+        #set( $discard = $arr.add( null ) ) ## this may be variable...
+        #set( $discard = $arr.add( "$value" ) )
+        #set( $discard = $filterMap.put("$key", $arr))
+        #set( $discard = $orderList.add( "$key" ))
+     #else
+        #set ($arr = [])
+        #set( $discard = $arr.add( "StringProperty" ) ) ## this may be variable...
+        #set( $discard = $arr.add( "$value" ) )
+        #set( $discard = $filterMap.put("$key", $arr ))
+        #set ($arr2 = [])
+        #set( $discard = $arr2.add( "$key" ) )
+        #set( $discard = $arr2.add( "StringProperty" ) )
+        #set( $discard = $orderList.add( $arr2 ))
+     #end
+  #end
+#end
+
+#if($orderList.size() == 0)
+#set($disc = $orderList.add("name")) ## initially fiter by "name" !!!
+#end
+
+#foreach( $i in $params.get( "wiki" ) ) #set( $value = $i ) #end
+#if( $value == "local" )
+  #set( $users = $rm.getAllMatchedLocalUsers( $filterMap, $limit, $off, $orderList ) )
+  #set( $countUsers = $rm.countAllMatchedLocalUsers( $filterMap ) )
+#elseif( $value == "global" )
+  #set( $users = $rm.getAllMatchedGlobalUsers( $filterMap, $limit, $off, $orderList ) )
+  #set( $countUsers = $rm.countAllMatchedGlobalUsers( $filterMap ) )
+#else  
+  ## get both local and global users
+  #set( $users = $rm.getAllMatchedUsers( $filterMap, $limit, $off, $orderList ) )
+  #set( $countUsers = $rm.countAllMatchedUsers( $filterMap ) )
+#end
+
+### json starts
+{ 
+"totalrows": $countUsers,
+"returnedrows": #if($countUsers < $limit) $countUsers #else $limit #end,
+"offset": $offset,
+"reqNo": $mathtool.toInteger($request.reqNo),
+"rows": [
+#foreach( $user in $users )
+   #if($xcontext.user == $user.fullName)
+    #set($grayed = true)
+   #else
+    #set($grayed = false)
+  #end
+   #set($wikiname = $user.getWiki())
+   #if($wikiname != "xwiki" || $wikiname == $xcontext.database) #set($wikiname = "local") #end
+   #if( $velocityCount > 1 ) , #end
+   {"username"      : "$!{escapetool.javascript($user.name)}", 
+    "fullname"      : "$!{escapetool.javascript($user.fullName)}",
+    "wikiname"      : "$!{escapetool.javascript($wikiname)}",
+    "firstname"     : "$!{escapetool.javascript($!services.rendering.render($services.rendering.parse($user.getObject('XWiki.XWikiUsers').get('first_name'), 'html/4.01'), 'plain/1.0'))}", 
+    "lastname"      : "$!{escapetool.javascript($!services.rendering.render($services.rendering.parse($user.getObject('XWiki.XWikiUsers').get('last_name'), 'html/4.01'), 'plain/1.0'))}", 
+    "userurl"       : "$xwiki.getURL($user.fullName)",
+    "usersaveurl"   : "$user.getURL("save")",
+    "userinlineurl" : "$user.getURL("edit", "xpage=edituser")",
+    "docurl"        : "$xwiki.getURL("XWiki.XWikiPreferences", "admin", "section=Users")",
+    "grayed"        : "$grayed"
+  }
+#end
+]}
+
+### end of json
+
