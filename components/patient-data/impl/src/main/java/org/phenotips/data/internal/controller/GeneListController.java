@@ -65,12 +65,20 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
+    private static final String GENES_STRING = "genes";
+
+    private static final String CONTROLLER_NAME = GENES_STRING;
+
+    private static final String GENES_ENABLING_FIELD_NAME          = GENES_STRING;
+    private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
+
+    private static final String GENE_KEY     = "gene";
     private static final String COMMENTS_KEY = "comments";
 
     @Override
     public String getName()
     {
-        return "genes";
+        return CONTROLLER_NAME;
     }
 
     @Override
@@ -82,7 +90,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("gene", COMMENTS_KEY);
+        return Arrays.asList(GENE_KEY, COMMENTS_KEY);
     }
 
     @Override
@@ -128,28 +136,32 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        // FIXME. selectedFieldNames have no effect.
+        if (selectedFieldNames != null && !selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+            return;
+        }
+
         PatientData<Map<String, String>> data = patient.getData(getName());
         if (data == null) {
             return;
         }
         Iterator<Map<String, String>> iterator = data.iterator();
-        if (iterator == null || !iterator.hasNext()) {
+        if (!iterator.hasNext()) {
             return;
         }
-        JSONArray container = null;
+
+        // put() is placed here because we want to create the property iff at least one field is set/enabled
+        // (by this point we know there is some data since iterator.hasNext() == true)
+        json.put(getJsonPropertyName(), new JSONArray());
+        JSONArray container = json.getJSONArray(getJsonPropertyName());
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
-            if (container == null) {
-                // put() is placed here because we want to create the property iff at least one field is set/enabled
-                json.put(getJsonPropertyName(), new JSONArray());
-                container = json.getJSONArray(getJsonPropertyName());
-            }
 
-            if (item != null && StringUtils.isBlank(item.get(COMMENTS_KEY))) {
+            if (StringUtils.isBlank(item.get(COMMENTS_KEY))
+                || (selectedFieldNames != null && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
                 item.remove(COMMENTS_KEY);
             }
+
             container.add(item);
         }
     }
