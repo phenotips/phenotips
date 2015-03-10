@@ -179,6 +179,10 @@ DynamicPositionedGraph.prototype = {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
         }
+        if (patientObject.hasOwnProperty("date_of_death")) {
+            var deathDate = new PedigreeDate(patientObject.date_of_death);
+            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+        }
 
         if (patientObject.hasOwnProperty("ethnicity")) {
             // e.g.: "ethnicity":{"maternal_ethnicity":["Yugur"],"paternal_ethnicity":[]}
