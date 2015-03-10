@@ -105,8 +105,8 @@ public interface OntologyTerm
     OntologyService getOntology();
 
     /**
-     * @since 1.1-rc1
      * @return near-complete information contained in this term, in JSON format. Example:
+     * <pre>
      * {
      *    "term_category":[
      *      "HP:0004325",
@@ -126,7 +126,9 @@ public interface OntologyTerm
      *    "name":"Weight loss",
      *    "def":"Reduction inexisting body weight."
      * }
+     * </pre>
      * @throws java.lang.Exception could happen if casting fails
+     * @since 1.1-rc1
      */
     JSON toJson() throws Exception;
 }
