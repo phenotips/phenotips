@@ -2887,6 +2887,7 @@ PositionedGraph.prototype = {
                 this.GG.isRelationship(this.order.order[r][i])) return false;
             if (this.GG.isChildhub(this.order.order[r][i])) return true;
         }
+        return true;
     },
 
     _computePersonRankHeight: function(r)

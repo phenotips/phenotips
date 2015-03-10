@@ -896,10 +896,14 @@ var Person = Class.create(AbstractPerson, {
 
         var inactiveGenders = false;
         var genderSet = editor.getGraph().getPossibleGenders(this.getID());
-        for (gender in genderSet)
+        for (gender in genderSet) {
             if (genderSet.hasOwnProperty(gender))
-                if (!genderSet[gender])
-                    inactiveGenders = [ gender ];
+                if (!genderSet[gender]) {
+                    if (!inactiveGenders)
+                        inactiveGenders = [];
+                    inactiveGenders.push(gender);
+                }
+        }
 
         var childlessInactive = this.isFetus();  // TODO: can a person which already has children become childless?
                                                  // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
