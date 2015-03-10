@@ -3673,7 +3673,7 @@ document.observe("xwiki:dom:loaded", function() {
 
      initializeElements : function(element) {
        container = element || this._container;
-       if (container.__unitSwitcher) {
+        if (container.__unitSwitcher || (!container.up('.measurements') &amp;&amp; !container.hasClassName('measurements'))) {
          return;
        }
        container.__unitSwitcher = this;
