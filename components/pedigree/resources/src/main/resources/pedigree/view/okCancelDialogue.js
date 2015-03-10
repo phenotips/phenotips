@@ -17,9 +17,9 @@ var OkCancelDialogue = Class.create( {
         this._promptBody = new Element('div', {'class': 'ok-cancel-body'});
         mainDiv.insert(this._promptBody);
 
-        this._buttons[0] = new Element('input', {type: 'button', name : 'ok',     'value': 'OK', 'class' : 'button width80px', 'id': 'OK_button'});
-        this._buttons[1] = new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary width80px'});
-        this._buttons[2] = new Element('input', {type: 'button', name : 'other',  'value': 'Other', 'class' : 'button secondary width80px'});
+        this._buttons[0] = new Element('input', {type: 'button', name : 'ok',     'value': 'OK', 'class' : 'button min-width80px', 'id': 'OK_button'});
+        this._buttons[1] = new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary min-width80px'});
+        this._buttons[2] = new Element('input', {type: 'button', name : 'other',  'value': 'Other', 'class' : 'button secondary min-width80px'});
 
         var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
         for (var i = 0; i < this._buttons.length; i++) {

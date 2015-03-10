@@ -295,6 +295,9 @@
 .width80px {
   width: 80px;
 }
+.min-width80px {
+  min-width: 80px;
+}
 .relationship-menu {
   width: 290px;
 }
