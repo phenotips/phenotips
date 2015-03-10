@@ -26,12 +26,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Implementation for {@link OntologyTerm} based on an indexed Solr document.
@@ -41,7 +46,23 @@ import org.apache.solr.common.SolrDocument;
  */
 public class SolrOntologyTerm implements OntologyTerm
 {
+    private static final String ID = "id";
+
+    private static final String NAME = "name";
+
+    private static final String DEF = "def";
+
     private static final String TERM_CATEGORY = "term_category";
+
+    private static final String SYNONYM = "synonym";
+
+    private static final String IS_A = "is_a";
+
+    private static final String COMMENT = "comment";
+
+    private static final String ALT_ID = "alt_id";
+
+    private static final String XREF = "xref";
 
     /** The Solr document representing this term. */
     private SolrDocument doc;
@@ -86,7 +107,7 @@ public class SolrOntologyTerm implements OntologyTerm
         this.ontology = ontology;
         if (doc != null) {
             this.removeSelfDuplicate();
-            this.parents = new LazySolrTermSet(doc.getFieldValues("is_a"), ontology);
+            this.parents = new LazySolrTermSet(doc.getFieldValues(IS_A), ontology);
             this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
             Collection<Object> termSet = new HashSet<Object>();
             termSet.add(this.getId());
@@ -116,19 +137,19 @@ public class SolrOntologyTerm implements OntologyTerm
     @Override
     public String getId()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue("id") : null;
+        return this.doc != null ? (String) this.doc.getFirstValue(ID) : null;
     }
 
     @Override
     public String getName()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue("name") : null;
+        return this.doc != null ? (String) this.doc.getFirstValue(NAME) : null;
     }
 
     @Override
     public String getDescription()
     {
-        return this.doc != null ? (String) this.doc.getFirstValue("def") : null;
+        return this.doc != null ? (String) this.doc.getFirstValue(DEF) : null;
     }
 
     @Override
@@ -217,6 +238,31 @@ public class SolrOntologyTerm implements OntologyTerm
         sourceUnprocessedAncestors.addAll(nextLevel);
 
         return minDistance;
+    }
+
+    @Override
+    public JSON toJson() throws Exception
+    {
+        JSONObject json = new JSONObject();
+
+        Iterator<Map.Entry<String, Object>> fieldIterator = this.doc.iterator();
+
+        while (fieldIterator.hasNext()) {
+            Map.Entry<String, Object> field = fieldIterator.next();
+            addAsCorrectType(json, field.getKey(), field.getValue());
+        }
+
+        return json;
+    }
+
+    private void addAsCorrectType(JSONObject json, String name, Object toAdd) {
+        if (toAdd instanceof Collection) {
+            JSONArray array = new JSONArray();
+            array.addAll((Collection<String>) toAdd);
+            json.put(name, array);
+        } else {
+            json.put(name, toAdd);
+        }
     }
 
     @Override

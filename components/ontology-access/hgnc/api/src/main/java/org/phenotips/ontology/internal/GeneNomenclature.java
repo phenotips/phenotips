@@ -61,6 +61,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.params.CommonParams;
 import org.slf4j.Logger;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -214,12 +215,14 @@ public class GeneNomenclature implements OntologyService, Initializable
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START))) {
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START)))
+                    {
                         start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
                     }
                     int end = docs.size();
                     if (queryOptions.containsKey(CommonParams.ROWS)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS))) {
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS)))
+                    {
                         end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
                     }
 
@@ -334,8 +337,8 @@ public class GeneNomenclature implements OntologyService, Initializable
      * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
      *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
-     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
+     * property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a single value,
+     * or a collection of values that can (OR) be matched by the term;
      * @return the String representation of the equivalent Lucene query
      */
     private String generateQuery(Map<String, ?> fieldValues)
@@ -391,7 +394,6 @@ public class GeneNomenclature implements OntologyService, Initializable
         }
         query.append(')');
         return query;
-
     }
 
     private StringBuilder processSubquery(StringBuilder query, Map.Entry<String, Map<String, ?>> subquery)
@@ -476,5 +478,31 @@ public class GeneNomenclature implements OntologyService, Initializable
         {
             return "HGNC:" + getId();
         }
+
+        @Override
+        public JSON toJson()
+        {
+            JSONObject json = new JSONObject();
+            json.put("id", this.getId());
+            return json;
+        }
+    }
+
+    @Override
+    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    {
+        // ignoring sort and customFq
+        String formattedQuery = String.format("%s*", query);
+        Map<String, Object> fieldValues = new HashMap<>();
+        Map<String, String> queryMap = new HashMap<>();
+        Map<String, String> rowsMap = new HashMap<>();
+        queryMap.put(LABEL_KEY, formattedQuery);
+        queryMap.put("alias_symbol", formattedQuery);
+        queryMap.put("prev_symbol", formattedQuery);
+        fieldValues.put("status", "Approved");
+        fieldValues.put(DEFAULT_OPERATOR, queryMap);
+        rowsMap.put("rows", rows.toString());
+
+        return this.search(fieldValues, rowsMap);
     }
 }

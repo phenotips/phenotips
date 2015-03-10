@@ -145,4 +145,16 @@ public interface OntologyService
      * @return a version identifier, or {@code null} if the version cannot be determined
      */
     String getVersion();
+
+    /**
+     * Runs a complex Solr query to determine the best suggestions.
+     *
+     * @param query the text query that the user entered
+     * @param rows the number of rows to be returned; cannot be {@link null}
+     * @param sort an optional sort parameter corresponding exactly to Solr format. Could be {@link null}
+     * @param customFq a custom filter query for ids that can replace the default. Could be {@link null}
+     * @return suggestions found given the parameters produced by SolrParams set of functions
+     * @since 1.1-rc-1
+     */
+    Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq);
 }

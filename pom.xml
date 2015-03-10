@@ -365,6 +365,16 @@
             </difference>
             <difference>
               <differenceType>7012</differenceType>
+              <className>**/ontology/OntologyTerm</className>
+              <method>net.sf.json.JSON toJson()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/ontology/OntologyService</className>
+              <method>java.util.Set termSuggest(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
               <className>**/measurements/MeasurementsChartConfiguration</className>
               <method>java.net.URL getChartSourceLink()</method>
             </difference>

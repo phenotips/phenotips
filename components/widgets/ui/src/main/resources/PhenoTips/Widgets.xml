@@ -2330,12 +2330,10 @@ return PhenoTips;
     },
     noresults: "No sub-terms",
     targetQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
-                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }),
     expandQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
-                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
+                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }),
     showParents : true,
     showRoot : true,

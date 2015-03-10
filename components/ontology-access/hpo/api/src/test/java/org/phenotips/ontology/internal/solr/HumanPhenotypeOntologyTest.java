@@ -37,15 +37,20 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.SolrParams;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -114,5 +119,82 @@ public class HumanPhenotypeOntologyTest
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("hp.obo"));
         Assert.assertTrue(location.startsWith("http"));
+    }
+
+    @Test
+    public void testHumanPhenotypeOntologySuggestTermsBlank() throws ComponentLookupException
+    {
+        Assert.assertTrue(this.mocker.getComponentUnderTest().termSuggest("", 0, null, null).isEmpty());
+    }
+
+    @Test
+    public void testHumanPhenotypeOntologySuggestTermsIsId() throws ComponentLookupException, SolrServerException
+    {
+        SolrOntologyServiceInitializer externalServicesAccess =
+            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
+
+        QueryResponse response = mock(QueryResponse.class);
+        when(this.server.query(any(SolrParams.class))).thenReturn(response);
+        when(response.getSpellCheckResponse()).thenReturn(null);
+        when(response.getResults()).thenReturn(new SolrDocumentList());
+
+        this.mocker.getComponentUnderTest().termSuggest("HP:0001", 0, null, null);
+
+        verify(this.server).query(argThat(new hasIdInFilter()));
+    }
+
+    @Test
+    public void testHumanPhenotypeOntologySuggestTermsIsNotId() throws ComponentLookupException, SolrServerException
+    {
+        SolrOntologyServiceInitializer externalServicesAccess =
+            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
+
+        QueryResponse response = mock(QueryResponse.class);
+        when(this.server.query(any(SolrParams.class))).thenReturn(response);
+        when(response.getSpellCheckResponse()).thenReturn(null);
+        when(response.getResults()).thenReturn(new SolrDocumentList());
+
+        this.mocker.getComponentUnderTest().termSuggest("HP:Test", (Integer) 0, (String) null, (String) null);
+
+        verify(this.server).query(argThat(new hasBoostQuery()));
+    }
+
+    @Test
+    public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException, SolrServerException
+    {
+        SolrOntologyServiceInitializer externalServicesAccess =
+            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
+
+        QueryResponse response = mock(QueryResponse.class);
+        when(this.server.query(any(SolrParams.class))).thenReturn(response);
+        when(response.getSpellCheckResponse()).thenReturn(null);
+        when(response.getResults()).thenReturn(new SolrDocumentList());
+
+        this.mocker.getComponentUnderTest().termSuggest("first second", (Integer) 0, (String) null, (String) null);
+
+        verify(this.server).query(argThat(new lastWord()));
+        verify(this.server).query(argThat(new isNotId()));
+    }
+
+    class hasBoostQuery extends ArgumentMatcher<SolrParams> {
+        public boolean matches(Object params) {
+            return ((SolrParams) params).get("bq") != null && ((SolrParams) params).get(CommonParams.SORT) == null ;
+        }
+    }
+    class lastWord extends ArgumentMatcher<SolrParams> {
+        public boolean matches(Object params) {
+            return ((SolrParams) params).get(CommonParams.Q).endsWith("second*");
+        }
+    }
+    class hasIdInFilter extends ArgumentMatcher<SolrParams> {
+        public boolean matches(Object params) {
+            return ((SolrParams) params).get(CommonParams.FQ).startsWith("id") && ((SolrParams) params).get("bq") == null
+                && ((SolrParams) params).get("pf") == null && ((SolrParams) params).get("qf") == null;
+        }
+    }
+    class isNotId extends ArgumentMatcher<SolrParams> {
+        public boolean matches(Object params) {
+            return ((SolrParams) params).get("pf") != null && ((SolrParams) params).get("qf") != null;
+        }
     }
 }

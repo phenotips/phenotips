@@ -41,79 +41,23 @@
   <hidden>true</hidden>
   <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-  #if ("$!{request.defType}" != '')
-    #set ($parameters = {})
-    #foreach ($param in $request.parameterMap.entrySet())
-      #set ($foreach.value = '')
-      #foreach ($value in $param.value)
-        #set ($foreach.parent.value = $foreach.parent.value.concat($value))
-      #end
-      #set ($discard = $parameters.put($param.key, $foreach.value))
+  #if ("$!{request.q}" != '')
+    #set ($rows = 10)
+    #if ("$!{request.rows}" != '')
+      #set ($rows = $numbertool.toNumber($!{request.rows}))
     #end
-    #set ($results = $services.hpo.customSearch($parameters))
-  #else
-    #set ($rows = -1)
-    #if ("$!request.rows" != '')
-      #set ($rows = $mathtool.toInteger($request.rows))
-    #end
-    #set ($start = 0)
-    #if ("$!request.start" != '')
-      #set ($start = $mathtool.toInteger($request.start))
-    #end
-    #set ($results = $services.hpo.search("$!request.q", "$!request.sort", $rows, $start))
+    #set ($results = $services.ontologies.hpo.termSuggest($!{request.q}, $rows, "$!{request.sort}", "$!{request.fq}"))
   #end
-  #if ("$!request.format" == 'xml')
-    $response.setContentType('text/xml')
-&lt;response&gt;
-&lt;result name="response" numFound="$results.size()"&gt;
-#foreach ($result in $results)
-  &lt;doc&gt;
-    #foreach ($field in $result.fieldNames)
-      #set ($values = $result.getFieldValues($field))
-      #if ($values.size() &gt; 1)
-        &lt;arr name="$field"&gt;
-        #foreach ($value in $values)
-          &lt;str&gt;$escapetool.xml($value)&lt;/str&gt;
-        #end
-        &lt;/arr&gt;
-      #else
-        &lt;str name="$field"&gt;$escapetool.xml($values.get(0))&lt;/str&gt;
-      #end
-    #end
-  &lt;/doc&gt;
-#end
-&lt;/result&gt;
-&lt;/response&gt;
-  #else## No known custom format requested. Defaulting to JSON
-    $response.setContentType('application/json')
+$response.setContentType('application/json')
 {
    "returnedrows" : "$results.size()",
    "rows" : [
 #foreach ($result in $results)
-     {
-    #foreach ($field in $result.fieldNames)
-      #set ($values = $result.getFieldValues($field))
-      #if ($values.size() &gt; 0)
-      #if ($values.size() == 1)
-        "$field" : "$escapetool.javascript($values.get(0)).replace('\''', '''')"##
-      #else
-        "$field" : [
-        #foreach ($value in $values)
-          "$escapetool.javascript($value).replace('\''', '''')"#if($foreach.hasNext()),#end
-
-        #end
-        ]##
-      #end
-      #if($foreach.hasNext()),#end
-
-      #end
-    #end
-     }#if($foreach.hasNext()),#end
-
+  $result.toJson()
+  #if($foreach.hasNext()),#end
 #end
-   ]## docs array
+  ]## docs array
 }
-  #end## Done generating response
 #end## Done handling get action
 {{/html}}{{/velocity}}</content>
 </xwikidoc>
