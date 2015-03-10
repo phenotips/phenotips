@@ -93,6 +93,9 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   {'id' : 'members', 'name' : "$services.localization.render('phenotips.groups.menu.groupMembers')", 'icon' : 'users',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.groups.menu.cases')",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'}
 ])
+#if ($xwiki.exists('PhenoTips.CollaboratorClass'))
+  #set ($discard = $sections.add({'id' : 'sharedCases', 'name' : "$services.localization.render('phenotips.groups.menu.sharedCases')", 'icon' : 'share-square', 'content' : '{{include reference="PhenoTips.GroupSharedCases"/}}'}))
+#end
 #if ($xwiki.exists('PhenoTips.StudyClass'))
   #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='$doc.fullName' /}})))"}))
 #end
