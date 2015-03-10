@@ -98,7 +98,8 @@ NodeMenu = Class.create({
         // date
         this.form.select('.fuzzy-date').each(function(item) {
           if (!item.__datePicker) {
-            item.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(item);
+            var inputMode = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
+            item.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(item, inputMode);
           }
         });
         // disease
@@ -918,13 +919,15 @@ NodeMenu = Class.create({
             } else {
                 if (value.year) {
                     year = value.year.toString();
-                    if (value.month) {
-                        month = value.month.toString();
-                        if (value.day) {
-                            day = value.day.toString();
-                        }
-                    }
                 }
+            }
+
+            var dmyInputMode = (editor.getPreferencesManager().getConfigurationOption("dateEditFormat") == "DMY");
+            if ((dmyInputMode || value.year) && value.month) {
+                month = value.month.toString();
+            }
+            if ((dmyInputMode || (value.year && value.month)) && value.day) {
+                day = value.day.toString();
             }
 
             var updated = false;
