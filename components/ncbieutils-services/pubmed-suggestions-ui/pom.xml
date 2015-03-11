@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>ncbieutils-services</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ncbieutils-services-pubmed-ui</artifactId>
   <name>PhenoTips - NCBI eUtils Services - Documents providing PubMed relevant articles suggestions</name>

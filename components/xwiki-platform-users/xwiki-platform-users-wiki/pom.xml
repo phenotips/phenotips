@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>xwiki-platform-users</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-platform-users-wiki</artifactId>
   <name>XWiki Platform - Core - Users - Wiki</name>

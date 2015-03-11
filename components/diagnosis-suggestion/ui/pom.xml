@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>diagnosis-suggestion</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>diagnosis-suggestion-ui</artifactId>
   <name>PhenoTips - Diagnosis Suggestion- Documents providing phenotype and disease suggestions</name>

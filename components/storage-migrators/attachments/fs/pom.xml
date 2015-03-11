@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>storage-migrators-attachments</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>storage-migrators-attachments-filesystem</artifactId>
   <name>PhenoTips - Storage migrators - Attachments - Filesystem store</name>

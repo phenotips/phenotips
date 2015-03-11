@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>storage-migrators</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>storage-migrators-api</artifactId>
   <name>PhenoTips - Storage migrators - Java APIs</name>

@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>ontology-omim-access</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ontology-omim-access-ui</artifactId>
   <name>PhenoTips - Ontologies - Online Mendelian Inheritance in Man integration - Documents providing services</name>

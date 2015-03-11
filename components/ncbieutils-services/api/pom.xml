@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>ncbieutils-services</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ncbieutils-services-api</artifactId>
   <name>PhenoTips - NCBI eUtils Services - Java APIs</name>
