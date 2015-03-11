@@ -85,7 +85,10 @@ public class R54691PhenoTips1428DataMigration extends AbstractHibernateDataMigra
                 FloatProperty newAgeProperty = new FloatProperty();
                 newAgeProperty.setId(oldAgeProperty.getId());
                 newAgeProperty.setName(oldAgeProperty.getName());
-                newAgeProperty.setValue((float) oldAgeProperty.getValue());
+                Integer oldValue = (Integer) oldAgeProperty.getValue();
+                if (oldValue != null) {
+                    newAgeProperty.setValue((float) oldValue);
+                }
                 session.delete(oldAgeProperty);
                 session.save(newAgeProperty);
             }

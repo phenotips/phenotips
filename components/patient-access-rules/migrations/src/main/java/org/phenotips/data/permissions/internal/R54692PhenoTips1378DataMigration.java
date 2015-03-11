@@ -102,7 +102,7 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
                 + "as patobj where doc.fullName=patobj.name "
                 + "and patobj.className='PhenoTips.PatientClass' and not exists"
                 + "(from BaseObject visobj where visobj.className='PhenoTips.VisibilityClass' and"
-                + " doc.fullName=visobj.name");
+                + " doc.fullName=visobj.name)");
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
             R54692PhenoTips1378DataMigration.this.logger.debug("Found {} documents with no visibility object",
