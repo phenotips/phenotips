@@ -88,7 +88,8 @@ public class R54692PhenoTips1378DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Searches for all documents containing vcf files and replaces the reference genome name with the GRCh notation.
+     * Searches for all patient documents that don't contain a {@code PhenoTips.VisibilityClass} object, excluding
+     * {@code PatientTemplate}, and adds a new owner object with "private" set as the visibility.
      */
     private final class AddVisObjectCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
     {
