@@ -86,7 +86,10 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
             for (String propertyName : getProperties()) {
                 String propertyValue = data.getStringValue(propertyName);
                 if (StringUtils.isNotBlank(propertyValue)) {
-                    result.put(propertyName, this.ontologyManager.resolveTerm(propertyValue));
+                    OntologyTerm term = this.ontologyManager.resolveTerm(propertyValue);
+                    if (term != null) {
+                        result.put(propertyName, term);
+                    }
                 }
             }
             return new DictionaryPatientData<>(DATA_NAME, result);
