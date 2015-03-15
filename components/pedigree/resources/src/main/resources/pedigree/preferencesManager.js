@@ -12,9 +12,9 @@ var PreferencesManager = Class.create( {
             this.preferences.global.propagateFatherLastName      = ($xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('propagateFatherLastName').value == 1);
         }
 
-        /* the current way of loading propertie sis sub-optimal, in the future may have to introduce
-         * a velocity service and AJAX it
-         * 
+        /* The current way of loading properties is sub-optimal, in the future may have to introduce
+         * a velocity service and AJAX it.
+         *
         var preferencesJsonURL = new XWiki.Document('...', 'PhenoTips').getURL('get', '');
         // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
         preferencesJsonURL += "&rand=" + Math.random();
@@ -24,8 +24,8 @@ var PreferencesManager = Class.create( {
             onComplete: callWhenReady ? callWhenReady : {}
         });
         */
-        callWhenReady();
         this.onPreferencesAvailable();
+        callWhenReady();
     },
 
     onPreferencesAvailable : function(response) {
