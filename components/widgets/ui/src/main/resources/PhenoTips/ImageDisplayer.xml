@@ -444,7 +444,7 @@ $content
                 imgElt.remove();
               }
               if (!list.down('.attachment-item')) {
-                list.update(new Element('span', {'class' : 'hint'}).update('No photos available'));
+                list.update(new Element('span', {'class' : 'hint'}).update("$services.localization.render('phenotips.imageDisplayer.noFiles')"));
               }
             }.bind(this),
             onComplete : function() {
