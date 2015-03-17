@@ -371,6 +371,7 @@
     }
 
     if (val.length == 0) {
+      this.sInput = "";
       this.clearSuggestions();
       return false;
     }
