@@ -218,9 +218,28 @@ var XWiki = (function (XWiki) {
         #end
       #end
     #end
-    */
+
     var sources = $jsontool.serialize($sources);
     new XWiki.SearchSuggest($('headerglobalsearchinput'), sources);
+    */
+
+    new PhenoTips.widgets.Suggest($('headerglobalsearchinput'), {
+      script: new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=view&",
+      varname: "input",
+      noresults: "No matching terms",
+      json: false,
+      resultsParameter : "rs",
+      resultId : "id",
+      resultValue : "name",
+      resultInfo : "info",
+      enableHierarchy: false,
+      fadeOnClear : false,
+      timeout : 30000,
+      parentContainer : null
+    });
+    $('headerglobalsearchinput').observe("ms:suggest:selected", function(event) {
+      window.location = event.memo.id;
+    });
     return true;
   };
 
