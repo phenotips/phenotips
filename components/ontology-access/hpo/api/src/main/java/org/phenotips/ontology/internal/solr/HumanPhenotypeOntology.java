@@ -122,6 +122,9 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
             lastWord = lastWordRegex.group(1);
         }
         String q;
+        if (StringUtils.isBlank(lastWord)) {
+            lastWord = escapedQuery;
+        }
         if (isId) {
             if (StringUtils.isNotBlank(customFq)) {
                 params.add(fqStr, customFq);
@@ -134,11 +137,8 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
             String bq = new MessageFormat("nameSpell:{0}*^14 synonymSpell:{0}*^7 text:{0}*^1 textSpell:{0}*^2").format(
                 new String[]{ lastWord });
             q = new MessageFormat("{0}* textSpell:{1}*").format(new String[]{ escapedQuery, lastWord });
-            params.add(fqStr, "+(term_category:HP\\:0000118)");
+            params.add(fqStr, "term_category:HP\\:0000118");
             params.add("bq", bq);
-        }
-        if (StringUtils.isBlank(lastWord)) {
-            q = escapedQuery;
         }
         params.add(CommonParams.Q, q);
         params.add(CommonParams.ROWS, rows.toString());
