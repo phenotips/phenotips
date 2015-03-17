@@ -24,12 +24,11 @@ var HPOLegend = Class.create( Legend, {
      *
      * @method getTerm
      * @return {Object}
-     */    
+     */
     getTerm: function(hpoID) {
-        hpoID = HPOTerm.sanitizeID(hpoID);
         if (!this._termCache.hasOwnProperty(hpoID)) {
-            var whenNameIsLoaded = function() { this._updateTermName(hpoID); }
-            this._termCache[hpoID] = new HPOTerm(hpoID, null, whenNameIsLoaded.bind(this));            
+            var whenNameIsLoaded = function() { this._updateTermName(hpoID); };
+            this._termCache[hpoID] = new HPOTerm(hpoID, null, whenNameIsLoaded.bind(this));
         }
         return this._termCache[hpoID];
     },
@@ -66,10 +65,11 @@ var HPOLegend = Class.create( Legend, {
      * @method _updateTermName
      * @param {Number} id The identifier of the phenotype to update
      * @private
-     */    
+     */
     _updateTermName: function(id) {
         //console.log("updating phenotype display for " + id + ", name = " + this.getTerm(id).getName());
-        var name = this._legendBox.down('li#' + this._getPrefix() + '-' + id + ' .disorder-name');
+        var _this = this;
+        var name = this._legendBox.down('li#' + this._getPrefix() + '-' + _this._hashID(id) + ' .disorder-name');
         name.update(this.getTerm(id).getName());
     },
 
@@ -94,5 +94,5 @@ var HPOLegend = Class.create( Legend, {
         } else {
             alert("This person already has the selected phenotype");
         }
-    },
+    }
 });
