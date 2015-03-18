@@ -209,22 +209,22 @@
                     .insert(new Element ('div', {'class' : 'section-contents'}));
       };
 
-      var serverTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.titleAllPaitents')":
-                                                "$services.localization.render('phenotips.PushPatient.titleOnePaitent')";
-      var serverDesc  = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.serverAllPaitents')":
-                                                 "$services.localization.render('phenotips.PushPatient.serverOnePaitent')";
+      var serverTitle = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.label.multiplePatients')":
+                                                "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.label.singlePatient')";
+      var serverDesc  = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.hint.multiplePatients')":
+                                                 "$services.localization.render('phenotips.patientSharing.push.dialog.serverSelection.hint.singlePatient')";
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
       this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
-                     .insert(generateSection('user-selection', "$services.localization.render('phenotips.PushPatient.authenticationTitle')","$services.localization.render('phenotips.PushPatient.authenticationHint')"))
-                     .insert(generateSection('group-selection',"$services.localization.render('phenotips.PushPatient.remoteGroupTitle')","$services.localization.render('phenotips.PushPatient.remoteGroupHint')"));
+                     .insert(generateSection('user-selection', "$services.localization.render('phenotips.patientSharing.push.dialog.authentication.label')","$services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint')"))
+                     .insert(generateSection('group-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label')","$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint')"));
       if (!this._pushManyPatients) {
-          this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.PushPatient.previewTitle')","$services.localization.render('phenotips.PushPatient.previewHint')"));
+          this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
       }
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
       var labelApprove = new Element('label', {'id':'approve-label'});
-      var approveMessage = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.approveMessageMany')":
-                                                    "$services.localization.render('phenotips.PushPatient.approveMessageOne')";
+      var approveMessage = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.multiplePatients')":
+                                                    "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.singlePatient')";
       labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
@@ -241,7 +241,7 @@
       this._initServerSelector();
       this._initMainFormActions();
 
-      var title = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.titleMany')" : "$services.localization.render('phenotips.PushPatient.titleOne')".replace("__patientID__", this._patientId);
+      var title = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.title.multiplePatients')" : "$services.localization.render('phenotips.patientSharing.push.dialog.title.singlePatient')".replace("__patientID__", this._patientId);
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
