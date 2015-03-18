@@ -32,6 +32,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     _setDefault: function() {
+        this._phenotipsId = "";
         this._firstName = "";
         this._lastName = "";
         this._lastNameAtBirth = "";
@@ -78,6 +79,32 @@ var Person = Class.create(AbstractPerson, {
      */
     isProband: function() {
         return this._isProband;
+    },
+
+    /**
+     * Returns the id of the PhenoTips patient represented by this node.
+     * Returns an empty string for nodes not assosiated with any PhenoTips patients.
+     *
+     * @method getPhenotipsPatientId
+     * @return {String}
+     */
+    getPhenotipsPatientId: function()
+    {
+        return this._phenotipsId;
+    },
+
+    /**
+     * Replaces (or sets) the id of the PhenoTips patient represented by this node
+     * with the given id, and updates the label.
+     *
+     * No error checking for the validity of this id is done.
+     *
+     * @method setPhenotipsPatientId
+     * @param firstName
+     */
+    setPhenotipsPatientId: function(phenotipsId)
+    {
+        this._phenotipsId = phenotipsId;
     },
 
     /**
@@ -885,7 +912,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Returns an object (to be accepted by the menu) with information about this Person
+     * Returns an object (to be accepted by node menu) with information about this Person
      *
      * @method getSummary
      * @return {Object} Summary object for the menu
@@ -981,7 +1008,8 @@ var Person = Class.create(AbstractPerson, {
             evaluated:     {value : this.getEvaluated() },
             hpo_positive:  {value : hpoTerms },
             nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
-            cancers:       {value : this.getCancers() }
+            cancers:       {value : this.getCancers() },
+            phenotipsid:   {value : this.getPhenotipsPatientId() }
         };
     },
 
@@ -999,6 +1027,8 @@ var Person = Class.create(AbstractPerson, {
     getProperties: function($super) {
         // note: properties equivalent to default are not set
         var info = $super();
+        if (this.getPhenotipsPatientId() != "")
+            info['phenotipsId'] = this.getPhenotipsPatientId();
         if (this.getFirstName() != "")
             info['fName'] = this.getFirstName();
         if (this.getLastName() != "")
@@ -1057,6 +1087,9 @@ var Person = Class.create(AbstractPerson, {
         this._setDefault();
 
         if($super(info)) {
+            if(info.phenotipsId && this.getPhenotipsPatientId() != info.phenotipsId) {
+                this.setPhenotipsPatientId(info.phenotipsId);
+            }
             if(info.fName && this.getFirstName() != info.fName) {
                 this.setFirstName(info.fName);
             }

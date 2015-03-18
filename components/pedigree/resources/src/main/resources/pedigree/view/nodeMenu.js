@@ -94,7 +94,48 @@ NodeMenu = Class.create({
 
         this._onClickOutside = this._onClickOutside.bindAsEventListener(this);
 
-        // Attach pickers
+        // Attach pickers and suggest widgets
+        this._generatePickersAndSuggests();
+
+        // Update disorder colors
+        this._updateDisorderColor = function(id, color) {
+          this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
+             var colorBubble = item.up('li').down('.disorder-color');
+             if (!colorBubble) {
+               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               item.up('li').insert({top : colorBubble});
+             }
+             colorBubble.setStyle({background : color});
+          });
+        }.bind(this);
+        document.observe('disorder:color', function(event) {
+           if (!event.memo || !event.memo.id || !event.memo.color) {
+             return;
+           }
+           _this._updateDisorderColor(event.memo.id, event.memo.color);
+        });
+        //this._setFieldValue['disease-picker'].bind(this);
+
+        // Update gene colors
+        this._updateGeneColor = function(id, color) {
+          this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
+             var colorBubble = item.up('li').down('.disorder-color');
+             if (!colorBubble) {
+               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               item.up('li').insert({top : colorBubble});
+             }
+             colorBubble.setStyle({background : color});
+          });
+        }.bind(this);
+        document.observe('gene:color', function(event) {
+           if (!event.memo || !event.memo.id || !event.memo.color) {
+             return;
+           }
+           _this._updateGeneColor(event.memo.id, event.memo.color);
+        });
+    },
+
+    _generatePickersAndSuggests: function() {
         // date
         this.form.select('.fuzzy-date').each(function(item) {
           if (!item.__datePicker) {
@@ -293,42 +334,32 @@ NodeMenu = Class.create({
                 });
             }
         });
-
-        // Update disorder colors
-        this._updateDisorderColor = function(id, color) {
-          this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
-             var colorBubble = item.up('li').down('.disorder-color');
-             if (!colorBubble) {
-               colorBubble = new Element('span', {'class' : 'disorder-color'});
-               item.up('li').insert({top : colorBubble});
-             }
-             colorBubble.setStyle({background : color});
-          });
-        }.bind(this);
-        document.observe('disorder:color', function(event) {
-           if (!event.memo || !event.memo.id || !event.memo.color) {
-             return;
-           }
-           _this._updateDisorderColor(event.memo.id, event.memo.color);
-        });
-        //this._setFieldValue['disease-picker'].bind(this);
-
-        // Update gene colors
-        this._updateGeneColor = function(id, color) {
-          this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
-             var colorBubble = item.up('li').down('.disorder-color');
-             if (!colorBubble) {
-               colorBubble = new Element('span', {'class' : 'disorder-color'});
-               item.up('li').insert({top : colorBubble});
-             }
-             colorBubble.setStyle({background : color});
-          });
-        }.bind(this);
-        document.observe('gene:color', function(event) {
-           if (!event.memo || !event.memo.id || !event.memo.color) {
-             return;
-           }
-           _this._updateGeneColor(event.memo.id, event.memo.color);
+        // patient selector
+        this.form.select('input.suggest-patients').each(function(item) {
+            if (!item.hasClassName('initialized')) {
+                var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&";
+                console.log("PatientSuggest URL: " + patientSuggestURL);
+                item._suggest = new PhenoTips.widgets.Suggest(item, {
+                    script: patientSuggestURL,
+                    varname: "input",
+                    noresults: "No matching patients",
+                    json: false,
+                    resultsParameter : "rs",
+                    resultId : "id",
+                    resultValue : "name",
+                    resultInfo : "info",
+                    enableHierarchy: false,
+                    fadeOnClear : false,
+                    timeout : 30000,
+                    parentContainer : $('body')
+                });
+                item.addClassName('initialized');
+                document.observe('ms:suggest:containerCreated', function(event) {
+                    if (event.memo && event.memo.suggest === item._suggest) {
+                        item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                    }
+                });
+            }
         });
     },
 
@@ -587,6 +618,31 @@ NodeMenu = Class.create({
             this._attachFieldEventListeners(hpoPicker, ['custom:selection:changed']);
             return result;
         },
+        'phenotipsid-picker' : function (data) {
+            var result = this._generateEmptyField(data);
+            var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
+            result.insert(patientPicker);
+            patientPicker._getValue = function() {
+              var results = [];
+              var container = this.up('.field-box');
+              if (container) {
+                container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                  results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                });
+              }
+              return [results];
+            }.bind(patientPicker);
+            // Forward the 'custom:selection:changed' to the input
+            var _this = this;
+            document.observe('custom:selection:changed', function(event) {
+              if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                 Event.fire(event.memo.trigger, 'custom:selection:changed');
+                _this.reposition();
+              }
+            });
+            this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
+            return result;
+        },
         'gene-picker' : function (data) {
             var result = this._generateEmptyField(data);
             var genePicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-genes', name: data.name});
@@ -796,7 +852,10 @@ NodeMenu = Class.create({
 
     _onClickOutside: function (event) {
         //console.log("nodeMenu clickoutside");
-        if (!event.findElement('.menu-box') && !event.findElement('.calendar_date_select') && !event.findElement('.suggestItems')) {
+        if (!event.findElement('.suggestItems')) {
+            this.hideSuggestPicker();
+        }
+        if (!event.findElement('.menu-box') && !event.findElement('.suggestItems')) {
             this.hide();
         }
     },
@@ -1025,6 +1084,20 @@ NodeMenu = Class.create({
                 target._silent = false;
             }
         },
+        'phenotipsid-picker' : function (container, values) {
+            var _this = this;
+            var target = container.down('input[type=text].suggest-genes');
+            if (target && target._suggestPicker) {
+                target._silent = true;
+                target._suggestPicker.clearAcceptedList();
+                if (values) {
+                    values.each(function(v) {
+                        target._suggestPicker.addItem(v, v, '');
+                    })
+                }
+                target._silent = false;
+            }
+        },
         'select' : function (container, value) {
             var target = container.down('select option[value=' + value + ']');
             if (target) {
@@ -1148,6 +1221,9 @@ NodeMenu = Class.create({
         'gene-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
+        'phenotipsid-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
         'select' : function (container, inactive) {
             if (inactive === true) {
                 container.addClassName('hidden');
@@ -1209,6 +1285,9 @@ NodeMenu = Class.create({
             // FIXME: Not implemented
         },
         'gene-picker' : function (container, inactive) {
+            // FIXME: Not implemented
+        },
+        'phenotipsid-picker' : function (container, inactive) {
             // FIXME: Not implemented
         },
         'select' : function (container, inactive) {

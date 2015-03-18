@@ -399,6 +399,13 @@ var PedigreeEditor = Class.create({
                 'tab': 'Personal'
             },
             {
+                'name' : 'phenotipsid',
+                'label' : 'Phenotips Patient Link',
+                'type' : 'text', //phenotipsid-picker',
+                'tab' : 'Personal',
+                'function' : 'setPhenotipsPatientId'
+            },
+            {
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
