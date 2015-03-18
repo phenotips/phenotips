@@ -1754,7 +1754,9 @@ DynamicPositionedGraph.prototype = {
             var rank    = this.DG.ranks[i];
             if (rankYBefore && rankYBefore.length >= rank && this.DG.rankY[rank] != rankYBefore[rank]) {
                 var relationship = this.DG.GG.downTheChainUntilNonVirtual(i);
-                result[relationship] = true;
+                if (relationship <= maxOldID) {
+                    result[relationship] = true;
+                }
             }
         }
 
