@@ -297,9 +297,9 @@ NodeMenu = Class.create({
         // Update disorder colors
         this._updateDisorderColor = function(id, color) {
           this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
-             var colorBubble = item.up('li').down('.disorder-color');
+             var colorBubble = item.up('li').down('.abnormality-color');
              if (!colorBubble) {
-               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               colorBubble = new Element('span', {'class' : 'abnormality-color'});
                item.up('li').insert({top : colorBubble});
              }
              colorBubble.setStyle({background : color});
@@ -316,9 +316,9 @@ NodeMenu = Class.create({
         // Update gene colors
         this._updateGeneColor = function(id, color) {
           this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
-             var colorBubble = item.up('li').down('.disorder-color');
+             var colorBubble = item.up('li').down('.abnormality-color');
              if (!colorBubble) {
-               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               colorBubble = new Element('span', {'class' : 'abnormality-color'});
                item.up('li').insert({top : colorBubble});
              }
              colorBubble.setStyle({background : color});
