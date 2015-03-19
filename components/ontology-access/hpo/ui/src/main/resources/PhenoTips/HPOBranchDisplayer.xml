@@ -47,7 +47,10 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayItem $itemId $itemName $itemData)
-  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt;&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
+  #if ("$!{HPOInputType}" == '')
+    #set ($HPOInputType = 'radio')
+  #end
+  &lt;input type="$HPOInputType" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId || $!{value.contains($itemId)})checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt;&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
 #if("$!{itemData}" != '')
   &lt;span class="fa fa-info-circle phenotype-qualifier-info xHelpButton" title="${itemId}"&gt;&lt;/span&gt;
 #end
@@ -80,7 +83,9 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 {{/html}}
 #end
 #elseif ("$!{value}" != '')
-  $services.ontologies.resolveTerm($value).name
+  #foreach($id in $value)
+    $services.ontologies.resolveTerm($id).name
+  #end
 #end
 {{/velocity}}
 </content>

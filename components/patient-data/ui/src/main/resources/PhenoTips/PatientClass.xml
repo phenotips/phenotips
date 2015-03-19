@@ -631,19 +631,20 @@
   'HP:0001427'
 ])
 #set ($startWith = 'HP:0000005')
+#set ($HPOInputType = 'checkbox')
 {{/velocity}}
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
-      <displayType>select</displayType>
+      <displayType>checkbox</displayType>
       <idField/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>global_mode_of_inheritance</name>
       <number>9</number>
       <picker>0</picker>
       <prettyName>Global mode of inheritance</prettyName>
       <relationalStorage>0</relationalStorage>
-      <separator> </separator>
+      <separator/>
       <separators/>
       <size>1</size>
       <sort>none</sort>
