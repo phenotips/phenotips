@@ -114,8 +114,6 @@
 
 {{velocity}}
 #__hasBooleanDataToDisplay('solved', $showSolved)
-#__hasDataToDisplay('solved__pubmed_id' $showPubmedId)
-#__hasDataToDisplay('solved__Gene_id' $showGeneId)
 ##
 ##
 #if ($showSolved)
