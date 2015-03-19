@@ -1072,6 +1072,21 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </solved__gene_id>
+    <solved__notes>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>PureText</editor>
+      <name>solved__notes</name>
+      <number>46</number>
+      <picker>0</picker>
+      <prettyName>Resolution notes</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </solved__notes>
     <solved__pubmed_id>
       <customDisplay/>
       <disabled>0</disabled>
