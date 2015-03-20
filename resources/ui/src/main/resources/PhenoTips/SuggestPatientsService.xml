@@ -61,23 +61,67 @@
   #set ($query = $services.query.xwql($query))
   #set ($discard = $query.setLimit($nb))
   #set ($discard = $query.bindValue('input', "%${input}%"))
-  #set ($discard = $response.setContentType("text/xml"))
-  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   #set ($results = $query.execute())
-  &lt;results&gt;
+  #if ($request.permission)
+    #set ($requiredPermissions = "$request.permission")
+  #else
+    #set ($requiredPermissions = "view")
+  #end
+  #if ($request.json)
+    $response.setContentType('application/json')
+    { "matchedPatients": [
+    #set ($first = true)
     #foreach ($item in $results)
-      #if ($xwiki.hasAccessLevel('view', $xcontext.user, $item))
+      #if ($xwiki.hasAccessLevel("$requiredPermissions", $xcontext.user, $item))
         #set ($itemdoc = $xwiki.getDocument($item))
-        #set ($name = $itemdoc.getPlainTitle())
-        #set ($externalId = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
-        #if ($externalId != '')
-          #set ($name = "${externalId} (${name})")
-        #end
+        #set ($phenotipsId = "$itemdoc.getPlainTitle()")
         #set ($url = $itemdoc.getURL())
-        &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($name)&lt;/rs&gt;
+        #set ($externalId  = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
+        #set ($firstName   = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('first_name').value")
+        #set ($lastName    = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('last_name').value")
+        #set ($name = "$firstName $lastName")
+        #set ($name = $name.trim())
+        #set ($description = "$phenotipsId")
+        #if ($externalId != '' || $name != '')
+          #set ($description = "$description (")
+          #if ($name != '')
+            #set ($description = "${description}name: '${name}'")
+          #end
+          #if ($externalId != '')
+            #if ($name != '')
+              #set ($description = "${description}, ")
+            #end
+            #set ($description = "${description}identifier: '${externalId}'")
+          #end
+          #set ($description = "$description)")
+        #end
+        #if (!$first)
+        ,
+        #end
+        #set ($first = false)
+        { "id": "$phenotipsId", "url": "$url", "identifier": "${externalId}", "textSummary": "$description" }##
       #end
     #end
-  &lt;/results&gt;
+
+    ] }
+  #else
+    #set ($discard = $response.setContentType("text/xml"))
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;results&gt;
+      #foreach ($item in $results)
+        #if ($xwiki.hasAccessLevel("$requiredPermissions", $xcontext.user, $item))
+          #set ($itemdoc = $xwiki.getDocument($item))
+          #set ($name = $itemdoc.getPlainTitle())
+          #set ($externalId = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
+          #if ($externalId != '')
+            #set ($name = "${externalId} (${name})")
+          #end
+          #set ($url = $itemdoc.getURL())
+          &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($name)&lt;/rs&gt;
+        #end
+      #end
+    &lt;/results&gt;
+  #end
 #else
 {{info}}
 $services.localization.render('phenotips.SuggestPatientService.serviceInfo',["[[$doc.getExternalURL('get', 'outputSyntax=plain&amp;query=__INPUT__*&amp;input=test')]]"])
