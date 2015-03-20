@@ -27,12 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822125000</creationDate>
+  <creationDate>1426704841000</creationDate>
   <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822125000</date>
-  <contentUpdateDate>1401822125000</contentUpdateDate>
+  <date>1426869717000</date>
+  <contentUpdateDate>1426869717000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -631,7 +631,6 @@
   'HP:0001427'
 ])
 #set ($startWith = 'HP:0000005')
-#set ($HPOInputType = 'checkbox')
 {{/velocity}}
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
@@ -643,7 +642,7 @@
       <number>9</number>
       <picker>0</picker>
       <prettyName>Global mode of inheritance</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator/>
       <separators/>
       <size>1</size>

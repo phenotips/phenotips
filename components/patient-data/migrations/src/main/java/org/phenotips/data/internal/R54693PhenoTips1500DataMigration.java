@@ -36,10 +36,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.objects.StringListProperty;
+import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -47,10 +46,12 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #1500: Mode of inheritance should be multiselect.
+ * Migration for PhenoTips issue #1500: Automatically migrate {@code global_mode_of _inheritance} from
+ * {@code StringProperty} to {@DBStringListProperty} to allow for the selection of multiple modes
+ * of inheritance.
  *
  * @version $Id$
- * @since 1.2M0
+ * @since 1.2M1
  */
 @Component
 @Named("R54693PhenoTips#1500")
@@ -91,7 +92,7 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
 
     /**
      * Searches for all documents containing a global_mode_of_inheritance property and changes that property type from
-     * {@code StringProperty} to {@code StringListProperty}
+     * {@code StringProperty} to {@code DBStringListProperty}.
      */
     private final class UpdateModeOfInheritanceCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
     {
@@ -103,7 +104,6 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
         {
 
             XWikiContext context = R54693PhenoTips1500DataMigration.this.getXWikiContext();
-            XWiki xwiki = context.getWiki();
             DocumentReference classReference =
                 new DocumentReference(context.getDatabase(), "PhenoTips", "PatientClass");
             Query q =
@@ -117,7 +117,7 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
                 properties.size());
             for (StringProperty oldProperty : properties) {
                 try {
-                    StringListProperty newProperty = new StringListProperty();
+                    DBStringListProperty newProperty = new DBStringListProperty();
                     newProperty.setName(oldProperty.getName());
                     newProperty.setId(oldProperty.getId());
 
@@ -130,8 +130,8 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
                     session.save(newProperty);
                 } catch (Exception e) {
                     R54693PhenoTips1500DataMigration.this.logger
-                        .warn("Failed to update a global mode of inheritance property. Exception message: {}",
-                            e.getMessage());
+                    .warn("Failed to update a global mode of inheritance property. Exception message: {}",
+                        e.getMessage());
                 }
 
             }
