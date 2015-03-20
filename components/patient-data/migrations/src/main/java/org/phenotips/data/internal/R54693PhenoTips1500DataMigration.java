@@ -47,8 +47,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #1500: Automatically migrate {@code global_mode_of _inheritance} from
- * {@code StringProperty} to {@DBStringListProperty} to allow for the selection of multiple modes
- * of inheritance.
+ * {@code StringProperty} to {@code DBStringListProperty} to allow for the selection of multiple modes of inheritance.
  *
  * @version $Id$
  * @since 1.2M1
@@ -109,7 +108,7 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
                     + R54693PhenoTips1500DataMigration.this.serializer.serialize(classReference)
-                    + "and p.id.id = o.id and p.id.name =" + this.propertyName + "'");
+                    + "'and p.id.id = o.id and p.id.name = '" + this.propertyName + "'");
 
             @SuppressWarnings("unchecked")
             List<StringProperty> properties = q.list();

@@ -643,7 +643,7 @@
       <picker>0</picker>
       <prettyName>Global mode of inheritance</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator/>
+      <separator> </separator>
       <separators/>
       <size>1</size>
       <sort>none</sort>
