@@ -260,7 +260,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   var suggestionsMapping = {
         "hpo" : {
             script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
-            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({}, {}),
             varname: "q",
             noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
             json: true,
