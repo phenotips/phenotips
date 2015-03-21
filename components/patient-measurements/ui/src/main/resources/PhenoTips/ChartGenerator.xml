@@ -146,6 +146,9 @@
 preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="optimizeLegibility"&gt;
   &lt;title&gt;${chartConfiguration.chartTitle}, #if ($sex)$services.localization.render('phenotips.chartGenerator.chartTitle.male')#{else}$services.localization.render('phenotips.chartGenerator.chartTitle.female')#end&lt;/title&gt;
   &lt;style type="text/css"&gt;
+a:hover {
+  text-decoration: underline;
+}
 .chart-background {
   fill: white;
   stroke: none;
@@ -212,6 +215,10 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   font-family: sans-serif;
   font-size: 20px;
   text-anchor: middle;
+}
+.reference {
+  font-size: 10px;
+  text-anchor: end;
 }
 .chart-percentile.chart-background {
   stroke: none;
@@ -372,6 +379,11 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   &lt;text y="$mathtool.div($graphHeight, 2)" x="$mathtool.add($graphWidth, 33)" class="right side chart-label" transform="rotate(90 $mathtool.add($graphWidth, 33) $mathtool.div($graphHeight, 2))"&gt;${chartConfiguration.rightLabel}&lt;/text&gt;
   &lt;text y="-20" x="$mathtool.div($graphWidth, 2)" class="top side chart-label"&gt;${chartConfiguration.topLabel}&lt;/text&gt;
   &lt;text y="$mathtool.add($graphHeight, 20)" x="$mathtool.div($graphWidth, 2)" class="bottom side chart-label" dy="0.7em"&gt;${chartConfiguration.bottomLabel}&lt;/text&gt;
+  #if ("$!chartConfiguration.chartSource" != '')
+    #if ("$!chartConfiguration.chartSourceLink" != '')&lt;a xlink:href="${chartConfiguration.chartSourceLink}"&gt;#end
+    &lt;text y="$mathtool.add($graphHeight, 45)" x="$mathtool.add($chartWidth, -65.5)" class="reference" dy="0.7em"&gt;${chartConfiguration.chartSource}&lt;/text&gt;
+    #if ("$!chartConfiguration.chartSourceLink" != '')&lt;/a&gt;#end
+  #end
   &lt;/g&gt;
 &lt;/svg&gt;
 {{/html}}</content>
