@@ -3862,6 +3862,9 @@ h1, h2, h3, h4 {
   width:32%;
   margin-left:1%;
 }
+.chart-wrapper:hover {
+  text-decoration: none;
+}
 .term-entry {
   display: block;
   width: auto;
