@@ -19,9 +19,9 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.data.Patient;
+
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.ArrayList;
@@ -61,11 +61,6 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
     @Inject
     private Logger logger;
 
-    /** Resolves unprefixed document names to the current wiki. */
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<String> resolver;
-
     /** Serializes the class name without the wiki prefix, to be used in the database query. */
     @Inject
     @Named("compactwiki")
@@ -103,11 +98,9 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
         {
 
             XWikiContext context = R54693PhenoTips1500DataMigration.this.getXWikiContext();
-            DocumentReference classReference =
-                new DocumentReference(context.getDatabase(), "PhenoTips", "PatientClass");
             Query q =
                 session.createQuery("select distinct p from BaseObject o, StringProperty p where o.className = '"
-                    + R54693PhenoTips1500DataMigration.this.serializer.serialize(classReference)
+                    + R54693PhenoTips1500DataMigration.this.serializer.serialize(Patient.CLASS_REFERENCE)
                     + "'and p.id.id = o.id and p.id.name = '" + this.propertyName + "'");
 
             @SuppressWarnings("unchecked")
@@ -129,8 +122,7 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
                     session.save(newProperty);
                 } catch (Exception e) {
                     R54693PhenoTips1500DataMigration.this.logger
-                    .warn("Failed to update a global mode of inheritance property. Exception message: {}",
-                        e.getMessage());
+                        .warn("Failed to update a global mode of inheritance property: {}", e.getMessage());
                 }
 
             }
