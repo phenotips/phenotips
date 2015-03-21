@@ -106,7 +106,7 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
             DocumentReference classReference =
                 new DocumentReference(context.getDatabase(), "PhenoTips", "PatientClass");
             Query q =
-                session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
+                session.createQuery("select distinct p from BaseObject o, StringProperty p where o.className = '"
                     + R54693PhenoTips1500DataMigration.this.serializer.serialize(classReference)
                     + "'and p.id.id = o.id and p.id.name = '" + this.propertyName + "'");
 

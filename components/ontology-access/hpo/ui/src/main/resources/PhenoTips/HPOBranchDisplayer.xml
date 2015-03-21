@@ -66,9 +66,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   &lt;ul&gt;
   #if($firstLevel)
     #set($firstLevel = false)
-    #if($field.getProperty('multiSelect').value == 1)
-      &lt;li class="hpo-unknown"&gt;&lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;&lt;/li&gt;
-    #else
+    #if($field.getProperty('multiSelect').value != 1)
       &lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;
     #end
   #end
@@ -88,16 +86,19 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 {{html wiki=false clean=false}}
 &lt;div class="hpo-branch"&gt;
 #_displayChildren($startWith)
+#if($field.getProperty('multiSelect').value == 1)
+  &lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;
+#end
 &lt;/div&gt;
 {{/html}}
 #end
-#elseif ("$!{value}" != '')
+#else
   #if ($field.getProperty('multiSelect').value == 1)
     #foreach($id in $value)
-      $services.ontologies.resolveTerm($id).name
+      $!services.ontologies.resolveTerm($id).name
     #end
-  #else
-    $services.ontologies.resolveTerm($value).name
+  #elseif ("$!{value}" != '')
+    $!services.ontologies.resolveTerm($value).name
   #end
 #end
 {{/velocity}}
