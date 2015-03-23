@@ -141,7 +141,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.2-SNAPSHOT</phenotips.version>
-    <xwiki.version>5.4.6</xwiki.version>
+    <xwiki.version>5.4.7</xwiki.version>
     <slf4j.version>1.7.10</slf4j.version>
     <buildtools.version>1.0</buildtools.version>
     <testframework.version>1.0-milestone-3</testframework.version>
