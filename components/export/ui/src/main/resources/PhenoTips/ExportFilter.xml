@@ -127,12 +127,12 @@
     #if ($isFirstPhenotype)
       #set ($isFirstPhenotype = false)
       #if ("$!request.phenotype_subterms" == 'no')
-        #set ($query = ", DBStringListProperty phenotype join phenotype.list as phenotypeValue ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'phenotype' and (? in phenotypeValue")
+        #set ($query = ", DBStringListProperty phenotype ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'phenotype' and (? in elements(phenotype.list)")
       #else
-        #set ($query = ", DBStringListProperty phenotype join phenotype.list as phenotypeValue ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'extended_phenotype' and (? in phenotypeValue")
+        #set ($query = ", DBStringListProperty phenotype ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'extended_phenotype' and (? in elements(phenotype.list)")
       #end
     #else
-      #set ($query = $query.concat(" ${joinOperator} ? in phenotypeValue"))
+      #set ($query = $query.concat(" ${joinOperator} ? in elements(phenotype.list)"))
     #end
     #set ($discard = $parameters.add($phenotype))
   #end
@@ -141,17 +141,17 @@
   #set ($query = $query.concat(')'))
 #end
 #set ($isFirstDisease = true)
-#set ($joinOperator = "$!{request.get('omim/join_mode').toUpperCase()}")
+#set ($joinOperator = "$!{request.get('omim_id/join_mode').toUpperCase()}")
 #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
   #set ($joinOperator = 'AND')
 #end
 #foreach ($disease in $request.getParameterValues('omim_id'))
   #if ($disease != '')
     #if ($isFirstDisease)
-      #set ($query = ", DBStringListProperty disease join disease.list as diseaseValue ${query} and disease.id.id = obj.id and disease.id.name = 'omim_id' and (? in diseaseValue")
+      #set ($query = ", DBStringListProperty disease ${query} and disease.id.id = obj.id and disease.id.name = 'omim_id' and (? in elements(disease.list)")
       #set ($isFirstDisease = false)
     #else
-      #set ($query = $query.concat(" ${joinOperator} ? in diseaseValue"))
+      #set ($query = $query.concat(" ${joinOperator} ? in elements(disease.list)"))
     #end
     #set ($discard = $parameters.add($disease))
   #end
