@@ -77,10 +77,14 @@
         #set ($phenotipsId = "$itemdoc.getPlainTitle()")
         #set ($url = $itemdoc.getURL())
         #set ($externalId  = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
-        #set ($firstName   = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('first_name').value")
-        #set ($lastName    = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('last_name').value")
-        #set ($name = "$firstName $lastName")
-        #set ($name = $name.trim())
+        #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+          #set ($firstName   = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('first_name').value")
+          #set ($lastName    = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('last_name').value")
+          #set ($name = "$firstName $lastName")
+          #set ($name = $name.trim())
+        #else
+          #set ($name = '')
+        #end
         #set ($description = "$phenotipsId")
         #if ($externalId != '' || $name != '')
           #set ($description = "$description (")
