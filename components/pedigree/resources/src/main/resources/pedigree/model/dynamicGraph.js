@@ -2,7 +2,12 @@
 
 DynamicPositionedGraph = function( drawGraph )
 {
+    this._currentPatientId = XWiki.currentDocument.page;
+
     this.DG = drawGraph;
+
+    // TODO: auto-find fo rnow; may specify manually a node different from current patient later
+    this._probandId = this.findProbandId();
 
     this._heuristics = new Heuristics( drawGraph );  // heuristics & helper methods separated into a separate class
 
@@ -27,6 +32,41 @@ DynamicPositionedGraph.prototype = {
       if (!this.DG.GG.isPerson(id) && !this.DG.GG.isRelationship(id))
         return false;
       return true;
+    },
+
+    getCurrentPatientId: function()
+    {
+        return this._currentPatientId;
+    },
+
+    setProbandId: function(id)
+    {
+        this._probandId = id;
+    },
+
+    getProbandId: function()
+    {
+        return this._probandId;
+    },
+
+    findProbandId: function()
+    {
+        // default to node with ID 0
+        var probandId = 0;
+
+        // look through all person nodes for a node linked to the current patient
+        for (var i = 0 ; i <= this.getMaxNodeId(); i++) {
+            if (this.isPerson(i)) {
+                if (this.getProperties(i).hasOwnProperty("phenotipsId")) {
+                    if (this.getProperties(i).phenotipsId == this.getCurrentPatientId()) {
+                        probandId = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return probandId;
     },
 
     getMaxNodeId: function()
@@ -148,38 +188,38 @@ DynamicPositionedGraph.prototype = {
         this.DG.GG.properties[id] = newSetOfProperties;
     },
 
-    // returns false if this gender is incompatible with this pedigree; true otherwise
-    setProbandData: function( patientObject )
+    // returns false if gender as given in JSON is incompatible with this pedigree; true otherwise
+    setNodeDataFromPhenotipsJSON: function( id, patientObject )
     {
-        // TODO: separate patient object parser/data loader
+        this.DG.GG.properties[id] = {"phenotipsId": patientObject.id };
 
         if (patientObject.hasOwnProperty("patient_name")) {
             if (patientObject.patient_name.hasOwnProperty("first_name")) {
-                this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
+                this.DG.GG.properties[id].fName = patientObject.patient_name.first_name;
             }
             if (patientObject.patient_name.hasOwnProperty("last_name")) {
-                this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
+                this.DG.GG.properties[id].lName = patientObject.patient_name.last_name;
             }
         }
 
         var genderOK = true;
         if (patientObject.hasOwnProperty("sex")) {
             var probandSex = patientObject.sex;
-            var possibleGenders = this.getPossibleGenders(0);
+            var possibleGenders = this.getPossibleGenders(id);
             if (!possibleGenders.hasOwnProperty(probandSex) || !possibleGenders[probandSex]) {
                 probandSex = 'U';
                 genderOK = false;
             }
-            this.DG.GG.properties[0].gender = probandSex;
+            this.DG.GG.properties[id].gender = probandSex;
         }
 
         if (patientObject.hasOwnProperty("date_of_birth")) {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
-            this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+            this.DG.GG.properties[id].dob = birthDate.getSimpleObject();
         }
         if (patientObject.hasOwnProperty("date_of_death")) {
             var deathDate = new PedigreeDate(patientObject.date_of_death);
-            this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+            this.DG.GG.properties[id].dod = deathDate.getSimpleObject();
         }
 
         if (patientObject.hasOwnProperty("ethnicity")) {
@@ -192,12 +232,12 @@ DynamicPositionedGraph.prototype = {
                 ethnicities = ethnicities.concat(patientObject.ethnicity.paternal_ethnicity.slice(0));
             }
             if (ethnicities.length > 0) {
-                this.DG.GG.properties[0].ethnicities = filterUnique(ethnicities);
+                this.DG.GG.properties[id].ethnicities = filterUnique(ethnicities);
             }
         }
 
         if (patientObject.hasOwnProperty("external_id")) {
-            this.DG.GG.properties[0].externalID = patientObject.external_id;
+            this.DG.GG.properties[id].externalID = patientObject.external_id;
         }
 
         var hpoTerms = [];
@@ -218,7 +258,7 @@ DynamicPositionedGraph.prototype = {
             }
         }
         if (hpoTerms.length > 0) {
-            this.DG.GG.properties[0].hpoTerms = hpoTerms;
+            this.DG.GG.properties[id].hpoTerms = hpoTerms;
         }
 
         var disorders = [];
@@ -232,7 +272,7 @@ DynamicPositionedGraph.prototype = {
             }
         }
         if (disorders.length > 0) {
-            this.DG.GG.properties[0].disorders = disorders;
+            this.DG.GG.properties[id].disorders = disorders;
         }
 
         var genes = [];
@@ -243,7 +283,7 @@ DynamicPositionedGraph.prototype = {
             }
         }
         if (genes.length > 0) {
-            this.DG.GG.properties[0].candidateGenes = genes;
+            this.DG.GG.properties[id].candidateGenes = genes;
         }
 
         return genderOK;
@@ -394,22 +434,22 @@ DynamicPositionedGraph.prototype = {
     isChildOfProband: function( v )
     {
         var parents = this.DG.GG.getParents(v);
-        if (arrayContains(parents,0)) return true;
+        if (arrayContains(parents, this.getProbandId())) return true;
         return false;
     },
 
     isSiblingOfProband: function( v )
     {
         var siblings = this.DG.GG.getAllSiblingsOf(v);
-        if (arrayContains(siblings,0)) return true;
+        if (arrayContains(siblings, this.getProbandId())) return true;
         return false;
     },
 
     isPartnershipRelatedToProband: function( v )
     {
         var parents = this.DG.GG.getParents(v);
-        if (arrayContains(parents, 0)) return true;
-        if (v == this.DG.GG.getProducingRelationship(0))
+        if (arrayContains(parents, this.getProbandId())) return true;
+        if (v == this.DG.GG.getProducingRelationship(this.getProbandId()))
         {
             return true;
         }
@@ -419,7 +459,7 @@ DynamicPositionedGraph.prototype = {
     // returns true iff node v is either a sibling, a child or a parent of proband node
     isRelatedToProband: function( v )
     {
-        var probandRelatedRels = this.getAllRelatedRelationships(0);
+        var probandRelatedRels = this.getAllRelatedRelationships(this.getProbandId());
         for (var i = 0; i < probandRelatedRels.length; i++) {
             var rel = probandRelatedRels[i];
 
@@ -674,7 +714,7 @@ DynamicPositionedGraph.prototype = {
         var connected = {};
 
         var queue = new Queue();
-        queue.push( 0 );
+        queue.push( this.getProbandId() );
 
         while ( queue.size() > 0 ) {
             var next = parseInt(queue.pop());
@@ -1536,6 +1576,8 @@ DynamicPositionedGraph.prototype = {
 
         var newNodes = this._getAllNodes();
 
+        this._probandId = this.findProbandId();
+
         return {"new": newNodes, "removed": removedNodes};
     },
 
@@ -1597,6 +1639,8 @@ DynamicPositionedGraph.prototype = {
 
         this.DG          = newDG;
         this._heuristics = new Heuristics( this.DG );
+
+        this._probandId = this.findProbandId();
 
         //this._debugPrintAll("before improvement");
         this._heuristics.improvePositioning();

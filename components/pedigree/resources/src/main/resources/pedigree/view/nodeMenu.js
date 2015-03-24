@@ -320,17 +320,17 @@ NodeMenu = Class.create({
         // patient selector
         this.form.select('input.suggest-patients').each(function(item) {
             if (!item.hasClassName('initialized')) {
-                var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&";
+                var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&json=true&";
                 console.log("PatientSuggest URL: " + patientSuggestURL);
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: patientSuggestURL,
                     varname: "input",
                     noresults: "No matching patients",
-                    json: false,
-                    resultsParameter : "rs",
+                    json: true,
+                    resultsParameter : "matchedPatients",
                     resultId : "id",
-                    resultValue : "name",
-                    resultInfo : "info",
+                    resultValue : "textSummary",
+                    resultInfo : {},
                     enableHierarchy: false,
                     fadeOnClear : false,
                     timeout : 30000,
@@ -374,7 +374,11 @@ NodeMenu = Class.create({
           if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
           var target = _this.targetNode;
           if (!target) return;
-          _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
+          if (event.hasOwnProperty("memo") && event.memo.hasOwnProperty("useValue")) {
+              _this.fieldMap[field.name].crtValue = event.memo.useValue;
+          } else {
+              _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
+          }
           var method = _this.fieldMap[field.name]['function'];
 
           if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue)
@@ -605,23 +609,25 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
             result.insert(patientPicker);
-            patientPicker._getValue = function() {
-              var results = [];
-              var container = this.up('.field-box');
-              if (container) {
-                container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                  results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
-                });
-              }
-              return [results];
-            }.bind(patientPicker);
-            // Forward the 'custom:selection:changed' to the input
+
+            var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
+            var patientLink = new Element('a', {'class': 'patient-link-url', 'target': "_blank", name: data.name + "_link"});
+            var removeLink = new Element('span', {'class': 'patient-link-remove'});
+            removeLink.insert("unlink");
+            var syncStatus = new Element('span', {'class': 'patient-link-remove'});
+            syncStatus.insert("synced");
+            var familyStatus = new Element('span', {'class': 'patient-link-remove'});
+            familyStatus.insert("family");
+            patientLinkContainer.insert(patientLink).insert(removeLink).insert(syncStatus).insert(familyStatus);
+            result.insert(patientLinkContainer);
+            //var patientLinkType = new Element('i', {'class': 'fa fa-lock', name: data.name + '_linktype'});
+            //result.insert(patientLinkType);
+
             var _this = this;
-            document.observe('custom:selection:changed', function(event) {
-              if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                 Event.fire(event.memo.trigger, 'custom:selection:changed');
+            patientPicker.observe('ms:suggest:selected', function(event) {
+                 //Event.stop(event);
+                 Event.fire(patientPicker, 'custom:selection:changed', { "useValue": event.memo.id });
                 _this.reposition();
-              }
             });
             this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
             return result;
@@ -937,8 +943,8 @@ NodeMenu = Class.create({
             var target = container.down('input[type=text]');
             if (target) {
                 target.value = value;
+                this._restoreCursorPositionIfNecessary(target);
             }
-            this._restoreCursorPositionIfNecessary(target);
         },
         'textarea' : function (container, value) {
             var target = container.down('textarea');
@@ -1067,18 +1073,30 @@ NodeMenu = Class.create({
                 target._silent = false;
             }
         },
-        'phenotipsid-picker' : function (container, values) {
+        'phenotipsid-picker' : function (container, value) {
             var _this = this;
-            var target = container.down('input[type=text].suggest-genes');
-            if (target && target._suggestPicker) {
-                target._silent = true;
-                target._suggestPicker.clearAcceptedList();
-                if (values) {
-                    values.each(function(v) {
-                        target._suggestPicker.addItem(v, v, '');
-                    })
+
+            var suggestInput = container.down('input[type=text].suggest-patients');
+
+            var linkContainer = container.down('div.patient-link-container');
+            var link          = container.down('a.patient-link-url');
+            var linkRemove    = container.down('span.patient-link-remove');
+
+            suggestInput.value = "";
+
+            if (value == "") {
+                linkContainer.hide();
+                suggestInput.show();
+            } else {
+                suggestInput.hide();
+                link.href = new XWiki.Document(value).getURL();
+                link.text = value;
+                linkContainer.show();
+                if (_this.targetNode.isProband()) {
+                    linkRemove.hide();
+                } else {
+                    linkRemove.show();
                 }
-                target._silent = false;
             }
         },
         'select' : function (container, value) {

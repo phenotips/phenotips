@@ -232,7 +232,7 @@ var Controller = Class.create({
 
     handleSetProperty: function(event)
     {
-        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         var nodeID     = event.memo.nodeID;
         var properties = event.memo.properties;
         var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": cloneObject(event.memo.properties)}};
@@ -241,6 +241,7 @@ var Controller = Class.create({
         var changed = false;
 
         var twinUpdate = undefined;
+        var needUpdateOldProbandId = undefined;
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         var needUpdateAllRelationships = false;
@@ -301,6 +302,22 @@ var Controller = Class.create({
                 }
                 if (propertySetFunction == "setCarrierStatus") {
                     undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
+                }
+
+                if (propertySetFunction == "setPhenotipsPatientId") {
+                    if (propValue == editor.getGraph().getCurrentPatientId()) {
+                        // TODO: display message boxes
+
+                        // mark to update old proband
+                        needUpdateOldProbandId = editor.getGraph().getProbandId();
+
+                        editor.getGraph().setProbandId(nodeID);
+
+                        // TODO: update proband data from patient document?
+
+                        // if anothe rnode is involved there is no easy one-event undo
+                        undoEvent = null;
+                    }
                 }
 
                 node[propertySetFunction](propValue);
@@ -410,6 +427,13 @@ var Controller = Class.create({
             }
         }
 
+        if (isInt(needUpdateOldProbandId)) {
+            var oldProbandNode = editor.getView().getNode(needUpdateOldProbandId);
+            oldProbandNode.setPhenotipsPatientId("");
+            var oldProbandProperties = oldProbandNode.getProperties();
+            editor.getGraph().setProperties( needUpdateOldProbandId, oldProbandProperties );
+        }
+
         var allProperties = node.getProperties();
         editor.getGraph().setProperties( nodeID, allProperties );
 
@@ -446,7 +470,6 @@ var Controller = Class.create({
 
     handleModification: function(event)
     {
-        try {
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         var nodeID        = event.memo.nodeID;
         var modifications = event.memo.modifications;
@@ -479,10 +502,6 @@ var Controller = Class.create({
 
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event );
-
-        } catch(err) {
-            console.log("err: " + err);
-        }
     },
 
     handlePersonDragToNewParent: function(event)

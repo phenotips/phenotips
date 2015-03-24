@@ -8,7 +8,7 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        //this.DEBUG_MODE = true;
+        this.DEBUG_MODE = true;
         window.editor = this;
 
         // Available options:
@@ -377,6 +377,7 @@ var PedigreeEditor = Class.create({
      * @method isAnyMenuVisible
      */
     isAnyMenuVisible: function() {
+        if (this.isReadOnlyMode()) return false;
         if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
             return;
         }
@@ -398,13 +399,13 @@ var PedigreeEditor = Class.create({
                 'type'  : 'hidden',
                 'tab': 'Personal'
             },
-            /*{
+            {
                 'name' : 'phenotipsid',
-                'label' : 'Phenotips Patient Link',
-                'type' : 'text', //phenotipsid-picker',
+                'label' : 'Local Patient Profile',
+                'type' : 'phenotipsid-picker',
                 'tab' : 'Personal',
                 'function' : 'setPhenotipsPatientId'
-            },*/
+            },
             {
                 'name' : 'gender',
                 'label' : 'Gender',
@@ -442,7 +443,7 @@ var PedigreeEditor = Class.create({
             },
             {
                 'name' : 'external_id',
-                'label': 'External ID',
+                'label': 'Identifier',
                 'type' : 'text',
                 'tab': 'Personal',
                 'function' : 'setExternalID'
