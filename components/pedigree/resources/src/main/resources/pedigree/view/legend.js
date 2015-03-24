@@ -191,6 +191,24 @@ var Legend = Class.create( {
         }
     },
 
+    /**
+     * Updates internal references to nodes when node ids is/are changed (e.g. after a node deletion)
+     */
+    replaceIDs: function(changedIdsSet) {
+        for (var abnormality in this._affectedNodes) {
+            if (this._affectedNodes.hasOwnProperty(abnormality)) {
+
+                var affectedList = this._affectedNodes[abnormality];
+
+                for (var i = 0; i < affectedList.length; i++) {
+                    var oldID = affectedList[i];
+                    var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
+                    affectedList[i] = newID;
+                }
+            }
+        }
+    },
+
     _getListElementForObjectWithID: function(id) {
         return $(this._getPrefix() + '-' + id);
     },

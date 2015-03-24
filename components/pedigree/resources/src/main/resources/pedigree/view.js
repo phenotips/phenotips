@@ -434,6 +434,11 @@ var View = Class.create({
         this._nodeMap = newNodeMap;
 
         this._lineSet.replaceIDs(changedIdsSet);
+
+        editor.getCancerLegend().replaceIDs(changedIdsSet);
+        editor.getGeneLegend().replaceIDs(changedIdsSet);
+        editor.getHPOLegend().replaceIDs(changedIdsSet);
+        editor.getDisorderLegend().replaceIDs(changedIdsSet);
     },
 
     /**

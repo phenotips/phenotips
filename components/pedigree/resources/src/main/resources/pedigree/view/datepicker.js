@@ -122,9 +122,9 @@ var PhenoTips = (function (PhenoTips) {
     },
 
     onProgrammaticUpdate : function() {
-        this.yearSelected();
-        this.monthSelected();
-        this.updateDate();
+        this.yearSelected(true);
+        this.monthSelected(true);
+        this.updateDate(true);
     },
 
     createYearDropdown : function() {
@@ -153,15 +153,15 @@ var PhenoTips = (function (PhenoTips) {
       return this.yearSelector.getElement();
     },
 
-    yearSelected : function() {
+    yearSelected : function(doNotNotifyOnChange) {
       if (this.yearSelector.getSelectedValue() > 0) {
         this.monthSelector.enable();
-        this.monthSelected();
+        this.monthSelected(doNotNotifyOnChange);
       } else {
         this.monthSelector.disable();
         this.daySelector.disable();
       }
-      this.updateDate();
+      this.updateDate(doNotNotifyOnChange);
     },
 
     createMonthDropdown : function() {
@@ -172,7 +172,7 @@ var PhenoTips = (function (PhenoTips) {
       return this.monthSelector.getElement();
     },
 
-    monthSelected : function() {
+    monthSelected : function(doNotNotifyOnChange) {
       if (this.monthSelector.getSelectedValue() > 0) {
         this.daySelector.populate(this.getAvailableDays());
         this.daySelector.enable();
@@ -184,7 +184,7 @@ var PhenoTips = (function (PhenoTips) {
             this.daySelector.disable();
         }
       }
-      this.updateDate();
+      this.updateDate(doNotNotifyOnChange);
     },
 
     createDayDropdown : function() {
@@ -227,7 +227,7 @@ var PhenoTips = (function (PhenoTips) {
       return values;
     },
 
-    updateDate : function () {
+    updateDate : function (doNotFireEventOnChange) {
         var dateObject = {};
 
         var y = this.yearSelector.getSelectedValue();
@@ -256,7 +256,9 @@ var PhenoTips = (function (PhenoTips) {
         var newValue = JSON.stringify(dateObject);
         if (newValue != this.__input.value) {
             this.__input.value = JSON.stringify(dateObject);
-            this.__input.fire("xwiki:date:changed");
+            if (!doNotFireEventOnChange) {
+                this.__input.fire("xwiki:date:changed");
+            }
         }
     }
   });
