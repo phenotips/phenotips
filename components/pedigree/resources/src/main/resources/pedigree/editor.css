@@ -319,7 +319,7 @@
 }
 .menu-box .tabs dd.active {
   box-shadow: none;
-  background-color: #E1E1E1;
+  background-color: #D9D9D9;
 }
 .menu-box .tabs dd:not(.active) {
   box-shadow: none;
@@ -336,7 +336,7 @@
   box-shadow: none;
 }
 .menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover {
-  background-color: #D1D1D1;
+  background-color: #CFCFCF;
   cursor:pointer;
 }
 .menu-box .tabs dd > a, .tabs .tab-title > a {
@@ -394,9 +394,6 @@
 }
 .menu-box .field-box {
   padding: .5em 0;
-}
-.menu-box .field-phenotipsid {
-  padding: .8em 0;
 }
 .menu-box .field-box input[type=text] {
   width: 99%;
@@ -544,6 +541,9 @@
   font-family: Arial,Verdana,sans-serif;
 }
 
+.menu-box .field-phenotipsid {
+  padding: .8em 0;
+}
 .menu-box .field-first_name {
   width: 48%;
   float: left;
@@ -627,6 +627,28 @@
 }
 .menu-box .field-childlessSelect {
   padding: 0.5em 0 0.5em;
+}
+.menu-box .patient-link-container {
+  margin-top: 4px;
+}
+.menu-box a.patient-link-url {
+}
+.menu-box .patient-link-remove {
+  margin-right: 5px;
+  margin-top: -2px;
+  float: right;
+  -webkit-border-radius: 2;
+  -moz-border-radius: 2;
+  border-radius: 2px;
+  -webkit-box-shadow: 0px 1px 1px #AAA;
+  -moz-box-shadow: 0px 1px 1px #AAA;
+  box-shadow: 0px 1px 1px #AAA;
+  background: #E0E0E0;
+  padding: 1px 8px 2px 8px;
+  cursor: pointer;
+}
+.menu-box .patient-link-remove:hover {
+  background: #decdc7;
 }
 
 /* ===========================================

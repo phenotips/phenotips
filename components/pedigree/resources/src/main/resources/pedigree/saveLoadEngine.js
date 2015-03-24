@@ -52,7 +52,7 @@ var SaveLoadEngine = Class.create( {
         return JSON.stringify(jsonObject);
     },
 
-    createGraphFromSerializedData: function(JSONString, noUndo, centerAround0) {
+    createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband) {
         console.log("---- load: parsing data ----");
         document.fire("pedigree:load:start");
 
@@ -78,7 +78,7 @@ var SaveLoadEngine = Class.create( {
 
         if (!noUndo) {
             var probandJSONObject = editor.getProbandDataFromPhenotips();
-            var genderOk = editor.getGraph().setProbandData(probandJSONObject);
+            var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( editor.getGraph().getProbandId(), probandJSONObject);
             if (!genderOk)
                 alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
             JSONString = this.serialize();
@@ -88,8 +88,8 @@ var SaveLoadEngine = Class.create( {
             editor.getWorkspace().adjustSizeToScreen();
         }
 
-        if (centerAround0)
-            editor.getWorkspace().centerAroundNode(0);
+        if (centerAroundProband)
+            editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
 
         if (!noUndo)
             editor.getActionStack().addState(null, null, JSONString);
@@ -97,7 +97,7 @@ var SaveLoadEngine = Class.create( {
         document.fire("pedigree:load:finish");
     },
 
-    createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAround0) {
+    createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAroundProband) {
         console.log("---- import: parsing data ----");
         document.fire("pedigree:load:start");
 
@@ -124,8 +124,8 @@ var SaveLoadEngine = Class.create( {
             editor.getWorkspace().adjustSizeToScreen();
         }
 
-        if (centerAround0)
-            editor.getWorkspace().centerAroundNode(0);
+        if (centerAroundProband)
+            editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
 
         if (!noUndo)
             editor.getActionStack().addState(null, null, JSONString);
@@ -152,8 +152,12 @@ var SaveLoadEngine = Class.create( {
         backgroundParent.removeChild(background);
         var bbox = image.down().getBBox();
         var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
-            method: 'POST',
+
+        var familyServiceURL = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get');
+        new Ajax.Request(familyServiceURL, {
+                method: "POST",
+        //new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
+        //    method: 'POST',
             onCreate: function() {
                 me._saveInProgress = true;
                 // Disable save and close buttons during a save
@@ -183,7 +187,7 @@ var SaveLoadEngine = Class.create( {
             onSuccess: function() { editor.getActionStack().addSaveEvent();
                                     savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));
                                   },
-            parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
+            parameters: {"json": jsonData, "image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
         });
         backgroundParent.insertBefore(background, backgroundPosition);
     },

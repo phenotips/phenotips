@@ -47,10 +47,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method setGenderGraphics
      */
     setGenderGraphics: function($super) {
+        this.unmark();
+        this._genderGraphics && this._genderGraphics.remove();
+
         //console.log("set gender graphics");
         if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
-            this._genderGraphics && this._genderGraphics.remove();
-
             var radius = PedigreeEditor.attributes.radius;
             if (this.getNode().isPersonGroup())
                 radius *= PedigreeEditor.attributes.groupNodesScale;
@@ -64,11 +65,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             shape.attr(PedigreeEditor.attributes.nodeShapeAborted);
             this._genderShape = shape;
             shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
-
-            if(this.getNode().isProband()) {
-                shape.transform(["...s", 1.07]);
-                shape.attr("stroke-width", 5);
-            }
 
             if(this.getNode().getGender() == 'U') {
                 this._genderGraphics = shape;
@@ -103,9 +99,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
     generateProbandArrow: function() {
         var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
-        var x = this.getX()-this._shapeRadius-26;
-        var y = this.getY()+this._shapeRadius-12;
-        if (this.getNode().getGender() == 'F') {
+        var x = this.getX()-this._shapeRadius-28;
+        var y = this.getY()+this._shapeRadius-14;
+        if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
+            x -= 2;
+            y -= 5;
+        }
+        if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
+            x -= 12;
+            y -= 30;
+        } else if (this.getNode().getGender() == 'F') {
             x += 5;
             y -= 5;
         }
@@ -169,7 +172,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel && this._nameLabel.remove();
         var text =  "";
         this.getNode().getFirstName() && (text = this.getNode().getFirstName());
-                
+
         if (this.getNode().getLastName()) {
             text += ' ' + this.getNode().getLastName();
             this.getNode().getLastNameAtBirth() &&
@@ -178,7 +181,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else
             this.getNode().getLastNameAtBirth() && (text += ' ' + this.getNode().getLastNameAtBirth());
-        
+
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {
             this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.nameLabels);
@@ -287,9 +290,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method drawDeadShape
      */
     drawDeadShape: function() {
+        this._deadShape && this._deadShape.remove();
         var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(2.5);
         var x, y;
-        if(this.getNode().getLifeStatus() == 'aborted') {
+        if (this.getNode().getLifeStatus() == 'aborted') {
             var side   = PedigreeEditor.attributes.radius * Math.sqrt(3.5);
             var height = side/Math.sqrt(2);
             if (this.getNode().isPersonGroup())

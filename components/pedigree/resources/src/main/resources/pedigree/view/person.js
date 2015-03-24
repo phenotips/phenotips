@@ -9,16 +9,13 @@
  * @extends AbstractPerson
  * @param {Number} x X coordinate on the Raphael canvas at which the node drawing will be centered
  * @param {Number} y Y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param {String} gender 'M', 'F' or 'U' depending on the gender
  * @param {Number} id Unique ID number
- * @param {Boolean} isProband True if this person is the proband
  */
 
 var Person = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, id, properties) {
         //var timer = new Timer();
-        this._isProband = (id == 0);
         !this._type && (this._type = "Person");
         this._setDefault();
         var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
@@ -78,7 +75,7 @@ var Person = Class.create(AbstractPerson, {
      * @return {Boolean}
      */
     isProband: function() {
-        return this._isProband;
+        return (this.getID() == editor.getGraph().getProbandId());
     },
 
     /**
@@ -105,6 +102,10 @@ var Person = Class.create(AbstractPerson, {
     setPhenotipsPatientId: function(phenotipsId)
     {
         this._phenotipsId = phenotipsId;
+
+        this.getGraphics().setGenderGraphics();
+        this.getGraphics().getHoverBox().regenerateButtons();
+        //this.updateLinkLabel();
     },
 
     /**
@@ -357,6 +358,10 @@ var Person = Class.create(AbstractPerson, {
                 this.setBirthDate("");
                 this.setAdopted("");
                 this.setChildlessStatus(null);
+            }
+
+            if (this.isProband()) {
+                this.getGraphics().setGenderGraphics();
             }
             this.getGraphics().updateLifeStatusShapes(oldStatus);
             this.getGraphics().getHoverBox().regenerateHandles();
