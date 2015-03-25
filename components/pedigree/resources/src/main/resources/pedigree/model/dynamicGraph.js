@@ -51,6 +51,10 @@ DynamicPositionedGraph.prototype = {
 
     findProbandId: function()
     {
+        if (editor.isFamilyPage()) {
+            return -1; // no proband
+        }
+
         // default to node with ID 0
         var probandId = 0;
 

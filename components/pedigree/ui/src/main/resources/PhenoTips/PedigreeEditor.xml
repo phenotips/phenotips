@@ -96,6 +96,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/externalEndpoints.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/preferencesManager.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/pedigreeDate.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##

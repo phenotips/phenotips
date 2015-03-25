@@ -495,6 +495,25 @@ var Controller = Class.create({
                     node.assignProperties(editor.getGraph().getProperties(nodeID));
                 }
 
+                if (modificationType == "trySetPhenotipsPatientId") {
+
+                    // undo should be handled by setProperty(),
+                    // here we just check if setProperty should be called
+                    event.memo.noUndoRedo = true;
+
+                    var setLink = function() {
+                        var properties = {"setPhenotipsPatientId": modValue };
+                        var event = { "nodeID": nodeID, "properties": properties };
+                        document.fire("pedigree:node:setproperty", event);
+                    }
+
+                    if (modValue != "") {
+                        Controller._checkPatientLinkValidity(setLink, modValue);
+                    } else {
+                        setLink();
+                    }
+                }
+
                 if (modificationType == "makePlaceholder") {
                     // TODO
                 }
@@ -805,3 +824,27 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
     }
 }
 
+Controller._checkPatientLinkValidity = function(callbackOnValid, linkID)
+{
+    var familyServiceURL = editor.getExternalEndpoint().getFamilyInterfaceURL();
+    new Ajax.Request(familyServiceURL, {
+        method: 'POST',
+        onSuccess: function(response) {
+            if (response.responseJSON) {
+                if (!response.responseJSON.validLink) {
+                    SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON);
+                } else {
+                    var onCancelAssignPatient = function() {
+                        editor.getNodeMenu().update();
+                    }
+                    editor.getOkCancelDialogue().show("Do you want to add patient " + linkID + " to this family?",
+                            "Add patient to the family", callbackOnValid, onCancelAssignPatient);
+                }
+            } else  {
+                editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',
+                        'Error verifying patient link', "OK", undefined );
+            }
+        },
+        parameters: {"proband": editor.getGraph().getCurrentPatientId(), "link_to_id": linkID }
+    });
+}
