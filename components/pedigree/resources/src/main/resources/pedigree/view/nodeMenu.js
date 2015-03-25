@@ -613,6 +613,11 @@ NodeMenu = Class.create({
             var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
             var patientLink = new Element('a', {'class': 'patient-link-url', 'target': "_blank", name: data.name + "_link"});
             var removeLink = new Element('span', {'class': 'patient-link-remove'});
+            removeLink.observe('click', function(event) {
+                //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": "" } });
+                Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
+                _this.reposition();
+            });
             removeLink.insert("unlink");
             var syncStatus = new Element('span', {'class': 'patient-link-remove'});
             syncStatus.insert("synced");
@@ -625,8 +630,8 @@ NodeMenu = Class.create({
 
             var _this = this;
             patientPicker.observe('ms:suggest:selected', function(event) {
-                 //Event.stop(event);
-                 Event.fire(patientPicker, 'custom:selection:changed', { "useValue": event.memo.id });
+                 //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": event.memo.id } });
+                Event.fire(patientPicker, 'custom:selection:changed', { "useValue": event.memo.id });
                 _this.reposition();
             });
             this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
@@ -844,7 +849,9 @@ NodeMenu = Class.create({
         if (!event.findElement('.suggestItems')) {
             this.hideSuggestPicker();
         }
-        if (!event.findElement('.menu-box') && !event.findElement('.suggestItems')) {
+        if (!event.findElement('.menu-box')
+            && !event.findElement('.suggestItems')
+            && !event.findElement('.ok-cancel-dialogue')) {
             this.hide();
         }
     },
@@ -1090,7 +1097,7 @@ NodeMenu = Class.create({
             } else {
                 suggestInput.hide();
                 link.href = new XWiki.Document(value).getURL();
-                link.text = value;
+                link.innerHTML = value;
                 linkContainer.show();
                 if (_this.targetNode.isProband()) {
                     linkRemove.hide();

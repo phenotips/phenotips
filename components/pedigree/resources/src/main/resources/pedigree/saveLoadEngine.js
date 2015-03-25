@@ -7,22 +7,51 @@
 
 var ProbandDataLoader = Class.create( {
     initialize: function() {
+        this.isFamily = false;
+        this.hasFamily = false;
         this.probandData = {};
     },
 
     load: function(callWhenReady) {
-        var probandID = XWiki.currentDocument.page;
-        var patientJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
-        // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
-        patientJsonURL += "&rand=" + Math.random();
+        var _this = this;
+        this._loadFamilyInfo( function() {
+            _this._loadPatientData(callWhenReady);
+        });
+    },
+
+    _loadFamilyInfo: function(callWhenReady) {
+        var probandID = editor.getGraph().getCurrentPatientId();
+        var familyJsonURL = editor.getExternalEndpoint().getFamilyInterfaceURL(probandID);
+        new Ajax.Request(familyJsonURL, {
+            method: "POST",
+            onSuccess: this._onFamilyDataReady.bind(this),
+            onComplete: callWhenReady ? callWhenReady : {},
+            parameters: {"proband": probandID, "family_status": true }
+        });
+    },
+
+    _onFamilyDataReady: function(response) {
+        if (response.responseJSON) {
+            this.isFamily  = response.responseJSON.isFamilyPage;
+            this.hasFamily = response.responseJSON.hasFamily;
+        } else {
+            console.log("[!] Error parsing family JSON");
+        }
+        console.log("Family data:  [hasFamily: " + stringifyObject(this.hasFamily) +
+                               "], [isFamily: " + stringifyObject(this.isFamily) + "]");
+    },
+
+    _loadPatientData: function(callWhenReady) {
+        var probandID = editor.getGraph().getCurrentPatientId();
+        var patientJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL(probandID);
         new Ajax.Request(patientJsonURL, {
             method: "GET",
-            onSuccess: this.onProbandDataReady.bind(this),
+            onSuccess: this._onProbandDataReady.bind(this),
             onComplete: callWhenReady ? callWhenReady : {}
         });
     },
 
-    onProbandDataReady : function(response) {
+    _onProbandDataReady : function(response) {
         if (response.responseJSON) {
             this.probandData = response.responseJSON;
         } else {
@@ -76,7 +105,7 @@ var SaveLoadEngine = Class.create( {
             return;
         }
 
-        if (!noUndo) {
+        if (!noUndo && !editor.isFamilyPage()) {
             var probandJSONObject = editor.getProbandDataFromPhenotips();
             var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( editor.getGraph().getProbandId(), probandJSONObject);
             if (!genderOk)
@@ -112,7 +141,7 @@ var SaveLoadEngine = Class.create( {
             return;
         }
 
-        if (!noUndo) {
+        if (!noUndo && !editor.isFamilyPage()) {
             var probandJSONObject = editor.getProbandDataFromPhenotips();
             var genderOk = editor.getGraph().setProbandData(probandJSONObject);
             if (!genderOk)
@@ -140,6 +169,7 @@ var SaveLoadEngine = Class.create( {
         editor.getView().unmarkAll();
 
         var me = this;
+        me._notSaved = true;
 
         var jsonData = this.serialize();
 
@@ -153,11 +183,14 @@ var SaveLoadEngine = Class.create( {
         var bbox = image.down().getBBox();
         var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
 
-        var familyServiceURL = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get');
+        var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+        // remove invisible elements to slim down svg
+        svgText = svgText.replace(/<[^<>]+display: none;[^<>]+>/, "");
+
+        var familyServiceURL = editor.getExternalEndpoint().getSavePedigreeURL();
         new Ajax.Request(familyServiceURL, {
-                method: "POST",
         //new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
-        //    method: 'POST',
+            method: 'POST',
             onCreate: function() {
                 me._saveInProgress = true;
                 // Disable save and close buttons during a save
@@ -172,8 +205,10 @@ var SaveLoadEngine = Class.create( {
             },
             onComplete: function() {
                 me._saveInProgress = false;
-                var actionAfterSave = editor.getAfterSaveAction();
-                actionAfterSave && actionAfterSave();
+                if (!me._notSaved) {
+                    var actionAfterSave = editor.getAfterSaveAction();
+                    actionAfterSave && actionAfterSave();
+                }
                 // Enable save and close buttons after a save
                 var closeButton = $('action-close');
                 var saveButton = $('action-save');
@@ -184,23 +219,31 @@ var SaveLoadEngine = Class.create( {
                 Element.removeClassName(closeButton, "disabled-menu-item");
                 Element.removeClassName(closeButton, "no-mouse-interaction");
             },
-            onSuccess: function() { editor.getActionStack().addSaveEvent();
-                                    savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
-                                  },
-            parameters: {"json": jsonData, "image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
+            onSuccess: function(response) {
+                if (response.responseJSON) {
+                    if (response.responseJSON.error) {
+                        savingNotification.replace(new XWiki.widgets.Notification("Pedigree was not saved"));
+                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON);
+                    } else {
+                        me._notSaved = false;
+                        editor.getActionStack().addSaveEvent();
+                        savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
+                    }
+                } else  {
+                    savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));
+                    editor.getOkCancelDialogue().showError('Server error - unable to save pedigree',
+                            'Error saving pedigree', "OK", undefined );
+                }
+            },
+            parameters: {"proband": editor.getGraph().getCurrentPatientId(), "json": jsonData, "image": svgText}
+            //parameters: {"property#data": jsonData, "property#image": svgText}
         });
         backgroundParent.insertBefore(background, backgroundPosition);
     },
 
     load: function() {
-        console.log("initiating load process");
-
-        // IE caches AJAX requests, use a random URL to break that cache
-        var probandID = XWiki.currentDocument.page;
-        var pedigreeJsonURL = new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+probandID);
-        pedigreeJsonURL += "&data=pedigree";
-        // IE caches AJAX requests, use a random URL to break that cache (TODO: investigate)
-        pedigreeJsonURL += "&rand=" + Math.random();
+        var probandID = editor.getGraph().getCurrentPatientId();
+        var pedigreeJsonURL = editor.getExternalEndpoint().getLoadPatientPedigreeJSONURL(probandID);
         new Ajax.Request(pedigreeJsonURL, {
             method: 'GET',
             onCreate: function() {
@@ -224,3 +267,21 @@ var SaveLoadEngine = Class.create( {
         })
     }
 });
+
+
+SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON)
+{
+    var errorMessage = replyJSON.errorMessage ? replyJSON.errorMessage : "Unknown problem";
+    errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br><br>";
+    if (replyJSON.errorType == "familyConflict") {
+        errorMessage += "(for now it is only possible to add persons who is not in another family to a family)";
+    }
+    if (replyJSON.errorType == "pedigreeConflict") {
+        errorMessage += "(for now it is only possible to add persons without an already existing pedigree to a family)";
+    }
+    if (replyJSON.errorType == "permissions") {
+        errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
+    }
+    editor.getOkCancelDialogue().showError('<br>Unable to save pedigree: ' + errorMessage,
+            'Error saving pedigree', "OK", undefined );
+}

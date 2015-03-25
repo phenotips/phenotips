@@ -81,12 +81,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             $super();
         }
 
+        this._genderShape.node.setAttribute("class", "node-shape-" + this.getNode().getID());
+
         if(this.getNode().isProband()) {
             this._genderGraphics.push(this.generateProbandArrow());
             this.getGenderShape().transform(["...s", 1.08]);
             this.getGenderShape().attr("stroke-width", 5.5);
         }
-        if(!editor.isUnsupportedBrowser() && this.getHoverBox()) {
+        if(!editor.isReadOnlyMode() && this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }
         this.updateDisorderShapes();
@@ -99,6 +101,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
     generateProbandArrow: function() {
         var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
+        icon.node.setAttribute("class", "proband-arrow-shape");
         var x = this.getX()-this._shapeRadius-28;
         var y = this.getY()+this._shapeRadius-14;
         if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
