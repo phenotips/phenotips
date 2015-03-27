@@ -125,7 +125,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         this.generateMenuBtn();
 
         // proband can't be removed
-        if (!this.getNode().isProband())
+        if (!this.getNode().isProband() && !editor.getGraph().getMaxNodeId() == 0)
             this.generateDeleteBtn();
     },
 
@@ -205,6 +205,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     animateDrawHoverZone: function($super) {
         this._hidden = false;
         if(!this.isMenuToggled()){
+            // add.remove delete button depending on if it is ok to remove this node or not
             var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
             if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
                 editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();

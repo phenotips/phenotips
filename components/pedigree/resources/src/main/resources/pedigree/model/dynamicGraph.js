@@ -463,6 +463,10 @@ DynamicPositionedGraph.prototype = {
     // returns true iff node v is either a sibling, a child or a parent of proband node
     isRelatedToProband: function( v )
     {
+        if (editor.isFamilyPage()) {
+            return false;
+        }
+
         var probandRelatedRels = this.getAllRelatedRelationships(this.getProbandId());
         for (var i = 0; i < probandRelatedRels.length; i++) {
             var rel = probandRelatedRels[i];
@@ -718,7 +722,23 @@ DynamicPositionedGraph.prototype = {
         var connected = {};
 
         var queue = new Queue();
-        queue.push( this.getProbandId() );
+
+        if (!editor.isFamilyPage()) {
+            // proband is the node which is guaranteed to stay,
+            // so need to find all nodes no longer connected to it - that is the set of nodes ot be removed
+            queue.push( this.getProbandId() );
+        } else {
+            // TODO:
+            // we don't know which nodes the user wants to keep. For now, just use the node
+            // with the smallest ID that is not being explicitly remove, and only keep nodes
+            // connected to this smallest-id-node
+            for (var i = 0; i < this.DG.GG.getNumVertices(); i++) {
+                if (i != v && this.isPerson(i) && !this.isPlaceholder(i)) {
+                    queue.push( i );
+                    break;
+                }
+            }
+        }
 
         while ( queue.size() > 0 ) {
             var next = parseInt(queue.pop());
