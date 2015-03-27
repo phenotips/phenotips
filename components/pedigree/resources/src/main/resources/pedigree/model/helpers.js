@@ -10,6 +10,10 @@
 // To allow debug code to run in IE7 && IE8
 if (!window.console) { var console = {log: function() {}}; }
 
+//function isIE9 () {
+//  return (navigator.userAgent.toLowerCase().indexOf('msie 9.') != -1);
+//}
+
 // For IE7 && IE8 again
 if(typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {

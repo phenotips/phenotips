@@ -223,7 +223,7 @@ var SaveLoadEngine = Class.create( {
                 if (response.responseJSON) {
                     if (response.responseJSON.error) {
                         savingNotification.replace(new XWiki.widgets.Notification("Pedigree was not saved"));
-                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON);
+                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON, "Error saving pedigree", "Unable to save pedigree: ");
                     } else {
                         me._notSaved = false;
                         editor.getActionStack().addSaveEvent();
@@ -269,7 +269,7 @@ var SaveLoadEngine = Class.create( {
 });
 
 
-SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON)
+SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON, title, messageIntro, callWhenDone)
 {
     var errorMessage = replyJSON.errorMessage ? replyJSON.errorMessage : "Unknown problem";
     errorMessage = "<font color='#660000'>" + errorMessage + "</font><br><br><br>";
@@ -282,6 +282,5 @@ SaveLoadEngine._displayFamilyPedigreeInterfaceError = function(replyJSON)
     if (replyJSON.errorType == "permissions") {
         errorMessage += "(you need to have edit permissions for the patient to be able to add it to a family)";
     }
-    editor.getOkCancelDialogue().showError('<br>Unable to save pedigree: ' + errorMessage,
-            'Error saving pedigree', "OK", undefined );
+    editor.getOkCancelDialogue().showError('<br>' + messageIntro + errorMessage, title, "OK", callWhenDone );
 }

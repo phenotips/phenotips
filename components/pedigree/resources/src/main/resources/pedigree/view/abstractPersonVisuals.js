@@ -13,14 +13,14 @@
 var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
-    	$super(node, x, y);
-    	
+        $super(node, x, y);
+
         this._radius = PedigreeEditor.attributes.radius;
         this._width  = PedigreeEditor.attributes.radius * 4;
-                
-        this._highlightBox   = null;        
+
+        this._highlightBox   = null;
         this._adoptedShape   = null;
-        this._genderShape    = null;                        
+        this._genderShape    = null;
         this._genderGraphics = null;  // == set(_genderShape, shadow)
         this._numberLabel    = null;
 
@@ -35,7 +35,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     updateIDLabel: function() {
         if (!editor.DEBUG_MODE) return;
-                
+
         var x = this.getX();
         var y = this.getY();
         this._idLabel && this._idLabel.remove();
@@ -56,12 +56,12 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     generateHoverbox: function(x, y) {
         return null;
     },
-    
+
     /**
      * Updates whatever needs to change when node id changes (e.g. id label) 
      *
      * @method onSetID
-     */        
+     */
     onSetID: function($super, id) {
         $super(id);
         this.updateIDLabel();
@@ -80,12 +80,12 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
         this.getHoverBox().removeHandles();
         this.getHoverBox().removeButtons();
-        
+
         var moveX = x - this.getX();
         var moveY = y - this.getY();
-        
+
         if (moveX == 0 && moveY == 0) return; 
-            
+
         // need to set X and Y before animation finishes or other
         // stuff will be drawn incorrectly
         $super(x, y, animate);
@@ -98,19 +98,19 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
                                            }
                                            delete me._callback;
                                            callback && callback(); } 
-                                
+
             this.getAllGraphics().animate( {'transform': "t " + moveX + "," + moveY + "..."},
                 900, "linear", me._callback ); //easeInOut
-            
+
             //this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
             //callback && callback();
         }
         else {
             this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
             callback && callback();
-        }                
+        }
     },
-    
+
     /**
      * Expands the partnership circle
      *
@@ -122,21 +122,21 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             throw "Assertion failed: grow() during animation";
         if (this.glow) return;
         this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
-        if (this.marked) this.marked.hide();        
+        if (this.marked) this.marked.hide();
     },
-    
+
     /**
      * Shrinks node graphics to the original size
      *
      * @method shrink
-     */    
+     */
     shrink: function($super) {
         this.glow && this.glow.remove();
         delete this.glow;
         if (this.marked) this.marked.show();
         $super();
-    },      
-    
+    },
+
     /**
      * Marks the node in  away different from glow
      *
@@ -152,39 +152,39 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         if (this.marked) return;
         this.marked = this._genderShape.glow({width: 11, fill: true, opacity: 0.6, color: "#ee8d00"});
     },
-    
+
     /**
      * Unmarks the node
      *
      * @method shrink
-     */    
+     */
     unmark: function() {
         this.marked && this.marked.remove();
         delete this.marked;
-    },  
-    
+    },
+
     /**
      * Returns true if this node's graphic representation covers coordinates (x,y)
      *
      * @method containsXY
-     */    
+     */
     containsXY: function(x,y) {
         if ( Math.abs(x - this.getX()) <= this._radius &&
              Math.abs(y - this.getY()) <= this._radius )
             return true;
         return false;
     },
-    
+
     /**
      * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
      *
      * @method getY
      * @return {Number} The y coordinate
-     */    
+     */
     getBottomY: function() {
         return this._absoluteY + this._radius + PedigreeEditor.attributes.childlessLength;
     },
-    
+
     /**
      * Draws brackets around the node icon to show that this node is adopted
      *
@@ -277,7 +277,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
         this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;            
         if (this.getNode().isPersonGroup())
-            this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;            
+            this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;
 
         var shape;
         var x      = this.getX(),
@@ -290,7 +290,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         else {
             //console.log("x: " + x + ", y: " + y + ", rad: " + radius + ", shape: " + this._genderShape);
             shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
-        }        
+        }
 
         if (this.getNode().getGender() == 'U') {
             shape.attr(PedigreeEditor.attributes.nodeShapeDiag);
@@ -347,7 +347,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     highlight: function() {
         this.getHighlightBox() && this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
     },
-    
+
     /**
      * Hides the highlightBox around the node
      *
@@ -355,8 +355,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     unHighlight: function() {
         this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
-    },    
-    
+    },
+
     remove: function($super) {
         this.marked && this.marked.remove();
         $super();

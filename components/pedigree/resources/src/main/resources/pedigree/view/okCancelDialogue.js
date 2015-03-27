@@ -65,8 +65,8 @@ var OkCancelDialogue = Class.create( {
     /**
      * Displays a dialogue with a red error icon and only one button
      */
-    showError: function(message, title, buttonTitle) {
-        this.showCustomized(message, title, buttonTitle);
+    showError: function(message, title, buttonTitle, onOKFunction) {
+        this.showCustomized(message, title, buttonTitle, onOKFunction);
         this.dialog.dialogBox.down("div.msdialog-title").update("<img src='/resources/icons/silk/error.png' height='13'>&nbsp;&nbsp;" + title);
     },
 

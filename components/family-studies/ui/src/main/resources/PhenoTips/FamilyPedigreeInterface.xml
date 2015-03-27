@@ -43,6 +43,7 @@
 ## family member, proband or family
 #set ($anchorId = $request.proband)
 $response.setContentType('application/json')##
+{{html wiki="false" clean="false"}}
 ##
 #if ("$!request.json" != '')
   $services.family.processPedigree($anchorId, $request.json, $request.image)
