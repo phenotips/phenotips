@@ -1,5 +1,6 @@
 package org.phenotips.studies.family.internal;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 /**
@@ -13,18 +14,18 @@ public class StatusResponse
 
     public String errorType = "";
 
-    public String asProcessing() {
+    public JSON asProcessing() {
         boolean isError = statusCode != 200;
         JSONObject json = baseErrorJson();
         json.put("error", isError);
-        return json.toString();
+        return json;
     }
 
-    public String asVerification() {
-        boolean valid = statusCode != 200;
+    public JSON asVerification() {
+        boolean valid = statusCode == 200;
         JSONObject json = baseErrorJson();
         json.put("validLink", valid);
-        return json.toString();
+        return json;
     }
 
     private JSONObject baseErrorJson() {

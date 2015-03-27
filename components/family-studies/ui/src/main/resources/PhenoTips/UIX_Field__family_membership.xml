@@ -217,15 +217,16 @@ if (newFamilyTrigger) {
   #if ($xcontext.action == 'edit')
     $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
   #end
+  ##
 (% class="clear relatives-info" %)(((
-##    === $services.localization.render('phenotips.UIXField.family.heading') ===
+    ##=== $services.localization.render('phenotips.UIXField.family.heading') ===
     === Family ===
     {{html wiki='true'}}
     &lt;span class="buttonwrapper"&gt;
     #if ($!family)
       &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;Open family page&lt;/a&gt;
     #else
-      &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL("PhenoTips.CreateFamily")?patient_id=$doc.getName()"&gt;Create a family&lt;/a&gt;
+      &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL("Family.CreateFamily")?patient_id=$doc.getName()"&gt;Create a family&lt;/a&gt;
     #end
     &lt;/span&gt;
     {{/html}}

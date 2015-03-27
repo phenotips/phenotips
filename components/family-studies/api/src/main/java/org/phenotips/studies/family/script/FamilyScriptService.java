@@ -22,11 +22,12 @@ package org.phenotips.studies.family.script;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
-import org.phenotips.studies.family.internal.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,6 +38,8 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Component
@@ -60,8 +63,12 @@ public class FamilyScriptService implements ScriptService
     public DocumentReference createFamily(String patientId)
     {
         try {
-            XWikiDocument doc = utils.createFamilyDoc(patientId);
-            return doc != null ? doc.getDocumentReference() : null;
+            XWikiDocument familyDoc;
+            familyDoc = utils.getFamilyOfPatient(patientId);
+            if (familyDoc == null) {
+                familyDoc = utils.createFamilyDoc(patientId);
+            }
+            return familyDoc != null ? familyDoc.getDocumentReference() : null;
         } catch (Exception ex) {
             logger.error("Could not create a new family document {}", ex.getMessage());
         }
@@ -81,61 +88,55 @@ public class FamilyScriptService implements ScriptService
     }
 
     /** Can return null. */
-    public String getFamilyStatus(String id)
+    public JSON getFamilyStatus(String id)
     {
         boolean isFamily = false;
         try {
             XWikiDocument doc = utils.getFromDataSpace(id);
             XWikiDocument familyDoc = utils.getFamilyDoc(doc);
-            boolean hasFamily = familyDoc != null;
-            if (hasFamily) {
-                isFamily = familyDoc.getDocumentReference() == doc.getDocumentReference();
-            }
-            return familyStatusResponse(isFamily, hasFamily);
+            return familyStatusResponse(familyDoc, utils.getFamilyMembers(familyDoc));
         } catch (XWikiException ex) {
             logger.error("Could not get patient's family {}", ex.getMessage());
-            return "";
+            return new JSONObject(true);
         }
     }
 
     /**
      * @return 200 if everything is ok, an error code if the patient is not linkable.
      */
-    public String verifyLinkable(String thisId, String otherId)
+    public JSON verifyLinkable(String thisId, String otherId)
     {
-        StatusResponse response = new StatusResponse();
         try {
-            if (validation.hasFamily(otherId)) {
-                response.statusCode = 501;
-                response.errorType = "familyConflict";
-                response.message = String.format("Patient %s belongs to a different family.", otherId);
-                return response.asVerification();
-            } else if (validation.isInFamily(thisId, otherId)) {
-                response.statusCode = 208;
-                response.errorType = "alreadyExists";
-                response.message = String.format("Patient %s already exists in this family.", otherId);
-                return response.asVerification();
-            } else {
-                return validation.canAddToFamily(thisId, otherId).asVerification();
-            }
+            return validation.canAddToFamily(thisId, otherId).asVerification();
         } catch (XWikiException ex) {
-            return "";
+            return new JSONObject(true);
         }
     }
 
-    public String processPedigree(String anchorId, String json, String image)
+    public JSON processPedigree(String anchorId, String json, String image)
     {
         try {
             return this.processing.processPatientPedigree(anchorId, JSONObject.fromObject(json), image).asProcessing();
         } catch (Exception ex) {
-            return "";
+            return new JSONObject(true);
         }
     }
 
-    private static String familyStatusResponse(boolean isFamily, boolean hasFamily) {
+    private static JSON familyStatusResponse(XWikiDocument family, List<String> members)
+    {
         JSONObject json = new JSONObject();
-        json.put("isFamilyPage", isFamily);
-        json.put("hasFamily", hasFamily);
-        return json.toString();
+        json.put("familyPage", family == null ? null : family.getDocumentReference().getName());
+
+        JSONArray membersJson = new JSONArray();
+        for (String member : members) {
+            JSONObject memberJson = new JSONObject();
+            memberJson.put("id", member);
+            memberJson.put("identifier", "");
+            memberJson.put("name", "");
+            membersJson.add(memberJson);
+        }
+
+        json.put("familyMembers", membersJson);
+        return json;
     }
 }

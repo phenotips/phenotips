@@ -26,8 +26,10 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.QueryException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.naming.NamingException;
 
@@ -41,19 +43,23 @@ import net.sf.json.JSONObject;
 @Role
 public interface FamilyUtils
 {
-    final EntityReference FAMILY_CLASS =
+    EntityReference FAMILY_CLASS =
         new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-    final static EntityReference PEDIGREE_CLASS =
+
+    EntityReference PEDIGREE_CLASS =
         new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    final EntityReference FAMILY_REFERENCE =
+    EntityReference FAMILY_REFERENCE =
         new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    EntityReference RIGHTS_CLASS =
+        new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
     XWikiDocument getDoc(EntityReference docRef) throws XWikiException;
 
     XWikiDocument getFromDataSpace(String id) throws XWikiException;
 
-    XWikiDocument getFamilyDoc(XWikiDocument patient) throws XWikiException;
+    XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
     XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException;
 
@@ -65,6 +71,8 @@ public interface FamilyUtils
 
     XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
 
+    XWikiDocument createFamilyDoc(boolean save) throws NamingException, QueryException, XWikiException;
+
     EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException;
 
     List<String> getFamilyMembers(XWikiDocument familyDoc) throws XWikiException;
@@ -75,4 +83,6 @@ public interface FamilyUtils
         throws XWikiException;
 
     void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException;
+
+    List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc);
 }

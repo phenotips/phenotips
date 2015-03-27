@@ -22,6 +22,6 @@ var ExternalEndpointsManager = Class.create({
     },
 
     getFamilyInterfaceURL: function() {
-        return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get');
-    },
+        return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get') + "?outputSyntax=plain";
+    }
 });

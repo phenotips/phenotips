@@ -39,14 +39,14 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
+  <content>{{velocity wwiki="false"}}
 ## family member, proband or family
 #set ($anchorId = $request.proband)
-$response.setContentType('application/json')
+$response.setContentType('application/json')##
 ##
 #if ("$!request.json" != '')
   $services.family.processPedigree($anchorId, $request.json, $request.image)
-#elseif ("$!resuest.link_to_id" != '')
+#elseif ("$!request.link_to_id" != '')
   $services.family.verifyLinkable($anchorId, $request.link_to_id)
 #else
   $services.family.getFamilyStatus($anchorId)

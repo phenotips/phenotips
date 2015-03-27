@@ -32,6 +32,8 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,6 +56,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.LargeStringProperty;
+import com.xpn.xwiki.objects.StringProperty;
 
 import groovy.lang.Singleton;
 import net.sf.json.JSONObject;
@@ -197,6 +200,34 @@ public class FamilyUtilsImpl implements FamilyUtils
     {
         XWikiContext context = provider.get();
         XWiki wiki = context.getWiki();
+        XWikiDocument newFamilyDoc = this.createFamilyDoc(false);
+        BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
+
+        BaseObject permissions = newFamilyDoc.getXObject(RIGHTS_CLASS);
+        String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
+        permissions.set("users", fullRights[0], context);
+        permissions.set("groups", fullRights[1], context);
+        permissions.set("levels", "view,edit", context);
+        permissions.set("allow", 1, context);
+
+        // adding the creating patient as a member
+        List<String> members = new LinkedList<>();
+        members.add(patientDoc.getDocumentReference().getName());
+        familyObject.set("members", members, context);
+        this.setFamilyReference(patientDoc, newFamilyDoc, context);
+
+        // fixme. copy pedigree if present
+
+        wiki.saveDocument(newFamilyDoc, context);
+        wiki.saveDocument(patientDoc, context);
+        return newFamilyDoc;
+    }
+
+    public synchronized XWikiDocument createFamilyDoc(boolean save)
+        throws NamingException, QueryException, XWikiException
+    {
+        XWikiContext context = provider.get();
+        XWiki wiki = context.getWiki();
         long nextId = getLastUsedId() + 1;
         String nextStringId = String.format("%s%07d", PREFIX, nextId);
         EntityReference nextRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE);
@@ -205,23 +236,55 @@ public class FamilyUtilsImpl implements FamilyUtils
             throw new NamingException("The new family id was already taken.");
         } else {
             XWikiDocument template = getDoc(FAMILY_TEMPLATE);
-            // copying from template
+            // copying all objects from template
             for (Map.Entry<DocumentReference, List<BaseObject>> templateObject : template.getXObjects().entrySet()) {
                 newFamilyDoc.newXObject(templateObject.getKey(), context);
             }
             BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
             familyObject.set("identifier", nextId, context);
 
-            // adding the creating patient as a member
-            List<String> members = new LinkedList<>();
-            members.add(patientDoc.getDocumentReference().getName());
-            familyObject.set("members", members, context);
-            this.setFamilyReference(patientDoc, newFamilyDoc, context);
-
-            wiki.saveDocument(newFamilyDoc, context);
-            wiki.saveDocument(patientDoc, context);
+            if (save) {
+                wiki.saveDocument(newFamilyDoc, context);
+            }
         }
         return newFamilyDoc;
+    }
+
+    /** users, groups */
+    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
+    {
+        String[] fullRights = new String[2];
+        int i = 0;
+        for (Set<String> category : this.getEntitiesWithEditAccess(patientDoc)) {
+            String categoryString = "";
+            for (String user : category) {
+                categoryString += user + ",";
+            }
+            fullRights[i] = categoryString;
+            i++;
+        }
+        return fullRights;
+    }
+
+    /** users, groups */
+    public List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
+    {
+        Collection<BaseObject> rightsObjects = patientDoc.getXObjects(RIGHTS_CLASS);
+        Set<String> users = new HashSet<>();
+        Set<String> groups = new HashSet<>();
+        for (BaseObject rights : rightsObjects) {
+            String[] levels = ((StringProperty) rights.getField("levels")).getValue().split(",");
+            if (Arrays.asList(levels).contains("edit")) {
+                String[] usersAccess = ((LargeStringProperty) rights.getField("users")).getValue().split(",");
+                String[] groupsAccess = ((LargeStringProperty) rights.getField("groups")).getValue().split(",");
+                users.addAll(Arrays.asList(usersAccess));
+                groups.addAll(Arrays.asList(groupsAccess));
+            }
+        }
+        ArrayList<Set<String>> fullRights = new ArrayList<>();
+        fullRights.add(users);
+        fullRights.add(groups);
+        return fullRights;
     }
 
     public void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
@@ -258,15 +321,15 @@ public class FamilyUtilsImpl implements FamilyUtils
     public List<String> getFamilyMembers(BaseObject familyObject) throws XWikiException
     {
         DBStringListProperty xwikiRelativesList = (DBStringListProperty) familyObject.get("members");
-        return xwikiRelativesList.getList();
+        return xwikiRelativesList == null ? new LinkedList<String>() : xwikiRelativesList.getList();
     }
 
+    /** Saves the family document. */
     public void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException
     {
         BaseObject familyObject = familyDoc.getXObject(FAMILY_CLASS);
-        DBStringListProperty xwikiRelativesList = (DBStringListProperty) familyObject.get("members");
-        xwikiRelativesList.setList(members);
         XWikiContext context = provider.get();
+        familyObject.set("members", members, context);
         context.getWiki().saveDocument(familyDoc, context);
     }
 }
