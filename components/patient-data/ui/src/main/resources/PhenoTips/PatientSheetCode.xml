@@ -4062,7 +4062,6 @@ form .extradata-list tr:hover td {
   float: right;
   text-indent: 0;
   text-align: center;
-  color: $theme.buttonPrimaryTextColor;
   text-decoration: none !important;
 }
 .growth-charts-section.collapsed #charts,
