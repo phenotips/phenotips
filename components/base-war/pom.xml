@@ -134,7 +134,6 @@
                 <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                 <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                 <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
-                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
                 <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -153,10 +152,7 @@
   com.xpn.xwiki.plugin.diff.DiffPlugin,\
   com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
   com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
-  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
-  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
-  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
-  com.xpn.xwiki.plugin.watchlist.WatchListPlugin</xwikiCfgPlugins>
+  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin</xwikiCfgPlugins>
                 <xwikiCfgVirtual>0</xwikiCfgVirtual>
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
