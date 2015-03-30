@@ -54,24 +54,6 @@
 #if($isMyProfile || $hasAdmin)
   #set($discard = $categories.add({'id':'preferences', 'sheet':'XWiki.XWikiUserPreferencesSheet'}))
 #end
-## TODO: add APIs to be able to display users watchlists to admins
-#if($isMyProfile &amp;&amp; $hasWatch)  
-  #set($discard = $categories.add({'id':'watchlist', 'sheet':'XWiki.XWikiUserWatchListSheet'}))
-#end
-#if($isMyProfile)
-  #set($discard = $categories.add({'id':'network', 'sheet':'XWiki.XWikiUserNetworkSheet'}))
-#end
-#set($userWikiSheet = 'WikiManager.UserWikiSheet')
-#if($xcontext.isMainWiki() &amp;&amp; $xwiki.exists($userWikiSheet))  
-  #set($discard = $categories.add({
-    'id': 'wikis',
-    'name': $services.localization.render('platform.wiki.menu.userwikis'),
-    'sheet': $userWikiSheet
-  }))
-#end
-#if($isMyProfile &amp;&amp; $hasDashboard)
-  #set($discard = $categories.add({'id':'dashboard', 'sheet':'Dashboard.XWikiUserDashboardSheet'}))  
-#end
 #########################
 ## Current category
 #########################
