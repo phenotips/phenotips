@@ -133,6 +133,10 @@ VersionUpdater = Class.create( {
         // check if at least one node is linked to the current patient. 
         // Iff none are, assumenode 0 is the proband and link it to the patient
 
+        if (editor.isFamilyPage()) {
+            return null;
+        }
+
         var currentPatient = XWiki.currentDocument.page;
 
         var data = JSON.parse(pedigreeJSON);
