@@ -618,12 +618,14 @@ NodeMenu = Class.create({
                 Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                 _this.reposition();
             });
-            removeLink.insert("unlink");
-            var syncStatus = new Element('span', {'class': 'patient-link-remove'});
+            removeLink.insert("remove connection");
+            /*var syncStatus = new Element('span', {'class': 'patient-link-remove'});
             syncStatus.insert("synced");
             var familyStatus = new Element('span', {'class': 'patient-link-remove'});
             familyStatus.insert("family");
             patientLinkContainer.insert(patientLink).insert(removeLink).insert(syncStatus).insert(familyStatus);
+            */
+            patientLinkContainer.insert(patientLink).insert(removeLink);
             result.insert(patientLinkContainer);
             //var patientLinkType = new Element('i', {'class': 'fa fa-lock', name: data.name + '_linktype'});
             //result.insert(patientLinkType);

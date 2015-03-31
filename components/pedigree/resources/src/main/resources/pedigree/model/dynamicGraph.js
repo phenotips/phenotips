@@ -69,8 +69,22 @@ DynamicPositionedGraph.prototype = {
                 }
             }
         }
-
         return probandId;
+    },
+
+    getAllPatientLinks: function()
+    {
+        var linkedPatientsList = { "linkedPatients": [], "patientToNodeMapping": {} };
+
+        for (var i = 0 ; i <= this.getMaxNodeId(); i++) {
+            if (this.isPerson(i)) {
+                if (this.getProperties(i).hasOwnProperty("phenotipsId")) {
+                    linkedPatientsList.linkedPatients.push( this.getProperties(i).phenotipsId );
+                    linkedPatientsList.patientToNodeMapping[this.getProperties(i).phenotipsId] = i;
+                }
+            }
+        }
+        return linkedPatientsList;
     },
 
     getMaxNodeId: function()
@@ -195,6 +209,10 @@ DynamicPositionedGraph.prototype = {
     // returns false if gender as given in JSON is incompatible with this pedigree; true otherwise
     setNodeDataFromPhenotipsJSON: function( id, patientObject )
     {
+        if (patientObject === null) {
+            return true;
+        }
+
         this.DG.GG.properties[id] = {"phenotipsId": patientObject.id };
 
         if (patientObject.hasOwnProperty("patient_name")) {

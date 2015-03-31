@@ -50,11 +50,14 @@ var PedigreeEditor = Class.create({
         this._saveLoadIndicator = new SaveLoadIndicator();
         this._versionUpdater = new VersionUpdater();
         this._saveLoadEngine = new SaveLoadEngine();
-        this._probandData = new ProbandDataLoader();
+        this._familyData = new FamilyDataLoader();
+        this._patientDataLoader = new PatientDataLoader();
 
+        // load global pedigree preferences before a specific pedigre eis loaded, since
+        // preferences kmay affect the way it is rendered, and load provcess triggers (re-)render internally
         this._preferencesManager.load( function() {
-                // load proband data and load the graph after proband data is available 
-                this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+                // load family page info and load the pedigree after that data is loaded 
+                this._familyData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
                 // generate various dialogues after preferences have been loaded
                 this._nodeMenu = this.generateNodeMenu();
@@ -91,7 +94,8 @@ var PedigreeEditor = Class.create({
         });
         var loadButton = $('action-reload');
         loadButton && loadButton.on("click", function(event) {
-            editor.getSaveLoadEngine().load();
+            // re-load family page info and re-load the pedigree after that data is updated 
+            editor._familyData.load( editor.getSaveLoadEngine().load() );
         });
 
         var templatesButton = $('action-templates');
@@ -171,6 +175,14 @@ var PedigreeEditor = Class.create({
      */
     getPreferencesManager: function() {
         return this._preferencesManager;
+    },
+
+    /**
+     * @method getPatientDataLoader
+     * @return {PatientDataLoader}
+     */
+    getPatientDataLoader: function() {
+        return this._patientDataLoader;
     },
 
     /**
@@ -351,22 +363,35 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * @method getProbandDataFromPhenotips
-     * @return {firstName: "...", lastName: "..."}
-     */
-    getProbandDataFromPhenotips: function() {
-        return this._probandData.probandData;
-    },
-
-    /**
      * True iff current pedigree belongs toa family page, not a patient
      * @method isFamilyPage
      * @return {boolean}
      */
     isFamilyPage: function() {
-        if (!this._probandData) return false;
+        if (!this._familyData) return false;
 
-        return this._probandData.isFamily;
+        return this._familyData.isFamily();
+    },
+
+    /**
+     * True iff current patient is part of an existing family
+     * @method hasFamily
+     * @return {boolean}
+     */
+    hasFamily: function() {
+        if (!this._familyData) return false;
+
+        return this._familyData.hasFamily();
+    },
+
+    /**
+     * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
+     * were part of this patient's family at the time pedigree was last reloaded (on open or when reload was pressed)
+     * @method getCurrentFamilyPageFamilyMembers
+     * @return {Object}
+     */
+    getCurrentFamilyPageFamilyMembers: function() {
+        return this._familyData.getCurrentFamilyMembers();
     },
 
     /**
@@ -424,7 +449,7 @@ var PedigreeEditor = Class.create({
             },
             {
                 'name' : 'phenotipsid',
-                'label' : 'Local Patient Profile',
+                'label' : 'Patient Record',
                 'type' : 'phenotipsid-picker',
                 'tab' : 'Personal',
                 'function' : 'trySetPhenotipsPatientId'

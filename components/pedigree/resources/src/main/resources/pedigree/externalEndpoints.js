@@ -6,8 +6,15 @@ var ExternalEndpointsManager = Class.create({
         //       investigate if this is still the case with new caching policy in phenotips
     },
 
-    getLoadPatientDataJSONURL: function(patientID) {
-        return new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+patientID) +
+    getLoadPatientDataJSONURL: function(patientList) {
+        var pList = "";
+        for (var i = 0; i < patientList.length; i++) {
+          if (i != 0) {
+              pList += ",";
+          }
+          pList += patientList[i];
+        }
+        return new XWiki.Document('ExportMultiplePatients', 'PhenoTips').getURL('get', 'idlist='+pList) +
             "&rand=" + Math.random();
     },
 
@@ -22,6 +29,6 @@ var ExternalEndpointsManager = Class.create({
     },
 
     getFamilyInterfaceURL: function() {
-        return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get');
+        return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
     },
 });
