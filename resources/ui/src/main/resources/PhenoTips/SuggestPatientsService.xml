@@ -115,13 +115,26 @@
       #foreach ($item in $results)
         #if ($xwiki.hasAccessLevel("$requiredPermissions", $xcontext.user, $item))
           #set ($itemdoc = $xwiki.getDocument($item))
-          #set ($name = $itemdoc.getPlainTitle())
+          #set ($title = $itemdoc.getPlainTitle())
           #set ($externalId = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
-          #if ($externalId != '')
-            #set ($name = "${externalId} (${name})")
+          #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+            #set ($firstName   = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('first_name').value")
+            #set ($lastName    = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('last_name').value")
+            #set ($name = "$firstName $lastName")
+            #set ($name = $name.trim())
+          #end
+          #if ("$!{externalId}" != '' || "$!{firstName}" != '' || "$!{lastName}" != '')
+            #set ($externalIdFormat = '')
+            #if ("$!{externalId}" != '')
+              #set ($externalIdFormat = "$externalId")
+              #if ("$!{firstName}" != '' || "$!{lastName}" != '')
+                #set ($externalIdFormat = "$externalIdFormat; ")
+              #end
+            #end
+            #set ($title = "${title} ($!{externalIdFormat}$!{name})")
           #end
           #set ($url = $itemdoc.getURL())
-          &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($name)&lt;/rs&gt;
+          &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($title)&lt;/rs&gt;
         #end
       #end
     &lt;/results&gt;
