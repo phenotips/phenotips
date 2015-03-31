@@ -693,17 +693,26 @@
   text-align: center;
   line-height: 24px;
 }
-/* The unicode symbols we use for different node types have disproportionate sizes.
-   Adjusting the font size for a cleaner look:
-*/
-.fa-rotate-45 {
+.node-type-options .node-type-option.square {
+  line-height: 27px;
+}
+.node-type-options .node-type-option.square span {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border: 1px solid black;
+}
+.node-type-options .node-type-option.diamond {
+  line-height: 24px;
+}
+.node-type-options .node-type-option.diamond span {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border: 1px solid black;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
-  display: inline-block !important;
-  font-size: 90%;
 }
 .expand-arrow {
   cursor: pointer;
