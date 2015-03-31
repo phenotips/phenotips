@@ -224,7 +224,7 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
     &lt;/clipPath&gt;
   &lt;/defs&gt;
   &lt;rect x="-60" y="-80" width="$mathtool.sub($chartWidth, 1)" height="$mathtool.sub($chartHeight, 1)" class="chart-background" /&gt;
-  &lt;g transform="translate(0, 10)" class="#if ($sex)$services.localization.render('phenotips.chartGenerator.chartTitle.male')#{else}$services.localization.render('phenotips.chartGenerator.chartTitle.female')#{end}"&gt;
+  &lt;g transform="translate(0, 10)" class="#if ($sex)boy#{else}girl#{end}"&gt;
   #foreach ($i in [0..$xlines])
     #set ($age = $mathtool.add($mathtool.mul($i, $chartConfiguration.ageTickStep), $chartConfiguration.lowerAgeLimit))
     #set ($isMajorLine = $mathtool.abs($mathtool.sub($mathtool.div($age, $chartConfiguration.ageLabelStep), $mathtool.round($mathtool.div($age, $chartConfiguration.ageLabelStep)))) &lt;= 0.0001)
