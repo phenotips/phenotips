@@ -44,10 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 import net.sf.json.JSONObject;
 
 /**
- * Handled fields for solved patient records, including solved status, PubMed ID, gene symbol, and notes.
+ * Handles fields for solved patient records, including solved status, PubMed ID, gene symbol, and notes.
  *
  * @version $Id$
- * @since 1.2m2
+ * @since 1.2M2
  */
 @Component(roles = { PatientDataController.class })
 @Named("solved")
