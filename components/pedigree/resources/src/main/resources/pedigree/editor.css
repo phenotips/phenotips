@@ -714,6 +714,15 @@
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+.node-type-options .node-type-option.circle {
+  line-height: 24px;
+}
+.node-type-options .node-type-option.circle span {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
 .expand-arrow {
   cursor: pointer;
   font-size: 15px;

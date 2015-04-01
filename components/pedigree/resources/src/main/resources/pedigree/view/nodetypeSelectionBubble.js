@@ -24,8 +24,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Female",
             tip  : "Create a person of female gender",
-            symbol: "",
-            cssclass: "fa fa-circle-thin",
+            symbol: "<span></span>",
+            cssclass: "circle",
             callback : "CreateChild",
             params: { parameters: {"gender": "F"} },
             inSiblingMode: true
