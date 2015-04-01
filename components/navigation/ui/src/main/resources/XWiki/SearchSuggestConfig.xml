@@ -516,7 +516,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>$xwiki.getURL('PhenoTips.SuggestPatientsService', 'get', 'outputSyntax=plain&amp;permission=view')</url>
+      <url>PhenoTips.SuggestPatientsService</url>
     </property>
   </object>
   <object>
@@ -664,7 +664,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>$xwiki.getURL('PhenoTips.SuggestPatientsService', 'get', 'outputSyntax=plain&amp;permission=view')</url>
+      <url>PhenoTips.SuggestPatientsService</url>
     </property>
   </object>
   <object>
@@ -812,7 +812,7 @@
       <resultsNumber>5</resultsNumber>
     </property>
     <property>
-      <url>$xwiki.getURL('PhenoTips.SuggestPatientsService', 'get', 'outputSyntax=plain&amp;permission=view')</url>
+      <url>PhenoTips.SuggestPatientsService</url>
     </property>
   </object>
 </xwikidoc>
