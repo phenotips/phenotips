@@ -29,8 +29,8 @@ import org.xwiki.component.phase.InitializationException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,15 +68,15 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private static final String STATUS_UNKNOWN = "";
 
-    private static Map<String, String> fields = new HashMap<String, String>();
+    private static Map<String, String> fields = new LinkedHashMap<String, String>();
 
     @Override
     public void initialize() throws InitializationException
     {
         fields.put(STATUS_KEY, "status");
         fields.put("solved__pubmed_id", "pubmed_id");
-        fields.put("solved__notes", "notes");
         fields.put("solved__gene_id", "gene");
+        fields.put("solved__notes", "notes");
     }
 
     @Override
