@@ -289,12 +289,6 @@
       </sectionPriority>
     </class>
     <property>
-      <advancedOnly/>
-    </property>
-    <property>
-      <categoryPriority/>
-    </property>
-    <property>
       <codeToExecute>{{html clean="false"}}
 &lt;form id="$formId" method="post" action="$formAction" class="xform half"&gt;
 {{/html}}
@@ -329,9 +323,6 @@
       <configureGlobally>1</configureGlobally>
     </property>
     <property>
-      <displayInCategory/>
-    </property>
-    <property>
       <displayInSection>searchSuggest</displayInSection>
     </property>
     <property>
@@ -345,9 +336,6 @@
     </property>
     <property>
       <propertiesToShow/>
-    </property>
-    <property>
-      <sectionPriority/>
     </property>
   </object>
   <object>

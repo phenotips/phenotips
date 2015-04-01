@@ -63,7 +63,7 @@
   #set ($discard = $query.bindValue('input', "%${input}%"))
   #set ($results = $query.execute())
   #if ($request.permission)
-    #set ($requiredPermissions = "$request.permission")
+    #set ($requiredPermissions = $request.permission)
   #else
     #set ($requiredPermissions = "view")
   #end
@@ -72,7 +72,7 @@
     { "matchedPatients": [
     #set ($first = true)
     #foreach ($item in $results)
-      #if ($xwiki.hasAccessLevel("$requiredPermissions", $xcontext.user, $item))
+      #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
         #set ($itemdoc = $xwiki.getDocument($item))
         #set ($phenotipsId = "$itemdoc.getPlainTitle()")
         #set ($url = $itemdoc.getURL())
@@ -113,7 +113,7 @@
     &lt;?xml version="1.0" encoding="UTF-8"?&gt;
     &lt;results&gt;
       #foreach ($item in $results)
-        #if ($xwiki.hasAccessLevel("$requiredPermissions", $xcontext.user, $item))
+        #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
           #set ($itemdoc = $xwiki.getDocument($item))
           #set ($title = $itemdoc.getPlainTitle())
           #set ($externalId = "$!itemdoc.getObject('PhenoTips.PatientClass').getProperty('external_id').value")
