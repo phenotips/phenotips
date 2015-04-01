@@ -2185,8 +2185,10 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
 
   $$('.chapter &gt; h2').each(function(item){
-    var chapterShow = new Element('span', {'class' : 'tool show'}).update("$services.localization.render('phenotips.patientSheet.expandSection')");
-    var chapterHide = new Element('span', {'class' : 'tool hide'}).update("$services.localization.render('phenotips.patientSheet.collapseSection')");
+    var showIcon = '&lt;span class="fa fa-plus-circle fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterShow = new Element('span', {'class' : 'tool show'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
+    var hideIcon = '&lt;span class="fa fa-minus-circle fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterHide = new Element('span', {'class' : 'tool hide'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
     var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShow).insert(chapterHide);
     item.insert({after: chapterExpandTools});
     [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
