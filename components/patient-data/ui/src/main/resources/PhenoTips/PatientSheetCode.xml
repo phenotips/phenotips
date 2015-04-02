@@ -736,7 +736,10 @@ document.observe('xwiki:dom:loaded', function() {
                }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
-               var deleteTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')");
+               var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')")
+               );
+
                tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
@@ -748,11 +751,17 @@ document.observe('xwiki:dom:loaded', function() {
                });
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
-               var detailsTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')");
-               var clearTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')");
-               var editTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')");
-               var editClearTools = new Element('span').insert(editTool).insert(' · ').insert(clearTool);
-               tools.insert(' · ').insert(detailsTool).insert(editClearTools);
+               var detailsTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')")
+               );
+               var clearTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')")
+               );
+               var editTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')")
+               );
+               var editClearTools = new Element('span').insert(editTool).insert(clearTool);
+               tools.insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
                  var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.loading')");
