@@ -2185,11 +2185,13 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
 
   $$('.chapter &gt; h2').each(function(item){
-    var showIcon = '&lt;span class="fa fa-plus-circle fa-lg">&lt;/span>&amp;nbsp;';
-    var chapterShow = new Element('span', {'class' : 'tool show'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
-    var hideIcon = '&lt;span class="fa fa-minus-circle fa-lg">&lt;/span>&amp;nbsp;';
-    var chapterHide = new Element('span', {'class' : 'tool hide'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
-    var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShow).insert(chapterHide);
+    var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterShow = new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
+    var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterHide = new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+    var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
+    var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
+    var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
     item.insert({after: chapterExpandTools});
     [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
       event.element().up('.chapter').toggleClassName('collapsed');
@@ -3832,7 +3834,7 @@ h1, h2, h3, h4 {
 .chapter .expand-tools {
   color: $theme.textPrimaryColor;;
   float: right;
-  font-size: 0.8em;
+  font-size: 0.9em;
   margin-right: -10px;
   margin-top: -2em;
 }
