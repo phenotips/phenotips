@@ -51,9 +51,6 @@
     #foreach ($piece in $!request.getParameterValues('symptom'))
       #set($discard = $data.add($piece))
     #end
-    #foreach ($piece in $!request.getParameterValues('free_symptom'))
-      #set($discard = $data.add($piece))
-    #end
 #if ("$!{request.format}" == 'html')
 #set ($results = $services.diagnosis.get($data, $limit))
 #if ($results.size() &gt; 0)
