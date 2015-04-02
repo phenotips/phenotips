@@ -59,6 +59,25 @@
    #end
 #end
 
+#macro (__expandTools)
+  {{html clean="false" wiki="false"}}
+  &lt;div class="expand-tools"&gt;
+    &lt;span class="buttonwrapper show"&gt;
+      &lt;a href="javascript:void(0)" class="tool button secondary"&gt;
+        &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+        $services.localization.render('phenotips.patientSheet.expandSection')
+      &lt;/a&gt;
+    &lt;/span&gt;
+    &lt;span class="buttonwrapper hide"&gt;
+      &lt;a href="javascript:void(0)" class="tool button secondary"&gt;
+        &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+        $services.localization.render('phenotips.patientSheet.collapseSection')
+      &lt;/a&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+  {{/html}}
+#end
+
 #macro (__display $propName)
 (% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end})))##
 #end
