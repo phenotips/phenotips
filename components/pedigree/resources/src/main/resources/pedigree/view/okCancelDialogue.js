@@ -46,6 +46,17 @@ var OkCancelDialogue = Class.create( {
     },
 
     /**
+     * Same as show but also displays a checkbox with the given title and cals the
+     * onOK and onCancel functions with the boolean value indicating if the checkbox was pressed or not
+     *
+     * @method show
+     */
+    showCheckbox: function(message, title, checkboxText, onOKFunction, onCancelFunction) {
+        // TODO
+        this.showCustomized(message, title, "OK", onOKFunction, "Cancel", onCancelFunction);
+    },
+
+    /**
      * Displays the template selector
      *
      * @method show

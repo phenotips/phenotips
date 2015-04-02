@@ -248,10 +248,10 @@ var Controller = Class.create({
         var changed = false;
 
         var twinUpdate = undefined;
-        var needUpdateOldProbandId = undefined;
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         var needUpdateAllRelationships = false;
+        var needReloadFromPhenotips = false;
         var needUpdateYPositions = false;  // true iff: setting this property (e.g. extra long comments)
                                            //           may force stuff to move around in Y direction
 
@@ -309,22 +309,6 @@ var Controller = Class.create({
                 }
                 if (propertySetFunction == "setCarrierStatus") {
                     undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
-                }
-
-                if (propertySetFunction == "setPhenotipsPatientId") {
-                    if (propValue == editor.getGraph().getCurrentPatientId()) {
-                        // TODO: display message boxes
-
-                        // mark to update old proband
-                        needUpdateOldProbandId = editor.getGraph().getProbandId();
-
-                        editor.getGraph().setProbandId(nodeID);
-
-                        // TODO: update proband data from patient document?
-
-                        // if anothe rnode is involved there is no easy one-event undo
-                        undoEvent = null;
-                    }
                 }
 
                 node[propertySetFunction](propValue);
@@ -441,6 +425,7 @@ var Controller = Class.create({
             editor.getGraph().setProperties( needUpdateOldProbandId, oldProbandProperties );
         }
 
+        // sync underlying graph with visual node representation's properties
         var allProperties = node.getProperties();
         editor.getGraph().setProperties( nodeID, allProperties );
 
@@ -508,16 +493,79 @@ var Controller = Class.create({
                     // here we just check if setProperty should be called
                     event.memo.noUndoRedo = true;
 
-                    var setLink = function() {
-                        var properties = {"setPhenotipsPatientId": modValue };
-                        var event = { "nodeID": nodeID, "properties": properties };
-                        document.fire("pedigree:node:setproperty", event);
+                    var setLink = function(clearOldData) {
+
+                        // load node properties from the linked patient's phenotips document
+
+                        var onDataReady = function(loadedPatientData) {
+                            // TODO: a very similar piece of code is used in saveLoadEngine.js, see _finalizeCreateGraph();
+                            //       check if some refactoring/reusing is posible
+                            if (loadedPatientData !== null && loadedPatientData.hasOwnProperty(modValue)) {
+
+                                var patientJSONObject = loadedPatientData[modValue];
+                                var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
+                                if (!genderOk) {
+                                    alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
+                                }
+
+                                // update visual node's properties using data in graph model which was just loaded from phenotips
+                                node.assignProperties(editor.getGraph().getProperties(nodeID));
+                            } else if (modValue == "") {
+                                if (clearOldData) {
+                                    // TODO
+                                    // editor.getGraph().setProperties(nodeID, {});
+                                    // need to fix property setting in person.assignProperties().
+                                    // Setting node.assignProperties() to {} just ignores all fields
+                                } else {
+                                    node.setPhenotipsPatientId("");
+                                    editor.getGraph().setProperties( nodeID, node.getProperties() );
+                                }
+                            }
+
+                            /* TODO: may need the code below when changing proband (need to enable [remove connection]
+                                     button for proband nodes on non-family pages first)
+                            if (modValue == editor.getGraph().getCurrentPatientId()) {
+                                // mark to update old proband
+                                var oldProbandId = editor.getGraph().getProbandId();
+
+                                editor.getGraph().setProbandId(nodeID);
+
+                                var oldProbandNode = editor.getView().getNode(oldProbandId);
+                                oldProbandNode.setPhenotipsPatientId("");
+                                var oldProbandProperties = oldProbandNode.getProperties();
+                                editor.getGraph().setProperties( oldProbandId, oldProbandProperties );
+                            }*/
+                            //var changeSet = {"removed": [nodeID], "new": [nodeID]};
+                            //editor.getView().applyChanges(changeSet, true);
+
+                            var changeSet = editor.getGraph().updateYPositioning();
+                            editor.getView().applyChanges(changeSet, true);
+
+                            editor.getNodeMenu().update();
+
+                            editor.getActionStack().addState( event, null /* no easy undo event */);
+                        }
+
+                        if (modValue != "") {
+                            var patientDataLoader = editor.getPatientDataLoader();
+
+                            // load data for only one patient with ID=="modValue", the one a node was just linked to
+                            patientDataLoader.load([modValue], onDataReady);
+                        } else {
+                            onDataReady(null);
+                        }
                     }
 
                     if (modValue != "") {
                         Controller._checkPatientLinkValidity(setLink, modValue);
                     } else {
-                        setLink();
+                        var onCancelAssignPatient = function() {
+                            // clear link input field in node menu
+                            editor.getNodeMenu().update();
+                        }
+                        editor.getOkCancelDialogue().showCheckbox("Do you want to remove the link between this node and this patient? " +
+                                "Note that if you do not connect this patient with some other node before saving the pedigree this patient will be removed from this family",
+                                'Remove the connections?', 'clear node properties', setLink, onCancelAssignPatient );
                     }
                 }
 
@@ -833,20 +881,46 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
 
 Controller._checkPatientLinkValidity = function(callbackOnValid, linkID)
 {
+    var onCancelAssignPatient = function() {
+        // clear link input field in node menu
+        editor.getNodeMenu().update();
+    }
+
+    var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+    if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+        editor.getOkCancelDialogue().showError("Patient " + linkID + " is already represented in this pedigree. "+
+                                               "Please remove that connection before connecting the patient to this node",
+                                               "Can't connect this node to this patient", "OK", onCancelAssignPatient );
+        return;
+    }
+
     var familyServiceURL = editor.getExternalEndpoint().getFamilyInterfaceURL();
     new Ajax.Request(familyServiceURL, {
         method: 'POST',
         onSuccess: function(response) {
             if (response.responseJSON) {
-                var onCancelAssignPatient = function() {
-                    editor.getNodeMenu().update();
-                }
                 if (!response.responseJSON.validLink) {
                     SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
                             "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                 } else {
-                    editor.getOkCancelDialogue().show("Do you want to add patient " + linkID + " to this family?",
-                            "Add patient to the family", callbackOnValid, onCancelAssignPatient);
+                    var alreadyWasOInFamily = false;
+                    var familyMembersWhenLoaded = editor.getCurrentFamilyPageFamilyMembers();
+                    for (var i = 0; i < familyMembersWhenLoaded.length; i++) {
+                        if (familyMembersWhenLoaded[i].id == linkID) {
+                            alreadyWasOInFamily = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyWasOInFamily) {
+                        editor.getOkCancelDialogue().show("<br><b>Do you want to add patient " + linkID + " to this family?</b><br><br><br>" +
+                                "<div style='margin-left: 10px; text-align: left'>Please note that:<br><br>1) adding a patient to a family automatically gives everyone who can edit this patient the " +
+                                "right to edit all other patients in the family, and everyone who can edit any other patients in the " +
+                                "family to edit this patient<br><br>2) This pedigree will be shared between all members of the family, including this patient<br><br>"+
+                                "3) All node properties will be lost and overwritten by patient " + linkID + "'s properties</div>",
+                                "Add patient to the family", callbackOnValid, onCancelAssignPatient);
+                    } else {
+                        callbackOnValid();
+                    }
                 }
             } else  {
                 editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',
