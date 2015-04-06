@@ -495,7 +495,7 @@ var Controller = Class.create({
                                 var patientJSONObject = loadedPatientData[modValue];
                                 var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
                                 if (!genderOk) {
-                                    alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
+                                    alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
                                 }
 
                                 // update visual node's properties using data in graph model which was just loaded from phenotips
@@ -893,12 +893,12 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
     if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
         editor.getOkCancelDialogue().showError("Patient " + linkID + " is already represented in this pedigree. "+
-                                               "Please remove that connection before connecting the patient to this node",
+                                               "Please remove that connection before connecting the patient to this node.",
                                                "Can't connect this node to this patient", "OK", onCancelAssignPatient );
         return;
     }
 
-    var familyServiceURL = editor.getExternalEndpoint().getFamilyInterfaceURL();
+    var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
     new Ajax.Request(familyServiceURL, {
         method: 'POST',
         onSuccess: function(response) {

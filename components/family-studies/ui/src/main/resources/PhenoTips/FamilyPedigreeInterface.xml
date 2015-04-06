@@ -40,17 +40,45 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity wwiki="false"}}
-## family member, proband or family
-#set ($anchorId = $request.proband)
 $response.setContentType('application/json')##
 {{html wiki="false" clean="false"}}
 ##
-#if ("$!request.json" != '')
-  $services.family.processPedigree($anchorId, $request.json, $request.image)
-#elseif ("$!request.link_to_id" != '')
-  $services.family.verifyLinkable($anchorId, $request.link_to_id)
-#else
-  $services.family.getFamilyStatus($anchorId)
+#if ("$!request.action" == '')
+  Action was not specified
+  #break
 #end
-{{/velocity}}</content>
+##
+#if ("$!request.action" != "createpatient")
+  #if ("$!request.proband" == '')
+    PROBAND was not specified
+    #break
+  #end
+  ## family member, proband or family
+  #set ($anchorId = $request.proband)
+#end
+##
+#if ("$!request.action" == "save")
+  #if ("$!request.json" != '')
+    $services.family.processPedigree($anchorId, $request.json, $request.image)
+  #else
+    JSON was not specified for action SAVE
+  #end
+#elseif ("$!request.action" == "checklink")
+  #if ("$!request.link_to_id" != '')
+    $services.family.verifyLinkable($anchorId, $request.link_to_id)
+  #else
+    LINK_TO_ID was not specified for action CHECKLINK
+  #end
+#elseif ("$!request.action" == "familystatus")
+  $services.family.getFamilyStatus($anchorId)
+#elseif ("$!request.action" == "createpatient")
+  #set ($patient = $services.patients.createNewPatient())
+  #if ($patient)
+    { "newID": "$patient.getId()" }
+  #else
+    { "newID": null }
+  #end
+#else
+  Unknown action
+#end{{/velocity}}</content>
 </xwikidoc>

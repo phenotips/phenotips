@@ -321,12 +321,13 @@ NodeMenu = Class.create({
         this.form.select('input.suggest-patients').each(function(item) {
             if (!item.hasClassName('initialized')) {
                 var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&json=true&";
-                console.log("PatientSuggest URL: " + patientSuggestURL);
+                //console.log("PatientSuggest URL: " + patientSuggestURL);
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: patientSuggestURL,
                     varname: "input",
                     noresults: "No matching patients",
                     json: true,
+                    width: 337,
                     resultsParameter : "matchedPatients",
                     resultId : "id",
                     resultValue : "textSummary",
@@ -607,8 +608,30 @@ NodeMenu = Class.create({
         },
         'phenotipsid-picker' : function (data) {
             var result = this._generateEmptyField(data);
+            var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
             var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
-            result.insert(patientPicker);
+            var newPatientButton = new Element('span', {'class': 'patient-link-remove patient-create-button'}).update("Create new");
+            newPatientButton.observe('click', function(event) {
+
+                var _this = this;
+                var _onPatientCreated = function(response) {
+                    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                        console.log("Created new patient: " + stringifyObject(response.responseJSON));
+                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID });
+                        _this.reposition();
+                    } else {
+                        alert("Patient creation failed");
+                    }
+                }
+
+                var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                new Ajax.Request(createPatientURL, {
+                    method: "GET",
+                    onSuccess: _onPatientCreated
+                });
+            });
+            patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
+            result.insert(patientNewLinkContainer);
 
             var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
             var patientLink = new Element('a', {'class': 'patient-link-url', 'target': "_blank", name: data.name + "_link"});
@@ -618,18 +641,9 @@ NodeMenu = Class.create({
                 Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                 _this.reposition();
             });
-            removeLink.insert("remove connection");
-            /*var syncStatus = new Element('span', {'class': 'patient-link-remove'});
-            syncStatus.insert("synced");
-            var familyStatus = new Element('span', {'class': 'patient-link-remove'});
-            familyStatus.insert("family");
-            patientLinkContainer.insert(patientLink).insert(removeLink).insert(syncStatus).insert(familyStatus);
-            */
+            removeLink.insert("unlink patient record");
             patientLinkContainer.insert(patientLink).insert(removeLink);
             result.insert(patientLinkContainer);
-            //var patientLinkType = new Element('i', {'class': 'fa fa-lock', name: data.name + '_linktype'});
-            //result.insert(patientLinkType);
-
             var _this = this;
             patientPicker.observe('ms:suggest:selected', function(event) {
                  //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": event.memo.id } });
@@ -1086,7 +1100,8 @@ NodeMenu = Class.create({
         'phenotipsid-picker' : function (container, value) {
             var _this = this;
 
-            var suggestInput = container.down('input[type=text].suggest-patients');
+            var suggestContainer = container.down('div.patient-newlink-container');
+            var suggestInput     = container.down('input[type=text].suggest-patients');
 
             var linkContainer = container.down('div.patient-link-container');
             var link          = container.down('a.patient-link-url');
@@ -1096,9 +1111,9 @@ NodeMenu = Class.create({
 
             if (value == "") {
                 linkContainer.hide();
-                suggestInput.show();
+                suggestContainer.show();
             } else {
-                suggestInput.hide();
+                suggestContainer.hide();
                 link.href = new XWiki.Document(value).getURL();
                 link.innerHTML = value;
                 linkContainer.show();

@@ -25,10 +25,22 @@ var ExternalEndpointsManager = Class.create({
     },
 
     getSavePedigreeURL: function() {
-        return this.getFamilyInterfaceURL();
+        return this._getBaseFamilyInterfaceURL() + "&action=save";
     },
 
-    getFamilyInterfaceURL: function() {
+    getFamilyInfoURL: function() {
+        return this._getBaseFamilyInterfaceURL() + "&action=familystatus";
+    },
+
+    getFamilyCheckLinkURL: function() {
+        return this._getBaseFamilyInterfaceURL() + "&action=checklink";
+    },
+
+    getFamilyNewPatientURL: function() {
+        return this._getBaseFamilyInterfaceURL() + "&action=createpatient";
+    },
+
+    _getBaseFamilyInterfaceURL: function() {
         return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
     },
 });
