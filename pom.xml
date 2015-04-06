@@ -333,6 +333,18 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.2 -->
+            <difference>
+              <className>org/phenotips/diagnosis/DiagnosisService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List getDiagnosis(java.util.List, int)</method>
+              <justification>The API should accept both ontology terms and non-standard features.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/diagnosis/script/DiagnosisScriptService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List get(java.util.List, int)</method>
+              <justification>The script service passes both ontology terms and non-standard features to the API.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
