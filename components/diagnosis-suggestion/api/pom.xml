@@ -84,4 +84,28 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <ignored> 
+            <!-- Remove the following ignores after we release 1.2m2 -->
+            <difference>
+              <className>org/phenotips/diagnosis/DiagnosisService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List getDiagnosis(java.util.List, int)</method>
+            </difference>
+            <difference>
+              <className>org/phenotips/diagnosis/script/DiagnosisScriptService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List get(java.util.List, int)</method>
+            </difference>
+          </ignored>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
