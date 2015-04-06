@@ -14,7 +14,7 @@ var FamilyDataLoader = Class.create( {
 
     load: function(callWhenReady) {
         var probandID = editor.getGraph().getCurrentPatientId();
-        var familyJsonURL = editor.getExternalEndpoint().getFamilyInterfaceURL();
+        var familyJsonURL = editor.getExternalEndpoint().getFamilyInfoURL();
         new Ajax.Request(familyJsonURL, {
             method: "POST",
             onSuccess: this._onFamilyDataReady.bind(this),
