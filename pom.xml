@@ -332,7 +332,7 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.2 -->
+            <!-- Remove the following ignores after we release 1.2M2 -->
             <difference>
               <className>org/phenotips/diagnosis/DiagnosisService</className>
               <differenceType>7004</differenceType>
