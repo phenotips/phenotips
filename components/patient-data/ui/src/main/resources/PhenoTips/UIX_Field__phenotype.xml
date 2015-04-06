@@ -133,10 +133,10 @@
     item.insert({after: new Element('span', {'class' : 'expand-tools'})});
   });
   var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg">&lt;/span>&amp;nbsp;';
-  var phBrowserExpandAll = new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update(showIcon+"$services.localization.render('phenotips.UIXField.phenotype.expand')");
+  var phBrowserExpandAll = new Element('button', {'class' : 'tool button secondary'}).update(showIcon+"$services.localization.render('phenotips.UIXField.phenotype.expand')");
   var phBrowserExpandAllWrapper = new Element('span', {'class' : 'buttonwrapper expand-all'}).insert(phBrowserExpandAll);
   var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg">&lt;/span>&amp;nbsp;';
-  var phBrowserCollapseAll = new Element('a', {'class' : 'tool button secondary', 'href' : 'javascript:void(0)'}).update(hideIcon+"$services.localization.render('phenotips.UIXField.phenotype.collapse')");
+  var phBrowserCollapseAll = new Element('button', {'class' : 'tool button secondary'}).update(hideIcon+"$services.localization.render('phenotips.UIXField.phenotype.collapse')");
   var phBrowserCollapseAllWrapper = new Element('span', {'class' : 'buttonwrapper collapse-all'}).insert(phBrowserCollapseAll);
   var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAllWrapper).insert(phBrowserCollapseAllWrapper);
 
