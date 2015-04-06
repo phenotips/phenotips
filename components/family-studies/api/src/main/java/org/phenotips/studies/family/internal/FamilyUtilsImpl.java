@@ -161,6 +161,24 @@ public class FamilyUtilsImpl implements FamilyUtils
         }
     }
 
+    /** Will not throw an exception if fails. Does not save any documents. */
+    private void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context) {
+        try {
+            BaseObject fromPedigreeObj = from.getXObject(PEDIGREE_CLASS);
+            if (fromPedigreeObj != null) {
+                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get("data");
+                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get("image");
+                if (StringUtils.isNotBlank(data.toText())) {
+                    BaseObject toPedigreeObj = to.getXObject(PEDIGREE_CLASS);
+                    toPedigreeObj.set("data", data.toText(), context);
+                    toPedigreeObj.set("image", image.toText(), context);
+                }
+            }
+        } catch (XWikiException ex) {
+            // do nothing
+        }
+    }
+
     /**
      * Relatives are patients that are stored in the RelativeClass (old interface).
      *
@@ -216,7 +234,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         familyObject.set("members", members, context);
         this.setFamilyReference(patientDoc, newFamilyDoc, context);
 
-        // fixme. copy pedigree if present
+        this.copyPedigree(patientDoc, newFamilyDoc, context);
 
         wiki.saveDocument(newFamilyDoc, context);
         wiki.saveDocument(patientDoc, context);
