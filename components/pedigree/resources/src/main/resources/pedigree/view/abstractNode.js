@@ -163,8 +163,12 @@ var AbstractNode = Class.create( {
      * @return {Boolean} True if properties were successfully assigned (i.e. no conflicts/invalid values)
      */
     assignProperties: function(properties) {
-        if (properties.hasOwnProperty("comments") && this.getComments() != properties.comments) {
-            this.setComments(properties.comments);
+        if (properties.hasOwnProperty("comments")) {
+            if (this.getComments() != properties.comments) {
+                this.setComments(properties.comments);
+            }
+        } else {
+            this.setComments("");
         }
         return true;
     },

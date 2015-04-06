@@ -853,7 +853,8 @@ NodeMenu = Class.create({
         }
         if (!event.findElement('.menu-box')
             && !event.findElement('.suggestItems')
-            && !event.findElement('.ok-cancel-dialogue')) {
+            && !event.findElement('.ok-cancel-dialogue')
+            && !event.findElement('.msdialog-screen')) {
             this.hide();
         }
     },

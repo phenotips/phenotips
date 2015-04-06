@@ -64,7 +64,6 @@ var PatientDataLoader = Class.create( {
             method: "GET",
             onSuccess: this._onPatientDataReady.bind(this),
             onComplete: dataProcessorWhenReady ? function() {
-                console.log("Complete: " + stringifyObject(_this._patientData));
                 dataProcessorWhenReady(_this._patientData)
             } : {}
         });

@@ -51,9 +51,21 @@ var OkCancelDialogue = Class.create( {
      *
      * @method show
      */
-    showCheckbox: function(message, title, checkboxText, onOKFunction, onCancelFunction) {
-        // TODO
-        this.showCustomized(message, title, "OK", onOKFunction, "Cancel", onCancelFunction);
+    showWithCheckbox: function(message, title, checkboxText, defaultState, okButtonText, onOKFunction, cancelButtonText, onCancelFunction) {
+        // add checkbox
+        var message = message + '<br><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' + checkboxText;
+        var onOK = function() {
+            // read checkbox state & clal original onOK with the state as the parameter
+            var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
+            var state = checkbox ? checkbox[0].checked : defaultState;
+            onOKFunction(state);
+        }
+        var onCancel = function() {
+            var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
+            var state = checkbox ? checkbox[0].checked : defaultState;
+            onCancelFunction(state);
+        }
+        this.showCustomized(message, title, okButtonText, onOK, cancelButtonText, onCancelFunction);
     },
 
     /**
