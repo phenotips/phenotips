@@ -737,7 +737,7 @@ document.observe('xwiki:dom:loaded', function() {
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')")
                );
 
                tools.insert(deleteTool);
@@ -752,13 +752,13 @@ document.observe('xwiki:dom:loaded', function() {
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
                var detailsTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')")
                );
                var clearTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')")
                );
                var editTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
-                 new Element('button', {'class' : 'tool button secondary'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')")
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')")
                );
                var editClearTools = new Element('span').insert(editTool).insert(clearTool);
                tools.insert(detailsTool).insert(editClearTools);
