@@ -85,6 +85,10 @@ public class NonStandardFeatureCategoryUpdater extends AbstractEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
+        if (this.container.getRequest() == null) {
+            // Not a browser request, no custom categories, nothing to do
+            return;
+        }
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         XWikiDocument doc = (XWikiDocument) source;
 
