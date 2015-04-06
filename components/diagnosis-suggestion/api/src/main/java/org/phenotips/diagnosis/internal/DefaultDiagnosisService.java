@@ -127,8 +127,10 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     }
 
     @Override
-    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, int limit)
+    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
+        // TODO: use the `nonstandardPhenotypes` argument
+
         Observations o = new Observations();
         o.observations = new boolean[this.boqa.getOntology().getNumberOfTerms()];
         boolean searchIsEmpty = true;
