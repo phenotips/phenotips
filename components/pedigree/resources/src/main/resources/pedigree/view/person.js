@@ -1083,77 +1083,157 @@ var Person = Class.create(AbstractPerson, {
       * @return {Boolean} True if info was successfully assigned
       */
      assignProperties: function($super, info) {
-        this._setDefault();
-
         if($super(info)) {
-            if(info.phenotipsId && this.getPhenotipsPatientId() != info.phenotipsId) {
-                this.setPhenotipsPatientId(info.phenotipsId);
+            if(info.phenotipsId) {
+                if (this.getPhenotipsPatientId() != info.phenotipsId) {
+                    this.setPhenotipsPatientId(info.phenotipsId);
+                }
+            } else {
+                this.setPhenotipsPatientId("");
             }
-            if(info.fName && this.getFirstName() != info.fName) {
-                this.setFirstName(info.fName);
+            if(info.fName) {
+                if (this.getFirstName() != info.fName) {
+                    this.setFirstName(info.fName);
+                }
+            } else {
+                this.setFirstName("");
             }
-            if(info.lName && this.getLastName() != info.lName) {
-                this.setLastName(info.lName);
+            if(info.lName) {
+                if (this.getLastName() != info.lName) {
+                    this.setLastName(info.lName);
+                }
+            } else {
+                this.setLastName("");
             }
-            if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
-                this.setLastNameAtBirth(info.lNameAtB);
+            if(info.lNameAtB) {
+                if (this.getLastNameAtBirth() != info.lNameAtB) {
+                    this.setLastNameAtBirth(info.lNameAtB);
+                }
+            } else {
+                this.setLastNameAtBirth("");
             }
-            if (info.externalID && this.getExternalID() != info.externalID) {
-                this.setExternalID(info.externalID);
+            if (info.externalID) {
+                if (this.getExternalID() != info.externalID) {
+                    this.setExternalID(info.externalID);
+                }
+            } else {
+                this.setExternalID("");
             }
-            if(info.dob && this.getBirthDate() != info.dob) {
-                this.setBirthDate(info.dob);
+            if(info.dob) {
+                if (this.getBirthDate() != info.dob) {
+                    this.setBirthDate(info.dob);
+                }
+            } else {
+                this.setBirthDate(null);
+            }
+            if(info.dod) {
+                if (this.getDeathDate() != info.dod) {
+                    this.setDeathDate(info.dod);
+                }
+            } else {
+                this.setDeathDate(null);
             }
             if(info.disorders) {
                 this.setDisorders(info.disorders);
+            } else {
+                this.setDisorders([]);
             }
             if(info.cancers) {
                 this.setCancers(info.cancers);
+            } else {
+                this.setCancers({});
             }
             if(info.hpoTerms) {
                 this.setHPO(info.hpoTerms);
+            } else {
+                this.setHPO([]);
             }
             if(info.ethnicities) {
                 this.setEthnicities(info.ethnicities);
+            } else {
+                this.setEthnicities([]);
             }
             if(info.candidateGenes) {
                 this.setGenes(info.candidateGenes);
+            } else {
+                this.setGenes([]);
             }
-            if(info.hasOwnProperty("adoptedStatus") && this.getAdopted() != info.adoptedStatus) {
-                this.setAdopted(info.adoptedStatus);
+            if(info.hasOwnProperty("adoptedStatus")) {
+                if (this.getAdopted() != info.adoptedStatus) {
+                    this.setAdopted(info.adoptedStatus);
+                }
+            } else {
+                this.setAdopted("");
             }
-            if(info.hasOwnProperty("lifeStatus") && this.getLifeStatus() != info.lifeStatus) {
-                this.setLifeStatus(info.lifeStatus);
+            if(info.hasOwnProperty("lifeStatus")) {
+                if (this.getLifeStatus() != info.lifeStatus) {
+                    this.setLifeStatus(info.lifeStatus);
+                }
+            } else {
+                this.setLifeStatus('alive');
             }
-            if(info.dod && this.getDeathDate() != info.dod) {
-                this.setDeathDate(info.dod);
+            if(info.gestationAge) {
+                if (this.getGestationAge() != info.gestationAge) {
+                    this.setGestationAge(info.gestationAge);
+                }
+            } else {
+                this.setGestationAge("");
             }
-            if(info.gestationAge && this.getGestationAge() != info.gestationAge) {
-                this.setGestationAge(info.gestationAge);
+            if(info.childlessStatus) {
+                if (this.getChildlessStatus() != info.childlessStatus) {
+                    this.setChildlessStatus(info.childlessStatus);
+                }
+            } else {
+                this.setChildlessStatus(null);
             }
-            if(info.childlessStatus && this.getChildlessStatus() != info.childlessStatus) {
-                this.setChildlessStatus(info.childlessStatus);
+            if(info.childlessReason) {
+                if (this.getChildlessReason() != info.childlessReason) {
+                    this.setChildlessReason(info.childlessReason);
+                }
+            } else {
+                this.setChildlessReason("");
             }
-            if(info.childlessReason && this.getChildlessReason() != info.childlessReason) {
-                this.setChildlessReason(info.childlessReason);
+            if(info.hasOwnProperty("twinGroup")) {
+                if (this._twinGroup != info.twinGroup) {
+                    this.setTwinGroup(info.twinGroup);
+                }
+            } else {
+                this.setTwinGroup(null);
             }
-            if(info.hasOwnProperty("twinGroup") && this._twinGroup != info.twinGroup) {
-                this.setTwinGroup(info.twinGroup);
+            if(info.hasOwnProperty("monozygotic")) {
+                if (this._monozygotic != info.monozygotic) {
+                    this.setMonozygotic(info.monozygotic);
+                }
+            } else {
+                this.setMonozygotic(false);
             }
-            if(info.hasOwnProperty("monozygotic") && this._monozygotic != info.monozygotic) {
-                this.setMonozygotic(info.monozygotic);
+            if(info.hasOwnProperty("evaluated")) {
+                if (this._evaluated != info.evaluated) {
+                    this.setEvaluated(info.evaluated);
+                }
+            } else {
+                this.setEvaluated(false);
             }
-            if(info.hasOwnProperty("evaluated") && this._evaluated != info.evaluated) {
-                this.setEvaluated(info.evaluated);
+            if(info.hasOwnProperty("carrierStatus")) {
+                if (this._carrierStatus != info.carrierStatus) {
+                    this.setCarrierStatus(info.carrierStatus);
+                }
+            } else {
+                this.setCarrierStatus("");
             }
-            if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
-                this.setCarrierStatus(info.carrierStatus);
+            if (info.hasOwnProperty("nodeNumber")) {
+                if (this.getPedNumber() != info.nodeNumber) {
+                    this.setPedNumber(info.nodeNumber);
+                }
+            } else {
+                this.setPedNumber("");
             }
-            if (info.hasOwnProperty("nodeNumber") && this.getPedNumber() != info.nodeNumber) {
-                this.setPedNumber(info.nodeNumber);
-            }
-            if (info.hasOwnProperty("lostContact") && this.getLostContact() != info.lostContact) {
-                this.setLostContact(info.lostContact);
+            if (info.hasOwnProperty("lostContact")) {
+                if (this.getLostContact() != info.lostContact) {
+                    this.setLostContact(info.lostContact);
+                }
+            } else {
+                this.setLostContact(false);
             }
             return true;
         }

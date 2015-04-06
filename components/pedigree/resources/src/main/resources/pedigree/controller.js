@@ -251,7 +251,6 @@ var Controller = Class.create({
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         var needUpdateAllRelationships = false;
-        var needReloadFromPhenotips = false;
         var needUpdateYPositions = false;  // true iff: setting this property (e.g. extra long comments)
                                            //           may force stuff to move around in Y direction
 
@@ -418,13 +417,6 @@ var Controller = Class.create({
             }
         }
 
-        if (isInt(needUpdateOldProbandId)) {
-            var oldProbandNode = editor.getView().getNode(needUpdateOldProbandId);
-            oldProbandNode.setPhenotipsPatientId("");
-            var oldProbandProperties = oldProbandNode.getProperties();
-            editor.getGraph().setProperties( needUpdateOldProbandId, oldProbandProperties );
-        }
-
         // sync underlying graph with visual node representation's properties
         var allProperties = node.getProperties();
         editor.getGraph().setProperties( nodeID, allProperties );
@@ -489,11 +481,9 @@ var Controller = Class.create({
 
                 if (modificationType == "trySetPhenotipsPatientId") {
 
-                    // undo should be handled by setProperty(),
-                    // here we just check if setProperty should be called
-                    event.memo.noUndoRedo = true;
-
                     var setLink = function(clearOldData) {
+
+                        event.memo.clearOldData = clearOldData;
 
                         // load node properties from the linked patient's phenotips document
 
@@ -512,17 +502,24 @@ var Controller = Class.create({
                                 node.assignProperties(editor.getGraph().getProperties(nodeID));
                             } else if (modValue == "") {
                                 if (clearOldData) {
-                                    // TODO
-                                    // editor.getGraph().setProperties(nodeID, {});
-                                    // need to fix property setting in person.assignProperties().
-                                    // Setting node.assignProperties() to {} just ignores all fields
+                                    // preserve gender and some other pedigree-specific properties which
+                                    // were manually set and were not loaded from a node
+                                    // TODO: review the set of properties retained
+                                    var clearedProperties = { "gender" : node.getGender(),
+                                                              "adoptedStatus" : node.getAdopted(),
+                                                              "twinGroup" : node._twinGroup,
+                                                              "monozygotic" : node._monozygotic,
+                                                              "nodeNumber": node.getPedNumber() };
+
+                                    editor.getGraph().setProperties(nodeID, clearedProperties);
+                                    node.assignProperties(clearedProperties);
                                 } else {
                                     node.setPhenotipsPatientId("");
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
                             }
 
-                            /* TODO: may need the code below when changing proband (need to enable [remove connection]
+                            /* TODO: need the (modified) code below when changing proband (need to enable [remove connection]
                                      button for proband nodes on non-family pages first)
                             if (modValue == editor.getGraph().getCurrentPatientId()) {
                                 // mark to update old proband
@@ -543,7 +540,9 @@ var Controller = Class.create({
 
                             editor.getNodeMenu().update();
 
-                            editor.getActionStack().addState( event, null /* no easy undo event */);
+                            if (!event.memo.noUndoRedo) {
+                                editor.getActionStack().addState( event, null /* no easy undo event */);
+                            }
                         }
 
                         if (modValue != "") {
@@ -556,16 +555,11 @@ var Controller = Class.create({
                         }
                     }
 
-                    if (modValue != "") {
-                        Controller._checkPatientLinkValidity(setLink, modValue);
+                    if (!event.memo.noUndoRedo) {
+                        Controller._checkPatientLinkValidity(setLink, nodeID, modValue);
                     } else {
-                        var onCancelAssignPatient = function() {
-                            // clear link input field in node menu
-                            editor.getNodeMenu().update();
-                        }
-                        editor.getOkCancelDialogue().showCheckbox("Do you want to remove the link between this node and this patient? " +
-                                "Note that if you do not connect this patient with some other node before saving the pedigree this patient will be removed from this family",
-                                'Remove the connections?', 'clear node properties', setLink, onCancelAssignPatient );
+                        // if this is a redo event skip all the warnings
+                        setLink(event.memo.clearOldData);
                     }
                 }
 
@@ -879,11 +873,21 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
     }
 }
 
-Controller._checkPatientLinkValidity = function(callbackOnValid, linkID)
+Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
 {
     var onCancelAssignPatient = function() {
         // clear link input field in node menu
         editor.getNodeMenu().update();
+    }
+
+    if (linkID == "") {
+        var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
+        editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this pedigree node and patient " + oldLinkID + "?</b>" +
+                "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that if you do not connect patient " + oldLinkID +
+                " with some other pedigree node before saving this pedigree then the patient will be removed from this family. " +
+                "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
+                'Remove the connections?', 'blank pedigree node properties', true, "Remove link", callbackOnValid, "Cancel", onCancelAssignPatient );
+        return;
     }
 
     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
@@ -903,23 +907,37 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, linkID)
                     SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
                             "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                 } else {
-                    var alreadyWasOInFamily = false;
-                    var familyMembersWhenLoaded = editor.getCurrentFamilyPageFamilyMembers();
-                    for (var i = 0; i < familyMembersWhenLoaded.length; i++) {
-                        if (familyMembersWhenLoaded[i].id == linkID) {
-                            alreadyWasOInFamily = true;
-                            break;
+                    var processLinking = function(topMessage, notesMessage) {
+                        var alreadyWasInFamily = false;
+                        var familyMembersWhenLoaded = editor.getCurrentFamilyPageFamilyMembers();
+                        for (var i = 0; i < familyMembersWhenLoaded.length; i++) {
+                            if (familyMembersWhenLoaded[i].id == linkID) {
+                                alreadyWasInFamily = true;
+                                break;
+                            }
+                        }
+                        if (!alreadyWasInFamily) {
+                            editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
+                                    "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                    notesMessage +  "</div><br>",
+                                    "Add patient to the family", "Confirm", callbackOnValid, "Cancel", onCancelAssignPatient);
+                        } else {
+                            callbackOnValid();
                         }
                     }
-                    if (!alreadyWasOInFamily) {
-                        editor.getOkCancelDialogue().show("<br><b>Do you want to add patient " + linkID + " to this family?</b><br><br><br>" +
-                                "<div style='margin-left: 10px; text-align: left'>Please note that:<br><br>1) adding a patient to a family automatically gives everyone who can edit this patient the " +
-                                "right to edit all other patients in the family, and everyone who can edit any other patients in the " +
-                                "family to edit this patient<br><br>2) This pedigree will be shared between all members of the family, including this patient<br><br>"+
-                                "3) All node properties will be lost and overwritten by patient " + linkID + "'s properties</div>",
-                                "Add patient to the family", callbackOnValid, onCancelAssignPatient);
+
+                    // check if there is a family. If there is no family show a warning that a family will be created
+                    if (!editor.hasFamily() && allLinkedNodes.linkedPatients.length < 2) {
+                        processLinking("Connecting this patient requires creating a family. " +
+                                       "Do you want to create a family and add patient " + linkID + "?",
+                                       "1) All members of a family share the same pedigree.<br><br>"+
+                                       "2) Patient records may have collaborators. Adding an existing patient to a family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record.<br><br>"+
+                                       "3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.");
                     } else {
-                        callbackOnValid();
+                        processLinking("Do you want to add patient " + linkID + " to this family?",
+                                "1) The pedigree is shared by all members of this family.<br><br>"+
+                                "2) Patient records may have collaborators. Adding an existing patient to this family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record.<br><br>"+
+                                "3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.");
                     }
                 }
             } else  {
