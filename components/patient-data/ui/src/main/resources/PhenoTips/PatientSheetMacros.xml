@@ -67,12 +67,14 @@
         &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
         $services.localization.render('phenotips.patientSheet.expandSection')
       &lt;/a&gt;
+      &lt;/button&gt;
     &lt;/span&gt;
     &lt;span class="buttonwrapper hide"&gt;
       &lt;button class="tool button secondary"&gt;
         &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
         $services.localization.render('phenotips.patientSheet.collapseSection')
       &lt;/a&gt;
+      &lt;/button&gt;
     &lt;/span&gt;
   &lt;/div&gt;
   {{/html}}
