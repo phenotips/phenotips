@@ -29,7 +29,7 @@
   <name>PhenoTips - Diagnosis Suggestion Java Code</name>
 
   <properties>
-    <coverage.instructionRatio>0.82</coverage.instructionRatio>
+    <coverage.instructionRatio>0.81</coverage.instructionRatio>
   </properties>
 
   <dependencies>
