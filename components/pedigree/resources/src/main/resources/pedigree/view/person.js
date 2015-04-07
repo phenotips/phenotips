@@ -91,6 +91,17 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Returns the URL of the PhenoTips patient represented by this node.
+     *
+     * @method getPhenotipsPatientURL
+     * @return {String}
+     */
+    getPhenotipsPatientURL: function()
+    {
+        return new XWiki.Document(this.getPhenotipsPatientId()).getURL();
+    },
+
+    /**
      * Replaces (or sets) the id of the PhenoTips patient represented by this node
      * with the given id, and updates the label.
      *
@@ -105,7 +116,7 @@ var Person = Class.create(AbstractPerson, {
 
         this.getGraphics().setGenderGraphics();
         this.getGraphics().getHoverBox().regenerateButtons();
-        //this.updateLinkLabel();
+        this.getGraphics().updateLinkLabel();
     },
 
     /**

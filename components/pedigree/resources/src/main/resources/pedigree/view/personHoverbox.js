@@ -202,7 +202,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      *
      * @method animateDrawHoverZone
      */
-    animateDrawHoverZone: function($super) {
+    animateDrawHoverZone: function($super, event) {
         this._hidden = false;
         if(!this.isMenuToggled()){
             // add.remove delete button depending on if it is ok to remove this node or not
