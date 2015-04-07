@@ -694,19 +694,21 @@
   line-height: 24px;
 }
 .node-type-options .node-type-option.square {
-  line-height: 27px;
+  line-height: 28px;
 }
 .node-type-options .node-type-option.square span {
   display: inline-block;
-  width: 10px; height: 10px;
+  width: 12px; 
+  height: 12px;
   border: 1px solid black;
 }
 .node-type-options .node-type-option.diamond {
-  line-height: 24px;
+  line-height: 26px;
 }
 .node-type-options .node-type-option.diamond span {
   display: inline-block;
-  width: 7px; height: 7px;
+  width: 10px; 
+  height: 10px;
   border: 1px solid black;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
@@ -715,13 +717,24 @@
   transform: rotate(45deg);
 }
 .node-type-options .node-type-option.circle {
-  line-height: 24px;
+  line-height: 29px;
 }
 .node-type-options .node-type-option.circle span {
   display: inline-block;
-  width: 10px; height: 10px;
+  width: 12px; 
+  height: 12px;
   border-radius: 50%;
   border: 1px solid black;
+}
+.node-type-options .node-type-option.text-in-middle {
+  position: relative;
+}
+.node-type-options .node-type-option.text-in-middle strong {
+  font-weight: bold;
+  font-size: 8px;
+  position: absolute;
+  top: 8px; 
+  left: 10px;
 }
 .expand-arrow {
   cursor: pointer;
