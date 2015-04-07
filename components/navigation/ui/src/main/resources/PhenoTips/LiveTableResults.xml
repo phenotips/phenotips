@@ -380,6 +380,9 @@
   #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}")
   #set($tableAlias = $colname)
   ## only safe versions should be used in SQL queries
+  #if (!$filterValueList &amp;&amp; "$filterValueLowLimit$filterValueHighLimit" == '')
+    #break($macro)
+  #end
   #set($safe_colname = "$!{colname.replaceAll('[^a-zA-Z0-9_.]','')}")
   #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
   ##
