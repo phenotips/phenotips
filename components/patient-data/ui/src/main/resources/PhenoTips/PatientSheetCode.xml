@@ -736,7 +736,10 @@ document.observe('xwiki:dom:loaded', function() {
                }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
-               var deleteTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')");
+               var deleteTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.delete')")
+               );
+
                tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
@@ -748,11 +751,17 @@ document.observe('xwiki:dom:loaded', function() {
                });
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
-               var detailsTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')");
-               var clearTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')");
-               var editTool = new Element('span', {'class' : 'tool'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')");
-               var editClearTools = new Element('span').insert(editTool).insert(' · ').insert(clearTool);
-               tools.insert(' · ').insert(detailsTool).insert(editClearTools);
+               var detailsTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.addDetails')")
+               );
+               var clearTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.clearDetails')")
+               );
+               var editTool = new Element('span', {'class' : 'buttonwrapper'}).insert(
+                 new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.editDetails')")
+               );
+               var editClearTools = new Element('span').insert(editTool).insert(clearTool);
+               tools.insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
                  var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.loading')");
@@ -2185,9 +2194,13 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
 
   $$('.chapter &gt; h2').each(function(item){
-    var chapterShow = new Element('span', {'class' : 'tool show'}).update("$services.localization.render('phenotips.patientSheet.expandSection')");
-    var chapterHide = new Element('span', {'class' : 'tool hide'}).update("$services.localization.render('phenotips.patientSheet.collapseSection')");
-    var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShow).insert(chapterHide);
+    var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterShow = new Element('button', {'class' : 'tool button secondary'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
+    var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+    var chapterHide = new Element('button', {'class' : 'tool button secondary'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+    var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
+    var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
+    var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
     item.insert({after: chapterExpandTools});
     [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
       event.element().up('.chapter').toggleClassName('collapsed');
@@ -3830,7 +3843,7 @@ h1, h2, h3, h4 {
 .chapter .expand-tools {
   color: $theme.textPrimaryColor;;
   float: right;
-  font-size: 0.8em;
+  font-size: 0.9em;
   margin-right: -10px;
   margin-top: -2em;
 }
