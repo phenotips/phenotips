@@ -40,6 +40,16 @@ var NodetypeSelectionBubble = Class.create({
             params: { parameters: {"gender": "U"} },
             inSiblingMode: true
         }, {
+            key: "P",
+            type: "person",
+            label: "Pregnancy",
+            tip  : "Create pregnancy",
+            symbol: "P",
+            cssclass: "",
+            callback : "CreateChild",
+            params: { "parameters": {"lifeStatus": "unborn"} },
+            inSiblingMode: true
+        }, {
             key: "T",
             type: "person",
             label: "Twins",
