@@ -621,6 +621,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateLinkLabel: function() {
         this._linkArea && this._linkArea.remove();
+        this._linkArea = null;
         this._linkLabel && this._linkLabel.remove();
         if (this.getNode().getPhenotipsPatientId() == "") {
             this._linkLabel = null;
