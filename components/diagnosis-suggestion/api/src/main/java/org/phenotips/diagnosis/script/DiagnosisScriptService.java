@@ -51,11 +51,12 @@ public class DiagnosisScriptService implements ScriptService
      *
      * @param phenotypes a list of phenotype term IDs observed in the patient; each phenotype is represented as a String
      *            in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
+     * @param nonstandardPhenotypes a list of non-standard phenotype terms observed in the patient
      * @param limit the maximum number of diagnoses to return; must be a positive number
      * @return a list of suggested diagnoses
      */
-    public List<OntologyTerm> get(List<String> phenotypes, int limit)
+    public List<OntologyTerm> get(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
-        return this.service.getDiagnosis(phenotypes, limit);
+        return this.service.getDiagnosis(phenotypes, nonstandardPhenotypes, limit);
     }
 }

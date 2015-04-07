@@ -136,8 +136,10 @@ public class DefaultDiagnosisServiceTest
 
         int limit = 3;
         int i = 0;
+        List<String> nonstandardPhenotypeSet = new LinkedList<>();
+        nonstandardPhenotypeSet.add("Non-standard term");
         for (List<String> phenotypeSet : phenotypes) {
-            List<OntologyTerm> diagnoses = diagnosisService.getDiagnosis(phenotypeSet, limit);
+            List<OntologyTerm> diagnoses = diagnosisService.getDiagnosis(phenotypeSet, nonstandardPhenotypeSet, limit);
             List<String> diagnosisIds = new LinkedList<>();
             for (OntologyTerm diagnosis : diagnoses) {
                 diagnosisIds.add(diagnosis.getId());
