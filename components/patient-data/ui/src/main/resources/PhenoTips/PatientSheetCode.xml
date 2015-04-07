@@ -3783,6 +3783,9 @@ h1, h2, h3, h4 {
 .viewbody .family_study .half-width * {
   margin: 0 !important;
 }
+.omim_id.half-width p {
+  margin: 0;
+}
 /** ----------------------------------------------------------- */
 /** PubMed search box &amp; suggest */
 .pubmed-search-box {
