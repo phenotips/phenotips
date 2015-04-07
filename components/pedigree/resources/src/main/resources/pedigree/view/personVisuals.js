@@ -14,7 +14,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     initialize: function($super, node, x, y) {
         //var timer = new Timer();
     	//console.log("person visuals");
-        $super(node, x, y);    	
+        $super(node, x, y);
+        this._linkLabel = null;
+        this._linkArea = null;
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
@@ -601,7 +603,37 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         this.drawLabels();
     },
-       
+
+    /**
+     * Returns this Person's PhenoTips profile link label
+     *
+     * @method getLinkLabel
+     * @return {Raphael.el}
+     */
+    getLinkLabel: function() {
+        return this._linkLabel;
+    },
+
+    /**
+     * Updates the PhenoTips profile link label
+     *
+     * @method updateLinkLabel
+     */
+    updateLinkLabel: function() {
+        this._linkArea && this._linkArea.remove();
+        this._linkLabel && this._linkLabel.remove();
+        if (this.getNode().getPhenotipsPatientId() == "") {
+            this._linkLabel = null;
+        } else {
+            this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditor.attributes.label);
+            this._linkLabel.node.setAttribute("class","nodeTextLink");
+            this._linkLabel.addGapAfter = true;
+            var patientURL = this.getNode().getPhenotipsPatientURL();
+            this._linkLabel.click(function () { window.open(patientURL); })
+        }
+        this.drawLabels();
+    },
+
     /**
      * Returns this Person's comments label
      *
@@ -690,6 +722,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         for(var i = 0; i<labels.length; i++) {
             labels[i].stop().animate({"y": labels[i].oy + shift}, 200,">");
         }
+        this._linkArea && this._linkArea.stop().animate({"y": this._linkArea.oy + shift}, 200,">");
     },
 
     /**
@@ -699,10 +732,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     unshiftLabels: function() {
         var labels = this.getLabels();
-        var firstLable = this._childlessStatusLabel ? 1 : 0;
         for(var i = 0; i<labels.length; i++) {
             labels[i].stop().animate({"y": labels[i].oy}, 200,">");
         }
+        this._linkArea && this._linkArea.stop().animate({"y": this._linkArea.oy}, 200,">");
     },
 
     /**
@@ -713,6 +746,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getLabels: function() {
         var labels = editor.getPaper().set();
+        this.getLinkLabel() && labels.push(this.getLinkLabel());
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());        
@@ -734,7 +768,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
                 
-        var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
+        var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset + 15;
         for (var i = 0; i < labels.length; i++) {
             var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
             var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
@@ -745,7 +779,24 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             labels[i].toBack();
             if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
                 startY = labels[i].getBBox().y2 + 11;
+                if (labels[i].addGapAfter) {
+                    startY += 4;
+                }
             }
+        }
+        // a hack for node links which should be clickable without hoverbox obscuring them and making them move
+        if (this._linkLabel) {
+            this._linkArea && this._linkArea.remove();
+            var boundingBox = this._linkLabel.getBBox();
+            var patientURL = this.getNode().getPhenotipsPatientURL();
+            this._linkArea = editor.getPaper().rect(boundingBox.x-10, boundingBox.y-2, boundingBox.width+20, boundingBox.height+4).attr({
+                fill: "#F00",
+                opacity: 0,
+                cursor: "pointer"
+              }).click(function () { window.open(patientURL); });
+            this._linkArea.oy = (this._linkArea.attr("y") - selectionOffset);
+            this._linkArea.toFront();
+            this.getLinkLabel().toFront();
         }
         //if(!editor.isUnsupportedBrowser())
         //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
@@ -785,7 +836,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getAllGraphics: function($super) {
         //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-        return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+        return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this._linkArea, this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
     },
 
     /**
