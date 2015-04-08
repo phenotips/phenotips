@@ -31,6 +31,7 @@ PROP_dmgFile="${project.build.finalName}.dmg"
 PROP_bundleDir="${bundleDir}"
 PROP_includeApplicationsSymlink="${includeApplicationsSymlink}"
 PROP_internetEnable="${internetEnable}"
+PROP_codesignCertCommonName="${codesignCertCommonName}"
 
 [ -n "$PROP_workDir" -a -d "$PROP_workDir" ] ||
   { echo "[ERROR] Invalid work directory \"$PROP_workDir\""; exit 1; }
@@ -70,6 +71,8 @@ else
 fi
 
 SetFile -a B "$PROP_bundleDir" &>/dev/null
+
+codesign -s "$PROP_codesignCertCommonName" "$PROP_bundleDir" &>/dev/null
 
 function createDiskImage {
   local dmgFile dmgFormat
