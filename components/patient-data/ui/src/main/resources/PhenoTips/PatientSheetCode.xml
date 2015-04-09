@@ -2195,9 +2195,9 @@ document.observe('xwiki:dom:loaded', function() {
 
   $$('.chapter &gt; h2').each(function(item){
     var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg">&lt;/span>&amp;nbsp;';
-    var chapterShow = new Element('button', {'class' : 'tool button secondary'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
+    var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+"$services.localization.render('phenotips.patientSheet.expandSection')");
     var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg">&lt;/span>&amp;nbsp;';
-    var chapterHide = new Element('button', {'class' : 'tool button secondary'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+    var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+"$services.localization.render('phenotips.patientSheet.collapseSection')");
     var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
     var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
     var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
