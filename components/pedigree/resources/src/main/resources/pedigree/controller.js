@@ -536,7 +536,7 @@ var Controller = Class.create({
 
                                 var patientJSONObject = loadedPatientData[modValue];
                                 var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
-                                if (!genderOk) {
+                                if (!genderOk && !event.memo.noUndoRedo) {
                                     alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
                                 }
 
