@@ -14,7 +14,10 @@ VersionUpdater = Class.create( {
                                     "func":       "updateId"},
                                   { "comment":    "proband link",
                                     "introduced": "Mar 2015",
-                                    "func":       "updateNode0ProbandLink"}
+                                    "func":       "updateNode0ProbandLink"},
+                                  { "comment":    "version info",
+                                    "introduced": "Apr 2015",
+                                    "func":       "updateJSONVersionInfo"}
                                 ];
     },
 
@@ -37,8 +40,11 @@ VersionUpdater = Class.create( {
      * - returns null if there were no changes; returns new JSON if there was a change
      */
     updateGroupNodeComments: function(pedigreeJSON) {
-        var change = false;
         var data = JSON.parse(pedigreeJSON);
+        if (data.hasOwnProperty("JSON_version")) {
+            return null;
+        }
+        var change = false;
         for (var i = 0; i < data.GG.length; i++) {
             var node = data.GG[i];
             
@@ -61,8 +67,11 @@ VersionUpdater = Class.create( {
      * - returns null if there were no changes; returns new JSON if there was a change
      */
     updateAdoptedStatus: function(pedigreeJSON) {
-        var change = false;
         var data = JSON.parse(pedigreeJSON);
+        if (data.hasOwnProperty("JSON_version")) {
+            return null;
+        }
+        var change = false;
         for (var i = 0; i < data.GG.length; i++) {
             var node = data.GG[i];
 
@@ -133,13 +142,20 @@ VersionUpdater = Class.create( {
         // check if at least one node is linked to the current patient. 
         // Iff none are, assumenode 0 is the proband and link it to the patient
 
-        if (editor.isFamilyPage()) {
+        var data = JSON.parse(pedigreeJSON);
+        if (data.hasOwnProperty("JSON_version")) {
             return null;
         }
 
-        var currentPatient = XWiki.currentDocument.page;
+        if (editor.isFamilyPage()) {
+            if (data.hasOwnProperty("probandNodeID")) {
+                return null;
+            }
+            data["probandNodeID"] = -1;
+            return JSON.stringify(data);
+        }
 
-        var data = JSON.parse(pedigreeJSON);
+        var currentPatient = XWiki.currentDocument.page;
 
         //look through all person nodes for a node linked to the current patient
         for (var i = 0; i < data.GG.length; i++) {
@@ -148,35 +164,58 @@ VersionUpdater = Class.create( {
             if (node.hasOwnProperty("prop")) {
                 if (node.prop.hasOwnProperty("phenotipsId") ) {
                     if (node.prop.phenotipsId == currentPatient) {
-                        return null;
+
+                        // if there is no proband make this node the proband
+                        // if ther eis proband, we are done
+                        if (!data.hasOwnProperty("probandNodeID")) {
+                            data["probandNodeID"] = i;
+                            return JSON.stringify(data);
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 }
             }
         }
 
-        var change = false;
+        // no nodes are linked ot the current patient. Either link the proband node or node 0 if no
+        // proband is defined
+        if (!data.hasOwnProperty("probandNodeID")) {
+            var probandID = 0;
+            data["probandNodeID"] = 0;
+        } else {
+            var probandID = data["probandNodeID"];
+        }
 
         // assign node with id = 0 to be the proband
         for (var i = 0; i < data.GG.length; i++) {
             var node = data.GG[i];
 
-            if (node.id == 0) {
+            if (node.id == probandID) {
                 if (!node.hasOwnProperty("prop")) {
                     node.prop = {};
                 }
                 if (node.prop.hasOwnProperty("phenotipsId")) {
                     alert("Loaded pedigree is inconsistent - assumed proband node is linked to a different patient");
+                    return null;
                 } else {
                     node.prop.phenotipsId = currentPatient;
-                    change = true;
                     break;
                 }
             }
         }
-
-        if (!change)
-            return null;
-
         return JSON.stringify(data);
-    }
+    },
+
+    updateJSONVersionInfo: function(pedigreeJSON) {
+        var data = JSON.parse(pedigreeJSON);
+        if (data.hasOwnProperty("JSON_version")) {
+            return null;
+        }
+        // all updates ran before htis point should bring JSON to version "1.0", which
+        // will be recorded here
+        data["JSON_version"] = "1.0";
+        return JSON.stringify(data);
+    },
 });

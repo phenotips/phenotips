@@ -56,16 +56,17 @@ var PatientDataLoader = Class.create( {
     initialize: function() {
         this._patientData = {};    // ...as last loaded from PhenoTips
     },
-
     load: function(patientList, dataProcessorWhenReady) {
         var _this = this;
         var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL(patientList);
+        document.fire("pedigree:load:start");
         new Ajax.Request(patientDataJsonURL, {
             method: "GET",
             onSuccess: this._onPatientDataReady.bind(this),
             onComplete: dataProcessorWhenReady ? function() {
-                dataProcessorWhenReady(_this._patientData)
-            } : {}
+                dataProcessorWhenReady(_this._patientData);
+                document.fire("pedigree:load:finish");
+            } : function() { document.fire("pedigree:load:finish"); }
         });
     },
 
@@ -184,33 +185,35 @@ var SaveLoadEngine = Class.create( {
         if (!noUndo) {
             var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-            if (editor.isFamilyPage()) {
-                // if no nodes are linked to any patient documents, and there is only one family member
-                // => auto-assign the only family member to the assumed proband node. This case is only
-                //    possible when  apedigree is created form a template or imported, as any family
-                //    pedigree on disk will always have at least one node linked to a patient
-                //
-                // TODO: code below assumes template proband is node with id 0 and/or imported proband is node with id 0,
-                //       which may change in the future
+            if (allLinkedNodes.linkedPatients.length == 0) {
+                if (editor.isFamilyPage()) {
+                    // if no nodes are linked to any patient documents, and there is only one family member
+                    // => auto-assign the only family member to the assumed proband node. This case is only
+                    //    possible when  apedigree is created form a template or imported, as any family
+                    //    pedigree on disk will always have at least one node linked to a patient
+                    //
+                    // TODO: code below assumes template proband is node with id 0 and/or imported proband is node with id 0,
+                    //       which may change in the future
 
-                var familyMembers = editor.getCurrentFamilyPageFamilyMembers();
+                    var familyMembers = editor.getCurrentFamilyPageFamilyMembers();
 
-                if (familyMembers.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
-                    var probandProperties = editor.getGraph().getProperties(0);
-                    probandProperties["phenotipsId"] = familyMembers[0].id;
-                    editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
+                    if (familyMembers.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
+                        var probandProperties = editor.getGraph().getProperties(0);
+                        probandProperties["phenotipsId"] = familyMembers[0].id;
+                        editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
+                    }
                 }
-            }
-            else {
-                // similar to family page, if no node is linked to the current patient link assumed proband node
-                // to current patient.
-                var probandProperties = editor.getGraph().getProperties(editor.getGraph().getProbandId());
-                if (!probandProperties.hasOwnProperty("phenotipsId")) {
-                    // TODO: it is currently guaranteed that a node is linked to editor.getGraph().getCurrentPatientId()
-                    //       it will be the proband. But in theory may want to check if non-proband node is linked
-                    //       to current documen, which implies some kind of data inconsistency
-                    probandProperties["phenotipsId"] = editor.getGraph().getCurrentPatientId();
-                    editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
+                else {
+                    // similar to family page, if no node is linked to the current patient link assumed proband node
+                    // to current patient.
+                    var probandProperties = editor.getGraph().getProperties(editor.getGraph().getProbandId());
+                    if (!probandProperties.hasOwnProperty("phenotipsId")) {
+                        // TODO: it is currently guaranteed that a node is linked to editor.getGraph().getCurrentPatientId()
+                        //       it will be the proband. But in theory may want to check if non-proband node is linked
+                        //       to current documen, which implies some kind of data inconsistency
+                        probandProperties["phenotipsId"] = editor.getGraph().getCurrentPatientId();
+                        editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
+                    }
                 }
             }
 
@@ -248,7 +251,9 @@ var SaveLoadEngine = Class.create( {
 
         var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
         // remove invisible elements to slim down svg
-        svgText = svgText.replace(/<[^<>]+display: none;[^<>]+>/, "");
+        svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+><\/\w+>/g, "");
+        // remove elements with opacity==0 to slim down svg
+        svgText = svgText.replace(/<[^<>]+"opacity: ?0;[^<>]+><\/\w+>/g, "");
 
         var familyServiceURL = editor.getExternalEndpoint().getSavePedigreeURL();
         new Ajax.Request(familyServiceURL, {
@@ -256,31 +261,17 @@ var SaveLoadEngine = Class.create( {
             method: 'POST',
             onCreate: function() {
                 me._saveInProgress = true;
-                // Disable save and close buttons during a save
-                var closeButton = $('action-close');
-                var saveButton = $('action-save');
-                Element.addClassName(saveButton, "disabled-menu-item");
-                Element.removeClassName(saveButton, "menu-item");
-                Element.addClassName(saveButton, "no-mouse-interaction");
-                Element.addClassName(closeButton, "disabled-menu-item");
-                Element.removeClassName(closeButton, "menu-item");
-                Element.addClassName(closeButton, "no-mouse-interaction");
+                // disable user interaction while save is in progress
+                document.fire("pedigree:load:start");
             },
             onComplete: function() {
                 me._saveInProgress = false;
+                // Re-enable user-interaction
+                document.fire("pedigree:load:finish");
                 if (!me._notSaved) {
                     var actionAfterSave = editor.getAfterSaveAction();
                     actionAfterSave && actionAfterSave();
                 }
-                // Enable save and close buttons after a save
-                var closeButton = $('action-close');
-                var saveButton = $('action-save');
-                Element.addClassName(saveButton, "menu-item");
-                Element.removeClassName(saveButton, "disabled-menu-item");
-                Element.removeClassName(saveButton, "no-mouse-interaction");
-                Element.addClassName(closeButton, "menu-item");
-                Element.removeClassName(closeButton, "disabled-menu-item");
-                Element.removeClassName(closeButton, "no-mouse-interaction");
             },
             onSuccess: function(response) {
                 if (response.responseJSON) {

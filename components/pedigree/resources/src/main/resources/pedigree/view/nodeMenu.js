@@ -610,7 +610,7 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
             var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
-            var newPatientButton = new Element('span', {'class': 'patient-link-remove patient-create-button'}).update("Create new");
+            var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
             newPatientButton.observe('click', function(event) {
 
                 var _this = this;
@@ -625,9 +625,11 @@ NodeMenu = Class.create({
                 }
 
                 var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                document.fire("pedigree:load:start");
                 new Ajax.Request(createPatientURL, {
                     method: "GET",
-                    onSuccess: _onPatientCreated
+                    onSuccess: _onPatientCreated,
+                    onComplete: function() { document.fire("pedigree:load:finish"); }
                 });
             });
             patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
@@ -635,9 +637,8 @@ NodeMenu = Class.create({
 
             var patientLinkContainer = new Element('div', { 'class': 'patient-link-container'});
             var patientLink = new Element('a', {'class': 'patient-link-url', 'target': "_blank", name: data.name + "_link"});
-            var removeLink = new Element('span', {'class': 'patient-link-remove'});
+            var removeLink = new Element('span', {'class': 'patient-menu-button patient-link-remove'});
             removeLink.observe('click', function(event) {
-                //Event.fire(patientPicker, 'custom:selection:changed', { "useValue": { "phenotipsid": "" } });
                 Event.fire(patientPicker, 'custom:selection:changed', { "useValue": "" });
                 _this.reposition();
             });
@@ -676,6 +677,27 @@ NodeMenu = Class.create({
               }
             });
             this._attachFieldEventListeners(genePicker, ['custom:selection:changed']);
+            return result;
+        },
+        'button' : function (data ) {
+            var result = this._generateEmptyField(data);
+            var buttonContainer = new Element('div', { 'class': 'button-container'});
+            var classes = 'patient-menu-button patient-generic-button';
+            if (data.cssclass) {
+                classes += " " + data.cssclass;
+            }
+            var button = new Element('span', {'class': classes}).update(data.label);
+            // using nameHolder below is a workaround: existing code uses field.name ot get the name -
+            // but DIVs and SPANs can't have "name" attribute
+            var nameHolder = new Element('input', {'type': 'hidden', 'name': data.name});
+            var _this = this;
+            button.observe('click', function(event) {
+                    Event.fire(nameHolder, 'custom:selection:changed', { "useValue": "" });
+                    _this.reposition();
+                });
+            this._attachFieldEventListeners(nameHolder, ['custom:selection:changed']);
+            buttonContainer.update(button).insert(nameHolder);;
+            result.down('label').update(buttonContainer);
             return result;
         },
         'select' : function (data) {
@@ -1117,12 +1139,15 @@ NodeMenu = Class.create({
                 link.href = new XWiki.Document(value).getURL();
                 link.innerHTML = value;
                 linkContainer.show();
-                if (_this.targetNode.isProband()) {
+                if (_this.targetNode.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
                     linkRemove.hide();
                 } else {
                     linkRemove.show();
                 }
             }
+        },
+        'button' : function (container, value) {
+            // does not depend on input data, nothing to set
         },
         'select' : function (container, value) {
             var target = container.down('select option[value=' + value + ']');
@@ -1229,6 +1254,9 @@ NodeMenu = Class.create({
         'text' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
+        'button' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
         'textarea' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
@@ -1294,6 +1322,9 @@ NodeMenu = Class.create({
             if (target) {
                 target.disabled = disabled;
             }
+        },
+        'button' : function (container, inactive) {
+            // FIXME: Not implemented
         },
         'textarea' : function (container, inactive) {
             // FIXME: Not implemented

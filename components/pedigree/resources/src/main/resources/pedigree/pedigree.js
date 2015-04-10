@@ -8,6 +8,8 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
+        this.INTERNALJSON_VERSION = "1.0";
+
         //this.DEBUG_MODE = true;
         window.editor = this;
 
@@ -157,6 +159,13 @@ var PedigreeEditor = Class.create({
         });
 
         //this.startAutoSave(30);
+    },
+
+    /**
+     * Returns the version of the internal JSON represenations which will be saved to PhenpoTips patient record
+     */
+    getInternalJSONVersion: function() {
+        return this.INTERNALJSON_VERSION;
     },
 
     /**
@@ -660,7 +669,15 @@ var PedigreeEditor = Class.create({
                 'type' : 'cancerlist',
                 'tab' : 'Cancers',
                 'function' : 'setCancers'
-            }
+            },
+            {
+                'name' : 'setproband',
+                'label' : 'Set this person to be the proband node',
+                'type' : 'button',
+                'tab' : 'Clinical',
+                'cssclass' : 'unintrusive-button menu-fullWidthbutton',
+                'function' : 'assignProband'
+            },
         ], ["Personal", "Clinical", "Cancers"]);
     },
 
