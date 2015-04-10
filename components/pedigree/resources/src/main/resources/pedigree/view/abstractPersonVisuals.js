@@ -118,8 +118,10 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     grow: function($super) {
         $super();
-        if (this._callback)
-            throw "Assertion failed: grow() during animation";
+        if (this._callback) {
+            // throw "Assertion failed: grow() during animation";
+            return;
+        }
         if (this.glow) return;
         this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
         if (this.marked) this.marked.hide();
@@ -138,14 +140,14 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Marks the node in  away different from glow
+     * Marks the node in a way different from glow
      *
-     * @method grow
+     * @method markPermanently
      */
     markPermanently: function() {
         //console.log("marking " + this.getNode().getID());
         if (this._callback && !this._toMark) {
-            // trying to mark during animation - need ot wait until animation finishes to mark @ the final location
+            // trying to mark during animation - need to wait until animation finishes to mark @ the final location
             this._toMark = true;
             return;
         }
@@ -156,11 +158,31 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     /**
      * Unmarks the node
      *
-     * @method shrink
+     * @method unmark
      */
     unmark: function() {
         this.marked && this.marked.remove();
         delete this.marked;
+    },
+
+    /**
+     * Marks the node as corresponding to the current patient
+     *
+     * @method markAsCurrent
+     */
+    markAsCurrent: function() {
+        if (this.markedCurrent) return;
+        this.markedCurrent = this._genderShape.glow({width: 20, fill: true, opacity: 0.4, color: "#999999"});
+    },
+
+    /**
+     * Unmarks the node
+     *
+     * @method unmarkCurrent
+     */
+    unmarkCurrent: function() {
+        this.markedCurrent && this.markedCurrent.remove();
+        delete this.markedCurrent;
     },
 
     /**
@@ -359,6 +381,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     remove: function($super) {
         this.marked && this.marked.remove();
+        this.markedCurrent && this.markedCurrent.remove();
         $super();
     }
 });

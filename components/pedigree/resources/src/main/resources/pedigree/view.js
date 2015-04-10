@@ -491,6 +491,11 @@ var View = Class.create({
         this._currentMarkedNew = [];
     },
 
+    markNode: function(nodeID) {
+        this.getNode(nodeID).getGraphics().markPermanently();
+        this._currentMarkedNew.push(nodeID);
+    },
+
     getValidDragTargets: function(sourceNodeID, hoverType) {
         var result = [];
         switch (hoverType) {
@@ -667,8 +672,7 @@ var View = Class.create({
         if (changeSet.hasOwnProperty("highlight")) {
             for (var i = 0; i < changeSet.highlight.length; i++) {
                 var nextHighlight = changeSet.highlight[i];
-                this.getNode(nextHighlight).getGraphics().markPermanently();
-                this._currentMarkedNew.push(nextHighlight);
+                this.markNode(nextHighlight);
             }
         }
 

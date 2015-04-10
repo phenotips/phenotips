@@ -909,12 +909,19 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
 
     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
     if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+        var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
+        editor.getView().unmarkAll();
+        editor.getView().markNode(currentLinkedNodeID);
+        var onCancel = function() {
+            editor.getView().unmarkAll();
+            onCancelAssignPatient();
+        }
         editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already represented by a different node in this pedigree. "+
                                                "Do you want to link the patient to this node? "+
                                                "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
                                                "Re-link patient " + linkID + " to this node?",
                                                'blank properties of the pedigree node currently linked to the patient', true,
-                                               "OK", callbackOnValid, "Cancel", onCancelAssignPatient );
+                                               "OK", callbackOnValid, "Cancel", onCancel );
         return;
     }
 
