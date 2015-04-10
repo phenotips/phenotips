@@ -865,6 +865,7 @@
     var pointer = this;
 
     this.killTimeout();
+    this.clearHighlight();
 
     // create holding div
     //
