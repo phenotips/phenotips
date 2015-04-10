@@ -588,9 +588,6 @@ var Person = Class.create(AbstractPerson, {
      */
     getDisordersForExport: function() {
         var exportDisorders = this._disorders.slice(0);
-        for (var i = 0; i < exportDisorders.length; i++) {
-            exportDisorders[i] = Disorder.desanitizeID(exportDisorders[i]);
-        }
         return exportDisorders;
     },
 
@@ -673,9 +670,6 @@ var Person = Class.create(AbstractPerson, {
      */
     getHPOForExport: function() {
         var exportHPOs = this._hpo.slice(0);
-        for (var i = 0; i < exportHPOs.length; i++) {
-            exportHPOs[i] = HPOTerm.desanitizeID(exportHPOs[i]);
-        }
         return exportHPOs;
     },
 

@@ -64,7 +64,7 @@
       #foreach ($color in $disorderColors.entrySet())
         &lt;li class="pedigree-disorder-item" style="list-style-type: none;"&gt;
           &lt;span class="pedigree-disorder-color" style="color: $color.value; $listyle"&gt;⬤&lt;/span&gt;
-          &lt;span class="pedigree-disorder-name"&gt;$disorderNames[$color.key]&lt;/span&gt;
+          &lt;span class="pedigree-disorder-name"&gt;$escapetool.xml($disorderNames[$color.key])&lt;/span&gt;
         &lt;/li&gt;
       #end
       &lt;/ul&gt;

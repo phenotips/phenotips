@@ -11,10 +11,10 @@ var Disorder = Class.create( {
     initialize: function(disorderID, name, callWhenReady) {
         // user-defined disorders
         if (name == null && !isInt(disorderID)) {
-            name = Disorder.desanitizeID(disorderID);
+            name = disorderID;
         }
         
-        this._disorderID = Disorder.sanitizeID(disorderID);
+        this._disorderID = disorderID;
         this._name       = name ? name : "loading...";
 
         if (!name && callWhenReady)
@@ -59,23 +59,7 @@ var Disorder = Class.create( {
     }
 });
 
-/*
- * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
- * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to some underscores.
- */
-Disorder.sanitizeID = function(disorderID) {
-    if (isInt(disorderID))
-        return disorderID;
-    var temp = disorderID.replace(/[\(\[]/g, '_L_');
-    temp = temp.replace(/[\)\]]/g, '_J_');
-    return temp.replace(/[^a-zA-Z0-9,;_\-*]/g, '__');
-}
 
-Disorder.desanitizeID = function(disorderID) {
-    var temp = disorderID.replace(/__/g, " ");
-    temp = temp.replace(/_L_/g, "(");
-    return temp.replace(/_J_/g, ")");
-}
 
 Disorder.getOMIMServiceURL = function() {
     return new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain");
