@@ -138,8 +138,10 @@ var Controller = Class.create({
     handleClearGraph: function(event)
     {
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
-        var changeSet = editor.getGraph().clearAll();
+        var changeSet = editor.getGraph().clearAll(editor.isFamilyPage());
         editor.getView().applyChanges(changeSet, true);
+
+        editor.getView().unmarkAll();
 
         editor.getWorkspace().centerAroundNode(0, false);
 
@@ -477,8 +479,30 @@ var Controller = Class.create({
                         editor.getView().applyChanges(changeSet, true);
                     }
                     node.assignProperties(editor.getGraph().getProperties(nodeID));
-                }
 
+                    if (!event.memo.noUndoRedo) {
+                        editor.getActionStack().addState( event );
+                    }
+                }
+                else
+                if (modificationType == "assignProband") {
+
+                    var oldProbandID = editor.getGraph().getProbandId();
+
+                    editor.getGraph().setProbandId(nodeID);
+
+                    editor.getNode(nodeID).redrawProbandStatus();
+                    if (oldProbandID >= 0) {
+                        editor.getNode(oldProbandID).redrawProbandStatus();
+                    }
+
+                    editor.getNodeMenu().update();
+
+                    if (!event.memo.noUndoRedo) {
+                        editor.getActionStack().addState( event );
+                    }
+                }
+                else
                 if (modificationType == "trySetPhenotipsPatientId") {
 
                     var setLink = function(clearOldData) {
@@ -488,6 +512,24 @@ var Controller = Class.create({
                         // load node properties from the linked patient's phenotips document
 
                         var onDataReady = function(loadedPatientData) {
+                            // check if the value used is equal is already linked to some other node.
+                            // If it is, unlink and, optionally, clean that node's properties
+                            var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+                            if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(modValue)) {
+                                var oldRepresentingNodeID = allLinkedNodes.patientToNodeMapping[modValue]; 
+
+                                var oldNode = editor.getView().getNode(oldRepresentingNodeID);
+                                oldNode.setPhenotipsPatientId("");
+                                if (clearOldData) {
+                                    var oldProperties = oldNode.getPatientIndependentProperties();
+                                } else {
+                                    var oldProperties = oldNode.getProperties();
+                                }
+                                editor.getGraph().setProperties( oldRepresentingNodeID, oldProperties );
+                                var changeSet = {"removed": [oldRepresentingNodeID], "new": [oldRepresentingNodeID]};
+                                editor.getView().applyChanges(changeSet, true);
+                            }
+
                             // TODO: a very similar piece of code is used in saveLoadEngine.js, see _finalizeCreateGraph();
                             //       check if some refactoring/reusing is posible
                             if (loadedPatientData !== null && loadedPatientData.hasOwnProperty(modValue)) {
@@ -504,13 +546,7 @@ var Controller = Class.create({
                                 if (clearOldData) {
                                     // preserve gender and some other pedigree-specific properties which
                                     // were manually set and were not loaded from a node
-                                    // TODO: review the set of properties retained
-                                    var clearedProperties = { "gender" : node.getGender(),
-                                                              "adoptedStatus" : node.getAdopted(),
-                                                              "twinGroup" : node._twinGroup,
-                                                              "monozygotic" : node._monozygotic,
-                                                              "nodeNumber": node.getPedNumber() };
-
+                                    var clearedProperties = node.getPatientIndependentProperties();
                                     editor.getGraph().setProperties(nodeID, clearedProperties);
                                     node.assignProperties(clearedProperties);
                                 } else {
@@ -518,22 +554,6 @@ var Controller = Class.create({
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
                             }
-
-                            /* TODO: need the (modified) code below when changing proband (need to enable [remove connection]
-                                     button for proband nodes on non-family pages first)
-                            if (modValue == editor.getGraph().getCurrentPatientId()) {
-                                // mark to update old proband
-                                var oldProbandId = editor.getGraph().getProbandId();
-
-                                editor.getGraph().setProbandId(nodeID);
-
-                                var oldProbandNode = editor.getView().getNode(oldProbandId);
-                                oldProbandNode.setPhenotipsPatientId("");
-                                var oldProbandProperties = oldProbandNode.getProperties();
-                                editor.getGraph().setProperties( oldProbandId, oldProbandProperties );
-                            }*/
-                            //var changeSet = {"removed": [nodeID], "new": [nodeID]};
-                            //editor.getView().applyChanges(changeSet, true);
 
                             var changeSet = editor.getGraph().updateYPositioning();
                             editor.getView().applyChanges(changeSet, true);
@@ -562,14 +582,11 @@ var Controller = Class.create({
                         setLink(event.memo.clearOldData);
                     }
                 }
-
+                else
                 if (modificationType == "makePlaceholder") {
                     // TODO
                 }
             }
-
-        if (!event.memo.noUndoRedo)
-            editor.getActionStack().addState( event );
     },
 
     handlePersonDragToNewParent: function(event)
@@ -892,9 +909,12 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
 
     var allLinkedNodes = editor.getGraph().getAllPatientLinks();
     if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
-        editor.getOkCancelDialogue().showError("Patient " + linkID + " is already represented in this pedigree. "+
-                                               "Please remove that connection before connecting the patient to this node.",
-                                               "Can't connect this node to this patient", "OK", onCancelAssignPatient );
+        editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already represented by a different node in this pedigree. "+
+                                               "Do you want to link the patient to this node? "+
+                                               "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
+                                               "Re-link patient " + linkID + " to this node?",
+                                               'blank properties of the pedigree node currently linked to the patient', true,
+                                               "OK", callbackOnValid, "Cancel", onCancelAssignPatient );
         return;
     }
 

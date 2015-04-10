@@ -89,7 +89,8 @@ var TemplateSelector = Class.create( {
         //console.log("observe onTemplateSelected");
         this.dialog.close();
         if (pictureBox.type == 'internal') {
-            editor.getSaveLoadEngine().createGraphFromSerializedData(pictureBox.pedigreeData, false /* add to undo stack */, true /*center around 0*/);
+            var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(pictureBox.pedigreeData);
+            editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */, true /*center around 0*/);
         } else if (pictureBox.type == 'simpleJSON') {
             editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */, true /*center around 0*/);
         }

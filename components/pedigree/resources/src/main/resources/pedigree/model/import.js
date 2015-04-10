@@ -339,7 +339,7 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
 
     PedigreeImport.validateBaseGraph(newG);
     
-    return newG;
+    return {"baseGraph": newG, "probandNodeID": 0};
 }
 
 
@@ -585,7 +585,7 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
 
     PedigreeImport.validateBaseGraph(newG);
 
-    return newG;
+    return {"baseGraph": newG, "probandNodeID": 0};
 }
 
 /* ===============================================================================================
@@ -679,6 +679,8 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
        throw "Unable to import pedigree: input is empty";
    }
 
+   var probandID = null;
+
    var newG = new BaseGraph();
 
    var nameToID            = {};
@@ -712,7 +714,9 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
                if (property == "mother" || property == "father")  // those are processed on the second pass
                    continue;
                
-               if (property == "sex") {
+               if (property == "proband" && probandID === null) {
+                   probandID = pedigreeID;
+               } else if (property == "sex") {
                    var genderString = value.toLowerCase();
                    if( genderString == "female" || genderString == "f")
                        properties["gender"] = "F";
@@ -831,7 +835,11 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
 
    PedigreeImport.validateBaseGraph(newG);
 
-   return newG;
+   if (probandID === null) {
+       probandID = 0; // default to 0 if not defined explicitly
+   }
+
+   return {"baseGraph": newG, "probandNodeID": probandID};
 }
 
 
@@ -1209,7 +1217,7 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExter
 
    PedigreeImport.validateBaseGraph(newG);
 
-   return newG;
+   return {"baseGraph": newG, "probandNodeID": 0};
 }
 
 

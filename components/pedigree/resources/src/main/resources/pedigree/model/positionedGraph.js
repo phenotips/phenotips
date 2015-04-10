@@ -2908,6 +2908,9 @@ PositionedGraph.prototype = {
                     // count number of new lines
                     numLabelLines += ((comments.match(/\n/g) || []).length + 1);
                 }
+                if (this.GG.properties[person].hasOwnProperty("phenotipsId")) {
+                    numLabelLines++;
+                }
                 var dob = this.GG.properties[person].hasOwnProperty("dob") ? new PedigreeDate(this.GG.properties[person].dob) : null;
                 var dod = this.GG.properties[person].hasOwnProperty("dod") ? new PedigreeDate(this.GG.properties[person].dod) : null;
                 if (dob !== null && dob.isComplete()) {

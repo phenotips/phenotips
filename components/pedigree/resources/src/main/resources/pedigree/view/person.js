@@ -79,6 +79,13 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Redraws gender shape withor without proband indicators
+     */
+    redrawProbandStatus: function() {
+        this.getGraphics().setGenderGraphics();
+    },
+
+    /**
      * Returns the id of the PhenoTips patient represented by this node.
      * Returns an empty string for nodes not assosiated with any PhenoTips patients.
      *
@@ -1019,7 +1026,8 @@ var Person = Class.create(AbstractPerson, {
             hpo_positive:  {value : hpoTerms },
             nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
             cancers:       {value : this.getCancers() },
-            phenotipsid:   {value : this.getPhenotipsPatientId() }
+            phenotipsid:   {value : this.getPhenotipsPatientId() },
+            setproband:    {value : "allow", inactive: this.isProband() }
         };
     },
 
@@ -1087,6 +1095,20 @@ var Person = Class.create(AbstractPerson, {
      },
 
      /**
+      * These properties are related to pedigree structure, but not to PhenoTips patient.
+      * 
+      * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+      */
+     getPatientIndependentProperties: function() {
+         // TODO: review the set of properties retained
+         return  { "gender"        : this.getGender(),
+                   "adoptedStatus" : this.getAdopted(),
+                   "twinGroup"     : this._twinGroup,
+                   "monozygotic"   : this._monozygotic,
+                   "nodeNumber"    : this.getPedNumber() };
+     },
+
+     /**
       * Applies the properties found in info to this node.
       *
       * @method assignProperties
@@ -1095,6 +1117,13 @@ var Person = Class.create(AbstractPerson, {
       */
      assignProperties: function($super, info) {
         if($super(info)) {
+
+            // drawLabels() method may be slow yet is called after each label is generated
+            // after calls to setFirstname(), setComments(), etc. This speedup disables
+            // it while initial properties are set and it is later execute once after
+            // all properties have been set and labels have been generated
+            this._speedup_NODRAWLABELS = true;
+
             if(info.phenotipsId) {
                 if (this.getPhenotipsPatientId() != info.phenotipsId) {
                     this.setPhenotipsPatientId(info.phenotipsId);
@@ -1246,6 +1275,8 @@ var Person = Class.create(AbstractPerson, {
             } else {
                 this.setLostContact(false);
             }
+            this._speedup_NODRAWLABELS = false;
+            this.getGraphics().drawLabels();
             return true;
         }
         return false;

@@ -636,14 +636,7 @@
 .menu-box .suggest-patients {
   width: 64% !important;
 }
-.menu-box .patient-create-button {
-  margin-top: 3px !important;
-  font-size: 14px !important;  /* make sure button size is the same and does not grow with different font sizes and break the layout */
-}
-.menu-box .patient-create-button:hover {
-  background: #B1C2E2 !important;
-}
-.menu-box .patient-link-remove {
+.menu-box .patient-menu-button {
   margin-right: 5px;
   margin-top: -2px;
   float: right;
@@ -659,6 +652,27 @@
 }
 .menu-box .patient-link-remove:hover {
   background: #E6CE85;
+}
+.menu-box .patient-create-button {
+  margin-top: 3px !important;
+  font-size: 14px !important;  /* make sure button size is the same and does not grow with different font sizes and break the layout */
+}
+.menu-box .patient-create-button:hover {
+  background: #B1C2E2;
+}
+.menu-box .patient-generic-button {
+  float: none !important;
+  font-weight: initial;
+}
+.menu-box .patient-generic-button:hover {
+  background: #B1C2E2;
+}
+.menu-box .unintrusive-button {
+  background: #e0e0e0;
+}
+.menu-box .menu-fullWidthbutton {
+  display: block;
+  text-align: center;
 }
 
 /* ===========================================
@@ -693,11 +707,11 @@
   top: auto;
   bottom: -8px;
 }
-.nodeTextLink {
+.pedigree-nodePatientTextLink {
   cursor: pointer;
   fill: #00498A;
 }
-.nodeTextLink:hover {
+.pedigree-nodePatientTextLink:hover {
   text-decoration: underline;
 }
 .node-type-options {

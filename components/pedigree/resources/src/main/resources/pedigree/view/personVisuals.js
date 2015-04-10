@@ -90,6 +90,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getGenderShape().transform(["...s", 1.08]);
             this.getGenderShape().attr("stroke-width", 5.5);
         }
+
+        //TODO: if node is current node and pedigree is not on the family page: mark
+
         if(!editor.isReadOnlyMode() && this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }
@@ -626,11 +629,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if (this.getNode().getPhenotipsPatientId() == "") {
             this._linkLabel = null;
         } else {
-            this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditor.attributes.label);
-            this._linkLabel.node.setAttribute("class","nodeTextLink");
+            this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditor.attributes.label); 
+            this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
             this._linkLabel.addGapAfter = true;
             var patientURL = this.getNode().getPhenotipsPatientURL();
-            this._linkLabel.click(function () { window.open(patientURL); })
+            //this._linkLabel.click(function () { window.open(patientURL); })
+            this._linkLabel.attr({ "href": patientURL, "target": "blank"});  // note: "blank" not "_blank" as Raphael processes this in its own way
+            this._linkLabel.attr("fill", "#00498A");
+            this._linkLabel.node.id = "link_" + patientURL;
         }
         this.drawLabels();
     },
@@ -762,6 +768,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method drawLabels
      */
     drawLabels: function() {
+        // this method may be slow yet is called after each label is generated;
+        // skip it while initial properties are set and execute once after all labels have been generated 
+        if (this.getNode()._speedup_NODRAWLABELS) return;
+
         var labels = this.getLabels();
         var selectionOffset = this._labelSelectionOffset();
         var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditor.attributes.label['font-size'] : 0;
@@ -790,11 +800,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this._linkArea && this._linkArea.remove();
             var boundingBox = this._linkLabel.getBBox();
             var patientURL = this.getNode().getPhenotipsPatientURL();
-            this._linkArea = editor.getPaper().rect(boundingBox.x-10, boundingBox.y-2, boundingBox.width+20, boundingBox.height+4).attr({
+            this._linkArea = editor.getPaper().rect(boundingBox.x-50, boundingBox.y-3, boundingBox.width+100, boundingBox.height+6).attr({
                 fill: "#F00",
-                opacity: 0,
-                cursor: "pointer"
-              }).click(function () { window.open(patientURL); });
+                opacity: 0
+              });
             this._linkArea.oy = (this._linkArea.attr("y") - selectionOffset);
             this._linkArea.toFront();
             this.getLinkLabel().toFront();
