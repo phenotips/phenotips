@@ -91,8 +91,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getGenderShape().attr("stroke-width", 5.5);
         }
 
-        //TODO: if node is current node and pedigree is not on the family page: mark
-
         if(!editor.isReadOnlyMode() && this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }
@@ -101,6 +99,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateEvaluationLabel();
         if (this.getNode().getLifeStatus() == "unborn"){
             this.updateLifeStatusShapes("unborn");
+        }
+
+        // highlight current patient
+        if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+            this.markAsCurrent();
         }
     },
 
