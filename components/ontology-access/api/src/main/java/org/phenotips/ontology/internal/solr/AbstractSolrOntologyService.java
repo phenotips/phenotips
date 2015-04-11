@@ -214,6 +214,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     {
         try {
             SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
+            this.logger.debug("Searching [{}] with query [{}]", getName(), enhancedParams);
             QueryResponse response = this.externalServicesAccess.getServer().query(enhancedParams);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
@@ -221,6 +222,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
                 enhancedParams =
                     SolrQueryUtils.applySpellcheckSuggestion(enhancedParams, response.getSpellCheckResponse()
                         .getCollatedResult());
+                this.logger.debug("Searching [{}] with spellchecked query [{}]", getName(), enhancedParams);
                 SolrDocumentList spellcheckResults =
                     this.externalServicesAccess.getServer().query(enhancedParams).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
@@ -248,6 +250,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         params.set(CommonParams.ROWS, "0");
         SolrDocumentList results;
         try {
+            this.logger.debug("Counting terms matching [{}] in [{}]", query, getName());
             results = this.externalServicesAccess.getServer().query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
