@@ -136,7 +136,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         } else {
             String bq = new MessageFormat("nameSpell:{0}*^14 synonymSpell:{0}*^7 text:{0}*^1 textSpell:{0}*^2").format(
                 new String[] { lastWord });
-            q = new MessageFormat("{0}* textSpell:{1}*").format(new String[] { escapedQuery, lastWord });
+            q = new MessageFormat("{0} textSpell:{1}*").format(new String[] { escapedQuery, lastWord });
             params.add(fqStr, StringUtils.defaultIfBlank(customFq, "term_category:HP\\:0000118"));
             params.add("bq", bq);
         }
