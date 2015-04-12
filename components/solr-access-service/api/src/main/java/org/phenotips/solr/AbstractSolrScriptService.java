@@ -47,6 +47,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.MapSolrParams;
+import org.apache.solr.common.params.SpellingParams;
 import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
 
@@ -430,7 +431,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
             result.put(CommonParams.SORT, sort);
         }
         result.put("spellcheck", Boolean.toString(true));
-        result.put("spellcheck.collate", Boolean.toString(true));
+        result.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
         return result;
     }
 

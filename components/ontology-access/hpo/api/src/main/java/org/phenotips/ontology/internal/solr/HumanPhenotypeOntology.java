@@ -41,6 +41,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.params.SpellingParams;
 
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
@@ -92,7 +93,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         String trueStr = "true";
         Map<String, String> params = new HashMap<>();
         params.put("spellcheck", trueStr);
-        params.put("spellcheck.collate", trueStr);
+        params.put(SpellingParams.SPELLCHECK_COLLATE, trueStr);
         params.put("lowercaseOperators", "false");
         params.put("defType", "edismax");
         return params;
@@ -111,7 +112,6 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
     private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq,
         boolean isId)
     {
-        String fqStr = "fq";
         String query = originalQuery.trim();
         ModifiableSolrParams params = new ModifiableSolrParams();
         String escapedQuery = ClientUtils.escapeQueryChars(query);
@@ -127,17 +127,17 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         }
         if (isId) {
             if (StringUtils.isNotBlank(customFq)) {
-                params.add(fqStr, customFq);
+                params.add(CommonParams.FQ, customFq);
             } else {
                 String fq = new MessageFormat("id: {0} alt_id:{0}").format(new String[] { escapedQuery });
-                params.add(fqStr, fq);
+                params.add(CommonParams.FQ, fq);
             }
             q = new MessageFormat("{0} textSpell:{1}").format(new String[] { escapedQuery, lastWord });
         } else {
             String bq = new MessageFormat("nameSpell:{0}*^14 synonymSpell:{0}*^7 text:{0}*^1 textSpell:{0}*^2").format(
                 new String[] { lastWord });
             q = new MessageFormat("{0} textSpell:{1}*").format(new String[] { escapedQuery, lastWord });
-            params.add(fqStr, StringUtils.defaultIfBlank(customFq, "term_category:HP\\:0000118"));
+            params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq, "term_category:HP\\:0000118"));
             params.add("bq", bq);
         }
         params.add(CommonParams.Q, q);
