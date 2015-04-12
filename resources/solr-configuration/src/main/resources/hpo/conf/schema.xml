@@ -49,14 +49,14 @@
       </analyzer>
     </fieldType>
 
-    <!-- A general text field: it tokenizes with StandardTokenizer,
+    <!-- A general text field: it tokenizes with ClassicTokenizer,
          removes stop words from case-insensitive "stopwords.txt,
          protects keywords defined in "protwords.txt", down cases,
          and stems words using the possessive (remove 's) and the
          Porter English stemmer. At query time only, it also applies synonyms. -->
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.LowerCaseFilterFactory"/>
@@ -64,7 +64,7 @@
         <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
@@ -84,17 +84,17 @@
          valid words. -->
     <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <filter class="solr.StandardFilterFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory" />
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
-        <filter class="solr.StandardFilterFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory" />
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
@@ -103,13 +103,13 @@
     <fieldtype name="exact_match" class="solr.TextField" positionIncrementGap="1000">
       <analyzer type="index">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER" />
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.LowerCaseFilterFactory" />
       </analyzer>
       <analyzer type="query">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER" />
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
         <filter class="solr.LowerCaseFilterFactory" />
@@ -119,13 +119,13 @@
     <fieldtype name="prefix_match" class="solr.TextField" positionIncrementGap="1000">
       <analyzer type="index">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1" />
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.LowerCaseFilterFactory" />
       </analyzer>
       <analyzer type="query">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1*" />
-        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
         <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
         <filter class="solr.LowerCaseFilterFactory" />
