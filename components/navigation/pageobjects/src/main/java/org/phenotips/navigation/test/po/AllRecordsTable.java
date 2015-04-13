@@ -21,9 +21,6 @@ package org.phenotips.navigation.test.po;
 
 import org.xwiki.test.ui.po.LiveTableElement;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 /**
  * Represents the livetable listing patients on the Browse All Records page.
  *

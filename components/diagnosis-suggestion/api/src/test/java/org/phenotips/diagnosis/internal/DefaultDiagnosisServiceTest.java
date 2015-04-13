@@ -97,16 +97,16 @@ public class DefaultDiagnosisServiceTest
 
         int invalidPhenotypes = 2;
 
-        OntologyManager ontology = mocker.getInstance(OntologyManager.class);
-        Environment env = mocker.getInstance(Environment.class);
-        Utils utils = mocker.getInstance(Utils.class);
+        OntologyManager ontology = this.mocker.getInstance(OntologyManager.class);
+        Environment env = this.mocker.getInstance(Environment.class);
+        Utils utils = this.mocker.getInstance(Utils.class);
 
         File tempMock = mock(File.class);
         doReturn(tempMock).when(env).getTemporaryDirectory();
         doReturn(tempDir).when(tempMock).getPath();
 
-        Environment utilsEnv = workingUtils.getInstance(Environment.class);
-        Utils workingUtilsComponent = workingUtils.getComponentUnderTest();
+        Environment utilsEnv = this.workingUtils.getInstance(Environment.class);
+        Utils workingUtilsComponent = this.workingUtils.getComponentUnderTest();
         String annotationPath =
             stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
         String ontologyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
@@ -116,7 +116,7 @@ public class DefaultDiagnosisServiceTest
         doReturn(tempSpy).when(utilsEnv).getTemporaryDirectory();
         workingUtilsComponent.loadDataFiles(ontologyPath, annotationPath);
 
-        doAnswer(new Answer()
+        doAnswer(new Answer<OntologyTerm>()
         {
             @Override
             public OntologyTerm answer(InvocationOnMock invocationOnMock) throws Throwable
@@ -132,7 +132,7 @@ public class DefaultDiagnosisServiceTest
         doReturn(tempSpy).when(env).getTemporaryDirectory();
         doReturn(workingUtilsComponent.getGraph()).when(utils).getGraph();
         doReturn(workingUtilsComponent.getDataAssociation()).when(utils).getDataAssociation();
-        DiagnosisService diagnosisService = mocker.getComponentUnderTest();
+        DiagnosisService diagnosisService = this.mocker.getComponentUnderTest();
 
         int limit = 3;
         int i = 0;
