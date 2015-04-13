@@ -131,9 +131,6 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologySuggestTermsIsId() throws ComponentLookupException, SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
@@ -147,54 +144,65 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologySuggestTermsIsNotId() throws ComponentLookupException, SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("HP:Test", (Integer) 0, (String) null, (String) null);
+        this.mocker.getComponentUnderTest().termSuggest("HP:Test", 0, null, null);
 
         verify(this.server).query(argThat(new hasBoostQuery()));
     }
 
     @Test
-    public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException, SolrServerException
+    public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException,
+        SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("first second", (Integer) 0, (String) null, (String) null);
+        this.mocker.getComponentUnderTest().termSuggest("first second", 0, null, null);
 
         verify(this.server).query(argThat(new lastWord()));
         verify(this.server).query(argThat(new isNotId()));
     }
 
-    class hasBoostQuery extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get("bq") != null && ((SolrParams) params).get(CommonParams.SORT) == null ;
+    class hasBoostQuery extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object params)
+        {
+            return ((SolrParams) params).get("bq") != null && ((SolrParams) params).get(CommonParams.SORT) == null;
         }
     }
-    class lastWord extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
+
+    class lastWord extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object params)
+        {
             return ((SolrParams) params).get(CommonParams.Q).endsWith("second*");
         }
     }
-    class hasIdInFilter extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get(CommonParams.FQ).startsWith("id") && ((SolrParams) params).get("bq") == null
+
+    class hasIdInFilter extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object params)
+        {
+            return ((SolrParams) params).get(CommonParams.FQ).startsWith("id")
+                && ((SolrParams) params).get("bq") == null
                 && ((SolrParams) params).get("pf") == null && ((SolrParams) params).get("qf") == null;
         }
     }
-    class isNotId extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
+
+    class isNotId extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object params)
+        {
             return ((SolrParams) params).get("pf") != null && ((SolrParams) params).get("qf") != null;
         }
     }
