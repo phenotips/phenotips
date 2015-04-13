@@ -83,7 +83,8 @@ public class HumanPhenotypeOntologyTest
         this.server = mock(SolrServer.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
-        this.ontologyServiceResult = this.ontologyService.reindex(null);
+        this.ontologyServiceResult =
+            this.ontologyService.reindex(this.getClass().getResource("/hpo-test.obo").toString());
     }
 
     @Test
