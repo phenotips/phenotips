@@ -200,7 +200,7 @@ var SaveLoadEngine = Class.create( {
                     if (familyMembers.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
                         var probandProperties = editor.getGraph().getProperties(0);
                         probandProperties["phenotipsId"] = familyMembers[0].id;
-                        editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
+                        editor.getGraph().setProperties(0, probandProperties);
                     }
                 }
                 else {

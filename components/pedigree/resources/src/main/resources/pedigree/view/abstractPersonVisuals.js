@@ -112,7 +112,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Expands the partnership circle
+     * Highlight green to mark as a valid drag target
      *
      * @method grow
      */
@@ -124,11 +124,11 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         }
         if (this.glow) return;
         this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
-        if (this.marked) this.marked.hide();
+        if (this.marked) this.marked.hide(); // to avoid interference between green and yelow marks
     },
 
     /**
-     * Shrinks node graphics to the original size
+     * Unhighlight
      *
      * @method shrink
      */
@@ -265,7 +265,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox(), this._idLabel, this._numberLabel).concat($super());
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel, this.markedCurrent, this._numberLabel).concat($super());
     },
 
     /**

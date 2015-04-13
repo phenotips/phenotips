@@ -388,14 +388,17 @@ NodeMenu = Class.create({
           if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
               var properties = {};
               properties[method] = _this.fieldMap[field.name].crtValue;
-              var event = { "nodeID": target.getID(), "properties": properties };
-              document.fire("pedigree:node:setproperty", event);
+              var fireEvent = { "nodeID": target.getID(), "properties": properties };
+              document.fire("pedigree:node:setproperty", fireEvent);
           }
           else {
               var properties = {};
               properties[method] = _this.fieldMap[field.name].crtValue;
-              var event = { "nodeID": target.getID(), "modifications": properties };
-              document.fire("pedigree:node:modify", event);
+              var fireEvent = { "nodeID": target.getID(), "modifications": properties };
+              if (event.memo.hasOwnProperty("useValue") && event.memo.hasOwnProperty("eventDetails")) {
+                  fireEvent["details"] = event.memo.eventDetails;
+              }
+              document.fire("pedigree:node:modify", fireEvent);
           }
           field.fire('pedigree:change');
         });
@@ -617,7 +620,8 @@ NodeMenu = Class.create({
                 var _onPatientCreated = function(response) {
                     if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
                         console.log("Created new patient: " + stringifyObject(response.responseJSON));
-                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID });
+                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID,
+                                                                                "eventDetails": {"loadPatientProperties": false} });
                         _this.reposition();
                     } else {
                         alert("Patient creation failed");
