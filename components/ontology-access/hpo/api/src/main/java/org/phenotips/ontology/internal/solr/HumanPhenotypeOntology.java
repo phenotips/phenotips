@@ -91,8 +91,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         Map<String, String> params = new HashMap<>();
         params.put("spellcheck", trueStr);
         params.put(SpellingParams.SPELLCHECK_COLLATE, trueStr);
-        params.put(SpellingParams.SPELLCHECK_ALTERNATIVE_TERM_COUNT, "3");
-        params.put(SpellingParams.SPELLCHECK_MAX_COLLATIONS, "3");
+        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
         params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
         params.put("lowercaseOperators", "false");
         params.put("defType", "edismax");

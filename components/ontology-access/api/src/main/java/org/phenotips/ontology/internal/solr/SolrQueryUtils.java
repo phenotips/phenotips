@@ -132,7 +132,7 @@ public final class SolrQueryUtils
 
         // Since the spelling suggestion might not be that good, also search for the original user input
         if (StringUtils.isNotEmpty(originalParams.get(SpellingParams.SPELLCHECK_Q))) {
-            newQuery = originalParams.get(CommonParams.Q) + "^1.5 " + suggestedQuery;
+            newQuery = originalParams.get(CommonParams.Q) + "^10 " + suggestedQuery;
         }
 
         // Check if the last term in the query is a word stub search which, in case the request comes from a
