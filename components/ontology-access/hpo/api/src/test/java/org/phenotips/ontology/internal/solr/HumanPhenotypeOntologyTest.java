@@ -38,6 +38,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Assert;
 import org.junit.Before;
@@ -138,7 +139,7 @@ public class HumanPhenotypeOntologyTest
 
         this.mocker.getComponentUnderTest().termSuggest("HP:0001", 0, null, null);
 
-        verify(this.server).query(argThat(new hasIdInFilter()));
+        verify(this.server).query(argThat(new IsIdQuery()));
     }
 
     @Test
@@ -151,7 +152,7 @@ public class HumanPhenotypeOntologyTest
 
         this.mocker.getComponentUnderTest().termSuggest("HP:Test", 0, null, null);
 
-        verify(this.server).query(argThat(new hasBoostQuery()));
+        verify(this.server).query(argThat(new IsDisMaxQuery()));
     }
 
     @Test
@@ -165,45 +166,40 @@ public class HumanPhenotypeOntologyTest
 
         this.mocker.getComponentUnderTest().termSuggest("first second", 0, null, null);
 
-        verify(this.server).query(argThat(new lastWord()));
-        verify(this.server).query(argThat(new isNotId()));
+        verify(this.server).query(argThat(new IsDisMaxQuery()));
     }
 
-    class hasBoostQuery extends ArgumentMatcher<SolrParams>
+    class IsDisMaxQuery extends ArgumentMatcher<SolrParams>
     {
         @Override
-        public boolean matches(Object params)
+        public boolean matches(Object argument)
         {
-            return ((SolrParams) params).get("bq") != null && ((SolrParams) params).get(CommonParams.SORT) == null;
+            SolrParams params = (SolrParams) argument;
+            return params.get(DisMaxParams.PF) != null
+                && params.get(DisMaxParams.QF) != null
+                && params.get(CommonParams.Q) != null;
         }
     }
 
-    class lastWord extends ArgumentMatcher<SolrParams>
+    class LastWord extends ArgumentMatcher<SolrParams>
     {
         @Override
-        public boolean matches(Object params)
+        public boolean matches(Object argument)
         {
-            return ((SolrParams) params).get(CommonParams.Q).endsWith("second*");
+            SolrParams params = (SolrParams) argument;
+            return params.get(CommonParams.Q).endsWith("second*");
         }
     }
 
-    class hasIdInFilter extends ArgumentMatcher<SolrParams>
+    class IsIdQuery extends ArgumentMatcher<SolrParams>
     {
         @Override
-        public boolean matches(Object params)
+        public boolean matches(Object argument)
         {
-            return ((SolrParams) params).get(CommonParams.FQ).startsWith("id")
-                && ((SolrParams) params).get("bq") == null
-                && ((SolrParams) params).get("pf") == null && ((SolrParams) params).get("qf") == null;
-        }
-    }
-
-    class isNotId extends ArgumentMatcher<SolrParams>
-    {
-        @Override
-        public boolean matches(Object params)
-        {
-            return ((SolrParams) params).get("pf") != null && ((SolrParams) params).get("qf") != null;
+            SolrParams params = (SolrParams) argument;
+            return params.get(CommonParams.FQ).startsWith("id")
+                && params.get(DisMaxParams.PF) == null
+                && params.get(DisMaxParams.QF) == null;
         }
     }
 }
