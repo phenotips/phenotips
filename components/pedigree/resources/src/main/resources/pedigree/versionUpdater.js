@@ -151,7 +151,7 @@ VersionUpdater = Class.create( {
             if (data.hasOwnProperty("probandNodeID")) {
                 return null;
             }
-            data["probandNodeID"] = -1;
+            data["probandNodeID"] = 0;
             return JSON.stringify(data);
         }
 

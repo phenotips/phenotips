@@ -291,6 +291,16 @@ DynamicPositionedGraph.prototype = {
             this.DG.GG.properties[id].candidateGenes = genes;
         }
 
+        // TODO: review
+        // pedigree-specific properties (added by controller)
+        if (patientObject.hasOwnProperty("pedigreeProperties")) {
+            for (var prop in patientObject.pedigreeProperties) {
+                if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
+                    this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
+                }
+            }
+        }
+
         return genderOK;
     },
 
@@ -2706,7 +2716,7 @@ Heuristics.prototype = {
     {
         var timer = new Timer();
 
-        //console.log("pre-fix orders: " + stringifyObject(this.DG.order.order[2]));
+        //console.log("pre-fix orders: " + stringifyObject(this.DG.order));
         //var xcoord = new XCoord(this.DG.positions, this.DG);
         //this.DG.displayGraph(xcoord.xcoord, "pre-fix");
 

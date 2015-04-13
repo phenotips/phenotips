@@ -505,7 +505,7 @@ var Controller = Class.create({
                 else
                 if (modificationType == "trySetPhenotipsPatientId") {
 
-                    var setLink = function(clearOldData) {
+                    var setLink = function(clearOldData, loadPatientProperties) {
 
                         event.memo.clearOldData = clearOldData;
 
@@ -535,6 +535,12 @@ var Controller = Class.create({
                             if (loadedPatientData !== null && loadedPatientData.hasOwnProperty(modValue)) {
 
                                 var patientJSONObject = loadedPatientData[modValue];
+
+                                // TODO: review which properties to keep (likley all that are not saved in a patient profile?)
+                                //       for now save twin/monozygothic/adopted statuses, or pedigree may get inconsistent
+                                patientJSONObject.pedigreeProperties = node.getPatientIndependentProperties();
+                                delete patientJSONObject.pedigreeProperties.gender; // this one is loaded from the patient
+
                                 var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
                                 if (!genderOk && !event.memo.noUndoRedo) {
                                     alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
@@ -553,6 +559,10 @@ var Controller = Class.create({
                                     node.setPhenotipsPatientId("");
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
+                            } else {
+                                // not clearing data and no loaded data
+                                node.setPhenotipsPatientId(modValue);
+                                editor.getGraph().setProperties( nodeID, node.getProperties() );
                             }
 
                             var changeSet = editor.getGraph().updateYPositioning();
@@ -566,17 +576,26 @@ var Controller = Class.create({
                         }
 
                         if (modValue != "") {
-                            var patientDataLoader = editor.getPatientDataLoader();
+                            if (loadPatientProperties) {
+                                var patientDataLoader = editor.getPatientDataLoader();
 
-                            // load data for only one patient with ID=="modValue", the one a node was just linked to
-                            patientDataLoader.load([modValue], onDataReady);
+                                // load data for only one patient with ID=="modValue", the one a node was just linked to
+                                patientDataLoader.load([modValue], onDataReady);
+                            } else {
+                                onDataReady(null);
+                            }
                         } else {
                             onDataReady(null);
                         }
                     }
 
                     if (!event.memo.noUndoRedo) {
-                        Controller._checkPatientLinkValidity(setLink, nodeID, modValue);
+                        var loadPatientProperties = true;
+                        if (event.memo.hasOwnProperty("details")
+                            && event.memo.details.hasOwnProperty("loadPatientProperties")) {
+                            loadPatientProperties = event.memo.details.loadPatientProperties;
+                        }
+                        Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties);
                     } else {
                         // if this is a redo event skip all the warnings
                         setLink(event.memo.clearOldData);
@@ -890,7 +909,7 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName, chang
     }
 }
 
-Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
+Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties)
 {
     var onCancelAssignPatient = function() {
         // clear link input field in node menu
@@ -934,6 +953,18 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
                     SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
                             "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                 } else {
+                    if (loadPatientProperties) {
+                        var clearPropertiesMsg = "<br><br>3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.";
+                        var callbackLink = function() {
+                            callbackOnValid(undefined, true);
+                        }
+                    } else {
+                        var clearPropertiesMsg = "";
+                        var callbackLink = function() {
+                            callbackOnValid(undefined, false);
+                        }
+                    }
+
                     var processLinking = function(topMessage, notesMessage) {
                         var alreadyWasInFamily = false;
                         var familyMembersWhenLoaded = editor.getCurrentFamilyPageFamilyMembers();
@@ -947,9 +978,9 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
                             editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
                                     "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                                     notesMessage +  "</div><br>",
-                                    "Add patient to the family", "Confirm", callbackOnValid, "Cancel", onCancelAssignPatient);
+                                    "Add patient to the family", "Confirm", callbackLink, "Cancel", onCancelAssignPatient);
                         } else {
-                            callbackOnValid();
+                            callbackLink();
                         }
                     }
 
@@ -958,13 +989,13 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID)
                         processLinking("Connecting this patient requires creating a family. " +
                                        "Do you want to create a family and add patient " + linkID + "?",
                                        "1) All members of a family share the same pedigree.<br><br>"+
-                                       "2) Patient records may have collaborators. Adding an existing patient to a family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record.<br><br>"+
-                                       "3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.");
+                                       "2) Patient records may have collaborators. Adding an existing patient to a family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record." +
+                                       clearPropertiesMsg);
                     } else {
                         processLinking("Do you want to add patient " + linkID + " to this family?",
                                 "1) The pedigree is shared by all members of this family.<br><br>"+
-                                "2) Patient records may have collaborators. Adding an existing patient to this family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record.<br><br>"+
-                                "3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.");
+                                "2) Patient records may have collaborators. Adding an existing patient to this family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record."+
+                                clearPropertiesMsg);
                     }
                 }
             } else  {
