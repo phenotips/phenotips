@@ -164,9 +164,7 @@
   }
 
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
-     if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
-       toggleCategory(item);
-     }
+     toggleCategory(item);
      item.observe('click', toggleCategory);
   });
   phBrowserExpandAllWrapper.observe('click', function(event){
