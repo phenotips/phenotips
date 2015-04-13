@@ -100,6 +100,16 @@
       </analyzer>
     </fieldType>
 
+    <fieldType name="text_prefix" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="10" side="front"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+
     <fieldtype name="exact_match" class="solr.TextField" positionIncrementGap="1000">
       <analyzer type="index">
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER"/>
@@ -145,11 +155,13 @@
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="namePrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
     <field name="synonym" type="text_general" indexed="true" stored="true" multiValued="true"/>
     <field name="synonymSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="synonymStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="def" type="text_general" indexed="true" stored="true"/>
     <field name="comment" type="text_general" indexed="true" stored="true"/>
     <field name="xref" type="text_ws" indexed="true" stored="true" multiValued="true"/>
@@ -160,6 +172,7 @@
          via copyField further on in this schema). -->
     <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <field name="textStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
     <dynamicField name="*" type="ignored" multiValued="true"/>
   </fields>
@@ -173,9 +186,12 @@
   <copyField source="name" dest="nameSpell"/>
   <copyField source="name" dest="nameExact"/>
   <copyField source="name" dest="namePrefix"/>
+  <copyField source="name" dest="nameStub"/>
   <copyField source="synonym" dest="synonymSpell"/>
   <copyField source="synonym" dest="synonymExact"/>
   <copyField source="synonym" dest="synonymPrefix"/>
+  <copyField source="synonym" dest="synonymStub"/>
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="textSpell"/>
+  <copyField source="*" dest="textStub"/>
 </schema>

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Named;
@@ -56,8 +55,6 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
 {
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^HP:[0-9]+$", Pattern.CASE_INSENSITIVE);
-
-    private static final Pattern LAST_WORD = Pattern.compile(".*\\W(\\w+)$");
 
     @Override
     protected String getName()
@@ -94,6 +91,9 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         Map<String, String> params = new HashMap<>();
         params.put("spellcheck", trueStr);
         params.put(SpellingParams.SPELLCHECK_COLLATE, trueStr);
+        params.put(SpellingParams.SPELLCHECK_ALTERNATIVE_TERM_COUNT, "3");
+        params.put(SpellingParams.SPELLCHECK_MAX_COLLATIONS, "3");
+        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
         params.put("lowercaseOperators", "false");
         params.put("defType", "edismax");
         return params;
@@ -102,10 +102,11 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put("pf",
-            "name^20 nameSpell^36 nameExact^100 namePrefix^30 synonym^15 synonymSpell^25 synonymExact^70 "
-                + "synonymPrefix^20 text^3 textSpell^5");
-        params.put("qf", "name^10 nameSpell^18 synonym^6 synonymSpell^10 text^1 textSpell^2");
+        params.put("pf", "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
+            + "text^3 textSpell^5");
+        params.put("qf",
+            "name^10 nameSpell^18 nameStub^5 synonym^6 synonymSpell^10 synonymStub^3 text^1 textSpell^2 textStub^0.5");
         return params;
     }
 
@@ -115,32 +116,14 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         String query = originalQuery.trim();
         ModifiableSolrParams params = new ModifiableSolrParams();
         String escapedQuery = ClientUtils.escapeQueryChars(query);
-        // String lastWord = escapedQuery.trim().();
-        Matcher lastWordRegex = LAST_WORD.matcher(escapedQuery);
-        String lastWord = "";
-        if (lastWordRegex.matches()) {
-            lastWord = lastWordRegex.group(1);
-        }
-        String q;
-        if (StringUtils.isBlank(lastWord)) {
-            lastWord = escapedQuery;
-        }
         if (isId) {
-            if (StringUtils.isNotBlank(customFq)) {
-                params.add(CommonParams.FQ, customFq);
-            } else {
-                String fq = new MessageFormat("id: {0} alt_id:{0}").format(new String[] { escapedQuery });
-                params.add(CommonParams.FQ, fq);
-            }
-            q = new MessageFormat("{0} textSpell:{1}").format(new String[] { escapedQuery, lastWord });
+            params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq,
+                new MessageFormat("id:{0} alt_id:{0}").format(new String[] { escapedQuery })));
         } else {
-            String bq = new MessageFormat("nameSpell:{0}*^14 synonymSpell:{0}*^7 text:{0}*^1 textSpell:{0}*^2").format(
-                new String[] { lastWord });
-            q = new MessageFormat("{0} textSpell:{1}*").format(new String[] { escapedQuery, lastWord });
             params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq, "term_category:HP\\:0000118"));
-            params.add("bq", bq);
         }
-        params.add(CommonParams.Q, q);
+        params.add(CommonParams.Q, escapedQuery);
+        params.add(SpellingParams.SPELLCHECK_Q, query);
         params.add(CommonParams.ROWS, rows.toString());
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
