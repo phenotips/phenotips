@@ -540,12 +540,18 @@ PositionedGraph.prototype = {
         for (var i = 0; i < leafAndRootlessInfo.parentlessNodes.length; i++) {
             var v = leafAndRootlessInfo.parentlessNodes[i];
 
-            if ( this.GG.getOutEdges(v).length == 1 && this.GG.getOutEdges(v).length > 0) {
+            if ( this.GG.getOutEdges(v).length == 1) {
                 var relationShipNode = this.GG.downTheChainUntilNonVirtual(this.GG.getOutEdges(v)[0]);
 
                 var parents = this.GG.getParents(relationShipNode);
 
                 var otherParent = (parents[0] == v) ? parents[1] : parents[0];
+
+                // Note: can't ignore nodes which are parentless and are connected to only one partner,
+                //       but are not on the same rank with the partner
+                if (this.ranks[v] != this.ranks[otherParent]) {
+                    continue;
+                }
 
                 //if (this.GG.getInEdges(otherParent).length > 0 || v > otherParent || this.GG.getOutEdges(otherParent).length > 1) {
                 if (this.GG.getInEdges(otherParent).length > 0) {
@@ -556,7 +562,6 @@ PositionedGraph.prototype = {
                 }
             }
         }
-
         //console.log("Found rootless partners: " + stringifyObject(rootlessPartners));
         return rootlessPartners;
     },
@@ -582,7 +587,6 @@ PositionedGraph.prototype = {
     reconnectRootlessPartners: function(order, rootlessPartners)
     {
         //console.log("Order before reconnect rootless: " + stringifyObject(order));
-
         for (var p in rootlessPartners) {
             if (rootlessPartners.hasOwnProperty(p)) {
 
@@ -631,7 +635,6 @@ PositionedGraph.prototype = {
 
             }
         }
-
         //console.log("Order after reconnect rootless: " + stringifyObject(order));
    },
 
@@ -690,7 +693,6 @@ PositionedGraph.prototype = {
     reconnectLeafSiblings: function(order, leafSiblings)
     {
         //console.log("Order before reconnect leaves: " + stringifyObject(order));
-
         for (var p in leafSiblings) {
             if (leafSiblings.hasOwnProperty(p)) {
                 var leaves = leafSiblings[p];
@@ -789,6 +791,7 @@ PositionedGraph.prototype = {
 
     reconnectTwins: function(disconnectedTwins)
     {
+        //console.log("Order before reconnect twins: " + stringifyObject(this.order));
         for (var v in disconnectedTwins) {
             if (disconnectedTwins.hasOwnProperty(v)) {
 
@@ -886,6 +889,7 @@ PositionedGraph.prototype = {
                 }
             }
         }
+        //console.log("Order after reconnect twins: " + stringifyObject(this.order));
     },
 
     computePossibleParentlessNodePermutations: function(maxInitOrderingBuckets, leafAndRootlessInfo, rootlessPartners)
