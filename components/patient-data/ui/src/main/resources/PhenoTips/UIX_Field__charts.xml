@@ -111,6 +111,7 @@
     </class>
     <property>
       <content>{{include document="PhenoTips.ChartServiceMacros" /}}
+
 {{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
