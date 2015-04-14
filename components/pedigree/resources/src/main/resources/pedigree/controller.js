@@ -932,7 +932,7 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                 "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that if you do not connect patient " + oldLinkID +
                 " with some other pedigree node before saving this pedigree then the patient will be removed from this family. " +
                 "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
-                'Remove the connections?', 'blank pedigree node properties', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
+                'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
         return;
     }
 
@@ -949,7 +949,7 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                                                "Do you want to link the patient to this node? "+
                                                "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
                                                "Re-link patient " + linkID + " to this node?",
-                                               'blank properties of the pedigree node currently linked to the patient', true,
+                                               'Clear data from the pedigree node currently linked to this patient', true,
                                                "OK", processLinkCallback, "Cancel", onCancel );
         return;
     }
