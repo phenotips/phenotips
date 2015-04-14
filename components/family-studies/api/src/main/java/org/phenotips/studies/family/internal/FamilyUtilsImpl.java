@@ -293,10 +293,16 @@ public class FamilyUtilsImpl implements FamilyUtils
         for (BaseObject rights : rightsObjects) {
             String[] levels = ((StringProperty) rights.getField("levels")).getValue().split(",");
             if (Arrays.asList(levels).contains("edit")) {
-                String[] usersAccess = ((LargeStringProperty) rights.getField("users")).getValue().split(",");
-                String[] groupsAccess = ((LargeStringProperty) rights.getField("groups")).getValue().split(",");
-                users.addAll(Arrays.asList(usersAccess));
-                groups.addAll(Arrays.asList(groupsAccess));
+                Object userAccessObject = rights.getField("users");
+                Object groupAccessObject = rights.getField("groups");
+                if (userAccessObject != null) {
+                    String[] usersAccess = ((LargeStringProperty) userAccessObject).getValue().split(",");
+                    users.addAll(Arrays.asList(usersAccess));
+                }
+                if (groupAccessObject != null) {
+                    String[] groupsAccess = ((LargeStringProperty) groupAccessObject).getValue().split(",");
+                    groups.addAll(Arrays.asList(groupsAccess));
+                }
             }
         }
         ArrayList<Set<String>> fullRights = new ArrayList<>();
