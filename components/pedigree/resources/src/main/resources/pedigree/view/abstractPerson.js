@@ -91,10 +91,12 @@ var AbstractPerson = Class.create(AbstractNode, {
         if (adoptedStatus != "" && adoptedStatus != "adoptedIn" && adoptedStatus != "adoptedOut") {
             adoptedStatus = "";
         }
-        this._adoptedStatus = adoptedStatus;
-        this.getGraphics().setGenderGraphics();
-        this.getGraphics().drawAdoptedShape();
-        this.getGraphics().getHoverBox().regenerateHandles();
+        if (adoptedStatus != this._adoptedStatus) {
+            this._adoptedStatus = adoptedStatus;
+            this.getGraphics().setGenderGraphics();
+            this.getGraphics().drawAdoptedShape();
+            this.getGraphics().getHoverBox().regenerateHandles();
+        }
     },
 
     /**

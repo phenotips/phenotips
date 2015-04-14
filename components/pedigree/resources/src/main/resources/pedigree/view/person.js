@@ -119,6 +119,10 @@ var Person = Class.create(AbstractPerson, {
      */
     setPhenotipsPatientId: function(phenotipsId)
     {
+        if (phenotipsId == this._phenotipsId) {
+            return;
+        }
+
         this._phenotipsId = phenotipsId;
 
         this.getGraphics().setGenderGraphics();
@@ -363,6 +367,10 @@ var Person = Class.create(AbstractPerson, {
      * @param {String} newStatus "alive", "deceased", "stillborn", "unborn", "aborted" or "miscarriage"
      */
     setLifeStatus: function(newStatus) {
+        if (newStatus == this._lifeStatus) {
+            return;
+        }
+
         if(this._isValidLifeStatus(newStatus)) {
             var oldStatus = this._lifeStatus;
 
@@ -1121,11 +1129,13 @@ var Person = Class.create(AbstractPerson, {
      assignProperties: function($super, info) {
         if($super(info)) {
 
-            // drawLabels() method may be slow yet is called after each label is generated
-            // after calls to setFirstname(), setComments(), etc. This speedup disables
-            // it while initial properties are set and it is later execute once after
+            // setGenderGraphics() and drawLabels() methods may be slow yet may be
+            // called myultiple times while properties are set as part of property update procedure.
+            // (e.g. setFirstname(), setComments(), etc. set labels, and setAdopted() calls setGenderGraphics.
+            // This speedup disables the methods while initial properties are set and it is later execute once after
             // all properties have been set and labels have been generated
-            this._speedup_NODRAWLABELS = true;
+            this._speedup_NOREDRAW = true;
+            this._speedup_NEEDTOCALL = {};
 
             if(info.phenotipsId) {
                 if (this.getPhenotipsPatientId() != info.phenotipsId) {
@@ -1278,8 +1288,12 @@ var Person = Class.create(AbstractPerson, {
             } else {
                 this.setLostContact(false);
             }
-            this._speedup_NODRAWLABELS = false;
-            this.getGraphics().drawLabels();
+            this._speedup_NOREDRAW = false;
+            for (var method in this._speedup_NEEDTOCALL) {
+                if (this._speedup_NEEDTOCALL.hasOwnProperty(method)) {
+                    this.getGraphics()[method]();
+                }
+            }
             return true;
         }
         return false;

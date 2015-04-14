@@ -49,6 +49,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method setGenderGraphics
      */
     setGenderGraphics: function($super) {
+        // this method may be slow yet is called after some property updates
+        // skip it while initial properties are set and execute once after all labels have been generated
+        if (this.getNode()._speedup_NOREDRAW) {
+            this.getNode()._speedup_NEEDTOCALL["setGenderGraphics"] = true;
+            return;
+        }
+
         this.unmark();
         this._genderGraphics && this._genderGraphics.remove();
 
@@ -120,8 +127,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var x = this.getX()-this._shapeRadius-28;
             var y = this.getY()+this._shapeRadius-14;
             if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
-                x -= 5;
-                y -= 9;
+                x -= 6;
+                y -= 10;
             }
             if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
                 x -= 12;
@@ -615,6 +622,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getSBLabel() && this.getSBLabel().remove();        
         if (this.getNode().getLifeStatus() == 'stillborn') {        
             this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
+            this._stillBirthLabel.addLargeGapAfter = true;
+            this._stillBirthLabel.shiftUp = 15;
         } else {
             this._stillBirthLabel = null;
         }
@@ -767,8 +776,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getLabels: function() {
         var labels = editor.getPaper().set();
-        this.getLinkLabel() && labels.push(this.getLinkLabel());
         this.getSBLabel() && labels.push(this.getSBLabel());
+        this.getLinkLabel() && labels.push(this.getLinkLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());        
         this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
@@ -784,7 +793,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     drawLabels: function() {
         // this method may be slow yet is called after each label is generated;
         // skip it while initial properties are set and execute once after all labels have been generated 
-        if (this.getNode()._speedup_NODRAWLABELS) return;
+        if (this.getNode()._speedup_NOREDRAW) {
+            this.getNode()._speedup_NEEDTOCALL["drawLabels"] = true;
+            return;
+        }
 
         var labels = this.getLabels();
         var selectionOffset = this._labelSelectionOffset();
@@ -797,15 +809,21 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         for (var i = 0; i < labels.length; i++) {
             var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
             var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
+            if (i == 0 && labels[i].shiftUp) {
+                offset -= labels[i].shiftUp;
+            }
             labels[i].transform(""); // clear all transofrms, using new real x
             labels[i].attr("x", this.getX());
             labels[i].attr("y", startY + offset);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             labels[i].toBack();
-            if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
+            if (i != labels.length - 1) {   // don't do getBBox() computation if don't need to, it is slow in IE9
                 startY = labels[i].getBBox().y2 + 11;
                 if (labels[i].addGapAfter) {
                     startY += 4;
+                }
+                if (labels[i].addLargeGapAfter) {
+                    startY += 8;
                 }
             }
         }
