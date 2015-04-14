@@ -854,7 +854,8 @@
 /* Option types */
 .node-type-options .node-type-m.text-in-middle strong {
   font-size: 10px;
-  left: 10px; top: 6px;
+  left: 10px;
+  top: 5px;
 }
 
 /* Datepicker style */
