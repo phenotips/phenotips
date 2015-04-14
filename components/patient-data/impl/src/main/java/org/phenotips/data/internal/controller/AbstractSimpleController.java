@@ -25,6 +25,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.context.Execution;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -58,6 +60,10 @@ public abstract class AbstractSimpleController implements PatientDataController<
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    /** Provides access to the current execution context. */
+    @Inject
+    private Execution execution;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -85,7 +91,27 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseObject xwikiDataObject = doc.getXObject(Patient.CLASS_REFERENCE);
+            if (xwikiDataObject == null) {
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+            }
+
+            PatientData<String> data = patient.<String>getData(this.getName());
+            if (!data.isNamed()) {
+                return;
+            }
+            for (String property : this.getProperties()) {
+                xwikiDataObject.setStringValue(property, data.get(property));
+            }
+
+            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            String comment = String.format("Updated %s from JSON", this.getName());
+            context.getWiki().saveDocument(doc, comment, true, context);
+        } catch (Exception e) {
+            this.logger.error("Failed to save {}: [{}]", this.getName(), e.getMessage());
+        }
     }
 
     @Override
@@ -122,7 +148,25 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        if (!json.containsKey(this.getJsonPropertyName())) {
+            // no data supported by this controller is present in provided JSON
+            return null;
+        }
+        Map<String, String> result = new LinkedHashMap<String, String>();
+
+        // since the loader always returns dictionary data, this should always be a block.
+        Object jsonBlockObject = json.get(this.getJsonPropertyName());
+        if (!(jsonBlockObject instanceof JSONObject)) {
+            return null;
+        }
+        JSONObject jsonBlock = (JSONObject) jsonBlockObject;
+        for (String property : this.getProperties()) {
+            if (jsonBlock.has(property)) {
+                result.put(property, jsonBlock.getString(property));
+            }
+        }
+
+        return new DictionaryPatientData<>(this.getName(), result);
     }
 
     protected abstract List<String> getProperties();

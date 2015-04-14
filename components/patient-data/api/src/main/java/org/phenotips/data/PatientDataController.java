@@ -55,6 +55,10 @@ import net.sf.json.JSONObject;
 @Role
 public interface PatientDataController<T>
 {
+    /** The error message that should be used for exceptions indicting that a PhenoTips.PatientClass has not been
+     * found. */
+    String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
+
     /**
      * Plays the role of initialization function. Given a patient, extracts data from the underlying document and
      * returns it to the patient.

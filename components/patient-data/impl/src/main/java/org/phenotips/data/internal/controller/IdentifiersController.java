@@ -63,8 +63,6 @@ public class IdentifiersController implements PatientDataController<String>
 
     private static final String EXTERNAL_IDENTIFIER_PROPERTY_NAME = "external_id";
 
-    private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
