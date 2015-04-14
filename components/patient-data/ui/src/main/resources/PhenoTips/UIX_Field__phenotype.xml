@@ -164,7 +164,9 @@
   }
 
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
-     toggleCategory(item);
+     if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
+       toggleCategory(item);
+     }
      item.observe('click', toggleCategory);
   });
   phBrowserExpandAllWrapper.observe('click', function(event){
@@ -178,8 +180,7 @@
     });
   });
 
-  // FIXME: Re-enable once https://github.com/phenotips/phenotips/issues/822 is fixed.
-  // phBrowserCollapseAll.click();
+  phBrowserCollapseAll.click();
 
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
