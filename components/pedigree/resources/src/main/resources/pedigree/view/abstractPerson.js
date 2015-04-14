@@ -92,6 +92,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             adoptedStatus = "";
         }
         this._adoptedStatus = adoptedStatus;
+        this.getGraphics().setGenderGraphics();
         this.getGraphics().drawAdoptedShape();
         this.getGraphics().getHoverBox().regenerateHandles();
     },
