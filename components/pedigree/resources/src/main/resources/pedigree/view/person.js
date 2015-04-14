@@ -1043,6 +1043,9 @@ var Person = Class.create(AbstractPerson, {
      }
      */
     getProperties: function($super) {
+        // note: once new properties are added need to update
+        //       getNodePropertiesNotStoredInPatientProfile() as well
+        //
         // note: properties equivalent to default are not set
         var info = $super();
         if (this.getPhenotipsPatientId() != "")

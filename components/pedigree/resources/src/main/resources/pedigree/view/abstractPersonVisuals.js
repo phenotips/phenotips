@@ -166,26 +166,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Marks the node as corresponding to the current patient
-     *
-     * @method markAsCurrent
-     */
-    markAsCurrent: function() {
-        if (this.markedCurrent) return;
-        this.markedCurrent = this._genderShape.glow({width: 20, fill: true, opacity: 0.4, color: "#999999"});
-    },
-
-    /**
-     * Unmarks the node
-     *
-     * @method unmarkCurrent
-     */
-    unmarkCurrent: function() {
-        this.markedCurrent && this.markedCurrent.remove();
-        delete this.markedCurrent;
-    },
-
-    /**
      * Returns true if this node's graphic representation covers coordinates (x,y)
      *
      * @method containsXY
@@ -265,7 +245,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox(), this._idLabel, this.markedCurrent, this._numberLabel).concat($super());
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel, this._numberLabel).concat($super());
     },
 
     /**
@@ -381,7 +361,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     remove: function($super) {
         this.marked && this.marked.remove();
-        this.markedCurrent && this.markedCurrent.remove();
         $super();
     }
 });
