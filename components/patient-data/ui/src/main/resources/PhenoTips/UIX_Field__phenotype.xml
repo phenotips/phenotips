@@ -163,21 +163,33 @@
     }
   }
 
+  var relayoutSummaryStickyBox = function() {
+    if (sSticky) {
+      sSticky.makeDefault();
+      sSticky.resetPosition();
+    }
+  }
+
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
      if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
        toggleCategory(item);
      }
-     item.observe('click', toggleCategory);
+     item.observe('click', function() {
+       toggleCategory(item);
+       relayoutSummaryStickyBox();
+     });
   });
   phBrowserExpandAllWrapper.observe('click', function(event){
     event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item) {
       toggleCategory(item);
     });
+    relayoutSummaryStickyBox();
   });
   phBrowserCollapseAllWrapper.observe('click', function(event){
     event.element().up('.chapter').select('.collapsible-group:not(.collapsed) h3').each(function(item) {
       toggleCategory(item);
     });
+    relayoutSummaryStickyBox();
   });
 
   // FIXME: Re-enable once https://github.com/phenotips/phenotips/issues/822 is fixed.
