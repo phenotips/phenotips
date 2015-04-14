@@ -189,6 +189,30 @@ DynamicPositionedGraph.prototype = {
         this.DG.GG.properties[id] = newSetOfProperties;
     },
 
+    getNodePropertiesNotStoredInPatientProfile: function(id)
+    {
+        var allProperties = this.getProperties(id);
+
+        if (allProperties === undefined) {
+            return {};
+        }
+
+        // TODO: review. The first one to review is "lifeStatus" which will be added to PhenoTips soon
+        var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
+                               'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
+                               'carrierStatus', 'lostContact', 'nodeNumber', 'lifeStatus' ];
+
+        var result = {};
+
+        for (var i = 0; i < keepProperties.length; i++) {
+            if (allProperties.hasOwnProperty(keepProperties[i])) {
+                result[keepProperties[i]] = allProperties[keepProperties[i]];
+            }
+        }
+
+        return result;
+    },
+
     // returns false if gender as given in JSON is incompatible with this pedigree; true otherwise
     setNodeDataFromPhenotipsJSON: function( id, patientObject )
     {

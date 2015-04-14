@@ -159,7 +159,18 @@ var SaveLoadEngine = Class.create( {
                 for (var patient in loadedPatientData) {
                     if (loadedPatientData.hasOwnProperty(patient)) {
                         var patientJSONObject = loadedPatientData[patient];
+
+                        if (patientJSONObject === null) {
+                            // no data for this patient: it is ok just don't set any properties
+                            // (may happen if a patient is deleted; we'll still keep the properties as stored in the pedigree)
+                            continue;
+                        }
+
                         var nodeID = allLinkedNodes.patientToNodeMapping[patient];
+
+                        // reuse some properties which are not currently saved into patient record
+                        // such as cancers and pedigree specific stuff
+                        patientJSONObject.pedigreeProperties = editor.getGraph().getNodePropertiesNotStoredInPatientProfile(nodeID);
 
                         var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
                         if (!genderOk)
