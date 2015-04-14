@@ -916,13 +916,23 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
         editor.getNodeMenu().update();
     }
 
+    if (loadPatientProperties) {
+        var processLinkCallback = function(clearParameter) {
+            callbackOnValid(clearParameter, true);
+        }
+    } else {
+        var processLinkCallback = function(clearParameter) {
+            callbackOnValid(clearParameter, false);
+        }
+    }
+
     if (linkID == "") {
         var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
         editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this pedigree node and patient " + oldLinkID + "?</b>" +
                 "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that if you do not connect patient " + oldLinkID +
                 " with some other pedigree node before saving this pedigree then the patient will be removed from this family. " +
                 "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
-                'Remove the connections?', 'blank pedigree node properties', true, "Remove link", callbackOnValid, "Cancel", onCancelAssignPatient );
+                'Remove the connections?', 'blank pedigree node properties', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
         return;
     }
 
@@ -940,7 +950,7 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                                                "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
                                                "Re-link patient " + linkID + " to this node?",
                                                'blank properties of the pedigree node currently linked to the patient', true,
-                                               "OK", callbackOnValid, "Cancel", onCancel );
+                                               "OK", processLinkCallback, "Cancel", onCancel );
         return;
     }
 
@@ -955,14 +965,8 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                 } else {
                     if (loadPatientProperties) {
                         var clearPropertiesMsg = "<br><br>3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.";
-                        var callbackLink = function() {
-                            callbackOnValid(undefined, true);
-                        }
                     } else {
                         var clearPropertiesMsg = "";
-                        var callbackLink = function() {
-                            callbackOnValid(undefined, false);
-                        }
                     }
 
                     var processLinking = function(topMessage, notesMessage) {
@@ -978,9 +982,9 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                             editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
                                     "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                                     notesMessage +  "</div><br>",
-                                    "Add patient to the family", "Confirm", callbackLink, "Cancel", onCancelAssignPatient);
+                                    "Add patient to the family", "Confirm", processLinkCallback, "Cancel", onCancelAssignPatient);
                         } else {
-                            callbackLink();
+                            processLinkCallback();
                         }
                     }
 
