@@ -91,11 +91,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
             // highlight current node
-            this.getGenderShape().transform(["...s", 1.08]);
+            this.getGenderShape().transform(["...s", 1.05]);
             this.getGenderShape().attr("stroke-width", 5.5);
         } else if(this.getNode().isProband()) {
             // slightly highlight proband when it is NOT the current node
-            this.getGenderShape().transform(["...s", 1.06]);
+            this.getGenderShape().transform(["...s", 1.03]);
             this.getGenderShape().attr("stroke-width", 2.2);
         }
 
@@ -113,18 +113,26 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     generateProbandArrow: function() {
         var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
         icon.node.setAttribute("class", "proband-arrow-shape");
-        var x = this.getX()-this._shapeRadius-28;
-        var y = this.getY()+this._shapeRadius-14;
-        if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
-            x -= 2;
-            y -= 5;
-        }
-        if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
-            x -= 12;
-            y -= 30;
-        } else if (this.getNode().getGender() == 'F') {
-            x += 5;
-            y -= 5;
+        if (this.getNode().getAdopted() != "") {
+            var x = this.getX()-78;
+            var y = this.getY()+34;
+        } else {
+            var x = this.getX()-this._shapeRadius-28;
+            var y = this.getY()+this._shapeRadius-14;
+            if(this.getNode().getLifeStatus() == 'deceased' || this.getNode().getLifeStatus() == 'stillborn') {
+                x -= 5;
+                y -= 9;
+            }
+            if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
+                x -= 12;
+                y -= 30;
+            } else if (this.getNode().getGender() == 'F') {
+                x += 6;
+                y -= 6;
+            } else if (this.getNode().getGender() == 'U') {
+                x += 2;
+                y -= 2;
+            }
         }
         icon.transform(["t" , x, y])
         return icon;
