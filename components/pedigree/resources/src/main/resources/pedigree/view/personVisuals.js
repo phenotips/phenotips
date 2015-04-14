@@ -86,9 +86,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._genderShape.node.setAttribute("class", "node-shape-" + this.getNode().getID());
 
         if(this.getNode().isProband()) {
+            // add proband arrow TO PROBAND
             this._genderGraphics.push(this.generateProbandArrow());
+        }
+        if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+            // highlight current node
             this.getGenderShape().transform(["...s", 1.08]);
             this.getGenderShape().attr("stroke-width", 5.5);
+        } else if(this.getNode().isProband()) {
+            // slightly highlight proband when it is NOT the current node
+            this.getGenderShape().transform(["...s", 1.06]);
+            this.getGenderShape().attr("stroke-width", 2.2);
         }
 
         if(!editor.isReadOnlyMode() && this.getHoverBox()) {
@@ -99,11 +107,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateEvaluationLabel();
         if (this.getNode().getLifeStatus() == "unborn"){
             this.updateLifeStatusShapes("unborn");
-        }
-
-        // highlight current patient
-        if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
-            this.markAsCurrent();
         }
     },
 

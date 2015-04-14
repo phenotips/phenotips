@@ -548,7 +548,8 @@ PositionedGraph.prototype = {
                 var otherParent = (parents[0] == v) ? parents[1] : parents[0];
 
                 // Note: can't ignore nodes which are parentless and are connected to only one partner,
-                //       but are not on the same rank with the partner
+                //       but are not on the same rank with the partner. Ow they are dropped and the long edge
+                //       hangs with no input node and is not traversed/assigned an order when doing the ordering pass
                 if (this.ranks[v] != this.ranks[otherParent]) {
                     continue;
                 }
