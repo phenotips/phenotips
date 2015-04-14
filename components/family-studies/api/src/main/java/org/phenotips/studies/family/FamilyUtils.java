@@ -71,7 +71,7 @@ public interface FamilyUtils
 
     XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
 
-    XWikiDocument createFamilyDoc(boolean save) throws NamingException, QueryException, XWikiException;
+    XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save) throws NamingException, QueryException, XWikiException;
 
     EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException;
 

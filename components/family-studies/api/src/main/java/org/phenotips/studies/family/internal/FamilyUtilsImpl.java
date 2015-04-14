@@ -218,7 +218,7 @@ public class FamilyUtilsImpl implements FamilyUtils
     {
         XWikiContext context = provider.get();
         XWiki wiki = context.getWiki();
-        XWikiDocument newFamilyDoc = this.createFamilyDoc(false);
+        XWikiDocument newFamilyDoc = this.createFamilyDoc(patientDoc, false);
         BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
 
         BaseObject permissions = newFamilyDoc.getXObject(RIGHTS_CLASS);
@@ -228,10 +228,6 @@ public class FamilyUtilsImpl implements FamilyUtils
         permissions.set("levels", "view,edit", context);
         permissions.set("allow", 1, context);
 
-        // adding the creating patient as a member
-        List<String> members = new LinkedList<>();
-        members.add(patientDoc.getDocumentReference().getName());
-        familyObject.set("members", members, context);
         this.setFamilyReference(patientDoc, newFamilyDoc, context);
 
         this.copyPedigree(patientDoc, newFamilyDoc, context);
@@ -241,7 +237,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         return newFamilyDoc;
     }
 
-    public synchronized XWikiDocument createFamilyDoc(boolean save)
+    public synchronized XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException
     {
         XWikiContext context = provider.get();
@@ -260,6 +256,11 @@ public class FamilyUtilsImpl implements FamilyUtils
             }
             BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
             familyObject.set("identifier", nextId, context);
+
+            // adding the creating patient as a member
+            List<String> members = new LinkedList<>();
+            members.add(probandDoc.getDocumentReference().getName());
+            familyObject.set("members", members, context);
 
             if (save) {
                 wiki.saveDocument(newFamilyDoc, context);

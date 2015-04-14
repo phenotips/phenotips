@@ -88,7 +88,8 @@ public class ProcessingImpl implements Processing
             response.message = "The family has no members. Please specify at least one patient link.";
             return response;
         } else if (familyDoc == null && updatedMembers.size() > 1) {
-            familyDoc = familyUtils.createFamilyDoc(false);
+            // in theory the anchorDoc could be a family document, but at this point it should be a patient document
+            familyDoc = familyUtils.createFamilyDoc(anchorDoc, true);
             this.setUnionOfUserPermissions(familyDoc, updatedMembers);
             isNew = true;
         } else if (familyDoc != null) {
