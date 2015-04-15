@@ -42,7 +42,7 @@
     <dmgDir>${bundleName} DMG</dmgDir>
     <bundleDir>${dmgDir}/${bundleName}.app</bundleDir>
     <makeDmgScript>makeDMG.sh</makeDmgScript>
-    <codesignCertCommonName>sickkids-ccm</codesignCertCommonName>
+    <codesignCertCommonName>Developer ID Application: Michael Brudno (Q62G548LC6)</codesignCertCommonName>
     <!-- Optional properties -->
     <iconFile>application-icon.icns</iconFile>
     <!-- the image in volumeBackgroundFile has to show a right-pointing arrow in the center -->
