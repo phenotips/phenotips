@@ -32,6 +32,7 @@ PROP_bundleDir="${bundleDir}"
 PROP_includeApplicationsSymlink="${includeApplicationsSymlink}"
 PROP_internetEnable="${internetEnable}"
 PROP_codesignCertCommonName="${codesignCertCommonName}"
+PROP_performRelease="${performRelease}"
 
 [ -n "$PROP_workDir" -a -d "$PROP_workDir" ] ||
   { echo "[ERROR] Invalid work directory \"$PROP_workDir\""; exit 1; }
@@ -73,6 +74,14 @@ fi
 SetFile -a B "$PROP_bundleDir" &>/dev/null
 
 codesign -s "$PROP_codesignCertCommonName" "$PROP_bundleDir" &>/dev/null
+codesign_status=$?
+
+if [ $codesign_status != "0" -a "$PROP_performRelease" = "true" ]; then
+  echo "[ERROR] Failed to sign application"
+  exit 1
+elif [ $codesign_status != "0" ]; then
+  echo "[WARN] Failed to sign application"
+fi
 
 function createDiskImage {
   local dmgFile dmgFormat
