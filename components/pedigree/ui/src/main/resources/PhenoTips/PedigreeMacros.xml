@@ -51,11 +51,11 @@
 
   #if (($disorderColors &amp;&amp; $disorderColors.size() &gt; 0) || ($geneColors &amp;&amp; $geneColors.size() &gt; 0) || ($cancerColors &amp;&amp; $cancerColors.size() &gt; 0))
     #if ($xcontext.action == 'export')
-      #set ($circle = "⬤")
-      #set ($listyle = "margin: 0 .5em 0 0; font-family: FreeSerif, serif;")
+      #set ($circle = '⬤')
+      #set ($listyle = 'margin: 0 .5em 0 0; font-family: FreeSerif, serif;')
     #else
-      #set ($circle = "&lt;span class=""fa fa-circle"">&lt;/span>")
-      #set ($listyle = "margin: 0 .25em 0 0; font-size: 15px")
+      #set ($circle = '&lt;span class="fa fa-circle fa-lg">&lt;/span>')
+      #set ($listyle = 'margin: 0 .25em 0 0;')
     #end
 
     #set ($divstyle="")
