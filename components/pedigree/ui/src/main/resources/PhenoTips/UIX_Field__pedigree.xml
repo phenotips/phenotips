@@ -124,17 +124,13 @@
   var init = function() {
     // Save before opening the pedigree
     var pedigreeTrigger = $("pedigree-trigger");
-    if (pedigreeTrigger) {
+    if (pedigreeTrigger &amp;&amp; XWiki.contextaction == "edit") {
       pedigreeTrigger.observe("click", function(event) {
         event.stop();
-        if (XWiki.contextaction == "view") {
+        document.observe("xwiki:document:saved", function () {
           window.self.location = pedigreeTrigger.href;
-        } else {
-          document.observe("xwiki:document:saved", function () {
-            window.self.location = pedigreeTrigger.href;
-          });
-          document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
-        }
+        });
+        document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
       });
     }
 
