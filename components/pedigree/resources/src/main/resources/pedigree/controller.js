@@ -943,9 +943,9 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
 
     if (linkID == "") {
         var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-        editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this pedigree node and patient " + oldLinkID + "?</b>" +
-                "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that if you do not connect patient " + oldLinkID +
-                " with some other pedigree node before saving this pedigree then the patient will be removed from this family. " +
+        editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this individual and patient record " + oldLinkID + "?</b>" +
+                "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that, unless you link the patient record to another individual in this pedigree, " +
+                "the patient will be removed from this family. " +
                 "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
                 'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
         return;
@@ -960,8 +960,8 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
             editor.getView().unmarkAll();
             onCancelAssignPatient();
         }
-        editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already represented by a different node in this pedigree. "+
-                                               "Do you want to link the patient to this node? "+
+        editor.getOkCancelDialogue().showWithCheckbox("<br>Patient record " + linkID + " is already linked to a different individual node in this pedigree. "+
+                                               "Do you want to link the patient record to this individual instead? "+
                                                "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
                                                "Re-link patient " + linkID + " to this node?",
                                                'Clear data from the pedigree node currently linked to this patient', true,
@@ -979,7 +979,7 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                             "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                 } else {
                     if (loadPatientProperties) {
-                        var clearPropertiesMsg = "<br><br>3) All current pedigree node properties will be lost and overwritten by patient " + linkID + "'s properties.";
+                        var clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
                     } else {
                         var clearPropertiesMsg = "";
                     }
@@ -1007,13 +1007,13 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                     if (!editor.hasFamily() && allLinkedNodes.linkedPatients.length < 2) {
                         processLinking("Connecting this patient requires creating a family. " +
                                        "Do you want to create a family and add patient " + linkID + "?",
-                                       "1) All members of a family share the same pedigree.<br><br>"+
-                                       "2) Patient records may have collaborators. Adding an existing patient to a family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record." +
+                                       "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                       "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa." +
                                        clearPropertiesMsg);
                     } else {
                         processLinking("Do you want to add patient " + linkID + " to this family?",
-                                "1) The pedigree is shared by all members of this family.<br><br>"+
-                                "2) Patient records may have collaborators. Adding an existing patient to this family will grant all collaborators from that patient access to all family members' records. Also, all other family members' collaborators will be able to edit that patient's record."+
+                                "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa."+
                                 clearPropertiesMsg);
                     }
                 }
