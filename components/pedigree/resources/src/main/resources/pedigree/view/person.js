@@ -83,6 +83,7 @@ var Person = Class.create(AbstractPerson, {
      */
     redrawProbandStatus: function() {
         this.getGraphics().setGenderGraphics();
+        this.getGraphics().getHoverBox().regenerateButtons();
     },
 
     /**

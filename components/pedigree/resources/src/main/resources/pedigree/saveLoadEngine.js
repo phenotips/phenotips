@@ -100,7 +100,7 @@ var SaveLoadEngine = Class.create( {
         return JSON.stringify(jsonObject);
     },
 
-    createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband) {
+    createGraphFromSerializedData: function(JSONString, noUndo, centerAroundProband, callbackWhenDataLoaded) {
         console.log("---- load: parsing data ----");
         document.fire("pedigree:load:start");
 
@@ -124,7 +124,7 @@ var SaveLoadEngine = Class.create( {
             return;
         }
 
-        this._finalizeCreateGraph(changeSet, noUndo, centerAroundProband);
+        this._finalizeCreateGraph(changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded);
     },
 
     createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAroundProband) {
@@ -147,7 +147,7 @@ var SaveLoadEngine = Class.create( {
     },
 
     // common code for pedigree creation called after the actual pedigree has been initialized using whatever input data
-    _finalizeCreateGraph: function(changeSet, noUndo, centerAroundProband) {
+    _finalizeCreateGraph: function(changeSet, noUndo, centerAroundProband, callbackWhenDataLoaded) {
 
         var _this = this;
 
@@ -181,6 +181,8 @@ var SaveLoadEngine = Class.create( {
                 var JSONString = _this.serialize();
 
                 editor.getActionStack().addState(null, null, JSONString);
+
+                callbackWhenDataLoaded && callbackWhenDataLoaded();
             }
 
             if (editor.getView().applyChanges(changeSet, false)) {
@@ -321,10 +323,12 @@ var SaveLoadEngine = Class.create( {
 
                     var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
 
-                    this.createGraphFromSerializedData(updatedJSONData);
+                    var addSaveEventOnceLoaded = function() {
+                        // since we just loaded data from disk data in memory is equivalent to data on disk
+                        editor.getActionStack().addSaveEvent();
+                    }
 
-                    // since we just loaded data from disk data in memory is equivalent to data on disk
-                    editor.getActionStack().addSaveEvent();
+                    this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
                 } else {
                     new TemplateSelector(true);
                 }

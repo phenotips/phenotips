@@ -98,11 +98,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
             // highlight current node
-            this.getGenderShape().transform(["...s", 1.05]);
+            this.getGenderShape().transform(["...s", 1.06]);
             this.getGenderShape().attr("stroke-width", 5.5);
         } else if(this.getNode().isProband()) {
             // slightly highlight proband when it is NOT the current node
-            this.getGenderShape().transform(["...s", 1.03]);
+            this.getGenderShape().transform(["...s", 1.04]);
             this.getGenderShape().attr("stroke-width", 2.2);
         }
 

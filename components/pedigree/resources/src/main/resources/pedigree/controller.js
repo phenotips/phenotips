@@ -227,6 +227,21 @@ var Controller = Class.create({
             }
         }
 
+        // disallow removal of the node linked to the current patient
+        for (var i = 0; i < disconnectedList.length; i++) {
+            if (editor.getGraph().isPerson(disconnectedList[i])) {
+                var node = editor.getNode(disconnectedList[i]);
+                if (node.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                    editor.getOkCancelDialogue().showError("<br>Can't remove this node because the current patient would have to be removed as well.<br><br>" +
+                            "<font style='font-size:95%'>(a pedigree can't have disconnected components; " +
+                            "removing this node would<br>cause all highlighted individuals to be disconnected from the<br>" +
+                            "proband and thus all of them would have to be removed)</font>",
+                            "Can't remove", "OK", unhighlightSelected);
+                    return;
+                }
+            }
+        }
+
         if (!editor.isFamilyPage()) {
             // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
             editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
