@@ -127,10 +127,14 @@
     if (pedigreeTrigger) {
       pedigreeTrigger.observe("click", function(event) {
         event.stop();
-        document.observe("xwiki:document:saved", function () {
+        if (XWiki.contextaction == "view") {
           window.self.location = pedigreeTrigger.href;
-        });
-        document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
+        } else {
+          document.observe("xwiki:document:saved", function () {
+            window.self.location = pedigreeTrigger.href;
+          });
+          document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
+        }
       });
     }
 
@@ -261,7 +265,12 @@
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
     #end## pedigree data exists
     (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
-  #end## action == edit
+  #elseif ($xcontext.action == 'view')
+    #if ("$!data" != '')
+      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
+      (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
+    #end
+  #end
   #if ("$!image" != '')
     (% class="pedigree-wrapper" %)((({{html clean="false"}}$!image{{/html}})))
     (% class="pedigree-wrapper" %)((({{html clean="false"}}#pedigreeLegend($data, "Legend:"){{/html}})))
