@@ -125,8 +125,11 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         this.generateMenuBtn();
 
         // proband can't be removed
-        if (!this.getNode().isProband() && !editor.getGraph().getMaxNodeId() == 0)
+        if (!this.getNode().isProband()
+            && !editor.getGraph().getMaxNodeId() == 0
+            && this.getNode().getPhenotipsPatientId() != editor.getGraph().getCurrentPatientId()) {
             this.generateDeleteBtn();
+        }
     },
 
     /**
