@@ -167,23 +167,29 @@ var Controller = Class.create({
         var removeSelected = function() {
             try {
                 if (onlyChild) {
+                    // instea dof removing convert child to a placeholder.
+                    //
+                    // note: need to set properties before actual remove while we know the
+                    //       ID which may change as part of remove process
+
                     removeFirstOccurrenceByValue(disconnectedList, nodeID);
-                }
 
-                var changeSet = editor.getGraph().removeNodes(disconnectedList);
-
-                if (onlyChild) {
-                    // convert child to a placeholder
                     editor.getGraph().setProperties( nodeID, {"gender": "U", "placeholder": true} );
-                    changeSet.removed.push(nodeID);
-                    changeSet["new"] = [ nodeID ];
-
                     if (!editor.getGraph().isChildless(producingRelationship)) {
                         var partnership = editor.getView().getNode(producingRelationship);
                         partnership.setChildlessStatus('childless');
                         var newProperties = partnership.getProperties();
                         editor.getGraph().setProperties( producingRelationship, newProperties );
                     }
+                }
+
+                var changeSet = editor.getGraph().removeNodes(disconnectedList);
+
+                if (onlyChild) {
+                    // mark that this needs to be recreated
+                    changeSet.removed.push(nodeID);
+                    var newNodeID = changeSet.changedIDSet.hasOwnProperty(nodeID) ? changeSet.changedIDSet[nodeID] : nodeID;
+                    changeSet["new"] = [ newNodeID ];
                 }
 
                 editor.getView().applyChanges(changeSet, true);

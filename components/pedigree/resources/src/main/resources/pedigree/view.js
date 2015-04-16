@@ -113,15 +113,6 @@ var View = Class.create({
         return this._nodeMap[nodeId];
     },
 
-    getMaxNodeID: function() {
-        var max = 0;
-        for (var node in this._nodeMap)
-            if (this._nodeMap.hasOwnProperty(node))
-                if (parseInt(node) > max)
-                    max = node;
-        return max;
-    },
-
     /**
      * Returns the person node containing x and y coordinates, or null if outside all person nodes
      *
@@ -555,8 +546,8 @@ var View = Class.create({
             changeSet["moved"] = [];
         if (!changeSet.hasOwnProperty("removed"))
             changeSet["removed"] = [];
-        if (!changeSet.hasOwnProperty("removedInternally"))
-            changeSet["removedInternally"] = [];
+        if (!changeSet.hasOwnProperty("changedIDSet"))
+            changeSet["changedIDSet"] = {};
 
         // 0. remove all removed
         //
@@ -585,24 +576,8 @@ var View = Class.create({
                     }
             }
 
-            // for each removed node all nodes with higher ids get their IDs shifted down by 1
-            var idChanged = false;
-            var changedIDs = {};
-            var maxCurrentNodeId = this.getMaxNodeID();
-            for (var i = 0; i < changeSet.removedInternally.length; i++) {
-                var nextRemoved = changeSet.removedInternally[i];
-                for (var u = nextRemoved + 1; u <= maxCurrentNodeId; u++) {
-                    idChanged = true;
-                    if (!changedIDs.hasOwnProperty(u))
-                        changedIDs[u] = u - 1;
-                    else
-                        changedIDs[u]--;
-                }
-            }
-
             // change all IDs at once so that have both new and old references at the same time
-            if (idChanged)
-                this.changeNodeIds(changedIDs);
+            this.changeNodeIds(changeSet.changedIDSet);
 
             //console.log("Affected by line removal: " + stringifyObject(affectedByLineRemoval));
             //console.log("LineSet: " + stringifyObject(this._lineSet));
