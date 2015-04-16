@@ -37,13 +37,13 @@
     <module>migrations</module>
     <module>indexing</module>
     <module>ui</module>
+    <module>pageobjects</module>
   </modules>
 
   <profiles>
     <profile>
       <id>functional-tests</id>
       <modules>
-        <module>pageobjects</module>
         <module>tests</module>
       </modules>
     </profile>
