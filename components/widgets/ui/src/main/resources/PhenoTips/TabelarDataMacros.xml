@@ -100,7 +100,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')&lt;td class="actions"&gt;#__extradata_rejectTool($targetObj '' $options)&lt;/td&gt;&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')#if("$!{options.rejectToClass}" != '')&lt;td class="actions"&gt;#__extradata_rejectTool($targetObj '' $options)&lt;/td&gt;#end&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 {{/velocity}}
