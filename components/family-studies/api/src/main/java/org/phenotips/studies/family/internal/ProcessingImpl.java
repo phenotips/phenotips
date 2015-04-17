@@ -3,6 +3,7 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.FamilyUtils;
+import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 
@@ -30,8 +31,8 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import groovy.json.JsonException;
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -40,8 +41,6 @@ import net.sf.json.JSONObject;
 @Component
 public class ProcessingImpl implements Processing
 {
-    private final static String PATIENT_LINK_JSON_KEY = "phenotipsId";
-
     @Inject
     private PatientRepository patientRepository;
 
@@ -57,6 +56,9 @@ public class ProcessingImpl implements Processing
 
     @Inject
     private Validation validation;
+
+    @Inject
+    private JsonAdapter jsonAdapter;
 
     public StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException
@@ -75,7 +77,7 @@ public class ProcessingImpl implements Processing
 
         boolean isNew = false;
         List<String> members = new LinkedList<>();
-        List<String> updatedMembers = this.extractIdsFromPedigree(json);
+        List<String> updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
         // sometimes pedigree passes in family document name as a member
         if (familyDoc != null) {
             updatedMembers.remove(familyDoc.getDocumentReference().getName());
@@ -102,6 +104,12 @@ public class ProcessingImpl implements Processing
         }
 
         if (familyDoc != null) {
+            StatusResponse individualAccess = this.canAddEveryMember(familyDoc, updatedMembers);
+            if (individualAccess.statusCode != 200) {
+                return individualAccess;
+            }
+
+            this.updatePatientsFromJson(json);
             // storing first, because pedigree depends on this.
             StatusResponse storingResponse = this.storeFamilyRepresentation(familyDoc, updatedMembers, json, image);
             if (storingResponse.statusCode != 200) {
@@ -121,7 +129,7 @@ public class ProcessingImpl implements Processing
             }
             // when saving just a patient's pedigree that does not belong to a family
             XWikiContext context = provider.get();
-            this.storePedigreeWithSave(anchorDoc, json, image, context, context.getWiki());
+            storePedigreeWithSave(anchorDoc, json, image, context, context.getWiki());
         }
 
         response.statusCode = 200;
@@ -148,57 +156,55 @@ public class ProcessingImpl implements Processing
         rightsObject.set("allow", 1, context);
     }
 
-    private String setToString(Set<String> set)
+    private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException
     {
-        String finalString = "";
-        for (String item : set) {
-            if (StringUtils.isNotBlank(item)) {
-                finalString += item + ",";
-            }
-        }
-        return finalString;
-    }
+        StatusResponse defaultResponse = new StatusResponse();
+        defaultResponse.statusCode = 200;
 
-    private StatusResponse checkForDuplicates(List<String> updatedMembers)
-    {
-        StatusResponse response = new StatusResponse();
-        List<String> duplicationCheck = new LinkedList<>();
-        duplicationCheck.addAll(updatedMembers);
-        for (String member : updatedMembers) {
-            duplicationCheck.remove(member);
-            if (duplicationCheck.contains(member)) {
-                response.statusCode = 400;
-                response.errorType = "duplicate";
-                response.message = String.format("There is a duplicate link for patient %s", member);
-                return response;
-            }
-        }
-
-        response.statusCode = 200;
-        return response;
-    }
-
-    private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
-        JSON familyContents, String image) throws XWikiException
-    {
-        XWikiContext context = provider.get();
-        XWiki wiki = context.getWiki();
-        // first check that the user has permissions for all patients
         for (String member : updatedMembers) {
             StatusResponse patientResponse = validation.canAddToFamily(family, member);
             if (patientResponse.statusCode != 200) {
                 return patientResponse;
             }
         }
-        // only then actually store the changes
+        return defaultResponse;
+    }
+
+    private void updatePatientsFromJson(JSON familyContents) throws JsonException {
+        JSONObject familyContentsObject = JSONObject.fromObject(familyContents);
+        List<JSONObject> patientsJson = jsonAdapter.convert(familyContentsObject);
+
+        for (JSONObject singlePatient : patientsJson) {
+            if (singlePatient.containsKey("id")) {
+                Patient patient = patientRepository.getPatientById(singlePatient.getString("id"));
+                patient.updateFromJSON(singlePatient);
+            }
+        }
+    }
+
+    /**
+     * Does not do access checking.
+     * @param family
+     * @param updatedMembers
+     * @param familyContents
+     * @param image
+     * @return
+     * @throws XWikiException
+     */
+    private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
+        JSON familyContents, String image) throws XWikiException
+    {
+        XWikiContext context = provider.get();
+        XWiki wiki = context.getWiki();
+
         for (String member : updatedMembers) {
-            XWikiDocument patientDoc =
-                wiki.getDocument(patientRepository.getPatientById(member).getDocument(), context);
-            this.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
+            Patient patient = patientRepository.getPatientById(member);
+            XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
+            storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
         }
         StatusResponse familyResponse = validation.checkFamilyAccessWithResponse(family);
         if (familyResponse.statusCode == 200) {
-            this.storePedigreeWithSave(family, familyContents, image, context, wiki);
+            storePedigreeWithSave(family, familyContents, image, context, wiki);
         }
         return familyResponse;
     }
@@ -208,10 +214,10 @@ public class ProcessingImpl implements Processing
      *
      * @param image could be null. If it is, no changes will be made to the image.
      */
-    private void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
+    private static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
         XWiki wiki) throws XWikiException
     {
-        this.storePedigree(document, pedigree, image, context, wiki);
+        storePedigree(document, pedigree, image, context, wiki);
         wiki.saveDocument(document, context);
     }
 
@@ -220,7 +226,7 @@ public class ProcessingImpl implements Processing
      *
      * @param image could be null. If it is, no changes will be made to the image.
      */
-    private void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context, XWiki wiki)
+    private static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context, XWiki wiki)
         throws XWikiException
     {
         BaseObject pedigreeObject = document.getXObject(FamilyUtils.PEDIGREE_CLASS);
@@ -228,38 +234,6 @@ public class ProcessingImpl implements Processing
             pedigreeObject.set("image", image, context);
         }
         pedigreeObject.set("data", pedigree.toString(), context);
-    }
-
-    /**
-     * @return all PhenoTips ids from pedigree nodes that have internal ids
-     */
-    private List<String> extractIdsFromPedigree(JSONObject pedigree)
-    {
-        List<String> extractedIds = new LinkedList<>();
-        for (JSONObject properties : this.extractPatientJSONPropertiesFromPedigree(pedigree)) {
-            Object id = properties.get(PATIENT_LINK_JSON_KEY);
-            if (id != null && StringUtils.isNotBlank(id.toString())) {
-                extractedIds.add(id.toString());
-            }
-        }
-        return extractedIds;
-    }
-
-    /** @return non-null and non-empty patient properties JSON objects. */
-    private List<JSONObject> extractPatientJSONPropertiesFromPedigree(JSONObject pedigree)
-    {
-        List<JSONObject> extractedObjects = new LinkedList<>();
-        JSONArray gg = (JSONArray) pedigree.get("GG");
-        // letting it throw a null exception on purpose
-        for (Object nodeObj : gg) {
-            JSONObject node = (JSONObject) nodeObj;
-            JSONObject properties = (JSONObject) node.get("prop");
-            if (properties == null || properties.isEmpty()) {
-                continue;
-            }
-            extractedObjects.add(properties);
-        }
-        return extractedObjects;
     }
 
     /**
@@ -293,7 +267,7 @@ public class ProcessingImpl implements Processing
     private JSONObject stripIdsFromPedigree(XWikiDocument patientDoc)
     {
         JSONObject pedigree = familyUtils.getPedigree(patientDoc);
-        List<JSONObject> patientProperties = this.extractPatientJSONPropertiesFromPedigree(pedigree);
+        List<JSONObject> patientProperties = PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree);
         String patientId = patientDoc.getDocumentReference().getName();
         for (JSONObject properties : patientProperties) {
             if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
@@ -323,5 +297,35 @@ public class ProcessingImpl implements Processing
                 }
             }
         }
+    }
+
+    private static String setToString(Set<String> set)
+    {
+        String finalString = "";
+        for (String item : set) {
+            if (StringUtils.isNotBlank(item)) {
+                finalString += item + ",";
+            }
+        }
+        return finalString;
+    }
+
+    private static StatusResponse checkForDuplicates(List<String> updatedMembers)
+    {
+        StatusResponse response = new StatusResponse();
+        List<String> duplicationCheck = new LinkedList<>();
+        duplicationCheck.addAll(updatedMembers);
+        for (String member : updatedMembers) {
+            duplicationCheck.remove(member);
+            if (duplicationCheck.contains(member)) {
+                response.statusCode = 400;
+                response.errorType = "duplicate";
+                response.message = String.format("There is a duplicate link for patient %s", member);
+                return response;
+            }
+        }
+
+        response.statusCode = 200;
+        return response;
     }
 }

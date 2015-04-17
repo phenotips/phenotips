@@ -14,6 +14,8 @@ import net.sf.json.JSONObject;
 @Role
 public interface Processing
 {
-    public StatusResponse processPatientPedigree(String patientId, JSONObject json, String image)
+    StatusResponse processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
+
+    String PATIENT_LINK_JSON_KEY = "phenotipsId";
 }
