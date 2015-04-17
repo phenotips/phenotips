@@ -176,6 +176,7 @@ var Legend = Class.create( {
             if(this._affectedNodes[id].length == 0) {
                 delete this._affectedNodes[id];
                 delete this._objectColors[id];
+
                 var htmlElement = this._getListElementForObjectWithID(id)
                 htmlElement.remove();
                 if(Object.keys(this._affectedNodes).length == 0) {
@@ -191,8 +192,27 @@ var Legend = Class.create( {
         }
     },
 
+    /**
+     * Updates internal references to nodes when node ids is/are changed (e.g. after a node deletion)
+     */
+    replaceIDs: function(changedIdsSet) {
+        for (var abnormality in this._affectedNodes) {
+            if (this._affectedNodes.hasOwnProperty(abnormality)) {
+
+                var affectedList = this._affectedNodes[abnormality];
+
+                for (var i = 0; i < affectedList.length; i++) {
+                    var oldID = affectedList[i];
+                    var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
+                    affectedList[i] = newID;
+                }
+            }
+        }
+    },
+
     _getListElementForObjectWithID: function(id) {
-        return $(this._getPrefix() + '-' + id);
+        var HTMLid = isInt(id) ? id : this._hashID(id);
+        return $(this._getPrefix() + '-' + HTMLid);
     },
 
     /**
@@ -203,7 +223,8 @@ var Legend = Class.create( {
      * @private
      */
     _updateCaseNumbersForObject : function(id) {
-      var label = this._legendBox.down('li#' + this._getPrefix() + '-' + id + ' .abnormality-cases');
+      var HTMLid = isInt(id) ? id : this._hashID(id);
+      var label = this._legendBox.down('li#' + this._getPrefix() + '-' + HTMLid + ' .abnormality-cases');
       if (label) {
         var cases = this._affectedNodes.hasOwnProperty(id) ? this._affectedNodes[id].length : 0;
         label.update(cases + "&nbsp;case" + ((cases - 1) && "s" || ""));
@@ -220,7 +241,9 @@ var Legend = Class.create( {
      */
     _generateElement: function(id, name) {
         var color = this.getObjectColor(id);
-        var item = new Element('li', {'class' : 'abnormality '+'drop-'+this._getPrefix(), 'id' : this._getPrefix() + '-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
+        var HTMLid = isInt(id) ? id : this._hashID(id);
+        var item = new Element('li', {'class' : 'abnormality ' + 'drop-' + this._getPrefix(), 'id' : this._getPrefix() + '-' + HTMLid}).update(new Element('span', {'class' : 'disorder-name'}).update(name.escapeHTML()));
+        item.insert(new Element('input', {'type' : 'hidden', 'value' : id}));
         var bubble = new Element('span', {'class' : 'abnormality-color'});
         bubble.style.backgroundColor = color;
         item.insert({'top' : bubble});
@@ -281,7 +304,7 @@ var Legend = Class.create( {
         var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
         //console.log("Position x: " + pos.x + " position y: " + pos.y);
         if (node) {
-            var id = label.id.substring( label.id.indexOf('-') + 1 );
+            var id = label.select('input')[0].value;
             this._onDropObject(node, id);
         }
     },
@@ -295,5 +318,22 @@ var Legend = Class.create( {
      */
     _onDropObject: function(node, objectID) {
         throw "drop functionality is not defined";
+    },
+
+    /*
+    * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
+    * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to a numeric value.
+    *
+    * @method _hashID
+    * @param {id} ID string to be converted
+    * @return {int} Hashed integer representation of input string
+    */
+    _hashID : function(s){
+      s.toLowerCase();
+      return "c" + s.split("").reduce(function(a, b) {
+         a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+      }, 0);
     }
+    
 });

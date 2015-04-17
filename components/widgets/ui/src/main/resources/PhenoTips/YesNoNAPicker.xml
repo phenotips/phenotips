@@ -441,7 +441,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   border-radius: 4px;
   box-shadow: 0 0 10px #eee;
   display: inline-block;
-  margin: 0 5px;
+  margin: 0 0.5em 0 0;
   background: #fff;
   position: relative;
   cursor: pointer;

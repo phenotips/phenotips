@@ -14,8 +14,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Male",
             tip  : "Create a person of male gender",
-            symbol: "",
-            cssclass: "fa fa-square-o",
+            symbol: "<span></span>",
+            cssclass: "square",
             callback : "CreateChild",
             params: { parameters: {"gender": "M"} },
             inSiblingMode: true
@@ -24,8 +24,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Female",
             tip  : "Create a person of female gender",
-            symbol: "",
-            cssclass: "fa fa-circle-thin",
+            symbol: "<span></span>",
+            cssclass: "circle",
             callback : "CreateChild",
             params: { parameters: {"gender": "F"} },
             inSiblingMode: true
@@ -34,10 +34,20 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Unknown",
             tip  : "Create a person of unknown gender",
-            symbol: "<div class='fa fa-square-o fa-rotate-45'></div>",
-            cssclass: "",
+            symbol: "<span></span>",
+            cssclass: "diamond",
             callback : "CreateChild",
             params: { parameters: {"gender": "U"} },
+            inSiblingMode: true
+        }, {
+            key: "P",
+            type: "person",
+            label: "Pregnancy",
+            tip  : "Create a pregnancy",
+            symbol: "<span></span><strong>P</strong>",
+            cssclass: "diamond text-in-middle",
+            callback : "CreateChild",
+            params: { "parameters": {"lifeStatus": "unborn"} },
             inSiblingMode: true
         }, {
             key: "T",
@@ -56,8 +66,8 @@ var NodetypeSelectionBubble = Class.create({
             type: "person",
             label: "Multiple",
             tip  : "Create a node representing multiple siblings",
-            symbol: "〈n〉",
-            cssclass: "",
+            symbol: "<span></span><strong>n</strong>",
+            cssclass: "diamond text-in-middle",
             callback : "CreateChild",
             params: { "group": true },
             expandsTo: "expandPersonGroup",
@@ -93,8 +103,8 @@ var NodetypeSelectionBubble = Class.create({
         this.element = new Element('div', {'class' : 'callout'});
         this.element.insert(new Element('span', {'class' : 'callout-handle'}));
 
-        var container = new Element('div', {'class' : 'node-type-options'});
-        this.expandedOptionsContainer = new Element('div', {'class' : 'node-type-options-extended'});
+        var container = new Element('div', {'class' : 'node-type-options field-no-user-select'});
+        this.expandedOptionsContainer = new Element('div', {'class' : 'node-type-options-extended field-no-user-select'});
         this.element.insert(container);
         this.element.insert(this.expandedOptionsContainer);
 
@@ -102,7 +112,7 @@ var NodetypeSelectionBubble = Class.create({
         this.buttonsDefs.each(function(def) {
             if (!siblingMode || (def.hasOwnProperty("inSiblingMode") && def.inSiblingMode))
                 container.insert(def.type == 'separator' ? _this._generateSeparator() : _this._createOption(def));
-        });        
+        });
         this.element.hide();
         editor.getWorkspace().getWorkArea().insert(this.element);
 
@@ -110,10 +120,10 @@ var NodetypeSelectionBubble = Class.create({
 
         this.resetParameters();
     },
-    
+
     resetParameters: function() {
         this.numPersonsInGroup = 1;
-        this.numTwinNodes      = 2;        
+        this.numTwinNodes      = 2;
     },
 
     /**
@@ -134,20 +144,20 @@ var NodetypeSelectionBubble = Class.create({
             'class' : data.cssclass + ' ' + expandablePrefix + 'node-type-option ' + (data.type || '') + '-type-option node-type-' + data.key,
             'title' : data.tip,
             'href' : '#'
-        }).update(data.symbol); // TODO: eliminate symbol, do ".update(data.label)", add style (icons);
+        }).update(data.symbol);
         var _this = this;
         o.observe('click', function(event) {
-            event.stop();            
+            event.stop();
             if (!_this._node) return;
-            console.log("observe nodetype click: " + data.callback);            
+            console.log("observe nodetype click: " + data.callback);
             if (data.callback == "setProperty") {
                 var event = { "nodeID": _this._node.getID(), "properties": data.params };
                 document.fire("pedigree:node:setproperty", event);
             }
             else if (data.callback == "CreateChild") {
-                _this.handleCreateAction(data);                                      
-            }                        
-            _this.hide();            
+                _this.handleCreateAction(data);
+            }
+            _this.hide();
         });
         var container = new Element("span");
         container.insert(o);
@@ -157,7 +167,7 @@ var NodetypeSelectionBubble = Class.create({
 
     handleCreateAction: function(data) {
         var id       = this._node.getID();
-        var nodeType = this._node.getType();                                                   
+        var nodeType = this._node.getType();
         if (nodeType == "Person") {
             var event = { "personID": id, "childParams": data.params.parameters, "preferLeft": false };
             if (data.params.twins) {
@@ -166,7 +176,7 @@ var NodetypeSelectionBubble = Class.create({
             if (data.params.group) {
                 event["groupSize"] = this.numPersonsInGroup;
             }
-            
+
             if (this._siblingMode)
                 document.fire("pedigree:person:newsibling", event);
             else
@@ -176,15 +186,15 @@ var NodetypeSelectionBubble = Class.create({
             var event = { "partnershipID": id, "childParams": data.params.parameters };
             if (data.params.twins) {
                 event["twins"] = this.numTwinNodes;
-            }                    
+            }
             if (data.params.group) {
                 event["groupSize"] = this.numPersonsInGroup;
             }
             document.fire("pedigree:partnership:newchild", event);
-        }           
+        }
         this.hide();
     },
-    
+
     /**
      * Creates an arrow button that expands or shrinks the bubble
      *
@@ -293,7 +303,7 @@ var NodetypeSelectionBubble = Class.create({
      */
     hide : function() {
         //console.log("hide1");
-        document.stopObserving('mousedown', this._onClickOutside);        
+        document.stopObserving('mousedown', this._onClickOutside);
         $$(".expand-arrow").forEach(function(arrow) {
             arrow.collapse();
         });
@@ -343,7 +353,7 @@ var NodetypeSelectionBubble = Class.create({
     _incrementNumNodes: function() {
         return this.numPersonsInGroup < 9 ? ++this.numPersonsInGroup : this.numPersonsInGroup;
     },
-    
+
     /**
      * Decrement the number of twins to be created
      *
@@ -364,7 +374,7 @@ var NodetypeSelectionBubble = Class.create({
      */
     _incrementNumTwins: function() {
         return this.numTwinNodes < 9 ? ++this.numTwinNodes : this.numTwinNodes;
-    },    
+    },
 
     /**
      * Expand the bubble and show additional options for creation of PersonGroup nodes
@@ -402,14 +412,6 @@ var NodetypeSelectionBubble = Class.create({
         this.expandedOptionsContainer.insert(svgContainer);
         this.expandedOptionsContainer.insert(plusBtn);
         this.expandedOptionsContainer.insert(createBtn);
-
-//        var height = this.element.getHeight();
-//        new Effect.Morph( this.element, {
-//            style: 'background:#f00; color: #fff;', // CSS Properties
-//            width: 400,
-//            duration: 0.8 // Core Effect properties
-//        });
-        //this.element.morph('background:#00ff00; height:' + (height + 20) + 'px;');
     },
 
     /**
@@ -420,10 +422,15 @@ var NodetypeSelectionBubble = Class.create({
     expandTwins: function(twinMenuInfo) {
         var me = this;
         var generateIcon = function(){
+            var displayNumber = me._siblingMode ? (me.numTwinNodes - 1) : me.numTwinNodes;
             return '<svg version="1.1" viewBox="0.0 0.0 100.0 100.0" width=50 height=50 fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="p.0"><path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"></path></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"></path><path fill="#cfe2f3" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path fill="#000000" fill-opacity="0.0" d="m20.661417 22.068241l58.204727 0l0 48.000004l-58.204727 0z" fill-rule="nonzero"></path></g><desc>Number of children</desc><text x="35" y="60" font-family="Verdana" font-size="40" fill="black">'
-                + me.numTwinNodes + '</text></svg>';
+                + displayNumber + '</text></svg>';
         };
-        var createBtn = new Element("input", {'type': 'button', 'value': 'create', 'class': 'button'});
+        if (this._siblingMode) {
+            var createBtn = new Element("input", {'type': 'button', 'value': 'add twins', 'class': 'button'});
+        } else {
+            var createBtn = new Element("input", {'type': 'button', 'value': 'create twins', 'class': 'button'});
+        }
         var svgContainer = new Element('span').update(generateIcon());
         var minusBtn = new Element("span", {
             "class": 'minus-button value-control-button'
@@ -432,7 +439,7 @@ var NodetypeSelectionBubble = Class.create({
             "class": 'plus-button value-control-button'
         }).update("+");
         minusBtn.observe("click", function() { me._decrementNumTwins(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click",  function() { me._incrementNumTwins(); svgContainer.update(generateIcon())});        
+        plusBtn.observe("click",  function() { me._incrementNumTwins(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             me.handleCreateAction(twinMenuInfo);
         });

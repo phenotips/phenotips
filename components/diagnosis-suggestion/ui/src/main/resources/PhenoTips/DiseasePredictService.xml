@@ -47,15 +47,16 @@
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 20)
     #end
-    #set ($data = [])
+    #set ($symptoms = [])
+    #set ($freeSymptoms = [])
     #foreach ($piece in $!request.getParameterValues('symptom'))
-      #set($discard = $data.add($piece))
+      #set($discard = $symptoms.add($piece))
     #end
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
-      #set($discard = $data.add($piece))
+      #set($discard = $freeSymptoms.add($piece))
     #end
 #if ("$!{request.format}" == 'html')
-#set ($results = $services.diagnosis.get($data, $limit))
+#set ($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;

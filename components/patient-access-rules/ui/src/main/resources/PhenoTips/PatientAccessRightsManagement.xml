@@ -1126,7 +1126,7 @@ $xwiki.ssx.use($serviceDocName)
         #end
         #if ($canManage)
           &lt;input type="text" name="user" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newCollaborator')" id="new-collaborator-input" /&gt;
-          &lt;input type="text" name="group" class="suggestGroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-group-input" /&gt;
+          &lt;input type="text" name="group" class="suggestWorkgroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-group-input" /&gt;
         #end
         #if ($canTransfer)
           &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newOwner')" /&gt;&lt;/div&gt;

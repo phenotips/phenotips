@@ -132,9 +132,13 @@
   $$('.chapter .browser .browser-title').each(function(item) {
     item.insert({after: new Element('span', {'class' : 'expand-tools'})});
   });
-  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.expand')");
-  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update("$services.localization.render('phenotips.UIXField.phenotype.collapse')");
-  var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll);
+  var showIcon = '&lt;span class="fa fa-plus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+  var phBrowserExpandAll = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+"$services.localization.render('phenotips.UIXField.phenotype.expand')");
+  var phBrowserExpandAllWrapper = new Element('span', {'class' : 'buttonwrapper expand-all'}).insert(phBrowserExpandAll);
+  var hideIcon = '&lt;span class="fa fa-minus-square-o fa-lg">&lt;/span>&amp;nbsp;';
+  var phBrowserCollapseAll = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+"$services.localization.render('phenotips.UIXField.phenotype.collapse')");
+  var phBrowserCollapseAllWrapper = new Element('span', {'class' : 'buttonwrapper collapse-all'}).insert(phBrowserCollapseAll);
+  var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAllWrapper).insert(phBrowserCollapseAllWrapper);
 
   $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
@@ -159,25 +163,36 @@
     }
   }
 
+  var relayoutSummaryStickyBox = function() {
+    if (sSticky) {
+      sSticky.makeDefault();
+      sSticky.resetPosition();
+    }
+  }
+
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
      if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
        toggleCategory(item);
      }
-     item.observe('click', toggleCategory);
+     item.observe('click', function() {
+       toggleCategory(item);
+       relayoutSummaryStickyBox();
+     });
   });
-  phBrowserExpandAll.observe('click', function(event){
+  phBrowserExpandAllWrapper.observe('click', function(event){
     event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item) {
       toggleCategory(item);
     });
+    relayoutSummaryStickyBox();
   });
-  phBrowserCollapseAll.observe('click', function(event){
+  phBrowserCollapseAllWrapper.observe('click', function(event){
     event.element().up('.chapter').select('.collapsible-group:not(.collapsed) h3').each(function(item) {
       toggleCategory(item);
     });
+    relayoutSummaryStickyBox();
   });
 
-  // FIXME: Re-enable once https://github.com/phenotips/phenotips/issues/822 is fixed.
-  // phBrowserCollapseAll.click();
+  phBrowserCollapseAll.click();
 
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
@@ -509,6 +524,9 @@
   background-color: $theme.highlightColor;
   margin: 0 !important;
   padding: 0 !important;
+}
+.diffDiagnosis-search .hint {
+  padding: 0.92em;
 }
 #diffDiagnosis-search-results ul li {
   margin: 0;

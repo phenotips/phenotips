@@ -1626,7 +1626,7 @@
       <groups/>
     </property>
     <property>
-      <levels>view,register</levels>
+      <levels>register</levels>
     </property>
     <property>
       <users>XWiki.XWikiGuest</users>

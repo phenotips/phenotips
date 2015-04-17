@@ -153,8 +153,6 @@ DynamicPositionedGraph.prototype = {
     {
         // TODO: separate patient object parser/data loader
 
-        this.DG.GG.properties[0] = {};
-
         if (patientObject.hasOwnProperty("patient_name")) {
             if (patientObject.patient_name.hasOwnProperty("first_name")) {
                 this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
@@ -1267,6 +1265,8 @@ DynamicPositionedGraph.prototype = {
         //var consangrBefore   = this.DG.consangr;
         //var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
 
+        var oldMaxID = this.getMaxNodeId();
+
         var removed = nodeList.slice(0);
         removed.sort();
         var moved = [];
@@ -1294,6 +1294,8 @@ DynamicPositionedGraph.prototype = {
 
         //console.log("nodeList: " + stringifyObject(nodeList));
 
+        var changedIDSet = {};
+
         for (var i = nodeList.length-1; i >= 0; i--) {
             var v = nodeList[i];
             //console.log("removing: " + v);
@@ -1315,11 +1317,13 @@ DynamicPositionedGraph.prototype = {
             this.DG.ranks.splice(v,1);
             this.DG.positions.splice(v, 1);
 
-            //// update moved IDs accordingly
-            //for (var m = 0; m < moved.length; m++ ) {
-            //    if (moved[m] > v)
-            //        moved[m]--;
-            //}
+            // for each removed node all nodes with higher ids get their IDs shifted down by 1
+            for (var u = v + 1; u <= oldMaxID; u++) {
+                if (!changedIDSet.hasOwnProperty(u))
+                    changedIDSet[u] = u - 1;
+                else
+                    changedIDSet[u]--;
+            }
         }
 
         this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
@@ -1342,7 +1346,7 @@ DynamicPositionedGraph.prototype = {
         //        movedNodes.push(moved[i]);
 
         // note: moved now has the correct IDs valid in the graph with all affected nodes removed
-        return {"removed": removed, "removedInternally": nodeList, "moved": moved };
+        return {"removed": removed, "changedIDSet": changedIDSet, "moved": moved };
     },
 
     improvePosition: function ()
@@ -1459,8 +1463,7 @@ DynamicPositionedGraph.prototype = {
                  "moved": movedNodes,
                  "highlight": reRanked,
                  "animate": animateList,
-                 "removed": removedBeforeRedrawList,
-                 "removedInternally": removedBeforeRedrawList };
+                 "removed": removedBeforeRedrawList };
     },
 
     // remove empty-values optional properties, e.g. "fName: ''" or "disorders: []"
@@ -1754,7 +1757,9 @@ DynamicPositionedGraph.prototype = {
             var rank    = this.DG.ranks[i];
             if (rankYBefore && rankYBefore.length >= rank && this.DG.rankY[rank] != rankYBefore[rank]) {
                 var relationship = this.DG.GG.downTheChainUntilNonVirtual(i);
-                result[relationship] = true;
+                if (relationship <= maxOldID) {
+                    result[relationship] = true;
+                }
             }
         }
 

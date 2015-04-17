@@ -141,8 +141,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.2-SNAPSHOT</phenotips.version>
-    <xwiki.version>5.4.6</xwiki.version>
-    <slf4j.version>1.7.10</slf4j.version>
+    <xwiki.version>5.4.7</xwiki.version>
+    <slf4j.version>1.7.12</slf4j.version>
     <buildtools.version>1.0</buildtools.version>
     <testframework.version>1.0-milestone-3</testframework.version>
     <solr.version>4.10.4</solr.version>
@@ -169,7 +169,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.3.2</version>
+        <version>3.4</version>
       </dependency>
       <!-- Everybody logs -->
       <dependency>
@@ -191,7 +191,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.3</version>
       </dependency>
       <!-- Most plugins depend on the servlet API -->
       <dependency>
@@ -223,17 +223,17 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4</version>
+        <version>4.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4</version>
+        <version>4.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.5</version>
+        <version>4.4.1</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -244,7 +244,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.3.5</version>
+        <version>4.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -332,7 +332,19 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.2 -->
+            <!-- Remove the following ignores after we release 1.2M2 -->
+            <difference>
+              <className>org/phenotips/diagnosis/DiagnosisService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List getDiagnosis(java.util.List, int)</method>
+              <justification>The API should accept both ontology terms and non-standard features.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/diagnosis/script/DiagnosisScriptService</className>
+              <differenceType>7004</differenceType>
+              <method>java.util.List get(java.util.List, int)</method>
+              <justification>The script service passes both ontology terms and non-standard features to the API.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

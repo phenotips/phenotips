@@ -112,14 +112,16 @@
     <property>
       <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
+{{include document="PhenoTips.PatientSheetMacros" /}}
+
 {{velocity}}
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% class="growth-charts-section" %)(((
     === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
-    (% class="expand-tools" %)(((
-      (% class="tool show" %)$services.localization.render('phenotips.patientSheet.expandSection')(%%) (% class="tool hide" %)$services.localization.render('phenotips.patientSheet.collapseSection')(%%)
-    )))
+
+    #__expandTools()
+
     (% id="charts"%)(((
       #_measurementCharts({'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
     )))

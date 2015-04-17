@@ -51,6 +51,7 @@
     <module>xwiki-platform-users</module>
     <module>studies</module>
     <module>users</module>
+    <module>user-profile-ui</module>
     <module>application-configuration</module>
     <module>patient-tools</module>
     <module>storage-migrators</module>

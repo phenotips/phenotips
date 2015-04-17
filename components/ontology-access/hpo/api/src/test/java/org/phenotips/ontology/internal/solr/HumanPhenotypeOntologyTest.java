@@ -38,6 +38,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +84,8 @@ public class HumanPhenotypeOntologyTest
         this.server = mock(SolrServer.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
-        this.ontologyServiceResult = this.ontologyService.reindex(null);
+        this.ontologyServiceResult =
+            this.ontologyService.reindex(this.getClass().getResource("/hpo-test.obo").toString());
     }
 
     @Test
@@ -130,9 +132,6 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologySuggestTermsIsId() throws ComponentLookupException, SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
@@ -140,61 +139,67 @@ public class HumanPhenotypeOntologyTest
 
         this.mocker.getComponentUnderTest().termSuggest("HP:0001", 0, null, null);
 
-        verify(this.server).query(argThat(new hasIdInFilter()));
+        verify(this.server).query(argThat(new IsIdQuery()));
     }
 
     @Test
     public void testHumanPhenotypeOntologySuggestTermsIsNotId() throws ComponentLookupException, SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("HP:Test", (Integer) 0, (String) null, (String) null);
+        this.mocker.getComponentUnderTest().termSuggest("HP:Test", 0, null, null);
 
-        verify(this.server).query(argThat(new hasBoostQuery()));
+        verify(this.server).query(argThat(new IsDisMaxQuery()));
     }
 
     @Test
-    public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException, SolrServerException
+    public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException,
+        SolrServerException
     {
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
-
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("first second", (Integer) 0, (String) null, (String) null);
+        this.mocker.getComponentUnderTest().termSuggest("first second", 0, null, null);
 
-        verify(this.server).query(argThat(new lastWord()));
-        verify(this.server).query(argThat(new isNotId()));
+        verify(this.server).query(argThat(new IsDisMaxQuery()));
     }
 
-    class hasBoostQuery extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get("bq") != null && ((SolrParams) params).get(CommonParams.SORT) == null ;
+    class IsDisMaxQuery extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object argument)
+        {
+            SolrParams params = (SolrParams) argument;
+            return params.get(DisMaxParams.PF) != null
+                && params.get(DisMaxParams.QF) != null
+                && params.get(CommonParams.Q) != null;
         }
     }
-    class lastWord extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get(CommonParams.Q).endsWith("second*");
+
+    class LastWord extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object argument)
+        {
+            SolrParams params = (SolrParams) argument;
+            return params.get(CommonParams.Q).endsWith("second*");
         }
     }
-    class hasIdInFilter extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get(CommonParams.FQ).startsWith("id") && ((SolrParams) params).get("bq") == null
-                && ((SolrParams) params).get("pf") == null && ((SolrParams) params).get("qf") == null;
-        }
-    }
-    class isNotId extends ArgumentMatcher<SolrParams> {
-        public boolean matches(Object params) {
-            return ((SolrParams) params).get("pf") != null && ((SolrParams) params).get("qf") != null;
+
+    class IsIdQuery extends ArgumentMatcher<SolrParams>
+    {
+        @Override
+        public boolean matches(Object argument)
+        {
+            SolrParams params = (SolrParams) argument;
+            return params.get(CommonParams.FQ).startsWith("id")
+                && params.get(DisMaxParams.PF) == null
+                && params.get(DisMaxParams.QF) == null;
         }
     }
 }

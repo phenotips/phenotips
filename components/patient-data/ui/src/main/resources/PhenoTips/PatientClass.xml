@@ -27,12 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822125000</creationDate>
+  <creationDate>1426704841000</creationDate>
   <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822125000</date>
-  <contentUpdateDate>1401822125000</contentUpdateDate>
+  <date>1426869717000</date>
+  <contentUpdateDate>1426869717000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -635,14 +635,14 @@
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
-      <displayType>select</displayType>
+      <displayType>checkbox</displayType>
       <idField/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>global_mode_of_inheritance</name>
       <number>9</number>
       <picker>0</picker>
       <prettyName>Global mode of inheritance</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>1</size>
@@ -1056,7 +1056,7 @@
     <solved__gene_id>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='Enter a gene name' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='Enter a gene ID' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
@@ -1065,20 +1065,35 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <name>solved__gene_id</name>
       <number>42</number>
       <picker>0</picker>
-      <prettyName>Gene id</prettyName>
+      <prettyName>Gene ID</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </solved__gene_id>
+    <solved__notes>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>PureText</editor>
+      <name>solved__notes</name>
+      <number>46</number>
+      <picker>0</picker>
+      <prettyName>Resolution notes</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </solved__notes>
     <solved__pubmed_id>
       <customDisplay/>
       <disabled>0</disabled>
       <name>solved__pubmed_id</name>
       <number>41</number>
       <picker>0</picker>
-      <prettyName>Pubmed Id</prettyName>
+      <prettyName>Pubmed ID</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>

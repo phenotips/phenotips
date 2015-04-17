@@ -79,12 +79,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-user-profile-ui</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-uiextension-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
@@ -111,6 +105,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-navigation-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-user-profile-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>

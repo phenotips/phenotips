@@ -114,8 +114,6 @@
 
 {{velocity}}
 #__hasBooleanDataToDisplay('solved', $showSolved)
-#__hasDataToDisplay('solved__pubmed_id' $showPubmedId)
-#__hasDataToDisplay('solved__Gene_id' $showGeneId)
 ##
 ##
 #if ($showSolved)
@@ -131,6 +129,7 @@
   (% class="controlled" %) (((
      #__displayIfNotEmpty2Col('solved__pubmed_id')
      #__displayIfNotEmpty2Col('solved__gene_id')
+     #__displayIfNotEmpty2Col('solved__notes')
   )))## controlled (pubmed/gene)
   )))## controlled-group
 #end## section has content
@@ -147,7 +146,7 @@
 enabled=true
 required=
 order=1
-fields=solved,solved__pubmed_id,solved__gene_id</parameters>
+fields=solved,solved__pubmed_id,solved__gene_id,solved__notes</parameters>
     </property>
     <property>
       <scope>wiki</scope>

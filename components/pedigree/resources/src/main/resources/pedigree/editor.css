@@ -395,7 +395,7 @@
 .menu-box .field-box {
   padding: .5em 0;
 }
-.menu-box .field-gender {
+.menu-box .field-phenotipsid {
   padding: .8em 0;
 }
 .menu-box .field-box input[type=text] {
@@ -693,17 +693,48 @@
   text-align: center;
   line-height: 24px;
 }
-/* The unicode symbols we use for different node types have disproportionate sizes.
-   Adjusting the font size for a cleaner look:
-*/
-.fa-rotate-45 {
+.node-type-options .person-type-option.square {
+  line-height: 28px;
+}
+.node-type-options .person-type-option.square span {
+  display: inline-block;
+  width: 12px; 
+  height: 12px;
+  border: 1px solid black;
+}
+.node-type-options .person-type-option.diamond {
+  line-height: 26px;
+}
+.node-type-options .person-type-option.diamond span {
+  display: inline-block;
+  width: 10px; 
+  height: 10px;
+  border: 1px solid black;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
-  display: inline-block !important;
-  font-size: 90%;
+}
+.node-type-options .person-type-option.circle {
+  line-height: 29px;
+}
+.node-type-options .person-type-option.circle span {
+  display: inline-block;
+  width: 12px; 
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+.node-type-options .person-type-option.text-in-middle {
+  position: relative;
+}
+.node-type-options .person-type-option.text-in-middle strong {
+  font-weight: bold;
+  font-size: 8px;
+  position: absolute;
+  top: 8px; 
+  left: 10px;
 }
 .expand-arrow {
   cursor: pointer;
@@ -819,29 +850,13 @@
   width: 100px;
   margin-right: 15px;
 }
-/* TODO: add icons to each option type:
-.node-type-options .node-type-M {
-  background-image: url("$xwiki.getSkinFile('.png')");
+
+/* Option types */
+.node-type-options .node-type-m.text-in-middle strong {
+  font-size: 10px;
+  left: 10px;
+  top: 5px;
 }
-.node-type-options .node-type-F {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-.node-type-options .node-type-U {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-.node-type-options .node-type-T {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-.node-type-options .node-type-m {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-.node-type-options .node-type-i {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-.node-type-options .node-type-n {
-  background-image: url("$xwiki.getSkinFile('.png')");
-}
-*/
 
 /* Datepicker style */
 .fuzzy-date-picker {

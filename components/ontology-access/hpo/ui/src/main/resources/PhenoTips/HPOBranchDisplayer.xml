@@ -47,7 +47,12 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayItem $itemId $itemName $itemData)
-  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt;&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
+  #if ($field.getProperty('multiSelect').value == 1)
+    #set ($inputType = 'checkbox')
+  #else
+    #set ($inputType = 'radio')
+  #end
+  &lt;input type="$inputType" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId || $!{value.contains($itemId)})checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt;&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
 #if("$!{itemData}" != '')
   &lt;span class="fa fa-info-circle phenotype-qualifier-info xHelpButton" title="${itemId}"&gt;&lt;/span&gt;
 #end
@@ -59,7 +64,12 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   #set($childrenList = $services.ontologies.hpo.search({'is_a': $term.id}))
   #if ($childrenList.size() &gt; 0)
   &lt;ul&gt;
-  #if ($firstLevel)&lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
+  #if($firstLevel)
+    #set($firstLevel = false)
+    #if($field.getProperty('multiSelect').value != 1)
+      &lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;
+    #end
+  #end
   #set($macro.childrenMap = {})
   #foreach($item in $childrenList)
     #set ($discard = $macro.childrenMap.put($item.id, $item))
@@ -76,11 +86,20 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 {{html wiki=false clean=false}}
 &lt;div class="hpo-branch"&gt;
 #_displayChildren($startWith)
+#if($field.getProperty('multiSelect').value == 1)
+  &lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;
+#end
 &lt;/div&gt;
 {{/html}}
 #end
-#elseif ("$!{value}" != '')
-  $services.ontologies.resolveTerm($value).name
+#else
+  #if ($field.getProperty('multiSelect').value == 1)
+    #foreach($id in $value)
+      $!services.ontologies.resolveTerm($id).name
+    #end
+  #elseif ("$!{value}" != '')
+    $!services.ontologies.resolveTerm($value).name
+  #end
 #end
 {{/velocity}}
 </content>

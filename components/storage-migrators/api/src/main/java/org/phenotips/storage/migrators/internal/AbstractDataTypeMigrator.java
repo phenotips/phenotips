@@ -37,8 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 
-import org.slf4j.Logger;
-
 /**
  * Implementation for the {@link DataTypeMigrator} role, which tries to use all available {@link DataReader}s that
  * {@link DataReader#hasData() have data} and {@link DataWriter#storeEntity(Object) write} the retrieved data to the
@@ -52,10 +50,6 @@ public abstract class AbstractDataTypeMigrator<T> implements DataTypeMigrator<T>
 {
     /** The current default storage engine assumed by XWiki if no specific store is enabled. */
     private static final String DEFAULT_STORE = "hibernate";
-
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
 
     /** Provides access tot the configuration file where the storage engines are configured. */
     @Inject
