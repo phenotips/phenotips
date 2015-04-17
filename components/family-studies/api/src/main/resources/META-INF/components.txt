@@ -2,3 +2,4 @@ org.phenotips.studies.family.script.FamilyScriptService
 org.phenotips.studies.family.internal.FamilyUtilsImpl
 org.phenotips.studies.family.internal.ProcessingImpl
 org.phenotips.studies.family.internal.ValidationImpl
+org.phenotips.studies.family.internal.JsonAdapterImpl
