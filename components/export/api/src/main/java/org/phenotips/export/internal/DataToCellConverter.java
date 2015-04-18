@@ -1215,6 +1215,85 @@ public class DataToCellConverter
         return bodySection;
     }
 
+
+    public DataSection isSolvedHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "isSolved";
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put("solved", "Solved");
+        fieldToHeaderMap.put("solved__pubmed_id", "PubMed ID");
+        fieldToHeaderMap.put("solved__gene_id", "Gene ID");
+        fieldToHeaderMap.put("solved__notes", "Notes");
+
+        Set<String> present = new LinkedHashSet<>();
+        for (String fieldId : fieldToHeaderMap.keySet()) {
+            if (enabledFields.remove(fieldId)) {
+                present.add(fieldId);
+            }
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        int x = 0;
+        for (String fieldId : present) {
+            DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            x++;
+        }
+        DataCell headerCell = new DataCell("Solved Status", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection isSolvedBody(Patient patient)
+    {
+        String sectionName = "isSolved";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        DataSection bodySection = new DataSection();
+        PatientData<String> patientData = patient.getData("solved");
+
+        Integer x = 0;
+        if (present.contains("solved")) {
+            String solved = patientData != null ? patientData.get("solved") : null;
+            DataCell cell = new DataCell(solved != null ? ConversionHelpers.strIntegerToStrBool(solved) : "", x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("solved__pubmed_id")) {
+            String pubmedId = patientData != null ? patientData.get("solved__pubmed_id") : null;
+            DataCell cell = new DataCell(pubmedId != null ? pubmedId : "", x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("solved__gene_id")) {
+            String geneId = patientData != null ? patientData.get("solved__gene_id") : null;
+            DataCell cell = new DataCell(geneId != null ? geneId : "", x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("solved__notes")) {
+            String solvedNotes = patientData != null ? patientData.get("solved__notes") : null;
+            for (DataCell cell : ConversionHelpers.preventOverflow(solvedNotes, x, 0)) {
+                cell.setMultiline();
+                bodySection.addCell(cell);
+            }
+            x++;
+        }
+
+        return bodySection;
+    }
+
     private String getUsername(DocumentReference reference)
     {
         if (reference == null) {
