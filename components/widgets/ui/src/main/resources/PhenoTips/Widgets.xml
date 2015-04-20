@@ -4306,7 +4306,7 @@ document.observe("xwiki:dom:loaded", function() {
     },
 
     getElement : function() {
-      return this.span;
+      return this.span.down();
     },
 
     onSelect : function(callback) {
