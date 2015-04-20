@@ -260,11 +260,11 @@
     #else
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
     #end## pedigree data exists
-    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
+    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" class="button" id="pedigree-trigger"]](%%)
   #elseif ($xcontext.action == 'view')
     #if ("$!data" != '')
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
-      (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
+      (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" class="button" id="pedigree-trigger"]](%%)
     #end
   #end
   #if ("$!image" != '')
