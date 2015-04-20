@@ -25,7 +25,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.context.Execution;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
 
     /** Provides access to the current execution context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> contextProvider;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -95,7 +95,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject xwikiDataObject = doc.getXObject(Patient.CLASS_REFERENCE);
             if (xwikiDataObject == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                throw new IllegalArgumentException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
             PatientData<String> data = patient.<String>getData(this.getName());
@@ -106,7 +106,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
                 xwikiDataObject.setStringValue(property, data.get(property));
             }
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            XWikiContext context = contextProvider.get();
             String comment = String.format("Updated %s from JSON", this.getName());
             context.getWiki().saveDocument(doc, comment, true, context);
         } catch (Exception e) {
