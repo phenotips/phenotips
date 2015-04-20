@@ -116,7 +116,7 @@ var PedigreeEditor = Class.create({
         this._afterSaveFunc = null;
         closeButton && closeButton.on("click", function(event) {
             var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
-            var quitFunc        = function() { window.location=XWiki.currentDocument.getURL('edit'); };
+            var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
             var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
                                                editor.getSaveLoadEngine().save(); }
 
