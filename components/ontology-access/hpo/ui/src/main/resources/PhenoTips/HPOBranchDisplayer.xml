@@ -76,7 +76,15 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   #end
   #foreach($orderedItemId in $order)
     #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
-    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')&lt;li class="term-entry"&gt;#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)#_displayChildren($foreach.item.id)&lt;/li&gt;#end
+    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')
+      #set ($childrenHtml = "#_displayChildren($foreach.item.id)")
+      #if ("$childrenHtml" != "")
+        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked">▼&lt;/span>')
+      #else
+        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked disabled">▼&lt;/span>')
+      #end
+      &lt;li class="term-entry">$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)$!childrenHtml&lt;/li>
+    #end
   #end
   &lt;/ul&gt;
   #end
