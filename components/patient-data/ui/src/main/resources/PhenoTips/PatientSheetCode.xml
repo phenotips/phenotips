@@ -1924,6 +1924,9 @@ document.observe('xwiki:dom:loaded', function() {
         return;
       }
       this.chartContainer = container;
+      if (this.chartContainer.innerHTML == '') {
+        this.chartContainer.up().hide();
+      }
       this.dataSources = dataSources;
       /** Chart update service */
       this.chartService = new XWiki.Document('ChartService', 'PhenoTips').getURL('get');
@@ -1990,6 +1993,11 @@ document.observe('xwiki:dom:loaded', function() {
         onSuccess: function(response) {
           if (requestID &lt; this.lastRequestID) {return;}
           this.chartContainer.update(response.responseText);
+          if (response.responseText == '&lt;div class="clear"&gt;&lt;/div&gt;') {
+            this.chartContainer.up().hide();
+          } else {
+            this.chartContainer.up().show();
+          }
           this.__adjustAllSVGHeights();
         }.bind(this),
         onFailure: function (response) {}
