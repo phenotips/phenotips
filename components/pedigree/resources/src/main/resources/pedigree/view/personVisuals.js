@@ -659,7 +659,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             //this._linkLabel.click(function () { window.open(patientURL); })
             this._linkLabel.attr({ "href": patientURL, "target": "blank"});  // note: "blank" not "_blank" as Raphael processes this in its own way
             this._linkLabel.attr("fill", "#00498A");
-            this._linkLabel.node.id = "link_" + patientURL;
         }
         this.drawLabels();
     },
@@ -840,6 +839,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this._linkArea.toFront();
             this.getLinkLabel().toFront();
         }
+
+        this.onSetID(); // set IDs of SVG <text> and <a> elements
+
         //if(!editor.isUnsupportedBrowser())
         //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
@@ -853,6 +855,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if (this.getChildlessStatusLabel())
             selectionOffset = selectionOffset/2;
         return selectionOffset;        
+    },
+
+    /**
+     * Updates node's <text> and <a> id's when node ID changes
+     * @method onSetID
+     */
+    onSetID: function($super, id) {
+        $super(id);
+        var labels = this.getLabels();
+        for (var i = 0; i < labels.length; i++) {
+            labels[i].node.id = "text_id_" + this.getNode().getID();
+        }
+        this._linkLabel && (this._linkLabel.node.id = "link_id_" + this.getNode().getID() + "_patient_" + this.getNode().getPhenotipsPatientId());
     },
 
     /**
