@@ -153,6 +153,11 @@ xwiki.store.attachment.recyclebin.hint=file
             <artifactId>patient-measurements-migrations</artifactId>
             <version>${project.version}</version>
           </dependency>
+          <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>patient-data-default-impl</artifactId>
+            <version>${project.version}</version>
+          </dependency>
           <!-- WikiMacro classes are automatically generated. -->
           <dependency>
             <groupId>org.xwiki.platform</groupId>
