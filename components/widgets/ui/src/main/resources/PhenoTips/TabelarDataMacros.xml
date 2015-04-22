@@ -78,7 +78,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 
       #end## foreach object
     #else
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end $!{options.cssClass}" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end $!{options.cssClass}" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end"#if("$!{options.rejectToClass}" != '') data-reject-to-class="$!{options.rejectToClass}"#end %)
       #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.translatedPrettyName#end#if("$!{options.rejectToClass}" != '')|=(% class="actions" %)#end#if ($options.mode == 'edit')|=(% class="actions" %)
       #else
 
@@ -100,7 +100,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')#if("$!{options.rejectToClass}" != '')&lt;td class="actions"&gt;#__extradata_rejectTool($targetObj '' $options)&lt;/td&gt;#end&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 {{/velocity}}
@@ -247,7 +247,8 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
       var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
       var addedDisplaySheet = addTrigger.href.replace(/.*&amp;xredirect=.*addedDisplaySheet=([^&amp;]*).*/, '$1') || '';
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : ''))).replace(/#.*/m, '');
+      var rejectToClass = Element.readAttribute(dataTable, 'data-reject-to-class') || '';
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : '' + '&amp;rejectToClass=' + rejectToClass))).replace(/#.*/m, '');
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
@@ -263,6 +264,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
           }
           newRow.insert(response.responseText);
           newRow.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
+          newRow.down('a.reject').observe('click', this.ajaxRejectData.bindAsEventListener(this));
           Event.fire(dataTable, 'extradata:added', {'element' : newRow});
           Event.fire(document, 'xwiki:dom:updated', {'elements' : [newRow]});
         }.bind(this),
