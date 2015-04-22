@@ -264,7 +264,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
           }
           newRow.insert(response.responseText);
           newRow.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
-          newRow.down('a.reject').observe('click', this.ajaxRejectData.bindAsEventListener(this));
+          newRow.down('a.reject') &amp;&amp; newRow.down('a.reject').observe('click', this.ajaxRejectData.bindAsEventListener(this));
           Event.fire(dataTable, 'extradata:added', {'element' : newRow});
           Event.fire(document, 'xwiki:dom:updated', {'elements' : [newRow]});
         }.bind(this),
