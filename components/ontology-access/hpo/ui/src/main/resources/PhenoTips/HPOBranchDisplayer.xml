@@ -79,11 +79,11 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
     #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')
       #set ($childrenHtml = "#_displayChildren($foreach.item.id)")
       #if ("$childrenHtml" != "")
-        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked">▼&lt;/span>')
+        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked"&gt;▼&lt;/span&gt;')
       #else
-        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked disabled">▼&lt;/span>')
+        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked disabled"&gt;▼&lt;/span&gt;')
       #end
-      &lt;li class="term-entry">$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)$!childrenHtml&lt;/li>
+      &lt;li class="term-entry"&gt;$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)$!childrenHtml&lt;/li&gt;
     #end
   #end
   &lt;/ul&gt;
