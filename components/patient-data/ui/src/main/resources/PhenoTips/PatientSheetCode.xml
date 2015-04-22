@@ -766,12 +766,12 @@ document.observe('xwiki:dom:loaded', function() {
                  var source = event.findElement('.summary-item');
                  var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update("$services.localization.render('phenotips.patientSheetCode.termSuggest.loading')");
                  source.insert(detailsElt);
-                 event.findElement().hide();
+                 var addTrigger = event.findElement('.buttonwrapper');
+                 addTrigger.hide();
                  clearTool.__target = detailsElt;
                  editTool.__target = detailsElt;
                  editClearTools.show();
 
-                 var addTrigger = event.findElement();
                  if (addTrigger.disabled) {
                    return;
                  }
