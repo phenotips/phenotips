@@ -835,7 +835,7 @@ document.observe('xwiki:dom:loaded', function() {
                   editClearTools.hide();
                }
                editTool.observe('click', function(event) {
-                 var target = event.findElement().__target;
+                 var target = event.findElement('.buttonwrapper').__target;
                  if (!target.hasClassName('focused')) {
                    event.stop();
                    selectionSummary._focusDetails(target);
@@ -843,7 +843,7 @@ document.observe('xwiki:dom:loaded', function() {
                });
                clearTool.observe('click', function(event) {
                  event.stop();
-                 var deleteTrigger = event.element();
+                 var deleteTrigger = event.findElement('.buttonwrapper');
                  if (deleteTrigger.disabled) {
                     return;
                  }
