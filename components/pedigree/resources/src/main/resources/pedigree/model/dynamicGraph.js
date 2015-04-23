@@ -1427,13 +1427,14 @@ DynamicPositionedGraph.prototype = {
         var reRankedDiffFrom0 = []
         var reRanked          = [];
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
-            if (this.DG.GG.isPerson(i))
+            if (this.DG.GG.isPerson(i)) {
                 if (this.DG.ranks[i] != ranksBefore[i]) {
                     reRanked.push(i);
                 }
                 if ((ranksBefore[i] - this.DG.ranks[i]) != probandReRankSize) {
                     reRankedDiffFrom0.push(i);
                 }
+            }
         }
         if (reRankedDiffFrom0.length < reRanked.length) {
             reRanked = reRankedDiffFrom0;
