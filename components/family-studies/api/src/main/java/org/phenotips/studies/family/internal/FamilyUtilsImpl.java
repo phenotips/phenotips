@@ -59,7 +59,6 @@ import com.xpn.xwiki.objects.LargeStringProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
 import groovy.lang.Singleton;
-import net.sf.json.JSONObject;
 
 @Component
 @Singleton
@@ -144,32 +143,15 @@ public class FamilyUtilsImpl implements FamilyUtils
         return this.getFamilyDoc(patientDoc);
     }
 
-    /** @return null on error, an empty {@link net.sf.json.JSON} if there is no pedigree, or the existing pedigree. */
-    public JSONObject getPedigree(XWikiDocument doc)
-    {
-        try {
-            BaseObject pedigreeObj = doc.getXObject(PEDIGREE_CLASS);
-            if (pedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get("data");
-                if (StringUtils.isNotBlank(data.toText())) {
-                    return JSONObject.fromObject(data.toText());
-                }
-            }
-            return new JSONObject(true);
-        } catch (XWikiException ex) {
-            return null;
-        }
-    }
-
     /** Will not throw an exception if fails. Does not save any documents. */
     private void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context) {
         try {
-            BaseObject fromPedigreeObj = from.getXObject(PEDIGREE_CLASS);
+            BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
             if (fromPedigreeObj != null) {
                 LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get("data");
                 LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get("image");
                 if (StringUtils.isNotBlank(data.toText())) {
-                    BaseObject toPedigreeObj = to.getXObject(PEDIGREE_CLASS);
+                    BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
                     toPedigreeObj.set("data", data.toText(), context);
                     toPedigreeObj.set("image", image.toText(), context);
                 }
