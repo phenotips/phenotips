@@ -2464,7 +2464,7 @@ return PhenoTips;
             memo.count = this.countDescendents(this._getDataFromResponse(response));
             //Event.fire(element, 'obrowser:count:done', memo);
           }
-          if ((memo.count === 0) || (doPopulate  &amp;&amp; !element.down('.descendents .entry, .error'))) {
+          if ((memo.count === 0) || (doPopulate &amp;&amp; !element.down('.descendents .entry, .error'))) {
             element.addClassName('collapsed');
             var expandTool = element.down('.expand-tool');
             if (expandTool) {
