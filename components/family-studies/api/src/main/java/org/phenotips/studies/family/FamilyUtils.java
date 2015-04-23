@@ -26,7 +26,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.QueryException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -38,16 +37,11 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import net.sf.json.JSONObject;
-
 @Role
 public interface FamilyUtils
 {
     EntityReference FAMILY_CLASS =
         new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    EntityReference PEDIGREE_CLASS =
-        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     EntityReference FAMILY_REFERENCE =
         new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -62,8 +56,6 @@ public interface FamilyUtils
     XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
     XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException;
-
-    JSONObject getPedigree(XWikiDocument doc);
 
     Collection<String> getRelatives(XWikiDocument patient) throws XWikiException;
 

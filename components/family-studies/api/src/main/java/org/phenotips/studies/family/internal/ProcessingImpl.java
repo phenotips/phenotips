@@ -96,7 +96,7 @@ public class ProcessingImpl implements Processing
             isNew = true;
         } else if (familyDoc != null) {
             members = familyUtils.getFamilyMembers(familyDoc);
-            StatusResponse duplicationStatus = this.checkForDuplicates(updatedMembers);
+            StatusResponse duplicationStatus = ProcessingImpl.checkForDuplicates(updatedMembers);
             if (duplicationStatus.statusCode != 200) {
                 return duplicationStatus;
             }
@@ -118,7 +118,7 @@ public class ProcessingImpl implements Processing
 
             if (!isNew) {
                 this.setUnionOfUserPermissions(familyDoc, updatedMembers);
-                this.removeMembersNotPresent(members, updatedMembers);
+                this.removeMembersNotPresent(members, updatedMembers, image);
             }
             this.addNewMembers(members, updatedMembers, familyDoc);
             // remove and add do not take care of modifying the 'members' property
@@ -129,7 +129,7 @@ public class ProcessingImpl implements Processing
             }
             // when saving just a patient's pedigree that does not belong to a family
             XWikiContext context = provider.get();
-            storePedigreeWithSave(anchorDoc, json, image, context, context.getWiki());
+            PedigreeUtils.storePedigreeWithSave(anchorDoc, json, image, context, context.getWiki());
         }
 
         response.statusCode = 200;
@@ -200,46 +200,19 @@ public class ProcessingImpl implements Processing
         for (String member : updatedMembers) {
             Patient patient = patientRepository.getPatientById(member);
             XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
-            storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
+            PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
         }
         StatusResponse familyResponse = validation.checkFamilyAccessWithResponse(family);
         if (familyResponse.statusCode == 200) {
-            storePedigreeWithSave(family, familyContents, image, context, wiki);
+            PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
         }
         return familyResponse;
     }
 
     /**
-     * Does not do permission checks.
-     *
-     * @param image could be null. If it is, no changes will be made to the image.
-     */
-    private static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
-        XWiki wiki) throws XWikiException
-    {
-        storePedigree(document, pedigree, image, context, wiki);
-        wiki.saveDocument(document, context);
-    }
-
-    /**
-     * Does not do permission checks.
-     *
-     * @param image could be null. If it is, no changes will be made to the image.
-     */
-    private static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context, XWiki wiki)
-        throws XWikiException
-    {
-        BaseObject pedigreeObject = document.getXObject(FamilyUtils.PEDIGREE_CLASS);
-        if (image != null) {
-            pedigreeObject.set("image", image, context);
-        }
-        pedigreeObject.set("data", pedigree.toString(), context);
-    }
-
-    /**
      * Removes records from the family that are no longer in the updated family structure.
      */
-    private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers) throws XWikiException
+    private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers, String image) throws XWikiException
     {
         List<String> toRemove = new LinkedList<>();
         toRemove.addAll(currentMembers);
@@ -247,15 +220,20 @@ public class ProcessingImpl implements Processing
         if (!toRemove.isEmpty()) {
             XWikiContext context = provider.get();
             XWiki wiki = context.getWiki();
-            for (String oldMember : toRemove) {
-                Patient patient = patientRepository.getPatientById(oldMember);
+            for (String oldMemberId : toRemove) {
+                Patient patient = patientRepository.getPatientById(oldMemberId);
                 if (patient != null) {
                     XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
                     BaseObject familyRefObj = patientDoc.getXObject(FamilyUtils.FAMILY_REFERENCE);
                     if (familyRefObj != null) {
                         patientDoc.removeXObject(familyRefObj);
-                        JSONObject strippedPedigree = this.stripIdsFromPedigree(patientDoc);
-                        this.storePedigree(patientDoc, strippedPedigree, null, context, wiki);
+                        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
+                        if (pedigree != null) {
+                            JSONObject strippedPedigree =
+                                this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
+                            image = SvgUpdater.removeLinks(pedigree.image, oldMemberId);
+                            PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
+                        }
                         wiki.saveDocument(patientDoc, context);
                     }
                 }
@@ -264,19 +242,21 @@ public class ProcessingImpl implements Processing
     }
 
     /** Strips out all linked ids from a pedigree. */
-    private JSONObject stripIdsFromPedigree(XWikiDocument patientDoc)
+    private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId)
     {
-        JSONObject pedigree = familyUtils.getPedigree(patientDoc);
-        List<JSONObject> patientProperties = PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree);
-        String patientId = patientDoc.getDocumentReference().getName();
-        for (JSONObject properties : patientProperties) {
-            if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
-                .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId))
-            {
-                properties.remove(PATIENT_LINK_JSON_KEY);
+        if (pedigree != null) {
+            List<JSONObject> patientProperties = PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.data);
+            for (JSONObject properties : patientProperties) {
+                if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
+                    .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId))
+                {
+                    properties.remove(PATIENT_LINK_JSON_KEY);
+                }
             }
+            return pedigree.data;
+        } else {
+            return new JSONObject();
         }
-        return pedigree;
     }
 
     private void addNewMembers(List<String> currentMembers, List<String> updatedMembers, XWikiDocument familyDoc)
