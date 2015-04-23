@@ -1540,7 +1540,7 @@ DynamicPositionedGraph.prototype = {
 
         var movedNodes = this._getAllNodes();
 
-        var probandReRankSize = (ranksBefore[0] - this.DG.ranks[0]);
+        var probandReRankSize = (ranksBefore[this._probandId] - this.DG.ranks[this._probandId]);
         var reRankedDiffFrom0 = []
         var reRanked          = [];
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
