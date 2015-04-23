@@ -95,11 +95,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getNode().isProband()) {
             // add proband arrow TO PROBAND
             this._genderGraphics.push(this.generateProbandArrow());
+            this.getGenderShape().node.setAttribute("isProband", "true");
         }
         if (this.getNode().getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
             // highlight current node
             this.getGenderShape().transform(["...s", 1.06]);
             this.getGenderShape().attr("stroke-width", 5.5);
+            this.getGenderShape().node.setAttribute("currentPatient", "true");
         } else if(this.getNode().isProband()) {
             // slightly highlight proband when it is NOT the current node
             this.getGenderShape().transform(["...s", 1.04]);
@@ -865,9 +867,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         $super(id);
         var labels = this.getLabels();
         for (var i = 0; i < labels.length; i++) {
-            labels[i].node.id = "text_id_" + this.getNode().getID();
+            labels[i].node.setAttribute("pedigreeNodeID", this.getNode().getID());
         }
-        this._linkLabel && (this._linkLabel.node.id = "link_id_" + this.getNode().getID() + "_patient_" + this.getNode().getPhenotipsPatientId());
+        this._linkLabel && (this._linkLabel.node.setAttribute("pedigreeLinkedPatient", this.getNode().getPhenotipsPatientId()));
     },
 
     /**
