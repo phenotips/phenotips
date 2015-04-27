@@ -44,6 +44,7 @@
 {{include document="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity output=false}}
+#set ($displayDocExtra = true)
 $xwiki.jsx.use('PhenoTips.TouchscreenEvents')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##

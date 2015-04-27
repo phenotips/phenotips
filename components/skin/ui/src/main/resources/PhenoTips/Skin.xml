@@ -446,6 +446,9 @@ h1:target, h2:target, h3:target {
   color: $theme.linkColor;
   cursor: pointer;
   float: right;
+}
+#xdocFooter {
+  display: none;
 }</code>
     </property>
     <property>
