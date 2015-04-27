@@ -2061,9 +2061,7 @@ CalendarDateSelect = Class.create({
   },
   dayHover: function(element) {
     var hover_date = new Date(this.selected_date);
-    hover_date.setYear(element.year);
-    hover_date.setMonth(element.month);
-    hover_date.setDate(element.day);
+    hover_date.setFullYear(element.year, element.month, element.day);
     this.updateFooter(hover_date.toFormattedString(this.options));
   },
   dayHoverOut: function(element) { this.updateFooter(); },
@@ -2127,9 +2125,7 @@ CalendarDateSelect = Class.create({
     }
     if (parts.get("day")) {
       var t_selected_date = this.selected_date, vdc = this.options.valid_date_check;
-      t_selected_date.setYear(parts.get("year"));
-      t_selected_date.setMonth(parts.get("month"));
-      t_selected_date.setDate(parts.get("day"));
+      t_selected_date.setFullYear(parts.get("year"), parts.get("month"), parts.get("day"));
       
       if (vdc &amp;&amp; ! vdc(t_selected_date.clearTime())) { return false; }
       this.selected_date = t_selected_date;
