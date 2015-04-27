@@ -401,12 +401,14 @@ public class DataToCellConverter
         DataCell topCell = new DataCell("Identifiers", 0, 0, StyleOption.HEADER);
         topCell.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(topCell);
+        int x = 0;
         if (present.contains("id")) {
-            DataCell idCell = new DataCell("Report ID", 0, 1, StyleOption.HEADER);
+            DataCell idCell = new DataCell("Report ID", x, 1, StyleOption.HEADER);
             section.addCell(idCell);
+            x++;
         }
         if (present.contains("external_id")) {
-            DataCell externalIdCell = new DataCell("Patient Identifier", 1, 1, StyleOption.HEADER);
+            DataCell externalIdCell = new DataCell("Patient Identifier", x, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
         }
         // section.finalizeToMatrix();
@@ -422,12 +424,14 @@ public class DataToCellConverter
         }
         DataSection section = new DataSection();
 
+        int x = 0;
         if (present.contains("id")) {
-            DataCell cell = new DataCell(patient.getId(), 0, 0);
+            DataCell cell = new DataCell(patient.getId(), x, 0);
             section.addCell(cell);
+            x++;
         }
         if (present.contains("external_id")) {
-            DataCell cell = new DataCell(patient.getExternalId(), 1, 0);
+            DataCell cell = new DataCell(patient.getExternalId(), x, 0);
             section.addCell(cell);
         }
         // section.finalizeToMatrix();
