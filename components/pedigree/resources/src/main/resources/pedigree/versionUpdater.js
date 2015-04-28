@@ -24,15 +24,14 @@ VersionUpdater = Class.create( {
     updateToCurrentVersion: function(pedigreeJSON) {
         for (var i = 0; i < this.availableUpdates.length; i++) {
             var update = this.availableUpdates[i];
-            
+
             var updateResult = this[update.func](pedigreeJSON);
-            
+
             if (updateResult !== null) {
                 console.log("[update #" + i + "] [updating to " + update.introduced + " version] - performing " + update.comment + " update");
                 pedigreeJSON = updateResult;
             }
         }
-        
         return pedigreeJSON;
     },
 
@@ -42,12 +41,13 @@ VersionUpdater = Class.create( {
     updateGroupNodeComments: function(pedigreeJSON) {
         var data = JSON.parse(pedigreeJSON);
         if (data.hasOwnProperty("JSON_version")) {
+            // any pedigree which has a JSON_version is known to have the updated data
             return null;
         }
         var change = false;
         for (var i = 0; i < data.GG.length; i++) {
             var node = data.GG[i];
-            
+
             if (node.hasOwnProperty("prop")) {
                 if (node.prop.hasOwnProperty("numPersons") && !node.prop.hasOwnProperty("comments") && node.prop.hasOwnProperty("fName") && node.prop.hasOwnProperty("fName") != "") {
                     node.prop["comments"] = node.prop.fName;
@@ -69,6 +69,7 @@ VersionUpdater = Class.create( {
     updateAdoptedStatus: function(pedigreeJSON) {
         var data = JSON.parse(pedigreeJSON);
         if (data.hasOwnProperty("JSON_version")) {
+            // any pedigree which has a JSON_version is known to have the updated data
             return null;
         }
         var change = false;
@@ -97,6 +98,10 @@ VersionUpdater = Class.create( {
     updateId: function(pedigreeJSON) {
         var change = false;
         var data = JSON.parse(pedigreeJSON);
+        if (data.hasOwnProperty("JSON_version")) {
+            // any pedigree which has a JSON_version is known to have the updated data
+            return null;
+        }
         for (var i = 0; i < data.GG.length; i++) {
             var node = data.GG[i];
 
@@ -144,6 +149,7 @@ VersionUpdater = Class.create( {
 
         var data = JSON.parse(pedigreeJSON);
         if (data.hasOwnProperty("JSON_version")) {
+            // any pedigree which has a JSON_version is known to have the updated data
             return null;
         }
 
@@ -217,5 +223,5 @@ VersionUpdater = Class.create( {
         // will be recorded here
         data["JSON_version"] = "1.0";
         return JSON.stringify(data);
-    },
+    }
 });
