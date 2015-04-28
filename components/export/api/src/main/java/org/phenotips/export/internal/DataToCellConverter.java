@@ -673,19 +673,19 @@ public class DataToCellConverter
             PatientData<List<SolrOntologyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrOntologyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            int y = 0;
-            if (modeTermList != null) {
-                for (SolrOntologyTerm term : modeTermList) {
-                    String mode = term != null ? term.getName() : "";
-                    DataCell cell = new DataCell(mode, x, y);
+                int y = 0;
+                if (modeTermList != null && !modeTermList.isEmpty()) {
+                    for (SolrOntologyTerm term : modeTermList) {
+                        String mode = term != null ? term.getName() : "";
+                        DataCell cell = new DataCell(mode, x, y);
+                        bodySection.addCell(cell);
+                        y++;
+                    }
+                } else {
+                    DataCell cell = new DataCell("", x, y);
                     bodySection.addCell(cell);
-                    y++;
                 }
-            } else {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
-            x++;
+                x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -1164,7 +1164,7 @@ public class DataToCellConverter
             // bodySection.addCell(cell);
             // x++;
             int y = 0;
-            if (ageOfOnsetList != null) {
+            if (ageOfOnsetList != null && !ageOfOnsetList.isEmpty()) {
                 for (SolrOntologyTerm term : ageOfOnsetList) {
                     String mode = term != null ? term.getName() : "";
                     DataCell cell = new DataCell(mode, x, y);

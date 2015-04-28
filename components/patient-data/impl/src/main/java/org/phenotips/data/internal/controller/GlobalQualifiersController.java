@@ -99,7 +99,8 @@ public class GlobalQualifiersController implements PatientDataController<List<On
                 }
                 result.put(propertyName, holder);
             }
-            return new DictionaryPatientData<>(GlobalQualifiersController.DATA_NAME, result);
+
+            return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
@@ -122,7 +123,7 @@ public class GlobalQualifiersController implements PatientDataController<List<On
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         Iterator<Entry<String, OntologyTerm>> data =
-            patient.<OntologyTerm>getData(GlobalQualifiersController.DATA_NAME).dictionaryIterator();
+            patient.<OntologyTerm>getData(DATA_NAME).dictionaryIterator();
         while (data.hasNext())
         {
             Entry<String, OntologyTerm> datum = data.next();
@@ -145,7 +146,7 @@ public class GlobalQualifiersController implements PatientDataController<List<On
     @Override
     public String getName()
     {
-        return GlobalQualifiersController.DATA_NAME;
+        return DATA_NAME;
     }
 
     protected List<String> getProperties()
