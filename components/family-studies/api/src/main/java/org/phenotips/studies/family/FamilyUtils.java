@@ -37,6 +37,12 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+/**
+ * Utility methods for manipulating families.
+ *
+ * @version $Id$
+ * @since 1.2RC1
+ */
 @Role
 public interface FamilyUtils
 {
@@ -63,7 +69,8 @@ public interface FamilyUtils
 
     XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
 
-    XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save) throws NamingException, QueryException, XWikiException;
+    XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save) throws NamingException, QueryException,
+        XWikiException;
 
     EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException;
 

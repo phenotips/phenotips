@@ -23,8 +23,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Contains mainly functions for manipulating json from pedigrees.
- * Example usage would be extracting patient data objects from the json.
+ * Contains mainly functions for manipulating json from pedigrees. Example usage would be extracting patient data
+ * objects from the json.
  */
 public class PedigreeUtils
 {
@@ -91,7 +91,6 @@ public class PedigreeUtils
         wiki.saveDocument(document, context);
     }
 
-
     /** @return null on error, an empty {@link net.sf.json.JSON} if there is no pedigree, or the existing pedigree. */
     public static Pedigree getPedigree(XWikiDocument doc)
     {
@@ -116,15 +115,28 @@ public class PedigreeUtils
     public static class Pedigree
     {
         // these are package local on purpose
-        JSONObject data;
-        String image = "";
+        private JSONObject data;
+
+        private String image = "";
 
         /**
          * Checks if the `data` field is empty.
+         *
          * @return true if data is {@link null} or if {@link JSONObject#isEmpty()} returns true
          */
-        boolean isEmpty() {
+        public boolean isEmpty()
+        {
             return this.data == null || this.data.isEmpty();
+        }
+
+        public JSONObject getData()
+        {
+            return this.data;
+        }
+
+        public String getImage()
+        {
+            return this.image;
         }
     }
 }

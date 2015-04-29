@@ -42,47 +42,64 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+/**
+ * Script service for working with Families.
+ *
+ * @version $Id$
+ * @since 1.2RC1
+ */
 @Component
 @Singleton
 @Named("family")
 public class FamilyScriptService implements ScriptService
 {
     @Inject
-    FamilyUtils utils;
+    private Logger logger;
 
     @Inject
-    Processing processing;
+    private FamilyUtils utils;
 
     @Inject
-    Validation validation;
+    private Processing processing;
 
     @Inject
-    Logger logger;
+    private Validation validation;
 
-    /** Can return null */
+    /**
+     * Create a new family for a patient, or, if the patient already has a family, return a reference to it.
+     *
+     * @param patientId a patient that should belong to the family
+     * @return a reference to the document holding the newly created family, or {@code null} if no family was created
+     */
     public DocumentReference createFamily(String patientId)
     {
         try {
-            XWikiDocument familyDoc;
-            familyDoc = utils.getFamilyOfPatient(patientId);
+            XWikiDocument familyDoc = this.utils.getFamilyOfPatient(patientId);
             if (familyDoc == null) {
-                familyDoc = utils.createFamilyDoc(patientId);
+                familyDoc = this.utils.createFamilyDoc(patientId);
             }
             return familyDoc != null ? familyDoc.getDocumentReference() : null;
         } catch (Exception ex) {
-            logger.error("Could not create a new family document {}", ex.getMessage());
+            this.logger.error("Could not create a new family document for patient [{}]: {}",
+                patientId, ex.getMessage());
         }
         return null;
     }
 
-    /** Can return null. */
+    /**
+     * Retrieve a patient's family, if any.
+     *
+     * @param patient the patient whose family must be retrieved
+     * @return a reference to the document holding the patient's family, or {@code null} if no family exists for the
+     *         patient
+     */
     public DocumentReference getPatientsFamily(XWikiDocument patient)
     {
         try {
-            XWikiDocument doc = utils.getFamilyDoc(patient);
+            XWikiDocument doc = this.utils.getFamilyDoc(patient);
             return doc != null ? doc.getDocumentReference() : null;
         } catch (XWikiException ex) {
-            logger.error("Could not get patient's family {}", ex.getMessage());
+            this.logger.error("Could not get patient's family {}", ex.getMessage());
         }
         return null;
     }
@@ -90,13 +107,12 @@ public class FamilyScriptService implements ScriptService
     /** Can return null. */
     public JSON getFamilyStatus(String id)
     {
-        boolean isFamily = false;
         try {
-            XWikiDocument doc = utils.getFromDataSpace(id);
-            XWikiDocument familyDoc = utils.getFamilyDoc(doc);
-            return familyStatusResponse(familyDoc, utils.getFamilyMembers(familyDoc));
+            XWikiDocument doc = this.utils.getFromDataSpace(id);
+            XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
+            return familyStatusResponse(familyDoc, this.utils.getFamilyMembers(familyDoc));
         } catch (XWikiException ex) {
-            logger.error("Could not get patient's family {}", ex.getMessage());
+            this.logger.error("Could not get patient's family {}", ex.getMessage());
             return new JSONObject(true);
         }
     }
@@ -107,7 +123,7 @@ public class FamilyScriptService implements ScriptService
     public JSON verifyLinkable(String thisId, String otherId)
     {
         try {
-            return validation.canAddToFamily(thisId, otherId).asVerification();
+            return this.validation.canAddToFamily(thisId, otherId).asVerification();
         } catch (XWikiException ex) {
             return new JSONObject(true);
         }
