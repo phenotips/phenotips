@@ -152,7 +152,7 @@ public class GlobalQualifiersController implements PatientDataController<List<On
         return Arrays.asList("global_age_of_onset", "global_mode_of_inheritance");
     }
 
-    protected void addTerms(String item, List<OntologyTerm> holder)
+    private void addTerms(String item, List<OntologyTerm> holder)
     {
         if (StringUtils.isNotBlank(item)) {
             OntologyTerm term = this.ontologyManager.resolveTerm(item);
