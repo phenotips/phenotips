@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +38,12 @@ import net.sf.json.JSONObject;
 
 /**
  * Storage and retrieval.
+ *
+ * @version $Id$
+ * @since 1.2RC1
  */
 @Component
+@Singleton
 public class ProcessingImpl implements Processing
 {
     @Inject
@@ -60,15 +65,16 @@ public class ProcessingImpl implements Processing
     @Inject
     private JsonAdapter jsonAdapter;
 
+    @Override
     public StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException
     {
         StatusResponse response = new StatusResponse();
-        DocumentReference anchorRef = referenceResolver.resolve(anchorId, Patient.DEFAULT_DATA_SPACE);
-        XWikiDocument anchorDoc = familyUtils.getDoc(anchorRef);
-        XWikiDocument familyDoc = familyUtils.getFamilyDoc(anchorDoc);
+        DocumentReference anchorRef = this.referenceResolver.resolve(anchorId, Patient.DEFAULT_DATA_SPACE);
+        XWikiDocument anchorDoc = this.familyUtils.getDoc(anchorRef);
+        XWikiDocument familyDoc = this.familyUtils.getFamilyDoc(anchorDoc);
 
-        if (anchorDoc == null) {  // fixme must check for all conditions as in verify linkable
+        if (anchorDoc == null) { // fixme must check for all conditions as in verify linkable
             response.statusCode = 404;
             response.errorType = "invalidId";
             response.message = String.format("The family/patient id %s is invalid", anchorId);
@@ -91,11 +97,11 @@ public class ProcessingImpl implements Processing
             return response;
         } else if (familyDoc == null && updatedMembers.size() > 1) {
             // in theory the anchorDoc could be a family document, but at this point it should be a patient document
-            familyDoc = familyUtils.createFamilyDoc(anchorDoc, true);
+            familyDoc = this.familyUtils.createFamilyDoc(anchorDoc, true);
             this.setUnionOfUserPermissions(familyDoc, updatedMembers);
             isNew = true;
         } else if (familyDoc != null) {
-            members = familyUtils.getFamilyMembers(familyDoc);
+            members = this.familyUtils.getFamilyMembers(familyDoc);
             StatusResponse duplicationStatus = ProcessingImpl.checkForDuplicates(updatedMembers);
             if (duplicationStatus.statusCode != 200) {
                 return duplicationStatus;
@@ -122,13 +128,13 @@ public class ProcessingImpl implements Processing
             }
             this.addNewMembers(members, updatedMembers, familyDoc);
             // remove and add do not take care of modifying the 'members' property
-            familyUtils.setFamilyMembers(familyDoc, updatedMembers);
+            this.familyUtils.setFamilyMembers(familyDoc, updatedMembers);
         } else {
-            if (!validation.hasPatientEditAccess(anchorDoc)) {
-                return validation.createInsufficientPermissionsResponse(anchorId);
+            if (!this.validation.hasPatientEditAccess(anchorDoc)) {
+                return this.validation.createInsufficientPermissionsResponse(anchorId);
             }
             // when saving just a patient's pedigree that does not belong to a family
-            XWikiContext context = provider.get();
+            XWikiContext context = this.provider.get();
             PedigreeUtils.storePedigreeWithSave(anchorDoc, json, image, context, context.getWiki());
         }
 
@@ -139,14 +145,14 @@ public class ProcessingImpl implements Processing
     /** Does not save the family document. */
     private void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws XWikiException
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         BaseObject rightsObject = familyDocument.getXObject(FamilyUtils.RIGHTS_CLASS);
         Set<String> usersUnion = new HashSet<>();
         Set<String> groupsUnion = new HashSet<>();
         for (String patientId : patientIds) {
-            DocumentReference patientRef = patientRepository.getPatientById(patientId).getDocument();
-            XWikiDocument patientDoc = familyUtils.getDoc(patientRef);
-            List<Set<String>> patientRights = familyUtils.getEntitiesWithEditAccess(patientDoc);
+            DocumentReference patientRef = this.patientRepository.getPatientById(patientId).getDocument();
+            XWikiDocument patientDoc = this.familyUtils.getDoc(patientRef);
+            List<Set<String>> patientRights = this.familyUtils.getEntitiesWithEditAccess(patientDoc);
             usersUnion.addAll(patientRights.get(0));
             groupsUnion.addAll(patientRights.get(1));
         }
@@ -162,7 +168,7 @@ public class ProcessingImpl implements Processing
         defaultResponse.statusCode = 200;
 
         for (String member : updatedMembers) {
-            StatusResponse patientResponse = validation.canAddToFamily(family, member);
+            StatusResponse patientResponse = this.validation.canAddToFamily(family, member);
             if (patientResponse.statusCode != 200) {
                 return patientResponse;
             }
@@ -170,13 +176,14 @@ public class ProcessingImpl implements Processing
         return defaultResponse;
     }
 
-    private void updatePatientsFromJson(JSON familyContents) throws JsonException {
+    private void updatePatientsFromJson(JSON familyContents) throws JsonException
+    {
         JSONObject familyContentsObject = JSONObject.fromObject(familyContents);
-        List<JSONObject> patientsJson = jsonAdapter.convert(familyContentsObject);
+        List<JSONObject> patientsJson = this.jsonAdapter.convert(familyContentsObject);
 
         for (JSONObject singlePatient : patientsJson) {
             if (singlePatient.containsKey("id")) {
-                Patient patient = patientRepository.getPatientById(singlePatient.getString("id"));
+                Patient patient = this.patientRepository.getPatientById(singlePatient.getString("id"));
                 patient.updateFromJSON(singlePatient);
             }
         }
@@ -184,6 +191,7 @@ public class ProcessingImpl implements Processing
 
     /**
      * Does not do access checking.
+     *
      * @param family
      * @param updatedMembers
      * @param familyContents
@@ -194,15 +202,15 @@ public class ProcessingImpl implements Processing
     private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
         JSON familyContents, String image) throws XWikiException
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
 
         for (String member : updatedMembers) {
-            Patient patient = patientRepository.getPatientById(member);
+            Patient patient = this.patientRepository.getPatientById(member);
             XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
             PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
         }
-        StatusResponse familyResponse = validation.checkFamilyAccessWithResponse(family);
+        StatusResponse familyResponse = this.validation.checkFamilyAccessWithResponse(family);
         if (familyResponse.statusCode == 200) {
             PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
         }
@@ -212,16 +220,17 @@ public class ProcessingImpl implements Processing
     /**
      * Removes records from the family that are no longer in the updated family structure.
      */
-    private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers, String image) throws XWikiException
+    private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers, String image)
+        throws XWikiException
     {
         List<String> toRemove = new LinkedList<>();
         toRemove.addAll(currentMembers);
         toRemove.removeAll(updatedMembers);
         if (!toRemove.isEmpty()) {
-            XWikiContext context = provider.get();
+            XWikiContext context = this.provider.get();
             XWiki wiki = context.getWiki();
             for (String oldMemberId : toRemove) {
-                Patient patient = patientRepository.getPatientById(oldMemberId);
+                Patient patient = this.patientRepository.getPatientById(oldMemberId);
                 if (patient != null) {
                     XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
                     BaseObject familyRefObj = patientDoc.getXObject(FamilyUtils.FAMILY_REFERENCE);
@@ -231,7 +240,7 @@ public class ProcessingImpl implements Processing
                         if (pedigree != null) {
                             JSONObject strippedPedigree =
                                 this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
-                            image = SvgUpdater.removeLinks(pedigree.image, oldMemberId);
+                            image = SvgUpdater.removeLinks(pedigree.getImage(), oldMemberId);
                             PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
                         }
                         wiki.saveDocument(patientDoc, context);
@@ -245,7 +254,8 @@ public class ProcessingImpl implements Processing
     private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId)
     {
         if (pedigree != null) {
-            List<JSONObject> patientProperties = PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.data);
+            List<JSONObject> patientProperties =
+                PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
             for (JSONObject properties : patientProperties) {
                 if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
                     .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId))
@@ -253,7 +263,7 @@ public class ProcessingImpl implements Processing
                     properties.remove(PATIENT_LINK_JSON_KEY);
                 }
             }
-            return pedigree.data;
+            return pedigree.getData();
         } else {
             return new JSONObject();
         }
@@ -266,13 +276,13 @@ public class ProcessingImpl implements Processing
         newMembers.addAll(updatedMembers);
         newMembers.removeAll(currentMembers);
         if (!newMembers.isEmpty()) {
-            XWikiContext context = provider.get();
+            XWikiContext context = this.provider.get();
             XWiki wiki = context.getWiki();
             for (String newMember : newMembers) {
-                Patient patient = patientRepository.getPatientById(newMember);
+                Patient patient = this.patientRepository.getPatientById(newMember);
                 if (patient != null) {
                     XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
-                    familyUtils.setFamilyReference(patientDoc, familyDoc, context);
+                    this.familyUtils.setFamilyReference(patientDoc, familyDoc, context);
                     wiki.saveDocument(patientDoc, context);
                 }
             }

@@ -64,12 +64,12 @@ import groovy.lang.Singleton;
 @Singleton
 public class FamilyUtilsImpl implements FamilyUtils
 {
-    private final String PREFIX = "FAM";
+    private static final String PREFIX = "FAM";
 
-    private final EntityReference FAMILY_TEMPLATE =
+    private static final EntityReference FAMILY_TEMPLATE =
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private final EntityReference RELATIVEREFERENCE =
+    private static final EntityReference RELATIVEREFERENCE =
         new EntityReference("RelativeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     @Inject
@@ -84,21 +84,24 @@ public class FamilyUtilsImpl implements FamilyUtils
     private DocumentReferenceResolver<String> referenceResolver;
 
     /** can return null */
+    @Override
     public XWikiDocument getDoc(EntityReference docRef) throws XWikiException
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
         return wiki.getDocument(docRef, context);
     }
 
+    @Override
     public XWikiDocument getFromDataSpace(String id) throws XWikiException
     {
-        return getDoc(referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
+        return getDoc(this.referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
     }
 
     /**
      * @return String could be null in case there is no pointer found
      */
+    @Override
     public EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException
     {
         if (patientDoc == null) {
@@ -108,7 +111,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         if (familyPointer != null) {
             String familyDocName = familyPointer.getStringValue("reference");
             if (StringUtils.isNotBlank(familyDocName)) {
-                return referenceResolver.resolve(familyDocName, Patient.DEFAULT_DATA_SPACE);
+                return this.referenceResolver.resolve(familyDocName, Patient.DEFAULT_DATA_SPACE);
             }
         }
         return null;
@@ -118,6 +121,7 @@ public class FamilyUtilsImpl implements FamilyUtils
      * can return null. Checks if the document is a family document, and returns it. If not tries to find the family
      * document attached to the passed in document.
      */
+    @Override
     public XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException
     {
         BaseObject familyObject = anchorDoc.getXObject(FamilyUtils.FAMILY_CLASS);
@@ -136,15 +140,17 @@ public class FamilyUtilsImpl implements FamilyUtils
      * Does not check for nulls while retrieving the family document. Will throw an exception if any of the 'links in
      * the chain' are not present.
      */
+    @Override
     public XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException
     {
-        DocumentReference patientRef = referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
+        DocumentReference patientRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument patientDoc = this.getDoc(patientRef);
         return this.getFamilyDoc(patientDoc);
     }
 
     /** Will not throw an exception if fails. Does not save any documents. */
-    private void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context) {
+    private void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
+    {
         try {
             BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
             if (fromPedigreeObj != null) {
@@ -166,6 +172,7 @@ public class FamilyUtilsImpl implements FamilyUtils
      *
      * @return collection of patient ids that the patient has links to on their report
      */
+    @Override
     public Collection<String> getRelatives(XWikiDocument patientDoc) throws XWikiException
     {
         if (patientDoc != null) {
@@ -185,9 +192,10 @@ public class FamilyUtilsImpl implements FamilyUtils
         return Collections.emptySet();
     }
 
+    @Override
     public XWikiDocument createFamilyDoc(String patientId) throws NamingException, QueryException, XWikiException
     {
-        DocumentReference docRef = referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
+        DocumentReference docRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument doc = getDoc(docRef);
         return createFamilyDoc(doc);
     }
@@ -195,10 +203,11 @@ public class FamilyUtilsImpl implements FamilyUtils
     /**
      * Creates a new family document and set that new document as the patients family, overwriting the existing family.
      */
+    @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument patientDoc)
         throws NamingException, QueryException, XWikiException
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
         XWikiDocument newFamilyDoc = this.createFamilyDoc(patientDoc, false);
         BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
@@ -219,10 +228,11 @@ public class FamilyUtilsImpl implements FamilyUtils
         return newFamilyDoc;
     }
 
+    @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
         long nextId = getLastUsedId() + 1;
         String nextStringId = String.format("%s%07d", PREFIX, nextId);
@@ -268,6 +278,7 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     /** users, groups */
+    @Override
     public List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
     {
         Collection<BaseObject> rightsObjects = patientDoc.getXObjects(RIGHTS_CLASS);
@@ -288,12 +299,13 @@ public class FamilyUtilsImpl implements FamilyUtils
                 }
             }
         }
-        ArrayList<Set<String>> fullRights = new ArrayList<>();
+        List<Set<String>> fullRights = new ArrayList<>();
         fullRights.add(users);
         fullRights.add(groups);
         return fullRights;
     }
 
+    @Override
     public void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
         throws XWikiException
     {
@@ -320,11 +332,13 @@ public class FamilyUtilsImpl implements FamilyUtils
         return crtMaxID;
     }
 
+    @Override
     public List<String> getFamilyMembers(XWikiDocument familyDoc) throws XWikiException
     {
         return this.getFamilyMembers(familyDoc.getXObject(FAMILY_CLASS));
     }
 
+    @Override
     public List<String> getFamilyMembers(BaseObject familyObject) throws XWikiException
     {
         DBStringListProperty xwikiRelativesList = (DBStringListProperty) familyObject.get("members");
@@ -332,10 +346,11 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     /** Saves the family document. */
+    @Override
     public void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException
     {
         BaseObject familyObject = familyDoc.getXObject(FAMILY_CLASS);
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         familyObject.set("members", members, context);
         context.getWiki().saveDocument(familyDoc, context);
     }
