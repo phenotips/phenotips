@@ -234,11 +234,16 @@
     },
 
     showValue : function(v) {
+      var oldValue = this._crtValue;
       this._crtValue = Math.min(1, Math.max(0, isNaN(v) ? 0 : v));
       var value = this._crtValue * 5;
       this.meterDisplay.title = this.levels[Math.round(value)] + " (" + value.toPrecision(3) + "/5)";
       this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value", "style" : "width: " + Math.round(v * 100) + "%;"}));
-    },
+      if (oldValue != this._crtValue) {
+	    var eventData = {"value": this._crtValue, "level": this.levels[Math.round(value)]};
+	    document.fire("phenotips:specificity-meter:change", eventData);
+	  }
+	},
 
     loadingValue : function() {
       this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value-loading"}).update(new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin"})));
