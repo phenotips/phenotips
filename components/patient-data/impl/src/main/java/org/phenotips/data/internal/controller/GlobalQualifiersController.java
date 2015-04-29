@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +45,8 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.StringProperty;
 
 import net.sf.json.JSONObject;
 
@@ -56,7 +59,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("global-qualifiers")
 @Singleton
-public class GlobalQualifiersController implements PatientDataController<OntologyTerm>
+public class GlobalQualifiersController implements PatientDataController<List<OntologyTerm>>
 {
     private static final String DATA_NAME = "global-qualifiers";
 
@@ -72,7 +75,7 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
     private OntologyManager ontologyManager;
 
     @Override
-    public PatientData<OntologyTerm> load(Patient patient)
+    public PatientData<List<OntologyTerm>> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -80,16 +83,21 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, OntologyTerm> result = new LinkedHashMap<>();
+            Map<String, List<OntologyTerm>> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
-                String propertyValue = data.getStringValue(propertyName);
-                if (StringUtils.isNotBlank(propertyValue)) {
-                    OntologyTerm term = this.ontologyManager.resolveTerm(propertyValue);
-                    if (term != null) {
-                        result.put(propertyName, term);
+                Object propertyValue = data.get(propertyName);
+                List<OntologyTerm> holder = new LinkedList<>();
+                if (propertyValue instanceof StringProperty) {
+                    String propertyValueString = data.getStringValue(propertyName);
+                    addTerms(propertyValueString, holder);
+                } else if (propertyValue instanceof DBStringListProperty) {
+                    for (String item : ((DBStringListProperty) propertyValue).getList()) {
+                        addTerms(item, holder);
                     }
                 }
+                result.put(propertyName, holder);
             }
+
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
@@ -112,7 +120,8 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        Iterator<Entry<String, OntologyTerm>> data = patient.<OntologyTerm>getData(DATA_NAME).dictionaryIterator();
+        Iterator<Entry<String, OntologyTerm>> data =
+            patient.<OntologyTerm>getData(DATA_NAME).dictionaryIterator();
         while (data.hasNext())
         {
             Entry<String, OntologyTerm> datum = data.next();
@@ -127,7 +136,7 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
     }
 
     @Override
-    public PatientData<OntologyTerm> readJSON(JSONObject json)
+    public PatientData<List<OntologyTerm>> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }
@@ -141,5 +150,15 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
     protected List<String> getProperties()
     {
         return Arrays.asList("global_age_of_onset", "global_mode_of_inheritance");
+    }
+
+    protected void addTerms(String item, List<OntologyTerm> holder)
+    {
+        if (StringUtils.isNotBlank(item)) {
+            OntologyTerm term = this.ontologyManager.resolveTerm(item);
+            if (term != null) {
+                holder.add(term);
+            }
+        }
     }
 }

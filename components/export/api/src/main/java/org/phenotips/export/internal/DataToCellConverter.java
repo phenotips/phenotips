@@ -672,13 +672,22 @@ public class DataToCellConverter
         PatientData<List<String>> ethnicities = patient.getData("ethnicity");
         Integer x = 0;
         if (present.contains("global_mode_of_inheritance")) {
-            PatientData<SolrOntologyTerm> globalControllers = patient.<SolrOntologyTerm>getData("global-qualifiers");
-            SolrOntologyTerm modeTerm =
+            PatientData<List<SolrOntologyTerm>> globalControllers = patient.getData("global-qualifiers");
+            List<SolrOntologyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            String mode = modeTerm != null ? modeTerm.getName() : "";
-            DataCell cell = new DataCell(mode, x, 0);
-            bodySection.addCell(cell);
-            x++;
+                int y = 0;
+                if (modeTermList != null && !modeTermList.isEmpty()) {
+                    for (SolrOntologyTerm term : modeTermList) {
+                        String mode = term != null ? term.getName() : "";
+                        DataCell cell = new DataCell(mode, x, y);
+                        bodySection.addCell(cell);
+                        y++;
+                    }
+                } else {
+                    DataCell cell = new DataCell("", x, y);
+                    bodySection.addCell(cell);
+                }
+                x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -1151,10 +1160,23 @@ public class DataToCellConverter
 
         Integer x = 0;
         if (present.contains("global_age_of_onset")) {
-            PatientData<SolrOntologyTerm> qualifiers = patient.getData("global-qualifiers");
-            SolrOntologyTerm ageOfOnset = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
-            DataCell cell = new DataCell(ageOfOnset != null ? ageOfOnset.getName() : "", x, 0);
-            bodySection.addCell(cell);
+            PatientData<List<SolrOntologyTerm>> qualifiers = patient.getData("global-qualifiers");
+            List<SolrOntologyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
+            // DataCell cell = new DataCell(ageOfOnset != null ? ageOfOnset.getName() : "", x, 0);
+            // bodySection.addCell(cell);
+            // x++;
+            int y = 0;
+            if (ageOfOnsetList != null && !ageOfOnsetList.isEmpty()) {
+                for (SolrOntologyTerm term : ageOfOnsetList) {
+                    String mode = term != null ? term.getName() : "";
+                    DataCell cell = new DataCell(mode, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            } else {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("medical_history")) {
