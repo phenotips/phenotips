@@ -4252,7 +4252,7 @@ document.observe("xwiki:dom:loaded", function() {
 
   widgets.FuzzyDatePickerDropdown = Class.create({
     initialize : function(options) {
-      this.span     = new Element('span');
+      this.span     = new Element('span', {"tabIndex":"-1"});
       this.options  = options;
       this.callback = null;
     },
