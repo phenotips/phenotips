@@ -127,6 +127,8 @@
           <!-- Tests use the Utils.getComponentManager singleton which can't be mocked in multiple threads -->
           <parallel>classes</parallel>
           <threadCount>1</threadCount>
+          <reuseForks>false</reuseForks>
+          <forkCount>1</forkCount>
         </configuration>
       </plugin>
     </plugins>
