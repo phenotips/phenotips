@@ -43,7 +43,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Script service for working with Families.
+ * Script service for working with families.
  *
  * @version $Id$
  * @since 1.2RC1
@@ -53,6 +53,8 @@ import net.sf.json.JSONObject;
 @Named("family")
 public class FamilyScriptService implements ScriptService
 {
+    private static final String FAMILY_NOT_FOUND = "Could not get patient's family {}";
+
     @Inject
     private Logger logger;
 
@@ -98,7 +100,7 @@ public class FamilyScriptService implements ScriptService
             XWikiDocument doc = this.utils.getFamilyDoc(patient);
             return doc != null ? doc.getDocumentReference() : null;
         } catch (XWikiException ex) {
-            this.logger.error("Could not get patient's family {}", ex.getMessage());
+            this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
         }
         return null;
     }
@@ -117,7 +119,7 @@ public class FamilyScriptService implements ScriptService
             XWikiDocument familyDoc = utils.getFamilyDoc(doc);
             return familyInfoResponse(familyDoc, utils.getFamilyMembers(familyDoc));
         } catch (XWikiException ex) {
-            this.logger.error("Could not get patient's family {}", ex.getMessage());
+            this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
             return new JSONObject(true);
         }
     }

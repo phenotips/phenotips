@@ -112,6 +112,25 @@ public class PedigreeUtils
         }
     }
 
+    /** Will not throw an exception if fails. Does not save any documents. */
+    public static void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
+    {
+        try {
+            BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+            if (fromPedigreeObj != null) {
+                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get("data");
+                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get("image");
+                if (StringUtils.isNotBlank(data.toText())) {
+                    BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+                    toPedigreeObj.set("data", data.toText(), context);
+                    toPedigreeObj.set("image", image.toText(), context);
+                }
+            }
+        } catch (XWikiException ex) {
+            // do nothing
+        }
+    }
+
     public static class Pedigree
     {
         // these are package local on purpose

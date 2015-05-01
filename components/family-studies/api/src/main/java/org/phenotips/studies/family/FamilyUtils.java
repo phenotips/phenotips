@@ -23,7 +23,6 @@ import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.QueryException;
 
@@ -138,47 +137,51 @@ public interface FamilyUtils
 
     /**
      * Gets the reference to the document of a family that the patient belongs to.
+     *
      * @param patientDoc document of the patient whose family is of interest
      * @return null if the patient does not belong to a family; a valid reference otherwise
-     * @throws XWikiException
      */
     EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException;
 
     /**
-     * {@see #getFamilyMembers(BaseObject)}
+     * {@see #getFamilyMembers(BaseObject)}.
+     * @param familyDoc XWiki object containing family information will be extracted from this document
+     * @return never {@link null}
      */
     List<String> getFamilyMembers(XWikiDocument familyDoc) throws XWikiException;
 
     /**
      * Lists the family members' ids.
+     *
      * @param familyObject XWiki object present in family documents which contains the list of family members
      * @return never {@link null}
-     * @throws XWikiException
      */
     List<String> getFamilyMembers(BaseObject familyObject) throws XWikiException;
 
     /**
      * Inserts a reference to a family document into a patient document. Does not save the patient document.
+     *
      * @param patientDoc which should be linked to the family
      * @param familyDoc family document which the patient is a member of
      * @param context {@link XWikiContext}
-     * @throws XWikiException
      */
     void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
         throws XWikiException;
 
     /**
-     * Overwrites the list of family members to the one passed in.
+     * Overwrites the list of family members to the one passed in. Saves the family document.
+     *
      * @param familyDoc whose members should be updated
      * @param members the new list of family members
-     * @throws XWikiException
      */
     void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException;
 
     /**
      * Filters the permissions of `patientDoc` down to entities (users, groups) that have edit access.
+     *
      * @param patientDoc document whose access rights should be parsed
-     * @return a list containing a set of users that have edit access (at position 0) and a set of groups that have edit access (at position 1)
+     * @return a list containing a set of users that have edit access (at position 0) and a set of groups that have edit
+     * access (at position 1)
      */
     List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc);
 }
