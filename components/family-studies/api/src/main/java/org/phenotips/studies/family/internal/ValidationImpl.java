@@ -58,10 +58,6 @@ public class ValidationImpl implements Validation
         return familyUtils.getFamilyMembers(family).contains(patientId);
     }
 
-    /**
-     * Checks if the current {@link com.xpn.xwiki.XWikiContext}/user has sufficient access to this patent id and the
-     * family to which the patient is being added to.
-     */
     public StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException
     {
         XWikiDocument family = familyUtils.getFamilyDoc(familyUtils.getFromDataSpace(familyAnchor));
@@ -116,22 +112,6 @@ public class ValidationImpl implements Validation
         }
     }
 
-    /** Should not be used when saving families. */
-    public boolean hasPatientEditAccess(XWikiDocument patientDoc) {
-        User currentUser = userManager.getCurrentUser();
-        PatientAccess patientAccess = permissionsManager.getPatientAccess(new PhenoTipsPatient(patientDoc));
-        AccessLevel patientAccessLevel = patientAccess.getAccessLevel(currentUser.getProfileDocument());
-        return patientAccessLevel.compareTo(editAccess) >= 0;
-    }
-
-    public StatusResponse createInsufficientPermissionsResponse(String patientId) {
-        StatusResponse response = new StatusResponse();
-        response.statusCode = 401;
-        response.errorType = "permissions";
-        response.message = String.format("Insufficient permissions to edit the patient record (%s).", patientId);
-        return response;
-    }
-
     public StatusResponse checkFamilyAccessWithResponse(XWikiDocument familyDoc) {
         StatusResponse response = new StatusResponse();
         User currentUser = userManager.getCurrentUser();
@@ -143,5 +123,14 @@ public class ValidationImpl implements Validation
         response.errorType = "permissions";
         response.message = "Insufficient permissions to edit the family record.";
         return response;
+    }
+
+    /* Should not be used when saving families. Todo why?*/
+    public boolean hasPatientEditAccess(XWikiDocument patientDoc) {
+        User currentUser = userManager.getCurrentUser();
+        // fixme. should not instantiate the implementation of PhenoTipsPatient
+        PatientAccess patientAccess = permissionsManager.getPatientAccess(new PhenoTipsPatient(patientDoc));
+        AccessLevel patientAccessLevel = patientAccess.getAccessLevel(currentUser.getProfileDocument());
+        return patientAccessLevel.compareTo(editAccess) >= 0;
     }
 }

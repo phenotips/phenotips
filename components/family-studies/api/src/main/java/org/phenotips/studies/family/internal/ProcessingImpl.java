@@ -131,7 +131,7 @@ public class ProcessingImpl implements Processing
             this.familyUtils.setFamilyMembers(familyDoc, updatedMembers);
         } else {
             if (!this.validation.hasPatientEditAccess(anchorDoc)) {
-                return this.validation.createInsufficientPermissionsResponse(anchorId);
+                return StatusResponse.createInsufficientPatientPermissionsResponse(anchorId);
             }
             // when saving just a patient's pedigree that does not belong to a family
             XWikiContext context = this.provider.get();

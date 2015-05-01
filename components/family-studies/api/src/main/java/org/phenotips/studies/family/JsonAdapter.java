@@ -21,6 +21,7 @@ public interface JsonAdapter
      * necessity of injections.
      *
      * @param toConvert cannot be null
+     * @return list of JSON objects, each containing patient data of a single patient
      */
     List<JSONObject> convert(JSONObject toConvert);
 }
