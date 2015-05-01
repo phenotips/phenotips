@@ -16,8 +16,9 @@ import net.sf.json.JSONObject;
 public interface JsonAdapter
 {
     /**
-     * Takes a JSON object from a pedigree and converts it into a JSON format consumable by the internal PhenoTips
-     * patient data model. This is a static method, but cannot be declared as such, given the necessity of injections.
+     * Takes a JSON object from a pedigree and converts it into a list of patient JSON objects, in the format consumable
+     * by the internal PhenoTips patient data model. This is a static method, but cannot be declared as such, given the
+     * necessity of injections.
      *
      * @param toConvert cannot be null
      */
