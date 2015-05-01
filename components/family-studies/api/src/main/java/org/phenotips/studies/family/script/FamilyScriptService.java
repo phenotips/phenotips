@@ -66,10 +66,10 @@ public class FamilyScriptService implements ScriptService
     private Validation validation;
 
     /**
-     * Create a new family for a patient, or, if the patient already has a family, return a reference to it.
+     * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
-     * @param patientId a patient that should belong to the family
-     * @return a reference to the document holding the newly created family, or {@code null} if no family was created
+     * @param patientId the id of the patient to use when searching for or creating a new family
+     * @return reference to the family document. Can be {@link null}
      */
     public DocumentReference createFamily(String patientId)
     {
@@ -87,11 +87,10 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * Retrieve a patient's family, if any.
+     * Gets a family, if the patient belongs to one.
      *
-     * @param patient the patient whose family must be retrieved
-     * @return a reference to the document holding the patient's family, or {@code null} if no family exists for the
-     *         patient
+     * @param patient the id of the patient who might belong to a family
+     * @return reference to the family document if the patient belongs to one, otherwise {@link null}
      */
     public DocumentReference getPatientsFamily(XWikiDocument patient)
     {
@@ -104,13 +103,19 @@ public class FamilyScriptService implements ScriptService
         return null;
     }
 
-    /** Can return null. */
-    public JSON getFamilyStatus(String id)
+    /**
+     * Gets a family with `id` (given a patient id, first finds the family the patient belongs to) and returns info
+     * about the family.
+     *
+     * @param id must be a valid family id or a patient id (patient must belong to a family)
+     * @return family id and all members that belong to it
+     */
+    public JSON getFamilyInfo(String id)
     {
         try {
-            XWikiDocument doc = this.utils.getFromDataSpace(id);
-            XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
-            return familyStatusResponse(familyDoc, this.utils.getFamilyMembers(familyDoc));
+            XWikiDocument doc = utils.getFromDataSpace(id);
+            XWikiDocument familyDoc = utils.getFamilyDoc(doc);
+            return familyInfoResponse(familyDoc, utils.getFamilyMembers(familyDoc));
         } catch (XWikiException ex) {
             this.logger.error("Could not get patient's family {}", ex.getMessage());
             return new JSONObject(true);
@@ -118,7 +123,14 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * @return 200 if everything is ok, an error code if the patient is not linkable.
+     * Verifies that a patient can be added to a family.
+     *
+     * @param thisId could be a family id or a patient id. If it is a patient id, finds the family that the patient
+     * belongs to. This family is the one into which the `otherId` patient is added to
+     * @param otherId must be a valid patient id
+     * @return {@link JSON} with 'validLink' field set to {@link false} if everything is ok, or {@link false} if the
+     * `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also contain
+     * 'errorMessage' and 'errorType'
      */
     public JSON verifyLinkable(String thisId, String otherId)
     {
@@ -129,6 +141,18 @@ public class FamilyScriptService implements ScriptService
         }
     }
 
+    /**
+     * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
+     *
+     * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
+     * processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient does belong
+     * to a family, or a family id is passed in as the `anchorId`, there is processing of the pedigree, which is then
+     * saved to all patient records that belong to the family and the family documents itself.
+     * @param json part of the pedigree data
+     * @param image svg part of the pedigree data
+     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
+     * error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and 'errorType'
+     */
     public JSON processPedigree(String anchorId, String json, String image)
     {
         try {
@@ -138,7 +162,7 @@ public class FamilyScriptService implements ScriptService
         }
     }
 
-    private static JSON familyStatusResponse(XWikiDocument family, List<String> members)
+    private static JSON familyInfoResponse(XWikiDocument family, List<String> members)
     {
         JSONObject json = new JSONObject();
         json.put("familyPage", family == null ? null : family.getDocumentReference().getName());
