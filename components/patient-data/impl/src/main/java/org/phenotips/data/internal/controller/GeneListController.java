@@ -156,13 +156,16 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
+            
+            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
 
-            if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                || (selectedFieldNames != null && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                item.remove(COMMENTS_KEY);
+                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
+                    || (selectedFieldNames != null && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                    item.remove(COMMENTS_KEY);
+                }
+
+                container.add(item);
             }
-
-            container.add(item);
         }
     }
 }
