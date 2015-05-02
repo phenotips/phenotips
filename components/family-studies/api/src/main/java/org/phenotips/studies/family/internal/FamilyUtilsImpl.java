@@ -45,7 +45,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.naming.NamingException;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,8 +57,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.LargeStringProperty;
 import com.xpn.xwiki.objects.StringProperty;
-
-import groovy.lang.Singleton;
 
 /**
  * Provides utility methods for working with family documents and patients.
@@ -174,7 +172,8 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public XWikiDocument createFamilyDoc(String patientId) throws NamingException, QueryException, XWikiException
+    public XWikiDocument createFamilyDoc(String patientId) throws IllegalArgumentException, QueryException,
+        XWikiException
     {
         DocumentReference docRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument doc = getDoc(docRef);
@@ -183,7 +182,7 @@ public class FamilyUtilsImpl implements FamilyUtils
 
     @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument patientDoc)
-        throws NamingException, QueryException, XWikiException
+        throws QueryException, XWikiException
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
@@ -207,7 +206,7 @@ public class FamilyUtilsImpl implements FamilyUtils
 
     @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
-        throws NamingException, QueryException, XWikiException
+        throws IllegalArgumentException, QueryException, XWikiException
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
@@ -216,7 +215,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         EntityReference nextRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument newFamilyDoc = wiki.getDocument(nextRef, context);
         if (!newFamilyDoc.isNew()) {
-            throw new NamingException("The new family id was already taken.");
+            throw new IllegalArgumentException("The new family id was already taken.");
         } else {
             XWikiDocument template = getDoc(FAMILY_TEMPLATE);
             // copying all objects from template
