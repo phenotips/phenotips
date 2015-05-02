@@ -32,8 +32,8 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import groovy.json.JsonException;
 import net.sf.json.JSON;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
@@ -176,7 +176,7 @@ public class ProcessingImpl implements Processing
         return defaultResponse;
     }
 
-    private void updatePatientsFromJson(JSON familyContents) throws JsonException
+    private void updatePatientsFromJson(JSON familyContents) throws JSONException
     {
         JSONObject familyContentsObject = JSONObject.fromObject(familyContents);
         List<JSONObject> patientsJson = this.jsonAdapter.convert(familyContentsObject);
