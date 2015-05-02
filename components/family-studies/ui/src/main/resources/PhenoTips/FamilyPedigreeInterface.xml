@@ -59,18 +59,18 @@ $response.setContentType('application/json')##
 ##
 #if ("$!request.action" == "save")
   #if ("$!request.json" != '')
-    $services.family.processPedigree($anchorId, $request.json, $request.image)
+    $services.families.processPedigree($anchorId, $request.json, $request.image)
   #else
     JSON was not specified for action SAVE
   #end
 #elseif ("$!request.action" == "checklink")
   #if ("$!request.link_to_id" != '')
-    $services.family.verifyLinkable($anchorId, $request.link_to_id)
+    $services.families.verifyLinkable($anchorId, $request.link_to_id)
   #else
     LINK_TO_ID was not specified for action CHECKLINK
   #end
 #elseif ("$!request.action" == "familystatus")
-  $services.family.getFamilyInfo($anchorId)
+  $services.families.getFamilyInfo($anchorId)
 #elseif ("$!request.action" == "createpatient")
   #set ($patient = $services.patients.createNewPatient())
   #if ($patient)
