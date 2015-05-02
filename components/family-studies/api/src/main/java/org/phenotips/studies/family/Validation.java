@@ -26,8 +26,7 @@ public interface Validation
     StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException;
 
     /**
-     * Runs several different checks to determine if a patient is eligible to be added as a member to a family
-     * document.
+     * Runs several different checks to determine if a patient is eligible to be added as a member to a family document.
      *
      * @param familyDoc to which the patient will be potentially added to
      * @param patientId patient id who will potentially be added to the family

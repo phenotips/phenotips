@@ -48,30 +48,33 @@ public class ValidationImpl implements Validation
     private AuthorizationService authorizationService;
 
     @Inject
-    @Named("edit") private AccessLevel editAccess;
+    @Named("edit")
+    private AccessLevel editAccess;
 
     /**
      * Checks if the patient is already present within the family members list.
      */
     private boolean isInFamily(XWikiDocument family, String patientId) throws XWikiException
     {
-        return familyUtils.getFamilyMembers(family).contains(patientId);
+        return this.familyUtils.getFamilyMembers(family).contains(patientId);
     }
 
+    @Override
     public StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException
     {
-        XWikiDocument family = familyUtils.getFamilyDoc(familyUtils.getFromDataSpace(familyAnchor));
+        XWikiDocument family = this.familyUtils.getFamilyDoc(this.familyUtils.getFromDataSpace(familyAnchor));
 
         return canAddToFamily(family, patientId);
     }
 
+    @Override
     public StatusResponse canAddToFamily(XWikiDocument familyDoc, String patientId)
         throws XWikiException
     {
         StatusResponse response = new StatusResponse();
 
-        DocumentReference patientRef = referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
-        XWikiDocument patientDoc = familyUtils.getDoc(patientRef);
+        DocumentReference patientRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
+        XWikiDocument patientDoc = this.familyUtils.getDoc(patientRef);
         if (patientDoc == null) {
             response.statusCode = 404;
             response.errorType = "invalidId";
@@ -79,7 +82,7 @@ public class ValidationImpl implements Validation
             return response;
         }
 
-        EntityReference patientFamilyRef = familyUtils.getFamilyReference(patientDoc);
+        EntityReference patientFamilyRef = this.familyUtils.getFamilyReference(patientDoc);
         if (patientFamilyRef != null) {
             boolean hasOtherFamily;
             hasOtherFamily = familyDoc == null || patientFamilyRef.compareTo(familyDoc.getDocumentReference()) != 0;
@@ -112,10 +115,13 @@ public class ValidationImpl implements Validation
         }
     }
 
-    public StatusResponse checkFamilyAccessWithResponse(XWikiDocument familyDoc) {
+    @Override
+    public StatusResponse checkFamilyAccessWithResponse(XWikiDocument familyDoc)
+    {
         StatusResponse response = new StatusResponse();
-        User currentUser = userManager.getCurrentUser();
-        if (authorizationService.hasAccess(currentUser, Right.EDIT, new DocumentReference(familyDoc.getDocumentReference()))) {
+        User currentUser = this.userManager.getCurrentUser();
+        if (this.authorizationService.hasAccess(currentUser, Right.EDIT,
+            new DocumentReference(familyDoc.getDocumentReference()))) {
             response.statusCode = 200;
             return response;
         }
@@ -125,12 +131,14 @@ public class ValidationImpl implements Validation
         return response;
     }
 
-    /* Should not be used when saving families. Todo why?*/
-    public boolean hasPatientEditAccess(XWikiDocument patientDoc) {
-        User currentUser = userManager.getCurrentUser();
+    /* Should not be used when saving families. Todo why? */
+    @Override
+    public boolean hasPatientEditAccess(XWikiDocument patientDoc)
+    {
+        User currentUser = this.userManager.getCurrentUser();
         // fixme. should not instantiate the implementation of PhenoTipsPatient
-        PatientAccess patientAccess = permissionsManager.getPatientAccess(new PhenoTipsPatient(patientDoc));
+        PatientAccess patientAccess = this.permissionsManager.getPatientAccess(new PhenoTipsPatient(patientDoc));
         AccessLevel patientAccessLevel = patientAccess.getAccessLevel(currentUser.getProfileDocument());
-        return patientAccessLevel.compareTo(editAccess) >= 0;
+        return patientAccessLevel.compareTo(this.editAccess) >= 0;
     }
 }

@@ -26,6 +26,7 @@ public class SvgUpdater
 
     /**
      * Removes all HTML links from a SVG, except for the current patient's link.
+     *
      * @param svg which to parse for links
      * @param currentPatientId whose link should not be removed
      * @return SVG with `<a></a>` corresponding to patient records cut out
@@ -243,9 +244,11 @@ public class SvgUpdater
 
     /**
      * Processes the SVG to visually mark a patient with current patient style.
+     *
      * @param svg can not be null
      * @param patientId the id of the patient that should be visually marked as current
-     * @return svg with the style for current patient applied to the node with id `currentUserId` and proband style retained
+     * @return svg with the style for current patient applied to the node with id `currentUserId` and proband style
+     *         retained
      */
     public static String setPatientStylesInSvg(String svg, String patientId)
     {
