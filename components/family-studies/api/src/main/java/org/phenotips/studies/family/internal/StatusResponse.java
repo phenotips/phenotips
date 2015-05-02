@@ -38,7 +38,7 @@ public class StatusResponse
      * Formats itself as a response to a validation request.
      *
      * @return JSON with a 'validLink' field which is true if no errors have occurred and the validation process was
-     * successful
+     *         successful
      */
     public JSON asVerification()
     {
@@ -58,6 +58,7 @@ public class StatusResponse
 
     /**
      * Convenience method for creating a pre-filled {@link StatusResponse}.
+     *
      * @param patientId to include in the error message
      * @return a {@link StatusResponse} with status code 401
      */

@@ -49,20 +49,22 @@ public interface FamilyUtils
     /** XWiki class that represents a family. */
     EntityReference FAMILY_CLASS =
         new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /** XWiki class that represents objects that contain a string reference to a family document. */
     EntityReference FAMILY_REFERENCE =
         new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /** XWiki class that contains rights to XWiki documents. */
     EntityReference RIGHTS_CLASS =
         new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
     /**
-     * A wrapper around {@link com.xpn.xwiki.XWiki#getDocument(DocumentReference, XWikiContext)}.
+     * A wrapper around {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}.
      *
      * @param docRef cannot be null
-     * @return the result of calling {@link com.xpn.xwiki.XWiki#getDocument(DocumentReference, XWikiContext)}
-     * @throws XWikiException that can be thrown by {@link com.xpn.xwiki.XWiki#getDocument(DocumentReference,
-     * XWikiContext)}
+     * @return the result of calling {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
+     * @throws XWikiException that can be thrown by
+     *             {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
      */
     XWikiDocument getDoc(EntityReference docRef) throws XWikiException;
 
@@ -80,7 +82,7 @@ public interface FamilyUtils
      *
      * @param anchorDoc a document used as a starting point for searching for a family document
      * @return {@link null} if the `anchorDoc` is not a family document or a patient document (that belongs to a
-     * family). Otherwise returns the family document.
+     *         family). Otherwise returns the family document.
      */
     XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
@@ -106,7 +108,7 @@ public interface FamilyUtils
      *
      * @param patientId patient who will be included into a new family
      * @return a newly created family document with rights set according to {@link #createFamilyDoc(XWikiDocument)} and
-     * pedigree of the patient copied to the newly created family.
+     *         pedigree of the patient copied to the newly created family.
      */
     XWikiDocument createFamilyDoc(String patientId) throws NamingException, QueryException, XWikiException;
 
@@ -117,7 +119,8 @@ public interface FamilyUtils
      * to create a family document.
      *
      * @param patient who will be added to the newly created family. If this patient already belongs to a family, the
-     * family reference will be silently overwritten, without the patient being removed from the family they belong to.
+     *            family reference will be silently overwritten, without the patient being removed from the family they
+     *            belong to.
      * @return a newly created family document
      */
     XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
@@ -126,11 +129,11 @@ public interface FamilyUtils
      * Allocates an id for a family, and uses a template to create a new document.
      *
      * @param probandDoc document of a patient who will be included as a member in the family members list. This method
-     * does not set the patient's family reference.
+     *            does not set the patient's family reference.
      * @param save if true calls {@link com.xpn.xwiki.XWiki#saveDocument(XWikiDocument, String, XWikiContext)} on the
-     * newly created family document
+     *            newly created family document
      * @return a blank family document with no rights or pedigree, but with the `probandDoc` patient included in the
-     * list of members
+     *         list of members
      */
     XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException;
@@ -145,6 +148,7 @@ public interface FamilyUtils
 
     /**
      * {@see #getFamilyMembers(BaseObject)}.
+     *
      * @param familyDoc XWiki object containing family information will be extracted from this document
      * @return never {@link null}
      */
@@ -181,7 +185,7 @@ public interface FamilyUtils
      *
      * @param patientDoc document whose access rights should be parsed
      * @return a list containing a set of users that have edit access (at position 0) and a set of groups that have edit
-     * access (at position 1)
+     *         access (at position 1)
      */
     List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc);
 }
