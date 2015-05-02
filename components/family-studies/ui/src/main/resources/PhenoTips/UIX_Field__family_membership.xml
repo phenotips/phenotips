@@ -212,7 +212,7 @@ if (newFamilyTrigger) {
     </class>
     <property>
       <content>{{velocity}}
-#set ($family = $services.family.getPatientsFamily($doc.getDocument()))
+#set ($family = $services.families.getPatientsFamily($doc.getDocument()))
 #if ($xcontext.action != 'view' || $family)
   #if ($xcontext.action == 'edit')
     $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')

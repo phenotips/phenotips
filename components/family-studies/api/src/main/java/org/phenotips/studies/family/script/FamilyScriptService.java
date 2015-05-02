@@ -50,7 +50,7 @@ import net.sf.json.JSONObject;
  */
 @Component
 @Singleton
-@Named("family")
+@Named("families")
 public class FamilyScriptService implements ScriptService
 {
     private static final String FAMILY_NOT_FOUND = "Could not get patient's family {}";

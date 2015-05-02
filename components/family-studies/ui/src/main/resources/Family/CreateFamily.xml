@@ -55,7 +55,7 @@
       &lt;/form&gt;
     {{/html}}
     #if ("$!{request.confirmation}" == 'true')
-	  #set ($family = $services.family.createFamily($request.patient_id))
+	  #set ($family = $services.families.createFamily($request.patient_id))
 	  #if ("$!{family}" != '')
 	    $response.sendRedirect($xwiki.getURL($family, 'edit'))
 	  #else
