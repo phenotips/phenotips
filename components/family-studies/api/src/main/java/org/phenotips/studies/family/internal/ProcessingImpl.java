@@ -149,7 +149,8 @@ public class ProcessingImpl implements Processing
      * family and patient records.
      */
     private LogicInterDependantVariables executePreUpdateLogic(LogicInterDependantVariables variables)
-            throws XWikiException, NamingException, QueryException {
+            throws XWikiException, NamingException, QueryException
+    {
         if (variables.updatedMembers.size() < 1) {
             // the list of members should not be empty.
             variables.response.statusCode = 412;
@@ -198,7 +199,8 @@ public class ProcessingImpl implements Processing
      * Does not save the family document.
      */
     private void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-            XWikiException {
+            XWikiException
+    {
         XWikiContext context = this.provider.get();
         BaseObject rightsObject = familyDocument.getXObject(FamilyUtils.RIGHTS_CLASS);
         Set<String> usersUnion = new HashSet<>();
@@ -216,7 +218,8 @@ public class ProcessingImpl implements Processing
         rightsObject.set("allow", 1, context);
     }
 
-    private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException {
+    private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException
+    {
         StatusResponse defaultResponse = new StatusResponse();
         defaultResponse.statusCode = 200;
 
@@ -262,7 +265,8 @@ public class ProcessingImpl implements Processing
      * @throws XWikiException
      */
     private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
-                                                     JSON familyContents, String image) throws XWikiException {
+                                                     JSON familyContents, String image) throws XWikiException
+    {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
 
@@ -282,7 +286,8 @@ public class ProcessingImpl implements Processing
      * Removes records from the family that are no longer in the updated family structure.
      */
     private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers)
-            throws XWikiException {
+            throws XWikiException
+    {
         List<String> toRemove = new LinkedList<>();
         toRemove.addAll(currentMembers);
         toRemove.removeAll(updatedMembers);
@@ -315,7 +320,8 @@ public class ProcessingImpl implements Processing
     /**
      * Strips out all linked ids from a pedigree.
      */
-    private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId) {
+    private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId)
+    {
         if (pedigree != null) {
             List<JSONObject> patientProperties =
                     PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
@@ -332,7 +338,8 @@ public class ProcessingImpl implements Processing
     }
 
     private void addNewMembers(List<String> currentMembers, List<String> updatedMembers, XWikiDocument familyDoc)
-            throws XWikiException {
+            throws XWikiException
+    {
         List<String> newMembers = new LinkedList<>();
         newMembers.addAll(updatedMembers);
         newMembers.removeAll(currentMembers);
@@ -350,7 +357,8 @@ public class ProcessingImpl implements Processing
         }
     }
 
-    private static String setToString(Set<String> set) {
+    private static String setToString(Set<String> set)
+    {
         String finalString = "";
         for (String item : set) {
             if (StringUtils.isNotBlank(item)) {
@@ -360,7 +368,8 @@ public class ProcessingImpl implements Processing
         return finalString;
     }
 
-    private static StatusResponse checkForDuplicates(List<String> updatedMembers) {
+    private static StatusResponse checkForDuplicates(List<String> updatedMembers)
+    {
         StatusResponse response = new StatusResponse();
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);

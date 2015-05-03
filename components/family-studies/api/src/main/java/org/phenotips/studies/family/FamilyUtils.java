@@ -130,6 +130,9 @@ public interface FamilyUtils
      *            family reference will be silently overwritten, without the patient being removed from the family they
      *            belong to.
      * @return a newly created family document
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
      */
     XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
 
