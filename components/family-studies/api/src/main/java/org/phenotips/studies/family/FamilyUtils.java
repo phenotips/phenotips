@@ -65,6 +65,7 @@ public interface FamilyUtils
      * @return the result of calling {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
      * @throws XWikiException that can be thrown by
      *             {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getDoc(EntityReference docRef) throws XWikiException;
 
@@ -73,6 +74,7 @@ public interface FamilyUtils
      *
      * @param id cannot be null
      * @return {@link XWikiDocument}, which could be null
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getFromDataSpace(String id) throws XWikiException;
 
@@ -83,6 +85,7 @@ public interface FamilyUtils
      * @param anchorDoc a document used as a starting point for searching for a family document
      * @return {@link null} if the `anchorDoc` is not a family document or a patient document (that belongs to a
      *         family). Otherwise returns the family document.
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
@@ -91,6 +94,7 @@ public interface FamilyUtils
      *
      * @param patientId cannot be {@link null}, and should be a valid id
      * @return {@link null} if the patient does not belong to a family, otherwise the family document
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException;
 
@@ -99,6 +103,7 @@ public interface FamilyUtils
      *
      * @param patient whose relatives to get
      * @return a collection of relatives stored in the old family stuides in the record of `patient`
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     Collection<String> getRelatives(XWikiDocument patient) throws XWikiException;
 
@@ -109,6 +114,9 @@ public interface FamilyUtils
      * @param patientId patient who will be included into a new family
      * @return a newly created family document with rights set according to {@link #createFamilyDoc(XWikiDocument)} and
      *         pedigree of the patient copied to the newly created family.
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
      */
     XWikiDocument createFamilyDoc(String patientId) throws NamingException, QueryException, XWikiException;
 
@@ -134,6 +142,9 @@ public interface FamilyUtils
      *            newly created family document
      * @return a blank family document with no rights or pedigree, but with the `probandDoc` patient included in the
      *         list of members
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
      */
     XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException;
@@ -143,6 +154,7 @@ public interface FamilyUtils
      *
      * @param patientDoc document of the patient whose family is of interest
      * @return null if the patient does not belong to a family; a valid reference otherwise
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException;
 
@@ -151,6 +163,7 @@ public interface FamilyUtils
      *
      * @param familyDoc XWiki object containing family information will be extracted from this document
      * @return never {@link null}
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     List<String> getFamilyMembers(XWikiDocument familyDoc) throws XWikiException;
 
@@ -159,6 +172,7 @@ public interface FamilyUtils
      *
      * @param familyObject XWiki object present in family documents which contains the list of family members
      * @return never {@link null}
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     List<String> getFamilyMembers(BaseObject familyObject) throws XWikiException;
 
@@ -168,6 +182,7 @@ public interface FamilyUtils
      * @param patientDoc which should be linked to the family
      * @param familyDoc family document which the patient is a member of
      * @param context {@link XWikiContext}
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
         throws XWikiException;
@@ -177,6 +192,7 @@ public interface FamilyUtils
      *
      * @param familyDoc whose members should be updated
      * @param members the new list of family members
+     * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException;
 

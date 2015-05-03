@@ -11,6 +11,12 @@ import com.xpn.xwiki.XWikiException;
 
 import net.sf.json.JSONObject;
 
+/**
+ * Provides a single method as entry point to main logic and processing.
+ *
+ * @version $Id$
+ * @since 1.2RC1
+ */
 @Role
 public interface Processing
 {
@@ -28,6 +34,9 @@ public interface Processing
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
      * @return {@link StatusResponse} with one of many possible statuses
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
      */
     StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
