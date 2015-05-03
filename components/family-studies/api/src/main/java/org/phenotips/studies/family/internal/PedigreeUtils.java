@@ -25,13 +25,30 @@ import net.sf.json.JSONObject;
 /**
  * Contains mainly functions for manipulating json from pedigrees. Example usage would be extracting patient data
  * objects from the json.
+ *
+ * @version $Id$
+ * @since 1.2RC1
  */
-public class PedigreeUtils
+public final class PedigreeUtils
 {
+    /**
+     * XWiki class that holds pedigree data (image, structure, etc).
+     */
     public static final EntityReference PEDIGREE_CLASS =
-        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+            new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final String DATA = "data";
+
+    private static final String IMAGE = "image";
+
+    private PedigreeUtils()
+    {
+    }
 
     /**
+     * Given a pedigree, will extract and return all PhenoTips patient ids.
+     *
+     * @param pedigree data section of a pedigree
      * @return all PhenoTips ids from pedigree nodes that have internal ids
      */
     public static List<String> extractIdsFromPedigree(JSONObject pedigree)
@@ -46,7 +63,13 @@ public class PedigreeUtils
         return extractedIds;
     }
 
-    /** @return non-null and non-empty patient properties JSON objects. */
+    /**
+     * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
+     * patients.
+     *
+     * @param pedigree data section of a pedigree
+     * @return non-null and non-empty patient properties in JSON objects.
+     */
     public static List<JSONObject> extractPatientJSONPropertiesFromPedigree(JSONObject pedigree)
     {
         List<JSONObject> extractedObjects = new LinkedList<>();
@@ -64,42 +87,58 @@ public class PedigreeUtils
     }
 
     /**
-     * Does not do permission checks.
+     * Does not do permission checks. Modifies pedigree's image style. Stores the modified image, and data (as is)
+     * into the `document`.
      *
-     * @param image could be null. If it is, no changes will be made to the image.
+     * @param document destination for storing the pedigree
+     * @param pedigree data section of a pedigree
+     * @param image    could be null. If it is, no changes will be made to the image.
+     * @param context  needed for XWiki calls
+     * @throws XWikiException one of many possible XWiki exceptions
      */
     public static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context)
-        throws XWikiException
+            throws XWikiException
     {
         BaseObject pedigreeObject = document.getXObject(PedigreeUtils.PEDIGREE_CLASS);
         if (image != null) {
-            image = SvgUpdater.setPatientStylesInSvg(image, document.getDocumentReference().getName());
-            pedigreeObject.set("image", image, context);
+            String updatedImage = SvgUpdater.setPatientStylesInSvg(image, document.getDocumentReference().getName());
+            pedigreeObject.set(IMAGE, updatedImage, context);
         }
-        pedigreeObject.set("data", pedigree.toString(), context);
+        pedigreeObject.set(DATA, pedigree.toString(), context);
     }
 
     /**
-     * Does not do permission checks.
+     * Wrapper around {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)} which saves the XWiki document.
      *
-     * @param image could be null. If it is, no changes will be made to the image.
+     * @param document {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param pedigree {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param image    {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param context  {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param wiki     Used for saving the `document`
+     * @throws XWikiException one of many possible XWikiExceptions
      */
     public static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
-        XWiki wiki) throws XWikiException
+                                             XWiki wiki) throws XWikiException
     {
         PedigreeUtils.storePedigree(document, pedigree, image, context);
         wiki.saveDocument(document, context);
     }
 
-    /** @return null on error, an empty {@link net.sf.json.JSON} if there is no pedigree, or the existing pedigree. */
+    /**
+     * Retrieves a pedigree (both image and data).
+     *
+     * @param doc in which to look for a pedigree
+     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there
+     * is no pedigree, or the existing pedigree.
+     */
     public static Pedigree getPedigree(XWikiDocument doc)
     {
         try {
             Pedigree pedigree = new Pedigree();
             BaseObject pedigreeObj = doc.getXObject(PEDIGREE_CLASS);
             if (pedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get("data");
-                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get("image");
+                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(DATA);
+                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(IMAGE);
                 if (StringUtils.isNotBlank(data.toText())) {
                     pedigree.data = JSONObject.fromObject(data.toText());
                     pedigree.image = image.toText();
@@ -112,18 +151,25 @@ public class PedigreeUtils
         }
     }
 
-    /** Will not throw an exception if fails. Does not save any documents. */
+    /**
+     * Overwrites a pedigree in one document given an existing pedigree in another document.
+     * Will not throw an exception if fails. Does not save any documents.
+     *
+     * @param from    in which to look for an existing pedigree
+     * @param to      into which document to copy the pedigree found in the `from` document
+     * @param context needed for overwriting pedigree fields in the `to` document
+     */
     public static void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
     {
         try {
             BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
             if (fromPedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get("data");
-                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get("image");
+                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get(DATA);
+                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get(IMAGE);
                 if (StringUtils.isNotBlank(data.toText())) {
                     BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-                    toPedigreeObj.set("data", data.toText(), context);
-                    toPedigreeObj.set("image", image.toText(), context);
+                    toPedigreeObj.set(DATA, data.toText(), context);
+                    toPedigreeObj.set(IMAGE, image.toText(), context);
                 }
             }
         } catch (XWikiException ex) {
@@ -131,9 +177,9 @@ public class PedigreeUtils
         }
     }
 
+    /** Simplifies passing around pedigree objects which consist of an SVG image and JSON data. */
     public static class Pedigree
     {
-        // these are package local on purpose
         private JSONObject data;
 
         private String image = "";
@@ -148,11 +194,21 @@ public class PedigreeUtils
             return this.data == null || this.data.isEmpty();
         }
 
+        /**
+         * Getter for `data` which holds all of a pedigree's JSON.
+         *
+         * @return could be null
+         */
         public JSONObject getData()
         {
             return this.data;
         }
 
+        /**
+         * Getter for `image` string (SVG).
+         *
+         * @return can not be null
+         */
         public String getImage()
         {
             return this.image;
