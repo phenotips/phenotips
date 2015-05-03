@@ -25,7 +25,10 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Collection of checks for checking if certain actions are allowed. Needs to be split up really, but later.
+ * Collection of checks for checking if certain actions are allowed.
+ *
+ * @version $Id$
+ * @since 1.2RC1
  */
 @Component
 @Singleton
@@ -94,10 +97,8 @@ public class ValidationImpl implements Validation
             }
         }
 
-        boolean isInFamily = false;
-        if (familyDoc != null) {
-            isInFamily = this.isInFamily(familyDoc, patientId);
-        }
+        boolean isInFamily = safeIsInFamilyCheck(familyDoc, patientId);
+
         PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
         if ((pedigree == null || pedigree.isEmpty()) || isInFamily) {
             if (!isInFamily && familyDoc != null) {
@@ -113,6 +114,14 @@ public class ValidationImpl implements Validation
                 String.format("Patient %s has an existing pedigree.", patientId);
             return response;
         }
+    }
+
+    private boolean safeIsInFamilyCheck(XWikiDocument familyDoc, String patientId) throws XWikiException
+    {
+        if (familyDoc != null) {
+            return this.isInFamily(familyDoc, patientId);
+        }
+        return false;
     }
 
     @Override
