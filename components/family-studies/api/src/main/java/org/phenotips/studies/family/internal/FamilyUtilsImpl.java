@@ -228,7 +228,7 @@ public class FamilyUtilsImpl implements FamilyUtils
             // adding the creating patient as a member
             List<String> members = new LinkedList<>();
             members.add(probandDoc.getDocumentReference().getName());
-            familyObject.set("members", members, context);
+            familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
             if (save) {
                 wiki.saveDocument(newFamilyDoc, context);

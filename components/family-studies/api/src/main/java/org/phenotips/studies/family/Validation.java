@@ -22,6 +22,7 @@ public interface Validation
      * @param familyAnchor resolved to a family document using {@link FamilyUtils#getFamilyDoc(XWikiDocument)}
      * @param patientId {@see #canAddToFamily(XWikiDocument, String)}
      * @return {@see #canAddToFamily}
+     * @throws XWikiException one of numerous XWiki exceptions
      */
     StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException;
 
@@ -31,6 +32,7 @@ public interface Validation
      * @param familyDoc to which the patient will be potentially added to
      * @param patientId patient id who will potentially be added to the family
      * @return a non-null {@link StatusResponse}
+     * @throws XWikiException one of numerous XWiki exceptions
      */
     StatusResponse canAddToFamily(XWikiDocument familyDoc, String patientId)
         throws XWikiException;
