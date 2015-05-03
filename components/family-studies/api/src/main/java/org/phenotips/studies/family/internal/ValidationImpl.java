@@ -111,7 +111,8 @@ public class ValidationImpl implements Validation
             if (hasOtherFamily) {
                 response.statusCode = 501;
                 response.errorType = "familyConflict";
-                response.message = String.format("Patient %s belongs to a different family.", patientId);
+                response.message = String.format("Patient %s already belongs to a different family, and therefore "
+                        + "cannot be added to this one.", patientId);
                 return response;
             }
         }
@@ -130,7 +131,8 @@ public class ValidationImpl implements Validation
             response.statusCode = 501;
             response.errorType = "existingPedigree";
             response.message =
-                String.format("Patient %s has an existing pedigree.", patientId);
+                    String.format("patient %s already has a different pedigree, and therefore cannot be included in "
+                            + "this one.", patientId);
             return response;
         }
     }
