@@ -2,20 +2,18 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.phenotips.export.internal;
 
@@ -674,12 +672,21 @@ public class DataToCellConverter
         PatientData<List<String>> ethnicities = patient.getData("ethnicity");
         Integer x = 0;
         if (present.contains("global_mode_of_inheritance")) {
-            PatientData<SolrOntologyTerm> globalControllers = patient.<SolrOntologyTerm>getData("global-qualifiers");
-            SolrOntologyTerm modeTerm =
+            PatientData<List<SolrOntologyTerm>> globalControllers = patient.getData("global-qualifiers");
+            List<SolrOntologyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            String mode = modeTerm != null ? modeTerm.getName() : "";
-            DataCell cell = new DataCell(mode, x, 0);
-            bodySection.addCell(cell);
+            int y = 0;
+            if (modeTermList != null && !modeTermList.isEmpty()) {
+                for (SolrOntologyTerm term : modeTermList) {
+                    String mode = term != null ? term.getName() : "";
+                    DataCell cell = new DataCell(mode, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            } else {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("miscarriages")) {
@@ -1153,10 +1160,20 @@ public class DataToCellConverter
 
         Integer x = 0;
         if (present.contains("global_age_of_onset")) {
-            PatientData<SolrOntologyTerm> qualifiers = patient.getData("global-qualifiers");
-            SolrOntologyTerm ageOfOnset = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
-            DataCell cell = new DataCell(ageOfOnset != null ? ageOfOnset.getName() : "", x, 0);
-            bodySection.addCell(cell);
+            PatientData<List<SolrOntologyTerm>> qualifiers = patient.getData("global-qualifiers");
+            List<SolrOntologyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
+            int y = 0;
+            if (ageOfOnsetList != null && !ageOfOnsetList.isEmpty()) {
+                for (SolrOntologyTerm term : ageOfOnsetList) {
+                    String onset = term != null ? term.getName() : "";
+                    DataCell cell = new DataCell(onset, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            } else {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("medical_history")) {
