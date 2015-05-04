@@ -42,9 +42,14 @@
 {{velocity}}
   $xwiki.ssx.use('PhenoTips.PatientSheetCode')
   $xwiki.jsx.use('PhenoTips.FamilySheet')
-  #set($familyObject = $doc.getObject('PhenoTips.FamilyClass'))
-  #set($members = $familyObject.getProperty('members').getValue())
+  #set($obj = $doc.getObject('PhenoTips.FamilyClass'))
+  #set($members = $obj.getProperty('members').getValue())
+  #set($class = $obj.xWikiClass)
+  #set($discard = $doc.use($obj))
   ##
+  (% class='clinical-info' %)(((
+    #__displayFormatted('2-col' 'external_id' '' '' '')
+  )))
   {{html clean='false' wiki='true'}}
   &lt;div id='members' class='chapter clinical-info'&gt;
     == List of members ==
@@ -62,7 +67,7 @@
     &lt;div id='reports' class='chapter clinical-info'&gt;
       == Reports ==
       &lt;div class='fieldset'&gt;
-      $doc.display('reports', $familyObject)
+      $doc.display('reports', $obj)
       &lt;/div&gt;
     &lt;/div&gt;
   #end
