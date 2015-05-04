@@ -149,7 +149,7 @@ public class ProcessingImpl implements Processing
             // remove and add do not take care of modifying the 'members' property
             this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
         } else {
-            if (!this.validation.hasPatientEditAccess(variables.anchorDoc)) {
+            if (!this.validation.hasPatientEditAccess(variables.anchorDoc.getDocumentReference().getName())) {
                 variables.response = StatusResponse.createInsufficientPatientPermissionsResponse(variables.anchorId);
                 return variables;
             }

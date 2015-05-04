@@ -18,7 +18,7 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.internal.PhenoTipsPatient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
@@ -51,6 +51,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Singleton
 public class ValidationImpl implements Validation
 {
+    @Inject
+    private PatientRepository patientRepository;
+
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> referenceResolver;
@@ -161,11 +164,11 @@ public class ValidationImpl implements Validation
 
     /* Should not be used when saving families. Todo why? */
     @Override
-    public boolean hasPatientEditAccess(XWikiDocument patientDoc)
+    public boolean hasPatientEditAccess(String patientId)
     {
         User currentUser = this.userManager.getCurrentUser();
-        // fixme. should not instantiate the implementation of PhenoTipsPatient
-        PatientAccess patientAccess = this.permissionsManager.getPatientAccess(new PhenoTipsPatient(patientDoc));
+        PatientAccess patientAccess =
+            this.permissionsManager.getPatientAccess(patientRepository.getPatientById(patientId));
         AccessLevel patientAccessLevel = patientAccess.getAccessLevel(currentUser.getProfileDocument());
         return patientAccessLevel.compareTo(this.editAccess) >= 0;
     }

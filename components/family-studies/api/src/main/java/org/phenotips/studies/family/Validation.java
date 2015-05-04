@@ -65,8 +65,8 @@ public interface Validation
     /**
      * Checks if the current user has edit access to a patient.
      *
-     * @param patientDoc must not be null
+     * @param patientId must not be null
      * @return true if has access; false otherwise
      */
-    boolean hasPatientEditAccess(XWikiDocument patientDoc);
+    boolean hasPatientEditAccess(String patientId);
 }
