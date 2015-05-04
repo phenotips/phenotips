@@ -155,13 +155,16 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
-            if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                item.remove(COMMENTS_KEY);
-            }
+            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
 
-            container.add(item);
+                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
+                    || (selectedFieldNames != null
+                    && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                    item.remove(COMMENTS_KEY);
+                }
+
+                container.add(item);
+            }
         }
     }
 }
