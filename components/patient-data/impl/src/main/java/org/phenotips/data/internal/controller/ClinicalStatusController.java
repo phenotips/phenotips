@@ -81,8 +81,8 @@ public class ClinicalStatusController implements PatientDataController<String>
                 return new SimpleValuePatientData<String>(getName(), unaffected);
             }
         } catch (Exception e) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
