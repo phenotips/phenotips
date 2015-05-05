@@ -1302,10 +1302,10 @@ PositionedGraph.prototype = {
                     totalEdgeLengthInChildren += (maxOrder - minOrder);
 
                     var leftChildDOB = this.GG.properties[orderedChildren[0]].hasOwnProperty("dob") ?
-                                       new Date(this.GG.properties[orderedChildren[0]]["dob"]) : null;
+                                       new PedigreeDate(this.GG.properties[orderedChildren[0]]["dob"]) : null;
                     for (var j = 1; j < orderedChildren.length; j++) {
                         var thisChildDOB = this.GG.properties[orderedChildren[j]].hasOwnProperty("dob") ?
-                                           new Date(this.GG.properties[orderedChildren[j]]["dob"]) : null;
+                                           new PedigreeDate(this.GG.properties[orderedChildren[j]]["dob"]) : null;
 
                         if (thisChildDOB != null) {
                             if (leftChildDOB == null) {
