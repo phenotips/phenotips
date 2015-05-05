@@ -32,7 +32,7 @@ import org.xwiki.component.phase.InitializationException;
 
 import javax.inject.Inject;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 
 /**
@@ -46,7 +46,7 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServiceInitializer
 {
     /** The Solr server instance used. */
-    private SolrServer server;
+    private SolrClient server;
 
     /**
      * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
@@ -81,7 +81,7 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     }
 
     @Override
-    public SolrServer getServer()
+    public SolrClient getServer()
     {
         return this.server;
     }

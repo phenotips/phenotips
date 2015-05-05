@@ -28,8 +28,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
 
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -56,7 +56,7 @@ public class ChEBIOntologyTest
 
     public Cache<OntologyTerm> cache;
 
-    public SolrServer server;
+    public SolrClient server;
 
     public OntologyService ontologyService;
 
@@ -73,7 +73,7 @@ public class ChEBIOntologyTest
         SolrOntologyServiceInitializer externalServicesAccess =
             this.mocker.getInstance(SolrOntologyServiceInitializer.class);
         when(externalServicesAccess.getCache()).thenReturn(this.cache);
-        this.server = mock(SolrServer.class);
+        this.server = mock(SolrClient.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
     }
@@ -82,7 +82,7 @@ public class ChEBIOntologyTest
     public void testChEBIOntologyReindex()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        ontologyServiceResult = this.ontologyService.reindex(null);
+        this.ontologyServiceResult = this.ontologyService.reindex(null);
         Mockito.verify(this.server).deleteByQuery("*:*");
         Mockito.verify(this.server, Mockito.atLeast(1)).commit();
         Mockito.verify(this.server, Mockito.atLeast(1)).add(Matchers.anyCollectionOf(SolrInputDocument.class));
@@ -92,7 +92,7 @@ public class ChEBIOntologyTest
     }
 
     @Test
-    public void testChEBIOntologyVersion() throws SolrServerException
+    public void testChEBIOntologyVersion() throws SolrServerException, IOException
     {
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrQuery.class))).thenReturn(response);

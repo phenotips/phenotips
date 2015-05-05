@@ -22,7 +22,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.stability.Unstable;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 
 /**
  * Provides methods for initializing an ontology service.
@@ -54,5 +54,5 @@ public interface SolrOntologyServiceInitializer
      *
      * @return server instance
      */
-    SolrServer getServer();
+    SolrClient getServer();
 }

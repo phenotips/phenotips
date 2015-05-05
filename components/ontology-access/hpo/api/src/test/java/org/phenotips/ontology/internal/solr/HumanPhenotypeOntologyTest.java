@@ -28,8 +28,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
 
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -62,7 +62,7 @@ public class HumanPhenotypeOntologyTest
 
     public Cache<OntologyTerm> cache;
 
-    public SolrServer server;
+    public SolrClient server;
 
     public OntologyService ontologyService;
 
@@ -79,7 +79,7 @@ public class HumanPhenotypeOntologyTest
         SolrOntologyServiceInitializer externalServicesAccess =
             this.mocker.getInstance(SolrOntologyServiceInitializer.class);
         when(externalServicesAccess.getCache()).thenReturn(this.cache);
-        this.server = mock(SolrServer.class);
+        this.server = mock(SolrClient.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
         this.ontologyServiceResult =
@@ -99,7 +99,7 @@ public class HumanPhenotypeOntologyTest
     }
 
     @Test
-    public void testHumanPhenotypeOntologyVersion() throws SolrServerException
+    public void testHumanPhenotypeOntologyVersion() throws SolrServerException, IOException
     {
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrQuery.class))).thenReturn(response);
@@ -128,7 +128,8 @@ public class HumanPhenotypeOntologyTest
     }
 
     @Test
-    public void testHumanPhenotypeOntologySuggestTermsIsId() throws ComponentLookupException, SolrServerException
+    public void testHumanPhenotypeOntologySuggestTermsIsId() throws ComponentLookupException, SolrServerException,
+        IOException
     {
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
@@ -141,7 +142,8 @@ public class HumanPhenotypeOntologyTest
     }
 
     @Test
-    public void testHumanPhenotypeOntologySuggestTermsIsNotId() throws ComponentLookupException, SolrServerException
+    public void testHumanPhenotypeOntologySuggestTermsIsNotId() throws ComponentLookupException, SolrServerException,
+        IOException
     {
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
@@ -155,7 +157,7 @@ public class HumanPhenotypeOntologyTest
 
     @Test
     public void testHumanPhenotypeOntologySuggestTermsMultipleWords() throws ComponentLookupException,
-        SolrServerException
+        SolrServerException, IOException
     {
         QueryResponse response = mock(QueryResponse.class);
         when(this.server.query(any(SolrParams.class))).thenReturn(response);
