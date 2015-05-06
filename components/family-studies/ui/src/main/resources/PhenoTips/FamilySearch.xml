@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>FamilySearch</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1430759100000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1430944780000</date>
+  <contentUpdateDate>1430944780000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+## ------------------------
+## URL parameters retrieval
+## ------------------------
+#set ($input = "$!request.input.toLowerCase()")
+#set ($nb = "$!request.nb")
+#if ($nb != '')
+  #set ($nb = $mathtool.toInteger($nb) + 1)
+#else
+  #set ($nb = 6)
+#end
+## -----------------------------------
+## Query execution, results formatting
+## -----------------------------------
+#if ($input != '')
+  #set ($queryFamily = 'from doc.object(PhenoTips.FamilyClass) as family where lower(doc.name) like :input ESCAPE ''_'' or lower(family.external_id) like :input ESCAPE ''_''')
+  #set ($queryPatient = 'from doc.object(PhenoTips.PatientClass) as patient where lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
+  ##, doc.object(PhenoTips.FamilyReference) as reference
+  #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+    #set ($queryPatient = $queryPatient.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
+  #end
+  #set ($queryFamily = $services.query.xwql($queryFamily))
+  #set ($discard = $queryFamily.setLimit($nb))
+  #set ($discard = $queryFamily.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
+  #set ($familyResults = $queryFamily.execute())
+  #set ($queryPatient = $services.query.xwql($queryPatient))
+  #set ($discard = $queryPatient.setLimit($nb))
+  #set ($discard = $queryPatient.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
+  #set ($patientResults = $queryPatient.execute())
+  #if ($request.permission)
+    #set ($requiredPermissions = $request.permission)
+  #else
+    #set ($requiredPermissions = 'view')
+  #end
+  #if ($request.json)
+    #set ($discard = $response.setContentType('application/json'))
+  { "matchedPatients": [
+  #else
+    #set ($discard = $response.setContentType('text/xml'))
+  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+  &lt;results&gt;
+  #end
+  #set ($first = true)
+  #foreach ($item in $patientResults)
+    #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
+      #set ($itemdoc = $xwiki.getDocument($item))
+      #set ($familyReferenceObj = $!itemdoc.getObject('PhenoTips.FamilyReference'))
+      #set ($familyDocId = $!{familyReferenceObj.getProperty('reference').value})
+      #if ("$!{familyDocId}" != '')
+        #set ($familyDoc = $!xwiki.getDocument("data.$!{familyDocId}"))
+        #set ($familyObj = $!familyDoc.getObject('PhenoTips.FamilyClass'))
+        #set ($phenotipsPatientId = $itemdoc.name)
+        #set ($patientObj = $!itemdoc.getObject('PhenoTips.PatientClass'))
+        #set ($url = $familyDoc.getURL())
+        #set ($externalFamilyId = "$!familyObj.getProperty('external_id').value")
+        #set ($externalPatientId = "$!patientObj.getProperty('external_id').value")
+        #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+          #set ($firstName   = "$!patientObj.getProperty('first_name').value")
+          #set ($lastName    = "$!patientObj.getProperty('last_name').value")
+          #set ($patientName = "$firstName $lastName")
+          #set ($patientName = $patientName.trim())
+        #else
+          #set ($patientName = '')
+        #end
+        #set ($description = "$familyDocId")
+        ##if ($externalFamilyId != '' || $externalPatientId != '' || $patientName != '')
+        ## START; Family's external id
+          #if ($externalFamilyId != '')
+            #set ($description = "$description [${externalFamilyId}]")
+          #end
+        ## END; Family's ex.id
+        ## START; Dealing with patient's name and patient's external id
+          #set ($description = "${description} (Patient $!{phenotipsPatientId}")
+          #if ($externalPatientId != '' || $patientName != '')
+            #set ($description = "${description}, ")
+            #if ($patientName != '')
+              #set ($description = "${description}name: ${patientName}")
+            #end
+            #if ($externalPatientId != '')
+              #if ($patientName != '')
+                #set ($description = "${description}, ")
+              #end
+              #set ($description = "${description}identifier: ${externalPatientId}")
+            #end
+          #end
+        ## END; patien name/ex. id
+          #set ($description = "$description)")
+        ##end
+        #if ($request.json &amp;&amp; !$first)
+            ,
+        #else
+          #set ($first = false)
+        #end
+        #if ($request.json)
+            { "id": "$familyDocId", "url": "$url", "identifier": "$!{externalFamilyId}", "textSummary": "$description" }##
+        #else
+            &lt;rs id="$url" info="${escapetool.xml($familyDoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
+        #end
+      #end
+    #end
+  #end
+  #if ($request.json)
+
+      ] }
+  #else
+  &lt;/results&gt;
+  #end
+#end
+{{/velocity}}
+</content>
+</xwikidoc>
