@@ -269,6 +269,7 @@
     } else {
       this.fld.observe("keypress", this.onKeyPress.bindAsEventListener(this));
     }
+    this.fld.observe("paste", this.onPaste.bindAsEventListener(this));
 
     // Prevent normal browser autocomplete
     this.fld.setAttribute("autocomplete", "off");
@@ -319,6 +320,16 @@
     }
   },
   /**
+   * Use the key press routine to search as if some "other" key was pressed;
+   * Pasted value is not yet available at the time of the "paste" event, so schedule
+   * the handler to fire immediately after paste processing is done.
+   */
+  onPaste: function(event) {
+    setTimeout(function () {
+        this.onKeyUp({"keyCode": null});
+      }.bind(this),0);
+  },
+  /**
    * Treats Up and Down arrows, Enter and Escape, affecting the UI meta-behavior. Enter puts the currently selected
    * value inside the target field, Escape closes the suggest dropdown, Up and Down move the current selection.
    */
@@ -364,7 +375,7 @@
     // if input stays the same, do nothing
     //
     val = val.strip().toLowerCase();
-    if (val == this.sInput) {
+    if (val == this.sInput &amp;&amp; val.length > 1) {
       return false;
     }
 
