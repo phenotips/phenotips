@@ -47,7 +47,7 @@ import net.sf.json.JSONObject;
  * Exposes the metainfo about the document.
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.2RC1
  */
 @Component(roles = { PatientDataController.class })
 @Named("metadata")
@@ -85,7 +85,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
 
             Map<String, String> result = new LinkedHashMap<String, String>();
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 
             result.put(DOCUMENT_NAME, doc.getDocumentReference().getName());
 
