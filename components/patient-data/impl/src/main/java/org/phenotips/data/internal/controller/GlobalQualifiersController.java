@@ -101,7 +101,8 @@ public class GlobalQualifiersController implements PatientDataController<List<On
 
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

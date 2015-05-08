@@ -97,7 +97,8 @@ public class DatesController implements PatientDataController<Date>
             }
             return new DictionaryPatientData<Date>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

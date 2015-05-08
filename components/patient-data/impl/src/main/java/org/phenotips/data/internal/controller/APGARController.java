@@ -86,7 +86,8 @@ public class APGARController implements PatientDataController<Integer>
             }
             return new DictionaryPatientData<Integer>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not read requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

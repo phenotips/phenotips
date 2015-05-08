@@ -86,7 +86,8 @@ public class IdentifiersController implements PatientDataController<String>
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
