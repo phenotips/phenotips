@@ -45,7 +45,7 @@ public class TermData extends SetMap<String, String>
         super.clear();
     };
 
-    String getId()
+    public String getId()
     {
         return this.id;
     }
