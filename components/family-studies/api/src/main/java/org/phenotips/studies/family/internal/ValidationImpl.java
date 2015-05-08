@@ -113,7 +113,7 @@ public class ValidationImpl implements Validation
                 response.statusCode = 501;
                 response.errorType = "familyConflict";
                 response.message = String.format("Patient %s already belongs to a different family, and therefore "
-                        + "cannot be added to this one.", patientId);
+                    + "cannot be added to this one.", patientId);
                 return response;
             }
         }
@@ -132,8 +132,8 @@ public class ValidationImpl implements Validation
             response.statusCode = 501;
             response.errorType = "existingPedigree";
             response.message =
-                    String.format("patient %s already has a different pedigree, and therefore cannot be included in "
-                            + "this one.", patientId);
+                String.format("patient %s already has a different pedigree, and therefore cannot be included in "
+                    + "this one.", patientId);
             return response;
         }
     }
@@ -152,7 +152,8 @@ public class ValidationImpl implements Validation
         StatusResponse response = new StatusResponse();
         User currentUser = this.userManager.getCurrentUser();
         if (this.authorizationService.hasAccess(currentUser, Right.EDIT,
-            new DocumentReference(familyDoc.getDocumentReference()))) {
+            new DocumentReference(familyDoc.getDocumentReference())))
+        {
             response.statusCode = 200;
             return response;
         }
