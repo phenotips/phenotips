@@ -71,21 +71,21 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
     protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
 
     protected static final String VERSION_FIELD_NAME = "version";
-    
+
     protected static final String SIZE_FIELD_NAME = "size";
-    
+    protected static final String ROWS_FIELD_NAME = "rows";
+
     private static final String FIELD_VALUE_SEPARATOR = "\\t";
-    
+
     private String infoServiceURL = "http://rest.genenames.org/info";
-    
+
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
-    
+
     /** The number of documents to be added and committed to Solr at a time. */
     protected abstract int getSolrDocsPerBatch();
-    
-    
-    public Map<String, TermData> transform(String ontologyUrl, Map<String, Double> fieldSelection)
+
+    private Map<String, TermData> transform(String ontologyUrl, Map<String, Double> fieldSelection)
     {
         URL url;
         try {
@@ -96,58 +96,57 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         return transform(url, fieldSelection);
     }
 
-    public Map<String, TermData> transform(URL url, Map<String, Double> fieldSelection)
+    private Map<String, TermData> transform(URL url, Map<String, Double> fieldSelection)
     {
         Map<String, TermData> data = new LinkedHashMap<String, TermData>();
-        
+
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
 
             String line;
             int counter = 0;
-            
+
             String zeroLine = in.readLine();
             String[] headers = zeroLine.split(FIELD_VALUE_SEPARATOR, -1);
-            headers[0] = "id";
-            
+            headers[0] = ID_FIELD_NAME;
+
             while ((line = in.readLine()) != null) {
-                
+
                 TermData crtTerm = new TermData();
-                
+
                 String[] pieces = line.split(FIELD_VALUE_SEPARATOR, -1);
-                //Ignore the whole line if begins with tab symbol
-                if (pieces.length > 1 && !pieces[0].equals("")) {
+                // Ignore the whole line if begins with tab symbol
+                if (pieces.length > 1 && !"".equals(pieces[0])) {
                     continue;
                 }
-                
-                for (String term : pieces) {             
-                    if (!term.equals("")) {
+
+                for (String term : pieces) {
+                    if (!"".equals(term)) {
                         crtTerm.addTo(headers[counter], term);
-                    } 
+                    }
                     counter++;
                 }
 
                 data.put(crtTerm.getId(), crtTerm);
             }
-            
+
         } catch (NullPointerException ex) {
             this.logger.error("NullPointer: {}", ex.getMessage());
         } catch (IOException ex) {
             this.logger.error("IOException: {}", ex.getMessage());
-        } 
-        
-        //put version/size here
+        }
+
+        // put version/size here
         TermData metaTerm = new TermData();
         JSONObject info = getInfo();
-        metaTerm.addTo("id", "HEADER_INFO");
-        metaTerm.addTo("version", getVersion(info));
-        metaTerm.addTo("size", Objects.toString(getSize(info), null));
-        
+        metaTerm.addTo(ID_FIELD_NAME, "HEADER_INFO");
+        metaTerm.addTo(VERSION_FIELD_NAME, getVersion(info));
+        metaTerm.addTo(SIZE_FIELD_NAME, Objects.toString(getSize(info), null));
+
         data.put("metadata", metaTerm);
-        
+
         return data;
     }
-    
 
     @Override
     public OntologyTerm getTerm(String id)
@@ -163,7 +162,7 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         }
         return result;
     }
-    
+
     @Override
     public Set<OntologyTerm> getTerms(Collection<String> ids)
     {
@@ -259,7 +258,6 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         }
         return 1;
     }
-    
 
     @Override
     public String getVersion()
@@ -270,7 +268,7 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         SolrDocument firstDoc;
 
         query.setQuery("version:*");
-        query.set("rows", "1");
+        query.set(ROWS_FIELD_NAME, "1");
         try {
             response = this.externalServicesAccess.getServer().query(query);
             termList = response.getResults();
@@ -281,10 +279,12 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
             }
         } catch (SolrServerException | SolrException ex) {
             this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting ontology version", ex);
         }
         return null;
     }
-    
+
     @Override
     public long size()
     {
@@ -294,18 +294,20 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         SolrDocument firstDoc;
 
         query.setQuery("size:*");
-        query.set("rows", "1");
+        query.set(ROWS_FIELD_NAME, "1");
         try {
             response = this.externalServicesAccess.getServer().query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
                 firstDoc = termList.get(0);
-                 String result = firstDoc.getFieldValue(SIZE_FIELD_NAME).toString();
-                 return Long.valueOf(result).longValue();
+                String result = firstDoc.getFieldValue(SIZE_FIELD_NAME).toString();
+                return Long.valueOf(result).longValue();
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology version: {}", ex.getMessage());
+            this.logger.warn("Failed to query ontology size", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting ontology size", ex);
         }
         return 0;
     }
@@ -321,7 +323,7 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
     }
 
     private JSONObject getInfo()
-    { 
+    {
         HttpGet method = new HttpGet(infoServiceURL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = client.execute(method)) {
@@ -333,5 +335,5 @@ public abstract class AbstractHGNCSolrOntologyService extends AbstractSolrOntolo
         }
         return new JSONObject(true);
     }
-    
+
 }
