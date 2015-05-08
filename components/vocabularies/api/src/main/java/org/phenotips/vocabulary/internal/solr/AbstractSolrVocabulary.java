@@ -56,6 +56,13 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     /** The name of the ID field. */
     protected static final String ID_FIELD_NAME = "id";
 
+    // to "boost" the score of documents in cases where all of the terms in the "q" param appear in close proximity
+    protected static final String COMMON_PARAMS_PF = "pf";
+
+    // List of fields and the "boosts" to associate with each of them
+    // when building DisjunctionMaxQueries from the user's query
+    protected static final String COMMON_PARAMS_QF = "qf";
+
     /**
      * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
      * requested entry.

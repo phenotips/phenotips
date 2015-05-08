@@ -74,7 +74,7 @@ import net.sf.json.JSONSerializer;
  * @since 1.0RC1
  */
 @Component
-@Named("hgnc")
+@Named("hgnc-remote")
 @Singleton
 public class GeneNomenclature implements Vocabulary, Initializable
 {
