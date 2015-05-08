@@ -114,10 +114,12 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 ##
 #set($privacyLevelObject = $doc.getObject('PhenoTips.PatientConsent'))
 #set($docPrivacyLevels = ['0'])
-#if ("$!{privacyLevelObject.getProperty('real').value}" == '1') #set($discard = $docPrivacyLevels.add('1')) #end
-#if ("$!{privacyLevelObject.getProperty('genetic').value}" == '1') #set($discard = $docPrivacyLevels.add('2')) #end
-#if ("$!{privacyLevelObject.getProperty('share_history').value}" == '1') #set($discard = $docPrivacyLevels.add('3')) #end
-#if ("$!{privacyLevelObject.getProperty('share_images').value}" == '1') #set($discard = $docPrivacyLevels.add('4')) #end
+#if ("$!{privacyLevelObject}" != '')
+  #if ("$!{privacyLevelObject.getProperty('real').value}" == '1') #set($discard = $docPrivacyLevels.add('1')) #end
+  #if ("$!{privacyLevelObject.getProperty('genetic').value}" == '1') #set($discard = $docPrivacyLevels.add('2')) #end
+  #if ("$!{privacyLevelObject.getProperty('share_history').value}" == '1') #set($discard = $docPrivacyLevels.add('3')) #end
+  #if ("$!{privacyLevelObject.getProperty('share_images').value}" == '1') #set($discard = $docPrivacyLevels.add('4')) #end
+#end
 ## Extensions making up the main content, the actual information about the patient
 #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
 #foreach ($section in $recordConfiguration.enabledSections)
@@ -127,7 +129,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
     #if ("$!{privacyLevel}" == '')
       #set ($privacyLevel = '0')
     #end
-    #if ($docPrivacyLevels.contains($!{privacyLevel}))
+    #if ($docPrivacyLevels.contains($!{privacyLevel}) || "$!{privacyLevelObject}" == '')
       #set ($extension_required = ($element.extension.getParameters().get('required') == 'true'))
       #set ($itemContent = $services.rendering.render($element.extension.execute(), 'xhtml/1.0').trim())
       #set ($sectionContent = $sectionContent.concat($itemContent))
