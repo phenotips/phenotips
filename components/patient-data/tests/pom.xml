@@ -89,6 +89,12 @@
       <version>${solr.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>${solr.version}</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <build>
