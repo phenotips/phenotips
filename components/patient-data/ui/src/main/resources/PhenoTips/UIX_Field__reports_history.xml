@@ -129,7 +129,8 @@
 enabled=true
 required=
 order=3
-fields=reports_history</parameters>
+fields=reports_history
+privacy_level=4</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -125,7 +125,8 @@
 enabled=true
 required=
 order=2
-fields=external_id</parameters>
+fields=external_id
+privacy_level=1</parameters>
     </property>
     <property>
       <scope>wiki</scope>

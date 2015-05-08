@@ -129,7 +129,8 @@
 enabled=true
 required=
 order=9
-fields=miscarriages</parameters>
+fields=miscarriages
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

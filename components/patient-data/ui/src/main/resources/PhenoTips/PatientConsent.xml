@@ -20,29 +20,95 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__pedigree</name>
+  <name>PatientConsent</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822201000</creationDate>
-  <parent>PhenoTips.PatientSheet</parent>
+  <creationDate>1431025641000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822201000</date>
-  <contentUpdateDate>1401822201000</contentUpdateDate>
+  <date>1431077271000</date>
+  <contentUpdateDate>1431075481000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.patientRecord.pedigree.extensionTitle')</title>
+  <title/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
+  <hidden>false</hidden>
   <content/>
+  <class>
+    <name>PhenoTips.PatientConsent</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <genetic>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>genetic</name>
+      <number>2</number>
+      <prettyName>genetic</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </genetic>
+    <real>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>real</name>
+      <number>1</number>
+      <prettyName>real</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </real>
+    <share_history>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>share_history</name>
+      <number>3</number>
+      <prettyName>share</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </share_history>
+    <share_images>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>share_images</name>
+      <number>4</number>
+      <prettyName>share_images</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </share_images>
+  </class>
   <object>
-    <name>PhenoTips.UIX_Field__pedigree</name>
+    <name>PhenoTips.PatientConsent</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
-    <guid>b8283fe3-5a0a-49f4-aea3-b08dc86ba892</guid>
+    <guid>d6d0ec8b-0824-4022-9aea-b5404c536cbb</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -118,60 +184,31 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>(function() {
-  var init = function() {
-    // Save before opening the pedigree
-    var pedigreeTrigger = $("pedigree-trigger");
-    if (pedigreeTrigger &amp;&amp; XWiki.contextaction == "edit") {
-      pedigreeTrigger.observe("click", function(event) {
-        event.stop();
-        document.observe("xwiki:document:saved", function () {
-          window.self.location = pedigreeTrigger.href;
-        });
-        document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
-      });
-    }
-
-    // Resize the pedigree image to fit in the viewport
-    var pedigreeElt = document.documentElement.down('.pedigree-wrapper svg');
-    if (pedigreeElt) {
-      var __fixPedigreeSize = function() {
-        if (!pedigreeElt._originalWidth) {
-          pedigreeElt._originalWidth = pedigreeElt.getAttribute('width');
-          pedigreeElt._originalHeight = pedigreeElt.getAttribute('height');
-        }
-        var newWidth = Element.up(pedigreeElt, '.pedigree-wrapper').up().getWidth();
-        if (newWidth &lt; pedigreeElt._originalWidth) {
-          var newHeight = pedigreeElt._originalHeight * newWidth / pedigreeElt._originalWidth;
-          pedigreeElt.setAttribute('width', newWidth);
-          pedigreeElt.setAttribute('height', newHeight);
-        } else {
-          pedigreeElt.setAttribute('width', pedigreeElt._originalWidth);
-          pedigreeElt.setAttribute('height', pedigreeElt._originalHeight);
-        }
-      };
-      __fixPedigreeSize();
-      Event.observe(window, 'resize', __fixPedigreeSize);
-    }
-  };
-  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+      <code>(function () {
+  var button = $('patient-consent-save');
+  button.observe('click', function(event) {
+    document.fire("xwiki:actions:save", {"continue" : true, "form" : button.up("form")});
+    document.observe('xwiki:document:saved', function(event) {
+      window.location.reload();
+    });
+  });
 })();</code>
     </property>
     <property>
-      <name>Save the patient record before loading the Pedigree Editor</name>
+      <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse/>
     </property>
     <property>
-      <use>onDemand</use>
+      <use>currentPage</use>
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX_Field__pedigree</name>
+    <name>PhenoTips.PatientConsent</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>3afe3456-6a7f-4aae-89e7-ef041fde6707</guid>
+    <guid>995516fc-aa05-4b06-9d24-f6003a1c8aa3</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -237,55 +274,47 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
-
-{{include document="PhenoTips.PedigreeMacros" /}}
-
-{{velocity}}
-#set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
-#if ($pedigreeObj)
-  #set ($data = $!pedigreeObj.getProperty('data').value)
-  #set ($image = $pedigreeObj.getProperty('image').value)
-#end## pedigree obj exists
-#if ($xcontext.action == 'edit' || "$!data" != '')
-  $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
-
-  === $services.localization.render('phenotips.patientRecord.pedigree.title') ===
-
-  #if ($xcontext.action == 'edit')
-    #if ("$!data" != '')
-      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
-    #else
-      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
-    #end## pedigree data exists
-    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" class="button" id="pedigree-trigger"]](%%)
-  #elseif ($xcontext.action == 'view')
-    #if ("$!data" != '')
-      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
-      (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" class="button" id="pedigree-trigger"]](%%)
-    #end
+      <content>{{velocity}}
+$xwiki.jsx.use('PhenoTips.PatientConsent')
+#if ($xcontext.action == 'edit')
+  #set ($consentObj = $doc.getObject('PhenoTips.PatientConsent'))
+  #if ("$!{consentObj}" == '')
+    #set ($consentObj = $doc.getObject('PhenoTips.PatientConsent', true))
+    $doc.save()
   #end
-  #if ("$!image" != '')
-    (% class="pedigree-wrapper" %)((({{html clean="false"}}$!image{{/html}})))
-    (% class="pedigree-wrapper" %)((({{html clean="false"}}#pedigreeLegend($data, "Legend:"){{/html}})))
+  #set ($consentClass = $consentObj.getxWikiClass())
+  #foreach ($property in $consentClass.getPropertyNames())
+    {{html clean='false' wiki='true'}}##
+    &lt;p style="margin-bottom: 10px"&gt;##
+      &lt;label&gt;##
+      $consentObj.display($property, 'edit')##
+      $consentClass.get($property).translatedPrettyName&lt;/label&gt;##
+    &lt;/p&gt;##
+    {{/html}}##
   #end
-#end## action == edit || data
-{{/velocity}}</content>
+  {{html clean='false' wiki='false'}}##
+##    &lt;p&gt;&lt;a href="$xwiki.getDocument('PhenoTips.PatientConsent').getAttachmentURL('phenomecentral_consent.pdf')"&gt;
+##        PhenomeCentral consent form
+##    &lt;/a&gt;&lt;/p&gt;
+    &lt;p&gt;##
+        &lt;a target="_blank" href='http://genomicsandhealth.org/'&gt;Global Alliance for Genomics and Health&lt;/a&gt;##
+    &lt;/p&gt;##
+    &lt;span class="buttonwrapper" id="patient-consent-save"&gt;##
+      &lt;a class="button" href="#"&gt;Save&lt;/a&gt;##
+    &lt;/span&gt;##
+  {{/html}}##
+#end
+{{/velocity}}
+</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.pedigree</name>
+      <name>org.phenotips.patientSheet.consent</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.patientRecord.pedigree.extensionTitle')
-enabled=true
-required=
-order=14
-fields=
-contains_PII=true
-privacy_level=3</parameters>
+      <parameters>required=false</parameters>
     </property>
     <property>
       <scope>wiki</scope>
