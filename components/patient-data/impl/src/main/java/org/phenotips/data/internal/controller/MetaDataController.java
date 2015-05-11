@@ -163,5 +163,4 @@ public class MetaDataController extends AbstractSimpleController implements Pati
                 return REFERRER;
         }
     }
-
 }

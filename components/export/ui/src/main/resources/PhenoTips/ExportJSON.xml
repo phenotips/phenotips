@@ -40,8 +40,6 @@
   <content>{{include document="PhenoTips.ExportFilter" /}}
 
 {{velocity wiki="true"}}{{{
-#set ($newline = ' ')
-#set ($newline = "${newline.charAt(0).toChars(13)[0]}${newline.charAt(0).toChars(10)[0]}")
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
 #set ($nonPatientClassProperties = ['genes', 'genes_comments', 'rejectedGenes', 'rejectedGenes_comments'])
 #set ($enabledFields = $request.getParameterValues('columns'))
