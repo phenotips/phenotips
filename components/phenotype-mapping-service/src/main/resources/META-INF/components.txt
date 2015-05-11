@@ -1,6 +1,0 @@
-org.phenotips.hpoa.PhenotypeMappingScriptService
-org.phenotips.hpoa.ontology.HPO
-org.phenotips.hpoa.annotation.GeneHPOAnnotations
-org.phenotips.hpoa.annotation.OmimHPOAnnotations
-org.phenotips.hpoa.prediction.BNPredictor
-org.phenotips.hpoa.prediction.ICPredictor
