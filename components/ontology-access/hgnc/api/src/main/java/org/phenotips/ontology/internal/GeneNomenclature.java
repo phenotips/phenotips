@@ -72,7 +72,7 @@ import net.sf.json.JSONSerializer;
  * @since 1.0RC1
  */
 @Component
-@Named("hgnc")
+@Named("hgnc-online")
 @Singleton
 public class GeneNomenclature implements OntologyService, Initializable
 {
@@ -97,7 +97,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configuration;
-
+    
     private String baseServiceURL;
 
     private String searchServiceURL;
