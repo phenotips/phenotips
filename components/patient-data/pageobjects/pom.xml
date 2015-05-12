@@ -39,5 +39,10 @@
       <artifactId>xwiki-platform-test-overrides</artifactId>
       <version>${testframework.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
