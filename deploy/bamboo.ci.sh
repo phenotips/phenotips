@@ -15,7 +15,7 @@ install() {
 
 install >/tmp/startup.log 2>&1
 
-md5=`md5sum ${BAMBOODIR}/${ORIGARTIFACT}`
+md5=`md5sum ${BAMBOODIR}/${ORIGARTIFACT}` | cut -d ' ' -f 1
 
 AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi_artifacts --key ${KEYNAME}/${DEVENV}/latest/$ARTIFACT --body ${BAMBOODIR}/${ORIGARTIFACT}
 AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi_artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/$ARTIFACT --body ${BAMBOODIR}/${ORIGARTIFACT}
