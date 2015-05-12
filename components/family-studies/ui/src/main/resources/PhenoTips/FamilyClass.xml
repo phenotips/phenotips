@@ -127,6 +127,35 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </reports>
+    <warning>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>warning</name>
+      <number>5</number>
+      <prettyName>warning</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </warning>
+    <warning_message>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>warning_message</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>warning_message</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </warning_message>
   </class>
   <object>
     <name>PhenoTips.FamilyClass</name>
