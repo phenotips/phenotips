@@ -4828,17 +4828,24 @@ document.observe("xwiki:dom:loaded", function() {
       });
       var valueUnit = 1 / this.segments;
       for (var i = 0; i &lt; this.segments; ++i) {
-        var segmentFill = Math.min(Math.max((this.value - i * valueUnit) / valueUnit, 0), 1);
+        var segmentFill = 100 * Math.min(Math.max((this.value - i * valueUnit) / valueUnit, 0), 1);
         var segment = new Element('span', {
           'class': 'segmented-unit',
         });
         segment.setStyle({
-          backgroundColor: this.fill,
           borderColor: this.border,
-          paddingRight: 'calc(' + (1 - segmentFill) + ' * ' + this.segmentWidth + ')',
-          height: 'calc(' + this.segmentHeight + ' + 2px)',
-          width: 'calc(' + this.segmentWidth + ' + 2px)'
+          height: this.segmentHeight,
+          width: this.segmentHeight
         });
+        var segmentFillElement =  new Element('span', {
+          'class': 'segmented-unit-fill'
+        });
+        segmentFillElement.setStyle({
+          width: segmentFill + '%',
+          height: this.segmentHeight,
+          backgroundColor: this.fill
+        });
+        segment.insert(segmentFillElement);
         bar.insert(segment);
       }
       if(this.displayPercentValueFlag){
@@ -6370,10 +6377,8 @@ input.xwiki-free-multiselect-value {
   width: auto;
 }
 .segmented-bar .segmented-unit {
-  background-clip: content-box ;
   border: 1px solid;
   border-radius: 1px;
-  box-sizing : border-box;
   display: inline-block;
   margin: 0 1px;
   padding:0
