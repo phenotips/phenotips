@@ -394,6 +394,17 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * True iff the pedigree contains sensitive data
+     * @method hasWarningMessage
+     * @return {boolean}
+     */
+    hasWarningMessage: function() {
+        if (!this._familyData) return false;
+
+        return this._familyData.hasWarningMessage();
+    },
+
+    /**
      * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
      * were part of this patient's family at the time pedigree was last reloaded (on open or when reload was pressed)
      * @method getCurrentFamilyPageFamilyMembers
@@ -401,6 +412,15 @@ var PedigreeEditor = Class.create({
      */
     getCurrentFamilyPageFamilyMembers: function() {
         return this._familyData.getCurrentFamilyMembers();
+    },
+
+    /**
+     * Returns the warning message to display
+     * @method getWarningMessage
+     * @returns {String}
+     */
+    getWarningMessage: function() {
+        return this._familyData.getWarningMesage();
     },
 
     /**

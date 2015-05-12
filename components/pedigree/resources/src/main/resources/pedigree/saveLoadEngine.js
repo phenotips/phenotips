@@ -9,7 +9,25 @@ var FamilyDataLoader = Class.create( {
     initialize: function() {
         this.familyPage = null;
         this.familyMembers = [];
+        this.warningMessage = "";
         this.probandData = {};
+
+        this.mainDiv = new Element('div', {'class': 'pedigree-warning-container'});
+        this.mainDiv.update("Sample warning");
+        var closeShortcut = ['Esc'];
+
+        //this.show = function() {
+        //    this.dialog.show();
+        //};
+        this.hide = function() {
+            this.dialog.closeDialog();
+        };
+
+        this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv,
+          {close: {method : this.hide.bind(this), keys : closeShortcut}},
+          {extraClassName: "pedigree-warning-message", title: "Please be advised",
+              displayCloseButton: true, verticalPosition: "top"});
+        this.dialog.show();
     },
 
     load: function(callWhenReady) {
@@ -30,6 +48,8 @@ var FamilyDataLoader = Class.create( {
 
             this.familyMembers  = response.responseJSON.hasOwnProperty("familyMembers") ?
                                   response.responseJSON.familyMembers: [];
+
+            this.warningMessage = response.responseJSON.hasOwnProperty("warning") ? response.responseJSON.warning : "";
         } else {
             console.log("[!] Error parsing family JSON");
         }
@@ -46,8 +66,16 @@ var FamilyDataLoader = Class.create( {
         return (this.familyPage != null);
     },
 
+    hasWarningMessage: function() {
+        return (this.warningMessage != "");
+    },
+
     getCurrentFamilyMembers: function() {
         return this.familyMembers;
+    },
+
+    getWarningMesage: function() {
+        return this.warningMessage;
     }
 });
 
