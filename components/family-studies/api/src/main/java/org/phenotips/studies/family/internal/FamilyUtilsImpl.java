@@ -326,4 +326,15 @@ public class FamilyUtilsImpl implements FamilyUtils
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
         context.getWiki().saveDocument(familyDoc, context);
     }
+
+    @Override
+    public String getWarningMessage(XWikiDocument familyDoc) throws XWikiException
+    {
+        BaseObject familyObject = familyDoc.getXObject(FAMILY_CLASS);
+        if (familyObject.getIntValue("warning") == 0) {
+            return "";
+        } else {
+            return familyObject.getStringValue("warning_message");
+        }
+    }
 }

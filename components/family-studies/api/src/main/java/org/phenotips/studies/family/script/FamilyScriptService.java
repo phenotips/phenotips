@@ -164,10 +164,11 @@ public class FamilyScriptService implements ScriptService
         }
     }
 
-    private static JSON familyInfoResponse(XWikiDocument family, List<String> members)
+    private JSON familyInfoResponse(XWikiDocument family, List<String> members) throws XWikiException
     {
         JSONObject json = new JSONObject();
         json.put("familyPage", family == null ? null : family.getDocumentReference().getName());
+        json.put("warning", utils.getWarningMessage(family));
 
         JSONArray membersJson = new JSONArray();
         for (String member : members) {
@@ -177,8 +178,8 @@ public class FamilyScriptService implements ScriptService
             memberJson.put("name", "");
             membersJson.add(memberJson);
         }
-
         json.put("familyMembers", membersJson);
+
         return json;
     }
 }
