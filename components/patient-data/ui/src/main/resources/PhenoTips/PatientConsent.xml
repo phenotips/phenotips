@@ -416,7 +416,8 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')
       $consentObj.display($property, 'edit')##
       $consentClass.get($property).translatedPrettyName&lt;/label&gt;##
     &lt;/p&gt;##
-    {{/html}}##
+    {{/html}}
+
   #end
   {{html clean='false' wiki='false'}}##
     &lt;span class="buttonwrapper" id="patient-consent-save"&gt;##
