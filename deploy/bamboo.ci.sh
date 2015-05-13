@@ -28,11 +28,11 @@ cp -rfp ~/mavenrepo.zip ${BAMBOODIR}/
 
 md5=`md5sum ${BAMBOODIR}/${ORIGARTIFACT}` | cut -d ' ' -f 1
 
-AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/extension.zip --body ${BAMBOODIR}/extension.zip
-AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/extension.zip --body ${BAMBOODIR}/extension.zip
+AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/extension.zip --body ${BAMBOODIR}/extension.zip
+AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/extension.zip --body ${BAMBOODIR}/extension.zip
 
-AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/mavenrepo.zip --body ${BAMBOODIR}/mavenrepo.zip
-AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/mavenrepo.zip --body ${BAMBOODIR}/mavenrepo.zip
+AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/mavenrepo.zip --body ${BAMBOODIR}/mavenrepo.zip
+AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/mavenrepo.zip --body ${BAMBOODIR}/mavenrepo.zip
 
 AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/$ARTIFACT --body ${BAMBOODIR}/${ORIGARTIFACT}
 AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/${BAMBOOBUILD}/$ARTIFACT --body ${BAMBOODIR}/${ORIGARTIFACT}
