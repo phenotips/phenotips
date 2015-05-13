@@ -18,8 +18,8 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -78,7 +78,7 @@ public final class R54595PhenoTips1151DataMigration extends AbstractHibernateDat
     private EntityReferenceSerializer<String> serializer;
 
     @Inject
-    private OntologyManager ontologies;
+    private VocabularyManager ontologies;
 
     @Override
     public String getDescription()
@@ -195,9 +195,9 @@ public final class R54595PhenoTips1151DataMigration extends AbstractHibernateDat
                     values.add(translation.getValue());
                     if (extendedValues != null) {
                         extendedValues.remove(translation.getKey());
-                        OntologyTerm newTerm =
+                        VocabularyTerm newTerm =
                             R54595PhenoTips1151DataMigration.this.ontologies.resolveTerm(translation.getValue());
-                        for (OntologyTerm ancestor : newTerm.getAncestorsAndSelf()) {
+                        for (VocabularyTerm ancestor : newTerm.getAncestorsAndSelf()) {
                             if (!extendedValues.contains(ancestor.getId())) {
                                 extendedValues.add(ancestor.getId());
                             }

@@ -21,8 +21,8 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientScorer;
 import org.phenotips.data.PatientSpecificity;
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.CacheException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -50,9 +50,9 @@ public class OmimInformationContentPatientScorerTest
 
     private Set<Feature> features = new LinkedHashSet<>();
 
-    private OntologyService hpo;
+    private Vocabulary hpo;
 
-    private OntologyService omim;
+    private Vocabulary omim;
 
     @Rule
     public final MockitoComponentMockingRule<PatientScorer> mocker =
@@ -78,14 +78,14 @@ public class OmimInformationContentPatientScorerTest
         when(feature.getName()).thenReturn("custom");
         this.features.add(feature);
 
-        this.hpo = this.mocker.getInstance(OntologyService.class, "hpo");
-        OntologyTerm hp3 = mock(OntologyTerm.class);
-        OntologyTerm hp4 = mock(OntologyTerm.class);
+        this.hpo = this.mocker.getInstance(Vocabulary.class, "hpo");
+        VocabularyTerm hp3 = mock(VocabularyTerm.class);
+        VocabularyTerm hp4 = mock(VocabularyTerm.class);
         when(this.hpo.getTerm("HP:3")).thenReturn(hp3);
         when(hp3.getParents()).thenReturn(Collections.singleton(hp4));
         when(hp4.getId()).thenReturn("HP:4");
 
-        this.omim = this.mocker.getInstance(OntologyService.class, "omim");
+        this.omim = this.mocker.getInstance(Vocabulary.class, "omim");
         when(this.omim.count(Collections.singletonMap("symptom", "HP:0000001"))).thenReturn(60L);
         when(this.omim.count(Collections.singletonMap("symptom", "HP:1"))).thenReturn(3L);
         when(this.omim.count(Collections.singletonMap("symptom", "HP:2"))).thenReturn(1L);
@@ -130,12 +130,12 @@ public class OmimInformationContentPatientScorerTest
     @Test
     public void getScoreWithNonInformativeFeaturesReturns0() throws ComponentLookupException
     {
-        OntologyTerm hp10 = mock(OntologyTerm.class);
-        OntologyTerm hp11 = mock(OntologyTerm.class);
-        OntologyTerm hp12 = mock(OntologyTerm.class);
-        OntologyTerm hp13 = mock(OntologyTerm.class);
-        OntologyTerm hp14 = mock(OntologyTerm.class);
-        OntologyTerm hp15 = mock(OntologyTerm.class);
+        VocabularyTerm hp10 = mock(VocabularyTerm.class);
+        VocabularyTerm hp11 = mock(VocabularyTerm.class);
+        VocabularyTerm hp12 = mock(VocabularyTerm.class);
+        VocabularyTerm hp13 = mock(VocabularyTerm.class);
+        VocabularyTerm hp14 = mock(VocabularyTerm.class);
+        VocabularyTerm hp15 = mock(VocabularyTerm.class);
         when(this.hpo.getTerm("HP:10")).thenReturn(hp10);
         when(this.hpo.getTerm("HP:11")).thenReturn(hp11);
         when(this.hpo.getTerm("HP:12")).thenReturn(hp12);
@@ -172,10 +172,10 @@ public class OmimInformationContentPatientScorerTest
     @Test
     public void getScoreWithParentlessTermDoesntThrowException() throws ComponentLookupException
     {
-        OntologyTerm hp10 = mock(OntologyTerm.class);
+        VocabularyTerm hp10 = mock(VocabularyTerm.class);
         when(this.hpo.getTerm("HP:10")).thenReturn(hp10);
         when(hp10.getId()).thenReturn("HP:10");
-        when(hp10.getParents()).thenReturn(Collections.<OntologyTerm>emptySet());
+        when(hp10.getParents()).thenReturn(Collections.<VocabularyTerm>emptySet());
         when(this.omim.count(Collections.singletonMap("symptom", "HP:10"))).thenReturn(0L);
 
         Feature feature = mock(Feature.class);

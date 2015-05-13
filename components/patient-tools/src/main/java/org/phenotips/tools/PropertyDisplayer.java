@@ -17,8 +17,8 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +62,7 @@ public class PropertyDisplayer
 
     private static final String INDEXED_PARENT_KEY = "is_a";
 
-    protected OntologyService ontologyService;
+    protected Vocabulary ontologyService;
 
     private final FormData data;
 
@@ -74,7 +74,7 @@ public class PropertyDisplayer
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, OntologyService ontologyService)
+    PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, Vocabulary ontologyService)
     {
         this.data = data;
         this.ontologyService = ontologyService;
@@ -162,9 +162,9 @@ public class PropertyDisplayer
 
         Map<String, String> m = new HashMap<String, String>();
         m.put("is_a", "HP:0000118");
-        Set<OntologyTerm> topSections = this.ontologyService.search(m);
+        Set<VocabularyTerm> topSections = this.ontologyService.search(m);
         Set<String> topSectionsId = new LinkedHashSet<String>();
-        for (OntologyTerm section : topSections) {
+        for (VocabularyTerm section : topSections) {
             topSectionsId.add(section.getId());
         }
         // Explicitly add Death, since it's not part of the "Phenotypic abnormality" branch of HPO, but still makes
@@ -202,7 +202,7 @@ public class PropertyDisplayer
             }
         }
         for (String sectionId : topSectionsId) {
-            OntologyTerm term = this.ontologyService.getTerm(sectionId);
+            VocabularyTerm term = this.ontologyService.getTerm(sectionId);
             if (term == null) {
                 continue;
             }
@@ -360,7 +360,7 @@ public class PropertyDisplayer
         if (!id.startsWith("HP:")) {
             return id;
         }
-        OntologyTerm phObj = this.ontologyService.getTerm(id);
+        VocabularyTerm phObj = this.ontologyService.getTerm(id);
         if (phObj != null) {
             return phObj.getName();
         }
@@ -383,7 +383,7 @@ public class PropertyDisplayer
         if (!value.startsWith("HP:")) {
             return Collections.emptyList();
         }
-        OntologyTerm termObj = this.ontologyService.getTerm(value);
+        VocabularyTerm termObj = this.ontologyService.getTerm(value);
         if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);

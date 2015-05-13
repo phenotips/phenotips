@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -34,25 +34,25 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default implementation of the {@link OntologyManager} component, which uses the {@link OntologyService ontologies}
+ * Default implementation of the {@link VocabularyManager} component, which uses the {@link Vocabulary ontologies}
  * registered in the component manager.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
 @Component
 @Singleton
-public class DefaultOntologyManager implements OntologyManager, Initializable
+public class DefaultVocabularyManager implements VocabularyManager, Initializable
 {
-    /** The currently available ontologies. */
+    /** The currently available vocabularies. */
     @Inject
-    private Map<String, OntologyService> ontologies;
+    private Map<String, Vocabulary> ontologies;
 
     @Override
     public void initialize() throws InitializationException
     {
-        Map<String, OntologyService> newOntologiesMap = new HashMap<String, OntologyService>();
-        for (OntologyService ontology : this.ontologies.values()) {
+        Map<String, Vocabulary> newOntologiesMap = new HashMap<String, Vocabulary>();
+        for (Vocabulary ontology : this.ontologies.values()) {
             for (String alias : ontology.getAliases()) {
                 newOntologiesMap.put(alias, ontology);
             }
@@ -61,9 +61,9 @@ public class DefaultOntologyManager implements OntologyManager, Initializable
     }
 
     @Override
-    public OntologyTerm resolveTerm(String termId)
+    public VocabularyTerm resolveTerm(String termId)
     {
-        OntologyService ontology = getOntologyForTerm(termId);
+        Vocabulary ontology = getOntologyForTerm(termId);
         if (ontology != null) {
             return ontology.getTerm(termId);
         }
@@ -71,7 +71,7 @@ public class DefaultOntologyManager implements OntologyManager, Initializable
     }
 
     @Override
-    public OntologyService getOntology(String ontologyId)
+    public Vocabulary getVocabulary(String ontologyId)
     {
         return this.ontologies.get(ontologyId);
     }
@@ -83,7 +83,7 @@ public class DefaultOntologyManager implements OntologyManager, Initializable
      * @param termId the term identifier to process
      * @return the owner ontology, or {@code null} if the term doesn't belong to a known ontology
      */
-    private OntologyService getOntologyForTerm(String termId)
+    private Vocabulary getOntologyForTerm(String termId)
     {
         String ontologyId = StringUtils.substringBefore(termId, ":");
         if (StringUtils.isNotBlank(ontologyId)) {

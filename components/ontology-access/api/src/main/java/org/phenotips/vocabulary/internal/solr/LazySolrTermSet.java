@@ -17,8 +17,8 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,18 +32,18 @@ import org.apache.commons.lang3.StringUtils;
  * A lazy-loading set that transforms a set of term identifiers into real terms only when actually accessing the terms.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under a different package since 1.0M8)
  */
-public class LazySolrTermSet implements Set<OntologyTerm>
+public class LazySolrTermSet implements Set<VocabularyTerm>
 {
     /** The original set of term identifiers. */
     private Collection<String> identifiers;
 
     /** The loaded terms, {@code null} until it is actually needed. */
-    private Collection<OntologyTerm> terms;
+    private Collection<VocabularyTerm> terms;
 
     /** The ontology owning all the terms in this set. Used for loading the terms. */
-    private OntologyService ontology;
+    private Vocabulary ontology;
 
     /**
      * Constructor that provides the list of {@link #identifiers terms identifier} and the {@link #ontology owner
@@ -52,7 +52,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
      * @param identifiers the {@link #identifiers identifiers to load}
      * @param ontology the {@link #ontology owner ontology}
      */
-    public LazySolrTermSet(Collection<Object> identifiers, OntologyService ontology)
+    public LazySolrTermSet(Collection<Object> identifiers, Vocabulary ontology)
     {
         if (identifiers == null || identifiers.isEmpty()) {
             this.identifiers = Collections.emptySet();
@@ -83,8 +83,8 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     {
         if (String.class.isInstance(o)) {
             return this.identifiers.contains(o);
-        } else if (OntologyTerm.class.isInstance(o)) {
-            return this.identifiers.contains(((OntologyTerm) o).getId());
+        } else if (VocabularyTerm.class.isInstance(o)) {
+            return this.identifiers.contains(((VocabularyTerm) o).getId());
         }
         return false;
     }
@@ -101,7 +101,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     }
 
     @Override
-    public Iterator<OntologyTerm> iterator()
+    public Iterator<VocabularyTerm> iterator()
     {
         loadTerms();
         return this.terms.iterator();
@@ -122,7 +122,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     }
 
     @Override
-    public boolean add(OntologyTerm e)
+    public boolean add(VocabularyTerm e)
     {
         // This is readonly, nothing can be added
         throw new UnsupportedOperationException();
@@ -136,7 +136,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     }
 
     @Override
-    public boolean addAll(Collection<? extends OntologyTerm> c)
+    public boolean addAll(Collection<? extends VocabularyTerm> c)
     {
         // This is readonly, nothing can be added
         throw new UnsupportedOperationException();

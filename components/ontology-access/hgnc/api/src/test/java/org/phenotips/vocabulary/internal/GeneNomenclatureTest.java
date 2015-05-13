@@ -17,8 +17,8 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -75,8 +75,8 @@ import static org.mockito.Mockito.when;
 public class GeneNomenclatureTest
 {
     @Rule
-    public MockitoComponentMockingRule<OntologyService> mocker =
-        new MockitoComponentMockingRule<OntologyService>(GeneNomenclature.class);
+    public MockitoComponentMockingRule<Vocabulary> mocker =
+        new MockitoComponentMockingRule<Vocabulary>(GeneNomenclature.class);
     
     private ConfigurationSource configuration;
 
@@ -90,26 +90,26 @@ public class GeneNomenclatureTest
     private HttpEntity responseEntity;
 
     @Mock
-    private Cache<OntologyTerm> cache;
+    private Cache<VocabularyTerm> cache;
 
     @Mock
-    private OntologyTerm term;
+    private VocabularyTerm term;
 
-    private OntologyTerm emptyMarker;
+    private VocabularyTerm emptyMarker;
 
     @Before
     public void setUp() throws ComponentLookupException, CacheException, NoSuchFieldException,
         IllegalArgumentException, IllegalAccessException
     {
         MockitoAnnotations.initMocks(this);
-        when(this.mocker.<CacheManager>getInstance(CacheManager.class).<OntologyTerm>createNewLocalCache(
+        when(this.mocker.<CacheManager>getInstance(CacheManager.class).<VocabularyTerm>createNewLocalCache(
             any(CacheConfiguration.class))).thenReturn(this.cache);
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
         when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/")).thenReturn("http://rest.genenames.org/");
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         Field em = ReflectionUtils.getField(GeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
-        this.emptyMarker = (OntologyTerm) em.get(null);
+        this.emptyMarker = (VocabularyTerm) em.get(null);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class GeneNomenclatureTest
         // Since the component was already initialized in setUp() with the default URL, re-initialize it
         // with the new configuration mock
         ((Initializable) this.mocker.getComponentUnderTest()).initialize();
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
         Assert.assertNotNull(result);
@@ -146,7 +146,7 @@ public class GeneNomenclatureTest
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
         when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream("BRCA1.json"));
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
         Assert.assertNotNull(result);
@@ -162,7 +162,7 @@ public class GeneNomenclatureTest
         ClientProtocolException, IOException
     {
         when(this.cache.get("BRCA1")).thenReturn(this.term);
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
         verify(this.client, never()).execute(any(HttpUriRequest.class));
         Assert.assertSame(this.term, result);
     }
@@ -176,7 +176,7 @@ public class GeneNomenclatureTest
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
         when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream("NOTHING.json"));
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("NOTHING");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("NOTHING");
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
         Assert.assertNull(result);
@@ -188,7 +188,7 @@ public class GeneNomenclatureTest
         ClientProtocolException, IOException
     {
         when(this.cache.get("NOTHING")).thenReturn(this.emptyMarker);
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("NOTHING");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("NOTHING");
         verify(this.client, never()).execute(any(HttpUriRequest.class));
         Assert.assertNull(result);
     }
@@ -198,7 +198,7 @@ public class GeneNomenclatureTest
         ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("ERROR");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("ERROR");
         Assert.assertNull(result);
     }
 
@@ -213,7 +213,7 @@ public class GeneNomenclatureTest
         when(this.response.getEntity()).thenReturn(this.responseEntity);
         when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream("BRCA1.json"),
             ClassLoader.getSystemResourceAsStream("NOTHING.json"));
-        Set<OntologyTerm> result = this.mocker.getComponentUnderTest().getTerms(Arrays.asList("BRCA1", "NOTHING"));
+        Set<VocabularyTerm> result = this.mocker.getComponentUnderTest().getTerms(Arrays.asList("BRCA1", "NOTHING"));
         List<HttpUriRequest> calledURIs = reqCapture.getAllValues();
         Assert.assertEquals(expectedURI1, calledURIs.get(0).getURI());
         Assert.assertEquals(expectedURI2, calledURIs.get(1).getURI());
@@ -236,10 +236,10 @@ public class GeneNomenclatureTest
     public void getTermDistanceIsFlat() throws ComponentLookupException
     {
         Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance(this.term, this.term));
-        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance(this.term, mock(OntologyTerm.class)));
+        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance(this.term, mock(VocabularyTerm.class)));
         Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance(this.term, null));
         Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance(null, this.term));
-        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance((OntologyTerm) null, null));
+        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().getDistance((VocabularyTerm) null, null));
     }
 
     @Test
@@ -305,13 +305,13 @@ public class GeneNomenclatureTest
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
         when(this.responseEntity.getContent()).thenReturn(ClassLoader.getSystemResourceAsStream("BRCA1.json"));
-        OntologyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
+        VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
         Assert.assertEquals("BRCA1", result.get("symbol"));
         Assert.assertEquals("breast cancer 1, early onset", result.getName());
         Assert.assertEquals("", result.getDescription());
         Assert.assertEquals(-1, result.getDistanceTo(null));
         Assert.assertEquals(-1, result.getDistanceTo(result));
-        Assert.assertEquals(-1, result.getDistanceTo(mock(OntologyTerm.class)));
+        Assert.assertEquals(-1, result.getDistanceTo(mock(VocabularyTerm.class)));
         Assert.assertEquals(this.mocker.getComponentUnderTest(), result.getOntology());
         Assert.assertTrue(result.getParents().isEmpty());
         Assert.assertTrue(result.getAncestors().isEmpty());
@@ -340,11 +340,11 @@ public class GeneNomenclatureTest
         Map<String, String> queryOptions = new LinkedHashMap<>();
         queryOptions.put("start", "3");
         queryOptions.put("rows", "2");
-        Set<OntologyTerm> result = this.mocker.getComponentUnderTest().search(search, queryOptions);
+        Set<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(search, queryOptions);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
         Assert.assertEquals(2, result.size());
-        Iterator<OntologyTerm> terms = result.iterator();
+        Iterator<VocabularyTerm> terms = result.iterator();
         Assert.assertEquals("BRCA1", terms.next().getId());
         Assert.assertEquals("BRCA1P1", terms.next().getId());
     }
@@ -354,7 +354,7 @@ public class GeneNomenclatureTest
         ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
-        Set<OntologyTerm> result = this.mocker.getComponentUnderTest().search(new HashMap<String, Object>());
+        Set<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(new HashMap<String, Object>());
         Assert.assertTrue(result.isEmpty());
     }
 

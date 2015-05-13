@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 @Component
 @Named("chebi")
 @Singleton
-public class ChEBIOntology extends AbstractOBOSolrOntologyService
+public class ChEBIOntology extends AbstractOBOSolrVocabulary
 {
     /**
      * TODO. Determine if this is still relevant.

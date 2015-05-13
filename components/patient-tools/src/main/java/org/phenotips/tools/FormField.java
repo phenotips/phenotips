@@ -18,8 +18,8 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.xml.XMLUtils;
@@ -43,7 +43,7 @@ public class FormField extends AbstractFormElement
 
     private final String hint;
 
-    private OntologyTerm term;
+    private VocabularyTerm term;
 
     FormField(String value, String title, String hint, String metaData, boolean expandable, boolean yesSelected,
         boolean noSelected)
@@ -57,8 +57,8 @@ public class FormField extends AbstractFormElement
         this.selection[YES] = yesSelected;
         this.selection[NO] = noSelected;
         try {
-            OntologyManager om =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
+            VocabularyManager om =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
             this.term = om.resolveTerm(value);
         } catch (ComponentLookupException ex) {
             this.term = null;

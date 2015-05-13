@@ -17,7 +17,7 @@
  */
 package org.phenotips.solr;
 
-import org.phenotips.vocabulary.SolrOntologyServiceInitializer;
+import org.phenotips.vocabulary.SolrVocabularyInitializer;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -86,7 +86,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     protected SolrClient server;
 
     @Inject
-    protected SolrOntologyServiceInitializer initializer;
+    protected SolrVocabularyInitializer initializer;
 
     /**
      * Cache for the recently accessed documents; useful since the ontology rarely changes, so a search should always

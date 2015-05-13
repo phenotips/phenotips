@@ -21,8 +21,8 @@ import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -66,19 +66,19 @@ public class PhenoTipsFeatureTest
     private Provider<ComponentManager> mockProvider;
 
     @Mock
-    private OntologyManager om;
+    private VocabularyManager om;
 
     @Mock
-    private OntologyTerm hp0000082;
+    private VocabularyTerm hp0000082;
 
     @Mock
-    private OntologyTerm hp0000100;
+    private VocabularyTerm hp0000100;
 
     @Mock
-    private OntologyTerm hp0003678;
+    private VocabularyTerm hp0003678;
 
     @Mock
-    private OntologyTerm hp0012211;
+    private VocabularyTerm hp0012211;
 
     @Before
     public void setup() throws ComponentLookupException
@@ -88,7 +88,7 @@ public class PhenoTipsFeatureTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(DiffManager.class)).thenReturn(null);
-        when(this.cm.getInstance(OntologyManager.class)).thenReturn(this.om);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.om);
 
         when(this.hp0000082.getId()).thenReturn("HP:0000082");
         when(this.hp0000082.getName()).thenReturn("Decreased renal function");

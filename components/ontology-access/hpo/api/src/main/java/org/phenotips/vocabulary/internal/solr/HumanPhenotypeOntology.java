@@ -17,7 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -49,7 +49,7 @@ import org.apache.solr.common.params.SpellingParams;
 @Component
 @Named("hpo")
 @Singleton
-public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
+public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
 {
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^HP:[0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -129,7 +129,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
     }
 
     @Override
-    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
     {
         if (StringUtils.isBlank(query)) {
             return new HashSet<>();
@@ -139,9 +139,9 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrOntologyService
         if (!isId) {
             options.putAll(this.getStaticFieldSolrParams());
         }
-        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
+        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
         for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
-            result.add(new SolrOntologyTerm(doc, this));
+            result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
     }

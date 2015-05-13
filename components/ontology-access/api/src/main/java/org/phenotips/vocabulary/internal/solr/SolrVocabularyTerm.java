@@ -17,8 +17,8 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,12 +37,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Implementation for {@link OntologyTerm} based on an indexed Solr document.
+ * Implementation for {@link VocabularyTerm} based on an indexed Solr document.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
-public class SolrOntologyTerm implements OntologyTerm
+public class SolrVocabularyTerm implements VocabularyTerm
 {
     private static final String ID = "id";
 
@@ -70,28 +70,28 @@ public class SolrOntologyTerm implements OntologyTerm
      *
      * @see #getOntology()
      */
-    private OntologyService ontology;
+    private Vocabulary ontology;
 
     /**
      * The parents of this term, transformed from a set of IDs into a real set of terms.
      *
      * @see #getParents()
      */
-    private Set<OntologyTerm> parents;
+    private Set<VocabularyTerm> parents;
 
     /**
      * The ancestors of this term, transformed from a set of IDs into a real set of terms.
      *
      * @see #getAncestors()
      */
-    private Set<OntologyTerm> ancestors;
+    private Set<VocabularyTerm> ancestors;
 
     /**
      * A set containing the term itself and its ancestors, transformed from a set of IDs into a real set of terms.
      *
      * @see #getAncestorsAndSelf()
      */
-    private Set<OntologyTerm> ancestorsAndSelf;
+    private Set<VocabularyTerm> ancestorsAndSelf;
 
     /**
      * Constructor that provides the backing {@link #doc Solr document} and the {@link #ontology owner ontology}.
@@ -99,7 +99,7 @@ public class SolrOntologyTerm implements OntologyTerm
      * @param doc the {@link #doc Solr document} representing this term
      * @param ontology the {@link #ontology owner ontology}
      */
-    public SolrOntologyTerm(SolrDocument doc, OntologyService ontology)
+    public SolrVocabularyTerm(SolrDocument doc, Vocabulary ontology)
     {
         this.doc = doc;
         this.ontology = ontology;
@@ -151,21 +151,21 @@ public class SolrOntologyTerm implements OntologyTerm
     }
 
     @Override
-    public Set<OntologyTerm> getParents()
+    public Set<VocabularyTerm> getParents()
     {
-        return this.parents != null ? this.parents : Collections.<OntologyTerm>emptySet();
+        return this.parents != null ? this.parents : Collections.<VocabularyTerm>emptySet();
     }
 
     @Override
-    public Set<OntologyTerm> getAncestors()
+    public Set<VocabularyTerm> getAncestors()
     {
-        return this.ancestors != null ? this.ancestors : Collections.<OntologyTerm>emptySet();
+        return this.ancestors != null ? this.ancestors : Collections.<VocabularyTerm>emptySet();
     }
 
     @Override
-    public Set<OntologyTerm> getAncestorsAndSelf()
+    public Set<VocabularyTerm> getAncestorsAndSelf()
     {
-        return this.ancestorsAndSelf != null ? this.ancestorsAndSelf : Collections.<OntologyTerm>emptySet();
+        return this.ancestorsAndSelf != null ? this.ancestorsAndSelf : Collections.<VocabularyTerm>emptySet();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class SolrOntologyTerm implements OntologyTerm
     }
 
     @Override
-    public OntologyService getOntology()
+    public Vocabulary getOntology()
     {
         return this.ontology;
     }
@@ -187,7 +187,7 @@ public class SolrOntologyTerm implements OntologyTerm
     }
 
     @Override
-    public long getDistanceTo(final OntologyTerm other)
+    public long getDistanceTo(final VocabularyTerm other)
     {
         if (other == null) {
             return -1;
@@ -203,9 +203,9 @@ public class SolrOntologyTerm implements OntologyTerm
         Map<String, Integer> otherLevelMap = new HashMap<String, Integer>();
         otherLevelMap.put(other.getId(), 0);
 
-        Set<OntologyTerm> myCrtLevel = new HashSet<OntologyTerm>();
+        Set<VocabularyTerm> myCrtLevel = new HashSet<VocabularyTerm>();
         myCrtLevel.add(this);
-        Set<OntologyTerm> otherCrtLevel = new HashSet<OntologyTerm>();
+        Set<VocabularyTerm> otherCrtLevel = new HashSet<VocabularyTerm>();
         otherCrtLevel.add(other);
 
         for (int l = 1; l <= distance && !myCrtLevel.isEmpty() && !otherCrtLevel.isEmpty(); ++l) {
@@ -215,13 +215,13 @@ public class SolrOntologyTerm implements OntologyTerm
         return distance == Integer.MAX_VALUE ? -1 : distance;
     }
 
-    private long processAncestorsAtDistance(int localDistance, Set<OntologyTerm> sourceUnprocessedAncestors,
+    private long processAncestorsAtDistance(int localDistance, Set<VocabularyTerm> sourceUnprocessedAncestors,
         Map<String, Integer> sourceDistanceMap, Map<String, Integer> targetDistanceMap)
     {
         long minDistance = Integer.MAX_VALUE;
-        Set<OntologyTerm> nextLevel = new HashSet<OntologyTerm>();
-        for (OntologyTerm term : sourceUnprocessedAncestors) {
-            for (OntologyTerm parent : term.getParents()) {
+        Set<VocabularyTerm> nextLevel = new HashSet<VocabularyTerm>();
+        for (VocabularyTerm term : sourceUnprocessedAncestors) {
+            for (VocabularyTerm parent : term.getParents()) {
                 if (sourceDistanceMap.containsKey(parent.getId())) {
                     continue;
                 }
@@ -253,7 +253,8 @@ public class SolrOntologyTerm implements OntologyTerm
         return json;
     }
 
-    private void addAsCorrectType(JSONObject json, String name, Object toAdd) {
+    private void addAsCorrectType(JSONObject json, String name, Object toAdd)
+    {
         if (toAdd instanceof Collection) {
             JSONArray array = new JSONArray();
             array.addAll((Collection<String>) toAdd);
@@ -276,9 +277,9 @@ public class SolrOntologyTerm implements OntologyTerm
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof OntologyTerm)) {
+        if (obj == null || !(obj instanceof VocabularyTerm)) {
             return false;
         }
-        return StringUtils.equals(getId(), ((OntologyTerm) obj).getId());
+        return StringUtils.equals(getId(), ((VocabularyTerm) obj).getId());
     }
 }

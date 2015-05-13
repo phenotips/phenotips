@@ -17,7 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -41,13 +41,13 @@ import org.apache.solr.common.params.CommonParams;
 @Component
 @Named("ethnicity")
 @Singleton
-public class EthnicityOntology extends AbstractSolrOntologyService
+public class EthnicityOntology extends AbstractSolrVocabulary
 {
     /**
      * @param stringSearch part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
      */
-    public Set<OntologyTerm> getMatchingEthnicities(String stringSearch)
+    public Set<VocabularyTerm> getMatchingEthnicities(String stringSearch)
     {
         Map<String, String> searchMap = new HashMap<String, String>();
         searchMap.put("nameGram", stringSearch);

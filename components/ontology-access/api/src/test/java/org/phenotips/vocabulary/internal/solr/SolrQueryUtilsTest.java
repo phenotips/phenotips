@@ -26,10 +26,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Tests for the {@link MeasurementsScriptService} component.
- * 
+ * Tests for the {@link SolrQueryUtils} utility class.
+ *
  * @version $Id$
- * @since 1.0M1
  */
 public class SolrQueryUtilsTest
 {
@@ -100,7 +99,7 @@ public class SolrQueryUtilsTest
         SolrParams output = SolrQueryUtils.applySpellcheckSuggestion(input, "fixed with text:stub*");
         Assert.assertNotNull(output);
         Assert.assertEquals("fixed with text:stub* text:stab*^1.5", output.get(CommonParams.Q));
-        Assert.assertArrayEquals(new String[] {"text:stab* name:stab*^5", "text:stub* name:stub*^5"},
+        Assert.assertArrayEquals(new String[] { "text:stab* name:stab*^5", "text:stub* name:stub*^5" },
             output.getParams(DisMaxParams.BQ));
     }
 

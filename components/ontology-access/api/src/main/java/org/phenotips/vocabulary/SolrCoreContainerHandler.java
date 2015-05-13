@@ -26,7 +26,7 @@ import org.apache.solr.core.CoreContainer;
  * Provides access to the configured Solr data.
  *
  * @version $Id$
- * @since 1.0M13
+ * @since 1.2M4 (under different names since 1.0M13)
  */
 @Unstable
 @Role

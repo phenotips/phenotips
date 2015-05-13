@@ -28,11 +28,11 @@ import org.apache.solr.client.solrj.SolrClient;
  * Provides methods for initializing an ontology service.
  *
  * @version $Id$
- * @since FIXME and version
+ * @since 1.2M4 (under different names since 1.0M10)
  */
 @Unstable
 @Role
-public interface SolrOntologyServiceInitializer
+public interface SolrVocabularyInitializer
 {
     /**
      * Initializes connection to the Solr server and new cache.
@@ -47,7 +47,7 @@ public interface SolrOntologyServiceInitializer
      *
      * @return cache instance
      */
-    Cache<OntologyTerm> getCache();
+    Cache<VocabularyTerm> getCache();
 
     /**
      * Gets server instance.

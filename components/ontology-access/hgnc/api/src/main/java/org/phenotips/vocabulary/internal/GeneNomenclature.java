@@ -17,8 +17,8 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -74,13 +74,13 @@ import net.sf.json.JSONSerializer;
 @Component
 @Named("hgnc")
 @Singleton
-public class GeneNomenclature implements OntologyService, Initializable
+public class GeneNomenclature implements Vocabulary, Initializable
 {
     /**
      * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
      * requested entry.
      */
-    private static final OntologyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
+    private static final VocabularyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
 
     private static final String RESPONSE_KEY = "response";
 
@@ -116,7 +116,7 @@ public class GeneNomenclature implements OntologyService, Initializable
      * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
      * the same thing.
      */
-    private Cache<OntologyTerm> cache;
+    private Cache<VocabularyTerm> cache;
 
     /** Cache for ontology metadata. */
     private Cache<JSONObject> infoCache;
@@ -147,9 +147,9 @@ public class GeneNomenclature implements OntologyService, Initializable
     }
 
     @Override
-    public OntologyTerm getTerm(String id)
+    public VocabularyTerm getTerm(String id)
     {
-        OntologyTerm result = this.cache.get(id);
+        VocabularyTerm result = this.cache.get(id);
         String safeID;
         if (result == null) {
             try {
@@ -178,12 +178,12 @@ public class GeneNomenclature implements OntologyService, Initializable
     }
 
     @Override
-    public Set<OntologyTerm> getTerms(Collection<String> ids)
+    public Set<VocabularyTerm> getTerms(Collection<String> ids)
     {
         // FIXME Reimplement with a bunch of async connections fired in parallel
-        Set<OntologyTerm> result = new LinkedHashSet<>();
+        Set<VocabularyTerm> result = new LinkedHashSet<>();
         for (String id : ids) {
-            OntologyTerm term = getTerm(id);
+            VocabularyTerm term = getTerm(id);
             if (term != null) {
                 result.add(term);
             }
@@ -192,13 +192,13 @@ public class GeneNomenclature implements OntologyService, Initializable
     }
 
     @Override
-    public Set<OntologyTerm> search(Map<String, ?> fieldValues)
+    public Set<VocabularyTerm> search(Map<String, ?> fieldValues)
     {
         return search(fieldValues, Collections.<String, String>emptyMap());
     }
 
     @Override
-    public Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    public Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
         try {
             HttpGet method =
@@ -209,7 +209,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 if (docs.size() >= 1) {
-                    Set<OntologyTerm> result = new LinkedHashSet<>();
+                    Set<VocabularyTerm> result = new LinkedHashSet<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)
@@ -269,7 +269,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     }
 
     @Override
-    public long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm)
+    public long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm)
     {
         // Flat nomenclature
         return -1;
@@ -404,13 +404,13 @@ public class GeneNomenclature implements OntologyService, Initializable
         return query;
     }
 
-    private static class JSONOntologyTerm implements OntologyTerm
+    private static class JSONOntologyTerm implements VocabularyTerm
     {
         private JSONObject data;
 
-        private OntologyService ontology;
+        private Vocabulary ontology;
 
-        public JSONOntologyTerm(JSONObject data, OntologyService ontology)
+        public JSONOntologyTerm(JSONObject data, Vocabulary ontology)
         {
             this.data = data;
             this.ontology = ontology;
@@ -436,25 +436,25 @@ public class GeneNomenclature implements OntologyService, Initializable
         }
 
         @Override
-        public Set<OntologyTerm> getParents()
+        public Set<VocabularyTerm> getParents()
         {
             return Collections.emptySet();
         }
 
         @Override
-        public Set<OntologyTerm> getAncestors()
+        public Set<VocabularyTerm> getAncestors()
         {
             return Collections.emptySet();
         }
 
         @Override
-        public Set<OntologyTerm> getAncestorsAndSelf()
+        public Set<VocabularyTerm> getAncestorsAndSelf()
         {
-            return Collections.<OntologyTerm>singleton(this);
+            return Collections.<VocabularyTerm>singleton(this);
         }
 
         @Override
-        public long getDistanceTo(OntologyTerm other)
+        public long getDistanceTo(VocabularyTerm other)
         {
             return -1;
         }
@@ -466,7 +466,7 @@ public class GeneNomenclature implements OntologyService, Initializable
         }
 
         @Override
-        public OntologyService getOntology()
+        public Vocabulary getOntology()
         {
             return this.ontology;
         }
@@ -487,7 +487,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     }
 
     @Override
-    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
     {
         // ignoring sort and customFq
         String formattedQuery = String.format("%s*", query);

@@ -24,11 +24,11 @@ import org.xwiki.stability.Unstable;
  * Provides access to the available ontologies and their terms.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
 @Unstable
 @Role
-public interface OntologyManager
+public interface VocabularyManager
 {
     /**
      * Retrieve a term from its owner ontology. For this to work properly, the term identifier must contain a known
@@ -39,7 +39,7 @@ public interface OntologyManager
      * @return the requested term, or {@code null} if the term doesn't exist in the ontology, or no matching ontology is
      *         available
      */
-    OntologyTerm resolveTerm(String termId);
+    VocabularyTerm resolveTerm(String termId);
 
     /**
      * Retrieve an ontology given its identifier.
@@ -48,5 +48,5 @@ public interface OntologyManager
      *            ontology, for example {@code HP} or {@code MIM}
      * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform
      */
-    OntologyService getOntology(String ontologyId);
+    Vocabulary getVocabulary(String ontologyId);
 }

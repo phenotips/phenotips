@@ -375,7 +375,7 @@
               <differenceType>6004</differenceType>
               <field>initializer</field>
               <from>org.phenotips.ontology.SolrOntologyServiceInitializer</from>
-              <to>org.phenotips.vocabulary.SolrOntologyServiceInitializer</to>
+              <to>org.phenotips.vocabulary.SolrVocabularyInitializer</to>
               <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
             </difference>
             <difference>
@@ -383,7 +383,7 @@
               <differenceType>6004</differenceType>
               <field>ontologyService</field>
               <from>org.phenotips.ontology.OntologyService</from>
-              <to>org.phenotips.vocabulary.OntologyService</to>
+              <to>org.phenotips.vocabulary.Vocabulary</to>
               <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
             </difference>
           </ignored>

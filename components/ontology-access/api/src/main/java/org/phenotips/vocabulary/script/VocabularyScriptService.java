@@ -23,24 +23,23 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Provides access to the available vocabularies and their terms to public scripts. This is a deprecated service still
- * present for backwards compatibility reasons, please use {@link VocabularyScriptService $services.vocabulary} instead.
+ * Provides access to the available vocabularies and their terms to public scripts.
  *
  * @version $Id$
- * @since 1.2M4 (under a different package since 1.0M8)
- * @deprecated use {@link VocabularyScriptService $services.vocabularies} instead
+ * @since 1.2M4 (under different names since 1.0M8)
  */
-@Deprecated
+@Unstable
 @Component
-@Named("ontologies")
+@Named("vocabularies")
 @Singleton
-public class OntologyScriptService implements ScriptService
+public class VocabularyScriptService implements ScriptService
 {
     /** The vocabulary manager that actually does all the work. */
     @Inject
@@ -54,9 +53,7 @@ public class OntologyScriptService implements ScriptService
      *            {@code HP:0002066}
      * @return the requested term, or {@code null} if the term doesn't exist in the vocabulary, or no matching
      *         vocabulary is available
-     * @deprecated use {@link VocabularyScriptService#resolveTerm(String) $services.vocabularies.resolveTerm} instead
      */
-    @Deprecated
     public VocabularyTerm resolveTerm(String termId)
     {
         return this.manager.resolveTerm(termId);
@@ -69,25 +66,21 @@ public class OntologyScriptService implements ScriptService
      *            vocabulary, or a {@link Vocabulary#getAliases() known alias} for it, for example {@code MIM},
      *            {@code hpo}, {@code HP} or {@code HPO}
      * @return the requested vocabulary, or {@code null} if it doesn't exist or isn't available in the platform
-     * @deprecated use {@link VocabularyScriptService#getOntology(String) $services.vocabularies.getOntology} instead
      */
-    @Deprecated
-    public Vocabulary getOntology(String vocabularyId)
+    public Vocabulary getVocabulary(String vocabularyId)
     {
         return this.manager.getVocabulary(vocabularyId);
     }
 
     /**
-     * Retrieve a vocabulary given its identifier. This is a shortcut for {@link #getOntology(String)} which allows
-     * scripts to use the shorter {@code $services.ontologies.hpo} notation for accessing a vocabulary.
+     * Retrieve a vocabulary given its identifier. This is a shortcut for {@link #getVocabulary(String)} which allows
+     * scripts to use the shorter {@code $services.vocabularies.hpo} notation for accessing a vocabulary.
      *
      * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
      *            vocabulary, or a {@link Vocabulary#getAliases() known alias} for it, for example {@code MIM},
      *            {@code HP} or {@code HPO}
      * @return the requested vocabulary, or {@code null} if it doesn't exist or isn't available in the platform
-     * @deprecated use {@link VocabularyScriptService#get(String) $services.vocabularies.get} instead
      */
-    @Deprecated
     public Vocabulary get(String vocabularyId)
     {
         return this.manager.getVocabulary(vocabularyId);

@@ -24,16 +24,16 @@ import java.util.Set;
 import net.sf.json.JSON;
 
 /**
- * A term from an {@link OntologyService ontology}. A few common properties are available as explicit individual
- * methods, and any property defined for the term can be accessed using the generic {@link #get(String)} method. As a
- * minimum, each term should have an identifier and a name. Terms can be accessed either using the owner
- * {@link OntologyService}, or the generic {@link OntologyManager}.
+ * A term from an {@link Vocabulary ontology}. A few common properties are available as explicit individual methods, and
+ * any property defined for the term can be accessed using the generic {@link #get(String)} method. As a minimum, each
+ * term should have an identifier and a name. Terms can be accessed either using the owner {@link Vocabulary}, or the
+ * generic {@link VocabularyManager}.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
 @Unstable
-public interface OntologyTerm
+public interface VocabularyTerm
 {
     /**
      * The (mandatory) term identifier, in the format {@code <ontology prefix>:<term id>}, for example
@@ -62,21 +62,21 @@ public interface OntologyTerm
      *
      * @return a set of ontology terms, or an empty set if the term doesn't have any ancestors in the ontology
      */
-    Set<OntologyTerm> getParents();
+    Set<VocabularyTerm> getParents();
 
     /**
      * Returns the ancestors (both direct and indirect ancestors) of this term.
      *
      * @return a set of ontology terms, or an empty set if the term doesn't have any ancestors in the ontology
      */
-    Set<OntologyTerm> getAncestors();
+    Set<VocabularyTerm> getAncestors();
 
     /**
      * Returns the ancestors (both direct and indirect ancestors) of this term <em>and</em> the term itself.
      *
      * @return a set of ontology terms, or a set with one term if the term doesn't have any ancestors in the ontology
      */
-    Set<OntologyTerm> getAncestorsAndSelf();
+    Set<VocabularyTerm> getAncestorsAndSelf();
 
     /**
      * Find the distance to another term in the ontology structure.
@@ -85,7 +85,7 @@ public interface OntologyTerm
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, or -1 if the
      *         terms are not connected
      */
-    long getDistanceTo(OntologyTerm other);
+    long getDistanceTo(VocabularyTerm other);
 
     /**
      * Generic meta-property access. Any property defined in the ontology for this term can be accessed this way.
@@ -100,7 +100,7 @@ public interface OntologyTerm
      *
      * @return the owner ontology
      */
-    OntologyService getOntology();
+    Vocabulary getOntology();
 
     /**
      * @return near-complete information contained in this term, in JSON format. Example:

@@ -18,9 +18,9 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -66,10 +66,10 @@ public class FormFieldTest
             field.set(null, cmp);
             ComponentManager cm = mock(ComponentManager.class);
             when(cmp.get()).thenReturn(cm);
-            OntologyManager om = mock(OntologyManager.class);
-            when(cm.getInstance(OntologyManager.class)).thenReturn(om);
-            OntologyTerm parent = new MockOntologyTerm("HP:0000708", "Behavioural/Psychiatric Abnormality", "", null);
-            OntologyTerm ocd =
+            VocabularyManager om = mock(VocabularyManager.class);
+            when(cm.getInstance(VocabularyManager.class)).thenReturn(om);
+            VocabularyTerm parent = new MockOntologyTerm("HP:0000708", "Behavioural/Psychiatric Abnormality", "", null);
+            VocabularyTerm ocd =
                 new MockOntologyTerm("HP:0000722", "OCD", "Obsessive-Compulsive Disorder", Arrays.asList("OC"), parent);
             when(om.resolveTerm("HP:0000722")).thenReturn(ocd);
         } finally {
@@ -261,7 +261,7 @@ public class FormFieldTest
         Assert.assertEquals("Obsessive-compulsive disorder", e.getAttribute("title"));
     }
 
-    private static class MockOntologyTerm implements OntologyTerm
+    private static class MockOntologyTerm implements VocabularyTerm
     {
         private String id;
 
@@ -271,25 +271,25 @@ public class FormFieldTest
 
         private List<String> synonyms;
 
-        private Set<OntologyTerm> parents;
+        private Set<VocabularyTerm> parents;
 
-        MockOntologyTerm(String id, String name, String description, List<String> synonyms, OntologyTerm... parents)
+        MockOntologyTerm(String id, String name, String description, List<String> synonyms, VocabularyTerm... parents)
         {
             this.id = id;
             this.name = name;
             this.description = description;
             this.synonyms = synonyms;
-            this.parents = new HashSet<OntologyTerm>(Arrays.asList(parents));
+            this.parents = new HashSet<VocabularyTerm>(Arrays.asList(parents));
         }
 
         @Override
-        public Set<OntologyTerm> getParents()
+        public Set<VocabularyTerm> getParents()
         {
             return this.parents;
         }
 
         @Override
-        public OntologyService getOntology()
+        public Vocabulary getOntology()
         {
             return null;
         }
@@ -307,7 +307,7 @@ public class FormFieldTest
         }
 
         @Override
-        public long getDistanceTo(OntologyTerm other)
+        public long getDistanceTo(VocabularyTerm other)
         {
             return 0;
         }
@@ -319,13 +319,13 @@ public class FormFieldTest
         }
 
         @Override
-        public Set<OntologyTerm> getAncestorsAndSelf()
+        public Set<VocabularyTerm> getAncestorsAndSelf()
         {
             return null;
         }
 
         @Override
-        public Set<OntologyTerm> getAncestors()
+        public Set<VocabularyTerm> getAncestors()
         {
             return null;
         }

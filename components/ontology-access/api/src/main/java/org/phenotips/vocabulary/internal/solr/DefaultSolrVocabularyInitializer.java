@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyTerm;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
-import org.phenotips.vocabulary.SolrOntologyServiceInitializer;
+import org.phenotips.vocabulary.SolrVocabularyInitializer;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -39,11 +39,11 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
  * Initializes cache and server connection for starting a Solr ontology service.
  *
  * @version $Id$
- * @since FIXME and version
+ * @since 1.2M4 (under different names since 1.0M10)
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServiceInitializer
+public class DefaultSolrVocabularyInitializer implements SolrVocabularyInitializer
 {
     /** The Solr server instance used. */
     private SolrClient server;
@@ -52,7 +52,7 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
      * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
      * the same thing.
      */
-    private Cache<OntologyTerm> cache;
+    private Cache<VocabularyTerm> cache;
 
     @Inject
     private SolrCoreContainerHandler cores;
@@ -75,7 +75,7 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     }
 
     @Override
-    public Cache<OntologyTerm> getCache()
+    public Cache<VocabularyTerm> getCache()
     {
         return this.cache;
     }

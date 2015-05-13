@@ -28,28 +28,28 @@ import java.util.Set;
  * Provides access to an ontology, such as the Human Phenotype Ontology.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
 @Unstable
 @Role
-public interface OntologyService
+public interface Vocabulary
 {
     /**
-     * Access an individual term from the ontology, identified by its {@link OntologyTerm#getId() term identifier}.
+     * Access an individual term from the ontology, identified by its {@link VocabularyTerm#getId() term identifier}.
      *
      * @param id the term identifier, in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
      * @return the requested term, or {@code null} if the term doesn't exist in this ontology
      */
-    OntologyTerm getTerm(String id);
+    VocabularyTerm getTerm(String id);
 
     /**
-     * Access a list of terms from the ontology, identified by their {@link OntologyTerm#getId() term identifiers}.
+     * Access a list of terms from the ontology, identified by their {@link VocabularyTerm#getId() term identifiers}.
      *
      * @param ids a set of term identifiers, in the format {@code <ontology prefix>:<term id>}, for example
      *            {@code HP:0002066}
      * @return a set with the requested terms that were found in the ontology, an empty set if no terms were found
      */
-    Set<OntologyTerm> getTerms(Collection<String> ids);
+    Set<VocabularyTerm> getTerms(Collection<String> ids);
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
@@ -59,7 +59,7 @@ public interface OntologyService
      *            single value, or a collection of values that can (OR) be matched by the term;
      * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
      */
-    Set<OntologyTerm> search(Map<String, ?> fieldValues);
+    Set<VocabularyTerm> search(Map<String, ?> fieldValues);
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
@@ -71,7 +71,7 @@ public interface OntologyService
      *            sort order
      * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
      */
-    Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
+    Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
 
     /**
      * Get the number of entries that match a specific query.
@@ -84,14 +84,14 @@ public interface OntologyService
     long count(Map<String, ?> fieldValues);
 
     /**
-     * Find the distance between two terms identified by their {@link OntologyTerm#getId() term identifiers}. The
+     * Find the distance between two terms identified by their {@link VocabularyTerm#getId() term identifiers}. The
      * parameters are interchangeable.
      *
      * @param fromTermId the identifier of the term that is considered the start point
      * @param toTermId the identifier of the term that is considered the end point
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
      *         the terms are not connected or if at least one of the identifiers is invalid
-     * @see #getDistance(OntologyTerm, OntologyTerm)
+     * @see #getDistance(VocabularyTerm, VocabularyTerm)
      */
     long getDistance(String fromTermId, String toTermId);
 
@@ -103,7 +103,7 @@ public interface OntologyService
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
      *         the terms are not connected or if at least one of the terms is {@code null}
      */
-    long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm);
+    long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm);
 
     /**
      * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
@@ -154,5 +154,5 @@ public interface OntologyService
      * @return suggestions found given the parameters produced by SolrParams set of functions
      * @since 1.1-rc-1
      */
-    Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq);
+    Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq);
 }

@@ -21,8 +21,8 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -60,7 +60,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("global-qualifiers")
 @Singleton
-public class GlobalQualifiersController implements PatientDataController<List<OntologyTerm>>
+public class GlobalQualifiersController implements PatientDataController<List<VocabularyTerm>>
 {
     private static final String DATA_NAME = "global-qualifiers";
 
@@ -73,10 +73,10 @@ public class GlobalQualifiersController implements PatientDataController<List<On
     private DocumentAccessBridge documentAccessBridge;
 
     @Inject
-    private OntologyManager ontologyManager;
+    private VocabularyManager ontologyManager;
 
     @Override
-    public PatientData<List<OntologyTerm>> load(Patient patient)
+    public PatientData<List<VocabularyTerm>> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -84,10 +84,10 @@ public class GlobalQualifiersController implements PatientDataController<List<On
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, List<OntologyTerm>> result = new LinkedHashMap<>();
+            Map<String, List<VocabularyTerm>> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 Object propertyValue = data.get(propertyName);
-                List<OntologyTerm> holder = new LinkedList<>();
+                List<VocabularyTerm> holder = new LinkedList<>();
                 if (propertyValue instanceof StringProperty) {
                     String propertyValueString = data.getStringValue(propertyName);
                     addTerms(propertyValueString, holder);
@@ -122,18 +122,18 @@ public class GlobalQualifiersController implements PatientDataController<List<On
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        Iterator<Entry<String, List<OntologyTerm>>> data =
-            patient.<List<OntologyTerm>>getData(DATA_NAME).dictionaryIterator();
+        Iterator<Entry<String, List<VocabularyTerm>>> data =
+            patient.<List<VocabularyTerm>>getData(DATA_NAME).dictionaryIterator();
         while (data.hasNext())
         {
-            Entry<String, List<OntologyTerm>> datum = data.next();
+            Entry<String, List<VocabularyTerm>> datum = data.next();
             if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
-                List<OntologyTerm> terms = datum.getValue();
+                List<VocabularyTerm> terms = datum.getValue();
                 if (terms == null || terms.isEmpty()) {
                     continue;
                 }
                 JSONArray elements = new JSONArray();
-                for (OntologyTerm term : terms) {
+                for (VocabularyTerm term : terms) {
                     JSONObject element = new JSONObject();
                     element.put("id", term.getId());
                     element.put("label", term.getName());
@@ -145,7 +145,7 @@ public class GlobalQualifiersController implements PatientDataController<List<On
     }
 
     @Override
-    public PatientData<List<OntologyTerm>> readJSON(JSONObject json)
+    public PatientData<List<VocabularyTerm>> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }
@@ -161,10 +161,10 @@ public class GlobalQualifiersController implements PatientDataController<List<On
         return Arrays.asList("global_age_of_onset", "global_mode_of_inheritance");
     }
 
-    private void addTerms(String item, List<OntologyTerm> holder)
+    private void addTerms(String item, List<VocabularyTerm> holder)
     {
         if (StringUtils.isNotBlank(item)) {
-            OntologyTerm term = this.ontologyManager.resolveTerm(item);
+            VocabularyTerm term = this.ontologyManager.resolveTerm(item);
             if (term != null) {
                 holder.add(term);
             }

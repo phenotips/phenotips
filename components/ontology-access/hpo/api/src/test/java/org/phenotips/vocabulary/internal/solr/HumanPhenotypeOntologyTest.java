@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
-import org.phenotips.vocabulary.SolrOntologyServiceInitializer;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.SolrVocabularyInitializer;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -53,22 +53,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the HPO implementation of the {@link org.phenotips.vocabulary.OntologyService},
+ * Tests for the HPO implementation of the {@link org.phenotips.vocabulary.Vocabulary},
  * {@link org.phenotips.vocabulary.internal.solr.HumanPhenotypeOntology}.
  */
 public class HumanPhenotypeOntologyTest
 {
     public int ontologyServiceResult;
 
-    public Cache<OntologyTerm> cache;
+    public Cache<VocabularyTerm> cache;
 
     public SolrClient server;
 
-    public OntologyService ontologyService;
+    public Vocabulary ontologyService;
 
     @Rule
-    public final MockitoComponentMockingRule<OntologyService> mocker =
-        new MockitoComponentMockingRule<OntologyService>(HumanPhenotypeOntology.class);
+    public final MockitoComponentMockingRule<Vocabulary> mocker =
+        new MockitoComponentMockingRule<Vocabulary>(HumanPhenotypeOntology.class);
 
     @SuppressWarnings("unchecked")
     @Before
@@ -76,8 +76,8 @@ public class HumanPhenotypeOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         this.cache = mock(Cache.class);
-        SolrOntologyServiceInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
+        SolrVocabularyInitializer externalServicesAccess =
+            this.mocker.getInstance(SolrVocabularyInitializer.class);
         when(externalServicesAccess.getCache()).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
         when(externalServicesAccess.getServer()).thenReturn(this.server);

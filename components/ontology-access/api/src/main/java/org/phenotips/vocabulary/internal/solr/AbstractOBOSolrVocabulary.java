@@ -20,7 +20,7 @@ package org.phenotips.vocabulary.internal.solr;
 import org.phenotips.obo2solr.ParameterPreparer;
 import org.phenotips.obo2solr.SolrUpdateGenerator;
 import org.phenotips.obo2solr.TermData;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -42,10 +42,10 @@ import org.apache.solr.common.SolrInputDocument;
 /**
  * Ontologies processed from OBO files share much of the processing code.
  *
- * @since 1.1
  * @version $Id$
+ * @since 1.2M4 (under different names since 1.1)
  */
-public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntologyService
+public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
 {
     /**
      * The name of the Alternative ID field, used for older aliases of updated HPO terms.
@@ -58,13 +58,13 @@ public abstract class AbstractOBOSolrOntologyService extends AbstractSolrOntolog
     protected abstract int getSolrDocsPerBatch();
 
     @Override
-    public OntologyTerm getTerm(String id)
+    public VocabularyTerm getTerm(String id)
     {
-        OntologyTerm result = super.getTerm(id);
+        VocabularyTerm result = super.getTerm(id);
         if (result == null) {
             Map<String, String> queryParameters = new HashMap<>();
             queryParameters.put(ALTERNATIVE_ID_FIELD_NAME, id);
-            Set<OntologyTerm> results = search(queryParameters);
+            Set<VocabularyTerm> results = search(queryParameters);
             if (results != null && !results.isEmpty()) {
                 result = search(queryParameters).iterator().next();
             }

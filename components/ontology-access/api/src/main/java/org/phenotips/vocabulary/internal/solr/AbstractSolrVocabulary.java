@@ -17,9 +17,9 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyService;
-import org.phenotips.vocabulary.OntologyTerm;
-import org.phenotips.vocabulary.SolrOntologyServiceInitializer;
+import org.phenotips.vocabulary.SolrVocabularyInitializer;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -47,9 +47,9 @@ import org.slf4j.Logger;
  * given query in the Lucene query language.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.2M4 (under different names since 1.0M8)
  */
-public abstract class AbstractSolrOntologyService implements OntologyService, Initializable
+public abstract class AbstractSolrVocabulary implements Vocabulary, Initializable
 {
     /** The name of the ID field. */
     protected static final String ID_FIELD_NAME = "id";
@@ -58,7 +58,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
      * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
      * requested entry.
      */
-    private static final OntologyTerm EMPTY_MARKER = new SolrOntologyTerm(null, null);
+    private static final VocabularyTerm EMPTY_MARKER = new SolrVocabularyTerm(null, null);
 
     /** Logging helper object. */
     @Inject
@@ -66,7 +66,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
 
     /** The object used for initializing server connection and cache. */
     @Inject
-    protected SolrOntologyServiceInitializer externalServicesAccess;
+    protected SolrVocabularyInitializer externalServicesAccess;
 
     @Override
     public void initialize() throws InitializationException
@@ -86,15 +86,15 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     protected abstract String getName();
 
     @Override
-    public OntologyTerm getTerm(String id)
+    public VocabularyTerm getTerm(String id)
     {
-        OntologyTerm result = this.externalServicesAccess.getCache().get(id);
+        VocabularyTerm result = this.externalServicesAccess.getCache().get(id);
         if (result == null) {
             ModifiableSolrParams params = new ModifiableSolrParams();
             params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
             SolrDocumentList allResults = this.search(params);
             if (allResults != null && !allResults.isEmpty()) {
-                result = new SolrOntologyTerm(allResults.get(0), this);
+                result = new SolrVocabularyTerm(allResults.get(0), this);
                 this.externalServicesAccess.getCache().set(id, result);
             } else {
                 this.externalServicesAccess.getCache().set(id, EMPTY_MARKER);
@@ -104,12 +104,12 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
-    public Set<OntologyTerm> getTerms(Collection<String> ids)
+    public Set<VocabularyTerm> getTerms(Collection<String> ids)
     {
-        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
+        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
-            OntologyTerm cachedTerm = this.externalServicesAccess.getCache().get(id);
+            VocabularyTerm cachedTerm = this.externalServicesAccess.getCache().get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
                     result.add(cachedTerm);
@@ -124,25 +124,25 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         // There's at least one more term not found in the cache
         if (query.length() > 5) {
             for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
-                result.add(new SolrOntologyTerm(doc, this));
+                result.add(new SolrVocabularyTerm(doc, this));
             }
         }
         return result;
     }
 
     @Override
-    public Set<OntologyTerm> search(Map<String, ?> fieldValues)
+    public Set<VocabularyTerm> search(Map<String, ?> fieldValues)
     {
         return search(fieldValues, null);
     }
 
     @Override
-    public Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    public Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
-        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
+        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
         for (SolrDocument doc : this
             .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
-            result.add(new SolrOntologyTerm(doc, this));
+            result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
     }
@@ -179,7 +179,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
-    public long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm)
+    public long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm)
     {
         if (fromTerm == null || toTerm == null) {
             return -1;
@@ -294,7 +294,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
-    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
     {
         throw new UnsupportedOperationException();
     }

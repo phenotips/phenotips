@@ -20,7 +20,7 @@ package org.phenotips.vocabulary.listeners;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangingEvent;
-import org.phenotips.vocabulary.OntologyService;
+import org.phenotips.vocabulary.Vocabulary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -49,11 +49,12 @@ import com.xpn.xwiki.objects.BaseObject;
  * Store versions (in the form name:String, version:String) in the patient record.
  *
  * @version $Id$
+ * @since 1.2M4 (under different names since 1.0M10)
  */
 @Component
-@Named("ontology-version-recorder")
+@Named("vocabulary-version-recorder")
 @Singleton
-public class PatientOntologyVersionRecorder extends AbstractEventListener
+public class PatientVocabularyVersionRecorder extends AbstractEventListener
 {
     /** The name of the class where version info (name, version) is stored. */
     private static final EntityReference VERSION_RECORDER_REFERENCE = new EntityReference("OntologyVersionClass",
@@ -65,15 +66,15 @@ public class PatientOntologyVersionRecorder extends AbstractEventListener
 
     /** Access to services that are needed to get the ontology version. */
     @Inject
-    private Map<String, OntologyService> ontologies;
+    private Map<String, Vocabulary> ontologies;
 
     @Inject
     private Execution execution;
 
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
-    public PatientOntologyVersionRecorder()
+    public PatientVocabularyVersionRecorder()
     {
-        super("ontology-version-recorder", new PatientChangingEvent());
+        super("vocabulary-version-recorder", new PatientChangingEvent());
     }
 
     @Override
@@ -122,7 +123,7 @@ public class PatientOntologyVersionRecorder extends AbstractEventListener
     {
         Map<String, String> result = new HashMap<>();
 
-        for (Entry<String, OntologyService> ontology : this.ontologies.entrySet()) {
+        for (Entry<String, Vocabulary> ontology : this.ontologies.entrySet()) {
             String version = ontology.getValue().getVersion();
             if (StringUtils.isNotBlank(version)) {
                 result.put(ontology.getKey(), version);

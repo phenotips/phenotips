@@ -17,7 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 @Component
 @Named("omim")
 @Singleton
-public class MendelianInheritanceInMan extends AbstractSolrOntologyService
+public class MendelianInheritanceInMan extends AbstractSolrVocabulary
 {
     /** The standard name of this ontology, used as a term prefix. */
     public static final String STANDARD_NAME = "MIM";
@@ -50,9 +50,9 @@ public class MendelianInheritanceInMan extends AbstractSolrOntologyService
     }
 
     @Override
-    public OntologyTerm getTerm(String id)
+    public VocabularyTerm getTerm(String id)
     {
-        OntologyTerm result = super.getTerm(id);
+        VocabularyTerm result = super.getTerm(id);
         if (result == null) {
             String optionalPrefix = STANDARD_NAME + ":";
             if (StringUtils.startsWith(id, optionalPrefix)) {

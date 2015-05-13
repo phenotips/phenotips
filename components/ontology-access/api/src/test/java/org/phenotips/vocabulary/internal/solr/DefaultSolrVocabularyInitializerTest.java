@@ -17,18 +17,19 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.SolrVocabularyInitializer;
+
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import org.junit.Rule;
 
 /**
- * Test for the implementation of DefaultSolrOntologyServiceInitializer. It is the class that creates a connection to
- * the Solr server and creates a cache.
+ * Test for the implementation of DefaultSolrVocabularyInitializer. It is the class that creates a connection to the
+ * Solr server and creates a cache.
  */
-public class DefaultSolrOntologyServiceInitializerTest
+public class DefaultSolrVocabularyInitializerTest
 {
     @Rule
-    public final MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer> mocker =
-        new MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer>(
-            DefaultSolrOntologyServiceInitializer.class);
+    public final MockitoComponentMockingRule<SolrVocabularyInitializer> mocker =
+        new MockitoComponentMockingRule<SolrVocabularyInitializer>(DefaultSolrVocabularyInitializer.class);
 }

@@ -19,8 +19,8 @@ package org.phenotips.data.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.OntologyProperty;
-import org.phenotips.vocabulary.OntologyManager;
-import org.phenotips.vocabulary.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
@@ -97,9 +97,9 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
             return this.name;
         }
         try {
-            OntologyManager om =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
-            OntologyTerm term = om.resolveTerm(this.id);
+            VocabularyManager om =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
+            VocabularyTerm term = om.resolveTerm(this.id);
             if (term != null && StringUtils.isNotEmpty(term.getName())) {
                 this.name = term.getName();
                 return this.name;
