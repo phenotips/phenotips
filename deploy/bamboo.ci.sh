@@ -15,6 +15,13 @@ install() {
 
 install >/tmp/startup.log 2>&1
 
+cd ~
+unzip ${BAMBOODIR}/distribution/standalone/target/phenotips-standalone-1.2-SNAPSHOT.zip
+cd phenotips-standalone-1.2-SNAPSHOT/data/extension
+find -name *.xed -exec sed -e 's/<installed.installed type="boolean">true<\/installed.installed>/<installed.installed type="boolean">false<\/installed.installed>/' -i \{\} \;
+zip -r ~/extension.zip .
+cp -rfp ~/extension.zip ${BAMBOODIR}/
+
 md5=`md5sum ${BAMBOODIR}/${ORIGARTIFACT}` | cut -d ' ' -f 1
 
 AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} aws s3api put-object --metadata md5=$md5 --bucket cbmi-artifacts --key ${KEYNAME}/${DEVENV}/latest/$ARTIFACT --body ${BAMBOODIR}/${ORIGARTIFACT}
