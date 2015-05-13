@@ -213,120 +213,27 @@ $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"
     </property>
     <property>
       <code>(function () {
-  var button = $('patient-consent-save');
-  button.observe('click', function(event) {
-    document.fire("xwiki:actions:save", {"continue" : true, "form" : button.up("form")});
-    document.observe('xwiki:document:saved', function(event) {
-      window.location.reload();
+  var init = function() {
+    var button = $('patient-consent-save');
+    button.observe('click', function(event) {
+      event.stop();
+      document.fire("xwiki:actions:save", {"continue" : true, "form" : button.up("form")});
+      document.observe('xwiki:document:saved', function(event) {
+        window.location.reload();
+      });
     });
-  });
+  };
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
     </property>
     <property>
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.PatientConsent</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>3717181e-b614-4a1e-8806-d3254711ad0b</guid>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>.consent-block {
-  margin-bottom: 10px;
-}
-.consent-block input {
-  margin-right: 10px;
-}</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse/>
-    </property>
-    <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -400,22 +307,17 @@ $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.jsx.use('PhenoTips.PatientConsent')
-$xwiki.ssx.use('PhenoTips.PatientConsent')
 #if ($xcontext.action == 'edit')
+  $xwiki.jsx.use('PhenoTips.PatientConsent')##
   #set ($consentObj = $doc.getObject('PhenoTips.PatientConsent'))
   #if ("$!{consentObj}" == '')
     #set ($consentObj = $doc.getObject('PhenoTips.PatientConsent', true))
-    $doc.save()
+    $doc.save('Added Consent object', true)##
   #end
   #set ($consentClass = $consentObj.getxWikiClass())
   #foreach ($property in $consentClass.getPropertyNames())
-    {{html clean='false' wiki='true'}}##
-    &lt;p class="consent-block"&gt;##
-      &lt;label&gt;##
-      $consentObj.display($property, 'edit')##
-      $consentClass.get($property).translatedPrettyName&lt;/label&gt;##
-    &lt;/p&gt;##
+    {{html clean='false' wiki='true'}}
+    &lt;p&gt;&lt;label&gt;$consentObj.display($property, 'edit') $consentClass.get($property).translatedPrettyName&lt;/label&gt;&lt;/p&gt;
     {{/html}}
 
   #end
@@ -435,7 +337,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')
       <name>org.phenotips.patientSheet.consent</name>
     </property>
     <property>
-      <parameters>required=false</parameters>
+      <parameters>disabled=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -96,8 +96,8 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 (% class="before-patient-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
   #set ($hasExtensionsBefore = true)
-  #set ($extension_required = ($e.getParameters().get('required') == 'false'))
-  #if (!$extension_required)
+  #set ($extension_disabled = ($e.getParameters().get('disabled') == 'true'))
+  #if (!$extension_disabled)
     {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 
   #end
