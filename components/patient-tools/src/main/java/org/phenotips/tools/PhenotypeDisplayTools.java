@@ -17,8 +17,8 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyService;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;

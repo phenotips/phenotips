@@ -18,9 +18,9 @@
 package org.phenotips.export.internal;
 
 import org.phenotips.data.Feature;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
 import org.phenotips.tools.PhenotypeMappingService;
+import org.phenotips.vocabulary.OntologyService;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;

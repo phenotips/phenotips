@@ -22,7 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.ontology.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.SolrCoreContainerHandler;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;

@@ -19,10 +19,10 @@ package org.phenotips.export.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
 import org.phenotips.tools.PhenotypeMappingService;
 import org.phenotips.tools.PropertyDisplayer;
+import org.phenotips.vocabulary.OntologyService;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
@@ -83,7 +83,7 @@ public class ConversionHelpers
      * @param positive sets the global parameter {@link #positive}
      * @param negative same as the above positive parameter, but for {@link #negative}
      * @param mapCategories whether the phenotypes will be sorted by which category they belong to
-     * @throws java.lang.Exception Could happen if the {@link org.phenotips.ontology.OntologyService} for HPO could not
+     * @throws java.lang.Exception Could happen if the {@link org.phenotips.vocabulary.OntologyService} for HPO could not
      * be accessed or is the phenotype category list is not available
      */
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception

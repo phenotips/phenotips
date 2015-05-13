@@ -1,5 +1,5 @@
-org.phenotips.ontology.internal.DefaultOntologyManager
-org.phenotips.ontology.script.OntologyScriptService
-org.phenotips.ontology.internal.solr.DefaultSolrCoreContainerHandler
-org.phenotips.ontology.internal.solr.DefaultSolrOntologyServiceInitializer
-org.phenotips.ontology.listeners.PatientOntologyVersionRecorder
+org.phenotips.vocabulary.internal.DefaultOntologyManager
+org.phenotips.vocabulary.script.OntologyScriptService
+org.phenotips.vocabulary.internal.solr.DefaultSolrCoreContainerHandler
+org.phenotips.vocabulary.internal.solr.DefaultSolrOntologyServiceInitializer
+org.phenotips.vocabulary.listeners.PatientOntologyVersionRecorder

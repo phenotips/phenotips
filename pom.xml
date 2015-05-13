@@ -365,6 +365,27 @@
               <to>org.apache.solr.client.solrj.SolrClient</to>
               <justification>SolrServer was replaced by SolrClient in Solr 5.0.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/ontology/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/solr/AbstractSolrScriptService</className>
+              <differenceType>6004</differenceType>
+              <field>initializer</field>
+              <from>org.phenotips.ontology.SolrOntologyServiceInitializer</from>
+              <to>org.phenotips.vocabulary.SolrOntologyServiceInitializer</to>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/tools/PropertyDisplayer</className>
+              <differenceType>6004</differenceType>
+              <field>ontologyService</field>
+              <from>org.phenotips.ontology.OntologyService</from>
+              <to>org.phenotips.vocabulary.OntologyService</to>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
