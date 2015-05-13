@@ -22,7 +22,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
+import org.phenotips.vocabulary.internal.solr.SolrOntologyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;

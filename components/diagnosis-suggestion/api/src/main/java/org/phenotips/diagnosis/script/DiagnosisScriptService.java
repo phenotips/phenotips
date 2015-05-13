@@ -18,7 +18,7 @@
 package org.phenotips.diagnosis.script;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;

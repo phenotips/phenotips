@@ -81,7 +81,8 @@ public abstract class AbstractSimpleController implements PatientDataController<
             }
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

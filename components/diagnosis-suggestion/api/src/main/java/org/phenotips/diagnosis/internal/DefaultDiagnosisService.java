@@ -18,8 +18,8 @@
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyManager;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;

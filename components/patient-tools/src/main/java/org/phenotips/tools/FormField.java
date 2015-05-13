@@ -18,8 +18,8 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyManager;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.xml.XMLUtils;

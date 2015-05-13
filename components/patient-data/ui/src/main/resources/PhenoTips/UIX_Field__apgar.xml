@@ -132,7 +132,8 @@
 enabled=true
 required=
 order=3
-fields=apgar1,apgar5</parameters>
+fields=apgar1,apgar5
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

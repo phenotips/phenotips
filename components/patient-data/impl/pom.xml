@@ -98,6 +98,11 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.7</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -115,7 +120,7 @@
   </dependencies>
 
   <properties>
-    <coverage.instructionRatio>0.16</coverage.instructionRatio>
+    <coverage.instructionRatio>0.15</coverage.instructionRatio>
   </properties>
 
   <build>

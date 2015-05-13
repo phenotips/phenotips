@@ -17,7 +17,7 @@
  */
 package org.phenotips.solr;
 
-import org.phenotips.ontology.SolrOntologyServiceInitializer;
+import org.phenotips.vocabulary.SolrOntologyServiceInitializer;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;

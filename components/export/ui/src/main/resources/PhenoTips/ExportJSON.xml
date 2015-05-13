@@ -40,10 +40,8 @@
   <content>{{include document="PhenoTips.ExportFilter" /}}
 
 {{velocity wiki="true"}}{{{
-#set ($newline = ' ')
-#set ($newline = "${newline.charAt(0).toChars(13)[0]}${newline.charAt(0).toChars(10)[0]}")
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
-#set ($nonPatientClassProperties = ['genes', 'genes_comments', 'rejectedGenes', 'rejectedGenes_comments'])
+#set ($nonPatientClassProperties = ['doc.name', 'referrer', 'author', 'creationDate', 'date', 'genes', 'genes_comments', 'rejectedGenes', 'rejectedGenes_comments'])
 #set ($enabledFields = $request.getParameterValues('columns'))
 #set ($displayedFields = [])
 #set ($allFields = $nonPatientClassProperties)
@@ -66,11 +64,6 @@ $response.setContentType('application/json')##
   #set ($patient = $services.patients.getPatientById($patientId))
   #if ($patientDoc &amp;&amp; $patient)
     #set ($JSON = $patient.toJSON($displayedFields))
-    #if ($enabledFields.contains('doc.name'))#set ($discard = $JSON.put("report_id", ${patientDoc.documentReference.name}))#end
-    #if ($enabledFields.contains('referrer'))#set ($discard = $JSON.put("referrer", ${xwiki.getUserName($patientDoc.creator, false)}))#end
-    #if ($enabledFields.contains('creationDate'))#set ($discard = $JSON.put("date", $!{services.jodatime.ISODateTimeFormatter.print($patientDoc.creationDate)}))#end
-    #if ($enabledFields.contains('author'))#set ($discard = $JSON.put("last_modified_by", ${xwiki.getUserName($patientDoc.author, false)}))#end
-    #if ($enabledFields.contains('date'))#set ($discard = $JSON.put("last_modification_date", $!{services.jodatime.ISODateTimeFormatter.print($patientDoc.date)}))#end
     #if ($isFirst)
       #set($isFirst = false)
     #else

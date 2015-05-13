@@ -36,10 +36,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -67,11 +69,16 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String CONTROLLER_NAME = GENES_STRING;
 
-    private static final String GENES_ENABLING_FIELD_NAME          = GENES_STRING;
+    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
+
     private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
 
-    private static final String GENE_KEY     = "gene";
+    private static final String GENE_KEY = "gene";
+
     private static final String COMMENTS_KEY = "comments";
+
+    @Inject
+    private Logger logger;
 
     @Override
     public String getName()
@@ -82,7 +89,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected String getJsonPropertyName()
     {
-        return getName();
+        return CONTROLLER_NAME;
     }
 
     @Override
@@ -109,8 +116,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
-            if (geneXWikiObjects == null) {
-                throw new NullPointerException("The patient does not have any gene information");
+            if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+                return null;
             }
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
@@ -126,7 +133,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             }
             return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
         } catch (Exception e) {
-            // TODO. Log an error.
+            this.logger.error("Could not find requested document or some unforeseen "
+                + "error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
@@ -155,12 +163,16 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
-            if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                || (selectedFieldNames != null && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                item.remove(COMMENTS_KEY);
-            }
+            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
 
-            container.add(item);
+                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
+                    || (selectedFieldNames != null
+                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                    item.remove(COMMENTS_KEY);
+                }
+
+                container.add(item);
+            }
         }
     }
 }

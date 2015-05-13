@@ -103,8 +103,8 @@
 )))##section filters
 
 (% class="section columns"%)(((
-#if ($request.multipatient)
 === (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
+#if ($request.multipatient)
   #set($activeFields = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
   #set($ignored = {})
   #set($customValues = {})
@@ -115,7 +115,6 @@
   #set($exportTitle = "$services.localization.render('phenotips.exportPreferences.push.submit', [$request.remoteserver])")
   #set($exportButtonID = "push-multiple-patients")
 #else
-=== (% class="step" %)2(%%) $services.localization.render('phenotips.exportPreferences.selectFields') ===
   #set($ignored = {
     'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype'],
     'types'  : []

@@ -21,8 +21,8 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyManager;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -101,7 +101,8 @@ public class GlobalQualifiersController implements PatientDataController<List<On
 
             return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

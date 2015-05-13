@@ -125,7 +125,8 @@
 enabled=true
 required=
 order=1
-fields=medical_history</parameters>
+fields=medical_history
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

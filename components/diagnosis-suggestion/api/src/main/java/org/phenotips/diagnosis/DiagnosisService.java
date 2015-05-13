@@ -17,7 +17,7 @@
  */
 package org.phenotips.diagnosis;
 
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.OntologyTerm;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
