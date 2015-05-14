@@ -17,6 +17,8 @@ install >/tmp/startup.log 2>&1
 
 echo "UNZIP STANDALONE AND PACKAGE EXTENSIONS"
 cd ~
+rm -rf extension.zip
+rm -rf ${BAMBOODIR}/extension.zip
 unzip -v "${BAMBOODIR}/distribution/standalone/target/phenotips-standalone-1.2-SNAPSHOT.zip" >/tmp/startup.log 2>&1
 cd phenotips-standalone-1.2-SNAPSHOT/data/extension
 find -name *.xed -exec sed -e 's/<installed.installed type="boolean">true<\/installed.installed>/<installed.installed type="boolean">false<\/installed.installed>/' -i \{\} \;
@@ -25,6 +27,8 @@ cp -rfp ~/extension.zip ${BAMBOODIR}/
 
 echo "ZIP MAVEN REPO"
 cd ~
+rm -rf mavenrepo.zip
+rm -rf ${BAMBOODIR}/mavenrepo.zip
 zip -r mavenrepo.zip .m2
 cp -rfp ~/mavenrepo.zip ${BAMBOODIR}/
 
