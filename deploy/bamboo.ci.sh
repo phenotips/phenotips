@@ -19,7 +19,7 @@ echo "UNZIP STANDALONE AND PACKAGE EXTENSIONS"
 cd ~
 rm -rf extension.zip
 rm -rf ${BAMBOODIR}/extension.zip
-unzip -v "${BAMBOODIR}/distribution/standalone/target/phenotips-standalone-1.2-SNAPSHOT.zip" >/tmp/startup.log 2>&1
+unzip -oq "${BAMBOODIR}/distribution/standalone/target/phenotips-standalone-1.2-SNAPSHOT.zip" >/tmp/startup.log 2>&1
 cd phenotips-standalone-1.2-SNAPSHOT/data/extension
 find -name *.xed -exec sed -e 's/<installed.installed type="boolean">true<\/installed.installed>/<installed.installed type="boolean">false<\/installed.installed>/' -i \{\} \;
 zip -r ~/extension.zip .
