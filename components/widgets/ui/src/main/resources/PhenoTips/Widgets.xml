@@ -4814,7 +4814,7 @@ document.observe("xwiki:dom:loaded", function() {
       this.border = this.options.border || this.DEFAULT_BORDER;
       this.segmentHeight = this.options.segmentHeight || this.DEFAULT_SEGMENT_HEIGHT;
       this.segmentWidth = (this.options.segmentWidth || this.options.segmentHeight) || this.DEFAULT_SEGMENT_HEIGHT;
-      this.displayPercentValueFlag = (this.options.displayPercentValue != undefined) ? this.options.displayPercentValue : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
+      this.displayPercentValueFlag = (typeof this.options.displayPercentValue !== 'undefined') ? this.options.displayPercentValue : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
     },
     generateSegmentedBar: function() {
       if (this.value &gt; 1 || this.value &lt; 0) {
