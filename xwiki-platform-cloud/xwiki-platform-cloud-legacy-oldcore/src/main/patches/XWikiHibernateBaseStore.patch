@@ -1,0 +1,47 @@
+diff --git com/xpn/xwiki/store/XWikiHibernateBaseStore.java com/xpn/xwiki/store/XWikiHibernateBaseStore.java
+index 6577246..996856f 100644
+--- com/xpn/xwiki/store/XWikiHibernateBaseStore.java
++++ com/xpn/xwiki/store/XWikiHibernateBaseStore.java
+@@ -29,6 +29,7 @@
+ 
+ import javax.inject.Inject;
+ import javax.inject.Named;
++import javax.inject.Provider;
+ 
+ import org.hibernate.FlushMode;
+ import org.hibernate.HibernateException;
+@@ -46,8 +47,10 @@
+ import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
++import org.w3c.dom.Document;
+ import org.xwiki.component.phase.Initializable;
+ import org.xwiki.component.phase.InitializationException;
++import org.xwiki.configuration.HibernateConfigurator;
+ import org.xwiki.context.Execution;
+ import org.xwiki.logging.LoggerManager;
+ 
+@@ -80,6 +83,9 @@
+     @Named("hibernate")
+     private DataMigrationManager dataMigrationManager;
+ 
++    @Inject
++    private Provider<HibernateConfigurator> hibernateConfiguratorProvider;
++
+     private String hibpath = "/WEB-INF/hibernate.cfg.xml";
+ 
+     /**
+@@ -201,7 +207,12 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
+      */
+     private synchronized void initHibernate(XWikiContext context) throws HibernateException
+     {
+-        getConfiguration().configure(getPath());
++        HibernateConfigurator hibernateConfigurator = hibernateConfiguratorProvider.get();
++
++        LOGGER.debug("Configuring Hibernate using configurator '{}'", hibernateConfigurator.getClass().getName());
++
++        Document hibernateConfiguration = hibernateConfigurator.getConfiguration();
++        getConfiguration().configure(hibernateConfiguration);
+ 
+         XWiki wiki = context.getWiki();
+         if (wiki != null && wiki.Param("xwiki.db") != null && !wiki.isVirtualMode()) {
