@@ -6354,16 +6354,18 @@ input.xwiki-free-multiselect-value {
   width: auto;
 }
 .segmented-bar .segmented-unit {
-  border: 1px solid currentColor;
-  border-radius: 1px;
+  border: 0.1ex solid currentColor;
+  border-radius: 0.1ex;
   display: inline-block;
   height: 1ex;
-  margin: 0 1px;
+  margin: 0;
   padding: 0;
   width: 1ex;
 }
+.segmented-bar .segmented-unit+.segmented-unit {
+  margin-left: 0.2ex;
+}
 .segmented-bar .segmented-unit-fill {
-  border-radius: 1px;
   display: block;
   height: 100%;
   background: currentColor;
