@@ -4774,8 +4774,10 @@ document.observe("xwiki:dom:loaded", function() {
       <code>var PhenoTips = (function(PhenoTips) {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.SegmentedBar = Class.create({
-    DEFAULT_SEGMENTS : 5,
-    DEFAULT_DISPLAY_VALUE : true,
+    options: {
+      segments : 5,
+      displayValue : true
+    },
     /**
     A PhenoTips widget for creating a segmented bar html element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors. Example:
 
@@ -4797,9 +4799,7 @@ document.observe("xwiki:dom:loaded", function() {
     */
     initialize : function(value, options) {
       this.value = value;
-      this.options = options || {};
-      this.segments = this.options.segments || this.DEFAULT_SEGMENTS;
-      this.displayValue = (typeof this.options.displayValue !== 'undefined') ? this.options.displayValue : this.DEFAULT_DISPLAY_VALUE;
+      this.options = Object.extend(Object.clone(this.options), options || { });
     },
     generateSegmentedBar: function() {
       if (this.value &gt; 1 || this.value &lt; 0) {
@@ -4810,8 +4810,8 @@ document.observe("xwiki:dom:loaded", function() {
         'class' : 'segmented-bar',
         'title': Math.round(this.value * 100) + '%' || ''
       });
-      var valueUnit = 1 / this.segments;
-      for (var i = 0; i &lt; this.segments; ++i) {
+      var valueUnit = 1 / this.options.segments;
+      for (var i = 0; i &lt; this.options.segments; ++i) {
         var segmentFill = 100 * Math.min(Math.max((this.value - i * valueUnit) / valueUnit, 0), 1);
         var segment = new Element('span', {
           'class': 'segmented-unit',
@@ -4825,7 +4825,7 @@ document.observe("xwiki:dom:loaded", function() {
         segment.insert(segmentFillElement);
         bar.insert(segment);
       }
-      if(this.displayValue){
+      if(this.options.displayValue){
         bar.insert(' ' + Math.round(this.value * 100) + '%');
       }
       return bar;
