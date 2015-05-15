@@ -4779,7 +4779,7 @@ document.observe("xwiki:dom:loaded", function() {
       displayValue : true
     },
     /**
-    A PhenoTips widget for creating a segmented bar html element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors. Example:
+    A PhenoTips widget for displaying a value as a segmented bar HTML element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors, either via a CSS extension or programmatically. Example:
 
         var barOptions = {
           segments : 10,
