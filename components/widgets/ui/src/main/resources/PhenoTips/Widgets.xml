@@ -4775,13 +4775,13 @@ document.observe("xwiki:dom:loaded", function() {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.SegmentedBar = Class.create({
     DEFAULT_SEGMENTS : 5,
-    DEFAULT_DISPLAY_PERCENT_VALUE_FLAG : true,
+    DEFAULT_DISPLAY_VALUE : true,
     /**
     A PhenoTips widget for creating a segmented bar html element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors. Example:
 
         var barOptions = {
           segments : 10,
-          displayPercentValueFlag : false
+          displayValue : false
         };
         container.insert(new PhenoTips.widgets.SegmentedBar(score, barOptions).generateSegmentedBar().setStyle({color: 'red', fontSize: '200%'}));
 
@@ -4791,7 +4791,7 @@ document.observe("xwiki:dom:loaded", function() {
 
     {
       segments: The number of segments in the bar. Default is 5,
-      displayPercentValueFlag: Option to display the percentage value after the bar. Default is true
+      displayValue: Option to display the percentage value after the bar. Default is true
     }
 
     */
@@ -4799,7 +4799,7 @@ document.observe("xwiki:dom:loaded", function() {
       this.value = value;
       this.options = options || {};
       this.segments = this.options.segments || this.DEFAULT_SEGMENTS;
-      this.displayPercentValueFlag = (typeof this.options.displayPercentValueFlag !== 'undefined') ? this.options.displayPercentValueFlag : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
+      this.displayValue = (typeof this.options.displayValue !== 'undefined') ? this.options.displayValue : this.DEFAULT_DISPLAY_VALUE;
     },
     generateSegmentedBar: function() {
       if (this.value &gt; 1 || this.value &lt; 0) {
@@ -4825,7 +4825,7 @@ document.observe("xwiki:dom:loaded", function() {
         segment.insert(segmentFillElement);
         bar.insert(segment);
       }
-      if(this.displayPercentValueFlag){
+      if(this.displayValue){
         bar.insert(' ' + Math.round(this.value * 100) + '%');
       }
       return bar;
