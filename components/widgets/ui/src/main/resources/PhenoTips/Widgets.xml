@@ -4768,7 +4768,7 @@ document.observe("xwiki:dom:loaded", function() {
       </use>
     </class>
     <property>
-      <cache>default</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var PhenoTips = (function(PhenoTips) {
@@ -4838,7 +4838,7 @@ document.observe("xwiki:dom:loaded", function() {
       <name>Segmented Bar</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -6375,7 +6375,7 @@ input.xwiki-free-multiselect-value {
       <name>Segmented Bar</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
