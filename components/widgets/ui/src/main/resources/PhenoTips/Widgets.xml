@@ -375,7 +375,7 @@
     // if input stays the same, do nothing
     //
     val = val.strip().toLowerCase();
-    if (val == this.sInput &amp;&amp; val.length > 1) {
+    if (val == this.sInput &amp;&amp; val.length &gt; 1) {
       return false;
     }
 
@@ -4792,8 +4792,8 @@ document.observe("xwiki:dom:loaded", function() {
     @param options Options for styling the segmented bar, all values are optional:
 
     {
-      segments: The number of segments in the bar. Default is 5,
-      displayValue: Option to display the percentage value after the bar. Default is true
+      segments: The number of segments in the bar; default is 5,
+      displayValue: Option to display the percentage value after the bar; default is true
     }
 
     */
@@ -4814,7 +4814,7 @@ document.observe("xwiki:dom:loaded", function() {
       for (var i = 0; i &lt; this.options.segments; ++i) {
         var segmentFill = 100 * Math.min(Math.max((this.value - i * valueUnit) / valueUnit, 0), 1);
         var segment = new Element('span', {
-          'class': 'segmented-unit',
+          'class': 'segmented-unit'
         });
         var segmentFillElement =  new Element('span', {
           'class': 'segmented-unit-fill'
