@@ -4799,7 +4799,7 @@ document.observe("xwiki:dom:loaded", function() {
       this.value = value;
       this.options = options || {};
       this.segments = this.options.segments || this.DEFAULT_SEGMENTS;
-      this.displayPercentValueFlag = (typeof this.options.displayPercentValue !== 'undefined') ? this.options.displayPercentValue : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
+      this.displayPercentValueFlag = (typeof this.options.displayPercentValueFlag !== 'undefined') ? this.options.displayPercentValueFlag : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
     },
     generateSegmentedBar: function() {
       if (this.value &gt; 1 || this.value &lt; 0) {
