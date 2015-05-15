@@ -4775,22 +4775,15 @@ document.observe("xwiki:dom:loaded", function() {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.SegmentedBar = Class.create({
     DEFAULT_SEGMENTS : 5,
-    DEFAULT_FILL : '#777',
-    DEFAULT_BORDER : '#000',
-    DEFAULT_SEGMENT_HEIGHT : '5px',
     DEFAULT_DISPLAY_PERCENT_VALUE_FLAG : true,
     /**
-    A PhenoTips widget for creating a segmented bar html element. Example:
+    A PhenoTips widget for creating a segmented bar html element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors. Example:
 
         var barOptions = {
           segments : 10,
-          fill: '#625',
-          border : '#987',
-          segmentHeight : '10px',
-          segmentWidth : '3px',
           displayPercentValueFlag : false
         };
-        container.insert(new PhenoTips.widgets.SegmentedBar(score, barOptions).generateSegmentedBar());
+        container.insert(new PhenoTips.widgets.SegmentedBar(score, barOptions).generateSegmentedBar().setStyle({color: 'red', fontSize: '200%'}));
 
     @param value The value that this bar is meant to display. Must be between 0 and 1.
 
@@ -4798,10 +4791,6 @@ document.observe("xwiki:dom:loaded", function() {
 
     {
       segments: The number of segments in the bar. Default is 5,
-      fill: The fill color for the segments. Takes any css color value supported by the browser. Default is #777,
-      border: The border color of the segments. Takes any css color value supported by the browser. Default is #000,
-      segmentHeight: The height of each individual segment. Takes any css value as a string. Default is 5px,
-      segmentWidth: The width of each individual segment Takes any css value as a string. Default is equal to either the specified height or the default height,
       displayPercentValueFlag: Option to display the percentage value after the bar. Default is true
     }
 
@@ -4810,10 +4799,6 @@ document.observe("xwiki:dom:loaded", function() {
       this.value = value;
       this.options = options || {};
       this.segments = this.options.segments || this.DEFAULT_SEGMENTS;
-      this.fill = this.options.fill || this.DEFAULT_FILL;
-      this.border = this.options.border || this.DEFAULT_BORDER;
-      this.segmentHeight = this.options.segmentHeight || this.DEFAULT_SEGMENT_HEIGHT;
-      this.segmentWidth = (this.options.segmentWidth || this.options.segmentHeight) || this.DEFAULT_SEGMENT_HEIGHT;
       this.displayPercentValueFlag = (typeof this.options.displayPercentValue !== 'undefined') ? this.options.displayPercentValue : this.DEFAULT_DISPLAY_PERCENT_VALUE_FLAG;
     },
     generateSegmentedBar: function() {
@@ -4823,7 +4808,6 @@ document.observe("xwiki:dom:loaded", function() {
       }
       var bar = new Element('div', {
         'class' : 'segmented-bar',
-        'style' : 'color: ' + this.border + ';',
         'title': Math.round(this.value * 100) + '%' || ''
       });
       var valueUnit = 1 / this.segments;
@@ -4832,18 +4816,11 @@ document.observe("xwiki:dom:loaded", function() {
         var segment = new Element('span', {
           'class': 'segmented-unit',
         });
-        segment.setStyle({
-          borderColor: this.border,
-          height: this.segmentHeight,
-          width: this.segmentHeight
-        });
         var segmentFillElement =  new Element('span', {
           'class': 'segmented-unit-fill'
         });
         segmentFillElement.setStyle({
           width: segmentFill + '%',
-          height: this.segmentHeight,
-          backgroundColor: this.fill
         });
         segment.insert(segmentFillElement);
         bar.insert(segment);
@@ -6377,15 +6354,19 @@ input.xwiki-free-multiselect-value {
   width: auto;
 }
 .segmented-bar .segmented-unit {
-  border: 1px solid;
+  border: 1px solid currentColor;
   border-radius: 1px;
   display: inline-block;
+  height: 1ex;
   margin: 0 1px;
-  padding:0
+  padding: 0;
+  width: 1ex;
 }
 .segmented-bar .segmented-unit-fill {
   border-radius: 1px;
   display: block;
+  height: 100%;
+  background: currentColor;
 }</code>
     </property>
     <property>
