@@ -11,23 +11,6 @@ var FamilyDataLoader = Class.create( {
         this.familyMembers = [];
         this.warningMessage = "";
         this.probandData = {};
-
-        this.mainDiv = new Element('div', {'class': 'pedigree-warning-container'});
-        this.mainDiv.update("Sample warning");
-        var closeShortcut = ['Esc'];
-
-        //this.show = function() {
-        //    this.dialog.show();
-        //};
-        this.hide = function() {
-            this.dialog.closeDialog();
-        };
-
-        this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv,
-          {close: {method : this.hide.bind(this), keys : closeShortcut}},
-          {extraClassName: "pedigree-warning-message", title: "Please be advised",
-              displayCloseButton: true, verticalPosition: "top"});
-        this.dialog.show();
     },
 
     load: function(callWhenReady) {
@@ -50,6 +33,8 @@ var FamilyDataLoader = Class.create( {
                                   response.responseJSON.familyMembers: [];
 
             this.warningMessage = response.responseJSON.hasOwnProperty("warning") ? response.responseJSON.warning : "";
+            /* Will display a warning if there is a warning message */
+            new Warning();
         } else {
             console.log("[!] Error parsing family JSON");
         }
