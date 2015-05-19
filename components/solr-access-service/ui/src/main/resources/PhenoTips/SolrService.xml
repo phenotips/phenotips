@@ -44,7 +44,7 @@
     #if ("$!{request.rows}" != '')
       #set ($rows = $numbertool.toNumber($!{request.rows}))
     #end
-    #set ($results = $services.ontologies.hpo.termSuggest($!{request.q}, $rows, "$!{request.sort}", "$!{request.fq}"))
+    #set ($results = $services.vocabularies.hpo.termSuggest($!{request.q}, $rows, "$!{request.sort}", "$!{request.fq}"))
   #end
 $response.setContentType('application/json')
 {

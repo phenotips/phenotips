@@ -49,7 +49,7 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ("$!request.id" != '')
-  #set ($term = $services.ontologies.hpo.getTerm($request.id))
+  #set ($term = $services.vocabularies.hpo.getTerm($request.id))
 #else
   $response.setStatus(400)##
   $response.setContentType('application/json')##

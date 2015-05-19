@@ -41,9 +41,9 @@
 #if ("$!{request.url}" != '' &amp;&amp; "$!{request.ontology}" != '')
   #set($result = "")
   #if("$!{request.ontology}" == 'hpo' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-    #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
+    #set($result = $services.vocabularies.hpo.reindex("$!{request.url}"))
   #elseif ("$!{request.ontology}" == 'chebi' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-    #set($result = $services.ontologies.chebi.reindex("$!{request.url}"))
+    #set($result = $services.vocabularies.chebi.reindex("$!{request.url}"))
   #end
 
   #if ("$!{request.ajax}" == '1')
@@ -71,7 +71,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;dl&gt;
 &lt;dt&gt;
 &lt;label for="ontology-hpo-url"&gt;$services.localization.render('phenotips.IndexOntology.hpo')&lt;/label&gt;
-#set ($version = $services.ontologies.hpo.Version)
+#set ($version = $services.vocabularies.hpo.Version)
 #if (!$version)
   &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
 #else
@@ -79,7 +79,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 #end
 &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.vocabularies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="hpo"/&gt;
@@ -92,7 +92,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;dl&gt;
 &lt;dt&gt;
 &lt;label for="ontology-chebi-url"&gt;$services.localization.render('phenotips.IndexOntology.chebi')&lt;/label&gt;
-#set ($version = $services.ontologies.chebi.Version)
+#set ($version = $services.vocabularies.chebi.Version)
 #if (!$version)
   &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
 #else
@@ -100,7 +100,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 #end
 &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.ontologies.chebi.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.vocabularies.chebi.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="chebi"/&gt;

@@ -46,7 +46,7 @@
   ##Get existing ethnicities
   ##------------------------
 
-  #foreach($res in $services.ontologies.ethnicity.getMatchingEthnicities($input))
+  #foreach($res in $services.vocabularies.ethnicity.getMatchingEthnicities($input))
     #set ($discard = $finalResults.add($res.name))
     #set ($discard = $lowercaseResults.add($res.name.toLowerCase()))
   #end
