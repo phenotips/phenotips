@@ -17,18 +17,12 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.phenotips.obo2solr.ParameterPreparer;
-import org.phenotips.obo2solr.TermData;
-import org.phenotips.ontology.OntologyTerm;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -55,38 +49,16 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrOntolog
 
     protected static final String ROWS_FIELD_NAME = "rows";
 
+    protected static final String SYMBOL_FIELD_NAME = "symbol";
+
+    protected static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
+
+    protected static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
+
     /** The number of documents to be added and committed to Solr at a time. */
     protected abstract int getSolrDocsPerBatch();
 
-    protected abstract Map<String, TermData> transform(Map<String, Double> fieldSelection);
-
-    @Override
-    public OntologyTerm getTerm(String id)
-    {
-        OntologyTerm result = super.getTerm(id);
-        if (result == null) {
-            Map<String, String> queryParameters = new HashMap<>();
-            queryParameters.put(ALTERNATIVE_ID_FIELD_NAME, id);
-            Set<OntologyTerm> results = search(queryParameters);
-            if (results != null && !results.isEmpty()) {
-                result = search(queryParameters).iterator().next();
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public Set<OntologyTerm> getTerms(Collection<String> ids)
-    {
-        Set<OntologyTerm> result = new LinkedHashSet<>();
-        for (String id : ids) {
-            OntologyTerm term = getTerm(id);
-            if (term != null) {
-                result.add(term);
-            }
-        }
-        return result;
-    }
+    protected abstract Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection);
 
     @Override
     public int reindex(String ontologyUrl)
@@ -105,13 +77,13 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrOntolog
     protected int index(String ontologyUrl)
     {
         Map<String, Double> fieldSelection = new HashMap<String, Double>();
-        Map<String, TermData> data = transform(fieldSelection);
+        Collection<SolrInputDocument> data = transform(fieldSelection);
         if (data == null) {
             return 2;
         }
         try {
             Collection<SolrInputDocument> termBatch = new HashSet<SolrInputDocument>();
-            Iterator<Map.Entry<String, TermData>> dataIterator = data.entrySet().iterator();
+            Iterator<SolrInputDocument> dataIterator = data.iterator();
             int batchCounter = 0;
             while (dataIterator.hasNext()) {
                 /* Resetting when the batch fills */
@@ -120,15 +92,8 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrOntolog
                     termBatch = new HashSet<>();
                     batchCounter = 0;
                 }
-                Map.Entry<String, TermData> item = dataIterator.next();
-                SolrInputDocument doc = new SolrInputDocument();
-                for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
-                    String name = property.getKey();
-                    for (String value : property.getValue()) {
-                        doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
-                    }
-                }
-                termBatch.add(doc);
+                SolrInputDocument item = dataIterator.next();
+                termBatch.add(item);
                 batchCounter++;
             }
             commitTerms(termBatch);

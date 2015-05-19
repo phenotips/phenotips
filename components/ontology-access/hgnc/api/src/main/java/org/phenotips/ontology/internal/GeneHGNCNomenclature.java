@@ -17,7 +17,6 @@
  */
 package org.phenotips.ontology.internal;
 
-import org.phenotips.obo2solr.TermData;
 import org.phenotips.ontology.OntologyTerm;
 import org.phenotips.ontology.internal.solr.AbstractCSVSolrOntologyService;
 import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
@@ -32,10 +31,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -54,8 +56,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
@@ -81,37 +89,23 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
     private static final String FIELD_VALUE_SEPARATOR = "\\t";
 
-    private static final String HGNC_ID = "gd_hgnc_id";
+    private static final List<String> SELECTED_COLUMNS = Arrays.asList("gd_hgnc_id", "gd_app_sym",
+        "gd_app_name", "gd_prev_sym", "gd_aliases", "gd_pub_acc_ids", "gd_pub_eg_id",
+        "gd_pub_ensembl_id", "gd_pub_refseq_ids", "family.id", "family.name",
+        "md_eg_id", "md_mim_id", "md_refseq_id",
+        "md_prot_id", "md_ensembl_id");
 
-    private static final String APPROVED_SYMBOL = "gd_app_sym";
+    private static final List<String> HEADERS = Arrays.asList("HGNC ID", "Approved Symbol",
+        "Approved Name", "Previous Symbols", "Synonyms", "Accession Numbers", "Entrez Gene ID",
+        "Ensembl Gene ID", "RefSeq IDs", "Gene Family ID", "Gene Family Name",
+        "Entrez Gene ID(supplied by NCBI)", "OMIM ID(supplied by OMIM)", "RefSeq(supplied by NCBI)",
+        "UniProt ID(supplied by UniProt)", "Ensembl ID(supplied by Ensembl)");
 
-    private static final String APPROVED_NAME = "gd_app_name";
-
-    private static final String PREVIOUS_SYMBOLS = "gd_prev_sym";
-
-    private static final String SYNONYMS = "gd_aliases";
-
-    private static final String ACCESSION_NUMBERS = "gd_pub_acc_ids";
-
-    private static final String ENTREZ_GENE_ID = "gd_pub_eg_id";
-
-    private static final String ENSEMBL_GENE_ID = "gd_pub_ensembl_id";
-
-    private static final String REFSEQ_IDS = "gd_pub_refseq_ids";
-
-    private static final String GENE_FAMILY_ID = "family.id";
-
-    private static final String GENE_FAMILY_NAME = "family.name";
-
-    private static final String EXTERNAL_ENTREZ_GENE_ID = "md_eg_id";
-
-    private static final String EXTERNAL_OMIM_ID = "md_mim_id";
-
-    private static final String EXTERNAL_REFSEQ = "md_refseq_id";
-
-    private static final String EXTERNAL_UNIPROT_ID = "md_prot_id";
-
-    private static final String EXTERNAL_ENSEMBL_ID = "md_ensembl_id";
+    private static final List<String> FIELDS = Arrays.asList("id", "symbol",
+        "name", "prev_symbol", "alias_symbol", "ena", "entrez_id",
+        "ensembl_gene_id", "refseq_accession", "gene_family_id", "gene_family",
+        "entrez_id_external", "omim_id", "refseq_accession_external",
+        "uniprot_ids", "ensembl_gene_id_external");
 
     // Approved symbol
     private static final String ORDER_BY = "gd_app_sym_sort";
@@ -121,6 +115,8 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private static final String SELECT_STATUS = "Approved";
 
     private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
+
+    private static final String COMMON_PARAMS_PF = "pf";
 
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
@@ -138,27 +134,15 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     @Override
     public void initialize() throws InitializationException
     {
+        super.initialize();
         Map<String, Boolean> config = new HashMap<String, Boolean>();
-        config.put(HGNC_ID, true);
-        config.put(APPROVED_SYMBOL, true);
-        config.put(APPROVED_NAME, true);
-        config.put(PREVIOUS_SYMBOLS, true);
-        config.put(SYNONYMS, true);
-        config.put(ACCESSION_NUMBERS, true);
-        config.put(ENTREZ_GENE_ID, true);
-        config.put(ENSEMBL_GENE_ID, true);
-        config.put(REFSEQ_IDS, true);
-        config.put(GENE_FAMILY_ID, true);
-        config.put(GENE_FAMILY_NAME, true);
-        config.put(EXTERNAL_ENTREZ_GENE_ID, true);
-        config.put(EXTERNAL_OMIM_ID, true);
-        config.put(EXTERNAL_REFSEQ, true);
-        config.put(EXTERNAL_UNIPROT_ID, true);
-        config.put(EXTERNAL_ENSEMBL_ID, true);
-        
+        for (String column : SELECTED_COLUMNS) {
+            config.put(column, true);
+        }
+
         this.baseServiceURL =
-            this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
-        this.infoServiceURL = this.baseServiceURL + "info";
+            this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://www.genenames.org/");
+        this.infoServiceURL = "http://rest.genenames.org/info";
         this.dataServiceURL = this.baseServiceURL + "cgi-bin/download?";
         // assemble the columns
         for (Map.Entry<String, Boolean> item : config.entrySet()) {
@@ -219,7 +203,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put("pf", "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+        params.put(COMMON_PARAMS_PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
             + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
             + "text^3 textSpell^5");
         params.put("qf",
@@ -236,8 +220,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         if (isId) {
             params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq,
                 new MessageFormat("id:{0} alt_id:{0}").format(new String[] { escapedQuery })));
-        } else {
-            params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq, "term_category:HGNC\\:0000118"));
         }
         params.add(CommonParams.Q, escapedQuery);
         params.add(SpellingParams.SPELLCHECK_Q, query);
@@ -246,6 +228,52 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             params.add(CommonParams.SORT, sort);
         }
         return params;
+    }
+
+    @Override
+    public OntologyTerm getTerm(String symbol)
+    {
+        QueryResponse response;
+        SolrQuery query = new SolrQuery();
+        SolrDocumentList termList;
+        OntologyTerm term;
+
+        String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
+
+        String queryString = String.format("%s:%s OR %s:%s OR %s:%s",
+            SYMBOL_FIELD_NAME, escapedSymbol,
+            PREV_SYMBOL_FIELD_NAME, escapedSymbol,
+            ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
+        query.setQuery(queryString);
+        query.setRows(1);
+        query.set(COMMON_PARAMS_PF, "nameExact^100");
+        try {
+            response = this.externalServicesAccess.getServer().query(query);
+            termList = response.getResults();
+
+            if (!termList.isEmpty()) {
+                term = new SolrOntologyTerm(termList.get(0), this);
+                return term;
+            }
+        } catch (SolrServerException | SolrException ex) {
+            this.logger.warn("Failed to query ontology term: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting ontology term", ex);
+        }
+        return null;
+    }
+
+    @Override
+    public Set<OntologyTerm> getTerms(Collection<String> symbols)
+    {
+        Set<OntologyTerm> result = new LinkedHashSet<>();
+        for (String symbol : symbols) {
+            OntologyTerm term = getTerm(symbol);
+            if (term != null) {
+                result.add(term);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -261,7 +289,8 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         }
         Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
         for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
-            result.add(new SolrOntologyTerm(doc, this));
+            SolrOntologyTerm ontTerm = new SolrOntologyTerm(doc, this);
+            result.add(ontTerm);
         }
         return result;
     }
@@ -286,7 +315,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     }
 
     @Override
-    protected Map<String, TermData> transform(Map<String, Double> fieldSelection)
+    protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
     {
         URL url;
         URL infoURL;
@@ -299,38 +328,74 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         return transform(url, infoURL, fieldSelection);
     }
 
-    private Map<String, TermData> transform(URL searchURL, URL infoURL, Map<String, Double> fieldSelection)
+    private void getFieldNames(String[] headers)
     {
-        Map<String, TermData> data = new LinkedHashMap<String, TermData>();
+        Map<String, String> fieldNames = new HashMap<String, String>();
+        int count = 0;
+        for (String field : FIELDS) {
+            fieldNames.put(HEADERS.get(count), field);
+            count++;
+        }
+
+        for (int i = 0; i < headers.length; i++) {
+            headers[i] = fieldNames.get(headers[i]);
+        }
+    }
+
+    private void processDuplicates(SolrInputDocument solrdoc)
+    {
+        List<String> curated = Arrays.asList("entrez_id", "ensembl_gene_id", "refseq_accession");
+        List<String> external =
+            Arrays.asList("entrez_id_external", "ensembl_gene_id_external", "refseq_accession_external");
+        // Remove extrenal fields, copy their values to corresponding curated field values if they are empty
+        int count = 0;
+        for (String field : curated) {
+            if ("".equals(solrdoc.get(field))) {
+                if (!"refseq_accession".equals(field)) {
+                    solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
+                } else {
+                    solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+                }
+            }
+            solrdoc.removeField(external.get(count));
+            count++;
+        }
+    }
+
+    private Collection<SolrInputDocument> transform(URL searchURL, URL infoURL, Map<String, Double> fieldSelection)
+    {
+        Collection<SolrInputDocument> data = new LinkedList<>();
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openConnection().getInputStream()));
 
             String line;
-            int counter = 0;
 
             String zeroLine = in.readLine();
             String[] headers = zeroLine.split(FIELD_VALUE_SEPARATOR, -1);
-            headers[0] = ID_FIELD_NAME;
+
+            // get correct field names for velocity
+            getFieldNames(headers);
 
             while ((line = in.readLine()) != null) {
-
-                TermData crtTerm = new TermData();
-
                 String[] pieces = line.split(FIELD_VALUE_SEPARATOR, -1);
                 // Ignore the whole line if begins with tab symbol
-                if (pieces.length > 1 && !"".equals(pieces[0])) {
+                if (pieces.length != headers.length || "".equals(pieces[0])) {
                     continue;
                 }
 
+                SolrInputDocument crtTerm = new SolrInputDocument();
+                int counter = 0;
                 for (String term : pieces) {
                     if (!"".equals(term)) {
-                        crtTerm.addTo(headers[counter], term);
+                        crtTerm.addField(headers[counter], term);
                     }
                     counter++;
                 }
 
-                data.put(crtTerm.getId(), crtTerm);
+                processDuplicates(crtTerm);
+
+                data.add(crtTerm);
             }
 
         } catch (NullPointerException ex) {
@@ -340,13 +405,13 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         }
 
         // put version/size here
-        TermData metaTerm = new TermData();
+        SolrInputDocument metaTerm = new SolrInputDocument();
         JSONObject info = getInfo();
-        metaTerm.addTo(ID_FIELD_NAME, "HEADER_INFO");
-        metaTerm.addTo(VERSION_FIELD_NAME, getVersion(info));
-        metaTerm.addTo(SIZE_FIELD_NAME, Objects.toString(getSize(info), null));
+        metaTerm.addField(ID_FIELD_NAME, "HEADER_INFO");
+        metaTerm.addField(VERSION_FIELD_NAME, getVersion(info));
+        metaTerm.addField(SIZE_FIELD_NAME, Objects.toString(getSize(info)));
 
-        data.put("metadata", metaTerm);
+        data.add(metaTerm);
 
         return data;
     }
@@ -365,7 +430,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     {
         HttpGet method = new HttpGet(this.infoServiceURL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        try (CloseableHttpResponse httpResponse = client.execute(method)) {
+        try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
             JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
             return responseJSON;
