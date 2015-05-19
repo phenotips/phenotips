@@ -28,6 +28,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -68,6 +69,8 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
+import org.apache.solr.internal.csv.CSVParser;
+import org.apache.solr.internal.csv.CSVStrategy;
 
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -370,15 +373,32 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openConnection().getInputStream()));
 
             String line;
+            String[] headers;
 
             String zeroLine = in.readLine();
-            String[] headers = zeroLine.split(FIELD_VALUE_SEPARATOR, -1);
+
+            CSVParser headParser = new CSVParser(new StringReader(zeroLine), CSVStrategy.TDF_STRATEGY);
+
+            try {
+                headers = headParser.getLine();
+            } catch (IOException e) {
+                throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e);
+            }
 
             // get correct field names for velocity
             getFieldNames(headers);
 
             while ((line = in.readLine()) != null) {
-                String[] pieces = line.split(FIELD_VALUE_SEPARATOR, -1);
+                String[] pieces;
+
+                CSVParser parser = new CSVParser(new StringReader(line), CSVStrategy.TDF_STRATEGY);
+
+                try {
+                    pieces = parser.getLine();
+                } catch (IOException e) {
+                    throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e);
+                }
+
                 // Ignore the whole line if begins with tab symbol
                 if (pieces.length != headers.length || "".equals(pieces[0])) {
                     continue;
