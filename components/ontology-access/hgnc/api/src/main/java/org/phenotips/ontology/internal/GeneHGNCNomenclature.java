@@ -31,7 +31,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -87,11 +85,6 @@ import net.sf.json.JSONSerializer;
 @Singleton
 public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 {
-    /** For determining if a query is a an id. */
-    private static final Pattern ID_PATTERN = Pattern.compile("^HGNC:[0-9]+$", Pattern.CASE_INSENSITIVE);
-
-    private static final String FIELD_VALUE_SEPARATOR = "\\t";
-
     private static final List<String> SELECTED_COLUMNS = Arrays.asList("gd_hgnc_id", "gd_app_sym",
         "gd_app_name", "gd_prev_sym", "gd_aliases", "gd_pub_acc_ids", "gd_pub_eg_id",
         "gd_pub_ensembl_id", "gd_pub_refseq_ids", "family.id", "family.name",
@@ -156,11 +149,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-                + "&order_by=" + ORDER_BY
-                + "&format=" + OUTPUT_FORMAT
-                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-                // those come by default in every query
-                + "&status_opt=2&where=&limit=&submit=submit";
+            + "&order_by=" + ORDER_BY
+            + "&format=" + OUTPUT_FORMAT
+            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+            // those come by default in every query
+            + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -214,16 +207,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         return params;
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq,
-        boolean isId)
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
     {
         String query = originalQuery.trim();
         ModifiableSolrParams params = new ModifiableSolrParams();
         String escapedQuery = ClientUtils.escapeQueryChars(query);
-        if (isId) {
-            params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFq,
-                new MessageFormat("id:{0} alt_id:{0}").format(new String[] { escapedQuery })));
-        }
         params.add(CommonParams.Q, escapedQuery);
         params.add(SpellingParams.SPELLCHECK_Q, query);
         params.add(CommonParams.ROWS, rows.toString());
@@ -285,22 +273,14 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         if (StringUtils.isBlank(query)) {
             return new HashSet<>();
         }
-        boolean isId = this.isId(query);
         Map<String, String> options = this.getStaticSolrParams();
-        if (!isId) {
-            options.putAll(this.getStaticFieldSolrParams());
-        }
+        options.putAll(this.getStaticFieldSolrParams());
         Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
+        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq), options)) {
             SolrOntologyTerm ontTerm = new SolrOntologyTerm(doc, this);
             result.add(ontTerm);
         }
         return result;
-    }
-
-    private boolean isId(String query)
-    {
-        return ID_PATTERN.matcher(query).matches();
     }
 
     @Override
