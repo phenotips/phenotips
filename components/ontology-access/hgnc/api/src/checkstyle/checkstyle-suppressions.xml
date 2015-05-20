@@ -15,13 +15,15 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses/
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN"
         "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 
 <suppressions>
-  <suppress checks=".*" files="DataToCellConverter.java"/>
-  <suppress checks="CyclomaticComplexity" files="Styler.java" lines="155, 209"/>
+  <suppress checks="ClassDataAbstractionCoupling" files="GeneHGNCNomenclature.java" lines="1, 443"/>
+  <suppress checks="ClassFanOutComplexity" files="GeneHGNCNomenclature.java" lines="1, 443"/>
+  <suppress checks="MultipleStringLiterals" files="GeneHGNCNomenclature.java" lines="1, 443"/>
+  <suppress checks="ExecutableStatementCount" files="GeneHGNCNomenclature.java" lines="1, 443"/>
 </suppressions>

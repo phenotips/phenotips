@@ -149,11 +149,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-            + "&order_by=" + ORDER_BY
-            + "&format=" + OUTPUT_FORMAT
-            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-            // those come by default in every query
-            + "&status_opt=2&where=&limit=&submit=submit";
+                + "&order_by=" + ORDER_BY
+                + "&format=" + OUTPUT_FORMAT
+                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+                // those come by default in every query
+                + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -330,7 +330,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         List<String> curated = Arrays.asList("entrez_id", "ensembl_gene_id", "refseq_accession");
         List<String> external =
             Arrays.asList("entrez_id_external", "ensembl_gene_id_external", "refseq_accession_external");
-        // Remove extrenal fields, copy their values to corresponding curated field values if they are empty
+        // Remove external fields, copy their values to corresponding curated field values if they are empty
         int count = 0;
         for (String field : curated) {
             if ("".equals(solrdoc.get(field))) {

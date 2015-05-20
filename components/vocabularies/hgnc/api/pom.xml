@@ -31,6 +31,7 @@
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
     <coverage.instructionRatio>0.81</coverage.instructionRatio>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
 
   <dependencies>
