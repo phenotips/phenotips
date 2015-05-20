@@ -1,0 +1,11 @@
+chd => congenital heart defect
+ocd => obsessive compulsive disorder
+vsd => ventricular septal defect
+asd => atrial septal defect
+mr => intellectual disability
+mental retardation => intellectual disability
+dd => developmental delay
+df => dysmorphic facies
+coartation => coarctation
+gerd => gastroesophageal reflux
+halluces => hallux
