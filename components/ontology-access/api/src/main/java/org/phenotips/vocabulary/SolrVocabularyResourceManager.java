@@ -25,34 +25,35 @@ import org.xwiki.stability.Unstable;
 import org.apache.solr.client.solrj.SolrClient;
 
 /**
- * Provides methods for initializing an ontology service.
+ * Provides methods for initializing the resources needed by vocabularies stored in a Solr index.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M10)
  */
 @Unstable
 @Role
-public interface SolrVocabularyInitializer
+public interface SolrVocabularyResourceManager
 {
     /**
-     * Initializes connection to the Solr server and new cache.
+     * Initializes the resources needed by a Solr-indexed vocabulary. This method must be called once before using the
+     * resources it exposes.
      *
-     * @param serverName the suffix for the Solr server
+     * @param vocabularyName the name of the vocabulary being managed
      * @throws InitializationException if an error happens during initialization
      */
-    void initialize(String serverName) throws InitializationException;
+    void initialize(String vocabularyName) throws InitializationException;
 
     /**
-     * Gets cache instance.
+     * Get the cache instance created for the target vocabulary.
      *
-     * @return cache instance
+     * @return a cache instance
      */
-    Cache<VocabularyTerm> getCache();
+    Cache<VocabularyTerm> getTermCache();
 
     /**
-     * Gets server instance.
+     * Get the Solr core used for the target vocabulary.
      *
-     * @return server instance
+     * @return a Solr client for communication with the target core
      */
-    SolrClient getServer();
+    SolrClient getSolrConnection();
 }

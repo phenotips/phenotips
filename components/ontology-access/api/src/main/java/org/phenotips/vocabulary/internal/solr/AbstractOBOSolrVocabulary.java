@@ -133,9 +133,9 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected void commitTerms(Collection<SolrInputDocument> batch)
         throws SolrServerException, IOException, OutOfMemoryError
     {
-        this.externalServicesAccess.getServer().add(batch);
-        this.externalServicesAccess.getServer().commit();
-        this.externalServicesAccess.getCache().removeAll();
+        this.externalServicesAccess.getSolrConnection().add(batch);
+        this.externalServicesAccess.getSolrConnection().commit();
+        this.externalServicesAccess.getTermCache().removeAll();
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     protected int clear()
     {
         try {
-            this.externalServicesAccess.getServer().deleteByQuery("*:*");
+            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -167,7 +167,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         query.setQuery("version:*");
         query.set("rows", "1");
         try {
-            response = this.externalServicesAccess.getServer().query(query);
+            response = this.externalServicesAccess.getSolrConnection().query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

@@ -19,7 +19,7 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
-import org.phenotips.vocabulary.SolrVocabularyInitializer;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -70,11 +70,11 @@ public class ChEBIOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         this.cache = mock(Cache.class);
-        SolrVocabularyInitializer externalServicesAccess =
-            this.mocker.getInstance(SolrVocabularyInitializer.class);
-        when(externalServicesAccess.getCache()).thenReturn(this.cache);
+        SolrVocabularyResourceManager externalServicesAccess =
+            this.mocker.getInstance(SolrVocabularyResourceManager.class);
+        when(externalServicesAccess.getTermCache()).thenReturn(this.cache);
         this.server = mock(SolrClient.class);
-        when(externalServicesAccess.getServer()).thenReturn(this.server);
+        when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
         this.ontologyService = this.mocker.getComponentUnderTest();
     }
 

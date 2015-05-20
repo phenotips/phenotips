@@ -18,7 +18,7 @@
 package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
-import org.phenotips.vocabulary.SolrVocabularyInitializer;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.cache.Cache;
@@ -36,24 +36,22 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 
 /**
- * Initializes cache and server connection for starting a Solr ontology service.
+ * Default implementation for the {@link SolrVocabularyResourceManager} component.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M10)
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultSolrVocabularyInitializer implements SolrVocabularyInitializer
+public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResourceManager
 {
-    /** The Solr server instance used. */
-    private SolrClient server;
+    /** @see #getSolrConnection() */
+    private SolrClient core;
 
-    /**
-     * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
-     * the same thing.
-     */
+    /** @see #getTermCache() */
     private Cache<VocabularyTerm> cache;
 
+    /** Provides access to the Solr cores. */
     @Inject
     private SolrCoreContainerHandler cores;
 
@@ -62,27 +60,27 @@ public class DefaultSolrVocabularyInitializer implements SolrVocabularyInitializ
     private CacheManager cacheFactory;
 
     @Override
-    public void initialize(String serverName) throws InitializationException
+    public void initialize(String vocabularyName) throws InitializationException
     {
         try {
-            this.server = new EmbeddedSolrServer(this.cores.getContainer(), serverName);
+            this.core = new EmbeddedSolrServer(this.cores.getContainer(), vocabularyName);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (RuntimeException ex) {
-            throw new InitializationException("Invalid URL specified for the Solr server: {}");
+            throw new InitializationException("Invalid Solr core: " + ex.getMessage());
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
         }
     }
 
     @Override
-    public Cache<VocabularyTerm> getCache()
+    public Cache<VocabularyTerm> getTermCache()
     {
         return this.cache;
     }
 
     @Override
-    public SolrClient getServer()
+    public SolrClient getSolrConnection()
     {
-        return this.server;
+        return this.core;
     }
 }

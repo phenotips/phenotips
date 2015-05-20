@@ -17,7 +17,7 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.vocabulary.SolrVocabularyInitializer;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -66,7 +66,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
 
     /** The object used for initializing server connection and cache. */
     @Inject
-    protected SolrVocabularyInitializer externalServicesAccess;
+    protected SolrVocabularyResourceManager externalServicesAccess;
 
     @Override
     public void initialize() throws InitializationException
@@ -88,16 +88,16 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public VocabularyTerm getTerm(String id)
     {
-        VocabularyTerm result = this.externalServicesAccess.getCache().get(id);
+        VocabularyTerm result = this.externalServicesAccess.getTermCache().get(id);
         if (result == null) {
             ModifiableSolrParams params = new ModifiableSolrParams();
             params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
             SolrDocumentList allResults = this.search(params);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrVocabularyTerm(allResults.get(0), this);
-                this.externalServicesAccess.getCache().set(id, result);
+                this.externalServicesAccess.getTermCache().set(id, result);
             } else {
-                this.externalServicesAccess.getCache().set(id, EMPTY_MARKER);
+                this.externalServicesAccess.getTermCache().set(id, EMPTY_MARKER);
             }
         }
         return (result == EMPTY_MARKER) ? null : result;
@@ -109,7 +109,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
-            VocabularyTerm cachedTerm = this.externalServicesAccess.getCache().get(id);
+            VocabularyTerm cachedTerm = this.externalServicesAccess.getTermCache().get(id);
             if (cachedTerm != null) {
                 if (cachedTerm != EMPTY_MARKER) {
                     result.add(cachedTerm);
@@ -213,7 +213,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         try {
             SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
             this.logger.debug("Searching [{}] with query [{}]", getName(), enhancedParams);
-            QueryResponse response = this.externalServicesAccess.getServer().query(enhancedParams);
+            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(enhancedParams);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
                 && StringUtils.isNotEmpty(response.getSpellCheckResponse().getCollatedResult())) {
@@ -222,7 +222,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
                         .getCollatedResult());
                 this.logger.debug("Searching [{}] with spellchecked query [{}]", getName(), enhancedParams);
                 SolrDocumentList spellcheckResults =
-                    this.externalServicesAccess.getServer().query(enhancedParams).getResults();
+                    this.externalServicesAccess.getSolrConnection().query(enhancedParams).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
                     results = spellcheckResults;
                 }
@@ -249,7 +249,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         SolrDocumentList results;
         try {
             this.logger.debug("Counting terms matching [{}] in [{}]", query, getName());
-            results = this.externalServicesAccess.getServer().query(params).getResults();
+            results = this.externalServicesAccess.getSolrConnection().query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
             this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
