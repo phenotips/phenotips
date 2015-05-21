@@ -24,10 +24,10 @@ import java.util.Set;
 import net.sf.json.JSON;
 
 /**
- * A term from an {@link Vocabulary ontology}. A few common properties are available as explicit individual methods, and
- * any property defined for the term can be accessed using the generic {@link #get(String)} method. As a minimum, each
- * term should have an identifier and a name. Terms can be accessed either using the owner {@link Vocabulary}, or the
- * generic {@link VocabularyManager}.
+ * A term from a {@link Vocabulary}. A few common properties are available as explicit individual methods, and any
+ * property defined for the term can be accessed using the generic {@link #get(String)} method. As a minimum, each term
+ * should have an identifier and a name. Terms can be accessed either using the owner {@link Vocabulary}, or the generic
+ * {@link VocabularyManager}.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M8)
@@ -36,7 +36,7 @@ import net.sf.json.JSON;
 public interface VocabularyTerm
 {
     /**
-     * The (mandatory) term identifier, in the format {@code <ontology prefix>:<term id>}, for example
+     * The (mandatory) term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      * {@code HP:0002066} or {@code MIM:260540}.
      *
      * @return the term identifier, or {@code null} if the term doesn't have an associated identifier
@@ -60,52 +60,65 @@ public interface VocabularyTerm
     /**
      * Returns the parents (direct ancestors) of this term.
      *
-     * @return a set of ontology terms, or an empty set if the term doesn't have any ancestors in the ontology
+     * @return a set of vocabulary terms, or an empty set if the term doesn't have any ancestors in the vocabulary
      */
     Set<VocabularyTerm> getParents();
 
     /**
      * Returns the ancestors (both direct and indirect ancestors) of this term.
      *
-     * @return a set of ontology terms, or an empty set if the term doesn't have any ancestors in the ontology
+     * @return a set of vocabulary terms, or an empty set if the term doesn't have any ancestors in the vocabulary
      */
     Set<VocabularyTerm> getAncestors();
 
     /**
      * Returns the ancestors (both direct and indirect ancestors) of this term <em>and</em> the term itself.
      *
-     * @return a set of ontology terms, or a set with one term if the term doesn't have any ancestors in the ontology
+     * @return a set of vocabulary terms, or a set with one term (this) if the term doesn't have any ancestors in the
+     *         vocabulary
      */
     Set<VocabularyTerm> getAncestorsAndSelf();
 
     /**
-     * Find the distance to another term in the ontology structure.
+     * Find the distance to another term in the same vocabulary, if the owner vocabulary is a structured ontology that
+     * supports computing such a distance.
      *
      * @param other the term to which the distance should be computed
-     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, or -1 if the
-     *         terms are not connected
+     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and
+     *         {@code -1} if this is an unstructured vocabulary, the terms are not connected, or if the other term is
+     *         {@code null}
      */
     long getDistanceTo(VocabularyTerm other);
 
     /**
-     * Generic meta-property access. Any property defined in the ontology for this term can be accessed this way.
+     * Generic property access. Any property defined in the vocabulary for this term can be accessed this way.
      *
      * @param name the name of the property to access
-     * @return the value defined for the requested property in the ontology, or {@code null} if no value is defined
+     * @return the value defined for the requested property in the vocabulary, or {@code null} if no value is defined
      */
     Object get(String name);
 
     /**
-     * Returns the ontology where this term is defined.
+     * Returns the vocabulary where this term is defined.
      *
-     * @return the owner ontology
+     * @return the owner vocabulary
      */
     Vocabulary getOntology();
 
     /**
-     * @return near-complete information contained in this term, in JSON format. Example:
-     * <pre>
+     * Serialize all the known information about this term as a JSON object.
+     *
+     * @return a JSON map with information about this term, with the keys being the term's properties, and the values
+     *         either a simple string, or a list of strings, for example:
+     *
+     *         <pre>
      * {
+     *    "id":"HP:0001824",
+     *    "name":"Weight loss",
+     *    "def":"Reduction in existing body weight.",
+     *    "is_a":[
+     *      "HP:0004325 ! Decreased body weight"
+     *    ],
      *    "term_category":[
      *      "HP:0004325",
      *      "HP:0004323",
@@ -116,13 +129,7 @@ public interface VocabularyTerm
      *    "xref":[
      *      "MeSH:D015431 \"Weight Loss\"",
      *      "UMLS:C0043096 \"Decreased body weight\""
-     *    ],
-     *      "is_a":[
-     *      "HP:0004325 ! Decreased body weight"
-     *    ],
-     *    "id":"HP:0001824",
-     *    "name":"Weight loss",
-     *    "def":"Reduction inexisting body weight."
+     *    ]
      * }
      * </pre>
      * @throws java.lang.Exception could happen if casting fails

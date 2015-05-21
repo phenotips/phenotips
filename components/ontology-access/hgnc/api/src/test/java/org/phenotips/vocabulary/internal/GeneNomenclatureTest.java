@@ -77,7 +77,7 @@ public class GeneNomenclatureTest
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker =
         new MockitoComponentMockingRule<Vocabulary>(GeneNomenclature.class);
-    
+
     private ConfigurationSource configuration;
 
     @Mock

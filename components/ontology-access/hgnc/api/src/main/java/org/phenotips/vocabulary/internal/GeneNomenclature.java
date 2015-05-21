@@ -335,8 +335,8 @@ public class GeneNomenclature implements Vocabulary, Initializable
      * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
      *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
-     * property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a single value,
-     * or a collection of values that can (OR) be matched by the term;
+     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
+     *            single value, or a collection of values that can (OR) be matched by the term;
      * @return the String representation of the equivalent Lucene query
      */
     private String generateQuery(Map<String, ?> fieldValues)

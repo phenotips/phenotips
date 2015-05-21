@@ -294,7 +294,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
-    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public Set<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
     {
         throw new UnsupportedOperationException();
     }

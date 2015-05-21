@@ -21,7 +21,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * Provides access to the available ontologies and their terms.
+ * Provides access to the available vocabularies and their terms.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M8)
@@ -31,22 +31,23 @@ import org.xwiki.stability.Unstable;
 public interface VocabularyManager
 {
     /**
-     * Retrieve a term from its owner ontology. For this to work properly, the term identifier must contain a known
-     * ontology prefix.
+     * Retrieve a term from its owner vocabulary. For this to work properly, the term identifier must contain a known
+     * vocabulary prefix.
      *
-     * @param termId the term identifier, in the format {@code <ontology prefix>:<term id>}, for example
+     * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
-     * @return the requested term, or {@code null} if the term doesn't exist in the ontology, or no matching ontology is
-     *         available
+     * @return the requested term, or {@code null} if the term doesn't exist in the vocabulary, or no matching
+     *         vocabulary is available
      */
     VocabularyTerm resolveTerm(String termId);
 
     /**
-     * Retrieve an ontology given its identifier.
+     * Retrieve a vocabulary given its identifier.
      *
-     * @param ontologyId the ontology identifier, which is also used as a prefix in every term identifier from that
-     *            ontology, for example {@code HP} or {@code MIM}
-     * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform
+     * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
+     *            vocabulary, for example {@code HP} or {@code MIM}, or one of its {@link Vocabulary#getAliases() known
+     *            aliases}
+     * @return the requested vocabulary, or {@code null} if it doesn't exist or isn't available in the platform
      */
-    Vocabulary getVocabulary(String ontologyId);
+    Vocabulary getVocabulary(String vocabularyId);
 }

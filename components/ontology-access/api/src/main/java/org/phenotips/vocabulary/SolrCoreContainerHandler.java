@@ -23,7 +23,7 @@ import org.xwiki.stability.Unstable;
 import org.apache.solr.core.CoreContainer;
 
 /**
- * Provides access to the configured Solr data.
+ * Provides access to the configured Solr instance.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M13)
@@ -33,7 +33,7 @@ import org.apache.solr.core.CoreContainer;
 public interface SolrCoreContainerHandler
 {
     /**
-     * Gets the embedded Solr core container.
+     * Gets the Solr core container.
      *
      * @return a loaded core container instance
      */

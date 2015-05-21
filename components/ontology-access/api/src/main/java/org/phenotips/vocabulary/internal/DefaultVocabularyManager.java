@@ -34,7 +34,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default implementation of the {@link VocabularyManager} component, which uses the {@link Vocabulary ontologies}
+ * Default implementation of the {@link VocabularyManager} component, which uses all the {@link Vocabulary vocabularies}
  * registered in the component manager.
  *
  * @version $Id$
@@ -46,48 +46,48 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
 {
     /** The currently available vocabularies. */
     @Inject
-    private Map<String, Vocabulary> ontologies;
+    private Map<String, Vocabulary> vocabularies;
 
     @Override
     public void initialize() throws InitializationException
     {
-        Map<String, Vocabulary> newOntologiesMap = new HashMap<String, Vocabulary>();
-        for (Vocabulary ontology : this.ontologies.values()) {
-            for (String alias : ontology.getAliases()) {
-                newOntologiesMap.put(alias, ontology);
+        Map<String, Vocabulary> newVocabulariesMap = new HashMap<String, Vocabulary>();
+        for (Vocabulary vocabulary : this.vocabularies.values()) {
+            for (String alias : vocabulary.getAliases()) {
+                newVocabulariesMap.put(alias, vocabulary);
             }
         }
-        this.ontologies = newOntologiesMap;
+        this.vocabularies = newVocabulariesMap;
     }
 
     @Override
     public VocabularyTerm resolveTerm(String termId)
     {
-        Vocabulary ontology = getOntologyForTerm(termId);
-        if (ontology != null) {
-            return ontology.getTerm(termId);
+        Vocabulary vocabulary = getVocabularyForTerm(termId);
+        if (vocabulary != null) {
+            return vocabulary.getTerm(termId);
         }
         return null;
     }
 
     @Override
-    public Vocabulary getVocabulary(String ontologyId)
+    public Vocabulary getVocabulary(String vocabularyId)
     {
-        return this.ontologies.get(ontologyId);
+        return this.vocabularies.get(vocabularyId);
     }
 
     /**
-     * Finds the owner ontology given a term identifier. The ontology is identified by the term ID prefix, for example
-     * {@code HP} in {@code HP:0002066}.
+     * Finds the owner vocabulary given a term identifier. The vocabulary is identified by the term ID prefix, for
+     * example {@code HP} in {@code HP:0002066}.
      *
      * @param termId the term identifier to process
-     * @return the owner ontology, or {@code null} if the term doesn't belong to a known ontology
+     * @return the owner vocabulary, or {@code null} if the term doesn't belong to a known vocabulary
      */
-    private Vocabulary getOntologyForTerm(String termId)
+    private Vocabulary getVocabularyForTerm(String termId)
     {
-        String ontologyId = StringUtils.substringBefore(termId, ":");
-        if (StringUtils.isNotBlank(ontologyId)) {
-            return this.ontologies.get(ontologyId);
+        String vocabularyId = StringUtils.substringBefore(termId, ":");
+        if (StringUtils.isNotBlank(vocabularyId)) {
+            return this.vocabularies.get(vocabularyId);
         }
         return null;
     }

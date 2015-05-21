@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Provides access to an ontology, such as the Human Phenotype Ontology.
+ * Provides access to a vocabulary, such as the HUGO Gene Nomenclature, or the Human Phenotype Ontology.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M8)
@@ -35,124 +35,133 @@ import java.util.Set;
 public interface Vocabulary
 {
     /**
-     * Access an individual term from the ontology, identified by its {@link VocabularyTerm#getId() term identifier}.
+     * Access an individual term from the vocabulary, identified by its {@link VocabularyTerm#getId() term identifier}.
      *
-     * @param id the term identifier, in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
-     * @return the requested term, or {@code null} if the term doesn't exist in this ontology
+     * @param id the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
+     *            {@code HP:0002066}
+     * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
      */
     VocabularyTerm getTerm(String id);
 
     /**
-     * Access a list of terms from the ontology, identified by their {@link VocabularyTerm#getId() term identifiers}.
+     * Access a list of terms from the vocabulary, identified by their {@link VocabularyTerm#getId() term identifiers}.
      *
-     * @param ids a set of term identifiers, in the format {@code <ontology prefix>:<term id>}, for example
+     * @param ids a set of term identifiers, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
-     * @return a set with the requested terms that were found in the ontology, an empty set if no terms were found
+     * @return a set with the requested terms that were found in the vocabulary, an empty set if no terms were found
      */
     Set<VocabularyTerm> getTerms(Collection<String> ids);
 
     /**
-     * Generic search method, which looks for terms that match the specified meta-properties.
+     * Generic search method, which looks for terms that match the specified term properties.
      *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
-     * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
+     *            single value, or a collection of values that can ({@code OR}) be matched by the term
+     * @return the matching terms that were found in the vocabulary, an empty set if no terms were found
      */
     Set<VocabularyTerm> search(Map<String, ?> fieldValues);
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
      *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
+     *            single value, or a collection of values that can ({@code OR}) be matched by the term
      * @param queryOptions a map with additional query options, such as maximum number of terms to return or a different
-     *            sort order
-     * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
+     *            sort order; the accepted keys/values depend on the actual implementation details, and usually
+     *            correspond to the settings accepted by the storage engine, for example {@code rows -> 10},
+     *            {@code start -> 50}, {@code sort -> nameSort asc} for Solr-indexed vocabularies
+     * @return the matching terms that were found in the vocabulary, an empty set if no terms were found
      */
     Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
 
     /**
-     * Get the number of entries that match a specific query.
+     * Get the number of terms that match a specific query.
      *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
-     * @return the number of entries matching the query
+     *            single value, or a collection of values that can (OR) be matched by the term
+     * @return the number of terms matching the query
      */
     long count(Map<String, ?> fieldValues);
 
     /**
-     * Find the distance between two terms identified by their {@link VocabularyTerm#getId() term identifiers}. The
-     * parameters are interchangeable.
+     * Find the distance between two terms identified by their {@link VocabularyTerm#getId() term identifiers}, if this
+     * is a structured ontology that supports computing such a distance. The parameters are interchangeable.
      *
      * @param fromTermId the identifier of the term that is considered the start point
      * @param toTermId the identifier of the term that is considered the end point
-     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
-     *         the terms are not connected or if at least one of the identifiers is invalid
+     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and
+     *         {@code -1} if this is an unstructured vocabulary, the terms are not connected, or if at least one of the
+     *         identifiers is invalid
      * @see #getDistance(VocabularyTerm, VocabularyTerm)
      */
     long getDistance(String fromTermId, String toTermId);
 
     /**
-     * Find the distance between two terms. The parameters are interchangeable.
+     * Find the distance between two terms, if this is a structured ontology that supports computing such a distance.
+     * The parameters are interchangeable.
      *
      * @param fromTerm the term that is considered the start point
      * @param toTerm the term that is considered the end point
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
-     *         the terms are not connected or if at least one of the terms is {@code null}
+     *         this is an unstructured vocabulary, the terms are not connected, or if at least one of the terms is
+     *         {@code null}
      */
     long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm);
 
     /**
-     * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
-     * known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or the
-     * lowercase {@code hpo}.
+     * A vocabulary has an official name, but it can also have other aliases, for example the Human Phenotype Ontology
+     * is known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or
+     * the lowercase {@code hpo}.
      *
-     * @return a set of identifiers which can be used to reference this ontology, including the official name
+     * @return a set of identifiers which can be used to reference this vocabulary, including the official name
      */
     Set<String> getAliases();
 
     /**
-     * Get the size (i.e. total number of entries) in the index.
+     * Get the size (i.e. total number of terms) in this vocabulary.
      *
-     * @return the number of entries in the index
+     * @return the number of terms in the vocabulary
      */
     long size();
 
     /**
-     * Reindex the whole ontology, fetching the latest version from the source.
+     * Reindex the whole vocabulary, fetching the source from the specified location.
      *
-     * @param ontologyUrl the url to be indexed
+     * @param sourceUrl the URL to be indexed
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
      *         specified URL is invalid
      */
-    int reindex(String ontologyUrl);
+    int reindex(String sourceUrl);
 
     /**
-     * Get the defaults ontology access string (url to the data).
+     * Get the default location where the sources for this vocabulary can be fetched from.
      *
-     * @return the string containing the default url for the ontology service
+     * @return the string containing the default URL for the vocabulary source
      */
     String getDefaultOntologyLocation();
 
     /**
-     * Get the available version of the ontology.
+     * Get the available version of the vocabulary.
      *
      * @return a version identifier, or {@code null} if the version cannot be determined
      */
     String getVersion();
 
     /**
-     * Runs a complex Solr query to determine the best suggestions.
+     * Suggest the terms that best match the user's input.
      *
-     * @param query the text query that the user entered
-     * @param rows the number of rows to be returned; cannot be {@link null}
-     * @param sort an optional sort parameter corresponding exactly to Solr format. Could be {@link null}
-     * @param customFq a custom filter query for ids that can replace the default. Could be {@link null}
-     * @return suggestions found given the parameters produced by SolrParams set of functions
+     * @param input the text that the user entered
+     * @param maxResults the maximum number of terms to be returned
+     * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
+     *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
+     * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
+     *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
+     *            query; may be {@code null}
+     * @return a set of suggestions, possibly empty
      * @since 1.1-rc-1
      */
-    Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq);
+    Set<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter);
 }
