@@ -6354,7 +6354,7 @@ input.xwiki-free-multiselect-value {
   width: auto;
 }
 .segmented-bar .segmented-unit {
-  border: 0.1ex solid currentColor;
+  border: 0.2ex solid currentColor;
   border-radius: 0.1ex;
   display: inline-block;
   height: 1ex;
