@@ -66,7 +66,6 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
-import org.apache.solr.common.params.SpellingParams;
 import org.apache.solr.internal.csv.CSVParser;
 import org.apache.solr.internal.csv.CSVStrategy;
 
@@ -98,10 +97,10 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         "UniProt ID(supplied by UniProt)", "Ensembl ID(supplied by Ensembl)");
 
     private static final List<String> FIELDS = Arrays.asList("id", "symbol",
-        "name", "prev_symbol", "alias_symbol", "ena", "entrez_id",
+        "name", "prev_symbol", "alias_symbol", "hgnc_accession", "entrez_id",
         "ensembl_gene_id", "refseq_accession", "gene_family_id", "gene_family",
         "entrez_id_external", "omim_id", "refseq_accession_external",
-        "uniprot_ids", "ensembl_gene_id_external");
+        "uniprot_id", "ensembl_gene_id_external");
 
     // Approved symbol
     private static final String ORDER_BY = "gd_app_sym_sort";
@@ -113,6 +112,14 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
 
     private static final String COMMON_PARAMS_PF = "pf";
+
+    private static final String COMMON_PARAMS_QF = "qf";
+
+    protected static final String SYMBOL_FIELD_NAME = "symbol";
+
+    protected static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
+
+    protected static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
@@ -149,11 +156,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-                + "&order_by=" + ORDER_BY
-                + "&format=" + OUTPUT_FORMAT
-                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-                // those come by default in every query
-                + "&status_opt=2&where=&limit=&submit=submit";
+            + "&order_by=" + ORDER_BY
+            + "&format=" + OUTPUT_FORMAT
+            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+            // those come by default in every query
+            + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -185,12 +192,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
     private Map<String, String> getStaticSolrParams()
     {
-        String trueStr = "true";
         Map<String, String> params = new HashMap<>();
-        params.put("spellcheck", trueStr);
-        params.put(SpellingParams.SPELLCHECK_COLLATE, trueStr);
-        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
-        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
         params.put("lowercaseOperators", "false");
         params.put("defType", "edismax");
         return params;
@@ -199,11 +201,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put(COMMON_PARAMS_PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
-            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
-            + "text^3 textSpell^5");
-        params.put("qf",
-            "name^10 nameSpell^18 nameStub^5 synonym^6 synonymSpell^10 synonymStub^3 text^1 textSpell^2 textStub^0.5");
+        params.put(COMMON_PARAMS_QF, "symbolExact^10 symbolPrefix^5 "
+            + "synonymExact^10 synonymPrefix^5 "
+            + "text^1 textSpell^2 textStub^0.5");
+        params.put(COMMON_PARAMS_PF, "symbolExact^100 symbolPrefix^10 "
+            + "synonymExact^30 synonymPrefix^5");
         return params;
     }
 
@@ -213,7 +215,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         ModifiableSolrParams params = new ModifiableSolrParams();
         String escapedQuery = ClientUtils.escapeQueryChars(query);
         params.add(CommonParams.Q, escapedQuery);
-        params.add(SpellingParams.SPELLCHECK_Q, query);
         params.add(CommonParams.ROWS, rows.toString());
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
@@ -237,7 +238,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
         query.setQuery(queryString);
         query.setRows(1);
-        query.set(COMMON_PARAMS_PF, "nameExact^100");
+        query.set(COMMON_PARAMS_PF, "symbolExact^100");
         try {
             response = this.externalServicesAccess.getServer().query(query);
             termList = response.getResults();

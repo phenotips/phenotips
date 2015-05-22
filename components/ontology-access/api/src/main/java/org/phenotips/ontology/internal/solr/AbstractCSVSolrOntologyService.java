@@ -38,22 +38,11 @@ import org.apache.solr.common.SolrInputDocument;
  */
 public abstract class AbstractCSVSolrOntologyService extends AbstractSolrOntologyService
 {
-    /**
-     * The name of the Alternative ID field, used for older aliases of updated HPO terms.
-     */
-    protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
-
     protected static final String VERSION_FIELD_NAME = "version";
 
     protected static final String SIZE_FIELD_NAME = "size";
 
     protected static final String ROWS_FIELD_NAME = "rows";
-
-    protected static final String SYMBOL_FIELD_NAME = "symbol";
-
-    protected static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
-
-    protected static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
     /** The number of documents to be added and committed to Solr at a time. */
     protected abstract int getSolrDocsPerBatch();
