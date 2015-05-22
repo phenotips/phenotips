@@ -74,7 +74,7 @@ public class DefaultBlobStoreProvider implements Provider<BlobStore>, Initializa
         }
 
         try {
-            blobStore = componentManager.lookup(BlobStore.class, blobStoreHint);
+            blobStore = componentManager.getInstance(BlobStore.class, blobStoreHint);
         } catch (ComponentLookupException e) {
             String errorMessage = String.format("Unable to lookup a blob store '%s'", blobStoreHint);
 

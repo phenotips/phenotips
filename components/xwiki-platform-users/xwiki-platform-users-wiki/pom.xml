@@ -37,6 +37,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
