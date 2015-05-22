@@ -1,6 +1,2 @@
-<<<<<<< HEAD
-org.phenotips.ontology.internal.GeneHGNCNomenclature
-org.phenotips.ontology.internal.GeneNomenclature
-=======
+org.phenotips.vocabulary.internal.GeneHGNCNomenclature
 org.phenotips.vocabulary.internal.GeneNomenclature
->>>>>>> upstream/master
