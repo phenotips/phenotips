@@ -65,7 +65,7 @@
     &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
     &lt;span class="title"&gt;${item.name}&lt;/span&gt;
     &lt;span class="hidden term-category"&gt;
-    #foreach ($c in $services.ontologies.resolveTerm($item.id).get('term_category'))
+    #foreach ($c in $services.vocabularies.resolveTerm($item.id).get('term_category'))
       &lt;input type="hidden" value="$c"&gt;
     #end
     &lt;/span&gt;

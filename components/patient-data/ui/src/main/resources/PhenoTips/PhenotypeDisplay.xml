@@ -70,7 +70,7 @@
     #end
     $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
-  #if ($services.ontologies.hpo.size() &lt;= 0)
+  #if ($services.vocabularies.hpo.size() &lt;= 0)
     {{error}}{{translation key="phenotips.patientRecord.phenotypes.error.hpoNotIndexed"/}}{{/error}}
 
   #end

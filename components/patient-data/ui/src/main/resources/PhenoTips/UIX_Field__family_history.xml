@@ -125,7 +125,8 @@
 enabled=true
 required=
 order=6
-fields=family_history</parameters>
+fields=family_history
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

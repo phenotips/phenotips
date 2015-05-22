@@ -116,8 +116,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
-            if (geneXWikiObjects == null) {
-                throw new NullPointerException("The patient does not have any gene information");
+            if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+                return null;
             }
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();

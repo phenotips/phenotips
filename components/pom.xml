@@ -54,7 +54,6 @@
     <module>patient-tools</module>
     <module>storage-migrators</module>
     <module>ncbieutils-services</module>
-    <module>phenotype-mapping-service</module>
     <module>specificity-meter</module>
     <module>medsavant-client</module>
     <module>diagnosis-suggestion</module>

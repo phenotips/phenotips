@@ -21,8 +21,8 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientScorer;
 import org.phenotips.data.PatientSpecificity;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -60,12 +60,12 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     /** Provides access to the OMIM ontology, where the information content is checked. */
     @Inject
     @Named("omim")
-    private OntologyService omim;
+    private Vocabulary omim;
 
     /** The HPO ontology, needed for accessing the ancestors of a term that might not be present in OMIM. */
     @Inject
     @Named("hpo")
-    private OntologyService hpo;
+    private Vocabulary hpo;
 
     /** The total information present in OMIM that is reachable through phenotypes. */
     private double totalTerms;
@@ -132,7 +132,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
         int i = 0;
 
         while (ic == 0 && ++i < 5) {
-            Set<OntologyTerm> parents = this.hpo.getTerm(toSearch).getParents();
+            Set<VocabularyTerm> parents = this.hpo.getTerm(toSearch).getParents();
             if (parents.isEmpty()) {
                 break;
             }

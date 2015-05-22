@@ -132,7 +132,8 @@
 enabled=true
 required=
 order=4
-fields=prenatal_phenotype,negative_prenatal_phenotype</parameters>
+fields=prenatal_phenotype,negative_prenatal_phenotype
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

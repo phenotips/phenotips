@@ -375,7 +375,7 @@
     // if input stays the same, do nothing
     //
     val = val.strip().toLowerCase();
-    if (val == this.sInput &amp;&amp; val.length > 1) {
+    if (val == this.sInput &amp;&amp; val.length &gt; 1) {
       return false;
     }
 
@@ -4693,6 +4693,159 @@ document.observe("xwiki:dom:loaded", function() {
   </object>
   <object>
     <name>PhenoTips.Widgets</name>
+    <number>13</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d823f086-78f1-4019-8747-fcd55d2bd448</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.SegmentedBar = Class.create({
+    options: {
+      segments : 5,
+      displayValue : true
+    },
+    /**
+    A PhenoTips widget for displaying a value as a segmented bar HTML element. It uses the current text color and font size, so adjusting the look of the bar means changing the color and font-size on the HTML element returned by the generateSegmentedBar method, or on one of its ancestors, either via a CSS extension or programmatically. Example:
+
+        var barOptions = {
+          segments : 10,
+          displayValue : false
+        };
+        container.insert(new PhenoTips.widgets.SegmentedBar(score, barOptions).generateSegmentedBar().setStyle({color: 'red', fontSize: '200%'}));
+
+    @param value The value that this bar is meant to display. Must be between 0 and 1.
+
+    @param options Options for styling the segmented bar, all values are optional:
+
+    {
+      segments: The number of segments in the bar; default is 5,
+      displayValue: Option to display the percentage value after the bar; default is true
+    }
+
+    */
+    initialize : function(value, options) {
+      this.value = value;
+      this.options = Object.extend(Object.clone(this.options), options || { });
+    },
+    generateSegmentedBar: function() {
+      if (this.value &gt; 1 || this.value &lt; 0) {
+        console.log("Invalid segmented bar value");
+        return;
+      }
+      var bar = new Element('div', {
+        'class' : 'segmented-bar',
+        'title': Math.round(this.value * 100) + '%' || ''
+      });
+      var valueUnit = 1 / this.options.segments;
+      for (var i = 0; i &lt; this.options.segments; ++i) {
+        var segmentFill = 100 * Math.min(Math.max((this.value - i * valueUnit) / valueUnit, 0), 1);
+        var segment = new Element('span', {
+          'class': 'segmented-unit'
+        });
+        var segmentFillElement =  new Element('span', {
+          'class': 'segmented-unit-fill'
+        });
+        segmentFillElement.setStyle({
+          width: segmentFill + '%',
+        });
+        segment.insert(segmentFillElement);
+        bar.insert(segment);
+      }
+      if(this.options.displayValue){
+        bar.insert(' ' + Math.round(this.value * 100) + '%');
+      }
+      return bar;
+    }
+  });
+  return PhenoTips;
+})(PhenoTips || {});</code>
+    </property>
+    <property>
+      <name>Segmented Bar</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
@@ -6108,6 +6261,118 @@ input.xwiki-free-multiselect-value {
     </property>
     <property>
       <name>Suggest workgroups</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>9</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a9b51b91-4ca2-45c8-9b25-845afcdd9a6e</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.segmented-bar {
+  white-space: nowrap;
+  width: auto;
+}
+.segmented-bar .segmented-unit {
+  border: 0.1ex solid currentColor;
+  border-radius: 0.1ex;
+  display: inline-block;
+  height: 1ex;
+  margin: 0;
+  padding: 0;
+  width: 1ex;
+}
+.segmented-bar .segmented-unit+.segmented-unit {
+  margin-left: 0.2ex;
+}
+.segmented-bar .segmented-unit-fill {
+  display: block;
+  height: 100%;
+  background: currentColor;
+}</code>
+    </property>
+    <property>
+      <name>Segmented Bar</name>
     </property>
     <property>
       <parse>0</parse>

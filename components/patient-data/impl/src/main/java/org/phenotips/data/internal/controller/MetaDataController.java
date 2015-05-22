@@ -24,7 +24,6 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -37,6 +36,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -85,19 +88,19 @@ public class MetaDataController extends AbstractSimpleController implements Pati
 
             Map<String, String> result = new LinkedHashMap<String, String>();
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+            DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
             result.put(DOCUMENT_NAME, doc.getDocumentReference().getName());
 
             result.put(REFERRER, (doc.getCreatorReference() != null)
                 ? doc.getCreatorReference().getName() : UNKNOWN_USER);
 
-            result.put(CREATION_DATE, format.format(doc.getCreationDate()));
+            result.put(CREATION_DATE, dateFormatter.print(new DateTime(doc.getCreationDate())));
 
             result.put(AUTHOR, (doc.getAuthorReference() != null)
                 ? doc.getAuthorReference().getName() : UNKNOWN_USER);
 
-            result.put(DATE, format.format(doc.getDate()));
+            result.put(DATE, dateFormatter.print(new DateTime(doc.getDate())));
 
             return new DictionaryPatientData<>(getName(), result);
 
@@ -160,5 +163,4 @@ public class MetaDataController extends AbstractSimpleController implements Pati
                 return REFERRER;
         }
     }
-
 }

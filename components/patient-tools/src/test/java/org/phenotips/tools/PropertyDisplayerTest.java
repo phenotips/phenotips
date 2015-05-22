@@ -17,8 +17,8 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.xml.XMLUtils;
 
@@ -67,8 +67,8 @@ public class PropertyDisplayerTest
         Mockito.when(doc.getObjects("PhenoTips.PhenotypeMetaClass")).thenReturn(new Vector<com.xpn.xwiki.api.Object>());
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
-        OntologyService ontologyService = Mockito.mock(OntologyService.class);
-        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService)
+        Vocabulary ontologyService = Mockito.mock(Vocabulary.class);
+        Mockito.doReturn(new HashSet<VocabularyTerm>()).when(ontologyService)
             .search(Matchers.anyMapOf(String.class, Object.class));
 
         PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);
