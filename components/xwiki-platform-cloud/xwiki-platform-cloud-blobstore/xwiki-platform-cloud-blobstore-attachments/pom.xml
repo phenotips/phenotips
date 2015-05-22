@@ -26,14 +26,14 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.contrib</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>xwiki-platform-cloud-blobstore</artifactId>
-    <version>4.0</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-platform-cloud-blobstore-attachments</artifactId>
 
   <name>XWiki Platform - Cloud - Blob store - Attachments</name>
-
+ 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
@@ -49,17 +49,17 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
-      <version>${project.version}</version>
+      <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.contrib</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-cloud-blobstore-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-store-transaction</artifactId>
-      <version>${project.version}</version>
+      <version>${xwiki.version}</version>
     </dependency>
   </dependencies>
 </project>

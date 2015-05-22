@@ -26,13 +26,14 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.contrib</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>xwiki-platform-cloud-blobstore</artifactId>
-    <version>4.0</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-platform-cloud-blobstore-api</artifactId>
 
   <name>XWiki Platform - Cloud - Blob store - API</name>
+
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,12 +44,12 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${project.version}</version>
+      <version>${xwiki.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${project.version}</version>
+      <version>${xwiki.version}</version>
     </dependency>
   </dependencies>
 

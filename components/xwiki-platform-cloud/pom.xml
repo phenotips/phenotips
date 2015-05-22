@@ -26,11 +26,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-core</artifactId>
-    <version>4.0</version>
+    <groupId>org.phenotips</groupId>
+    <artifactId>phenotips-components</artifactId>
+    <version>1.2-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.contrib</groupId>
   <artifactId>xwiki-platform-cloud</artifactId>
   <packaging>pom</packaging>
 
@@ -42,9 +41,6 @@
 
   <modules>
     <module>xwiki-platform-cloud-blobstore</module>
-    <module>xwiki-platform-cloud-configuration</module>
-    <module>xwiki-platform-cloud-legacy-oldcore</module>
-    <module>xwiki-platform-cloud-distribution</module>
   </modules>
 
   <build>
