@@ -673,6 +673,27 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-xars</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/META-INF/extensions/</outputDirectory>
+              <includeTypes>xar</includeTypes>
+              <useRepositoryLayout>true</useRepositoryLayout>
+              <copyPom>true</copyPom>
+              <silent>true</silent>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <webResources>
@@ -691,6 +712,7 @@
                - Exclude JavaBeans Activation Framework (activation-*.jar) since it's included in Java SE 6.
           -->
           <packagingExcludes>
+            WEB-INF/extensions/*.jar,
             WEB-INF/lib/activation-*.jar,
             WEB-INF/lib/batik-js-*.jar,
             WEB-INF/lib/commons-logging-*.jar,
