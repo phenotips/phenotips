@@ -18,9 +18,9 @@
 package org.phenotips.export.internal;
 
 import org.phenotips.data.Feature;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
 import org.phenotips.tools.PhenotypeMappingService;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
@@ -151,10 +151,10 @@ public class ConversionHelpersTest
         Feature featureTwo = mock(Feature.class);
         Feature featureThree = mock(Feature.class);
         Feature featureFour = mock(Feature.class);
-        OntologyTerm termOne = mock(OntologyTerm.class);
-        OntologyTerm termTwo = mock(OntologyTerm.class);
-        OntologyTerm termThree = mock(OntologyTerm.class);
-        OntologyTerm termFour = mock(OntologyTerm.class);
+        VocabularyTerm termOne = mock(VocabularyTerm.class);
+        VocabularyTerm termTwo = mock(VocabularyTerm.class);
+        VocabularyTerm termThree = mock(VocabularyTerm.class);
+        VocabularyTerm termFour = mock(VocabularyTerm.class);
         Set<Feature> features = new HashSet<>();
         List<String> mappingIdsOne = new LinkedList<>();
         List<String> mappingIdsTwo = new LinkedList<>();
@@ -170,13 +170,13 @@ public class ConversionHelpersTest
         mapping.put("sectionTwo", mappingIdsTwo);
 
         ComponentManager componentManager = mock(ComponentManager.class);
-        OntologyService ontologyService = mock(OntologyService.class);
+        Vocabulary ontologyService = mock(Vocabulary.class);
         List<Map<String, List<String>>> mappingObj = new LinkedList<>();
         List<Map<String, List<String>>> mappingObjSpy = spy(mappingObj);
         PhenotypeMappingService phenotypeMappingService = mock(PhenotypeMappingService.class);
 
         doReturn(componentManager).when(helpersSpy).getComponentManager();
-        doReturn(ontologyService).when(componentManager).getInstance(eq(OntologyService.class), eq("hpo"));
+        doReturn(ontologyService).when(componentManager).getInstance(eq(Vocabulary.class), eq("hpo"));
         doReturn(phenotypeMappingService).when(componentManager)
             .getInstance(eq(ScriptService.class), eq("phenotypeMapping"));
         doReturn(mappingObjSpy).when(phenotypeMappingService).get(anyString());
@@ -217,9 +217,9 @@ public class ConversionHelpersTest
         Feature featureOne = mock(Feature.class);
         Feature featureTwo = mock(Feature.class);
         Feature featureThree = mock(Feature.class);
-        OntologyTerm termOne = mock(OntologyTerm.class);
-        OntologyTerm termTwo = mock(OntologyTerm.class);
-        OntologyTerm termThree = mock(OntologyTerm.class);
+        VocabularyTerm termOne = mock(VocabularyTerm.class);
+        VocabularyTerm termTwo = mock(VocabularyTerm.class);
+        VocabularyTerm termThree = mock(VocabularyTerm.class);
         Set<Feature> features = new HashSet<>();
         List<String> mappingIdsOne = new LinkedList<>();
         List<String> mappingIdsTwo = new LinkedList<>();
@@ -234,14 +234,14 @@ public class ConversionHelpersTest
         mapping.put("sectionTwo", mappingIdsTwo);
 
         ComponentManager componentManager = mock(ComponentManager.class);
-        OntologyService ontologyService = mock(OntologyService.class);
+        Vocabulary ontologyService = mock(Vocabulary.class);
         List<Map<String, List<String>>> mappingObj = new LinkedList<>();
         List<Map<String, List<String>>> mappingObjSpy = spy(mappingObj);
         Map<String, List<String>> categoryEntry = mock(Map.class);
         PhenotypeMappingService phenotypeMappingService = mock(PhenotypeMappingService.class);
 
         doReturn(componentManager).when(helpersSpy).getComponentManager();
-        doReturn(ontologyService).when(componentManager).getInstance(eq(OntologyService.class), eq("hpo"));
+        doReturn(ontologyService).when(componentManager).getInstance(eq(Vocabulary.class), eq("hpo"));
         doReturn(phenotypeMappingService).when(componentManager)
             .getInstance(eq(ScriptService.class), eq("phenotypeMapping"));
         doReturn(mappingObjSpy).when(phenotypeMappingService).get(anyString());

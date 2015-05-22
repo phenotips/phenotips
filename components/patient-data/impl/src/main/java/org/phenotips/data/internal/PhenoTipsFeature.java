@@ -21,8 +21,8 @@ import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
@@ -233,10 +233,10 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         if (!this.categories.isEmpty()) {
             JSONArray categoriesList = new JSONArray();
             try {
-                OntologyManager om =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
+                VocabularyManager om =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
                 for (String category : this.categories) {
-                    OntologyTerm term = om.resolveTerm(category);
+                    VocabularyTerm term = om.resolveTerm(category);
                     if (term != null && StringUtils.isNotEmpty(term.getName())) {
                         JSONObject categoryObject = new JSONObject();
                         categoryObject.put(ID_JSON_KEY_NAME, term.getId());

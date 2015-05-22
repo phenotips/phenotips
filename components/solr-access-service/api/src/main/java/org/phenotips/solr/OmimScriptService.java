@@ -23,6 +23,7 @@ import org.phenotips.obo2solr.maps.SumMap;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class OmimScriptService extends AbstractSolrScriptService
         List<SuggestedPhenotype> result = new LinkedList<SuggestedPhenotype>();
         try {
             response = this.server.query(prepareParams(phenotypes, nphenotypes));
-        } catch (SolrServerException ex) {
+        } catch (SolrServerException | IOException ex) {
             this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
             return result;
         }

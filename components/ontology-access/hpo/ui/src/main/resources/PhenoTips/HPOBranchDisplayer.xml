@@ -58,8 +58,8 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayChildren $rootId)
-  #set ($term = $services.ontologies.resolveTerm($rootId))
-  #set($childrenList = $services.ontologies.hpo.search({'is_a': $term.id}))
+  #set ($term = $services.vocabularies.resolveTerm($rootId))
+  #set($childrenList = $services.vocabularies.hpo.search({'is_a': $term.id}))
   #if ($childrenList.size() &gt; 0)
   &lt;ul&gt;
   #if($firstLevel)
@@ -101,10 +101,10 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 #else
   #if ($field.getProperty('multiSelect').value == 1)
     #foreach($id in $value)
-      $!services.ontologies.resolveTerm($id).name
+      $!services.vocabularies.resolveTerm($id).name
     #end
   #elseif ("$!{value}" != '')
-    $!services.ontologies.resolveTerm($value).name
+    $!services.vocabularies.resolveTerm($value).name
   #end
 #end
 {{/velocity}}

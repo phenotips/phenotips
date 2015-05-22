@@ -19,8 +19,8 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangingEvent;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.AbstractEventListener;
@@ -50,7 +50,7 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
 {
     /** Needed for accessing the feature ontologies. */
     @Inject
-    private OntologyManager ontologyManager;
+    private VocabularyManager ontologyManager;
 
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientExtendedPhenotypeUpdater()
@@ -87,9 +87,9 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
         Set<String> sortedPhenotypes = new TreeSet<String>();
         for (String phenotype : phenotypes) {
             sortedPhenotypes.add(phenotype);
-            OntologyTerm phenotypeTerm = this.ontologyManager.resolveTerm(phenotype);
+            VocabularyTerm phenotypeTerm = this.ontologyManager.resolveTerm(phenotype);
             if (phenotypeTerm != null) {
-                for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
+                for (VocabularyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
                     extendedPhenotypes.add(term.getId());
                 }
             } else {

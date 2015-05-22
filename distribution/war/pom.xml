@@ -592,11 +592,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotype-mapping-service</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>obo2solr</artifactId>
       <version>${project.version}</version>
     </dependency>

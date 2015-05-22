@@ -18,8 +18,8 @@
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -71,7 +71,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     private Map<Integer, ByteString> omimMap;
 
     @Inject
-    private OntologyManager ontology;
+    private VocabularyManager ontology;
 
     @Inject
     private Environment env;
@@ -125,7 +125,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     }
 
     @Override
-    public List<OntologyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
+    public List<VocabularyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
         // TODO: use the `nonstandardPhenotypes` argument
 
@@ -168,7 +168,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         });
 
         // Get top limit results
-        List<OntologyTerm> results = new ArrayList<OntologyTerm>();
+        List<VocabularyTerm> results = new ArrayList<VocabularyTerm>();
         for (int id : order) {
             if (results.size() >= limit) {
                 break;
@@ -185,7 +185,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             // Strip 'O' in "OMIM"
             termId = termId.substring(1);
 
-            OntologyTerm term = this.ontology.resolveTerm(termId);
+            VocabularyTerm term = this.ontology.resolveTerm(termId);
 
             if (term == null) {
                 this.logger.warn(String.format(

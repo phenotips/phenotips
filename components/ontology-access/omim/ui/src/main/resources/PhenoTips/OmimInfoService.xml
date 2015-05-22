@@ -49,7 +49,7 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ("$!request.id" != '')
-  #set ($term = $services.ontologies.omim.getTerm($request.id))
+  #set ($term = $services.vocabularies.omim.getTerm($request.id))
 #else
   $response.setStatus(400)##
   $response.setContentType('application/json')##
@@ -66,11 +66,11 @@
 #set ($names = $term.name.split('\s*;;\s*'))
 #set ($symptoms = [])
 #foreach ($s in $term.actual_symptom)
-  #set ($discard = $symptoms.add({'id' : $s, 'label' : $services.ontologies.resolveTerm($s).name}))
+  #set ($discard = $symptoms.add({'id' : $s, 'label' : $services.vocabularies.resolveTerm($s).name}))
 #end
 #set ($not_symptoms = [])
 #foreach ($s in $term.actual_not_symptom)
-  #set ($discard = $not_symptoms.add({'id' : $s, 'label' : $services.ontologies.resolveTerm($s).name}))
+  #set ($discard = $not_symptoms.add({'id' : $s, 'label' : $services.vocabularies.resolveTerm($s).name}))
 #end
 
 #set ($result = {
