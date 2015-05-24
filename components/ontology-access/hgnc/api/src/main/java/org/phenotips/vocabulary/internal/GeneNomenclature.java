@@ -468,7 +468,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
         }
 
         @Override
-        public Vocabulary getOntology()
+        public Vocabulary getVocabulary()
         {
             return this.ontology;
         }

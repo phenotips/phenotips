@@ -103,7 +103,7 @@ public interface VocabularyTerm
      *
      * @return the owner vocabulary
      */
-    Vocabulary getOntology();
+    Vocabulary getVocabulary();
 
     /**
      * Serialize all the known information about this term as a JSON object.

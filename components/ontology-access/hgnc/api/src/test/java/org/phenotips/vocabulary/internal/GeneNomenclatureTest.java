@@ -312,7 +312,7 @@ public class GeneNomenclatureTest
         Assert.assertEquals(-1, result.getDistanceTo(null));
         Assert.assertEquals(-1, result.getDistanceTo(result));
         Assert.assertEquals(-1, result.getDistanceTo(mock(VocabularyTerm.class)));
-        Assert.assertEquals(this.mocker.getComponentUnderTest(), result.getOntology());
+        Assert.assertEquals(this.mocker.getComponentUnderTest(), result.getVocabulary());
         Assert.assertTrue(result.getParents().isEmpty());
         Assert.assertTrue(result.getAncestors().isEmpty());
         Assert.assertEquals(1, result.getAncestorsAndSelf().size());

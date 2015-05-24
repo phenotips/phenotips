@@ -68,7 +68,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     /**
      * The owner ontology.
      *
-     * @see #getOntology()
+     * @see #getVocabulary()
      */
     private Vocabulary ontology;
 
@@ -175,7 +175,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     }
 
     @Override
-    public Vocabulary getOntology()
+    public Vocabulary getVocabulary()
     {
         return this.ontology;
     }
