@@ -105,7 +105,8 @@ public class GeneNomenclatureTest
         when(this.mocker.<CacheManager>getInstance(CacheManager.class).<VocabularyTerm>createNewLocalCache(
             any(CacheConfiguration.class))).thenReturn(this.cache);
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
-        when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/")).thenReturn("http://rest.genenames.org/");
+        when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/"))
+            .thenReturn("http://rest.genenames.org/");
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         Field em = ReflectionUtils.getField(GeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
