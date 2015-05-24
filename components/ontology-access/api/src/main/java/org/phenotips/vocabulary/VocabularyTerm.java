@@ -132,8 +132,7 @@ public interface VocabularyTerm
      *    ]
      * }
      * </pre>
-     * @throws java.lang.Exception could happen if casting fails
      * @since 1.1-rc1
      */
-    JSON toJson() throws Exception;
+    JSON toJson();
 }
