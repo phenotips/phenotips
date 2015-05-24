@@ -257,7 +257,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     {
         if (toAdd instanceof Collection) {
             JSONArray array = new JSONArray();
-            array.addAll((Collection<String>) toAdd);
+            array.addAll(Collection.class.cast(toAdd));
             json.put(name, array);
         } else {
             json.put(name, toAdd);
