@@ -255,7 +255,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
             return results.getNumFound();
         } catch (Exception ex) {
             this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
-            return 0;
+            return -1;
         }
     }
 

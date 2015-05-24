@@ -83,7 +83,7 @@ public interface Vocabulary
      * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can (OR) be matched by the term
-     * @return the number of terms matching the query
+     * @return the number of terms matching the query, or {@code -1} if the query couldn't be run correctly
      */
     long count(Map<String, ?> fieldValues);
 

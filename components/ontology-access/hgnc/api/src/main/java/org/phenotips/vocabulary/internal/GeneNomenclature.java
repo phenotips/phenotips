@@ -260,7 +260,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
         } catch (UnsupportedEncodingException ex) {
             // This will not happen, UTF-8 is always available
         }
-        return 0;
+        return -1;
     }
 
     @Override
