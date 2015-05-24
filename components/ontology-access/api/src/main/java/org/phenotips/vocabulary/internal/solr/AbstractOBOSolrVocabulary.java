@@ -88,7 +88,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String ontologyUrl)
     {
-        String realOntologyUrl = StringUtils.defaultIfBlank(ontologyUrl, getDefaultOntologyLocation());
+        String realOntologyUrl = StringUtils.defaultIfBlank(ontologyUrl, getDefaultSourceLocation());
 
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
         Map<String, Double> fieldSelection = new HashMap<String, Double>();

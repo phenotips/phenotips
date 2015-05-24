@@ -59,7 +59,7 @@ public class ChEBIOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         return "ftp://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.obo";
     }

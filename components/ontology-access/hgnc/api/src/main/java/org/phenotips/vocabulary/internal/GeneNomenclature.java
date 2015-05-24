@@ -302,7 +302,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         return this.baseServiceURL;
     }

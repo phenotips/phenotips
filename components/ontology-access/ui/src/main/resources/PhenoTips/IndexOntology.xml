@@ -79,7 +79,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 #end
 &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.vocabularies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.vocabularies.hpo.DefaultSourceLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="hpo"/&gt;
@@ -100,7 +100,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 #end
 &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.vocabularies.chebi.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.vocabularies.chebi.DefaultSourceLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;input type="hidden" name="ontology" value="chebi"/&gt;

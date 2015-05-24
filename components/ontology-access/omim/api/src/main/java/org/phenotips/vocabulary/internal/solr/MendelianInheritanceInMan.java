@@ -73,7 +73,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         // FIX ME. For now returns just an empty string.
         return "";

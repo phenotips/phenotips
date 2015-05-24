@@ -142,7 +142,7 @@ public interface Vocabulary
      *
      * @return the string containing the default URL for the vocabulary source
      */
-    String getDefaultOntologyLocation();
+    String getDefaultSourceLocation();
 
     /**
      * Get the available version of the vocabulary.

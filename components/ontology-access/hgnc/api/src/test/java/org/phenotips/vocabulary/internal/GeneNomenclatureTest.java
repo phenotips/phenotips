@@ -461,13 +461,13 @@ public class GeneNomenclatureTest
     @Test
     public void getDefaultOntologyLocation() throws ComponentLookupException
     {
-        String location = this.mocker.getComponentUnderTest().getDefaultOntologyLocation();
+        String location = this.mocker.getComponentUnderTest().getDefaultSourceLocation();
         Assert.assertEquals("http://rest.genenames.org/", location);
     }
 
     @Test
     public void invalidResponseReturnsEmptySearch() throws ComponentLookupException, ClientProtocolException,
-    IOException
+        IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);

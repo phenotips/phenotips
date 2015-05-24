@@ -115,7 +115,7 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologyDefaultLocation()
     {
-        String location = this.ontologyService.getDefaultOntologyLocation();
+        String location = this.ontologyService.getDefaultSourceLocation();
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("hp.obo"));
         Assert.assertTrue(location.startsWith("http"));

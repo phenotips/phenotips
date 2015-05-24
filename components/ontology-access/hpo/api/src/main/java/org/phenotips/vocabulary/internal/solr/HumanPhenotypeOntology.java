@@ -63,7 +63,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         return "http://purl.obolibrary.org/obo/hp.obo";
     }

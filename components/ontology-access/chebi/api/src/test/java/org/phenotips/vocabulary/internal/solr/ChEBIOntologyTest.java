@@ -108,7 +108,7 @@ public class ChEBIOntologyTest
     @Test
     public void testChEBIOntologyDefaultLocation()
     {
-        String location = this.ontologyService.getDefaultOntologyLocation();
+        String location = this.ontologyService.getDefaultSourceLocation();
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("chebi.obo"));
         Assert.assertTrue(location.startsWith("ftp"));

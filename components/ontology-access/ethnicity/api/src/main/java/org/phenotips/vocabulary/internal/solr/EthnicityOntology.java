@@ -68,7 +68,7 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         throw new UnsupportedOperationException();
     }
