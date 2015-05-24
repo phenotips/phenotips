@@ -78,6 +78,21 @@ public interface Vocabulary
     List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
 
     /**
+     * Suggest the terms that best match the user's input.
+     *
+     * @param input the text that the user entered
+     * @param maxResults the maximum number of terms to be returned
+     * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
+     *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
+     * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
+     *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
+     *            query; may be {@code null}
+     * @return a list of suggestions, possibly empty.
+     * @since 1.1-rc-1
+     */
+    List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter);
+
+    /**
      * Get the number of terms that match a specific query.
      *
      * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
@@ -150,19 +165,4 @@ public interface Vocabulary
      * @return a version identifier, or {@code null} if the version cannot be determined
      */
     String getVersion();
-
-    /**
-     * Suggest the terms that best match the user's input.
-     *
-     * @param input the text that the user entered
-     * @param maxResults the maximum number of terms to be returned
-     * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
-     *            usually a property name followed by {@code asc} or {@code desc}; may be {@code null}
-     * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
-     *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
-     *            query; may be {@code null}
-     * @return a list of suggestions, possibly empty.
-     * @since 1.1-rc-1
-     */
-    List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter);
 }

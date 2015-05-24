@@ -189,6 +189,12 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         return fromTerm.getDistanceTo(toTerm);
     }
 
+    @Override
+    public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
@@ -293,11 +299,5 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
             query.append(')');
         }
         return query.toString();
-    }
-
-    @Override
-    public List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
-    {
-        throw new UnsupportedOperationException();
     }
 }

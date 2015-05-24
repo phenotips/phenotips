@@ -243,6 +243,24 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
+    public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
+    {
+        // ignoring sort and customFq
+        String formattedQuery = String.format("%s*", input);
+        Map<String, Object> fieldValues = new HashMap<>();
+        Map<String, String> queryMap = new HashMap<>();
+        Map<String, String> rowsMap = new HashMap<>();
+        queryMap.put(LABEL_KEY, formattedQuery);
+        queryMap.put("alias_symbol", formattedQuery);
+        queryMap.put("prev_symbol", formattedQuery);
+        fieldValues.put("status", "Approved");
+        fieldValues.put(DEFAULT_OPERATOR, queryMap);
+        rowsMap.put("rows", Integer.toString(maxResults));
+
+        return this.search(fieldValues, rowsMap);
+    }
+
+    @Override
     public long count(Map<String, ?> fieldValues)
     {
         try {
@@ -486,23 +504,5 @@ public class GeneNomenclature implements Vocabulary, Initializable
             json.put("id", this.getId());
             return json;
         }
-    }
-
-    @Override
-    public List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
-    {
-        // Ignoring sort and customFilter
-        String formattedQuery = String.format("%s*", input);
-        Map<String, Object> fieldValues = new HashMap<>();
-        Map<String, String> queryMap = new HashMap<>();
-        Map<String, String> rowsMap = new HashMap<>();
-        queryMap.put(LABEL_KEY, formattedQuery);
-        queryMap.put("alias_symbol", formattedQuery);
-        queryMap.put("prev_symbol", formattedQuery);
-        fieldValues.put("status", "Approved");
-        fieldValues.put(DEFAULT_OPERATOR, queryMap);
-        rowsMap.put("rows", maxResults.toString());
-
-        return this.search(fieldValues, rowsMap);
     }
 }

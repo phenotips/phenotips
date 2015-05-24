@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.params.CommonParams;
 
 /**
@@ -47,16 +48,29 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     /**
      * @param stringSearch part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
+     * @deprecated since 1.2M4 use {@link #search(String, int, String, String)} instead
      */
-    public List<VocabularyTerm> getMatchingEthnicities(String stringSearch)
+    @Deprecated
+    public List<VocabularyTerm> getMatchingEthnicities(String input)
     {
-        Map<String, String> searchMap = new HashMap<String, String>();
-        searchMap.put("nameGram", stringSearch);
-        // Order by population size:
-        searchMap.put("_val_", "popsize");
+        return search(input, 10, null, null);
+    }
 
-        Map<String, String> optionsMap = new HashMap<String, String>();
-        optionsMap.put(CommonParams.ROWS, "10");
+    @Override
+    public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
+    {
+        Map<String, String> searchMap = new HashMap<>();
+        Map<String, String> optionsMap = new HashMap<>();
+        searchMap.put("nameGram", input);
+
+        // Order by population size:
+        if (StringUtils.isBlank(sort)) {
+            searchMap.put("_val_", "popsize");
+        } else {
+            optionsMap.put(CommonParams.SORT, sort);
+        }
+
+        optionsMap.put(CommonParams.ROWS, Integer.toString(maxResults));
 
         return search(searchMap, optionsMap);
     }

@@ -124,7 +124,7 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologySuggestTermsBlank() throws ComponentLookupException
     {
-        Assert.assertTrue(this.mocker.getComponentUnderTest().termSuggest("", 0, null, null).isEmpty());
+        Assert.assertTrue(this.mocker.getComponentUnderTest().search("", 0, null, null).isEmpty());
     }
 
     @Test
@@ -136,7 +136,7 @@ public class HumanPhenotypeOntologyTest
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("HP:0001", 0, null, null);
+        this.mocker.getComponentUnderTest().search("HP:0001", 0, null, null);
 
         verify(this.server).query(argThat(new IsIdQuery()));
     }
@@ -150,7 +150,7 @@ public class HumanPhenotypeOntologyTest
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("HP:Test", 0, null, null);
+        this.mocker.getComponentUnderTest().search("HP:Test", 0, null, null);
 
         verify(this.server).query(argThat(new IsDisMaxQuery()));
     }
@@ -164,7 +164,7 @@ public class HumanPhenotypeOntologyTest
         when(response.getSpellCheckResponse()).thenReturn(null);
         when(response.getResults()).thenReturn(new SolrDocumentList());
 
-        this.mocker.getComponentUnderTest().termSuggest("first second", 0, null, null);
+        this.mocker.getComponentUnderTest().search("first second", 0, null, null);
 
         verify(this.server).query(argThat(new IsDisMaxQuery()));
     }

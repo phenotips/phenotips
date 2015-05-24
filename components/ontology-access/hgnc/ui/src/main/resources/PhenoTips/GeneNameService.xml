@@ -84,7 +84,7 @@
     $jsontool.serialize({"response": $results})
   #end
 #elseif ("$!request.q" != '')
-  #set ($terms = $services.vocabularies.hgnc.termSuggest("${request.q}", $max, "", ""))
+  #set ($terms = $services.vocabularies.hgnc.search("${request.q}", $max, "", ""))
   #set ($result = {'numReturned' : $terms.size(), 'docs': []})
   #foreach ($term in $terms)
     #set ($discard = $result.docs.add({'symbol' : $term.symbol}))

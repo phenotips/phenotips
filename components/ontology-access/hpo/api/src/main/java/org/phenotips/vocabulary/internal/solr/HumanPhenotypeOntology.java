@@ -85,6 +85,24 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
         return result;
     }
 
+    @Override
+    public List<VocabularyTerm> search(String query, int rows, String sort, String customFq)
+    {
+        if (StringUtils.isBlank(query)) {
+            return Collections.emptyList();
+        }
+        boolean isId = this.isId(query);
+        Map<String, String> options = this.getStaticSolrParams();
+        if (!isId) {
+            options.putAll(this.getStaticFieldSolrParams());
+        }
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
     private Map<String, String> getStaticSolrParams()
     {
         String trueStr = "true";
@@ -128,24 +146,6 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
             params.add(CommonParams.SORT, sort);
         }
         return params;
-    }
-
-    @Override
-    public List<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
-    {
-        if (StringUtils.isBlank(query)) {
-            return Collections.emptyList();
-        }
-        boolean isId = this.isId(query);
-        Map<String, String> options = this.getStaticSolrParams();
-        if (!isId) {
-            options.putAll(this.getStaticFieldSolrParams());
-        }
-        List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
-            result.add(new SolrVocabularyTerm(doc, this));
-        }
-        return result;
     }
 
     private boolean isId(String query)
