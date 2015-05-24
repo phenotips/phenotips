@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -64,7 +64,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         if (result == null) {
             Map<String, String> queryParameters = new HashMap<>();
             queryParameters.put(ALTERNATIVE_ID_FIELD_NAME, id);
-            Set<VocabularyTerm> results = search(queryParameters);
+            List<VocabularyTerm> results = search(queryParameters);
             if (results != null && !results.isEmpty()) {
                 result = search(queryParameters).iterator().next();
             }

@@ -22,9 +22,11 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -129,17 +131,17 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public List<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
     {
         if (StringUtils.isBlank(query)) {
-            return new HashSet<>();
+            return Collections.emptyList();
         }
         boolean isId = this.isId(query);
         Map<String, String> options = this.getStaticSolrParams();
         if (!isId) {
             options.putAll(this.getStaticFieldSolrParams());
         }
-        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
+        List<VocabularyTerm> result = new LinkedList<>();
         for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }

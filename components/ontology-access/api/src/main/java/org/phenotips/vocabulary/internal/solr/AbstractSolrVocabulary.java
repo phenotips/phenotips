@@ -26,6 +26,8 @@ import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -131,17 +133,17 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
-    public Set<VocabularyTerm> search(Map<String, ?> fieldValues)
+    public List<VocabularyTerm> search(Map<String, ?> fieldValues)
     {
         return search(fieldValues, null);
     }
 
     @Override
-    public Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
-        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
-        for (SolrDocument doc : this
-            .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
+        List<VocabularyTerm> result = new LinkedList<VocabularyTerm>();
+        for (SolrDocument doc : this.search(
+            SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
@@ -294,7 +296,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
-    public Set<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
+    public List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
     {
         throw new UnsupportedOperationException();
     }

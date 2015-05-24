@@ -162,7 +162,7 @@ public class PropertyDisplayer
 
         Map<String, String> m = new HashMap<String, String>();
         m.put("is_a", "HP:0000118");
-        Set<VocabularyTerm> topSections = this.ontologyService.search(m);
+        List<VocabularyTerm> topSections = this.ontologyService.search(m);
         Set<String> topSectionsId = new LinkedHashSet<String>();
         for (VocabularyTerm section : topSections) {
             topSectionsId.add(section.getId());

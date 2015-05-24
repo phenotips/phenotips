@@ -340,7 +340,7 @@ public class GeneNomenclatureTest
         Map<String, String> queryOptions = new LinkedHashMap<>();
         queryOptions.put("start", "3");
         queryOptions.put("rows", "2");
-        Set<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(search, queryOptions);
+        List<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(search, queryOptions);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals("application/json", reqCapture.getLastValue().getLastHeader("Accept").getValue());
         Assert.assertEquals(2, result.size());
@@ -354,7 +354,7 @@ public class GeneNomenclatureTest
         ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
-        Set<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(new HashMap<String, Object>());
+        List<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(new HashMap<String, Object>());
         Assert.assertTrue(result.isEmpty());
     }
 
@@ -478,7 +478,7 @@ public class GeneNomenclatureTest
 
         queryOptions.put("start", "three");
         queryOptions.put("rows", "");
-        Assert.assertEquals(Collections.emptySet(), this.mocker.getComponentUnderTest().search(search, queryOptions));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().search(search, queryOptions).isEmpty());
     }
 
     @Test

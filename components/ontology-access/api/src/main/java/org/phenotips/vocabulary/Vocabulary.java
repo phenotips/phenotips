@@ -21,6 +21,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,9 +59,9 @@ public interface Vocabulary
      * @param fieldValues a map with term property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can ({@code OR}) be matched by the term
-     * @return the matching terms that were found in the vocabulary, an empty set if no terms were found
+     * @return the matching terms that were found in the vocabulary, an empty list if no terms were found
      */
-    Set<VocabularyTerm> search(Map<String, ?> fieldValues);
+    List<VocabularyTerm> search(Map<String, ?> fieldValues);
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
@@ -72,9 +73,9 @@ public interface Vocabulary
      *            sort order; the accepted keys/values depend on the actual implementation details, and usually
      *            correspond to the settings accepted by the storage engine, for example {@code rows -> 10},
      *            {@code start -> 50}, {@code sort -> nameSort asc} for Solr-indexed vocabularies
-     * @return the matching terms that were found in the vocabulary, an empty set if no terms were found
+     * @return the matching terms that were found in the vocabulary, an empty list if no terms were found
      */
-    Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
+    List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
 
     /**
      * Get the number of terms that match a specific query.
@@ -160,8 +161,8 @@ public interface Vocabulary
      * @param customFilter a custom filter query to further restrict which terms may be returned, in a format that
      *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
      *            query; may be {@code null}
-     * @return a set of suggestions, possibly empty
+     * @return a list of suggestions, possibly empty.
      * @since 1.1-rc-1
      */
-    Set<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter);
+    List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter);
 }

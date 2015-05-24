@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -192,13 +194,13 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
-    public Set<VocabularyTerm> search(Map<String, ?> fieldValues)
+    public List<VocabularyTerm> search(Map<String, ?> fieldValues)
     {
         return search(fieldValues, Collections.<String, String>emptyMap());
     }
 
     @Override
-    public Set<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
         try {
             HttpGet method =
@@ -209,7 +211,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 if (docs.size() >= 1) {
-                    Set<VocabularyTerm> result = new LinkedHashSet<>();
+                    List<VocabularyTerm> result = new LinkedList<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)
@@ -237,7 +239,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
         } catch (UnsupportedEncodingException ex) {
             // This will not happen, UTF-8 is always available
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     @Override
@@ -487,10 +489,10 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
-    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
+    public List<VocabularyTerm> termSuggest(String input, Integer maxResults, String sort, String customFilter)
     {
-        // ignoring sort and customFq
-        String formattedQuery = String.format("%s*", query);
+        // Ignoring sort and customFilter
+        String formattedQuery = String.format("%s*", input);
         Map<String, Object> fieldValues = new HashMap<>();
         Map<String, String> queryMap = new HashMap<>();
         Map<String, String> rowsMap = new HashMap<>();
@@ -499,7 +501,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
         queryMap.put("prev_symbol", formattedQuery);
         fieldValues.put("status", "Approved");
         fieldValues.put(DEFAULT_OPERATOR, queryMap);
-        rowsMap.put("rows", rows.toString());
+        rowsMap.put("rows", maxResults.toString());
 
         return this.search(fieldValues, rowsMap);
     }
