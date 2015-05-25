@@ -289,7 +289,7 @@ public class FormFieldTest
         }
 
         @Override
-        public Vocabulary getOntology()
+        public Vocabulary getVocabulary()
         {
             return null;
         }
