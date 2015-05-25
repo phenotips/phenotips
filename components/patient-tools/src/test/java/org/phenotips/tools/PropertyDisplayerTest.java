@@ -24,7 +24,7 @@ import org.xwiki.xml.XMLUtils;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
@@ -68,7 +68,7 @@ public class PropertyDisplayerTest
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
         Vocabulary ontologyService = Mockito.mock(Vocabulary.class);
-        Mockito.doReturn(new HashSet<VocabularyTerm>()).when(ontologyService)
+        Mockito.doReturn(new LinkedList<VocabularyTerm>()).when(ontologyService)
             .search(Matchers.anyMapOf(String.class, Object.class));
 
         PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);
