@@ -40,7 +40,7 @@
     <module>export</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
-    <module>ontology-access</module>
+    <module>vocabularies</module>
     <module>patient-data</module>
     <module>security</module>
     <module>patient-access-rules</module>
