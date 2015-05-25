@@ -46,7 +46,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Store versions (in the form name:String, version:String) in the patient record.
+ * Store the used vocabulary versions (in the form name:String, version:String) in the patient record.
  *
  * @version $Id$
  * @since 1.2M4 (under different names since 1.0M10)
