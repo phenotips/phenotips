@@ -52,15 +52,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
 
     private static final String TERM_CATEGORY = "term_category";
 
-    private static final String SYNONYM = "synonym";
-
     private static final String IS_A = "is_a";
-
-    private static final String COMMENT = "comment";
-
-    private static final String ALT_ID = "alt_id";
-
-    private static final String XREF = "xref";
 
     /** The Solr document representing this term. */
     private SolrDocument doc;
