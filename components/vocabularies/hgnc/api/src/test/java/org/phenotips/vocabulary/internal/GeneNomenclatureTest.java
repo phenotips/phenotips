@@ -414,7 +414,7 @@ public class GeneNomenclatureTest
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         long result = this.mocker.getComponentUnderTest().count(new HashMap<String, Object>());
-        Assert.assertEquals(0, result);
+        Assert.assertEquals(-1, result);
     }
 
     @Test

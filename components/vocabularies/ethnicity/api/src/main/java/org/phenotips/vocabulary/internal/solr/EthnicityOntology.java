@@ -46,7 +46,7 @@ import org.apache.solr.common.params.CommonParams;
 public class EthnicityOntology extends AbstractSolrVocabulary
 {
     /**
-     * @param stringSearch part of full ethnicity name
+     * @param input part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
      * @deprecated since 1.2M4 use {@link #search(String, int, String, String)} instead
      */
