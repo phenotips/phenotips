@@ -17,6 +17,8 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.vocabulary.VocabularyTerm;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -162,7 +164,15 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
         return params;
     }
 
-    @Override
+    /**
+     * Get a list of suggested terms from the vocabulary identified by user input.
+     *
+     * @param query user formatted query
+     * @param rows number of suggested terms to return
+     * @param sort sorting filters
+     * @param customFq custom filter list
+     * @return set of suggested terms
+     */
     public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
     {
         if (StringUtils.isBlank(query)) {

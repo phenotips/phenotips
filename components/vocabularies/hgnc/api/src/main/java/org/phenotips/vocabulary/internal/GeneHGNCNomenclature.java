@@ -17,7 +17,9 @@
  */
 package org.phenotips.vocabulary.internal;
 
+import org.phenotips.vocabulary.VocabularyTerm;
 import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrOntologyService;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
@@ -158,7 +160,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     }
 
     @Override
-    public String getDefaultOntologyLocation()
+    public String getDefaultSourceLocation()
     {
         return this.dataServiceURL;
     }
@@ -187,48 +189,21 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     @Override
     public VocabularyTerm getTerm(String symbol)
     {
-        QueryResponse response;
-        SolrQuery query = new SolrQuery();
-        SolrDocumentList termList;
-        VocabularyTerm term;
-
         String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
 
         String queryString = String.format("%s:%s OR %s:%s OR %s:%s",
             SYMBOL_FIELD_NAME, escapedSymbol,
             PREV_SYMBOL_FIELD_NAME, escapedSymbol,
             ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
-        query.setQuery(queryString);
-        query.setRows(1);
-        query.set(COMMON_PARAMS_PF, "symbolExact^100");
-        try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
-            termList = response.getResults();
-
-            if (!termList.isEmpty()) {
-                term = new SolrVocabularyTerm(termList.get(0), this);
-                return term;
-            }
-        } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology term: {}", ex.getMessage());
-        } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology term", ex);
-        }
-        return null;
+        return requestTerm(queryString);
     }
 
-    public VocabularyTerm getTermByAlternativeId(String id)
+    private VocabularyTerm requestTerm(String queryString)
     {
         QueryResponse response;
         SolrQuery query = new SolrQuery();
         SolrDocumentList termList;
         VocabularyTerm term;
-
-        String escapedSymbol = ClientUtils.escapeQueryChars(id);
-
-        String queryString = String.format("%s:%s OR %s:%s",
-            ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
-            ENTREZ_ID_FIELD_NAME, escapedSymbol);
         query.setQuery(queryString);
         query.setRows(1);
         query.set(COMMON_PARAMS_PF, "symbolExact^100");
@@ -241,11 +216,28 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
                 return term;
             }
         } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology term: {}", ex.getMessage());
+            this.logger.warn("Failed to query ontology term: {} ", ex.getMessage());
         } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology term", ex);
+            this.logger.error("IOException while getting ontology term ", ex);
         }
         return null;
+    }
+
+    /**
+     * Access an individual term from the vocabulary, identified by its alternative ids: either Ensembl Gene ID or
+     * Entrez Gene ID.
+     *
+     * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
+     * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
+     */
+    public VocabularyTerm getTermByAlternativeId(String id)
+    {
+        String escapedSymbol = ClientUtils.escapeQueryChars(id);
+
+        String queryString = String.format("%s:%s OR %s:%s",
+            ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
+            ENTREZ_ID_FIELD_NAME, escapedSymbol);
+        return requestTerm(queryString);
     }
 
     @Override
@@ -280,7 +272,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     {
         Map<String, String> headerToFiledMap = getHeaderToFieldMapping();
         CSVFileService data =
-            new CSVFileService(getDefaultOntologyLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY);
+            new CSVFileService(getDefaultSourceLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY);
         addMetaInfo(data.solrDocuments);
         processDuplicates(data.solrDocuments);
         return data.solrDocuments;
