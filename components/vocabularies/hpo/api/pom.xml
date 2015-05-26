@@ -22,11 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>ontology-hpo-access</artifactId>
+    <artifactId>vocabulary-hpo</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-hpo-access-api</artifactId>
-  <name>PhenoTips - Ontologies - Human Phenotype Ontology integration - APIs</name>
+  <artifactId>vocabulary-hpo-api</artifactId>
+  <name>PhenoTips - Vocabularies - Human Phenotype Ontology integration - APIs</name>
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
@@ -66,7 +66,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access-api</artifactId>
+      <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

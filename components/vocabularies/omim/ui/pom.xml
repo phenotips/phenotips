@@ -22,11 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>ontology-omim-access</artifactId>
+    <artifactId>vocabulary-omim</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-omim-access-ui</artifactId>
-  <name>PhenoTips - Ontologies - Online Mendelian Inheritance in Man integration - Documents providing services</name>
+  <artifactId>vocabulary-omim-ui</artifactId>
+  <name>PhenoTips - Vocabularies - Online Mendelian Inheritance in Man integration - Documents providing services</name>
   <packaging>xar</packaging>
 
   <properties>
@@ -39,7 +39,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-omim-access-api</artifactId>
+      <artifactId>vocabulary-omim-api</artifactId>
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>

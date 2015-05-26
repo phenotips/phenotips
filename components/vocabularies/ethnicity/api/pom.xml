@@ -22,11 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>ontology-ethnicity-access</artifactId>
+    <artifactId>vocabulary-ethnicity</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-ethnicity-access-api</artifactId>
-  <name>PhenoTips - Ontologies - Ethnicity Ontology integration - APIs</name>
+  <artifactId>vocabulary-ethnicity-api</artifactId>
+  <name>PhenoTips - Vocabularies - Ethnicity Ontology integration - APIs</name>
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access-api</artifactId>
+      <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
