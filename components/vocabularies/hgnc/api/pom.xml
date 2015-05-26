@@ -22,11 +22,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>ontology-hgnc-access</artifactId>
+    <artifactId>vocabulary-hgnc</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-hgnc-access-api</artifactId>
-  <name>PhenoTips - Ontologies - HUGO Gene Nomenclature Committee (GeneNames) integration - APIs</name>
+  <artifactId>vocabulary-hgnc-api</artifactId>
+  <name>PhenoTips - Vocabularies - HUGO Gene Nomenclature Committee (GeneNames) integration - APIs</name>
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access-api</artifactId>
+      <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

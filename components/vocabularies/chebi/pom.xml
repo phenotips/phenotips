@@ -22,12 +22,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>ontology-access</artifactId>
+    <artifactId>vocabularies</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-chebi-access</artifactId>
+  <artifactId>vocabulary-chebi</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Ontologies - Chemical Entities of Biological Interest integration</name>
+  <name>PhenoTips - Vocabularies - Chemical Entities of Biological Interest</name>
 
   <modules>
     <module>api</module>
