@@ -27,7 +27,7 @@
   </parent>
   <artifactId>vocabularies</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Ontology Access</name>
+  <name>PhenoTips - Vocabularies</name>
 
   <modules>
     <module>api</module>
