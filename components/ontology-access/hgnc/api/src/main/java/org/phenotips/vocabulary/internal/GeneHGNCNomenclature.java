@@ -17,9 +17,7 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.VocabularyTerm;
 import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrOntologyService;
-import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
@@ -152,11 +150,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-                + "&order_by=" + ORDER_BY
-                + "&format=" + OUTPUT_FORMAT
-                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-                // those come by default in every query
-                + "&status_opt=2&where=&limit=&submit=submit";
+            + "&order_by=" + ORDER_BY
+            + "&format=" + OUTPUT_FORMAT
+            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+            // those come by default in every query
+            + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -200,6 +198,37 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             SYMBOL_FIELD_NAME, escapedSymbol,
             PREV_SYMBOL_FIELD_NAME, escapedSymbol,
             ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
+        query.setQuery(queryString);
+        query.setRows(1);
+        query.set(COMMON_PARAMS_PF, "symbolExact^100");
+        try {
+            response = this.externalServicesAccess.getSolrConnection().query(query);
+            termList = response.getResults();
+
+            if (!termList.isEmpty()) {
+                term = new SolrVocabularyTerm(termList.get(0), this);
+                return term;
+            }
+        } catch (SolrServerException | SolrException ex) {
+            this.logger.warn("Failed to query ontology term: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting ontology term", ex);
+        }
+        return null;
+    }
+
+    public VocabularyTerm getTermByAlternativeId(String id)
+    {
+        QueryResponse response;
+        SolrQuery query = new SolrQuery();
+        SolrDocumentList termList;
+        VocabularyTerm term;
+
+        String escapedSymbol = ClientUtils.escapeQueryChars(id);
+
+        String queryString = String.format("%s:%s OR %s:%s",
+            ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
+            ENTREZ_ID_FIELD_NAME, escapedSymbol);
         query.setQuery(queryString);
         query.setRows(1);
         query.set(COMMON_PARAMS_PF, "symbolExact^100");
