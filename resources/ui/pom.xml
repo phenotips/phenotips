@@ -120,7 +120,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-hpo-access-ui</artifactId>
+      <artifactId>vocabulary-hpo-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
@@ -162,7 +162,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access-ui</artifactId>
+      <artifactId>vocabularies-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>

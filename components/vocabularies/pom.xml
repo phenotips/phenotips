@@ -25,9 +25,9 @@
     <artifactId>phenotips-components</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-access</artifactId>
+  <artifactId>vocabularies</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Ontology Access</name>
+  <name>PhenoTips - Vocabularies</name>
 
   <modules>
     <module>api</module>

@@ -472,32 +472,32 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access-api</artifactId>
+      <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-hpo-access-api</artifactId>
+      <artifactId>vocabulary-hpo-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-chebi-access-api</artifactId>
+      <artifactId>vocabulary-chebi-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-omim-access-api</artifactId>
+      <artifactId>vocabulary-omim-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-hgnc-access-api</artifactId>
+      <artifactId>vocabulary-hgnc-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-ethnicity-access-api</artifactId>
+      <artifactId>vocabulary-ethnicity-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
