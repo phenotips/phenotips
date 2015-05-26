@@ -56,6 +56,10 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     /** The name of the ID field. */
     protected static final String ID_FIELD_NAME = "id";
 
+    protected static final String COMMON_PARAMS_PF = "pf";
+
+    protected static final String COMMON_PARAMS_QF = "qf";
+
     /**
      * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
      * requested entry.
