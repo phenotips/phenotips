@@ -170,13 +170,13 @@
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 	
     <field name="prev_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-	<field name="alias_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="alias_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
     <field name="ensembl_gene_id" type="text_general" indexed="true" stored="true"/>
     <field name="entrez_id" type="text_general" indexed="true" stored="true"/>
     <field name="hgnc_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
     <field name="refseq_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
     <field name="uniprot_id" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-	<field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="name" type="text_general" indexed="true" stored="true"/>
     <field name="gene_family_id" type="text_general" indexed="true" stored="true" multiValued="true"/>
     <field name="gene_family" type="text_general" indexed="true" stored="true"/>
     <field name="omim_id" type="string" indexed="true" stored="true"/>
