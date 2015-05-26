@@ -15,28 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.phenotips.ontology.internal;
+package org.phenotips.vocabulary.internal;
 
-import org.phenotips.ontology.OntologyTerm;
-import org.phenotips.ontology.internal.solr.AbstractCSVSolrOntologyService;
-import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrOntologyService;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +41,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -59,14 +52,9 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
-import org.apache.solr.internal.csv.CSVParser;
 import org.apache.solr.internal.csv.CSVStrategy;
 
 import net.sf.json.JSONException;
@@ -84,6 +72,33 @@ import net.sf.json.JSONSerializer;
 @Singleton
 public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 {
+    // Approved symbol
+    private static final String ORDER_BY = "gd_app_sym_sort";
+
+    private static final String OUTPUT_FORMAT = "text";
+
+    private static final String SELECT_STATUS = "Approved";
+
+    private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
+
+    private static final String SYMBOL_FIELD_NAME = "symbol";
+
+    private static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
+
+    private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
+
+    private static final String ENSEMBL_GENE_ID_FIELD_NAME = "ensembl_gene_id";
+
+    private static final String ENTREZ_ID_FIELD_NAME = "entrez_id";
+
+    private static final String REFSEQ_ACCESSION_FIELD_NAME = "refseq_accession";
+
+    private static final String REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME = "refseq_accession_external";
+
+    private static final String ENTREZ_ID_EXTERNAL_FIELD_NAME = "entrez_id_external";
+
+    private static final String ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME = "ensembl_gene_id_external";
+
     private static final List<String> SELECTED_COLUMNS = Arrays.asList("gd_hgnc_id", "gd_app_sym",
         "gd_app_name", "gd_prev_sym", "gd_aliases", "gd_pub_acc_ids", "gd_pub_eg_id",
         "gd_pub_ensembl_id", "gd_pub_refseq_ids", "family.id", "family.name",
@@ -96,30 +111,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         "Entrez Gene ID(supplied by NCBI)", "OMIM ID(supplied by OMIM)", "RefSeq(supplied by NCBI)",
         "UniProt ID(supplied by UniProt)", "Ensembl ID(supplied by Ensembl)");
 
-    private static final List<String> FIELDS = Arrays.asList("id", "symbol",
-        "name", "prev_symbol", "alias_symbol", "hgnc_accession", "entrez_id",
-        "ensembl_gene_id", "refseq_accession", "gene_family_id", "gene_family",
-        "entrez_id_external", "omim_id", "refseq_accession_external",
-        "uniprot_id", "ensembl_gene_id_external");
-
-    // Approved symbol
-    private static final String ORDER_BY = "gd_app_sym_sort";
-
-    private static final String OUTPUT_FORMAT = "text";
-
-    private static final String SELECT_STATUS = "Approved";
-
-    private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
-
-    private static final String COMMON_PARAMS_PF = "pf";
-
-    private static final String COMMON_PARAMS_QF = "qf";
-
-    protected static final String SYMBOL_FIELD_NAME = "symbol";
-
-    protected static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
-
-    protected static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
+    private static final List<String> FIELDS = Arrays.asList("id", SYMBOL_FIELD_NAME,
+        "name", PREV_SYMBOL_FIELD_NAME, ALIAS_SYMBOL_FIELD_NAME, "hgnc_accession", ENTREZ_ID_FIELD_NAME,
+        ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME, "gene_family_id", "gene_family",
+        ENTREZ_ID_EXTERNAL_FIELD_NAME, "omim_id", REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME,
+        "uniprot_id", ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME);
 
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
@@ -156,11 +152,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-            + "&order_by=" + ORDER_BY
-            + "&format=" + OUTPUT_FORMAT
-            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-            // those come by default in every query
-            + "&status_opt=2&where=&limit=&submit=submit";
+                + "&order_by=" + ORDER_BY
+                + "&format=" + OUTPUT_FORMAT
+                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+                // those come by default in every query
+                + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -190,45 +186,13 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         return result;
     }
 
-    private Map<String, String> getStaticSolrParams()
-    {
-        Map<String, String> params = new HashMap<>();
-        params.put("lowercaseOperators", "false");
-        params.put("defType", "edismax");
-        return params;
-    }
-
-    private Map<String, String> getStaticFieldSolrParams()
-    {
-        Map<String, String> params = new HashMap<>();
-        params.put(COMMON_PARAMS_QF, "symbolExact^10 symbolPrefix^5 "
-            + "synonymExact^10 synonymPrefix^5 "
-            + "text^1 textSpell^2 textStub^0.5");
-        params.put(COMMON_PARAMS_PF, "symbolExact^100 symbolPrefix^10 "
-            + "synonymExact^30 synonymPrefix^5");
-        return params;
-    }
-
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
-    {
-        String query = originalQuery.trim();
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        String escapedQuery = ClientUtils.escapeQueryChars(query);
-        params.add(CommonParams.Q, escapedQuery);
-        params.add(CommonParams.ROWS, rows.toString());
-        if (StringUtils.isNotBlank(sort)) {
-            params.add(CommonParams.SORT, sort);
-        }
-        return params;
-    }
-
     @Override
-    public OntologyTerm getTerm(String symbol)
+    public VocabularyTerm getTerm(String symbol)
     {
         QueryResponse response;
         SolrQuery query = new SolrQuery();
         SolrDocumentList termList;
-        OntologyTerm term;
+        VocabularyTerm term;
 
         String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
 
@@ -240,11 +204,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         query.setRows(1);
         query.set(COMMON_PARAMS_PF, "symbolExact^100");
         try {
-            response = this.externalServicesAccess.getServer().query(query);
+            response = this.externalServicesAccess.getSolrConnection().query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {
-                term = new SolrOntologyTerm(termList.get(0), this);
+                term = new SolrVocabularyTerm(termList.get(0), this);
                 return term;
             }
         } catch (SolrServerException | SolrException ex) {
@@ -256,30 +220,14 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     }
 
     @Override
-    public Set<OntologyTerm> getTerms(Collection<String> symbols)
+    public Set<VocabularyTerm> getTerms(Collection<String> symbols)
     {
-        Set<OntologyTerm> result = new LinkedHashSet<>();
+        Set<VocabularyTerm> result = new LinkedHashSet<>();
         for (String symbol : symbols) {
-            OntologyTerm term = getTerm(symbol);
+            VocabularyTerm term = getTerm(symbol);
             if (term != null) {
                 result.add(term);
             }
-        }
-        return result;
-    }
-
-    @Override
-    public Set<OntologyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
-    {
-        if (StringUtils.isBlank(query)) {
-            return new HashSet<>();
-        }
-        Map<String, String> options = this.getStaticSolrParams();
-        options.putAll(this.getStaticFieldSolrParams());
-        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq), options)) {
-            SolrOntologyTerm ontTerm = new SolrOntologyTerm(doc, this);
-            result.add(ontTerm);
         }
         return result;
     }
@@ -292,7 +240,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     }
 
     @Override
-    public long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm)
+    public long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm)
     {
         // Flat nomenclature
         return -1;
@@ -301,110 +249,51 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     @Override
     protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
     {
-        URL url;
-        URL infoURL;
-        try {
-            url = new URL(getDefaultOntologyLocation());
-            infoURL = new URL(this.infoServiceURL);
-        } catch (MalformedURLException ex) {
-            return null;
-        }
-        return transform(url, infoURL, fieldSelection);
+        Map<String, String> headerToFiledMap = getHeaderToFieldMapping();
+        CSVFileService data =
+            new CSVFileService(getDefaultOntologyLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY);
+        addMetaInfo(data.solrDocuments);
+        processDuplicates(data.solrDocuments);
+        return data.solrDocuments;
     }
 
-    private void getFieldNames(String[] headers)
+    private Map<String, String> getHeaderToFieldMapping()
     {
-        Map<String, String> fieldNames = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         int count = 0;
         for (String field : FIELDS) {
-            fieldNames.put(HEADERS.get(count), field);
+            map.put(HEADERS.get(count), field);
             count++;
         }
-
-        for (int i = 0; i < headers.length; i++) {
-            headers[i] = fieldNames.get(headers[i]);
-        }
+        return map;
     }
 
-    private void processDuplicates(SolrInputDocument solrdoc)
+    private void processDuplicates(Collection<SolrInputDocument> solrdocs)
     {
-        List<String> curated = Arrays.asList("entrez_id", "ensembl_gene_id", "refseq_accession");
+        List<String> curated =
+            Arrays.asList(ENTREZ_ID_FIELD_NAME, ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME);
         List<String> external =
-            Arrays.asList("entrez_id_external", "ensembl_gene_id_external", "refseq_accession_external");
+            Arrays.asList(ENTREZ_ID_EXTERNAL_FIELD_NAME, ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME,
+                REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME);
         // Remove external fields, copy their values to corresponding curated field values if they are empty
         int count = 0;
-        for (String field : curated) {
-            if ("".equals(solrdoc.get(field))) {
-                if (!"refseq_accession".equals(field)) {
-                    solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
-                } else {
-                    solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+        for (SolrInputDocument solrdoc : solrdocs) {
+            for (String field : curated) {
+                if ("".equals(solrdoc.get(field))) {
+                    if (!REFSEQ_ACCESSION_FIELD_NAME.equals(field)) {
+                        solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
+                    } else {
+                        solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+                    }
                 }
+                solrdoc.removeField(external.get(count));
+                count++;
             }
-            solrdoc.removeField(external.get(count));
-            count++;
         }
     }
 
-    private Collection<SolrInputDocument> transform(URL searchURL, URL infoURL, Map<String, Double> fieldSelection)
+    private void addMetaInfo(Collection<SolrInputDocument> data)
     {
-        Collection<SolrInputDocument> data = new LinkedList<>();
-
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(searchURL.openConnection().getInputStream()));
-
-            String line;
-            String[] headers;
-
-            String zeroLine = in.readLine();
-
-            CSVParser headParser = new CSVParser(new StringReader(zeroLine), CSVStrategy.TDF_STRATEGY);
-
-            try {
-                headers = headParser.getLine();
-            } catch (IOException e) {
-                throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e);
-            }
-
-            // get correct field names for velocity
-            getFieldNames(headers);
-
-            while ((line = in.readLine()) != null) {
-                String[] pieces;
-
-                CSVParser parser = new CSVParser(new StringReader(line), CSVStrategy.TDF_STRATEGY);
-
-                try {
-                    pieces = parser.getLine();
-                } catch (IOException e) {
-                    throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e);
-                }
-
-                // Ignore the whole line if begins with tab symbol
-                if (pieces.length != headers.length || "".equals(pieces[0])) {
-                    continue;
-                }
-
-                SolrInputDocument crtTerm = new SolrInputDocument();
-                int counter = 0;
-                for (String term : pieces) {
-                    if (!"".equals(term)) {
-                        crtTerm.addField(headers[counter], term);
-                    }
-                    counter++;
-                }
-
-                processDuplicates(crtTerm);
-
-                data.add(crtTerm);
-            }
-
-        } catch (NullPointerException ex) {
-            this.logger.error("NullPointer: {}", ex.getMessage());
-        } catch (IOException ex) {
-            this.logger.error("IOException: {}", ex.getMessage());
-        }
-
         // put version/size here
         SolrInputDocument metaTerm = new SolrInputDocument();
         JSONObject info = getInfo();
@@ -413,8 +302,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         metaTerm.addField(SIZE_FIELD_NAME, Objects.toString(getSize(info)));
 
         data.add(metaTerm);
-
-        return data;
     }
 
     private long getSize(JSONObject info)
