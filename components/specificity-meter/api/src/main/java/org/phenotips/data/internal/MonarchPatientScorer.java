@@ -165,6 +165,10 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
         return -1;
     }
 
+    public int getScorerPriority() {
+        return 2;
+    }
+
     private String getCacheKey(Patient patient)
     {
         StringBuilder result = new StringBuilder();
