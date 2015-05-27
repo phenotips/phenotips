@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>UIX_Field__gene-variants</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>XWiki.Admin</creator>
+  <creationDate>1432756414000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>XWiki.Admin</author>
+  <contentAuthor>XWiki.superadmin</contentAuthor>
+  <date>1432759116000</date>
+  <contentUpdateDate>1432756414000</contentUpdateDate>
+  <version>8.1</version>
+  <title>$services.localization.render('phenotips.UIXField.variants')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.UIX_Field__gene-variants</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>37600d90-5a22-479d-ac6e-100fe18c8696</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include document="PhenoTips.PatientSheetMacros" /}}&#xd;
+&#xd;
+{{include document="PhenoTips.TabelarDataMacros" /}}&#xd;
+&#xd;
+{{velocity}}&#xd;
+#set ($targetClassName = 'PhenoTips.GeneVariantClass')&#xd;
+#if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))&#xd;
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})&#xd;
+#end&#xd;
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.genotype</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.field.gene-variants</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')&#xd;
+enabled=true&#xd;
+required=&#xd;
+order=2&#xd;
+fields=</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>
