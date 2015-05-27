@@ -73,22 +73,22 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     }
 
     @Override
-    public int reindex(String ontologyUrl)
+    public int reindex(String sourceUrl)
     {
         this.clear();
-        return this.index(ontologyUrl);
+        return this.index(sourceUrl);
     }
 
     /**
-     * Add an ontology to the index.
+     * Add a vocabulary to the index.
      *
-     * @param ontologyUrl the address from where to get the ontology file
+     * @param sourceUrl the address from where to get the vocabulary source file
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
      *         specified URL is invalid
      */
-    protected int index(String ontologyUrl)
+    protected int index(String sourceUrl)
     {
-        String realOntologyUrl = StringUtils.defaultIfBlank(ontologyUrl, getDefaultSourceLocation());
+        String realOntologyUrl = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
 
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
         Map<String, Double> fieldSelection = new HashMap<String, Double>();
