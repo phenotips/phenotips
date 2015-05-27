@@ -47,7 +47,22 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-      <classification>
+    <comments>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>comments</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Comments</prettyName>
+      <rows>3</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </comments>
+    <classification>
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
@@ -65,24 +80,9 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>candidate=Candidate|rejected=Rejected|solved=Solved</values>
+      <values>candidate=Candidate|rejected=Excluded by testing|solved=Confirmed causal</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </classification>
-    <comments>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <editor>---</editor>
-      <name>comments</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Comments</prettyName>
-      <rows>3</rows>
-      <size>40</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-    </comments>
     <gene>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
