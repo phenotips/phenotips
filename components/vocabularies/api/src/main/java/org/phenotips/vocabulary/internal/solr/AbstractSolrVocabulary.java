@@ -162,7 +162,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
-    public int reindex(String ontologyUrl)
+    public int reindex(String sourceUrl)
     {
         // FIXME Not implemented yet
         throw new UnsupportedOperationException();
