@@ -41,7 +41,7 @@ import java.util.List;
 @Singleton
 public class DefaultPatientSpecificityService implements PatientSpecificityService, Initializable
 {
-    /** The list of all available scorers */
+    /** The list of all available scorers. */
     @Inject
     private List<PatientScorer> scorers;
 
