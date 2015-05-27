@@ -97,7 +97,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     }
 
     public int getScorerPriority() {
-        return 1;
+        return 10;
     }
 
     /**
