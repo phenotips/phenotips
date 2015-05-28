@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses/
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.phenotips.data.test.po;
 
@@ -40,18 +40,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_external_id")
     WebElement patientIdentifier;
 
-    @FindBy(id = "PhenoTips.PatientClass_0_last_name")
-    WebElement patientLastName;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_first_name")
-    WebElement patientFirstName;
-
-    @FindBy(id = "xwiki-form-gender-0-0")
-    WebElement patientGenderMale;
-
-    @FindBy(id = "xwiki-form-gender-0-1")
-    WebElement genderFemale;
-
     @FindBy(id = "HFamilyhistory")
     WebElement familyHistorySectionTitle;
 
@@ -61,8 +49,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_paternal_ethnicity_2")
     WebElement paternalEthnicity;
 
-    @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0010982")
-    WebElement polygenicInheritance;
 
     @FindBy(id = "HPrenatalandperinatalhistory")
     WebElement expandPrenatalAndPerinatalHistory;
@@ -79,7 +65,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     WebElement familyHealthConditions;
 
-    @FindBy(id = "PhenoTips.PatientClass_0_gestation")
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.gestation > div:nth-child(2) > div > div > div.controlled > input[type=\"text\"]")
     WebElement gestationAtDelivery;
 
     @FindBy(css = ".fieldset.assistedReproduction_fertilityMeds .yes")
@@ -112,7 +98,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//div[contains(@class, 'growth-charts-section')]//*[@class = 'wikigeneratedheader']")
     WebElement checkIfMeasurementsExpanded;
 
-    @FindBy(xpath = "//*[contains(@class, 'measurement-info')]//*[@class = 'list-actions']//*[contains(@class, 'add-data-button')]")
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.measurement-info.chapter > div.list-actions > p > span.buttonwrapper > a")
     WebElement newEntryMeasurements;
 
     @FindBy(id = "PhenoTips.MeasurementsClass_0_weight")
@@ -187,8 +173,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[contains(@class, 'clinical-info genotype')]//*[contains(@class, 'extradata-list')]//*[contains(@class, 'suggest-gene')]")
     WebElement genotypeInformationGene;
 
-    @FindBy(id = "HClinicalsymptomsandphysicalfindings")
-    WebElement expandClinicalSymptomsAndPhysicalFindings;
 
     @FindBy(id = "PhenoTips.PatientClass_0_unaffected")
     WebElement patientIsClinicallyNormal;
@@ -427,11 +411,21 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_apgar5")
     WebElement APGAR5Minutes;
 
-    @FindBy(id = "PhenoTips.PatientClass_0_date_of_birth")
-    WebElement dateOfBirth;
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select > option:nth-child(2)")
+    WebElement dateOfBirthDayOne;
 
-    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'year']")
-    WebElement setYearDateOfBirth;
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select")
+    WebElement dateOfBirthMonth;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select > option:nth-child(2)")
+    WebElement dateOfBirthMonthOne;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select")
+    WebElement dateOfBirthYear;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select > option:nth-child(2)")
+    WebElement dateOfBirthYearOne;
+
 
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'month']")
     WebElement setMonthDate;
@@ -460,10 +454,10 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[contains(@class, 'patient-info')]//*[contains(@class, 'gender')]//*[@class = 'xTooltip']//span[@class = 'hide-tool']")
     WebElement closeMoreInfoSex;
 
-    @FindBy(xpath = "//*[@class = 'fieldset indication_for_referral ']//*[contains(@class, 'fa-question-circle')]")
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.indication_for_referral > p > span")
     WebElement moreInfoIndicationForReferral;
 
-    @FindBy(xpath = "//*[contains(@class, 'patient-info')]//*[contains(@class, 'indication_for_referral ')]//*[@class = 'xTooltip']")
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.indication_for_referral > p > div > div")
     WebElement checkMoreInfoIndicationForReferral;
 
     @FindBy(xpath = "//*[contains(@class, 'patient-info')]//*[contains(@class, 'indication_for_referral ')]//*[@class = 'xTooltip']//*[@class = 'hide-tool']")
@@ -549,7 +543,6 @@ public class PatientRecordEditPage extends InlinePage
 
     @FindBy(xpath = "//*[@class = 'browse-phenotype-categories']//*[@class = 'expand-tools'][@class = 'collapse-all']//*[@class = 'expand-all']")
     WebElement expandAllPhenotypes;
-
     @FindBy(xpath = "//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']")
     WebElement chartTitleBoys;
 
@@ -580,15 +573,433 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']")
     WebElement checkIfGrowthChartsAreShowingByText;
 
+    // MINE
+    
     @FindBy(id = "body")
     WebElement body;
+
+    /* Date of Birth */
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select")
+    WebElement dateOfBirthDay;
+
+    /* Date of Death */
+
+    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'year']")
+    WebElement setYearDateOfBirth;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div")
+    WebElement birthDateSelector;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_death.date > div:nth-child(2) > div > div")
+    WebElement deathDateSelector;
+    
+    @FindBy(id = "PhenoTips.PatientClass_0_last_name")
+    WebElement patientLastName;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_first_name")
+    WebElement patientFirstName;
+
+    @FindBy(id = "xwiki-form-gender-0-0")
+    WebElement patientGenderMale;
+
+    @FindBy(id = "xwiki-form-gender-0-1")
+    WebElement patientGenderFemale;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0003745")
+    WebElement globalInheritanceSporadic;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0000006")
+    WebElement globalInheritanceAutosomal;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0010982")
+    WebElement globalInheritancePolygenic;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_gestation_term")
+    WebElement checkTermBirth;
+
+    // Assisted Reproduction
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.assistedReproduction_fertilityMeds > div > span > label.yes")
+    WebElement assistedReproductionFertilityYes;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > span > label.no")
+    WebElement assistedReproductionInVitroNo;
+
+    // APGAR Scores
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_apgar1")
+    WebElement APGAROneMinute;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_apgar5")
+    WebElement APGARFiveMinutes;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_prenatal_development")
+    WebElement prenatalNotes;
+
+    @FindBy(xpath = "//*[@id=\"PhenoTips.PatientClass_0_prenatal_phenotype_HP:0001518\"]")
+    WebElement prenatalGrowthSmallGestationalYes;
+    
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div:nth-child(11) > div.prenatal_phenotype-main.predefined-entries > div:nth-child(4) > div:nth-child(2) > span.yes-no-picker.initialized > label.yes")
+    WebElement prenatalGrowthLargeBirthYes;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_prenatal_phenotype_0\\2e 5173270363501185")
+    WebElement prenatalGrowthOther;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div:nth-child(12) > div.prenatal_phenotype-main.predefined-entries > div:nth-child(2) > span.yes-no-picker.initialized > label.no")
+    WebElement prenatalDevelopmentPolyhydramniosNo;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_prenatal_phenotype_0\\2e 8363013346655174")
+    WebElement prenatalDevelopmentOther;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_global_age_of_onset_HP\\3a 0003584")
+    WebElement lateOnset;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_medical_history")
+    WebElement medicalHistory;
+
+    @FindBy(css = "#extradata-list-PhenoTips\\2e InvestigationClass-molecular > tbody > tr.new > td.gene > input")
+    WebElement geneCandidateSearch;
+
+    @FindBy(css = "#PhenoTips\\2e InvestigationClass_0_comments")
+    WebElement geneCandidateComment;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.genotype.chapter > div:nth-child(5) > p > span.buttonwrapper > a")
+    WebElement newEntryListOfCandidateGenes;
+
+    @FindBy(css = "#extradata-list-PhenoTips\\2e RejectedGenesClass > tbody > tr.new > td.gene > input")
+    WebElement genePreviously;
+
+    @FindBy(css = "#PhenoTips\\2e RejectedGenesClass_1_comments")
+    WebElement genePreviouslyTestedComment;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.genotype.chapter > div:nth-child(8) > p > span.buttonwrapper > a")
+    WebElement newEntryPreviouslyTested;
+
+    @FindBy(id = "HCaseresolution")
+    WebElement caseResolution;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved")
+    WebElement caseSolved;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.phenotype-info.chapter.collapsed > span > span.buttonwrapper.show > button")
+    WebElement clinicalSymptomsAndPhysicalFindings;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved__pubmed_id")
+    WebElement pubmedID;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div > input")
+    WebElement geneID;
+
+    @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved__notes")
+    WebElement resolutionNotes;
+
+    @FindBy(css = "#inline > div:nth-child(3) > div.bottombuttons > div.buttons > span:nth-child(3) > input")
+    WebElement saveAndViewSummary;
+
+
+
 
     public static PatientRecordEditPage gotoPage(String patientId)
     {
         getUtil().gotoPage("data", patientId, "edit");
         return new PatientRecordEditPage();
     }
+    
+    public void clickBody()
+    {
+        this.body.click();
+    }
 
+    /* PATIENT INFORMATION */
+
+    /**
+     * Sets the first and last name of the patient
+     * @param first patient first name
+     * @param last patient last name
+     */
+    public void setPatientName(String first, String last) 
+    {
+        // first name
+        this.patientLastName.clear();
+        this.patientLastName.sendKeys(first);
+
+        // last name
+        this.patientFirstName.clear();
+        this.patientFirstName.sendKeys(last);
+        
+    }
+
+    /**
+     * Sets the full birthdate of the patient 
+     * @param day the birthdate of the patient
+     * @param month the birthmonth of the patient
+     * @param year the birthyear of the patient
+     */
+    public void setPatientDateOfBirth(String day, String month, String year)
+    {
+        // date
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select"));
+        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(3) > select"))).selectByVisibleText(day);
+
+        // month
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select"));
+        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(2) > select"))).selectByVisibleText(month);
+
+        // year
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select"));
+        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(1) > select"))).selectByVisibleText(year);
+    }
+
+    /**
+     * Sets the date of passing of the patient 
+     * @param day the day of death of the patient
+     * @param month the month death of the patient
+     * @param year the year death of the patient
+     */
+    public void setPatientDateOfDeath(String day, String month, String year)
+    {
+        // date
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select"));
+        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(3) > select"))).selectByVisibleText(day);
+
+        // month
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select"));
+        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(2) > select"))).selectByVisibleText(month);
+
+        // year
+        this.waitUntilElementIsVisible(By.cssSelector("#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select"));
+        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(1) > select"))).selectByVisibleText(year);
+    }
+
+    /**
+     * Sets the gender of the patient
+     * @param gender this either the string "male" or the string "female"
+     */
+    public void setPatientGender(String gender)
+    {
+        if(gender == "male")
+        {
+            this.patientGenderMale.click();
+        }
+        else if(gender == "female")
+        {
+            this.patientGenderFemale.click();
+        }
+        this.body.click();
+    }
+
+    public void expandFamilyHistory()
+    {
+        this.familyHistorySectionTitle.click();
+    }
+
+    /**
+     * Creates a new entry for family studies
+     * @param relative type of relative; one of "Child", "Parent", "Sibling"... etc.
+     * @param relative_id the reference if of the relative in the system
+     */
+    public void newEntryFamilyStudy(String relative, String relative_id)
+    {
+        // click new family study button
+        this.newEntryFamilyStudy.click();
+
+        // select the type of relative
+        this.waitUntilElementIsVisible(By.id("PhenoTips.RelativeClass_0_relative_type"));
+        new Select(this.thisPatientIsThe).selectByVisibleText(relative);
+
+        // input the id of the relative
+        this.ofPatientWithIdentifier.clear();
+        this.ofPatientWithIdentifier.sendKeys(relative_id);
+    }
+
+    /**
+     * Sets ethnicities in Family History tab
+     * @param maternal the maternal ethnicity of the patient
+     * @param paternal the paternal ethnicity of the patient
+     */
+    public void setEthnicites(String maternal, String paternal)
+    {
+        this.maternalEthnicity.clear();
+        this.maternalEthnicity.sendKeys(maternal);
+
+        this.paternalEthnicity.clear();
+        this.paternalEthnicity.sendKeys(paternal);
+    }
+
+    /**
+     * Checkboxes global mode of inheritance for autosomal, polygenic
+     * and sporadic
+     */
+    public void setGlobalModeOfInheritance()
+    {
+        this.globalInheritanceAutosomal.click();
+        this.globalInheritancePolygenic.click();
+        this.globalInheritanceSporadic.click();
+    }
+
+    /* PRENETAL AND PERINATAL HISTORY */
+
+    public void expandPrenatalAndPerinatalHistory()
+    {
+        this.expandPrenatalAndPerinatalHistory.click();
+    }
+
+    /**
+     * Sets prenatal gestration at birth text box and checks the term birth
+     * box if wanted
+     * @param weeks the number of weeks to input in the text box
+     */
+    public void setPrenatalGestationAtDelivery(String weeks)
+    {
+        this.gestationAtDelivery.clear();
+        this.gestationAtDelivery.sendKeys(weeks);
+    }
+    
+    /**
+     * Sets the yes and no values for assisted reproduction boxes
+     */
+    public void setAssistedReproduction()
+    {
+        this.assistedReproductionFertilityYes.click();
+        this.assistedReproductionInVitroNo.click();
+    }
+
+    /**
+     * Sets APGAR scores from the one and five minute options
+     * @param oneMinute a string that this one of the numbers "1" to "10"
+     *                  or "Unknown" for the one minute APGAR
+     * @param fiveMinute a string that this one of the numbers "1" to "10"
+     *                  or "Unknown" for the five minute APGAR
+     */
+    public void setAPGARScores(String oneMinute, String fiveMinutes)
+    {
+        //this.waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_apgar1"));
+        new Select(this.APGAROneMinute).selectByVisibleText(oneMinute);
+
+        //this.waitUntilElementDisappears(By.id("PhenoTips.PatientClass_0_apgar5"));
+        new Select(this.APGARFiveMinutes).selectByVisibleText(fiveMinutes);
+    }
+
+    public void setPrenatalNotes(String notes)
+    {
+        this.prenatalNotes.clear();
+        this.prenatalNotes.sendKeys(notes);
+    }
+
+    /**
+     * Sets the prenatal growth parameters
+     * @param other the text to goes in the other text box
+     */
+    public void setPrenatalGrowthParameters(String other)
+    {
+        // doesn't work, element isn't visible
+       this.prenatalGrowthSmallGestationalYes.click();
+       this.prenatalGrowthLargeBirthYes.click();
+       this.prenatalGrowthOther.clear();
+       this.prenatalGrowthOther.sendKeys();
+    }
+
+    /**
+     * Sets the prenatal developement or birth information
+     * @param other the text that goes in the other text box
+     */
+    public void setPrenatalDevelopmentOrBirth(String other)
+    {
+        // doesn't work, element isn't visible
+        this.prenatalDevelopmentPolyhydramniosNo.click();
+        this.prenatalDevelopmentOther.clear();
+        this.prenatalDevelopmentOther.sendKeys(other);
+    }
+
+    /**
+     * Enters text in the "medical and developmental
+     * history text box
+     * @param history the text to be entered
+     */
+    public void setMedicalHistory(String history)
+    {
+        this.medicalHistory.clear();
+        this.medicalHistory.sendKeys(history);
+        
+    }
+
+    /**
+     * Clicks the radio button "Late onset" in the
+     * radio group of "Global age at onset" buttons
+     */
+    public void setLateOnset()
+    {
+        this.lateOnset.click();
+    }
+
+    /**
+     * Returns the number of elements that match the css
+     * for the "upload image" button
+     * @return the number of elements matching this css
+     */
+    public int findElementsUploadImage()
+    {
+        return getDriver().findElements(By.cssSelector("#PhenoTips\\2e PatientClass_0_reports_history_container > div.actions > span > a")).size();
+    }
+
+    public void openNewEntryListOfCandidateGenes()
+    {
+        this.newEntryListOfCandidateGenes.click();
+    }
+
+    public int checkGeneCandidateSearchHideSuggestions(String search)
+    {
+        this.geneCandidateSearch.clear();
+        this.geneCandidateSearch.sendKeys(search);
+        return getDriver().findElements(By.cssSelector("#body > div.suggestItems.ajaxsuggest > div:nth-child(1) > span")).size();
+    }
+
+    public void setGeneCandidateComment(String comment)
+    {
+        this.geneCandidateComment.clear();
+        this.geneCandidateComment.sendKeys(comment);
+    }
+
+    public void openNewEntryPreviouslyTested()
+    {
+        this.newEntryPreviouslyTested.click();
+    }
+
+    public int checkGenePreviouslySearchHideSuggestions(String search)
+    {
+        this.genePreviously.clear();
+        this.genePreviously.sendKeys(search);
+        return getDriver().findElements(By.cssSelector("#body > div.suggestItems.ajaxsuggest > div:nth-child(1) > span")).size();
+    }
+
+    public void setPreviouslyTestedGenesComment(String comment)
+    {
+        this.genePreviouslyTestedComment.clear();
+        this.genePreviouslyTestedComment.sendKeys(comment);
+    }
+    
+    public void expandCaseResolution()
+    {
+        this.caseResolution.click();
+    }
+
+    public void setCaseSolved() 
+    {
+        this.caseSolved.click();
+    }
+
+    public void setIDsAndNotes(String pID, String gID, String notes)
+    {
+        this.pubmedID.clear();
+        this.pubmedID.sendKeys(pID);
+        this.geneID.clear();
+        this.geneID.sendKeys(gID);
+        this.resolutionNotes.clear();
+        this.resolutionNotes.sendKeys(notes);
+    }
+
+    ///////////////////////////////////
     public String getPatientRecordId()
     {
         return this.recordId.getText();
@@ -600,34 +1011,12 @@ public class PatientRecordEditPage extends InlinePage
         this.patientIdentifier.sendKeys(value);
     }
 
-    public void setPatientLastName(String value)
-    {
-        this.patientLastName.clear();
-        this.patientLastName.sendKeys(value);
-    }
-
-    public void setPatientFirstName(String value)
-    {
-        this.patientFirstName.clear();
-        this.patientFirstName.sendKeys(value);
-    }
-
     public void setMaleGender()
     {
         this.patientGenderMale.click();
         this.body.click();
     }
 
-    public void setFemaleGender()
-    {
-        this.genderFemale.click();
-        this.body.click();
-    }
-
-    public void expandFamilyHistory()
-    {
-        this.familyHistorySectionTitle.click();
-    }
 
     public boolean checkFamilyHistoryExpanded()
     {
@@ -638,23 +1027,6 @@ public class PatientRecordEditPage extends InlinePage
             return false;
 
         }
-    }
-
-    public void setMaternalEthnicity(String value)
-    {
-        this.maternalEthnicity.clear();
-        this.maternalEthnicity.sendKeys(value);
-    }
-
-    public void setPaternalEthnicity(String value)
-    {
-        this.paternalEthnicity.clear();
-        this.paternalEthnicity.sendKeys(value);
-    }
-
-    public void polygenicInheritance()
-    {
-        this.polygenicInheritance.click();
     }
 
     public void setConsanguinityYes()
@@ -677,10 +1049,6 @@ public class PatientRecordEditPage extends InlinePage
         this.familyHealthConditions.sendKeys(value);
     }
 
-    public void expandPrenatalAndPerinatalHistory()
-    {
-        this.expandPrenatalAndPerinatalHistory.click();
-    }
 
     public boolean checkPrenatalAndPerinatalHistoryExpanded()
     {
@@ -693,11 +1061,6 @@ public class PatientRecordEditPage extends InlinePage
         }
     }
 
-    public void setGestationAtDelivery(String value)
-    {
-        this.gestationAtDelivery.clear();
-        this.gestationAtDelivery.sendKeys(value);
-    }
 
     public void setConceptionAfterFertilityMedication()
     {
@@ -938,7 +1301,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandClinicalSymptomsAndPhysicalFindings()
     {
-        this.expandClinicalSymptomsAndPhysicalFindings.click();
+        this.clinicalSymptomsAndPhysicalFindings.click();
     }
 
     public boolean checkIfClinicalSymptomsAndPhysicalFindingsExpanded(By by)
@@ -1778,7 +2141,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void openDateOfBirth()
     {
-        this.dateOfBirth.click();
+        this.dateOfBirthDay.click();
     }
 
     public void openDateOfMeasurements()
@@ -1876,23 +2239,7 @@ public class PatientRecordEditPage extends InlinePage
         this.closeMoreInfoNewEntryFamilyStudy.click();
     }
 
-    public void newEntryFamilyStudy()
-    {
-        this.newEntryFamilyStudy.click();
-    }
 
-    public void setPatientIsTheRelativeOf(String relative)
-    {
-
-        this.waitUntilElementIsVisible(By.id("PhenoTips.RelativeClass_0_relative_type"));
-        new Select(this.thisPatientIsThe).selectByVisibleText(relative);
-    }
-
-    public void relativeOfCurrentPatient(String value)
-    {
-        this.ofPatientWithIdentifier.clear();
-        this.ofPatientWithIdentifier.sendKeys(value);
-    }
 
     public void moreInfoFamilyHealthConditions()
     {
@@ -2051,7 +2398,7 @@ public class PatientRecordEditPage extends InlinePage
     public boolean checkDecreasedBodyWeight()
     {
         this.waitUntilElementIsVisible(By
-            .xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
+            .cssSelector("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
         try {
             getDriver()
                 .findElement(

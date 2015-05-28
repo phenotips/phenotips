@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses/
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.phenotips.data.test.po;
 
@@ -228,6 +228,188 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(xpath = "//*[contains(@class, 'relatives-info')]//*[@class = 'relative_of']")
     WebElement checkRelativeOfPatient;
 
+    /* SUMMARY */
+
+    /* CASE RESOLUTION */
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(1) > p > span")
+    WebElement summaryPubmedIDTitle;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(1) > p > span")
+    WebElement summaryGeneIDTitle;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(1) > p > span")
+    WebElement summaryResolutionNotesTitle;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(2) > div")
+    WebElement summaryPubmedIDField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div")
+    WebElement summaryGeneIDField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(2) > div")
+    WebElement summaryResolutionNotesField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.fieldset.unaffected.controller > p")
+    WebElement summaryCaseResolution;
+
+    /* PATIENT INFORMATION */
+
+    // TODO: REFER TO ELEMENTS AS 1st, 2nd, 3rd.. and so on that dont have class names
+    // identifier is not tested since it must be unique everytime. The work around is to delete it everytime
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
+    WebElement summaryPatientNameField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(4) > span.displayed-value > span")
+    WebElement summaryDateOfBirthField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(5) > span.displayed-value > span")
+    WebElement summaryDateOfDeathField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(6) > span.displayed-value")
+    WebElement summarySexField;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > div.fieldset.indication_for_referral > div")
+    WebElement summaryIndicationForReferralField;
+
+    /* FAMILY HISTORY */
+
+    @FindBy(xpath = "//*[@id=\"extradata-list-PhenoTips.RelativeClass\"]/tbody/tr[2]/td[1]/text()")
+    WebElement fieldRelativeDescription;
+
+    @FindBy(xpath = "//*[@id=\"extradata-list-PhenoTips.RelativeClass\"]/tbody/tr[2]/td[2]/text()")
+    WebElement fieldRelativeOfPatientWithIdentifier;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.ethnicity > div.half-width.maternal_ethnicity > div > ol > li")
+    WebElement fieldMaternalEthnicity;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.ethnicity > div.half-width.paternal_ethnicity > div > ol > li")
+    WebElement fieldPaternalEthnicity;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.family_history > div")
+    WebElement fieldHealthConditions;
+
+    @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[1]")
+    WebElement fieldFirstGlobalInheritence;
+
+    @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[2]")
+    WebElement fieldSecondGlobalInheritence;
+
+    @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[3]")
+    WebElement fieldThirdGlobalInheritence;
+
+    /* PRENATAL AND PERINATAL HISTORY */
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
+    WebElement fieldGestationAtDelivery;
+    
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.assistedReproduction_fertilityMeds > div > label")
+    WebElement fieldFirstAssistedReproduction;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
+    WebElement fieldSecondAssistedReproduction;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
+    WebElement fieldAPGARScoreOneMinute;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")
+    WebElement fieldAPGARScoreFiveMinutes;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.prenatal_development > div")
+    WebElement  fieldPrenatalNotes;
+
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.prenatal_phenotype-group > div.prenatal_phenotype-main.predefined-entries > div")
+    WebElement fieldPrematureBirth;
+
+    public String getPrenatalAndPerinatalHistorySummary(String option)
+    {
+        switch(option)
+        {
+            case "fieldGestationAtDelivery":
+                return this.fieldGestationAtDelivery.getText();
+            case "fieldFirstAssistedReproduction":
+                return this.fieldFirstGlobalInheritence.getText();
+            case "fieldSecondAssistedReproduction":
+                return this.fieldSecondAssistedReproduction.getText();
+            case "fieldAPGARScoreOneMinute":
+                return this.fieldAPGARScoreOneMinute.getText();
+            case "fieldAPGARScoreFiveMinutes":
+                return this.fieldAPGARScoreFiveMinutes.getText();
+            case "fieldPrenatalNotes":
+                return this.fieldPrenatalNotes.getText();
+            case "fieldPrematureBirth":
+                return this.fieldPrematureBirth.getText();
+        }
+        return "";
+    }
+
+    public String getFamilyHistorySummary(String option)
+    {
+        switch(option)
+        {
+            case "fieldRelativeDescription":
+                return this.fieldRelativeDescription.getText();
+            case "fieldRelativeOfPatientWithIdentifier":
+                return this.fieldRelativeOfPatientWithIdentifier.getText();
+            case "fieldMaternalEthnicity":
+                return this.fieldMaternalEthnicity.getText();
+            case "fieldPaternalEthnicity":
+                return this.fieldPaternalEthnicity.getText();
+            case "fieldHealthConditions":
+                return this.fieldHealthConditions.getText();
+            case "fieldFirstGlobalInheritence":
+                return this.fieldFirstGlobalInheritence.getText();
+            case "fieldSecondGlobalInheritence":
+                return this.fieldSecondGlobalInheritence.getText();
+            case "fieldThirdGlobalInheritence":
+                return this.fieldThirdGlobalInheritence.getText();
+        }
+        return "";
+    }
+
+    public String getPatientInformationSummary(String option)
+    {
+        switch(option)
+        {
+            case "fieldPatientName":
+                return this.summaryPatientNameField.getText();
+            case "fieldDateOfBirth":
+                return this.summaryDateOfBirthField.getText();
+            case "fieldDateOfDeath":
+                return this.summaryDateOfDeathField.getText();
+            case "fieldSex":
+                return this.summarySexField.getText();
+            case "fieldIndicationForReferral":
+                return this.summaryIndicationForReferralField.getText();
+        }
+        return "";
+    }
+
+    public String getCaseResolutionSummary(String option)
+    {
+        switch(option) 
+        {
+            case "titlePubmed":
+                return this.summaryPubmedIDTitle.getText();
+            case "fieldPubmed":
+                return this.summaryPubmedIDField.getText();
+            case "titleGeneID":
+                return this.summaryGeneIDTitle.getText();
+            case "fieldGeneID":
+                return this.summaryGeneIDField.getText();
+            case "titleResolutionNotes":
+                return this.summaryResolutionNotesTitle.getText();
+            case "fieldResolutionNotes":
+                return this.summaryResolutionNotesField.getText();
+            case "caseResolution":
+                return this.summaryCaseResolution.getText();
+        }
+        return "";
+    }
+
+
+    ///////////////////
     public static PatientRecordViewPage gotoPage(String patientId)
     {
         getUtil().gotoPage("data", patientId, "view");
