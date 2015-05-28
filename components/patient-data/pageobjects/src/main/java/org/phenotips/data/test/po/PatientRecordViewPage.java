@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.test.po;
 
@@ -310,7 +310,7 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
     WebElement fieldSecondAssistedReproduction;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
+    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(6) > span:nth-child(2)")
     WebElement fieldAPGARScoreOneMinute;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")

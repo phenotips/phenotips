@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.test.po;
 
@@ -40,8 +40,8 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_external_id")
     WebElement patientIdentifier;
 
-    @FindBy(id = "HFamilyhistory")
-    WebElement familyHistorySectionTitle;
+    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.family-info.chapter.collapsed > span > span.buttonwrapper.show > button")
+    WebElement expandFamilyHistory;
 
     @FindBy(id = "PhenoTips.PatientClass_0_maternal_ethnicity_2")
     WebElement maternalEthnicity;
@@ -697,9 +697,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(css = "#inline > div:nth-child(3) > div.bottombuttons > div.buttons > span:nth-child(3) > input")
     WebElement saveAndViewSummary;
 
-
-
-
     public static PatientRecordEditPage gotoPage(String patientId)
     {
         getUtil().gotoPage("data", patientId, "edit");
@@ -791,7 +788,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandFamilyHistory()
     {
-        this.familyHistorySectionTitle.click();
+        this.expandFamilyHistory.click();
     }
 
     /**
