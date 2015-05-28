@@ -63,7 +63,7 @@ public class S3BlobStore implements BlobStore, Initializable
      * Configuration.
      */
     @Inject
-    @Named("cloud")
+    @Named("xwikiproperties")
     private ConfigurationSource configurationSource;
 
     /**

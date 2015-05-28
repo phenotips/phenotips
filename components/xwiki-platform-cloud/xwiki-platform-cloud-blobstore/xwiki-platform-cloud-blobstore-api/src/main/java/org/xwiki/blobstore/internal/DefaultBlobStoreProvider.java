@@ -55,7 +55,7 @@ public class DefaultBlobStoreProvider implements Provider<BlobStore>, Initializa
      * The configuration source for reading XWiki properties.
      */
     @Inject
-    @Named("cloud")
+    @Named("xwikiproperties")
     private ConfigurationSource configurationSource;
 
     /**
