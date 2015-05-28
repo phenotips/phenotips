@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.vocabulary.internal.solr;
 
@@ -162,7 +162,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     }
 
     @Override
-    public int reindex(String ontologyUrl)
+    public int reindex(String sourceUrl)
     {
         // FIXME Not implemented yet
         throw new UnsupportedOperationException();

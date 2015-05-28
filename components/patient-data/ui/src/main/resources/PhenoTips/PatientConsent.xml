@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -70,6 +70,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </genetic>
+    <matching>
+      <customDisplay/>
+      <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>matching</name>
+      <number>6</number>
+      <prettyName>matching</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </matching>
     <message_holder>
       <customDisplay>{{velocity}}
 #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
