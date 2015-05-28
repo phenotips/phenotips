@@ -198,7 +198,6 @@
 #end
 
 #if ($xcontext.action == 'edit')
-=== $services.localization.render('phenotips.vcf.sheetTitle') ===
 
 #set ($originalObj = $obj)
 #set ($originalClass = $class)
