@@ -31,7 +31,7 @@ import org.xwiki.store.TransactionRunnable;
 /**
  * The transaction runnable for deleting all attachment data on the blobstore.
  * 
- * @version $Id$
+ * @version $Id: f254cbd0da36b114ffd3a4d4c9f8b1bef9cc4c41 $
  */
 public class DeleteAttachmentDataTransactionRunnable extends TransactionRunnable<XWikiHibernateTransaction>
 {
