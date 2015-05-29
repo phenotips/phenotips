@@ -66,13 +66,18 @@ public class DeleteAttachmentDataTransactionRunnable extends TransactionRunnable
     @Override
     protected void onRun() throws Exception
     {
-        String path = Utils.generatePath(attachmentReference);
-
-        logger.debug("Deleting blob {}", path);
-
-        BlobStore blobStore = blobStoreProvider.get();
-
-        blobStore.deleteBlob(path);       
+    	try {
+	        String path = Utils.generatePath(attachmentReference);
+	
+	        logger.debug("Deleting blob {}", path);
+	
+	        BlobStore blobStore = blobStoreProvider.get();
+	
+	        blobStore.deleteBlob(path); 
+    	} catch (Exception e) {
+    		logger.error("Caught exception, rethrowing", e);
+    		throw e;
+    	}
     }
 
 }
