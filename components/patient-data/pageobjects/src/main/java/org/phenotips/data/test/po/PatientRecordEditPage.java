@@ -996,48 +996,10 @@ public class PatientRecordEditPage extends InlinePage
         this.resolutionNotes.sendKeys(notes);
     }
 
-    ///////////////////////////////////
-    public String getPatientRecordId()
-    {
-        return this.recordId.getText();
-    }
-
     public void setPatientIdentifier(String value)
     {
         this.patientIdentifier.clear();
         this.patientIdentifier.sendKeys(value);
-    }
-
-    public void setMaleGender()
-    {
-        this.patientGenderMale.click();
-        this.body.click();
-    }
-
-
-    public boolean checkFamilyHistoryExpanded()
-    {
-        try {
-            getDriver().findElement(By.id("PhenoTips.PatientClass_0_maternal_ethnicity_2"));
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-
-        }
-    }
-
-    public void setConsanguinityYes()
-    {
-        this.yesConsanguinity.click();
-    }
-
-    public void setMiscarriagesNo()
-    {
-        /*
-         * getUtil().hasElement(By.xpath("//*[text() = 'Miscarriages']")); getDriver().findElements(null).isEmpty();
-         */
-
-        this.noMiscarriages.click();
     }
 
     public void familyHealthConditions(String value)
@@ -1046,68 +1008,9 @@ public class PatientRecordEditPage extends InlinePage
         this.familyHealthConditions.sendKeys(value);
     }
 
-
-    public boolean checkPrenatalAndPerinatalHistoryExpanded()
-    {
-        try {
-            getDriver().findElement(By.id("PhenoTips.PatientClass_0_gestation"));
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-
-        }
-    }
-
-
-    public void setConceptionAfterFertilityMedication()
-    {
-        this.conceptionAfterFertilityMedication.click();
-    }
-
-    public void setInVitroFertilization()
-    {
-        this.inVitroFertilization.click();
-    }
-
-    public void setGestationalSurrogacy()
-    {
-        this.gestationalSurrogacy.click();
-    }
-
-    public void setPrenatalAndPerinatalNotes(String value)
-    {
-        this.prenatalAndPerinatalHistoryNotes.clear();
-        this.prenatalAndPerinatalHistoryNotes.sendKeys(value);
-    }
-
-    public void selectPrenatalLowWeight()
-    {
-        BaseElement
-            .getUtil()
-            .findElementWithoutWaiting(getDriver(),
-                By.cssSelector("label[for='PhenoTips.PatientClass_0_prenatal_phenotype_HP:0001518']")).click();
-        ;
-    }
-
     public void expandMedicalHistory()
     {
         this.expandMedicalHistory.click();
-    }
-
-    public String checkMedicalHistoryExpanded()
-    {
-        return this.medicalAndDevelopementalHistory.getText();
-    }
-
-    public void setMedicalAndDevelopmentalHistory(String value)
-    {
-        this.typeMedicalAndDevelopmentalHistory.clear();
-        this.typeMedicalAndDevelopmentalHistory.sendKeys(value);
-    }
-
-    public void setGlobalAgeOfOnset()
-    {
-        this.globalAgeOfOnset.click();
     }
 
     public void expandMeasurements()
@@ -1115,15 +1018,12 @@ public class PatientRecordEditPage extends InlinePage
         this.expandMeasurements.click();
     }
 
-    public String checkIfMeasurementsExpanded()
-    {
-        return this.checkIfMeasurementsExpanded.getText();
-    }
-
     public void createNewMeasurementsEntry()
     {
         this.newEntryMeasurements.click();
     }
+
+    /* setting measurements */
 
     public void setMeasurementWeight(String value)
     {
@@ -1238,40 +1138,12 @@ public class PatientRecordEditPage extends InlinePage
         this.measurementRightFootLength.sendKeys(value);
     }
 
-    public void expandGrowthCharts()
-    {
-        this.expandGrowthCharts.click();
-    }
-
-    public boolean checkIfGrowthChartsAreShowing()
-    {
-        this.waitUntilElementIsVisible(By
-            .xpath("//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']"));
-        try {
-            getDriver()
-                .findElement(
-                    By.xpath("//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']"));
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-
-        }
-    }
-
-    public String checkIfGrowthChartsAreShowingByText()
-    {
-        return this.checkIfGrowthChartsAreShowingByText.getText();
-    }
-
     public void expandGenotypeInformation()
     {
         this.expandGenotypeInformation.click();
     }
 
-    public String checkIfGenotypeInformationExpanded()
-    {
-        return this.checkIfGenotypeInformationExpanded.getText();
-    }
+    ///////////////////////////////////
 
     public void newEntryGenotypeInformation()
     {
