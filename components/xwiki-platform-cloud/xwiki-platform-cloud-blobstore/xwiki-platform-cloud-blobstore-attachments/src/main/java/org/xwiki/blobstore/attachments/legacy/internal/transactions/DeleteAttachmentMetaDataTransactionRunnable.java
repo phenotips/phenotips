@@ -33,7 +33,7 @@ import com.xpn.xwiki.doc.XWikiAttachmentContent;
 /**
  * The transaction runnable for deleting attachment metadata.
  * 
- * @version $Id: 206b18a29c45e7109fb795f2193478b540f17d2b$
+ * @version $Id: 407cb243de06973318903c0711fffcafb0d83b24$
  */
 public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunnable<XWikiHibernateTransaction>
 {
