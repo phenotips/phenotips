@@ -114,8 +114,6 @@
 #if ($xcontext.action == 'edit')
   (% class="ncbi-search-box" %)(((
     === $services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch')===
-    
-    #__expandTools()
 
     (% class="ncbi-search-box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.Hint')(%%)
