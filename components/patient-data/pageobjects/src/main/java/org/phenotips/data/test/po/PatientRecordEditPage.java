@@ -40,7 +40,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_external_id")
     WebElement patientIdentifier;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.family-info.chapter.collapsed > span > span.buttonwrapper.show > button")
+    @FindBy(id = "HFamilyhistoryandpedigree")
     WebElement expandFamilyHistory;
 
     @FindBy(id = "PhenoTips.PatientClass_0_maternal_ethnicity_2")
