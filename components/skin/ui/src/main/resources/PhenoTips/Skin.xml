@@ -209,7 +209,6 @@
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
-#macro (__img $name)$xwiki.getDocument('PhenoTips.Skin').getAttachmentURL("${name}.png")#end
 
 ## Remove this after it's implemented by default in the base skin
 *::-moz-focus-inner {
@@ -286,7 +285,6 @@
 }
 
 #create-patient-record {
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   background: transparent;
   border: 0 none;
@@ -397,7 +395,6 @@ input[type=text], textarea {
   width: 100%;
 }
 textarea {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
 }
