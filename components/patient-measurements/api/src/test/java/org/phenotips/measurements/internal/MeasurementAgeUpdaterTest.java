@@ -132,8 +132,8 @@ public class MeasurementAgeUpdaterTest
     public void testDateDifference() throws ParseException, ComponentLookupException
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String birthDateString = "01-01-15 12:00:00";
-        String measureDateString = "01-01-16 12:00:00";
+        String birthDateString = "01-01-2015 12:00:00";
+        String measureDateString = "01-01-2016 12:00:00";
         Date birthDate = dateFormat.parse(birthDateString);
         Date measureDate = dateFormat.parse(measureDateString);
 
