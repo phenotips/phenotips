@@ -67,30 +67,24 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
     @Override
     protected void onRun() throws Exception
     {
-    	
-    	try {
-	        logger.debug("Deleting attachment metadata");
-	
-	        final Session session = xwikiContext.getWiki().getHibernateStore().getSession(xwikiContext);
-	        session.delete(new XWikiAttachmentContent(xwikiAttachment));
-	
-	        final String fileName = xwikiAttachment.getFilename();
-	
-	        final List<XWikiAttachment> xwikiAttachments = xwikiAttachment.getDoc().getAttachmentList();
-	        for (XWikiAttachment a : xwikiAttachments) {
-	            if (fileName.equals(a.getFilename())) {
-	                xwikiAttachments.remove(a);
-	                break;
-	            }
-	        }
-	
-	        xwikiContext.getWiki().getStore().saveXWikiDoc(xwikiAttachment.getDoc(), xwikiContext, false);
-	
-	        session.delete(xwikiAttachment);
-    	} catch (Exception e) {
-    		logger.error("Exception caught, rethrowing", e);
-    		throw e;
-    	}
+        logger.debug("Deleting attachment metadata");
+
+        final Session session = xwikiContext.getWiki().getHibernateStore().getSession(xwikiContext);
+        session.delete(new XWikiAttachmentContent(xwikiAttachment));
+
+        final String fileName = xwikiAttachment.getFilename();
+
+        final List<XWikiAttachment> xwikiAttachments = xwikiAttachment.getDoc().getAttachmentList();
+        for (XWikiAttachment a : xwikiAttachments) {
+            if (fileName.equals(a.getFilename())) {
+                xwikiAttachments.remove(a);
+                break;
+            }
+        }
+
+        xwikiContext.getWiki().getStore().saveXWikiDoc(xwikiAttachment.getDoc(), xwikiContext, false);
+
+        session.delete(xwikiAttachment);
     }
 
 }

@@ -117,16 +117,10 @@ public class S3BlobStore implements BlobStore, Initializable
     public void deleteBlob(String path)
     {
         String normalizedPath = normalizePath(path);
-    	
+
         logger.debug("Deleting blob '{}' from bucket '{}'", normalizedPath, bucket);
-        
-    	try {
-	        client.deleteObject(bucket, normalizedPath);
-    	} catch (Exception e) {
-    		String msg = String.format("Exception while deleting blob from S3. Bucket = %s, key = %s" , bucket, normalizedPath);
-    		logger.error(msg, e);
-    		throw e;
-    	}
+
+        client.deleteObject(bucket, normalizedPath);
     }
 
     @Override
@@ -136,16 +130,7 @@ public class S3BlobStore implements BlobStore, Initializable
 
         logger.debug("Getting blob '{}' from bucket '{}'", normalizedPath, bucket);
 
-        S3Object object = null;
-        
-        try {
-        	object = client.getObject(bucket, normalizedPath);
-    	} catch (Exception e) {
-    		String msg = String.format("Exception while fetching blob from S3. Bucket = %s, key = %s" , bucket, normalizedPath);
-    		logger.error(msg, e);
-    		throw e;
-    	}
-        
+        S3Object object = client.getObject(bucket, normalizedPath);
         if (object != null) {
             return object.getObjectContent();
         }
@@ -171,13 +156,7 @@ public class S3BlobStore implements BlobStore, Initializable
             objectMetadata.setContentLength(length);
         }
 
-        try {
-        	client.putObject(bucket, normalizedPath, content, objectMetadata);
-    	} catch (Exception e) {
-    		String msg = String.format("Exception while putting blob in S3. Bucket = %s, key = %s" , bucket, normalizedPath);
-    		logger.error(msg, e);
-    		throw e;
-    	}	
+        client.putObject(bucket, normalizedPath, content, objectMetadata);
     }
 
     /**
