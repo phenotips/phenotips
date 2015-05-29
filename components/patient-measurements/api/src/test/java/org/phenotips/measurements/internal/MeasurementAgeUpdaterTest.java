@@ -108,8 +108,6 @@ public class MeasurementAgeUpdaterTest
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
     }
 
-
-
     @Test
     public void testMeasurementDateNull() throws ComponentLookupException
     {
