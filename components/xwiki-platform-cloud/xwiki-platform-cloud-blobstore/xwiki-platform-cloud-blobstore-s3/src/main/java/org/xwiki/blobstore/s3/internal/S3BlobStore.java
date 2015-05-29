@@ -41,7 +41,7 @@ import com.amazonaws.services.s3.model.S3Object;
  * Amazon S3 blob store implementation. This is a singleton in order to reuse as much as possible the Amazon S3 client
  * object (https://forums.aws.amazon.com/thread.jspa?threadID=50723)
  * 
- * @version $Id: 275731ab131d957391cf04ed2bf089494ef611c6$
+ * @version $Id$
  */
 @Component
 @Named("s3")
