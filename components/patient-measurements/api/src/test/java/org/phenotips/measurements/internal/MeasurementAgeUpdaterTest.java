@@ -39,7 +39,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+
 
 /**
  * Tests for the {@link MeasurementAgeUpdater} component.
@@ -104,6 +107,8 @@ public class MeasurementAgeUpdaterTest
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
     }
+
+
 
     @Test
     public void testMeasurementDateNull() throws ComponentLookupException
