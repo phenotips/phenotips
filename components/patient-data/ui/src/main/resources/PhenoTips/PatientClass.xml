@@ -257,6 +257,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </date_of_death_entered>
+    <delivery_mode>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>delivery_mode</name>
+      <number>47</number>
+      <picker>0</picker>
+      <prettyName>Delivery mode</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </delivery_mode>
     <diagnosis_notes>
       <customDisplay/>
       <disabled>0</disabled>
