@@ -116,7 +116,7 @@
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% class="growth-charts-section" %)(((
-    #if($xcontext.action != 'view')
+    #if($xcontext.action == 'edit')
       (% class="expandable" %)
       === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
       #__expandTools()
