@@ -210,6 +210,13 @@
     <property>
       <code>#template('colorThemeInit.vm')
 #macro (__img $name)$xwiki.getDocument('PhenoTips.Skin').getAttachmentURL("${name}.png")#end
+
+## Remove this after it's implemented by default in the base skin
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
 #body {
   font-family: Arial,Verdana,sans-serif;
 }

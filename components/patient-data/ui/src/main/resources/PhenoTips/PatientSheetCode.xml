@@ -3727,7 +3727,7 @@ hr {
 }
 .chapter {
   margin: 3.5em 0 1em;
-  padding: 5px 10px;
+  padding: 0 10px 5px;
   position: relative;
 }
 h2 a.action-edit {
