@@ -44,20 +44,20 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ($request.getParameter('id'))
-  #set ($valid = $services.vocabularies.hgnc.validateVariant($request.id))  
+  #set ($data = $services.variantservice.validateVariant($request.id))  
 #else
   $response.setStatus(400)
   Please specify a variant to check
   #break
 #end
-#if (!$valid)
+#if (!$data)
   $response.setStatus(403)
-  Error
+  Unknown
   #break
-#elseif ($valid.valid)
+#elseif ($data.errors == 0)
   $response.setStatus(404)
   Valid
-#elseif(!$valid.valid)
+#else
   $response.setStatus(409)
   Invalid
 #end
