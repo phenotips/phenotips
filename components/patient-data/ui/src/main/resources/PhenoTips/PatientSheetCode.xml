@@ -3439,7 +3439,7 @@ document.observe('xwiki:dom:loaded', function()
     },
     available : function() {
       this.valid = true;
-    },
+    },  
     invalid : function() {
       this.valid = false;
     },

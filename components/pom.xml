@@ -33,6 +33,7 @@
     <module>base-war</module>
     <module>constants</module>
     <module>component-registry</module>
+    <module>genomic-tools</module>
     <module>jodatime-service</module>
     <module>default-settings</module>
     <module>widgets</module>

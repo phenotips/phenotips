@@ -251,26 +251,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     }
 
     /**
-     * Validate the HGVS variant symbol id via mutalyzer.nl API service.
-     *
-     * @param id variant id to validate
-     * @return json respond in a form of {"valid": <Boolean>, "messages": []}
-     */
-    public JSONObject validateVariant(String id)
-    {
-        HttpGet method = new HttpGet("http://mutalyzer.nl/json/checkSyntax?variant=" + id);
-        method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-            String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-            return responseJSON;
-        } catch (IOException | JSONException ex) {
-            this.logger.warn("Failed to validate HGVS variant symbol id: {}", ex.getMessage());
-        }
-        return new JSONObject(true);
-    }
-
-    /**
      * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
      *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
