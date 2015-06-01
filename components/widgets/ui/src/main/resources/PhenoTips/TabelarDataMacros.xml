@@ -420,6 +420,7 @@ document.observe('xwiki:dom:loaded', function() {
       <code>#template('colorThemeInit.vm')
 table.extradata-list {
     width: 100%;
+    vertical-align: top;
 }
 .extradata-list td, .extradata-list th {
     border: 1px solid $theme.backgroundSecondaryColor;
@@ -443,7 +444,7 @@ table.extradata-list {
 .extradata-list th.row-count,
 .extradata-list td.start,
 .extradata-list td.end {
-    text-align: right;
+    text-align: left;
 }
 .extradata-list td.start,
 .extradata-list td.end,

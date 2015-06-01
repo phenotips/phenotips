@@ -23,6 +23,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.stability.Unstable;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,7 +73,13 @@ public class HGVSVariantManager implements VariantManager
     @Override
     public JSONObject validateVariant(String id)
     {
-        HttpGet method = new HttpGet(SERVICE_URL + id);
+        String url = null;
+        try {
+            url = SERVICE_URL + URLEncoder.encode(id, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        HttpGet method = new HttpGet(url);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
