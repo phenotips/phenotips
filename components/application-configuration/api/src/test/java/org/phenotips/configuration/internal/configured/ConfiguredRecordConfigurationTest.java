@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.configuration.internal.configured;
 
@@ -90,7 +90,7 @@ public class ConfiguredRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
@@ -128,7 +128,7 @@ public class ConfiguredRecordConfigurationTest
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("Patient information", result.get(0).getName());
         Assert.assertEquals("Clinical observations", result.get(1).getName());
-        Assert.assertEquals("Family history", result.get(2).getName());
+        Assert.assertEquals("Family history and pedigree", result.get(2).getName());
     }
 
     /** {@link RecordConfiguration#getEnabledSections()} lists only the enabled sections. */
@@ -158,7 +158,7 @@ public class ConfiguredRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
@@ -220,7 +220,7 @@ public class ConfiguredRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
@@ -258,7 +258,7 @@ public class ConfiguredRecordConfigurationTest
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("Patient information", result.get(0).getName());
         Assert.assertEquals("Clinical observations", result.get(1).getName());
-        Assert.assertEquals("Family history", result.get(2).getName());
+        Assert.assertEquals("Family history and pedigree", result.get(2).getName());
         Assert.assertEquals("Prenatal history", result.get(3).getName());
     }
 
@@ -289,7 +289,7 @@ public class ConfiguredRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("family-info");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);

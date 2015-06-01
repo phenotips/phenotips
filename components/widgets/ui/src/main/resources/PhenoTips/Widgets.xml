@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -6354,8 +6354,8 @@ input.xwiki-free-multiselect-value {
   width: auto;
 }
 .segmented-bar .segmented-unit {
-  border: 0.1ex solid currentColor;
-  border-radius: 0.1ex;
+  border: 1px solid currentColor;
+  border-radius: 1px;
   display: inline-block;
   height: 1ex;
   margin: 0;

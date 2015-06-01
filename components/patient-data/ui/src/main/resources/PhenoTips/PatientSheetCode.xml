@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -3727,7 +3727,7 @@ hr {
 }
 .chapter {
   margin: 3.5em 0 1em;
-  padding: 5px 10px;
+  padding: 0 10px 5px;
   position: relative;
 }
 h2 a.action-edit {
@@ -3879,6 +3879,18 @@ h1, h2, h3, h4 {
 }
 /** --------------------------------------------- **/
 /** Charts **/
+.growth-charts-section.collapsed #charts,
+.growth-charts-section.collapsed .expand-tools .hide,
+.growth-charts-section .expand-tools .show {
+  display: none;
+}
+.growth-charts-section.collapsed .expand-tools .show {
+  display: inline;
+}
+.growth-charts-section h3.expandable {
+  cursor: pointer;
+}
+
 .chart-wrapper {
   box-shadow: 0 0 6px $theme.borderColor;
   display:inline-block;
@@ -4088,17 +4100,6 @@ form .extradata-list tr:hover td {
   text-indent: 0;
   text-align: center;
   text-decoration: none !important;
-}
-.growth-charts-section.collapsed #charts,
-.growth-charts-section.collapsed .expand-tools .hide,
-.growth-charts-section .expand-tools .show {
-  display: none;
-}
-.growth-charts-section.collapsed .expand-tools .show {
-  display: inline;
-}
-.growth-charts-section h3 {
-  cursor: pointer;
 }
 
 .extradata-list .head-group label {

@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -116,9 +116,13 @@
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% class="growth-charts-section" %)(((
-    === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
-
-    #__expandTools()
+    #if($xcontext.action == 'edit')
+      (% class="expandable" %)
+      === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
+      #__expandTools()
+    #else
+      === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
+    #end
 
     (% id="charts"%)(((
       #_measurementCharts({'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
