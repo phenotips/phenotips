@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.push.internal;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.objects.BaseObject;
 import org.apache.http.NameValuePair;
 import org.junit.Assert;
@@ -31,7 +30,6 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -102,6 +100,7 @@ public class DefaultPushPatientDataTest {
                 String.class, String.class);
         method.setAccessible(true);
 
+        // check that the last
         List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
                 "actionName", "userName",
                 "passWord", "");
