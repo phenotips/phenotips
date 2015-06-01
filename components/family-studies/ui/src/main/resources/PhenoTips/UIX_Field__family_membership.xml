@@ -224,6 +224,7 @@ if (newFamilyTrigger) {
       <code>(function ()
 {
   var familySearchUrl = "$xwiki.getURL('PhenoTips.FamilySearch', 'get', 'outputSyntax=plain')";
+  var addMemberUrl = Form.Element.getValue($('addFamilyMemberUrl'));
   var fieldHolder = $('PhenoTips.FamilyReference_0_reference');
   var searchInput = fieldHolder.previous("input");
 
@@ -250,7 +251,18 @@ if (newFamilyTrigger) {
       Form.Element.clear(searchInput);
     });
     Event.observe(searchInput, "ms:suggest:selected", function (event) {
-        fieldHolder.value = event.memo.id;
+      fieldHolder.value = event.memo.id;
+      var url = addMemberUrl + event.memo.id;
+      new Ajax.Request(url, {
+        method: 'get',
+        onSuccess: function (transport) {
+          var response = transport.responseText;
+          if (response) {
+            Form.Element.clear(searchInput);
+            new PhenoTips.widgets.ModalPopup(response, {}, {title: "Could not add to family"}).show();
+          }
+        }
+      });
     })
   }
 })();
@@ -472,6 +484,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
           &lt;/div&gt;##
           &lt;span class="clear"&gt;&lt;/span&gt;##
       &lt;/div&gt;##
+      &lt;input id="addFamilyMemberUrl" type="hidden" value="/bin/get/PhenoTips/AddPatientToFamily?outputSyntax=plain&amp;patientId=${doc.getName()}&amp;familyId="&gt;
     #end##
   {{/html}}##
   )))##
