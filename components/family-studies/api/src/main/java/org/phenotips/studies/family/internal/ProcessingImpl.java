@@ -215,7 +215,7 @@ public class ProcessingImpl implements Processing
     /**
      * Does not save the family document.
      */
-    private void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
+    public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
             XWikiException
     {
         XWikiContext context = this.provider.get();

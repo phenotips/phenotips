@@ -22,9 +22,12 @@ import org.phenotips.studies.family.internal.StatusResponse;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.query.QueryException;
 
+import java.util.List;
+
 import javax.naming.NamingException;
 
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 import net.sf.json.JSONObject;
 
@@ -57,4 +60,7 @@ public interface Processing
      */
     StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
+
+    void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
+        XWikiException;
 }
