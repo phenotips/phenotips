@@ -70,9 +70,9 @@ public class MeasurementAgeUpdaterTest
     @Mock
     private BaseObject measurement;
 
-    private String DATE_PROPERTY_NAME;
+    private static final String DATE_PROPERTY_NAME = "date";
 
-    private String AGE_PROPERTY_NAME;
+    private static final String AGE_PROPERTY_NAME = "age";
 
     private List<BaseObject> objects;
 
@@ -81,15 +81,6 @@ public class MeasurementAgeUpdaterTest
     {
         MockitoAnnotations.initMocks(this);
         when(this.source.getXObject((EntityReference) Matchers.any())).thenReturn(this.patientRecordObj);
-
-        Field age = ReflectionUtils.getField(MeasurementAgeUpdater.class, "AGE_PROPERTY_NAME");
-        Field date = ReflectionUtils.getField(MeasurementAgeUpdater.class, "DATE_PROPERTY_NAME");
-
-        age.setAccessible(true);
-        date.setAccessible(true);
-
-        this.DATE_PROPERTY_NAME = (String)date.get(null);
-        this.AGE_PROPERTY_NAME = (String)age.get(null);
 
         objects = new LinkedList<>();
         objects.add(measurement);
