@@ -108,28 +108,4 @@ public class DefaultPushPatientDataTest {
         Assert.assertEquals("password", result.get(4).getName());
         Assert.assertEquals("passWord", result.get(4).getValue());
     }
-
-    @Test
-    public void getRemoteConfigurationTest()
-    {
-
-
-    }
-
-
-
-
-//    @Test
-//    public void generateRequestNullTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
-//            InvocationTargetException
-//    {
-//        // set up access for the private method
-//        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequest", String.class,  List.class);
-//        method.setAccessible(true);
-//
-//        Assert.assertNull(method.invoke(this.mocker.getComponentUnderTest(), "", data));
-//
-//    }
-
-
 }
