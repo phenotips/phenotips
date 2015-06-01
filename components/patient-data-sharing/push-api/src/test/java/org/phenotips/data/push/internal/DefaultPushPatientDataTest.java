@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.push.internal;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.objects.BaseObject;
 import org.apache.http.NameValuePair;
 import org.junit.Assert;
@@ -44,10 +45,12 @@ public class DefaultPushPatientDataTest {
     @Mock
     private BaseObject serverConfiguration;
 
+    @Mock
+    private List<NameValuePair> data;
+
     @Test
     public void getBaseUrlTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
-                                        InvocationTargetException
-    {
+            InvocationTargetException {
         // set up access for the private method
         Method method = DefaultPushPatientData.class.getDeclaredMethod("getBaseURL", BaseObject.class);
         method.setAccessible(true);
@@ -62,47 +65,71 @@ public class DefaultPushPatientDataTest {
 
         when(serverConfiguration.getStringValue(("url"))).thenReturn("apples");
         Assert.assertEquals(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration),
-                                          "http://apples/bin/receivePatientData");
+                "http://apples/bin/receivePatientData");
     }
 
     @Test
-    public void generateRequestTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
+    public void generateRequestDataTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException {
+        // set up access for the private method
+        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequestData",
+                String.class, String.class,
+                String.class, String.class);
+        method.setAccessible(true);
+
+        List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
+                "actionName", "userName",
+                "passWord", "userToken");
+        Assert.assertEquals("xpage", result.get(0).getName());
+        Assert.assertEquals("plain", result.get(0).getValue());
+        Assert.assertEquals("push_protocol_version", result.get(1).getName());
+        Assert.assertEquals("1", result.get(1).getValue());
+        Assert.assertEquals("action", result.get(2).getName());
+        Assert.assertEquals("actionName", result.get(2).getValue());
+        Assert.assertEquals("username", result.get(3).getName());
+        Assert.assertEquals("userName", result.get(3).getValue());
+        Assert.assertEquals("user_login_token", result.get(4).getName());
+        Assert.assertEquals("userToken", result.get(4).getValue());
+    }
+
+    @Test
+    public void generateRequestDataNoTokenTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException
     {
         // set up access for the private method
-        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequest", String.class,  List.class);
+        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequestData",
+                String.class, String.class,
+                String.class, String.class);
         method.setAccessible(true);
 
-
+        List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
+                "actionName", "userName",
+                "passWord", "");
+        Assert.assertEquals("password", result.get(4).getName());
+        Assert.assertEquals("passWord", result.get(4).getValue());
     }
 
-    @Test
-    public void generateRequestDataTest()
-    {
-
-    }
-
-    @Test
-    public void getPushServerConfigurationTest()
-    {
-
-    }
     @Test
     public void getRemoteConfigurationTest()
     {
 
-    }
-
-    @Test
-    public void sendPatientTest()
-    {
 
     }
 
-    @Test
-    public void getPatientURLTest()
-    {
 
-    }
+
+
+//    @Test
+//    public void generateRequestNullTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
+//            InvocationTargetException
+//    {
+//        // set up access for the private method
+//        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequest", String.class,  List.class);
+//        method.setAccessible(true);
+//
+//        Assert.assertNull(method.invoke(this.mocker.getComponentUnderTest(), "", data));
+//
+//    }
+
 
 }
