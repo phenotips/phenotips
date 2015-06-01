@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.push.internal;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.objects.BaseObject;
 import org.apache.http.NameValuePair;
 import org.junit.Assert;
@@ -31,7 +30,6 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -102,34 +100,11 @@ public class DefaultPushPatientDataTest {
                 String.class, String.class);
         method.setAccessible(true);
 
+        // check that the last
         List<NameValuePair> result = (List<NameValuePair>) method.invoke(this.mocker.getComponentUnderTest(),
                 "actionName", "userName",
                 "passWord", "");
         Assert.assertEquals("password", result.get(4).getName());
         Assert.assertEquals("passWord", result.get(4).getValue());
     }
-
-    @Test
-    public void getRemoteConfigurationTest()
-    {
-
-
-    }
-
-
-
-
-//    @Test
-//    public void generateRequestNullTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
-//            InvocationTargetException
-//    {
-//        // set up access for the private method
-//        Method method = DefaultPushPatientData.class.getDeclaredMethod("generateRequest", String.class,  List.class);
-//        method.setAccessible(true);
-//
-//        Assert.assertNull(method.invoke(this.mocker.getComponentUnderTest(), "", data));
-//
-//    }
-
-
 }
