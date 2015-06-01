@@ -85,6 +85,8 @@ public class BlobStoreAttachmentStore implements XWikiAttachmentStoreInterface
         try {
             transaction.start();
         } catch (Exception e) {
+        	logger.error("Exception caught in deleteXWikiAttachment(), rethrowing.", e);
+        	
             if (e instanceof XWikiException) {
                 throw (XWikiException) e;
             }
@@ -118,6 +120,8 @@ public class BlobStoreAttachmentStore implements XWikiAttachmentStoreInterface
         try {
             xwikiAttachment.setContent(blobData);
         } catch (IOException e) {
+        	logger.error("Exception caught in loadAttachmentContent(), rethrowing.", e);
+        	
             throw new XWikiException(XWikiException.MODULE_XWIKI_STORE, XWikiException.ERROR_XWIKI_STORE_FILENOTFOUND,
                 String.format("Blob %s not found", xwikiAttachment.getReference().getName()), e);
         }
@@ -139,6 +143,8 @@ public class BlobStoreAttachmentStore implements XWikiAttachmentStoreInterface
         try {
             transaction.start();
         } catch (Exception e) {
+        	logger.error("Exception caught in saveAttachmentContent(), rethrowing.", e);
+        	
             if (e instanceof XWikiException) {
                 throw (XWikiException) e;
             }
