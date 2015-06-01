@@ -51,6 +51,7 @@ $xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
+$xwiki.jsx.use('PhenoTips.UIX_Field__date_of_death')##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##

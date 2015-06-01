@@ -257,6 +257,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </date_of_death_entered>
+    <date_of_death_unknown>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>date_of_death_unknown</name>
+      <number>47</number>
+      <prettyName>date_of_death_unknown</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </date_of_death_unknown>
     <diagnosis_notes>
       <customDisplay/>
       <disabled>0</disabled>
