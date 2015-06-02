@@ -355,7 +355,7 @@ document.observe('xwiki:dom:loaded', function() {
 
 var is_death_date_after_birth_date = function () {
 
-   Validate.fail("is_death_date_after_birth_date error");
+   Validate.fail("$services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate')");
 
 }
 
