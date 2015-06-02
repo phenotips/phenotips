@@ -863,7 +863,7 @@ Date.prototype.getMonthName = function (abbrev) {
 Date.prototype._toString = Date.prototype.toString;
 
 /**
- * Converts the value of the current Date object to its equivalent string representation.
+ * Converts the value of the current Date object to its equivalent UTC string representation.
  * Format Specifiers
 &lt;pre&gt;
 Format  Description                                                                  Example
@@ -902,7 +902,7 @@ Format  Description                                                             
  * @return {String}  A string representation of the current Date object.
  */
 Date.prototype.toString = function (format) {
-    var self = this;
+    var self = this.toUTC();
 
     var p = function p(s) {
         return (s.toString().length == 1) ? "0" + s : s;
@@ -954,7 +954,7 @@ Date.prototype.toString = function (format) {
         case "zzz":
         case "zz":
         case "z":
-            return "";
+            return 'Z';
         }
     }
     ) : this._toString();
