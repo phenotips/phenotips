@@ -80,4 +80,59 @@ public class DefaultPushServerConfigurationResponseTest {
         Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
         Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
     }
+
+    @Test
+    public void getPushableFieldsTest()
+    {
+        // populate a JSONObject
+        for(int i = 0; i < 10; i++) {
+            serverResponse.accumulate("accepted_fields", i);
+        }
+        Set<String> expected = new TreeSet<String>();
+        for(int i = 0; i < 10; i++) {
+            expected.add(String.valueOf(i));
+        }
+        Assert.assertEquals(expected, defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields());
+        Assert.assertEquals(expected, defaultPushServerConfigurationResponse.getRemoteAcceptedPatientFields("string"));
+    }
+
+    @Test
+    public void getPushableFieldsNullTest()
+    {
+        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
+        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields("string").isEmpty());
+    }
+
+    @Test
+    public void  getPushableFieldsExceptionTest()
+    {
+        serverResponse = null;
+        Assert.assertTrue(defaultPushServerConfigurationResponse.getPushableFields().isEmpty());
+    }
+
+    @Test
+    public void remoteUpdatesAvailableTest()
+    {
+        serverResponse.accumulate("updates_enabled", true);
+        Assert.assertTrue(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+    }
+
+    @Test
+    public void remoteUpdatesNotAvailableTest()
+    {
+        // check before anything has been set
+        Assert.assertFalse(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+        serverResponse.accumulate("updates_enabled", false);
+        // check after it has been set false
+        Assert.assertFalse(defaultPushServerConfigurationResponse.remoteUpdatesEnabled());
+    }
+
+    @Test
+    public void getRemoteUserTokenTest()
+    {
+        Assert.assertNull(defaultPushServerConfigurationResponse.getRemoteUserToken());
+        serverResponse.accumulate("user_login_token", "yes");
+        Assert.assertEquals("yes", defaultPushServerConfigurationResponse.getRemoteUserToken());
+    }
+
 }
