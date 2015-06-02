@@ -72,16 +72,9 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
         final Session session = xwikiContext.getWiki().getHibernateStore().getSession(xwikiContext);
         session.delete(new XWikiAttachmentContent(xwikiAttachment));
 
-        final String fileName = xwikiAttachment.getFilename();
-
-        final List<XWikiAttachment> xwikiAttachments = xwikiAttachment.getDoc().getAttachmentList();
-        for (XWikiAttachment a : xwikiAttachments) {
-            if (fileName.equals(a.getFilename())) {
-                xwikiAttachments.remove(a);
-                break;
-            }
-        }
-
+        if (xwikiAttachment.getDoc().removeAttachment(xwikiAttachment) == null)
+        	logger.error("Could not remove attachment for name {" + xwikiAttachment.getFilename() + "}");
+        	
         xwikiContext.getWiki().getStore().saveXWikiDoc(xwikiAttachment.getDoc(), xwikiContext, false);
 
         session.delete(xwikiAttachment);
