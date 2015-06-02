@@ -437,6 +437,10 @@ document.observe('xwiki:dom:loaded', function()
 
   date_of_death.__validation = new LiveValidation(date_of_death);
   date_of_death.__validation.add(is_death_date_after_birth_date);
+  
+  //when date of death years are given as a decade, the value of that field is empty.
+  //LiveValidation does not show error message on this case
+  date_of_death.__validation.displayMessageWhenEmpty = true;
 });
 
 </code>
