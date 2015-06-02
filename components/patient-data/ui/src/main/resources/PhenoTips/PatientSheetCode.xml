@@ -353,10 +353,73 @@ document.observe('xwiki:dom:loaded', function() {
   return XWiki;
 }(XWiki || {}));
 
+//Returns true if birth_date is before than death_date, false if birth_date is after death_date and undefined if they cannot be compared
+//A decade value is understood as the first day of the decade for a birth date, and the last day of the decade for a death date 
+//(so only the years are compared)
+var isDateAfter = function(birth_date,death_date) {
+
+   var birth = birth_date;
+   var death = death_date;
+
+   var used_decade = false;	 
+   if (birth.decade) {
+     birth.year = birth.decade.substring(0,birth.decade.length-1);
+     used_decade = true;
+   }
+   if (death.decade) {
+     death.year = Number(death.decade.substring(0,death.decade.length-1)) + 9;
+     used_decade = true;
+   }
+  
+   //compare years
+   if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
+      //dates cannot be compared
+      return;
+   }
+   if (birth.year &lt; death.year) {
+      return true;
+   }
+   if (birth.year &gt; death.year) {
+      return false;
+   }
+   if (used_decade) {// here birth.year==death.year
+     return true;
+   }
+
+   //years are the same, compare months
+   if (typeof birth.month == "undefined" || typeof death.month == "undefined") {
+      //dates cannot be compared
+      return;
+   }
+   if (birth.month &lt; death.month) {
+      return true;
+   }
+   if (birth.month &gt; death.month) {
+      return false;
+   }
+
+   //months are the same, check days
+   if (typeof birth.day == "undefined" || typeof death.day == "undefined") {
+      //dates cannot be compared
+      return;
+   }
+   if (birth.day &lt; death.day || birth.day == death.day) {
+      return true;
+   }
+   else {
+      return false;
+   }
+}
+
 var is_death_date_after_birth_date = function () {
-
-   Validate.fail("$services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate')");
-
+   var birth_date = $$("[id$='date_of_birth_entered']")[0].value.evalJSON();
+   var death_date = $$("[id$='date_of_death_entered']")[0].value.evalJSON();
+   if (isDateAfter(birth_date,death_date)==false) {
+      Validate.fail("$services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate')");
+   }
+   else {
+      return true;
+   }
 }
 
 //registers LiveValidation and birth/death dates observers
