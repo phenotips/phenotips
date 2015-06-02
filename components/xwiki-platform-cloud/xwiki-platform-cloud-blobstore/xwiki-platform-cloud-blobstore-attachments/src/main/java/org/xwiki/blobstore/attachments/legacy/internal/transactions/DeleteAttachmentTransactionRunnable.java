@@ -50,9 +50,11 @@ public class DeleteAttachmentTransactionRunnable extends TransactionRunnable<XWi
          * This is simply a composite transaction that contains first the removal of the attachment metadata and then
          * the removal of the actual data in the blobstore.
          */
-        new DeleteAttachmentMetaDataTransactionRunnable(xwikiAttachment, xwikiContext).runIn(this);
-
-        new DeleteAttachmentDataTransactionRunnable(xwikiAttachment.getReference(), blobStoreProvider).runIn(this);
+    	if (updateDocument) {
+    		new DeleteAttachmentMetaDataTransactionRunnable(xwikiAttachment, xwikiContext).runIn(this);
+    	} else {
+    		new DeleteAttachmentDataTransactionRunnable(xwikiAttachment.getReference(), blobStoreProvider).runIn(this);
+    	}
     }
 
 }
