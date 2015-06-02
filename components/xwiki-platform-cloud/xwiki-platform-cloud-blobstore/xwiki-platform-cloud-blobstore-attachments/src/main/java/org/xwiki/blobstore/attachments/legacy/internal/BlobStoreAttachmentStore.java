@@ -88,6 +88,7 @@ public class BlobStoreAttachmentStore implements XWikiAttachmentStoreInterface
         	logger.error("Exception caught in deleteXWikiAttachment(), rethrowing.", e);
         	
             if (e instanceof XWikiException) {
+            	logger.error("Caused by: ", e.getCause());
                 throw (XWikiException) e;
             }
 
