@@ -352,6 +352,30 @@ document.observe('xwiki:dom:loaded', function() {
   // End XWiki augmentation.
   return XWiki;
 }(XWiki || {}));
+
+var is_death_date_after_birth_date = function () {
+
+   Validate.fail("is_death_date_after_birth_date error");
+
+}
+
+//registers LiveValidation and birth/death dates observers
+document.observe('xwiki:dom:loaded', function() 
+{
+  var date_of_birth = $$("[id$='date_of_birth']")[0];
+  var date_of_death = $$("[id$='date_of_death']")[0];
+
+  var validate_birth_death_dates = function() {
+     date_of_death.__validation.validate();
+  }
+
+  date_of_birth.observe('xwiki:date:changed',validate_birth_death_dates);
+  date_of_death.observe('xwiki:date:changed',validate_birth_death_dates);
+
+  date_of_death.__validation = new LiveValidation(date_of_death);
+  date_of_death.__validation.add(is_death_date_after_birth_date);
+});
+
 </code>
     </property>
     <property>
