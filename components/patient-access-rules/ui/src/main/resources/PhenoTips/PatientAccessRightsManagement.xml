@@ -703,11 +703,10 @@
             if (owner &amp;&amp; ownershipTransfer) {
               var newOwner = '';
               var newOwnerGroup = ownershipTransfer.down('select');
-              var newOwnerURL='/bin/';
+              var newOwnerURL = '';
               if (newOwnerGroup &amp;&amp; !newOwnerGroup.disabled &amp;&amp; newOwnerGroup.selectedIndex &gt; 0) {
                 newOwner = newOwnerGroup.options[newOwnerGroup.selectedIndex].text;
-                //TODO: The url should be requested from a service instead of hardcoded here and a few lines down
-                newOwnerURL += 'Groups/' + newOwner;
+                newOwnerURL = new XWiki.Document(newOwner, 'Groups').getURL();
               } else {
                 var newOwnerUser = ownershipTransfer.down('input[type="text"]');
                 if (newOwnerUser) {
@@ -715,7 +714,7 @@
                   if (!newOwnerUser.disabled &amp;&amp; userName) {
                     newOwner = userName.firstChild.nodeValue;
                   }
-                  newOwnerURL += 'XWiki/' + ownershipTransfer.down('.accepted-suggestions li .user-alias').innerHTML;
+                  newOwnerURL = new XWiki.Document(ownershipTransfer.down('.accepted-suggestions li .user-alias').innerHTML, 'XWiki').getURL();;
                 }
               }
               if (newOwner) {
@@ -930,7 +929,7 @@ document.observe("xwiki:dom:loaded", function() {
 #access-rights-summary {
   float: right;
 }
-#access-rights-summary .owner {
+.access-rights-info a {
   color: inherit;
 }
 #access-rights-summary .access-rights-info {
