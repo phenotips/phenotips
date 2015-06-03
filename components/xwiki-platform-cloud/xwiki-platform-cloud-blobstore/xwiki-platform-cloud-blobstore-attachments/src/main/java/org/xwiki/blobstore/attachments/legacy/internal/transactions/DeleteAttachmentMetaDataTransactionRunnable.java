@@ -79,5 +79,15 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
 
         session.delete(xwikiAttachment);
     }
+    
+    @Override
+    protected void onRollback() throws Exception {
+    	logger.warn("Rollback occurred while deleting an attachment, the file store may be inconsistent with the database");
+    }
+    
+    @Override
+    protected void onCommit() throws Exception {
+    	logger.info("Commit occurred while deleting an attachment");
+    }
 
 }
