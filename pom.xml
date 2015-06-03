@@ -555,7 +555,7 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10</version>
+          <version>2.11</version>
           <configuration>
             <skip>${license.skip}</skip>
             <header>license.txt</header>
