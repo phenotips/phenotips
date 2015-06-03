@@ -206,6 +206,7 @@
   <copyField source="alias_symbol" dest="synonymPrefix"/>
   <copyField source="ensembl_gene_id" dest="synonymExact"/>
   <copyField source="entrez_id" dest="synonymExact"/>
+  <copyField source="refseq_accession" dest="synonymExact"/>
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="textSpell"/>
   <copyField source="*" dest="textStub"/>
