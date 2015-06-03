@@ -428,6 +428,10 @@ document.observe('xwiki:dom:loaded', function()
   var date_of_birth = $$("[id$='date_of_birth']")[0];
   var date_of_death = $$("[id$='date_of_death']")[0];
 
+  if (typeof date_of_birth == "undefined" || typeof date_of_death == "undefined") {
+     return;
+  }
+
   var validate_birth_death_dates = function() {
      date_of_death.__validation.validate();
   }
