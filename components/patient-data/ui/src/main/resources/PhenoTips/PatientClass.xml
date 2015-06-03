@@ -258,17 +258,65 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </date_of_death_entered>
     <delivery_mode>
-      <customDisplay/>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0030369',
+
+  'HP:0005268',
+  'HP:0200067',
+
+  'HP:0001623',
+  'HP:0010859',
+  'HP:0010860',
+  'HP:0010861',
+
+  'HP:0001788',
+  'HP:0005100',
+
+  'HP:0011410',
+  'HP:0030363',
+  'HP:0030364',
+
+  'HP:0011411',
+
+  'HP:0011412',
+
+  'HP:0011413',
+
+  'HP:0030366',
+
+  'HP:0030365',
+
+  'HP:0012541',
+
+  'HP:0012498'
+
+])
+#set ($startWith = 'HP:0001787')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
+      <displayType>radio</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
       <name>delivery_mode</name>
       <number>47</number>
       <picker>0</picker>
       <prettyName>Delivery mode</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </delivery_mode>
     <diagnosis_notes>
       <customDisplay/>
@@ -366,8 +414,7 @@
       <picker>0</picker>
       <prettyName>extended_negative_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator>
-</separator>
+      <separator/>
       <separators/>
       <size>1</size>
       <sort>none</sort>
