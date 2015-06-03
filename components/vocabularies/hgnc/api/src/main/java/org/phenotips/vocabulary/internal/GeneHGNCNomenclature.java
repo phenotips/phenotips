@@ -156,11 +156,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-                + "&order_by=" + ORDER_BY
-                + "&format=" + OUTPUT_FORMAT
-                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-                // those come by default in every query
-                + "&status_opt=2&where=&limit=&submit=submit";
+            + "&order_by=" + ORDER_BY
+            + "&format=" + OUTPUT_FORMAT
+            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+            // those come by default in every query
+            + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -232,11 +232,8 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        // List of fields and the "boosts" to associate with each of them when building DisjunctionMaxQueries from the
-        // user's query
         params.put(COMMON_PARAMS_QF, "symbol^10 symbolPrefix^7 symbolSort^5 "
             + "synonymExact^12 synonymPrefix^3 text^1 textSpell^2 textStub^0.5");
-        // to "boost" the score of documents in cases where all of the terms in the "q" param appear in close proximity
         params.put(COMMON_PARAMS_PF, "symbol^50 symbolExact^100 symbolPrefix^30 symbolSort^35 "
             + "synonymExact^70 synonymPrefix^21 text^3 textSpell^5");
         return params;
@@ -249,9 +246,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         ModifiableSolrParams params = new ModifiableSolrParams();
         params.add(CommonParams.Q, escapedQuery);
         params.add(CommonParams.ROWS, rows.toString());
-        // Enabling debugging
-        params.add("debugQuery", USE_HGNC_DATABASE_IDENTIFIER);
-        params.add("explainOther", "symbol:RP1");
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
         }
