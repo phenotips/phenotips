@@ -21,6 +21,8 @@ package org.xwiki.blobstore.attachments.legacy.internal.transactions;
 
 import javax.inject.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.blobstore.BlobStore;
 import org.xwiki.store.TransactionRunnable;
 
@@ -35,6 +37,12 @@ import com.xpn.xwiki.doc.XWikiAttachment;
  */
 public class DeleteAttachmentTransactionRunnable extends TransactionRunnable<XWikiHibernateTransaction>
 {
+	
+    /**
+     * The logger.
+     */
+    private Logger logger = LoggerFactory.getLogger(DeleteAttachmentTransactionRunnable.class);
+	
     /**
      * Constructor.
      * 
@@ -51,6 +59,7 @@ public class DeleteAttachmentTransactionRunnable extends TransactionRunnable<XWi
          * the removal of the actual data in the blobstore.
          */
     	if (updateDocument) {
+    		logger.info("Deleting metadata for attachment " + xwikiAttachment.getFilename());
     		new DeleteAttachmentMetaDataTransactionRunnable(xwikiAttachment, xwikiContext).runIn(this);
     	} else {
     		new DeleteAttachmentDataTransactionRunnable(xwikiAttachment.getReference(), blobStoreProvider).runIn(this);
