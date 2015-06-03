@@ -4512,7 +4512,6 @@ form .extradata-list tr:hover td {
   width: 100%;
   max-height: inherit;
   height: auto;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 .phenotype-details .attachment-list .attachment-item.image {
