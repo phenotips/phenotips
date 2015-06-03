@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.ChartServiceMacros" /}}
+      <content>{{include reference="PhenoTips.ChartServiceMacros" /}}
 
 {{velocity}}
 #if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.MeasurementsClass'))

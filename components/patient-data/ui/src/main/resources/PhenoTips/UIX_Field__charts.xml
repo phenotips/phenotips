@@ -108,9 +108,9 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.ChartServiceMacros" /}}
+      <content>{{include reference="PhenoTips.ChartServiceMacros" /}}
 
-{{include document="PhenoTips.PatientSheetMacros" /}}
+{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
