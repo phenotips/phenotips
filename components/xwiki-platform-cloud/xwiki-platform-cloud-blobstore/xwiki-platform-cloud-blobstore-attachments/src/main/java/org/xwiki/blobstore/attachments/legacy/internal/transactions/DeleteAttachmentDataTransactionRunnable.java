@@ -26,14 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.blobstore.BlobStore;
 import org.xwiki.blobstore.attachments.legacy.internal.Utils;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.store.TransactionRunnable;
+import org.xwiki.store.StartableTransactionRunnable;
 
 /**
  * The transaction runnable for deleting all attachment data on the blobstore.
  * 
  * @version $Id$
  */
-public class DeleteAttachmentDataTransactionRunnable extends TransactionRunnable<XWikiHibernateTransaction>
+public class DeleteAttachmentDataTransactionRunnable extends StartableTransactionRunnable<XWikiHibernateTransaction>
 {
     /**
      * The logger.
