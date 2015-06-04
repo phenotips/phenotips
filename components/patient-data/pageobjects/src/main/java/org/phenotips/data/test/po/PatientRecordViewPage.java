@@ -304,7 +304,16 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
     WebElement fieldGestationAtDelivery;
     
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.assistedReproduction_fertilityMeds > div > label")
+    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(1) > .displayed-value")
+    WebElement fieldPrenatalFirstField;
+
+    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(2) > .displayed-value")
+    WebElement fieldPrenatalSecondField;
+
+    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(3) > .displayed-value")
+    WebElement fieldPrenatalThirdField;
+
+    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(1)")
     WebElement fieldFirstAssistedReproduction;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")

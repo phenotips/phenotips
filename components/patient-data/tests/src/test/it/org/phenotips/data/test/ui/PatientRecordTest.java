@@ -131,10 +131,10 @@ public class PatientRecordTest extends AbstractTest
         //patientEdit.setPrenatalDevelopmentOrBirth("Pad thai is good");
         
         PatientRecordViewPage patientView = patientEdit.clickSaveAndView();
-        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldGestationAtDelivery"), "4");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPrenatalFirstField"), "4");
         //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldFirstAssistedReproduction"), "Conception after fertility medication");
         Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldSecondAssistedReproduction"), "In vitro fertilization");
-        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreOneMinute"), "2");
+        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreOneMinute"), "2");
         Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreFiveMinutes"), "5");
         Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPrenatalNotes"), "Thai food is delicious");
         // This should be set automatically since gestation at delivery was 4

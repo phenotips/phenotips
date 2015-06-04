@@ -49,12 +49,8 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_paternal_ethnicity_2")
     WebElement paternalEthnicity;
 
-
     @FindBy(id = "HPrenatalandperinatalhistory")
     WebElement expandPrenatalAndPerinatalHistory;
-
-    @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//p[contains(text(), 'Assisted reproduction')]")
-    WebElement assistedReproductionCheck;
 
     @FindBy(css = ".fieldset.consanguinity .yes")
     WebElement yesConsanguinity;
@@ -65,7 +61,8 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     WebElement familyHealthConditions;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.gestation > div:nth-child(2) > div > div > div.controlled > input[type=\"text\"]")
+    //@FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.gestation > div:nth-child(2) > div > div > div.controlled > input[type=\"text\"]")
+    @FindBy(name = "PhenoTips.PatientClass_0_gestation")
     WebElement gestationAtDelivery;
 
     @FindBy(css = ".fieldset.assistedReproduction_fertilityMeds .yes")
@@ -405,28 +402,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[contains(@class, 'suggestItems')]//*[@class = 'hide-button-wrapper']//*[@class = 'hide-button']")
     WebElement hideQuickSearchBarSuggestions;
 
-    @FindBy(id = "PhenoTips.PatientClass_0_apgar1")
-    WebElement APGAR1Minute;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_apgar5")
-    WebElement APGAR5Minutes;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select > option:nth-child(2)")
-    WebElement dateOfBirthDayOne;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select")
-    WebElement dateOfBirthMonth;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(2) > select > option:nth-child(2)")
-    WebElement dateOfBirthMonthOne;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select")
-    WebElement dateOfBirthYear;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(1) > select > option:nth-child(2)")
-    WebElement dateOfBirthYearOne;
-
-
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'month']")
     WebElement setMonthDate;
 
@@ -579,9 +554,6 @@ public class PatientRecordEditPage extends InlinePage
     WebElement body;
 
     /* Date of Birth */
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div > span:nth-child(3) > select")
-    WebElement dateOfBirthDay;
 
     /* Date of Death */
 
@@ -849,7 +821,6 @@ public class PatientRecordEditPage extends InlinePage
      */
     public void setPrenatalGestationAtDelivery(String weeks)
     {
-        this.gestationAtDelivery.clear();
         this.gestationAtDelivery.sendKeys(weeks);
     }
     
@@ -1996,21 +1967,6 @@ public class PatientRecordEditPage extends InlinePage
             return false;
 
         }
-    }
-
-    public void setApgar1Score(String score)
-    {
-        new Select(this.APGAR1Minute).selectByVisibleText(score);
-    }
-
-    public void setApgar5Score(String score)
-    {
-        new Select(this.APGAR5Minutes).selectByVisibleText(score);
-    }
-
-    public void openDateOfBirth()
-    {
-        this.dateOfBirthDay.click();
     }
 
     public void openDateOfMeasurements()
