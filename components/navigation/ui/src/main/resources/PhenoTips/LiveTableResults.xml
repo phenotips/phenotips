@@ -89,8 +89,8 @@
     #end
     ## FIXME: Add support for ordering on properties from another XClass
     #set($tableAlias = $order)
-    ## only safe version should be used in SQL queries
-    #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
+    ## Only safe version should be used in SQL queries
+    #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]', '')}")
     ##
     #if($order.startsWith('doc.'))
       #set($orderSql = " order by ${safe_tableAlias.replace('_','.')} ${orderDirection}")
@@ -152,7 +152,7 @@
  *#
 #macro(gridresult_buildRowsJSON $map)
   #set($offset = $mathtool.toInteger($request.get('offset')))
-  ## offset starts from 0 in velocity and 1 in javascript
+  ## Offset starts from 0 in velocity and 1 in javascript
   #set($offset = $offset - 1)
   #if (!$offset || $offset &lt; 0)
     #set($offset = 0)
@@ -256,7 +256,7 @@
       #set($fieldDisplayValue = $services.localization.render("${request.transprefix}emptyvalue"))
     #end
     #set($fieldUrl = '')
-    ## only retrieve an URL for a DBListClass item
+    ## Only retrieve an URL for a DBListClass item
     #if($propType == 'DBListClass' &amp;&amp; $propClass.get($colname).getProperty('multiSelect').value != 1)
       #set($fieldUrl = $xwiki.getURL($fieldValue))
       #if($fieldUrl == $xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI'))))
@@ -266,7 +266,7 @@
     #set($discard = $row.put($colname, $fieldDisplayValue.replaceFirst($regextool.quote('{{html clean="false" wiki="false"}}'), '').replaceAll("$regextool.quote('{{/html}}')$", '')))
     #set($discard = $row.put("${colname}_value", $fieldValue))
     #set($discard = $row.put("${colname}_url", $fieldUrl))
-    ## reset to the default class
+    ## Reset to the default class
     #set($discard = $itemDoc.use($className))
   #end
 #end
