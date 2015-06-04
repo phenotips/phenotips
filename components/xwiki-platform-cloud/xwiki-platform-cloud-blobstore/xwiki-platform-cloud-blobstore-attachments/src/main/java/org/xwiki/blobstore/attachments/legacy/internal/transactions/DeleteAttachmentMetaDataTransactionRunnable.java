@@ -51,6 +51,11 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
      * The XWiki context.
      */
     private XWikiContext xwikiContext;
+    
+    /**
+     * Indicates whether the doc object should be saved - usually not if called from another tx
+     */
+    private boolean updateDoc;
 
     /**
      * Constructor.
@@ -58,10 +63,11 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
      * @param xwikiAttachment The XWiki attachment.
      * @param xwikiContext The XWiki context.
      */
-    public DeleteAttachmentMetaDataTransactionRunnable(XWikiAttachment xwikiAttachment, XWikiContext xwikiContext)
+    public DeleteAttachmentMetaDataTransactionRunnable(XWikiAttachment xwikiAttachment, XWikiContext xwikiContext, boolean updateDoc)
     {
         this.xwikiAttachment = xwikiAttachment;
         this.xwikiContext = xwikiContext;
+        this.updateDoc = updateDoc;
     }
 
     @Override
@@ -82,7 +88,8 @@ public class DeleteAttachmentMetaDataTransactionRunnable extends TransactionRunn
             }
         }
 
-        xwikiContext.getWiki().getStore().saveXWikiDoc(xwikiAttachment.getDoc(), xwikiContext, false);
+        if (updateDoc)
+        	xwikiContext.getWiki().getStore().saveXWikiDoc(xwikiAttachment.getDoc(), xwikiContext, false);
 
         session.delete(xwikiAttachment);
     }
