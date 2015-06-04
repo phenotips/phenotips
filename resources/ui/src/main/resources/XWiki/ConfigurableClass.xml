@@ -37,7 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="XWiki.ConfigurableClassMacros" /}}
+  <content>{{include reference="XWiki.ConfigurableClassMacros" /}}
 
 {{velocity}}
 #*

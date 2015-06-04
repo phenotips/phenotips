@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #__hasKnownDataToDisplay('apgar1' $showApgar1Score)

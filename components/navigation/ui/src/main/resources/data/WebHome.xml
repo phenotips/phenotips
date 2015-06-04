@@ -117,7 +117,7 @@ $!value
 
 //Patient information: //
 
-{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
@@ -1019,7 +1019,7 @@ $!value
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute>{{include document="PhenoTips.FormDesigner"/}}</codeToExecute>
+      <codeToExecute>{{include reference="PhenoTips.FormDesigner"/}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>

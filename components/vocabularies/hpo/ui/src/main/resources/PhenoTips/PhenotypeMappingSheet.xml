@@ -54,7 +54,7 @@ $!doc.display('description')
 {{/box}}
 #end
 
-{{include document="PhenoTips.PhenotypeMappingPreview" /}}
+{{include reference="PhenoTips.PhenotypeMappingPreview" /}}
 #end
 {{/velocity}}
 </content>

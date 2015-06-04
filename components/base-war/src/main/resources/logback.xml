@@ -36,6 +36,11 @@
   <logger name="com.xpn.xwiki.store.migration" level="info"/>
   <logger name="com.xpn.xwiki.render.XWikiRadeoxRenderEngine" level="warn"/>
 
+  <!-- Special loggers, not using class names -->
+
+  <!-- Set it to DEBUG to get logs for shuts down operations -->
+  <logger name="org.xwiki.shutdown" level="info"/>
+
   <!-- Hibernate logging options -->
 
   <!-- Global level for all Hibernate logs -->
