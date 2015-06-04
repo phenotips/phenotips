@@ -101,4 +101,20 @@
     when they get a build failure. So for now, I did too. But shouldn't this be fixed? -->
     <coverage.instructionRatio>0.15</coverage.instructionRatio>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Tests use a static field which can't be mocked in multiple threads -->
+          <parallel>classes</parallel>
+          <threadCount>1</threadCount>
+          <reuseForks>false</reuseForks>
+          <forkCount>1</forkCount>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
