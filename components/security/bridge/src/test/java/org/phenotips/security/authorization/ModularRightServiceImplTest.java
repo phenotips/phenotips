@@ -93,6 +93,7 @@ public class ModularRightServiceImplTest
     {
         MockitoAnnotations.initMocks(this);
         Utils.setComponentManager(this.cm);
+        when(this.cm.getInstance(ComponentManager.class, "context")).thenReturn(this.cm);
 
         when(this.cm.getInstance(AuthorizationService.class, "default")).thenReturn(this.internalService);
         when(this.internalService.hasAccess(this.user, Right.VIEW, this.documentReference)).thenReturn(true);
