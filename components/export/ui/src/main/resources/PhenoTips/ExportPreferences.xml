@@ -37,7 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.DatabaseFilters" /}}
+  <content>{{include reference="PhenoTips.DatabaseFilters" /}}
 
 {{velocity output=false}}
 ## if $simple is true the meta fields and the code fields are not rendered

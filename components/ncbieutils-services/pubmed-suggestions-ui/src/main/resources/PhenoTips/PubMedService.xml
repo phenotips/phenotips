@@ -312,7 +312,7 @@ $xwiki.jsx.use('PhenoTips.PubMedService')##
       <scope>wiki</scope>
     </property>
   </object>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
+  <content>{{include reference="PhenoTips.JSONMacros" /}}
 
 {{velocity filter="indent"}}
 #if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')

@@ -37,9 +37,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+  <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
-{{include document="PhenoTips.TabelarDataMacros" /}}
+{{include reference="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity output=false}}
 #set ($displayDocExtra = true)

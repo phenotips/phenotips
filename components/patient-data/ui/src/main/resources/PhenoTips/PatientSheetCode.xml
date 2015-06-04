@@ -3307,8 +3307,10 @@ document.observe('xwiki:dom:loaded', function() {
       this.valid = true;
       this.state = 'NEW';
       this.request = 0;
+      this.acc-symbol = null;
       this.value = input.value;
       this.serviceUrl = new XWiki.Document('CheckHGVSvariant', 'PhenoTips').getURL('get');
+      this.serviceUrlgene = new XWiki.Document('CheckVariantGeneSymbol', 'PhenoTips').getURL('get');
       if (!this.input.__validation) {
         this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
       }
@@ -3336,10 +3338,21 @@ document.observe('xwiki:dom:loaded', function() {
       return true;
     },
     empty : function() {
+      console.log(response);
       this.valid = false;
     },
-    available : function() {
+    available : function(response) {
       this.valid = true;
+      //--TODO-- get previous gene symbol
+      //null it
+      new Ajax.Request(this.serviceUrlgene, {
+          parameters : { outputSyntax: 'plain', id: response.acc-symbol},
+          onComplete : function(response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON.symbol)
+      		//--TODO-- store respond.symbol as a gene symbol
+    		},
+        });
     },  
     invalid : function() {
       this.valid = false;

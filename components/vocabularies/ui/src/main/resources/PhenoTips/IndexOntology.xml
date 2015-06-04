@@ -305,7 +305,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute>{{include document="PhenoTips.IndexOntology" /}}</codeToExecute>
+      <codeToExecute>{{include reference="PhenoTips.IndexOntology" /}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>

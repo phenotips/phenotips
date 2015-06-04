@@ -37,7 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="XWiki.ClassSheet"/}}</content>
+  <content>{{include reference="XWiki.ClassSheet"/}}</content>
   <class>
     <name>PhenoTips.PatientClass</name>
     <customClass/>
@@ -90,7 +90,7 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </apgar5>
     <assistedReproduction_fertilityMeds>
-      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
@@ -104,7 +104,7 @@
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </assistedReproduction_fertilityMeds>
     <assistedReproduction_surrogacy>
-      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
@@ -118,7 +118,7 @@
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </assistedReproduction_surrogacy>
     <consanguinity>
-      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>select</displayFormType>
@@ -694,7 +694,7 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </indication_for_referral>
     <ivf>
-      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
@@ -771,7 +771,7 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </medical_history>
     <miscarriages>
-      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>select</displayFormType>
@@ -837,7 +837,7 @@
     <omim_id>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.OmimDisplay" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.OmimDisplay" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <idField/>
@@ -897,7 +897,7 @@
     <pedigree>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>radio</displayType>
       <idField/>
@@ -924,7 +924,7 @@
       <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
-  {{include document="PhenoTips.PhenotypeDisplay" /}}
+  {{include reference="PhenoTips.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
@@ -969,7 +969,7 @@
       <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
-  {{include document="PhenoTips.PhenotypeDisplay" /}}
+  {{include reference="PhenoTips.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
@@ -1016,7 +1016,7 @@
 #end
 {{/velocity}}
 
-{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
       <idField/>
