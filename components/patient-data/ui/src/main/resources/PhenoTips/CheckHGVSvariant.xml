@@ -57,7 +57,7 @@
 #elseif ($data.errors == 0) 
   $response.setStatus(404)##
   $response.setContentType('application/json')##
-  $jsontool.serialize({'acc-symbol' : $data.sourceAccession})
+  $jsontool.serialize({'accsymbol' : $data.sourceAccession})
   #break
 #else
   $response.setStatus(409)

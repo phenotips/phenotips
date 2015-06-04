@@ -108,16 +108,16 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}&#xd;
-&#xd;
-{{include document="PhenoTips.TabelarDataMacros" /}}&#xd;
-&#xd;
-{{velocity}}&#xd;
-#set ($targetClassName = 'PhenoTips.GeneVariantClass')&#xd;
-#if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))&#xd;
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{include reference="PhenoTips.TabelarDataMacros" /}}
+
+{{velocity}}
+#set ($targetClassName = 'PhenoTips.GeneVariantClass')
+#if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
 === $services.localization.render('phenotips.vcf.sheetTitle') ===
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})&#xd;
-#end&#xd;
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
+#end
 {{/velocity}}</content>
     </property>
     <property>
@@ -127,10 +127,10 @@
       <name>org.phenotips.patientSheet.field.gene-variants</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')&#xd;
-enabled=true&#xd;
-required=&#xd;
-order=2&#xd;
+      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')
+enabled=true
+required=
+order=2
 fields=
 privacy_level=1</parameters>
     </property>

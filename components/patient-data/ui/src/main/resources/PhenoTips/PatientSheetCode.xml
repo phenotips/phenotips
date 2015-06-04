@@ -3307,7 +3307,6 @@ document.observe('xwiki:dom:loaded', function() {
       this.valid = true;
       this.state = 'NEW';
       this.request = 0;
-      this.acc-symbol = null;
       this.value = input.value;
       this.serviceUrl = new XWiki.Document('CheckHGVSvariant', 'PhenoTips').getURL('get');
       this.serviceUrlgene = new XWiki.Document('CheckVariantGeneSymbol', 'PhenoTips').getURL('get');
@@ -3325,8 +3324,7 @@ document.observe('xwiki:dom:loaded', function() {
           
           on403 : this.empty.bindAsEventListener(this),
           on404 : this.available.bindAsEventListener(this),
-          on409 : this.invalid.bindAsEventListener(this),
-          onComplete: this.responded.bindAsEventListener(this)
+          on409 : this.invalid.bindAsEventListener(this)
         });
       }
     },
@@ -3343,16 +3341,21 @@ document.observe('xwiki:dom:loaded', function() {
     },
     available : function(response) {
       this.valid = true;
-      //--TODO-- get previous gene symbol
-      //null it
-      new Ajax.Request(this.serviceUrlgene, {
-          parameters : { outputSyntax: 'plain', id: response.acc-symbol},
-          onComplete : function(response) {
-            console.log(response.responseJSON);
-            if (response.responseJSON.symbol)
-      		//--TODO-- store respond.symbol as a gene symbol
-    		},
-        });
+      if (this.valid) {
+	      //constructing the second column input name from this.input.name
+	      var second_occur = this.input.name.indexOf("_", this.input.name.indexOf("_") + 1);
+	      var xwikiclass_name = this.input.name.substring(0, second_occur+1)+"genesymbol";
+	      var next_input = document.getElementsByName(xwikiclass_name);
+	      next_input.value = "";
+	      var acc_symbol = response.responseJSON.accsymbol;
+	      new Ajax.Request(this.serviceUrlgene, {
+	          parameters : {id: acc_symbol},
+	          onComplete : function(response) {
+	            if (response.responseJSON.symbol)
+	      		next_input.value = response.responseJSON.symbol;
+	    		},
+	      });
+      }
     },  
     invalid : function() {
       this.valid = false;
