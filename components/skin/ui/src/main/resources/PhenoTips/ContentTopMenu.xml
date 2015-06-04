@@ -674,14 +674,14 @@
       {
         onYes : function() {
           var exportAfterSave = function() {
-            window.self.location = event.findElement().href;
+            window.open(event.findElement().href,"_blank");
             document.stopObserving('xwiki:document:saved', exportAfterSave);
           };
           document.observe('xwiki:document:saved', exportAfterSave);
           document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
         },
         onNo : function() {
-          window.self.location = event.findElement().href;
+          window.open(event.findElement().href,"_blank");
         }
       },
       /* Interaction parameters */
