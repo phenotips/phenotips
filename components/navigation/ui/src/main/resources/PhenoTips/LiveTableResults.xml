@@ -242,7 +242,7 @@
     #end
     ## Retrieve the property type as it might be usefull
     #set($propType = '')
-    #if($listtool.contains($propClass.getPropertyNames(), $colname))
+    #if($propClass.getPropertyNames().contains($colname))
       #set($propType = "$!propClass.get($colname).type")
     #end
     #set($fieldValue = "$!itemDoc.getValue($colname)")
@@ -327,7 +327,7 @@
     #set($propClass = $class)
   #end
   #set($propType = '')
-  #if($listtool.contains($propClass.getPropertyNames(), $colname))
+  #if($propClass.getPropertyNames().contains($colname))
     #set($propType = "$!{propClass.get($colname).type}")
   #end
   #if($propType == 'NumberClass')
@@ -389,7 +389,7 @@
   #set ($targetedObject = 'obj')
   #if($propClassName != '')
     #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
-    #if ($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
+    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
       #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
       #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
       #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
@@ -400,7 +400,7 @@
   #else
     #set($propClass = $class)
   #end
-  #if($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname))
+  #if($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname))
     #set($propType = "$!{propClass.get($colname).type}")
   #elseif (!$colname.startsWith('doc.'))
     #break($macro)
