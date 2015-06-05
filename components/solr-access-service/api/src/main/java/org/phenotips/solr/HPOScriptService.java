@@ -78,12 +78,16 @@ public class HPOScriptService extends AbstractSolrScriptService
             crt = nodes.poll();
             results.add(String.valueOf(crt.get(ID_FIELD_NAME)));
             @SuppressWarnings("unchecked")
-            List<String> parents = (List<String>) crt.get("is_a");
+            Object parents = crt.get("is_a");
             if (parents == null) {
                 continue;
             }
-            for (String pid : parents) {
-                nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
+            if (parents.getClass() == String.class) {
+                nodes.add(this.get(StringUtils.substringBefore((String) parents, " ")));
+            } else {
+                for (String pid : (List<String>) parents) {
+                    nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
+                }
             }
         }
         return results;
