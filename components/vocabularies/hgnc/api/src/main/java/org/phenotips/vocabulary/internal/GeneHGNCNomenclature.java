@@ -156,11 +156,11 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
-            + "&order_by=" + ORDER_BY
-            + "&format=" + OUTPUT_FORMAT
-            + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-            // those come by default in every query
-            + "&status_opt=2&where=&limit=&submit=submit";
+                + "&order_by=" + ORDER_BY
+                + "&format=" + OUTPUT_FORMAT
+                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+                // those come by default in every query
+                + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
@@ -199,7 +199,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             SYMBOL_FIELD_NAME, escapedSymbol,
             PREV_SYMBOL_FIELD_NAME, escapedSymbol,
             ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
-        return requestTerm(queryString);
+        return requestTerm(queryString, SYMBOL_EXACT);
     }
 
     /**
@@ -218,7 +218,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
             ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
             ENTREZ_ID_FIELD_NAME, escapedSymbol,
             REFSEQ_ACCESSION_FIELD_NAME, escapedSymbol);
-        return requestTerm(queryString);
+        return requestTerm(queryString, null);
     }
 
     private Map<String, String> getStaticSolrParams()

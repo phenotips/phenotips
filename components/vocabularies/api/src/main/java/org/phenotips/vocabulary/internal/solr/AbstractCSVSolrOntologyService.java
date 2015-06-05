@@ -127,7 +127,7 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
         return 1;
     }
 
-    protected VocabularyTerm requestTerm(String queryString)
+    protected VocabularyTerm requestTerm(String queryString, String params)
     {
         QueryResponse response;
         SolrQuery query = new SolrQuery();
@@ -135,7 +135,10 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
         VocabularyTerm term;
         query.setQuery(queryString);
         query.setRows(1);
-        query.set(COMMON_PARAMS_PF, SYMBOL_EXACT);
+        if (params != null) {
+            query.set(COMMON_PARAMS_PF, params);
+        }
+
         try {
             response = this.externalServicesAccess.getSolrConnection().query(query);
             termList = response.getResults();
