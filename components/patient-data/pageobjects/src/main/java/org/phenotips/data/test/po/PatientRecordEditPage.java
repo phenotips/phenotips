@@ -34,12 +34,6 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class PatientRecordEditPage extends InlinePage
 {
-    @FindBy(css = "#document-title h1")
-    WebElement recordId;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_external_id")
-    WebElement patientIdentifier;
-
     @FindBy(id = "HFamilyhistoryandpedigree")
     WebElement expandFamilyHistory;
 
@@ -52,12 +46,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "HPrenatalandperinatalhistory")
     WebElement expandPrenatalAndPerinatalHistory;
 
-    @FindBy(css = ".fieldset.consanguinity .yes")
-    WebElement yesConsanguinity;
-
-    @FindBy(css = ".fieldset.miscarriages .no")
-    WebElement noMiscarriages;
-
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     WebElement familyHealthConditions;
 
@@ -65,38 +53,16 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(name = "PhenoTips.PatientClass_0_gestation")
     WebElement gestationAtDelivery;
 
-    @FindBy(css = ".fieldset.assistedReproduction_fertilityMeds .yes")
-    WebElement conceptionAfterFertilityMedication;
-
-    @FindBy(css = ".fieldset.ivf .yes")
-    WebElement inVitroFertilization;
-
-    @FindBy(css = ".fieldset.assistedReproduction_surrogacy .yes")
-    WebElement gestationalSurrogacy;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_prenatal_development")
-    WebElement prenatalAndPerinatalHistoryNotes;
-
     @FindBy(id = "HMedicalhistory")
     WebElement expandMedicalHistory;
-
-    @FindBy(xpath = "//*[@class = 'fieldset medical_history ']//*[contains(@class, 'group-title')]")
-    WebElement medicalAndDevelopementalHistory;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_medical_history")
-    WebElement typeMedicalAndDevelopmentalHistory;
-
-    @FindBy(id = "PhenoTips.PatientClass_0_global_age_of_onset_HP:0003593")
-    WebElement globalAgeOfOnset;
 
     @FindBy(id = "HMeasurements")
     WebElement expandMeasurements;
 
-    @FindBy(xpath = "//div[contains(@class, 'growth-charts-section')]//*[@class = 'wikigeneratedheader']")
-    WebElement checkIfMeasurementsExpanded;
-
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.measurement-info.chapter > div.list-actions > p > span.buttonwrapper > a")
+    @FindBy(css = ".measurement-info.chapter > div.list-actions > p > span.buttonwrapper > a")
     WebElement newEntryMeasurements;
+
+    /* MEASUREMENT ELEMENTS */
 
     @FindBy(id = "PhenoTips.MeasurementsClass_0_weight")
     WebElement measurementWeight;
@@ -152,33 +118,16 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.MeasurementsClass_0_foot_right")
     WebElement measurementRightFootLength;
 
-    @FindBy(id = "HGrowthcharts")
-    WebElement expandGrowthCharts;
-
     @FindBy(id = "HGenotypeinformation")
     WebElement expandGenotypeInformation;
-
-    @FindBy(xpath = "//*[contains(@class, 'genotype chapter')]//*[@class = 'wikigeneratedheader']")
-    WebElement checkIfGenotypeInformationExpanded;
-
-    @FindBy(xpath = "//*[contains(@class, 'genotype chapter')]//*[@class = 'list-actions']//*[contains(@class, 'add-data-button')]")
-    WebElement newEntryGenotypeInformation;
-
-    @FindBy(id = "PhenoTips.InvestigationClass_0_comments")
-    WebElement genotypeInformationComments;
-
-    @FindBy(xpath = "//*[contains(@class, 'clinical-info genotype')]//*[contains(@class, 'extradata-list')]//*[contains(@class, 'suggest-gene')]")
-    WebElement genotypeInformationGene;
-
 
     @FindBy(id = "PhenoTips.PatientClass_0_unaffected")
     WebElement patientIsClinicallyNormal;
 
     @FindBy(id = "HDiagnosis")
     WebElement expandDiagnosis;
+    //
 
-    @FindBy(css = ".fieldset.diagnosis_notes .group-title")
-    WebElement checkDiagnosisExpanded;
 
     @FindBy(id = "PhenoTips.PatientClass_0_diagnosis_notes")
     WebElement diagnosisAdditionalComments;
@@ -256,16 +205,16 @@ public class PatientRecordEditPage extends InlinePage
     WebElement severitySeizures;
 
     @FindBy(xpath = "//*[contains(@class, 'summary-item')][.//input[@value = 'HP:0001250']]//dd[@class = 'severity']//li[contains(@class, 'term-entry')][.//input[@value = 'HP:0012825']]//*[@value = 'HP:0012825']")
-    private WebElement mildSeveritySeizures;
+    WebElement mildSeveritySeizures;
 
     @FindBy(xpath = "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010722']]")
-    private WebElement asymmetryOfTheEarsYes;
+    WebElement asymmetryOfTheEarsYes;
 
     @FindBy(xpath = "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]")
-    private WebElement immunodeficiencyYes;
+    WebElement immunodeficiencyYes;
 
     @FindBy(xpath = "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]")
-    private WebElement abnormalityOfTheCartoidArteriesYes;
+    WebElement abnormalityOfTheCartoidArteriesYes;
 
     @FindBy(xpath = "//*[contains(@class, 'background-search')]//label[@class = 'yes'][.//input[@value = 'HP:0010297']]")
     WebElement bifidTongueYes;
@@ -550,6 +499,9 @@ public class PatientRecordEditPage extends InlinePage
 
     // MINE
     
+    @FindBy(id = "PhenoTips.PatientClass_0_external_id")
+    WebElement patientIdentifier;
+    
     @FindBy(id = "body")
     WebElement body;
 
@@ -560,10 +512,10 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'year']")
     WebElement setYearDateOfBirth;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_birth.date > div:nth-child(2) > div > div")
+    @FindBy(css = ".fieldset.date_of_birth.date > div:nth-child(2) > div > div")
     WebElement birthDateSelector;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.patient-info.chapter > div.fieldset.date_of_death.date > div:nth-child(2) > div > div")
+    @FindBy(css = ".fieldset.date_of_death.date > div:nth-child(2) > div > div")
     WebElement deathDateSelector;
     
     @FindBy(id = "PhenoTips.PatientClass_0_last_name")
@@ -592,10 +544,10 @@ public class PatientRecordEditPage extends InlinePage
 
     // Assisted Reproduction
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.assistedReproduction_fertilityMeds > div > span > label.yes")
+    @FindBy(css = ".assistedReproduction_fertilityMeds > div > span > label.yes")
     WebElement assistedReproductionFertilityYes;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > span > label.no")
+    @FindBy(css = ".prenatal-info.chapter > div.fieldset.ivf > div > span > label.no")
     WebElement assistedReproductionInVitroNo;
 
     // APGAR Scores
@@ -612,13 +564,13 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[@id=\"PhenoTips.PatientClass_0_prenatal_phenotype_HP:0001518\"]")
     WebElement prenatalGrowthSmallGestationalYes;
     
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div:nth-child(11) > div.prenatal_phenotype-main.predefined-entries > div:nth-child(4) > div:nth-child(2) > span.yes-no-picker.initialized > label.yes")
+    @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div:nth-child(4) > div:nth-child(2) > span.yes-no-picker.initialized > label.yes")
     WebElement prenatalGrowthLargeBirthYes;
 
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_prenatal_phenotype_0\\2e 5173270363501185")
     WebElement prenatalGrowthOther;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div:nth-child(12) > div.prenatal_phenotype-main.predefined-entries > div:nth-child(2) > span.yes-no-picker.initialized > label.no")
+    @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div:nth-child(2) > span.yes-no-picker.initialized > label.no")
     WebElement prenatalDevelopmentPolyhydramniosNo;
 
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_prenatal_phenotype_0\\2e 8363013346655174")
@@ -636,7 +588,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(css = "#PhenoTips\\2e InvestigationClass_0_comments")
     WebElement geneCandidateComment;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.genotype.chapter > div:nth-child(5) > p > span.buttonwrapper > a")
+    @FindBy(css = ".genotype.chapter > div:nth-child(5) > p > span.buttonwrapper > a")
     WebElement newEntryListOfCandidateGenes;
 
     @FindBy(css = "#extradata-list-PhenoTips\\2e RejectedGenesClass > tbody > tr.new > td.gene > input")
@@ -645,7 +597,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(css = "#PhenoTips\\2e RejectedGenesClass_1_comments")
     WebElement genePreviouslyTestedComment;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.genotype.chapter > div:nth-child(8) > p > span.buttonwrapper > a")
+    @FindBy(css = ".genotype.chapter > div:nth-child(8) > p > span.buttonwrapper > a")
     WebElement newEntryPreviouslyTested;
 
     @FindBy(id = "HCaseresolution")
@@ -654,13 +606,13 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved")
     WebElement caseSolved;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.phenotype-info.chapter.collapsed > span > span.buttonwrapper.show > button")
+    @FindBy(css = ".phenotype-info.chapter.collapsed > span > span.buttonwrapper.show > button")
     WebElement clinicalSymptomsAndPhysicalFindings;
 
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved__pubmed_id")
     WebElement pubmedID;
 
-    @FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div > input")
+    @FindBy(css = ".fieldset.solved__gene_id > div:nth-child(2) > div > input")
     WebElement geneID;
 
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved__notes")
@@ -1116,23 +1068,6 @@ public class PatientRecordEditPage extends InlinePage
 
     ///////////////////////////////////
 
-    public void newEntryGenotypeInformation()
-    {
-        this.newEntryGenotypeInformation.click();
-    }
-
-    public void setGenotypeInformationComments(String value)
-    {
-        this.waitUntilElementIsVisible(By.id("PhenoTips.InvestigationClass_0_comments"));
-        this.genotypeInformationComments.clear();
-        this.genotypeInformationComments.sendKeys(value);
-    }
-
-    public void setGenotypeInformationGene(String value)
-    {
-        this.genotypeInformationGene.clear();
-        this.genotypeInformationGene.sendKeys(value);
-    }
 
     public void setPatientClinicallyNormal()
     {
@@ -1547,11 +1482,6 @@ public class PatientRecordEditPage extends InlinePage
     public void expandDiagnosis()
     {
         this.expandDiagnosis.click();
-    }
-
-    public String checkDiagnosisExpaned()
-    {
-        return this.checkDiagnosisExpanded.getText();
     }
 
     public void setDiagnosisAdditionalComments(String value)
