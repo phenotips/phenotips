@@ -68,14 +68,14 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
-            "phenotype_by_section" };
+        "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+        "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-            { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-                { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-                { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-                { "category" } };
+        { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
+        { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+        { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+        { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -91,7 +91,7 @@ public class DataToCellConverter
 
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -259,10 +259,10 @@ public class DataToCellConverter
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
-        String[] fieldIds = { "genes", "genes_comments", "rejectedGenes", "rejectedGenes_comments" };
+        String[] fieldIds = { "genes", "genes_classification", "genes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
+        { { "candidate" }, { "classification", "candidate" }, { "comments", "classification", "candidate" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -297,7 +297,13 @@ public class DataToCellConverter
         section.addCell(cell);
         hX++;
 
-        if (present.contains("comments") || present.contains("rejected_comments")) {
+        if (present.contains("classification")) {
+            cell = new DataCell("Classification", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("comments")) {
             cell = new DataCell("Comments", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
@@ -326,7 +332,7 @@ public class DataToCellConverter
         if (present.contains("candidate")) {
             PatientData<Map<String, String>> candidateGenes = patient.getData("genes");
             if (candidateGenes != null && candidateGenes.isIndexed()) {
-                DataCell cell = new DataCell("Candidate", 0, y);
+                DataCell cell = new DataCell("Genes", 0, y);
                 section.addCell(cell);
                 for (Map<String, String> candidateGene : candidateGenes) {
                     hasGenes = true;
@@ -334,30 +340,15 @@ public class DataToCellConverter
                     cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
 
-                    if (present.contains("comments")) {
-                        String comment = candidateGene.get("comments");
-                        cell = new DataCell(comment, 2, y);
+                    if (present.contains("classification")) {
+                        String classification = candidateGene.get("classification");
+                        cell = new DataCell(classification, 2, y);
                         section.addCell(cell);
                     }
-                    y++;
-                }
-            }
-        }
-        if (present.contains("rejected")) {
-            PatientData<Map<String, String>> rejectedGenes = patient.getData("rejectedGenes");
-            if (rejectedGenes != null && rejectedGenes.isIndexed()) {
-                DataCell cell = new DataCell("Previously tested", 0, y, StyleOption.YES_NO_SEPARATOR);
-                cell.addStyle(StyleOption.NO);
-                section.addCell(cell);
-                for (Map<String, String> rejectedGene : rejectedGenes) {
-                    hasGenes = true;
-                    String geneName = rejectedGene.get("gene");
-                    cell = new DataCell(geneName, 1, y);
-                    section.addCell(cell);
 
-                    if (present.contains("rejected_comments")) {
-                        String comment = rejectedGene.get("comments");
-                        cell = new DataCell(comment, 2, y);
+                    if (present.contains("comments")) {
+                        String comment = candidateGene.get("comments");
+                        cell = new DataCell(comment, 3, y);
                         section.addCell(cell);
                     }
                     y++;
@@ -368,7 +359,7 @@ public class DataToCellConverter
         /* Creating empties */
         if (!hasGenes) {
             /* Status, and gene name columns are always present */
-            int columns = present.contains("comments") || present.contains("rejected_comments") ? 3 : 2;
+            int columns = present.contains("comments") ? 3 : 2;
             Integer emptyX = 0;
             for (int i = 0; i < columns; i++) {
                 DataCell cell = new DataCell("", emptyX, 0);
@@ -675,19 +666,19 @@ public class DataToCellConverter
             PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            int y = 0;
-            if (modeTermList != null && !modeTermList.isEmpty()) {
-                for (SolrVocabularyTerm term : modeTermList) {
-                    String mode = term != null ? term.getName() : "";
-                    DataCell cell = new DataCell(mode, x, y);
+                int y = 0;
+                if (modeTermList != null && !modeTermList.isEmpty()) {
+                    for (SolrVocabularyTerm term : modeTermList) {
+                        String mode = term != null ? term.getName() : "";
+                        DataCell cell = new DataCell(mode, x, y);
+                        bodySection.addCell(cell);
+                        y++;
+                    }
+                } else {
+                    DataCell cell = new DataCell("", x, y);
                     bodySection.addCell(cell);
-                    y++;
                 }
-            } else {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
-            x++;
+                x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -869,7 +860,7 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+        "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
         Set<String> present = new HashSet<String>();
@@ -888,7 +879,7 @@ public class DataToCellConverter
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
@@ -1236,7 +1227,6 @@ public class DataToCellConverter
         return bodySection;
     }
 
-
     public DataSection isSolvedHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "isSolved";
@@ -1245,7 +1235,6 @@ public class DataToCellConverter
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         fieldToHeaderMap.put("solved", "Solved");
         fieldToHeaderMap.put("solved__pubmed_id", "PubMed ID");
-        fieldToHeaderMap.put("solved__gene_id", "Gene ID");
         fieldToHeaderMap.put("solved__notes", "Notes");
 
         Set<String> present = new LinkedHashSet<>();
@@ -1294,12 +1283,6 @@ public class DataToCellConverter
         if (present.contains("solved__pubmed_id")) {
             String pubmedId = patientData != null ? patientData.get("solved__pubmed_id") : null;
             DataCell cell = new DataCell(pubmedId != null ? pubmedId : "", x, 0);
-            bodySection.addCell(cell);
-            x++;
-        }
-        if (present.contains("solved__gene_id")) {
-            String geneId = patientData != null ? patientData.get("solved__gene_id") : null;
-            DataCell cell = new DataCell(geneId != null ? geneId : "", x, 0);
             bodySection.addCell(cell);
             x++;
         }

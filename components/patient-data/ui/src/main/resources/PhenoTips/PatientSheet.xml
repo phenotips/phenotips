@@ -75,7 +75,6 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
   #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
   #set ($discard = $options.put('labels', "$!{request.withLabel}"))
   #set ($discard = $options.put('mode', 'edit'))
-  #set ($discard = $options.put('rejectToClass', "$!{request.rejectToClass}"))
   #__extradata_displayLastEntry($request.dataClassName $options)
 #elseif ("$!{request.xaction}" == 'lastmeta')
   #__phenotypeMeta_displayLastEntry()
