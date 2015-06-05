@@ -339,11 +339,14 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         for (SolrInputDocument solrdoc : solrdocs) {
             int count = 0;
             for (String field : curated) {
-                if ("".equals(solrdoc.get(field))) {
-                    if (!REFSEQ_ACCESSION_FIELD_NAME.equals(field)) {
+                if (solrdoc.get(field) == null) {
+                    if (!REFSEQ_ACCESSION_FIELD_NAME.equals(field)
+                        && solrdoc.getFieldValue(external.get(count)) != null) {
                         solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
                     } else {
-                        solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+                        if (solrdoc.getFieldValues(external.get(count)) != null) {
+                            solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+                        }
                     }
                 }
                 solrdoc.removeField(external.get(count));
