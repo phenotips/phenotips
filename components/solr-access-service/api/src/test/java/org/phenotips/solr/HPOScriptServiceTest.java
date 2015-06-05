@@ -1,8 +1,29 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.solr;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SpellCheckResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CommonParams;
 import org.junit.Assert;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -11,33 +32,36 @@ import org.apache.solr.common.params.SolrParams;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
+
 import org.mockito.internal.matchers.CapturingMatcher;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
 import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.script.service.ScriptService;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 
 
 public class HPOScriptServiceTest
 {
-
-    private final String ID_FIELD_NAME = "id";
-
 
     @Rule
     public MockitoComponentMockingRule<HPOScriptService> mocker =
@@ -55,36 +79,96 @@ public class HPOScriptServiceTest
     @Mock
     private QueryResponse response;
 
-    @Mock
     private SolrDocumentList solrDocList;
 
     @Mock
     private SpellCheckResponse spellCheckResponse;
 
+    private int indexReturn;
+
+    private final String fieldNames = "id,name,def,comment,synonym,is_a";
+
     @Before
-    public void setUp() throws ComponentLookupException, IOException, SolrServerException
+    public void setUp() throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         MockitoAnnotations.initMocks(this);
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "cache", this.cache);
-        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "server", this.server);
-        when(this.server.query((SolrParams)Matchers.any())).thenReturn(response);
+
+        SolrVocabularyResourceManager externalServicesAccess =
+                this.mocker.getInstance(SolrVocabularyResourceManager.class);
+        when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
+
+        CacheManager cacheFactory = this.mocker.getInstance(CacheManager.class);
+        when(cacheFactory.createNewLocalCache((CacheConfiguration) Matchers.any())).thenReturn((Cache) this.cache);
+
+    }
+
+    @Test
+    public void testIndex() throws IOException, SolrServerException, ComponentLookupException
+    {
+        indexReturn = this.mocker.getComponentUnderTest().index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
+
+        verify(this.server).add(anyCollectionOf(SolrInputDocument.class));
+        verify(this.server).commit();
+        verify(this.cache).removeAll();
+        Assert.assertEquals(0, indexReturn);
     }
 
     @Test
     public void testGetUsesServer() throws ComponentLookupException, IOException, SolrServerException
     {
+        String id = "HP:0000118";
 
-        CapturingMatcher<SolrParams> argCap = new CapturingMatcher<>();
-        String expectedQuery = "id:HP\\:0000118";
-        when(this.server.query(Matchers.argThat(argCap))).thenReturn(this.response);
-        when(this.response.getResults()).thenReturn(solrDocList);
+        when(this.server.query((SolrParams)any())).thenReturn(this.response);
         when(this.response.getSpellCheckResponse()).thenReturn(spellCheckResponse);
-        this.mocker.getComponentUnderTest().get("HP:0000118");
-        List<SolrParams> capturedArgs = argCap.getAllValues();
+        this.mocker.getComponentUnderTest().get(id);
 
-        //TODO: Generate query here and use compare query objects, not strings
-        Assert.assertEquals("q=id:HP\\:0000118&spellcheck=true&fl=*+score&start=0&rows=1&spellcheck.collate=true", capturedArgs.remove(0).toString());
-        Assert.assertEquals("q=alt_id:HP\\:0000118&spellcheck=true&fl=*+score&start=0&rows=1&spellcheck.collate=true", capturedArgs.remove(0).toString());
+        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id)));
+        verify(this.server).query(Matchers.argThat(new IsMatchingAltIDQuery(id)));
+
+    }
+
+    @Test
+    public void testGetAllAncestorsAndSelfIDs() throws ComponentLookupException, IOException, SolrServerException
+    {
+        CapturingMatcher<Collection<SolrInputDocument>> alltermsCap = new CapturingMatcher<>();
+        when(this.server.add(Matchers.argThat(alltermsCap))).thenReturn(new UpdateResponse());
+
+        indexReturn = this.mocker.getComponentUnderTest().index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
+
+        Collection<SolrInputDocument> allterms = alltermsCap.getLastValue();
+        solrDocList = new SolrDocumentList();
+        for(SolrInputDocument i : allterms){
+            solrDocList.add(ClientUtils.toSolrDocument(i));
+        }
+
+        when(this.server.query((SolrParams)any())).thenAnswer(new Answer<QueryResponse>()
+        {
+            @Override
+            public QueryResponse answer(InvocationOnMock invocationOnMock) throws Throwable
+            {
+                SolrParams params = (SolrParams) invocationOnMock.getArguments()[0];
+                if (params == null) {
+                    when(response.getResults()).thenReturn(mock(SolrDocumentList.class));
+                    return response;
+                }
+                for (SolrDocument item : solrDocList) {
+                    String fieldValue = (String)item.getFieldValue("id");
+                    fieldValue = fieldValue.replace(":", "\\:");
+                    if (params.get(CommonParams.Q).contains(fieldValue)) {
+                        SolrDocumentList matchedItem = new SolrDocumentList();
+                        matchedItem.add(item);
+                        when(response.getResults()).thenReturn(matchedItem);
+                        return response;
+                    }
+                }
+                when(response.getResults()).thenReturn(mock(SolrDocumentList.class));
+                return  response;
+            }
+        });
+
+        Set<String> result = this.mocker.getComponentUnderTest().getAllAncestorsAndSelfIDs("HP:0001507");
+        Assert.assertTrue(result.contains("HP:0000118"));
+        Assert.assertTrue(result.contains("HP:0000001"));
     }
 
     @Test
@@ -93,16 +177,70 @@ public class HPOScriptServiceTest
         String cacheKey = "{id:HP:0000118\n}";
         when(this.cache.get(cacheKey)).thenReturn(doc);
         SolrDocument result = this.mocker.getComponentUnderTest().get("HP:0000118");
-        verify(this.server, never()).query((SolrParams)Matchers.any());
+        verify(this.server, never()).query((SolrParams)any());
         Assert.assertSame(this.doc, result);
     }
 
     @Test
-    public void testCacheReturnsEmptyMarker() throws ComponentLookupException
+    public void testCacheReturnsEmptyMarker() throws ComponentLookupException, IOException, SolrServerException
     {
-        when(this.cache.get(Matchers.anyString())).thenReturn(null);
-        when(this.mocker.getComponentUnderTest().search((Map<String, String>)Matchers.anyMap(), 1, 0)).thenReturn(null);
+        when(this.server.query((SolrParams)any())).thenReturn(response);
+        when(this.cache.get(anyString())).thenReturn(null);
+        when(this.mocker.getComponentUnderTest().search(anyMap(), 1, 0)).thenReturn(null);
         SolrDocument result = this.mocker.getComponentUnderTest().get("HP:0000118");
         Assert.assertNull(result);
+    }
+
+    @Test
+    public void testClear() throws ComponentLookupException, IOException, SolrServerException
+    {
+        int returnVal = this.mocker.getComponentUnderTest().clear();
+        verify(this.server).deleteByQuery("*:*");
+        verify(this.server).commit();
+        verify(this.cache).removeAll();
+        Assert.assertEquals(0, returnVal);
+    }
+
+
+    private class IsMatchingIDQuery extends ArgumentMatcher<SolrParams>{
+
+        private String id;
+
+        public IsMatchingIDQuery(String id){
+            id = id.replace(":", "\\:");
+            this.id = id;
+        }
+
+        @Override
+        public boolean matches(Object argument)
+        {
+            if (argument == null) {
+                return false;
+            }
+            SolrParams params = (SolrParams)argument;
+            return params.get(CommonParams.Q).startsWith("id")
+                    && params.get(CommonParams.Q).contains(id);
+        }
+    }
+
+    private class IsMatchingAltIDQuery extends ArgumentMatcher<SolrParams>{
+
+        private String id;
+
+        public IsMatchingAltIDQuery(String id){
+            id = id.replace(":", "\\:");
+            this.id = id;
+        }
+
+        @Override
+        public boolean matches(Object argument)
+        {
+            if (argument == null) {
+                return false;
+            }
+            SolrParams params = (SolrParams)argument;
+            return params.get(CommonParams.Q).startsWith("alt_id")
+                    && params.get(CommonParams.Q).contains(id);
+        }
     }
 }
