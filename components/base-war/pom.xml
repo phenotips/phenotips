@@ -139,6 +139,13 @@
       <type>zip</type>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-flamingo-skin</artifactId>
+      <version>${xwiki.version}</version>
+      <type>zip</type>
+      <scope>runtime</scope>
+    </dependency>
     <!-- Include the pedigree editor -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -227,7 +234,7 @@
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
                 <xwikiCfgDefaultSkin>phenotips</xwikiCfgDefaultSkin>
-                <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+                <xwikiCfgDefaultBaseSkin>flamingo</xwikiCfgDefaultBaseSkin>
                 <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
                 <xwikiCfgAdditionalProperties>
 xwiki.plugin.watchlist.automaticwatch=none
@@ -309,6 +316,12 @@ activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
             <overlay>
               <groupId>org.xwiki.platform</groupId>
               <artifactId>xwiki-platform-colibri</artifactId>
+              <type>zip</type>
+              <targetPath>skins/</targetPath>
+            </overlay>
+            <overlay>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-flamingo-skin</artifactId>
               <type>zip</type>
               <targetPath>skins/</targetPath>
             </overlay>

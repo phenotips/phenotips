@@ -1596,7 +1596,7 @@ h1:target, h2:target, h3:target {
       </viewheader.vm>
     </class>
     <property>
-      <baseskin>phenotips</baseskin>
+      <baseskin>flamingo</baseskin>
     </property>
     <property>
       <edit.vm/>
