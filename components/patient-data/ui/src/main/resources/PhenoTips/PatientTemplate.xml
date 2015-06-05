@@ -122,7 +122,21 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </assistedReproduction_surrogacy>
-      <consanguinity>
+    <assistedReproduction_donor>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_donor</name>
+      <number>47</number>
+      <prettyName>Donor sperm or egg</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_donor>
+    <consanguinity>
         <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
         <disabled>0</disabled>
