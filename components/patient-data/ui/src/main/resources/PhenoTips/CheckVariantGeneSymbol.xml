@@ -44,7 +44,7 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ($request.getParameter('id'))
-  #set ($term = $services.vocabularies.hgnc.getTermByAlternativeId("${request.q}"))
+  #set ($term = $services.vocabularies.hgnc.getTermByAlternativeId($request.id))
 #else
   $response.setStatus(400)
   Please specify a variant to check

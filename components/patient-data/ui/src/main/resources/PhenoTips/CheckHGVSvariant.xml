@@ -54,7 +54,7 @@
   $response.setStatus(403)
   Unknown
   #break
-#elseif ($data.errors == 0) 
+#elseif ($data.sourceAccession) 
   $response.setStatus(404)##
   $response.setContentType('application/json')##
   $jsontool.serialize({'accsymbol' : $data.sourceAccession})
