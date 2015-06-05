@@ -675,8 +675,9 @@
       new XWiki.widgets.ConfirmationBox(
         {
           onYes : function() {
+            var myWindow = window.open("","_blank");
             var exportAfterSave = function() {
-              window.open(event.findElement().href,"_blank");
+              myWindow.location = event.findElement().href;
               document.stopObserving('xwiki:document:saved', exportAfterSave);
             };
             document.observe('xwiki:document:saved', exportAfterSave);
