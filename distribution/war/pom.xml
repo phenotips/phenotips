@@ -533,6 +533,11 @@
       <version>${xwiki.version}</version>
     </dependency>
     <!-- PhenoTips components -->
+	<dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>genomic-tools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>component-registry</artifactId>
