@@ -49,6 +49,7 @@ public interface PatientScorer
     /**
      * Get the priority of this scorer. Higher priority (larger integer) scorers will be used first.
      *
+     * @since 1.0RC1
      * @return a score greater than {@code 0}
      */
     int getScorerPriority();
