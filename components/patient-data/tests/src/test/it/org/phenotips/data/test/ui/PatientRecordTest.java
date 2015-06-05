@@ -78,11 +78,11 @@ public class PatientRecordTest extends AbstractTest
                     "This content can be a short summary or include content from the patient record. DO NOT RECORD any Protected Health Information."));
 
         PatientRecordViewPage patientView = patientEdit.clickSaveAndView();
-        Assert.assertEquals(patientView.getPatientInformationSummary("fieldPatientName"), "Ceasar, Salad");
-        Assert.assertEquals(patientView.getPatientInformationSummary("fieldDateOfBirth"), "2013-04-01");
-        Assert.assertEquals(patientView.getPatientInformationSummary("fieldDateOfDeath"), "2001-03-02");
-        Assert.assertEquals(patientView.getPatientInformationSummary("fieldSex"), "Male");
-        Assert.assertEquals(patientView.getPatientInformationSummary("fieldIndicationForReferral"), "indicate referral");
+        Assert.assertEquals("Ceasar, Salad", patientView.getPatientInformationSummary("fieldPatientName"));
+        Assert.assertEquals("2013-04-01", patientView.getPatientInformationSummary("fieldDateOfBirth"));
+        Assert.assertEquals("2001-03-02", patientView.getPatientInformationSummary("fieldDateOfDeath"));
+        Assert.assertEquals("Male", patientView.getPatientInformationSummary("fieldSex"));
+        Assert.assertEquals("indicate referral", patientView.getPatientInformationSummary("fieldIndicationForReferral"));
     }
     
     @Test
@@ -107,14 +107,14 @@ public class PatientRecordTest extends AbstractTest
                     "List health conditions found in family (describe the relationship with proband). DO NOT RECORD any Protected Health Information."));
 
         PatientRecordViewPage patientView = patientEdit.clickSaveAndView();
-        //Assert.assertEquals(patientView.getFamilyHistorySummary("fieldRelativeDescription"), "Child");
-        //Assert.assertEquals(patientView.getFamilyHistorySummary("fieldRelativeOfPatientWithIdentifier"), "2");
-        Assert.assertEquals(patientView.getFamilyHistorySummary("fieldMaternalEthnicity"), "Arab");
-        Assert.assertEquals(patientView.getFamilyHistorySummary("fieldPaternalEthnicity"), "Japanese");
-        Assert.assertEquals(patientView.getFamilyHistorySummary("fieldHealthConditions"), "Autism, Dementia, Asthma");
-        //Assert.assertEquals(patientView.getFamilyHistorySummary("fieldFirstGlobalInheritence"), "Sporadic");
-        //Assert.assertEquals(patientView.getFamilyHistorySummary("fieldSecondGlobalInheritence"), "Autosomal dominant inheritance");
-        //Assert.assertEquals(patientView.getFamilyHistorySummary("fieldThirdGlobalInheritence"), "Polygenic inheritance");
+        Assert.assertTrue(patientView.getFamilyHistorySummary("fieldRelativeDescription").contains("Child"));
+        Assert.assertTrue(patientView.getFamilyHistorySummary("fieldRelativeOfPatientWithIdentifier").contains("2"));
+        Assert.assertEquals("Arab", patientView.getFamilyHistorySummary("fieldMaternalEthnicity"));
+        Assert.assertEquals("Japanese", patientView.getFamilyHistorySummary("fieldPaternalEthnicity"));
+        Assert.assertEquals("Autism, Dementia, Asthma", patientView.getFamilyHistorySummary("fieldHealthConditions"));
+        Assert.assertTrue(patientView.getFamilyHistorySummary("fieldGlobalInheritence").contains("Sporadic"));
+        Assert.assertTrue(patientView.getFamilyHistorySummary("fieldGlobalInheritence").contains("Autosomal dominant inheritance"));
+        Assert.assertTrue(patientView.getFamilyHistorySummary("fieldGlobalInheritence").contains("Polygenic inheritance"));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class PatientRecordTest extends AbstractTest
     {
         /* PRENETAL AND PERINATAL HISTORY */
         patientEdit.expandPrenatalAndPerinatalHistory();
-        patientEdit.setPrenatalGestationAtDelivery("4");
+        patientEdit.clickTermBirth();
         patientEdit.setAssistedReproduction();
         patientEdit.setAPGARScores("2", "5");
         patientEdit.setPrenatalNotes("Thai food is delicious");
@@ -131,14 +131,14 @@ public class PatientRecordTest extends AbstractTest
         //patientEdit.setPrenatalDevelopmentOrBirth("Pad thai is good");
         
         PatientRecordViewPage patientView = patientEdit.clickSaveAndView();
-        //Assert.assertEquals(4, patientView.getPrenatalAndPerinatalHistorySummary("fieldPrenatalFirstField"));
-        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldFirstAssistedReproduction"), "Conception after fertility medication");
-        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldSecondAssistedReproduction"), "In vitro fertilization");
-        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreOneMinute"), "2");
-        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreFiveMinutes"), "5");
+        Assert.assertTrue(patientView.getPrenatalAndPerinatalHistorySummary("fieldGestationAtDelivery").contains("Term birth"));
+        Assert.assertTrue(patientView.getPrenatalAndPerinatalHistorySummary("fieldConceptionAfterFertility").contains("Conception after fertility medication"));
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldIVF"), "In vitro fertilization");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreOneMinute"), "2");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldAPGARScoreFiveMinutes"), "5");
         Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPrenatalNotes"), "Thai food is delicious");
-        // This should be set automatically since gestation at delivery was 4
-        //Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPrematureBirth"), "Premature birth");
+        // This should be set automatically since term birth was specified
+        Assert.assertTrue(patientView.getPrenatalAndPerinatalHistorySummary("fieldPrematureBirth").contains("NO Premature birth"));
     }
 
     @Test

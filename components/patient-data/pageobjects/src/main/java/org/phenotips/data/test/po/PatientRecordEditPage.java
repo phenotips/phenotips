@@ -49,8 +49,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     WebElement familyHealthConditions;
 
-    //@FindBy(css = "#inline > div:nth-child(3) > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.gestation > div:nth-child(2) > div > div > div.controlled > input[type=\"text\"]")
-    @FindBy(name = "PhenoTips.PatientClass_0_gestation")
+    @FindBy(css = ".fieldset.gestation > div:nth-child(2) > div > div > div.controlled > input[type=\"text\"]")
     WebElement gestationAtDelivery;
 
     @FindBy(id = "HMedicalhistory")
@@ -773,6 +772,7 @@ public class PatientRecordEditPage extends InlinePage
      */
     public void setPrenatalGestationAtDelivery(String weeks)
     {
+        this.gestationAtDelivery.clear();
         this.gestationAtDelivery.sendKeys(weeks);
     }
     
@@ -861,6 +861,11 @@ public class PatientRecordEditPage extends InlinePage
     public int findElementsUploadImage()
     {
         return getDriver().findElements(By.cssSelector("#PhenoTips\\2e PatientClass_0_reports_history_container > div.actions > span > a")).size();
+    }
+
+    public void clickTermBirth()
+    {
+        this.checkTermBirth.click();
     }
 
     public void openNewEntryListOfCandidateGenes()

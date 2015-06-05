@@ -275,10 +275,10 @@ public class PatientRecordViewPage extends ViewPage
 
     /* FAMILY HISTORY */
 
-    @FindBy(xpath = "//*[@id=\"extradata-list-PhenoTips.RelativeClass\"]/tbody/tr[2]/td[1]/text()")
+    @FindBy(css = "#extradata-list-PhenoTips\\2e RelativeClass > tbody > tr:nth-child(2) > td.relative_type")
     WebElement fieldRelativeDescription;
 
-    @FindBy(xpath = "//*[@id=\"extradata-list-PhenoTips.RelativeClass\"]/tbody/tr[2]/td[2]/text()")
+    @FindBy(css = "#extradata-list-PhenoTips\\2e RelativeClass > tbody > tr:nth-child(2) > td.relative_of")
     WebElement fieldRelativeOfPatientWithIdentifier;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.ethnicity > div.half-width.maternal_ethnicity > div > ol > li")
@@ -289,6 +289,9 @@ public class PatientRecordViewPage extends ViewPage
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.family_history > div")
     WebElement fieldHealthConditions;
+
+    @FindBy(css = ".global_mode_of_inheritance > div")
+    WebElement fieldGlobalInheritence;
 
     @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[1]")
     WebElement fieldFirstGlobalInheritence;
@@ -301,40 +304,50 @@ public class PatientRecordViewPage extends ViewPage
 
     /* PRENATAL AND PERINATAL HISTORY */
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
     WebElement fieldGestationAtDelivery;
+
+    @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
+    WebElement fieldConceptionAfterFertility;
+
+    @FindBy(css = ".ivf > div > label")
+    WebElement fieldIVF;
     
-    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(1) > .displayed-value")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(1) > span.displayed-value")
     WebElement fieldPrenatalFirstField;
 
-    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(2) > .displayed-value")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
     WebElement fieldPrenatalSecondField;
 
-    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(3) > .displayed-value")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(3) > span.displayed-value")
     WebElement fieldPrenatalThirdField;
 
-    @FindBy(css = ".clinical-info.prenatal-info.chapter > p:nth-child(1)")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(1)")
     WebElement fieldFirstAssistedReproduction;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
     WebElement fieldSecondAssistedReproduction;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(6) > span:nth-child(2)")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(2)")
     WebElement fieldAPGARScoreOneMinute;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")
+    @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")
     WebElement fieldAPGARScoreFiveMinutes;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.prenatal_development > div")
     WebElement  fieldPrenatalNotes;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.prenatal_phenotype-group > div.prenatal_phenotype-main.predefined-entries > div")
+    @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div")
     WebElement fieldPrematureBirth;
 
     public String getPrenatalAndPerinatalHistorySummary(String option)
     {
         switch(option)
         {
+            case "fieldConceptionAfterFertility":
+                return this.fieldConceptionAfterFertility.getText();
+            case "fieldIVF":
+                return this.fieldIVF.getText();
             case "fieldGestationAtDelivery":
                 return this.fieldGestationAtDelivery.getText();
             case "fieldFirstAssistedReproduction":
@@ -367,6 +380,8 @@ public class PatientRecordViewPage extends ViewPage
                 return this.fieldPaternalEthnicity.getText();
             case "fieldHealthConditions":
                 return this.fieldHealthConditions.getText();
+            case "fieldGlobalInheritence":
+                return this.fieldGlobalInheritence.getText();
             case "fieldFirstGlobalInheritence":
                 return this.fieldFirstGlobalInheritence.getText();
             case "fieldSecondGlobalInheritence":
