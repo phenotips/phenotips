@@ -69,9 +69,9 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
         <genesymbol>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' disabled=true name='${prefix}${name}' class='gene-name' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' size='16' value="$!{escapetool.xml($value)}" readonly /&gt;{{/html}}
 #else
-$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_symbol' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_symbol' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>

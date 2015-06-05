@@ -51,13 +51,17 @@
   #break
 #end
 #if (!$term)
-  $response.setStatus(403)
+  $response.setStatus(404)
   Unknown
   #break
 #elseif ($term.symbol)
-  $response.setStatus(404)
+  $response.setStatus(200)
   $response.setContentType('application/json')
   $jsontool.serialize({'symbol' : $term.symbol})
+  #break
+#else
+  $response.setStatus(409)
+  Invalid
 #end
 {{/velocity}}</content>
 </xwikidoc>
