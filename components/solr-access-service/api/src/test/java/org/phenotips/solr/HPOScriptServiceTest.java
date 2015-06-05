@@ -61,7 +61,7 @@ public class HPOScriptServiceTest
 
     @Rule
     public MockitoComponentMockingRule<HPOScriptService> mocker =
-            new MockitoComponentMockingRule<>(HPOScriptService.class);
+            new MockitoComponentMockingRule<HPOScriptService>(HPOScriptService.class);
 
     @Mock
     private Cache<SolrDocument> cache;
@@ -77,7 +77,6 @@ public class HPOScriptServiceTest
     private int indexReturn;
 
     private final String fieldNames = "id,name,def,comment,synonym,is_a";
-
 
     @Before
     public void setUp() throws ComponentLookupException, IOException, SolrServerException, CacheException
@@ -182,11 +181,10 @@ public class HPOScriptServiceTest
     }
 
 
-    private class QueryAnswer implements Answer<QueryResponse>
-    {
+    private class QueryAnswer implements Answer<QueryResponse>{
 
         @Override
-        public QueryResponse answer(InvocationOnMock invocationOnMock)
+        public QueryResponse answer(InvocationOnMock invocationOnMock) throws Throwable
         {
             SolrParams params = (SolrParams) invocationOnMock.getArguments()[0];
             if (params == null) {
@@ -208,8 +206,7 @@ public class HPOScriptServiceTest
         }
     }
 
-    private class IsMatchingIDQuery extends ArgumentMatcher<SolrParams>
-    {
+    private class IsMatchingIDQuery extends ArgumentMatcher<SolrParams>{
 
         private String id;
 
@@ -230,8 +227,7 @@ public class HPOScriptServiceTest
         }
     }
 
-    private class IsMatchingAltIDQuery extends ArgumentMatcher<SolrParams>
-    {
+    private class IsMatchingAltIDQuery extends ArgumentMatcher<SolrParams>{
 
         private String id;
 
