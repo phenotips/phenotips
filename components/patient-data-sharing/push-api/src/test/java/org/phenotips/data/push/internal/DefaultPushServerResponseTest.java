@@ -34,7 +34,7 @@ public class DefaultPushServerResponseTest {
     }
 
     @Test
-    public void generateIncorrectCredentialsJSONTest() {
+    public void generateIncorrectCredentialsJSONWorksCorrectly() {
         JSONObject response = defaultPushServerResponse.generateIncorrectCredentialsJSON();
         Assert.assertFalse(response.getBoolean("success"));
         Assert.assertTrue(response.getBoolean("login_failed"));
@@ -42,14 +42,14 @@ public class DefaultPushServerResponseTest {
     }
 
     @Test
-    public void generateActionFailedJSONTest() {
+    public void generateActionFailedJSONWorksCorrectly() {
         JSONObject response = defaultPushServerResponse.generateActionFailedJSON();
         Assert.assertFalse(response.getBoolean("success"));
         Assert.assertTrue(response.getBoolean("action_failed"));
     }
 
     @Test
-    public void hasKeySetToTrueTest()
+    public void hasKeySetToTrueWorksCorrectly()
     {
         response.accumulate("success", false);
         response.accumulate("action_failed", true);
@@ -58,15 +58,21 @@ public class DefaultPushServerResponseTest {
     }
 
     @Test
-    public void valueOrNullTest()
+    public void valueOrNullReturnsValue()
     {
         response.accumulate("the key", "value of the key");
         Assert.assertEquals("value of the key", defaultPushServerResponse.valueOrNull("the key"));
+
+    }
+
+    @Test
+    public void valueOrNullReturnsNull()
+    {
         Assert.assertNull(defaultPushServerResponse.valueOrNull("not key"));
     }
 
     @Test
-    public void isSuccessfulTest()
+    public void isSuccessfulWorksCorrectly()
     {
         Assert.assertFalse(defaultPushServerResponse.isSuccessful());
         response.accumulate("success", true);
@@ -74,7 +80,7 @@ public class DefaultPushServerResponseTest {
     }
 
     @Test
-    public void isIncorrectProtolcolVersionTest()
+    public void isIncorrectProtolcolVersionWorksCorrectly()
     {
         Assert.assertTrue(defaultPushServerResponse.isIncorrectProtocolVersion());
         response.accumulate("response_protocol_version", true);
@@ -84,14 +90,14 @@ public class DefaultPushServerResponseTest {
     }
 
     @Test
-    public void isLoginFailedTest()
+    public void isLoginFailedWorksCorrectly()
     {
         response.accumulate("login_failed", true);
         Assert.assertTrue(defaultPushServerResponse.isLoginFailed());
     }
 
     @Test
-    public void isActionFailedTest()
+    public void isActionFailedTestWorksCorrectly()
     {
         response.accumulate("action_failed", true);
         Assert.assertTrue(defaultPushServerResponse.isActionFailed());
