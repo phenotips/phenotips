@@ -64,7 +64,7 @@
     </comments>
     <file>
       <cache>0</cache>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>

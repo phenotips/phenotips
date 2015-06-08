@@ -215,6 +215,12 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-gallery</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-groovy</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
@@ -234,12 +240,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-useravatar</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-gallery</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -335,6 +335,14 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- Security Script Services -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-script</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Skin Extension -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-skin-skinx</artifactId>
@@ -349,6 +357,14 @@
       <scope>runtime</scope>
     </dependency>
     <!-- Mailsender -->
+    <!-- New Mail Sender API -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-mail-send-storage</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Old Mail Sender Plugin -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-mailsender</artifactId>
@@ -366,6 +382,13 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-diff-script</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Blame Script Services -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-blame-script</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -392,6 +415,13 @@
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Configuration -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-configuration-default</artifactId>
+      <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
     <!-- Security -->
@@ -427,28 +457,34 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- WikiStream -->
+    <!-- Filter -->
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wikistream-instance-oldcore</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-filter-stream-xml</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wikistream-instance-script</artifactId>
+      <artifactId>xwiki-platform-filter-instance-oldcore</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wikistream-stream-xar</artifactId>
+      <artifactId>xwiki-platform-filter-instance-extension</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wikistream-stream-wikixml</artifactId>
+      <artifactId>xwiki-platform-filter-instance-script</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-filter-stream-xar</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -458,6 +494,25 @@
       <artifactId>xwiki-platform-wiki-default</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
+    </dependency>
+    <!-- LESS CSS Module -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-lesscss-default</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- LDAP -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-ldap-authenticator</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <!-- jQuery -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>1.11.1</version>
     </dependency>
     <!-- PhenoTips components -->
     <dependency>
@@ -723,6 +778,7 @@
                     <exclude>org.jmock:*</exclude>
                     <exclude>junit:*</exclude>
                     <exclude>javax.servlet:servlet-api:*:*:compile</exclude>
+                    <exclude>javax.servlet:javax.servlet-api:*:*:compile</exclude>
                   </excludes>
                   <includes>
                     <!-- Allow only JUnit and JMock with scope test because -->

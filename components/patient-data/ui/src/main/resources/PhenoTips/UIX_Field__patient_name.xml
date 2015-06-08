@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #if ($xcontext.action == 'edit' || "$!{doc.display('last_name')}$!{doc.display('first_name')}" != '')

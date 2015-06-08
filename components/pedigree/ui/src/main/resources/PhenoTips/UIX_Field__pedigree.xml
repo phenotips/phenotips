@@ -237,9 +237,9 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
-{{include document="PhenoTips.PedigreeMacros" /}}
+{{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))

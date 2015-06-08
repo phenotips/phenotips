@@ -98,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <!-- REMOVE? -->
     <dependency>
@@ -109,7 +109,7 @@
     <!-- Test dependencies
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>-->
