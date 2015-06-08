@@ -65,12 +65,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-search-ui</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-wikimacro-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
