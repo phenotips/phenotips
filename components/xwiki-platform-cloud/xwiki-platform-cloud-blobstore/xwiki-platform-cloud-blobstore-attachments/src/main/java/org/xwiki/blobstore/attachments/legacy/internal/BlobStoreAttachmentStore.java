@@ -74,7 +74,7 @@ public class BlobStoreAttachmentStore implements XWikiAttachmentStoreInterface
     public void deleteXWikiAttachment(XWikiAttachment xwikiAttachment, boolean updateDocument,
         XWikiContext xwikiContext, boolean bTransaction) throws XWikiException
     {
-        logger.info("deleteXWikiAttachment()"); Thread.dumpStack();
+        logger.debug("deleteXWikiAttachment()");
         
         XWikiHibernateTransaction transaction = new XWikiHibernateTransaction(xwikiContext);
 
