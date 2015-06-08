@@ -118,6 +118,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <coverage.instructionRatio>0.06</coverage.instructionRatio>
+    <coverage.instructionRatio>0</coverage.instructionRatio>
   </properties>
 </project>
