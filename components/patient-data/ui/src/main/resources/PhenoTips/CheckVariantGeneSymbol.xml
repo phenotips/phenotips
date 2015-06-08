@@ -44,20 +44,24 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ($request.getParameter('id'))
-  #set ($term = $services.vocabularies.hgnc.getTermByAlternativeId("${request.q}"))
+  #set ($term = $services.vocabularies.hgnc.getTermByAlternativeId($request.id))
 #else
   $response.setStatus(400)
   Please specify a variant to check
   #break
 #end
 #if (!$term)
-  $response.setStatus(403)
+  $response.setStatus(404)
   Unknown
   #break
 #elseif ($term.symbol)
-  $response.setStatus(404)
+  $response.setStatus(200)
   $response.setContentType('application/json')
   $jsontool.serialize({'symbol' : $term.symbol})
+  #break
+#else
+  $response.setStatus(409)
+  Invalid
 #end
 {{/velocity}}</content>
 </xwikidoc>
