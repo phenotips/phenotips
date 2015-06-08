@@ -55,13 +55,8 @@
   Unknown
   #break
 #elseif ($data.sourceAccession) 
-<<<<<<< Updated upstream
-  $response.setStatus(404)##
-  $response.setContentType('application/json')##
-=======
   $response.setStatus(200)
   $response.setContentType('application/json')
->>>>>>> Stashed changes
   $jsontool.serialize({'accsymbol' : $data.sourceAccession})
   #break
 #else
