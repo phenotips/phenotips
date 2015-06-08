@@ -3438,12 +3438,13 @@ document.observe('xwiki:dom:loaded', function()
 	  this.gene_symbol_input_name = xwikiclass_name;
     },
     validate : function(value) {
+      this.input.__validation.validMessage = '';
       if (this.state == 'DONE') {
         this.value == value &amp;&amp; (this.valid || Validate.fail("This HGVS identifier is not valid"));
         if (this.valid) {
-          Validate.message = 'Valid';
-          Validate.onValid();
+          this.input.__validation.validMessage = 'Valid';
         }
+        this.state = 'NEW';
       }
       this.check();
       return true;
@@ -3454,7 +3455,6 @@ document.observe('xwiki:dom:loaded', function()
     available : function() {
       this.valid = true;
       if (this.valid) {
-          this.input.__validation.validMessage = 'Valid';
 	      var next_input = document.getElementsByName(this.gene_symbol_input_name)[0];
 	      next_input.value = "";
 	      var acc_symbol = response.responseJSON.accsymbol;
