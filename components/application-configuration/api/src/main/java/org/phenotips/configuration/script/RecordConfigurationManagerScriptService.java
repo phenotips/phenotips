@@ -17,10 +17,17 @@
  */
 package org.phenotips.configuration.script;
 
+import org.phenotips.configuration.ConsentTracker;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordConfigurationManager;
 
+import org.phenotips.configuration.internal.configured.ConfiguredConsentManager;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
@@ -44,6 +51,14 @@ public class RecordConfigurationManagerScriptService implements ScriptService
     @Inject
     private RecordConfigurationManager configuration;
 
+    /** Provides access to the data. */
+    @Inject
+    private DocumentAccessBridge dab;
+
+    /** Provides access to patients. */
+    @Inject
+    private PatientRepository patientRepository;
+
     /**
      * Retrieves the {@code RecordConfiguration patient record configuration} active for the current user.
      *
@@ -52,5 +67,17 @@ public class RecordConfigurationManagerScriptService implements ScriptService
     public RecordConfiguration getActiveConfiguration()
     {
         return this.configuration.getActiveConfiguration();
+    }
+
+    public ConsentTracker getConsentManager(DocumentReference patientReference)
+    {
+        Patient patient = null;
+        try {
+            DocumentModelBridge patientDoc = dab.getDocument(patientReference);
+            patient = patientRepository.loadPatientFromDocument(patientDoc);
+        } catch (Exception ex) {
+            // do nothing
+        }
+        return new ConfiguredConsentManager(patient);
     }
 }
