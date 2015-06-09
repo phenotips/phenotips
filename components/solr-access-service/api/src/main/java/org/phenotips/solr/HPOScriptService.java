@@ -25,6 +25,7 @@ import org.xwiki.component.annotation.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -82,12 +83,11 @@ public class HPOScriptService extends AbstractSolrScriptService
             if (parents == null) {
                 continue;
             }
-            if (parents.getClass() == String.class) {
-                nodes.add(this.get(StringUtils.substringBefore((String) parents, " ")));
-            } else {
-                for (String pid : (List<String>) parents) {
-                    nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
-                }
+            if (parents instanceof String) {
+                parents = Collections.singletonList(parents);
+            }
+            for (String pid : (List<String>) parents) {
+                nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
             }
         }
         return results;

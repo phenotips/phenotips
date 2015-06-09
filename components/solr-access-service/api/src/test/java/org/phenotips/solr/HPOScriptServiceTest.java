@@ -113,8 +113,8 @@ public class HPOScriptServiceTest
         when(this.server.query((SolrParams)any())).thenReturn(this.response);
         this.mocker.getComponentUnderTest().get(id);
 
-        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id)));
-        verify(this.server).query(Matchers.argThat(new IsMatchingAltIDQuery(id)));
+        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id, "id")));
+        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id, "alt_id")));
 
     }
 
@@ -175,7 +175,7 @@ public class HPOScriptServiceTest
 
         Collection<SolrInputDocument> allTerms = allTermsCap.getLastValue();
         solrDocList = new SolrDocumentList();
-        for(SolrInputDocument i : allTerms){
+        for (SolrInputDocument i : allTerms) {
             solrDocList.add(ClientUtils.toSolrDocument(i));
         }
     }
@@ -209,10 +209,12 @@ public class HPOScriptServiceTest
     private class IsMatchingIDQuery extends ArgumentMatcher<SolrParams>{
 
         private String id;
+        private String field;
 
-        public IsMatchingIDQuery(String id){
+        public IsMatchingIDQuery(String id, String field){
             id = id.replace(":", "\\:");
             this.id = id;
+            this.field = field;
         }
 
         @Override
@@ -221,30 +223,9 @@ public class HPOScriptServiceTest
             if (argument == null) {
                 return false;
             }
-            SolrParams params = (SolrParams)argument;
-            return params.get(CommonParams.Q).startsWith("id")
-                    && params.get(CommonParams.Q).contains(id);
-        }
-    }
-
-    private class IsMatchingAltIDQuery extends ArgumentMatcher<SolrParams>{
-
-        private String id;
-
-        public IsMatchingAltIDQuery(String id){
-            id = id.replace(":", "\\:");
-            this.id = id;
-        }
-
-        @Override
-        public boolean matches(Object argument)
-        {
-            if (argument == null) {
-                return false;
-            }
-            SolrParams params = (SolrParams)argument;
-            return params.get(CommonParams.Q).startsWith("alt_id")
-                    && params.get(CommonParams.Q).contains(id);
+            String params = ((SolrParams) argument).get(CommonParams.Q);
+            return params.startsWith(field)
+                    && params.contains(id);
         }
     }
 }
