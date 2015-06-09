@@ -73,4 +73,8 @@ phenotips.UIXDirectory.options.delete=Delete this extension
 phenotips.UIXDirectory.newExtension.create=Create
 phenotips.UIXDirectory.sortedBy= Sorted by {0}
 phenotips.UIXDirectory.sortBy= Sort by {0}</content>
+
+platform.web.init.message.intializing=PhenoTips is initializing ({0}%)...
+platform.web.init.message.intializationFailure=PhenoTips initialization failed!
+platform.web.init.message.intializationSuccess=PhenoTips is initialized, you will be redirected shortly
 </xwikidoc>
