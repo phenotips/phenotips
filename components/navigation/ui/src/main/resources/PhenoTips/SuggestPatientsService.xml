@@ -52,7 +52,7 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
+  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where doc.name &lt;&gt; ''PatientTemplate'' and lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
   #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
     #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
   #end
