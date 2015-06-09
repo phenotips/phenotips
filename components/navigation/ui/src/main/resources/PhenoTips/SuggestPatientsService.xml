@@ -52,12 +52,12 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where doc.name &lt;&gt; ''PatientTemplate'' and lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
+  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where doc.name &lt;&gt; ''PatientTemplate'' and lower(doc.name) like :input ESCAPE ''!'' or lower(patient.external_id) like :input ESCAPE ''!''')
   #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
-    #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
+    #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''!'' or lower(patient.last_name) like :input ESCAPE ''!'''))
   #end
   #set ($query = $services.query.xwql($query))
-  #set ($discard = $query.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
+  #set ($discard = $query.bindValue('input', "%${input.replaceAll('[\[_%!]', '!$0')}%"))
   #set ($results = $query.execute())
   #if ($request.permission)
     #set ($requiredPermissions = $request.permission)
