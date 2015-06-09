@@ -57,7 +57,6 @@
     #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
   #end
   #set ($query = $services.query.xwql($query))
-  #set ($discard = $query.setLimit($nb))
   #set ($discard = $query.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
   #set ($results = $query.execute())
   #if ($request.permission)
@@ -73,7 +72,7 @@
     &lt;?xml version="1.0" encoding="UTF-8"?&gt;
     &lt;results&gt;
   #end
-  #set ($first = true)
+  #set ($count = 0)
   #foreach ($item in $results)
     #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
       #set ($itemdoc = $xwiki.getDocument($item))
@@ -103,15 +102,17 @@
         #end
         #set ($description = "$description)")
       #end
-      #if ($request.json &amp;&amp; !$first)
+      #if ($request.json &amp;&amp; $count &gt; 0)
         ,
-      #else
-        #set ($first = false)
       #end
       #if ($request.json)
         { "id": "$phenotipsId", "url": "$url", "identifier": "${externalId}", "textSummary": "$description" }##
       #else
         &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
+      #end
+      #set ($count = $count + 1)
+      #if ($count &gt;= $nb)
+        #break($foreach)
       #end
     #end
   #end
