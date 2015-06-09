@@ -44,7 +44,7 @@
 #set ($input = "$!request.input.toLowerCase()")
 #set ($nb = "$!request.nb")
 #if ($nb != '')
-  #set ($nb = $mathtool.toInteger($nb) + 1)
+  #set ($nb = $mathtool.toInteger($nb))
 #else
   #set ($nb = 6)
 #end
