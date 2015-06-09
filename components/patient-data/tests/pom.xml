@@ -125,6 +125,21 @@
           <parallel>suites</parallel>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.5.201505241946</version>
+        <executions>
+          <execution>
+            <id>jacoco-prepare</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>jacoco-check</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
