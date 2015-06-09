@@ -26,12 +26,10 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.observation.event.Event;
 
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -74,17 +72,19 @@ public class MeasurementAgeUpdaterTest
 
     private static final String AGE_PROPERTY_NAME = "age";
 
+    private static final String DATE_OF_BIRTH_PROPERTY_NAME = "date_of_birth";
+
     private List<BaseObject> objects;
 
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException
     {
         MockitoAnnotations.initMocks(this);
-        when(this.source.getXObject((EntityReference) Matchers.any())).thenReturn(this.patientRecordObj);
+        when(this.source.getXObject(Matchers.<EntityReference>any())).thenReturn(this.patientRecordObj);
 
         objects = new LinkedList<>();
         objects.add(measurement);
-        when(this.source.getXObjects((EntityReference)Matchers.any())).thenReturn(objects);
+        when(this.source.getXObjects(Matchers.<EntityReference>any())).thenReturn(objects);
 
         when(this.measurement.getStringValue(Matchers.anyString())).thenReturn(null);
     }
@@ -92,8 +92,8 @@ public class MeasurementAgeUpdaterTest
     @Test
     public void testBirthDateNull() throws ComponentLookupException
     {
-        when(this.measurement.getDateValue(Matchers.anyString())).thenReturn(new Date());
-        when(this.patientRecordObj.getDateValue(Matchers.matches("date_of_birth"))).thenReturn(null);
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+        when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(null);
 
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
@@ -102,7 +102,8 @@ public class MeasurementAgeUpdaterTest
     @Test
     public void testMeasurementDateNull() throws ComponentLookupException
     {
-        when(this.patientRecordObj.getDateValue(Matchers.matches("date_of_birth"))).thenReturn(new Date());
+        when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(new Date());
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(null);
 
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
         verify(this.measurement).removeField(AGE_PROPERTY_NAME);
@@ -123,16 +124,31 @@ public class MeasurementAgeUpdaterTest
     public void testDateDifference() throws ParseException, ComponentLookupException
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+
         String birthDateString = "01-01-2015 12:00:00";
-        String measureDateString = "01-01-2016 12:00:00";
         Date birthDate = dateFormat.parse(birthDateString);
+        when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(birthDate);
+
+        String measureDateString = "01-01-2016 12:00:00";
         Date measureDate = dateFormat.parse(measureDateString);
 
-        when(this.patientRecordObj.getDateValue(Matchers.matches("date_of_birth"))).thenReturn(birthDate);
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
-
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
-
         verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq(365/30.4375f));
+
+        measureDateString = "01-01-2035 12:00:00";
+        measureDate = dateFormat.parse(measureDateString);
+
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((365*20 + 5)/30.4375f));
+
+        measureDateString = "01-03-2016 12:00:00";
+        measureDate = dateFormat.parse(measureDateString);
+
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(measureDate);
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((31 + 29 + 365)/30.4375f));
+
     }
 }
