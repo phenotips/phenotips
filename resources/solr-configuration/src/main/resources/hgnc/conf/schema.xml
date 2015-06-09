@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!--
+ For more information, on how to customize this file, please see
+ http://wiki.apache.org/solr/SchemaXml
+
+ PERFORMANCE NOTE: this schema includes many optional features and should not
+ be used for benchmarking.  To improve performance one could
+  - set stored="false" for all fields possible (esp large fields) when you
+    only need to search on the field but don't need to return the original
+    value.
+  - set indexed="false" if you don't need to search on the field, but only
+    return the field as a result of searching on other indexed fields.
+  - remove all unneeded copyField statements
+  - for best index size and searching performance, set "index" to false
+    for all general text fields, use copyField to copy them to the
+    catchall "text" field, and use that for searching.
+  - For maximum indexing performance, use the StreamingUpdateSolrServer
+    java client.
+  - Remember to run the JVM in server mode, and use a higher logging level
+    that avoids logging every request
+-->
+
+<schema name="hgnc" version="1.5">
+  <types>
+    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+
+    <!-- A text field that only splits on whitespace for exact matching of words -->
+    <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+	
+	<!-- A text field that only splits on whitespace and comma for exact matching of gene identifiers/symbols -->
+    <fieldType name="symbol_list" class="solr.TextField" positionIncrementGap="100">
+	  <analyzer type="index">
+        <tokenizer class="solr.PatternTokenizerFactory" pattern=",\s*" />
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <!-- A general text field: it tokenizes with ClassicTokenizer,
+         removes stop words from case-insensitive "stopwords.txt,
+         protects keywords defined in "protwords.txt", down cases,
+         and stems words using the possessive (remove 's) and the
+         Porter English stemmer. At query time only, it also applies synonyms. -->
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+      </analyzer>
+    </fieldType>
+<!--    Could be tried out: -->
+<!--    <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/> -->
+<!--    <filter class="solr.EnglishMinimalStemFilterFactory"/> -->
+
+    <!-- Field for exact matching of the terms in the query, without stemming
+         or other disruptive text processing filters applied to it.
+         It is also used to construct a spellcheck index from. It does basic
+         tokenization and lowercasing, since it's only used as a source of
+         valid words. -->
+    <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.ClassicFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="text_prefix" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="10"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldtype name="exact_match" class="solr.TextField" positionIncrementGap="1000">
+      <analyzer type="index">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldtype>
+
+    <fieldtype name="prefix_match" class="solr.TextField" positionIncrementGap="1000">
+      <analyzer type="index">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1*"/>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldtype>
+
+    <!-- Since fields of this type are by default not stored or indexed,
+         any data added to them will be ignored outright. -->
+    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField"/>
+  </types>
+
+  <fields>
+    <field name="version" type="string" indexed="true" stored="true"/>
+	<field name="size" type="string" indexed="true" stored="true"/>
+    <field name="id" type="string" indexed="true" stored="true" required="true"/>
+	
+	<!-- Primary searching on gene symbol -->
+	<field name="symbol" type="text_general" indexed="true" stored="true"/>
+    <field name="symbolExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="symbolPrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="symbolSort" type="string" indexed="true" stored="false"/>
+	
+	<!-- Secondary searching on alternate IDs -->
+    <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+	
+    <field name="prev_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="alias_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="ensembl_gene_id" type="text_general" indexed="true" stored="true"/>
+    <field name="entrez_id" type="text_general" indexed="true" stored="true"/>
+    <field name="hgnc_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="refseq_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="uniprot_id" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
+    <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="gene_family_id" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="gene_family" type="text_general" indexed="true" stored="true"/>
+    <field name="omim_id" type="string" indexed="true" stored="true"/>
+
+    <!-- Catchall field, containing all other searchable text fields (implemented
+         via copyField further on in this schema). -->
+
+    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+    <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <field name="textStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <dynamicField name="*" type="ignored" multiValued="true"/>
+	
+  </fields>
+
+  <!-- Field to use to determine and enforce document uniqueness.
+       Unless this field is marked with required="false", it will be a required field
+    -->
+  <uniqueKey>id</uniqueKey>
+
+  <copyField source="symbol" dest="symbolExact"/>
+  <copyField source="symbol" dest="symbolPrefix"/>
+  <copyField source="symbol" dest="symbolSort"/>
+  <copyField source="prev_symbol" dest="synonymExact"/>
+  <copyField source="prev_symbol" dest="synonymPrefix"/>
+  <copyField source="alias_symbol" dest="synonymExact"/>
+  <copyField source="alias_symbol" dest="synonymPrefix"/>
+  <copyField source="ensembl_gene_id" dest="synonymExact"/>
+  <copyField source="entrez_id" dest="synonymExact"/>
+  <copyField source="refseq_accession" dest="synonymExact"/>
+  <copyField source="*" dest="text"/>
+  <copyField source="*" dest="textSpell"/>
+  <copyField source="*" dest="textStub"/>
+</schema>

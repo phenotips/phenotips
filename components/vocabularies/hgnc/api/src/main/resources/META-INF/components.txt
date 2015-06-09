@@ -1,1 +1,2 @@
+org.phenotips.vocabulary.internal.GeneHGNCNomenclature
 org.phenotips.vocabulary.internal.GeneNomenclature
