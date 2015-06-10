@@ -130,7 +130,7 @@
 
     ## Sort dataObjects
     #set ($sortedDataObjects = [])
-    #set ($sortingField = 'date')
+    #set ($sortingField = 'age')
     #foreach ($o in $dataObjects)
        #set ($discard = $sortedDataObjects.add({
            $sortingField : $o.getValue($sortingField),
