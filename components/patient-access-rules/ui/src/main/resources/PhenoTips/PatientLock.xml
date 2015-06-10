@@ -41,7 +41,7 @@
 #set ($patientId = $!{request.getParameter('patientId')})##The patient id to be locked or unlocked
 #set ($lockingRequest = $!{request.getParameter('lock')})##The locking request. True to lock, false to unlock.
 #set ($resultSuccessful = false)
-#if ("$!{patientId}" != ' ' &amp;&amp; "$!{lockingRequest}" != ' ')
+#if ("$!{patientId}" != '' &amp;&amp; "$!{lockingRequest}" != '')
   #set ($resultSuccessful = $services.recordLocking.setRecordLock($patientId, $lockingRequest))
 #end
 #if ($resultSuccessful)
