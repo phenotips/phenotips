@@ -78,6 +78,8 @@ public class HPOScriptServiceTest
 
     private final String fieldNames = "id,name,def,comment,synonym,is_a";
 
+    private final String testIDValue = "HP:0000118";
+
     @Before
     public void setUp() throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
@@ -90,7 +92,7 @@ public class HPOScriptServiceTest
         when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
 
         CacheManager cacheFactory = this.mocker.getInstance(CacheManager.class);
-        when(cacheFactory.createNewLocalCache((CacheConfiguration) Matchers.any())).thenReturn((Cache) this.cache);
+        when(cacheFactory.createNewLocalCache(any(CacheConfiguration.class))).thenReturn((Cache) this.cache);
 
     }
 
@@ -108,13 +110,12 @@ public class HPOScriptServiceTest
     @Test
     public void getUsesServer() throws ComponentLookupException, IOException, SolrServerException
     {
-        String id = "HP:0000118";
 
-        when(this.server.query((SolrParams)any())).thenReturn(this.response);
-        this.mocker.getComponentUnderTest().get(id);
+        when(this.server.query(any(SolrParams.class))).thenReturn(this.response);
+        this.mocker.getComponentUnderTest().get(testIDValue);
 
-        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id, "id")));
-        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(id, "alt_id")));
+        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(testIDValue, "id")));
+        verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(testIDValue, "alt_id")));
 
     }
 
@@ -123,10 +124,10 @@ public class HPOScriptServiceTest
     {
         SolrDocument expectedDoc = mock(SolrDocument.class);
         SolrDocument unexpectedDoc = mock(SolrDocument.class);
-        String cacheKey = "{id:HP:0000118\n}";
+        String cacheKey = "{id:"+ testIDValue + "\n}";
         when(this.cache.get(anyString())).thenReturn(unexpectedDoc);
         when(this.cache.get(cacheKey)).thenReturn(expectedDoc);
-        SolrDocument result = this.mocker.getComponentUnderTest().get("HP:0000118");
+        SolrDocument result = this.mocker.getComponentUnderTest().get(testIDValue);
         verify(this.server, never()).query((SolrParams)any());
         Assert.assertSame(expectedDoc, result);
     }
@@ -134,10 +135,10 @@ public class HPOScriptServiceTest
     @Test
     public void getCantFindIdReturnsNull() throws ComponentLookupException, IOException, SolrServerException
     {
-        when(this.server.query((SolrParams)any())).thenReturn(response);
+        when(this.server.query(any(SolrParams.class))).thenReturn(response);
         when(this.cache.get(anyString())).thenReturn(null);
         when(this.mocker.getComponentUnderTest().search(anyMap(), 1, 0)).thenReturn(null);
-        SolrDocument result = this.mocker.getComponentUnderTest().get("HP:0000118");
+        SolrDocument result = this.mocker.getComponentUnderTest().get(testIDValue);
         verify(this.cache, atLeast(1)).get(anyString());
         Assert.assertNull(result);
     }
@@ -146,7 +147,7 @@ public class HPOScriptServiceTest
     public void getAllAncestorsAndSelfIDsReturnsAllAncestors() throws ComponentLookupException, IOException, SolrServerException
     {
         this.indexMockSolrDocListFromResource();
-        when(this.server.query((SolrParams)any())).thenAnswer(new QueryAnswer());
+        when(this.server.query(any(SolrParams.class))).thenAnswer(new QueryAnswer());
 
         Set<String> actualResult = this.mocker.getComponentUnderTest().getAllAncestorsAndSelfIDs("HP:0001507");
         Set<String> expectedResult = new HashSet<>();
