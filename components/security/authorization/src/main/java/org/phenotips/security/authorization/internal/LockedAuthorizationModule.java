@@ -20,6 +20,7 @@ package org.phenotips.security.authorization.internal;
 import org.phenotips.Constants;
 import org.phenotips.security.authorization.AuthorizationModule;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -28,6 +29,8 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -40,6 +43,9 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  * @since 1.2
  */
+@Component
+@Named("locked")
+@Singleton
 public class LockedAuthorizationModule implements AuthorizationModule
 {
     /** The XClass used for patient lock objects. */
@@ -56,18 +62,15 @@ public class LockedAuthorizationModule implements AuthorizationModule
 
     @Override public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        Boolean decision = null;
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
 
         try {
             XWikiDocument doc = context.getWiki().getDocument(document, context);
             BaseObject lock = doc.getXObject(this.lockClassReference);
             if (lock != null && !access.isReadOnly()) {
-                return false;
+                return Boolean.FALSE;
             }
-        } catch (XWikiException e) {
-            return null;
-        } catch (NullPointerException e) {
+        } catch (XWikiException | NullPointerException e) {
             return null;
         }
 

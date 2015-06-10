@@ -40,7 +40,7 @@
   <content>{{velocity}}
 #set ($patientId = $!{request.getParameter('patientId')})##The patient id to be locked or unlocked
 #set ($lockingRequest = $!{request.getParameter('lock')})##The locking request. True to lock, false to unlock.
-#if ("$!{patientId}" != ' ' &amp;&amp; "$!{lockingRequest}" != ' ')
+#if ("$!{patientId}" != '' &amp;&amp; "$!{lockingRequest}" != '')
   $services.recordLocking.setRecordLock($patientId, $lockingRequest)
 #end
 {{/velocity}}</content>

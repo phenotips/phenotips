@@ -73,7 +73,7 @@ public class RecordLockingService implements ScriptService
      * @param patientId The record to be locked
      * @param lock "true" to create a lock, "false" to remove
      */
-    public void setRecordLock (String patientId, Boolean lock) throws XWikiException
+    public void setRecordLock (String patientId, Boolean lock)
     {
         if (patientId == null || lock == null) {
             return;
@@ -87,22 +87,26 @@ public class RecordLockingService implements ScriptService
             return;
         }
 
-        DocumentReference patientDocumentReference = patient.getDocument();
-        XWikiDocument patientDocument = xwiki.getDocument(patientDocumentReference, context);
-        PatientAccess patientAccess = this.pm.getPatientAccess(patient);
-        Boolean hasLockingPermission = patientAccess.hasAccessLevel(new ManageAccessLevel());
+        try {
+            DocumentReference patientDocumentReference = patient.getDocument();
+            XWikiDocument patientDocument = xwiki.getDocument(patientDocumentReference, context);
+            PatientAccess patientAccess = this.pm.getPatientAccess(patient);
+            Boolean hasLockingPermission = patientAccess.hasAccessLevel(new ManageAccessLevel());
 
-        //Edit the lock if the user has locking permission
-        if (hasLockingPermission) {
-            BaseObject previousLockObject = patientDocument.getXObject(lockClassReference);
+            //Edit the lock if the user has locking permission
+            if (hasLockingPermission) {
+                BaseObject previousLockObject = patientDocument.getXObject(lockClassReference);
 
-            if (lock && previousLockObject == null) {
-                patientDocument.createXObject(lockClassReference, context);
-            } else if (!lock && previousLockObject != null) {
-                patientDocument.removeXObjects(lockClassReference);
+                if (lock && previousLockObject == null) {
+                    patientDocument.createXObject(lockClassReference, context);
+                } else if (!lock && previousLockObject != null) {
+                    patientDocument.removeXObjects(lockClassReference);
+                }
+
+                xwiki.saveDocument(patientDocument, context);
             }
-
-            xwiki.saveDocument(patientDocument, context);
+        } catch (XWikiException e) {
+            return;
         }
     }
 }
