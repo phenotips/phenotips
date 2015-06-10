@@ -127,7 +127,20 @@
   #if ($dataClass)
     #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
     (% class="extradata-list" %)
+
+    ## Sort dataObjects
+    #set ($sortedDataObjects = [])
+    #set ($sortingField = 'date')
     #foreach ($o in $dataObjects)
+       #set ($discard = $sortedDataObjects.add({
+           $sortingField : $o.getValue($sortingField),
+           'original' : $o
+       }))
+    #end
+    #set ($sortedDataObjects = $sorttool.sort($sortedDataObjects,"${sortingField}:desc"))
+
+    #foreach ($obj in $sortedDataObjects )
+      #set ($o = $obj.original)
       #foreach($prop in $dataClass.properties)
         #if ($prop.name == 'date' || $prop.name == 'age')
           |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
@@ -136,6 +149,7 @@
         #end
       #end
     #end## foreach object
+
   #end## if dataclass
 #end
 {{/velocity}}</content>
