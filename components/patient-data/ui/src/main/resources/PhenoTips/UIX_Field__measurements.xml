@@ -127,7 +127,7 @@
   #if ($dataClass)
     #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
     (% class="extradata-list" %)
-
+    ##
     ## Sort dataObjects
     #set ($sortedDataObjects = [])
     #set ($sortingField = 'age')
@@ -138,7 +138,7 @@
        }))
     #end
     #set ($sortedDataObjects = $sorttool.sort($sortedDataObjects,"${sortingField}:desc"))
-
+    ##
     #foreach ($obj in $sortedDataObjects )
       #set ($o = $obj.original)
       #foreach($prop in $dataClass.properties)
@@ -149,7 +149,7 @@
         #end
       #end
     #end## foreach object
-
+    ##
   #end## if dataclass
 #end
 {{/velocity}}</content>
