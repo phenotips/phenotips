@@ -54,7 +54,7 @@
 #end
 {{/velocity}}
 
-{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <name>filename</name>
       <number>1</number>
@@ -190,7 +190,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #if (!$services.permissions.getPatientAccess($services.patients.getPatientById($doc.documentReference)).hasAccessLevel('edit'))

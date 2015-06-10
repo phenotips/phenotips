@@ -244,7 +244,7 @@
     <supporting_documents>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
@@ -268,7 +268,7 @@
     <supporting_images>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>

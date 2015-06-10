@@ -352,6 +352,100 @@ document.observe('xwiki:dom:loaded', function() {
   // End XWiki augmentation.
   return XWiki;
 }(XWiki || {}));
+
+// Returns true if birth_date is before than death_date, false if birth_date is after death_date and undefined if they cannot be compared
+// A decade value is understood as the first day of the decade for a birth date, and the last day of the decade for a death date 
+// (so only the years are compared)
+var isDateAfter = function(birth_date, death_date) {
+
+   var birth = birth_date;
+   var death = death_date;
+   var used_decade = false;	 
+
+   if (birth.decade) {
+     birth.year = birth.decade.substring(0, birth.decade.length-1);
+     used_decade = true;
+   }
+   if (death.decade) {
+     death.year = Number(death.decade.substring(0, death.decade.length-1)) + 9;
+     used_decade = true;
+   }
+  
+   // compare years
+   if (typeof birth.year == "undefined" || typeof death.year == "undefined") {
+      // dates cannot be compared
+      return;
+   }
+   if (birth.year &lt; death.year) {
+      return true;
+   }
+   if (birth.year &gt; death.year) {
+      return false;
+   }
+   if (used_decade) {
+     // here birth.year == death.year
+     return true;
+   }
+
+   // years are the same, compare months
+   if (typeof birth.month == "undefined" || typeof death.month == "undefined") {
+      // dates cannot be compared
+      return;
+   }
+   if (birth.month &lt; death.month) {
+      return true;
+   }
+   if (birth.month &gt; death.month) {
+      return false;
+   }
+
+   // months are the same, check days
+   if (typeof birth.day == "undefined" || typeof death.day == "undefined") {
+      // dates cannot be compared
+      return;
+   }
+   if (birth.day &lt; death.day || birth.day == death.day) {
+      return true;
+   } else {
+      return false;
+   }
+}
+
+var is_death_date_after_birth_date = function () {
+   var birth_date = $$("[id$='date_of_birth_entered']")[0].value.evalJSON();
+   var death_date = $$("[id$='date_of_death_entered']")[0].value.evalJSON();
+   if (isDateAfter(birth_date,death_date) == false) {
+      Validate.fail("$services.localization.render('phenotips.PatientSheetCode.birthDate.afterDeathDate')");
+   } else {
+      return true;
+   }
+}
+
+// registers LiveValidation and birth/death dates observers
+document.observe('xwiki:dom:loaded', function() 
+{
+  var date_of_birth = $$("[id$='date_of_birth']")[0];
+  var date_of_death = $$("[id$='date_of_death']")[0];
+
+  if (typeof date_of_birth == "undefined" || typeof date_of_death == "undefined") {
+     return;
+  }
+
+  var validate_birth_death_dates = function() {
+     date_of_death.__validation.validate();
+  }
+
+  date_of_birth.observe('xwiki:date:changed', validate_birth_death_dates);
+  date_of_death.observe('xwiki:date:changed', validate_birth_death_dates);
+
+  date_of_death.__validation = new LiveValidation(date_of_death);
+  date_of_death.__validation.add(is_death_date_after_birth_date);
+  
+  // when date of death years are given as a decade, the value of that field is empty.
+  // LiveValidation does not show error message on this case
+  date_of_death.__validation.displayMessageWhenEmpty = true;
+});
+
 </code>
     </property>
     <property>
@@ -4512,7 +4606,6 @@ form .extradata-list tr:hover td {
   width: 100%;
   max-height: inherit;
   height: auto;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 .phenotype-details .attachment-list .attachment-item.image {
