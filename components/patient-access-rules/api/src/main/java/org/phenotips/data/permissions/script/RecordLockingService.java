@@ -72,11 +72,12 @@ public class RecordLockingService implements ScriptService
      * Sets or removes a lock from a record. Locks remove edit rights from all users.
      * @param patientId The record to be locked
      * @param lock "true" to create a lock, "false" to remove
+     * @return true if successful false if otherwise
      */
-    public void setRecordLock (String patientId, Boolean lock)
+    public Boolean setRecordLock (String patientId, Boolean lock)
     {
         if (patientId == null || lock == null) {
-            return;
+            return Boolean.FALSE;
         }
 
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
@@ -84,7 +85,7 @@ public class RecordLockingService implements ScriptService
 
         Patient patient = this.pr.getPatientById(patientId);
         if (patient == null) {
-            return;
+            return Boolean.FALSE;
         }
 
         try {
@@ -106,7 +107,9 @@ public class RecordLockingService implements ScriptService
                 xwiki.saveDocument(patientDocument, context);
             }
         } catch (XWikiException e) {
-            return;
+            return Boolean.FALSE;
         }
+
+        return Boolean.TRUE;
     }
 }

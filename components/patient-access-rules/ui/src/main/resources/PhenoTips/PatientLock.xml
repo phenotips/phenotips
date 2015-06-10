@@ -40,8 +40,14 @@
   <content>{{velocity}}
 #set ($patientId = $!{request.getParameter('patientId')})##The patient id to be locked or unlocked
 #set ($lockingRequest = $!{request.getParameter('lock')})##The locking request. True to lock, false to unlock.
-#if ("$!{patientId}" != '' &amp;&amp; "$!{lockingRequest}" != '')
-  $services.recordLocking.setRecordLock($patientId, $lockingRequest)
+#set ($resultSuccessful = false)
+#if ("$!{patientId}" != ' ' &amp;&amp; "$!{lockingRequest}" != ' ')
+  #set ($resultSuccessful = $services.recordLocking.setRecordLock($patientId, $lockingRequest))
+#end
+#if ($resultSuccessful)
+  $response.setStatus(200)
+#else
+  $response.setStatus(500)
 #end
 {{/velocity}}</content>
   <object>
@@ -137,9 +143,13 @@
           onCreate: function() {
             activeLockingRequest = true;
           },
-          onComplete: function() {
+          onSuccess: function() {
             activeLockingRequest = false;
             window.location.reload();
+          },
+          onFailure: function() {
+            activeLockingRequest = false;
+            new XWiki.widgets.Notification("$services.localization.render('phenotips.patientLock.message.error')", 'error');
           }
         }));
     });
@@ -151,7 +161,7 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -357,7 +367,7 @@ $xwiki.ssx.use('PhenoTips.PatientLock')##
 #if ("$!{lockObject}" == '')
   #if ($patientAccess.hasAccessLevel('manage'))
     #set ($lockingServiceRequestParams = $lockingServiceRequestParams + "&amp;lock=true")
-    #_createLockButton($patientLockingService.getURL('view', $lockingServiceRequestParams), 'lock', "$services.localization.render('phenotips.patientLock.action.lock')")
+    #_createLockButton("$patientLockingService.getURL('view', $lockingServiceRequestParams)", 'lock', "$services.localization.render('phenotips.patientLock.action.lock')")
   #end
 #else
   #if ($patientAccess.hasAccessLevel('manage'))
