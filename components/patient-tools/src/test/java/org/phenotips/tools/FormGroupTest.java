@@ -19,6 +19,10 @@ package org.phenotips.tools;
 
 import org.junit.Test;
 import org.junit.Assert;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 
  /** Created by tarang on 15-06-09.
@@ -27,11 +31,31 @@ public class FormGroupTest {
 
     @Test
     public void testAddElement(){
-        FormGroup testGroup = new FormGroup("Test Group");
-        Assert.assertEquals(false, testGroup.addElement(null));
+        FormGroup addTestGroup = new FormGroup("Add Test Group");
+        Assert.assertEquals(false, addTestGroup.addElement(null));
         FormField testField = mock(FormField.class);
-        Assert.assertEquals(true, testGroup.addElement(testField));
+        Assert.assertEquals(true, addTestGroup.addElement(testField));
     }
+
     @Test
+    public void testEmptyGroupDisplay(){
+        FormGroup emptyGroup = new FormGroup("Empty FormGroup");
+        Assert.assertEquals(emptyGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }), "");
+        Assert.assertEquals(emptyGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }), "");
+    }
+
+    @Test
+    public void testEditModeDisplay(){
+        FormGroup testGroup = new FormGroup("Display Test Group");
+        FormField testField1 = mock(FormField.class);
+        FormField testField2 = mock(FormField.class);
+        testGroup.addElement(testField1);
+        testGroup.addElement(testField2);
+
+        String output = testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" });
+        Assert.assertNotNull(output);
+        output = testGroup.display(DisplayMode.Edit, new String[] { "phenotype" });
+        Assert.assertNotNull(output);
+    }
 
 }
