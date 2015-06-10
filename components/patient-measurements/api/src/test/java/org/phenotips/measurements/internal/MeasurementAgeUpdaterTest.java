@@ -19,10 +19,10 @@ package org.phenotips.measurements.internal;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -37,9 +37,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 
 
 /**
@@ -77,22 +81,23 @@ public class MeasurementAgeUpdaterTest
     private List<BaseObject> objects;
 
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException
+    public void setUp() throws IllegalAccessException
     {
         MockitoAnnotations.initMocks(this);
-        when(this.source.getXObject(Matchers.<EntityReference>any())).thenReturn(this.patientRecordObj);
+        when(this.source.getXObject(any(EntityReference.class))).thenReturn(this.patientRecordObj);
 
         objects = new LinkedList<>();
         objects.add(measurement);
-        when(this.source.getXObjects(Matchers.<EntityReference>any())).thenReturn(objects);
+        when(this.source.getXObjects(any(EntityReference.class))).thenReturn(objects);
 
-        when(this.measurement.getStringValue(Matchers.anyString())).thenReturn(null);
+        when(this.measurement.getStringValue(anyString())).thenReturn(null);
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+        when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(new Date());
     }
 
     @Test
-    public void testBirthDateNull() throws ComponentLookupException
+    public void removesAgeWhenBirthDateNull() throws ComponentLookupException
     {
-        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
         when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(null);
 
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
@@ -100,9 +105,8 @@ public class MeasurementAgeUpdaterTest
     }
 
     @Test
-    public void testMeasurementDateNull() throws ComponentLookupException
+    public void removesAgeWhenMeasurementDateNull() throws ComponentLookupException
     {
-        when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(new Date());
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(null);
 
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
@@ -110,7 +114,7 @@ public class MeasurementAgeUpdaterTest
     }
 
     @Test
-    public void testMeasurementTypeBirth() throws ComponentLookupException
+    public void setsAgeToZeroWhenMeasurementTypeBirth() throws ComponentLookupException
     {
         when(this.measurement.getStringValue("type")).thenReturn("birth");
 
@@ -121,7 +125,7 @@ public class MeasurementAgeUpdaterTest
     }
 
     @Test
-    public void testDateDifference() throws ParseException, ComponentLookupException
+    public void checkAgeIsCorrectlyCalculated() throws ParseException, ComponentLookupException
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 
@@ -150,5 +154,33 @@ public class MeasurementAgeUpdaterTest
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
         verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), eq((31 + 29 + 365)/30.4375f));
 
+    }
+
+    @Test
+    public void checkMultipleDatesAreUpdated() throws ComponentLookupException {
+        BaseObject measurement2 = mock(BaseObject.class);
+        BaseObject measurement3 = mock(BaseObject.class);
+        this.objects.add(measurement2);
+        this.objects.add(measurement3);
+
+        when(measurement2.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+        when(measurement3.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+        verify(measurement2).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+        verify(measurement3).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+    }
+
+    @Test
+    public void returnsNormallyWhenGivenNoMeasurementObjects() throws Exception {
+        when(this.source.getXObjects(any(EntityReference.class))).thenReturn(null);
+        NullPointerException exceptionWhenListIsNull = null;
+        try {
+            this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        } catch(NullPointerException e){
+            exceptionWhenListIsNull = e;
+        }
+        Assert.assertNull(exceptionWhenListIsNull);
     }
 }
