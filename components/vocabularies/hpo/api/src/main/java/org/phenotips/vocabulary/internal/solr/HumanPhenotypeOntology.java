@@ -22,6 +22,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,9 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.SpellingParams;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
  *
@@ -55,6 +59,8 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
 {
     /** For determining if a query is a an id. */
     private static final Pattern ID_PATTERN = Pattern.compile("^HP:[0-9]+$", Pattern.CASE_INSENSITIVE);
+
+    private VocabularyTerm rootTerm;
 
     @Override
     protected String getName()
@@ -85,6 +91,14 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
         return result;
     }
 
+    private VocabularyTerm getRootTerm()
+    {
+        if (this.rootTerm == null) {
+            this.rootTerm = this.getTerm("HP:0000001");
+        }
+        return rootTerm;
+    }
+
     @Override
     public List<VocabularyTerm> search(String query, int rows, String sort, String customFq)
     {
@@ -101,6 +115,51 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
+    }
+
+    /**
+     * Returns the same JSON as {@link VocabularyTerm#toJson()}, with the exception that the categories are ordered.
+     * @param term whose JSON should be returned
+     * @return JSON of the `term` with ordered categories
+     */
+    public JSON termToOrderedJson(VocabularyTerm term)
+    {
+        JSON rawJson = term.toJson();
+        JSONObject json;
+        if (!rawJson.isArray()) {
+            json = (JSONObject) rawJson;
+        } else {
+            return rawJson;
+        }
+
+        Set<VocabularyTerm> categoriesSet = term.getAncestorsAndSelf();
+        List<VocabularyTerm> sortedCategories = this.sortTermsByLevel(categoriesSet);
+        List<String> sortedCategoriesIds = new LinkedList<>();
+        for (VocabularyTerm category : sortedCategories) {
+            sortedCategoriesIds.add(category.getId());
+        }
+        json.put("term_category", sortedCategoriesIds);
+        return json;
+    }
+
+    private List<VocabularyTerm> sortTermsByLevel(Collection<VocabularyTerm> terms)
+    {
+        List<VocabularyTerm> sortedTerms = new LinkedList<>();
+        Map<Long, VocabularyTerm> levelMap = new HashMap<>();
+        for (VocabularyTerm term : terms) {
+            levelMap.put(term.getDistanceTo(this.getRootTerm()), term);
+        }
+        Set<Long> keys = levelMap.keySet();
+        List<Long> sortedKeys = new LinkedList<>();
+        for (Long key : keys) {
+            sortedKeys.add(key);
+        }
+        Collections.sort(sortedKeys);
+        Collections.reverse(sortedKeys);
+        for (Long key : sortedKeys) {
+            sortedTerms.add(levelMap.get(key));
+        }
+        return sortedTerms;
     }
 
     private Map<String, String> getStaticSolrParams()
