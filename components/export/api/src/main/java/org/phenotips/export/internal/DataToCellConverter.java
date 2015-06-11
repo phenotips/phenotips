@@ -753,8 +753,8 @@ public class DataToCellConverter
         fieldToHeaderMap.put("assistedReproduction_fertilityMeds", "Fertility medication");
         fieldToHeaderMap.put("ivf", "In vitro fertilization");
         fieldToHeaderMap.put("assistedReproduction_surrogacy", "Surrogacy");
-        fieldToHeaderMap.put("assistedReproduction_donorsperm","Donor sperm");
-        fieldToHeaderMap.put("assistedReproduction_donoregg","Donor egg");
+        fieldToHeaderMap.put("assistedReproduction_donorsperm", "Donor sperm");
+        fieldToHeaderMap.put("assistedReproduction_donoregg", "Donor egg");
         fieldToHeaderMap.put("apgar1", "1 min");
         fieldToHeaderMap.put("apgar5", "5 min");
 
