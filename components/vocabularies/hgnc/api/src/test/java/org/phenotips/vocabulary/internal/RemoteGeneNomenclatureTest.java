@@ -76,7 +76,7 @@ public class RemoteGeneNomenclatureTest
 {
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker =
-        new MockitoComponentMockingRule<Vocabulary>(RemoteGeneNomenclature.class);
+    new MockitoComponentMockingRule<Vocabulary>(GeneNomenclature.class);
 
     private ConfigurationSource configuration;
 
@@ -99,14 +99,14 @@ public class RemoteGeneNomenclatureTest
 
     @Before
     public void setUp() throws ComponentLookupException, CacheException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException
+    IllegalArgumentException, IllegalAccessException
     {
         MockitoAnnotations.initMocks(this);
         when(this.mocker.<CacheManager>getInstance(CacheManager.class).<VocabularyTerm>createNewLocalCache(
             any(CacheConfiguration.class))).thenReturn(this.cache);
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
         when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/"))
-            .thenReturn("http://rest.genenames.org/");
+        .thenReturn("http://rest.genenames.org/");
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         Field em = ReflectionUtils.getField(RemoteGeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
@@ -115,10 +115,10 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void checkURLConfigurable() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException, InitializationException
+    ClientProtocolException, IOException, InitializationException
     {
         when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/"))
-            .thenReturn("https://proxy/genenames/");
+        .thenReturn("https://proxy/genenames/");
         URI expectedURI = new URI("https://proxy/genenames/fetch/symbol/BRCA1");
         CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
@@ -140,7 +140,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/fetch/symbol/BRCA1");
         CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
@@ -160,7 +160,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermUsesCache() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.cache.get("BRCA1")).thenReturn(this.term);
         VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("BRCA1");
@@ -170,7 +170,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermWithInvalidTermReturnsNull() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/fetch/symbol/NOTHING");
         CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
@@ -186,7 +186,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermWithEmptyMarkerInCacheReturnsNull() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.cache.get("NOTHING")).thenReturn(this.emptyMarker);
         VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("NOTHING");
@@ -196,7 +196,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermWithExceptionReturnsNull() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         VocabularyTerm result = this.mocker.getComponentUnderTest().getTerm("ERROR");
@@ -205,7 +205,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getTermsFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI1 = new URI("http://rest.genenames.org/fetch/symbol/BRCA1");
         URI expectedURI2 = new URI("http://rest.genenames.org/fetch/symbol/NOTHING");
@@ -245,7 +245,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getSizeFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/info");
         CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
@@ -260,7 +260,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getSizeWithErrorReturnsNegative1() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         long result = this.mocker.getComponentUnderTest().size();
@@ -269,7 +269,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getVersionFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/info");
         CapturingMatcher<HttpUriRequest> reqCapture = new CapturingMatcher<>();
@@ -284,7 +284,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void getVersionWithErrorReturnsEmptyString() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         String result = this.mocker.getComponentUnderTest().getVersion();
@@ -301,7 +301,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void checkReturnedTermsBehavior() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -324,7 +324,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void searchFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/search/"
             + "+status%3A%28Approved%29+AND+%28+symbol%3A%28brcA*%29+alias_symbol%3A%28brcA*%29%29");
@@ -352,7 +352,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void searchWithErrorReturnsEmptySet() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         List<VocabularyTerm> result = this.mocker.getComponentUnderTest().search(new HashMap<String, Object>());
@@ -361,7 +361,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void searchIgnoresBadOptions() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -388,7 +388,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void countFetchesFromRemoteServer() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         URI expectedURI = new URI("http://rest.genenames.org/search/"
             + "+status%3A%28Approved%29+AND+%28+symbol%3A%28brcA*%29+alias_symbol%3A%28brcA*%29%29");
@@ -410,7 +410,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void countWithExceptionReturnsNegativeOne() throws ComponentLookupException, URISyntaxException,
-        ClientProtocolException, IOException
+    ClientProtocolException, IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
         long result = this.mocker.getComponentUnderTest().count(new HashMap<String, Object>());
@@ -419,7 +419,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void testQueryBuilder() throws URISyntaxException, ClientProtocolException, IOException,
-        ComponentLookupException
+    ComponentLookupException
     {
         URI expectedURI = new URI("http://rest.genenames.org/search/+status%3A%28Approved%29"
             + "+AND+locus_type%3A%28RNA%2C%5C+cluster+RNA%2C%5C+micro*+%29"
@@ -468,7 +468,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void invalidResponseReturnsEmptySearch() throws ComponentLookupException, ClientProtocolException,
-        IOException
+    IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -484,7 +484,7 @@ public class RemoteGeneNomenclatureTest
 
     @Test
     public void invalidOrEmptyResponseReturnsNoInfo() throws ComponentLookupException, ClientProtocolException,
-        IOException
+    IOException
     {
         when(this.client.execute(any(HttpUriRequest.class))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);

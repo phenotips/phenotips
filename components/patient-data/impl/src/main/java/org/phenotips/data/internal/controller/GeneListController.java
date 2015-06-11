@@ -193,6 +193,20 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return classification;
     }
 
+    private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
+        Collection<String> selectedFieldNames)
+    {
+        int count = 0;
+        for (String property : keys) {
+            if (StringUtils.isBlank(item.get(property))
+                || (selectedFieldNames != null
+                && !selectedFieldNames.contains(enablingProperties.get(count)))) {
+                item.remove(property);
+            }
+            count++;
+        }
+    }
+
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -214,29 +228,17 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
+        List<String> keys =
+            Arrays.asList(GENE_KEY, EVIDENCE_KEY, COMMENTS_KEY);
+
+        List<String> enablingProperties =
+            Arrays.asList(GENES_CLASSIFICATION_ENABLING_FIELD_NAME, GENES_EVIDENCE_ENABLING_FIELD_NAME,
+                GENES_COMMENTS_ENABLING_FIELD_NAME);
+
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
-
             if (!StringUtils.isBlank(item.get(GENE_KEY))) {
-
-                if (StringUtils.isBlank(item.get(CLASSIFICATION_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_CLASSIFICATION_ENABLING_FIELD_NAME))) {
-                    item.remove(CLASSIFICATION_KEY);
-                }
-
-                if (StringUtils.isBlank(item.get(EVIDENCE_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_EVIDENCE_ENABLING_FIELD_NAME))) {
-                    item.remove(EVIDENCE_KEY);
-                }
-
-                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                    item.remove(COMMENTS_KEY);
-                }
-
+                removeKeys(item, keys, enablingProperties, selectedFieldNames);
                 container.add(item);
             }
         }

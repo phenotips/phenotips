@@ -132,9 +132,6 @@ public class VariantListController extends AbstractComplexController<Map<String,
             case "likely_pathogenic":
                 interpretation = "Likely Pathogenic";
                 break;
-            case "variant_u_s":
-                interpretation = "Variant of Unknown Significance";
-                break;
             case "likely_benign":
                 interpretation = "Likely Benign";
                 break;
@@ -186,6 +183,20 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return null;
     }
 
+    private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
+        Collection<String> selectedFieldNames)
+    {
+        int count = 0;
+        for (String property : keys) {
+            if (StringUtils.isBlank(item.get(property))
+                || (selectedFieldNames != null
+                && !selectedFieldNames.contains(enablingProperties.get(count)))) {
+                item.remove(property);
+            }
+            count++;
+        }
+    }
+
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -207,27 +218,17 @@ public class VariantListController extends AbstractComplexController<Map<String,
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
+        List<String> keys =
+            Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
+        List<String> enablingProperties =
+            Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
+                VARIANTS_INHERITANCE_ENABLING_FIELD_NAME, VARIANTS_VALIDATED_ENABLING_FIELD_NAME);
+
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
             if (!StringUtils.isBlank(item.get(VARIANT_KEY))) {
-
-                List<String> properties =
-                    Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
-                List<String> enablingProperties =
-                    Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
-                        VARIANTS_INHERITANCE_ENABLING_FIELD_NAME, VARIANTS_VALIDATED_ENABLING_FIELD_NAME);
-
-                int count = 0;
-                for (String property : properties) {
-                    if (StringUtils.isBlank(item.get(property))
-                        || (selectedFieldNames != null
-                        && !selectedFieldNames.contains(enablingProperties.get(count)))) {
-                        item.remove(property);
-                    }
-                    count++;
-                }
-
+                removeKeys(item, keys, enablingProperties, selectedFieldNames);
                 container.add(item);
             }
         }

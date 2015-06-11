@@ -93,7 +93,7 @@ public class SheetAssembler
 
         /* Extend the section borders all the way to the bottom of the sheet */
         Styler
-        .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
+            .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
     /**
@@ -104,7 +104,7 @@ public class SheetAssembler
      */
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
         throws Exception
-        {
+    {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
             if (patient == null) {
@@ -136,7 +136,7 @@ public class SheetAssembler
             allSections.add(patientSections);
         }
         return allSections;
-        }
+    }
 
     /**
      * Same as {@link #generateBody(DataToCellConverter, java.util.List)} but for header sections. Most of header
