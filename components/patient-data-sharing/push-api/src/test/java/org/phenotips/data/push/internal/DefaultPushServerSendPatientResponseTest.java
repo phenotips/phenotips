@@ -34,7 +34,7 @@ public class DefaultPushServerSendPatientResponseTest {
     }
 
     @Test
-    public void isActionFailed_incorectGroupVerifiesTrueKey()
+    public void isActionFailed_incorrectGroupVerifiesTrueKey()
     {
         pushResponse.response.accumulate("incorrect_user_group", true);
         Assert.assertTrue(pushResponse.isActionFailed_incorrectGroup());
