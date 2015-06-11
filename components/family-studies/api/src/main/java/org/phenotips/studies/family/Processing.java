@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.studies.family;
 
@@ -61,6 +61,13 @@ public interface Processing
     StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
 
+    /**
+     * TODO.
+     *
+     * @param familyDocument XWiki family document object.
+     * @param patientIds List of PhenoTips patient IDs of patients in the family.
+     * @throws XWikiException TODO: review if need to throw.
+     */
     void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
         XWikiException;
 }

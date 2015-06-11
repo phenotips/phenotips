@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.studies.family.internal;
 
@@ -214,6 +214,10 @@ public class ProcessingImpl implements Processing
 
     /**
      * Does not save the family document.
+     *
+     * @param familyDocument XWiki family document object.
+     * @param patientIds List of PhenoTips patient IDs of patients in the family.
+     * @throws XWikiException TODO: review if need to throw on error.
      */
     public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
             XWikiException
