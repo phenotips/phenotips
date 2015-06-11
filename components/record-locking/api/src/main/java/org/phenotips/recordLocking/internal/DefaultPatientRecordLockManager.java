@@ -2,13 +2,11 @@ package org.phenotips.recordLocking.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -37,14 +35,6 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     private EntityReference lockClassReference = new EntityReference("PatientLock", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
-    /** Provides access to the current request context. */
-    @Inject
-    private Execution execution;
-
-    /** Allows retrieval of Patient from ID.*/
-    @Inject
-    private PatientRepository pr;
-
     /** Allows checking of access rights on a patient.*/
     @Inject
     private PermissionsManager pm;
@@ -60,7 +50,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     public boolean lockPatientRecord(Patient patient) {
         try {
             XWikiDocument patientDocument = this.getPatientDocument(patient);
-            if (!this.isDocumentLocked(patientDocument)) {
+            if (!this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
                 XWikiContext context = contextProvider.get();
                 XWiki xwiki = context.getWiki();
                 patientDocument.createXObject(lockClassReference, context);
@@ -79,7 +69,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     public boolean unlockPatientRecord(Patient patient) {
         try {
             XWikiDocument patientDocument = this.getPatientDocument(patient);
-            if (this.isDocumentLocked(patientDocument)) {
+            if (this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
                 XWikiContext context = contextProvider.get();
                 XWiki xwiki = context.getWiki();
                 patientDocument.removeXObjects(lockClassReference);
