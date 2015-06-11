@@ -19,7 +19,6 @@ package org.phenotips.measurements.internal;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.observation.EventListener;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.observation.event.Event;
 
@@ -54,8 +54,8 @@ public class MeasurementAgeUpdaterTest
 {
 
     @Rule
-    public MockitoComponentMockingRule<MeasurementAgeUpdater> mocker =
-            new MockitoComponentMockingRule<>(MeasurementAgeUpdater.class);
+    public MockitoComponentMockingRule<EventListener> mocker =
+        new MockitoComponentMockingRule<EventListener>(MeasurementAgeUpdater.class);
 
     @Mock
     private Object data;
@@ -173,14 +173,32 @@ public class MeasurementAgeUpdaterTest
     }
 
     @Test
+    public void behavesNormallyWithNullMeasurement() throws ComponentLookupException {
+        BaseObject measurement2 = mock(BaseObject.class);
+        BaseObject measurement3 = null;
+        BaseObject measurement4 = mock(BaseObject.class);
+        this.objects.add(measurement2);
+        this.objects.add(measurement3);
+        this.objects.add(measurement4);
+
+        when(measurement2.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+        when(measurement4.getDateValue(DATE_PROPERTY_NAME)).thenReturn(new Date());
+
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        verify(this.measurement).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+        verify(measurement2).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+        verify(measurement4).setFloatValue(eq(AGE_PROPERTY_NAME), anyFloat());
+    }
+
+    @Test
+    public void returnsNormallyWithNullPatientRecord() throws ComponentLookupException {
+        when(this.source.getXObject(any(EntityReference.class))).thenReturn(null);
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+    }
+
+    @Test
     public void returnsNormallyWhenGivenNoMeasurementObjects() throws Exception {
         when(this.source.getXObjects(any(EntityReference.class))).thenReturn(null);
-        NullPointerException exceptionWhenListIsNull = null;
-        try {
-            this.mocker.getComponentUnderTest().onEvent(event, source, data);
-        } catch(NullPointerException e){
-            exceptionWhenListIsNull = e;
-        }
-        Assert.assertNull(exceptionWhenListIsNull);
+        this.mocker.getComponentUnderTest().onEvent(event, source, data);
     }
 }
