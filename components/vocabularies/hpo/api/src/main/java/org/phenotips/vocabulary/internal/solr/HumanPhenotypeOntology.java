@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -145,20 +146,23 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     private List<VocabularyTerm> sortTermsByLevel(Collection<VocabularyTerm> terms)
     {
         List<VocabularyTerm> sortedTerms = new LinkedList<>();
-        Map<Long, VocabularyTerm> levelMap = new HashMap<>();
+        final Map<VocabularyTerm, Long> levelMap = new HashMap<>();
         for (VocabularyTerm term : terms) {
-            levelMap.put(term.getDistanceTo(this.getRootTerm()), term);
+            levelMap.put(term, term.getDistanceTo(this.getRootTerm()));
+            sortedTerms.add(term);
         }
-        Set<Long> keys = levelMap.keySet();
-        List<Long> sortedKeys = new LinkedList<>();
-        for (Long key : keys) {
-            sortedKeys.add(key);
-        }
-        Collections.sort(sortedKeys);
-        Collections.reverse(sortedKeys);
-        for (Long key : sortedKeys) {
-            sortedTerms.add(levelMap.get(key));
-        }
+        sortedTerms.sort(new Comparator<VocabularyTerm>()
+        {
+            @Override
+            public int compare(VocabularyTerm o1, VocabularyTerm o2)
+            {
+                if (levelMap.get(o1) > levelMap.get(o2)) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
         return sortedTerms;
     }
 
