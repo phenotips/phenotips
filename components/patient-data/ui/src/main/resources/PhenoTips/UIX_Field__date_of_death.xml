@@ -41,113 +41,6 @@
   <object>
     <name>PhenoTips.UIX_Field__date_of_death</name>
     <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>2d9fef79-4cab-4423-8190-c1419f070e81</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>document.observe("xwiki:dom:loaded", function() {
-  var unknown = $('PhenoTips.PatientClass_0_date_of_death_unknown');
-  var dateOfDeathInputs = $$('.date_of_death select');
-
-  unknown.observe('change', function (e) {
-    if (e.target.checked) {
-      dateOfDeathInputs.each(function (s) {
-        Form.Element.disable(s);
-      });
-    } else {
-      dateOfDeathInputs.each(function (s) {
-        Form.Element.enable(s);
-      });
-    }
-  });
-});</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse/>
-    </property>
-    <property>
-      <use>currentPage</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.UIX_Field__date_of_death</name>
-    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>1774d7e3-0783-4c20-a962-071a535e4bb4</guid>
     <class>
@@ -218,8 +111,14 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayFormatted('2-col' 'date_of_death' '' 'date' '')
-#__displayFormatted('2-col' 'date_of_death_unknown')
+(% class="controlled-group complete-hide" %)(((
+  (% class="controlled" %) (((
+  #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+  )))
+  (% class="controller" %)(((
+  #__displayFormatted('2-col' 'date_of_death_unknown')
+  )))
+)))
 {{/velocity}}</content>
     </property>
     <property>
