@@ -115,7 +115,11 @@
   $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
-#set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)${util.newline}#__displayIfSet('assistedReproduction_donoregg', false)${util.newline}#__displayIfSet('assistedReproduction_donorsperm', false)")
+#set ($assistedReproductionQuestions = ['assistedReproduction_fertilityMeds', 'ivf', 'assistedReproduction_surrogacy', 'assistedReproduction_donoregg', 'assistedReproduction_donorsperm'])
+#set ($displayedContent = "")
+#foreach ($question in $assistedReproductionQuestions)
+  #set ($displayedContent = "${displayedContent}#__displayIfSet(${question}, false)${util.newline}")
+#end
 #if ($displayedContent.trim() != '')
 **$services.localization.render('phenotips.UIXField.assistedReproduction.label')**
 $displayedContent.trim()
