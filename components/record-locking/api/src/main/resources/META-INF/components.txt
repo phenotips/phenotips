@@ -1,0 +1,2 @@
+org.phenotips.recordLocking.script.RecordLockingService
+org.phenotips.recordLocking.internal.DefaultPatientRecordLockManager

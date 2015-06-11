@@ -60,5 +60,6 @@
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>proxy-authentication</module>
+    <module>record-locking</module>
   </modules>
 </project>
