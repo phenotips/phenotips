@@ -773,7 +773,8 @@ public class DataToCellConverter
 
         List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar2"));
         List<String> assitedReproductionFields = new LinkedList<String>(
-            Arrays.asList("ivf", "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds"));
+            Arrays.asList("ivf", "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
+                "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
         apgarFields.retainAll(present);
         assitedReproductionFields.retainAll(present);
         int apgarOffset = apgarFields.size();
@@ -845,6 +846,18 @@ public class DataToCellConverter
         }
         if (present.contains("assistedReproduction_surrogacy")) {
             Integer assisted = history.get("assistedReproduction_surrogacy");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("assistedReproduction_donoregg")) {
+            Integer assisted = history.get("assistedReproduction_donoregg");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("assistedReproduction_donorsperm")) {
+            Integer assisted = history.get("assistedReproduction_donorsperm");
             DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
             bodySection.addCell(cell);
             x++;
