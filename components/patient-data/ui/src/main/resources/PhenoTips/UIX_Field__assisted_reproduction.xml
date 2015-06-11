@@ -115,7 +115,7 @@
   $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
-#set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)${util.newline}#__displayIfSet('assistedReproduction_donor', false)")
+#set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)${util.newline}#__displayIfSet('assistedReproduction_donoregg', false)${util.newline}#__displayIfSet('assistedReproduction_donorsperm', false)")
 #if ($displayedContent.trim() != '')
 **$services.localization.render('phenotips.UIXField.assistedReproduction.label')**
 $displayedContent.trim()
@@ -133,7 +133,7 @@ $displayedContent.trim()
 enabled=true
 required=
 order=2
-fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy,assistedReproduction_donor
+fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy,assistedReproduction_donoregg,assistedReproduction_donorsperm
 privacy_level=3</parameters>
     </property>
     <property>

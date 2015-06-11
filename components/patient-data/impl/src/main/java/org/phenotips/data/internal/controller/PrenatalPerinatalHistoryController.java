@@ -45,11 +45,12 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
 
     private static final String ASSISTED_REPRODUCTION_SURROGACY = "assistedReproduction_surrogacy";
 
-    private static final String ASSISTED_REPRODUCTION_DONOR = "assistedReproduction_donor";
+    private static final String ASSISTED_REPRODUCTION_DONOR_EGG = "assistedReproduction_donoregg";
+    private static final String ASSISTED_REPRODUCTION_DONOR_SPERM = "assistedReproduction_donorsperm";
 
     private List<String> booleans =
         Arrays.asList(IVF, ASSISTED_REPRODUCTION_FERTILITY_MEDS, ASSISTED_REPRODUCTION_SURROGACY,
-            ASSISTED_REPRODUCTION_DONOR);
+            ASSISTED_REPRODUCTION_DONOR_EGG, ASSISTED_REPRODUCTION_DONOR_SPERM);
 
     @Override
     public String getName()
@@ -67,7 +68,7 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     protected List<String> getProperties()
     {
         return Arrays.asList("gestation", IVF, ASSISTED_REPRODUCTION_FERTILITY_MEDS, ASSISTED_REPRODUCTION_SURROGACY,
-            ASSISTED_REPRODUCTION_DONOR);
+            ASSISTED_REPRODUCTION_DONOR_EGG, ASSISTED_REPRODUCTION_DONOR_SPERM);
     }
 
     @Override
