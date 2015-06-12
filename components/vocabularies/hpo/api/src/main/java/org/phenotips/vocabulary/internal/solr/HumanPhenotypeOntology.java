@@ -151,7 +151,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
             levelMap.put(term, term.getDistanceTo(this.getRootTerm()));
             sortedTerms.add(term);
         }
-        sortedTerms.sort(new Comparator<VocabularyTerm>()
+        Collections.sort(sortedTerms, (new Comparator<VocabularyTerm>()
         {
             @Override
             public int compare(VocabularyTerm o1, VocabularyTerm o2)
@@ -162,7 +162,7 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
                     return 1;
                 }
             }
-        });
+        }));
         return sortedTerms;
     }
 
