@@ -107,7 +107,7 @@ public class ModularRightServiceImplTest
         when(this.userManager.getUser(null, true)).thenReturn(this.guestUser);
 
         when(this.context.getWiki()).thenReturn(this.xwiki);
-        when(this.context.getDatabase()).thenReturn("xwiki");
+        when(this.context.getWikiId()).thenReturn("xwiki");
 
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "user")).thenReturn(this.userResolver);
         when(this.userResolver.resolve("jdoe", new WikiReference("xwiki"))).thenReturn(this.userReference);
