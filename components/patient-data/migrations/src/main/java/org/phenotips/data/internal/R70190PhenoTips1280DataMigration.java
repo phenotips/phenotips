@@ -69,7 +69,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Named("R70190PhenoTips#1280")
 @Singleton
 public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigration implements
-HibernateCallback<Object>
+    HibernateCallback<Object>
 {
     private static final String GENE_NAME = "gene";
 
@@ -78,6 +78,10 @@ HibernateCallback<Object>
     private static final String SOLVED_NAME = "solved__gene_id";
 
     private static final String CLASSIFICATION_NAME = "classification";
+
+    private static final String BEGINNING = "select distinct o.name from BaseObject o where o.className = '";
+
+    private static final String ENDING = "'";
 
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
@@ -123,6 +127,43 @@ HibernateCallback<Object>
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
                 + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
                 + SOLVED_NAME + "' and p.value <> ''");
+        setSolvedGenes(q, xwiki, patientClassReference, investigationClassReference, context, session);
+
+        q = session.createQuery(BEGINNING + this.serializer.serialize(investigationClassReference) + ENDING);
+        setCandidateGenes(q, xwiki, investigationClassReference, context, session);
+
+        q = session.createQuery(BEGINNING + this.serializer.serialize(rejectedGenesClassReference) + ENDING);
+        setRejectedGenes(q, xwiki, rejectedGenesClassReference, investigationClassReference, context, session);
+
+        return null;
+    }
+
+    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference investigationClassReference,
+        XWikiContext context, Session session) throws HibernateException, XWikiException
+    {
+        @SuppressWarnings("unchecked")
+        List<String> docs = q.list();
+        for (String docName : docs) {
+            XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
+            BaseObject gene = doc.getXObject(investigationClassReference);
+            gene.set(CLASSIFICATION_NAME, "candidate", context);
+            doc.setComment("Adding 'candidate' classification to existing "
+                + "candidate gene values in the InvestigationClass objects");
+            doc.setMinorEdit(true);
+            try {
+                session.clear();
+                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+                session.flush();
+            } catch (DataMigrationException e) {
+                //
+            }
+        }
+    }
+
+    private void setSolvedGenes(Query q, XWiki xwiki, DocumentReference patientClassReference,
+        DocumentReference investigationClassReference, XWikiContext context, Session session)
+        throws HibernateException, XWikiException
+    {
         @SuppressWarnings("unchecked")
         List<String> documents = q.list();
         for (String docName : documents) {
@@ -142,30 +183,15 @@ HibernateCallback<Object>
                 ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                 session.flush();
             } catch (DataMigrationException e) {
+                //
             }
         }
+    }
 
-        q = session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-            + this.serializer.serialize(investigationClassReference) + "'");
-        @SuppressWarnings("unchecked")
-        List<String> docs = q.list();
-        for (String docName : docs) {
-            XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
-            BaseObject gene = doc.getXObject(investigationClassReference);
-            gene.set(CLASSIFICATION_NAME, "candidate", context);
-            doc.setComment("Adding 'candidate' classification to existing "
-                + "candidate gene values in the InvestigationClass objects");
-            doc.setMinorEdit(true);
-            try {
-                session.clear();
-                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-                session.flush();
-            } catch (DataMigrationException e) {
-            }
-        }
-
-        q = session.createQuery("select distinct o.name from BaseObject o where o.className = '"
-            + this.serializer.serialize(rejectedGenesClassReference) + "'");
+    private void setRejectedGenes(Query q, XWiki xwiki, DocumentReference rejectedGenesClassReference,
+        DocumentReference investigationClassReference, XWikiContext context, Session session)
+        throws HibernateException, XWikiException
+    {
         @SuppressWarnings("unchecked")
         List<String> docums = q.list();
         for (String docName : docums) {
@@ -185,9 +211,8 @@ HibernateCallback<Object>
                 ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                 session.flush();
             } catch (DataMigrationException e) {
+                //
             }
         }
-
-        return null;
     }
 }
