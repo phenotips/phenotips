@@ -752,6 +752,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("prenatal_development", "Notes");
         fieldToHeaderMap.put("assistedReproduction_fertilityMeds", "Fertility medication");
         fieldToHeaderMap.put("ivf", "In vitro fertilization");
+        fieldToHeaderMap.put("icsi", "Intra-cytoplasmic sperm injection");
         fieldToHeaderMap.put("assistedReproduction_surrogacy", "Surrogacy");
         fieldToHeaderMap.put("assistedReproduction_donorsperm", "Donor sperm");
         fieldToHeaderMap.put("assistedReproduction_donoregg", "Donor egg");
@@ -773,7 +774,7 @@ public class DataToCellConverter
 
         List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar2"));
         List<String> assitedReproductionFields = new LinkedList<String>(
-            Arrays.asList("ivf", "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
+            Arrays.asList("ivf", "icsi", "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
                 "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
         apgarFields.retainAll(present);
         assitedReproductionFields.retainAll(present);
@@ -840,6 +841,12 @@ public class DataToCellConverter
         }
         if (present.contains("ivf")) {
             Integer assisted = history.get("ivf");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("icsi")) {
+            Integer assisted = history.get("icsi");
             DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
             bodySection.addCell(cell);
             x++;

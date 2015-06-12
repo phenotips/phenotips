@@ -735,6 +735,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </ivf>
+    <icsi>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>icsi</name>
+      <number>49</number>
+      <prettyName>Intra-cytoplasmic sperm injection</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </icsi>
     <last_name>
       <customDisplay/>
       <disabled>0</disabled>
