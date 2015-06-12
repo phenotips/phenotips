@@ -27,13 +27,14 @@
   </parent>
   <artifactId>phenotips-record-locking-ui</artifactId>
   <name>PhenoTips - Record Locking - UI - Documents providing record locking functionality</name>
+  <description>PhenoTips module to allow users to "lock" a record to prevent any further editing (from them or any other user) until they "unlock" it again.</description>
   <packaging>xar</packaging>
 
   <properties>
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Core patient data and the patient record UI</xwiki.extension.name>
+    <xwiki.extension.name>Patient record locking capability</xwiki.extension.name>
   </properties>
 
   <dependencies>

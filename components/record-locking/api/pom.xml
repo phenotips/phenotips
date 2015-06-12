@@ -29,7 +29,7 @@
   <name>PhenoTips - Record Locking - API</name>
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>1.00</coverage.instructionRatio>
+    <coverage.instructionRatio>0.99</coverage.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
