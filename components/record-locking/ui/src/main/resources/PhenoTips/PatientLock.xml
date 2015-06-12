@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1433886792000</date>
-  <contentUpdateDate>1433886501000</contentUpdateDate>
+  <date>1434132731000</date>
+  <contentUpdateDate>1434129645000</contentUpdateDate>
   <version>1.1</version>
   <title>Patient Lock</title>
   <comment/>
@@ -38,16 +38,17 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-#set ($patientId = $!{request.getParameter('patientId')})##The patient id to be locked or unlocked
+#set ($patientId = $doc.documentReference)##The patient id to be locked or unlocked
 #set ($lockingRequest = $!{request.getParameter('lock')})##The locking request. True to lock, false to unlock.
-#set ($resultSuccessful = false)
-#if ("$!{patientId}" != '' &amp;&amp; "$!{lockingRequest}" != '')
-  #set ($resultSuccessful = $services.recordLocking.setRecordLock($patientId, $lockingRequest))
-#end
-#if ($resultSuccessful)
-  $response.setStatus(200)
+#set ($csrfToken = $!{request.getParameter('token')})
+#if ($services.csrf.isTokenValid(${csrfToken}))
+  #if ("$!{lockingRequest}" == 'true')
+    $response.setStatus($services.recordLocking.lockPatient($patientId))
+  #elseif ("$!{lockingRequest}" == 'false')
+    $response.setStatus($services.recordLocking.unlockPatient($patientId))
+  #end
 #else
-  $response.setStatus(500)
+  $response.setStatus(403)
 #end
 {{/velocity}}</content>
   <object>
@@ -134,9 +135,7 @@
   var init = function() {
     var button = $('record-locking-button');
     var activeLockingRequest = false; //Prevent multiple requests being active concurrently
-
-    button.observe('click', function(event) {
-      event.stop();
+    var launchRequest = function() {
       (!activeLockingRequest &amp;&amp; new Ajax.Request(
         button.href, {
           method: "POST",
@@ -151,9 +150,32 @@
             activeLockingRequest = false;
             new XWiki.widgets.Notification("$services.localization.render('phenotips.patientLock.message.error')", 'error');
           }
-        }));
+        })
+      );
+    };
+
+    var showConfirmation = function() {
+      confirmationText = (button.href.indexOf("lock=true") &gt; -1) ? "$services.localization.render('phenotips.patientLock.confirmation.addLock')" : "$services.localization.render('phenotips.patientLock.confirmation.removeLock')";
+      new XWiki.widgets.ConfirmationBox(
+        //behaviours
+        {
+          onYes: launchRequest,
+          onNo: function(){},
+        },
+        //Text
+        {
+          confirmationText: confirmationText,
+          showCancelButton: false
+        }
+      );
+    };
+      
+    button.observe('click', function(event) {
+      event.stop();
+      showConfirmation();
     });
   };
+
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
     </property>
@@ -352,33 +374,35 @@
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.jsx.use('PhenoTips.PatientLock')##
-$xwiki.ssx.use('PhenoTips.PatientLock')##
-#set ($lockDocName = 'PhenoTips.PatientLock')
-#set ($lockObject = $doc.getObject($lockDocName))
-#set ($patient = $services.patients.getPatientById($doc.documentReference))
-#set ($patientAccess = $services.permissions.getPatientAccess($patient))
-#set ($patientLockingService = $xwiki.getDocument($lockDocName))
-#set ($lockingServiceRequestParams = "patientId=" + $patient.getId())
-{{html}}
-##Macro used to create help button.
-#macro (_createLockButton $link $icon $text)&lt;span class='buttonwrapper'&gt;&lt;a id="record-locking-button" class="button" href="${link}"&gt;&lt;span class = "fa fa-${icon}"&gt;&lt;/span&gt; ${text}&lt;/a&gt; &lt;span class="fa fa-question-circle xHelpButton" title="$services.localization.render('phenotips.patientLock.action.hint')"&gt;&lt;/span&gt;&lt;/span&gt;#end
-&lt;div class="locking-container"&gt;
-#if ("$!{lockObject}" == '')
-  #if ($patientAccess.hasAccessLevel('manage'))
-    #set ($lockingServiceRequestParams = $lockingServiceRequestParams + "&amp;lock=true")
-    #_createLockButton("$patientLockingService.getURL('view', $lockingServiceRequestParams)", 'lock', "$services.localization.render('phenotips.patientLock.action.lock')")
-  #end
-#else
-  #if ($patientAccess.hasAccessLevel('manage'))
-    #set ($lockingServiceRequestParams = $lockingServiceRequestParams + "&amp;lock=false")
-    #_createLockButton($patientLockingService.getURL('view', $lockingServiceRequestParams), 'unlock', "$services.localization.render('phenotips.patientLock.action.unlock')")
-  #elseif ($patientAccess.hasAccessLevel('edit'))
-    &lt;p&gt;&lt;span class = "fa fa-lock"&gt;&lt;/span&gt; $services.localization.render('phenotips.patientLock.message.locked')&lt;/p&gt;
-  #end
+#if($xcontext.getAction() == 'view')
+  $xwiki.jsx.use('PhenoTips.PatientLock')##
+  $xwiki.ssx.use('PhenoTips.PatientLock')##
+  #set ($lockDocName = 'PhenoTips.PatientLock')
+  #set ($patient = $services.patients.getPatientById($doc.documentReference))
+  #set ($patientAccess = $services.permissions.getPatientAccess($patient))
+  #set ($patientLockingService = $xwiki.getDocument($lockDocName))
+  #set ($lockingServiceRequestParams = "sheet=${lockDocName}&amp;token=$!{escapetool.xml($services.csrf.token)}")
+  {{html}}
+  ##Macro used to create help button.
+  #macro (_createLockButton $link $icon $text)&lt;span class='buttonwrapper'&gt;&lt;a id="record-locking-button" class="button" href="${link}"&gt;&lt;span class = "fa fa-${icon}"&gt;&lt;/span&gt; ${text}&lt;/a&gt; &lt;span class="fa fa-question-circle xHelpButton" title="$services.localization.render('phenotips.patientLock.action.hint')"&gt;&lt;/span&gt;&lt;/span&gt;#end
+    &lt;div class="locking-container"&gt;
+    #if (!$services.recordLocking.isLocked($patient))
+      #if ($patientAccess.hasAccessLevel('manage'))
+        #set ($lockingServiceRequestParams = $lockingServiceRequestParams + "&amp;lock=true")
+        #_createLockButton($doc.getURL('view', $lockingServiceRequestParams), 'lock', "$services.localization.render('phenotips.patientLock.action.lock')")
+      #end
+    #else
+      #if ($patientAccess.hasAccessLevel('manage'))
+        #set ($lockingServiceRequestParams = $lockingServiceRequestParams + "&amp;lock=false")
+        #_createLockButton($doc.getURL('view', $lockingServiceRequestParams), 'unlock', "$services.localization.render('phenotips.patientLock.action.unlock')")
+      #elseif ($patientAccess.hasAccessLevel('edit'))
+        ##User usually can edit but does not have permision to remove the lock
+        &lt;p&gt;&lt;span class = "fa fa-lock"&gt;&lt;/span&gt; $services.localization.render('phenotips.patientLock.message.locked')&lt;/p&gt;
+      #end
+    #end
+    &lt;/div&gt;
+  {{/html}}
 #end
-&lt;/div&gt;
-{{/html}}
 {{/velocity}}</content>
     </property>
     <property>
