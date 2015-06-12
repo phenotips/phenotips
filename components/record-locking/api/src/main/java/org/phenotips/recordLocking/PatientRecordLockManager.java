@@ -44,7 +44,7 @@ public interface PatientRecordLockManager
     boolean unlockPatientRecord(Patient patient);
 
     /**
-     * Checks if there is a lock on the given patient
+     * Checks if there is a lock on the given patient.
      * @param patient The patient to be checked
      * @return True if the patient is locked, false if otherwise
      */
