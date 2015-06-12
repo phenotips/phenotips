@@ -3576,9 +3576,9 @@ hr {
   display: none;
 }
 .patient-info p {
-  margin: 0 !important;
-  padding: 0 !important;
-  text-indent: 0 !important;
+  margin: 0;
+  padding: 0;
+  text-indent: 0;
 }
 .no-selected {
   color: $theme.notificationErrorColor;
