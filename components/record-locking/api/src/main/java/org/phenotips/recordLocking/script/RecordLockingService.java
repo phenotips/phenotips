@@ -17,29 +17,18 @@
  */
 package org.phenotips.recordLocking.script;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.data.permissions.internal.access.ManageAccessLevel;
+import org.phenotips.recordLocking.PatientRecordLockManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  * A service to add or remove a lock object to a record. The lock object will remove edit rights for all users on the
@@ -52,64 +41,56 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class RecordLockingService implements ScriptService
 {
-    /** The XClass used for lock objects. */
-    private EntityReference lockClassReference = new EntityReference("PatientLock", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
-    /** Provides access to the current request context. */
     @Inject
-    private Execution execution;
+    private PatientRecordLockManager lockManager;
 
-    /** Allows retrieval of Patient from ID*/
     @Inject
-    PatientRepository pr;
-
-    /** Allows checking of access rights on a patient*/
-    @Inject
-    PermissionsManager pm;
+    private PatientRepository pr;
 
     /**
-     * Sets or removes a lock from a record. Locks remove edit rights from all users.
-     * @param patientId The record to be locked
-     * @param lock "true" to create a lock, "false" to remove
-     * @return true if successful false if otherwise
+     * Locks the patient record.
+     * @param patient The patient to be locked
+     * @return A {@link HttpStatus} indicating the status of the request.
      */
-    public Boolean setRecordLock (String patientId, Boolean lock)
-    {
-        if (patientId == null || lock == null) {
-            return Boolean.FALSE;
-        }
+    public int lockPatient(Patient patient) {
+        return lockManager.lockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+    }
 
-        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-        XWiki xwiki = context.getWiki();
+    /**
+     * Unlocks the patient record.
+     * @param patient The patient to be unlocked
+     * @return A {@link HttpStatus} indicating the status of the request.
+     */
+    public int unlockPatient(Patient patient) {
+        return lockManager.unlockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+    }
 
-        Patient patient = this.pr.getPatientById(patientId);
-        if (patient == null) {
-            return Boolean.FALSE;
-        }
+    /**
+     * Locks the patient record.
+     * @param patientID The id of the patient to be locked
+     * @return A {@link HttpStatus} indicating the status of the request.
+     */
+    public int lockPatient(String patientID) {
+        Patient patient = this.pr.getPatientById(patientID);
+        return patient == null ? HttpStatus.SC_BAD_REQUEST : this.lockPatient(patient);
+    }
 
-        try {
-            DocumentReference patientDocumentReference = patient.getDocument();
-            XWikiDocument patientDocument = xwiki.getDocument(patientDocumentReference, context);
-            PatientAccess patientAccess = this.pm.getPatientAccess(patient);
-            Boolean hasLockingPermission = patientAccess.hasAccessLevel(new ManageAccessLevel());
+    /**
+     * Unlocks the patient record.
+     * @param patientID The id of the patient to be unlocked
+     * @return A {@link HttpStatus} indicating the status of the request.
+     */
+    public int unlockPatient(String patientID) {
+        Patient patient = this.pr.getPatientById(patientID);
+        return patient == null ? HttpStatus.SC_BAD_REQUEST : this.unlockPatient(patient);
+    }
 
-            //Edit the lock if the user has locking permission
-            if (hasLockingPermission) {
-                BaseObject previousLockObject = patientDocument.getXObject(lockClassReference);
-
-                if (lock && previousLockObject == null) {
-                    patientDocument.createXObject(lockClassReference, context);
-                } else if (!lock && previousLockObject != null) {
-                    patientDocument.removeXObjects(lockClassReference);
-                }
-
-                xwiki.saveDocument(patientDocument, context);
-            }
-        } catch (XWikiException e) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+    /**
+     * Checks if a patient is currently locked.
+     * @param patient The patient to be checked.
+     * @return {@code true} if locked
+     */
+    public boolean isLocked(Patient patient) {
+        return this.lockManager.isLocked(patient);
     }
 }

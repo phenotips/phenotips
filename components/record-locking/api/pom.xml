@@ -27,6 +27,10 @@
   </parent>
   <artifactId>phenotips-record-locking-api</artifactId>
   <name>PhenoTips - Record Locking - API</name>
+  <properties>
+    <checkstyle.skip>true</checkstyle.skip>
+    <coverage.instructionRatio>1.00</coverage.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -50,6 +54,21 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -15,18 +15,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.security.authorization.internal;
+package org.phenotips.recordLocking.internal.authorization;
 
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
+
+import java.lang.reflect.ParameterizedType;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,24 +69,25 @@ public class LockedAuthorizationModuleTest
     @Mock
     private DocumentReference documentReference;
 
-    private Execution execution;
-
+    @Mock
     private XWikiDocument document;
 
+    @Mock
     private XWikiContext context;
 
+    @Mock
     private XWiki xwiki;
+
+    private Provider<XWikiContext> contextProvider;
 
     @Before
     public void setup() throws ComponentLookupException, XWikiException
     {
         MockitoAnnotations.initMocks(this);
-        this.execution = this.mocker.getInstance(Execution.class);
-        ExecutionContext exContext = mock(ExecutionContext.class);
-        context = mock(XWikiContext.class);
-        Mockito.doReturn(exContext).when(this.execution).getContext();
-        Mockito.doReturn(context).when(exContext).getProperty("xwikicontext");
-        xwiki = mock(XWiki.class);
+        ParameterizedType cpType = new DefaultParameterizedType(null, Provider.class, XWikiContext.class);
+        this.contextProvider = this.mocker.getInstance(cpType);
+
+        Mockito.doReturn(context).when(contextProvider).get();
         Mockito.doReturn(xwiki).when(context).getWiki();
 
 
@@ -91,7 +95,6 @@ public class LockedAuthorizationModuleTest
     @Test
     public void ignoresDocumentsWithoutPatientLockObjects() throws ComponentLookupException, XWikiException
     {
-        document = mock(XWikiDocument.class);
         Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
         when(document.getXObject(Matchers.<EntityReference>any())).thenReturn(null);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
@@ -100,7 +103,6 @@ public class LockedAuthorizationModuleTest
     @Test
     public void ignoresWhenActionIsReadOnly() throws ComponentLookupException, XWikiException
     {
-        document = mock(XWikiDocument.class);
         Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
 
         BaseObject lock = mock(BaseObject.class);
@@ -111,7 +113,6 @@ public class LockedAuthorizationModuleTest
     @Test
     public void returnsFalseWhenLockedAndRightCanEdit() throws ComponentLookupException, XWikiException
     {
-        document = mock(XWikiDocument.class);
         Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
 
         BaseObject lock = mock(BaseObject.class);
@@ -123,7 +124,6 @@ public class LockedAuthorizationModuleTest
     @Test
     public void returnsNullWhenExceptionIsThrown() throws ComponentLookupException, XWikiException
     {
-        document = mock(XWikiDocument.class);
         Mockito.doThrow(new XWikiException()).when(xwiki).getDocument(documentReference, context);
         Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
     }

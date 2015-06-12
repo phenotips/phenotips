@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.security.authorization.internal;
+package org.phenotips.recordLocking.internal.authorization;
 
 import org.phenotips.Constants;
 import org.phenotips.security.authorization.AuthorizationModule;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -30,6 +29,7 @@ import org.xwiki.users.User;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import com.xpn.xwiki.XWikiContext;
@@ -51,9 +51,10 @@ public class LockedAuthorizationModule implements AuthorizationModule
     /** The XClass used for patient lock objects. */
     private EntityReference lockClassReference = new EntityReference("PatientLock", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
-    /** Provides access to the current request context. */
+
+    /** Provides access to the current context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> contextProvider;
 
     @Override public int getPriority()
     {
@@ -62,7 +63,7 @@ public class LockedAuthorizationModule implements AuthorizationModule
 
     @Override public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+        XWikiContext context = contextProvider.get();
 
         try {
             XWikiDocument doc = context.getWiki().getDocument(document, context);

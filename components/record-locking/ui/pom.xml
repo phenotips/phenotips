@@ -26,7 +26,7 @@
     <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>phenotips-record-locking-ui</artifactId>
-  <name>PhenoTips - Record Locking - API - Documents providing record locking functionality</name>
+  <name>PhenoTips - Record Locking - UI - Documents providing record locking functionality</name>
   <packaging>xar</packaging>
 
   <properties>
