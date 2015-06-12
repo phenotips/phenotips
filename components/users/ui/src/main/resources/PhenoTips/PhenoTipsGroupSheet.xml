@@ -83,7 +83,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="group-logo" %)(((#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end})))$doc.display('description')
 
 #set ($isMyGroup = $xwiki.user.isUserInGroup($doc.fullName) || $xwiki.user.isUserInGroup("${doc.fullName} Administrators"))
-#if ($isMyGroup){{info}}$services.localization.render('phenotips.groups.selfMembership').{{/info}}#end
+#if ($isMyGroup){{info}}$services.localization.render('phenotips.groups.selfMembership'){{/info}}#end
 (% class="clearfloats" %)((()))
 #end
 
