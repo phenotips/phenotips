@@ -115,7 +115,11 @@
   $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
-#set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)")
+#set ($assistedReproductionQuestions = ['assistedReproduction_fertilityMeds', 'ivf', 'icsi', 'assistedReproduction_surrogacy', 'assistedReproduction_donoregg', 'assistedReproduction_donorsperm'])
+#set ($displayedContent = "")
+#foreach ($question in $assistedReproductionQuestions)
+  #set ($displayedContent = "${displayedContent}#__displayIfSet(${question}, false)${util.newline}")
+#end
 #if ($displayedContent.trim() != '')
 **$services.localization.render('phenotips.UIXField.assistedReproduction.label')**
 $displayedContent.trim()
@@ -133,7 +137,7 @@ $displayedContent.trim()
 enabled=true
 required=
 order=2
-fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy
+fields=assistedReproduction_fertilityMeds,ivf,icsi,assistedReproduction_surrogacy,assistedReproduction_donoregg,assistedReproduction_donorsperm
 privacy_level=3</parameters>
     </property>
     <property>
