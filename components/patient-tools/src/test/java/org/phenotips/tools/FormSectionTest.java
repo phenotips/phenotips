@@ -20,7 +20,9 @@ package org.phenotips.tools;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 
 
@@ -30,22 +32,25 @@ public class FormSectionTest {
 
     @Before
     public void setUp(){
-        testFormSection = new FormSection("title", "property", new ArrayList<String>());
+        List<String> categories = new LinkedList<String>();
+        testFormSection = new FormSection("title", "phenotype", categories);
     }
 
     @Test
     public void testAddCustomElement(){
         FormField testField = mock(FormField.class);
-        Assert.assertNotNull(testFormSection.addCustomElement(testField));
-
         FormGroup testGroup = mock(FormGroup.class);
+        Assert.assertNotNull(testFormSection.addCustomElement(testField));
         Assert.assertNotNull(testFormSection.addCustomElement(testGroup));
     }
 
     @Test
-    public void testCustomElementDisplay(){
-
-
-
+    public void testSectionDisplay(){
+        String[] fieldNames = new String[]{"phenotype", "negative_phenotype"};
+        Assert.assertEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
+        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
+        FormField testField = mock(FormField.class);
+        testFormSection.addCustomElement(testField);
+        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
     }
 }
