@@ -17,9 +17,15 @@
  */
 package org.phenotips.configuration;
 
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * Checks if information in a {@link RecordElement} has been granted consent to by the patient.
  */
-public interface ConsentTracker {
-    public boolean hasConsent(RecordElement element);
+public interface ConsentManager
+{
+    Set<RecordElement> filter(Collection<RecordElement> element);
+
+    boolean noConsentPresent();
 }

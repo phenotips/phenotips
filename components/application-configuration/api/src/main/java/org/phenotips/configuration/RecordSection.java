@@ -67,14 +67,4 @@ public interface RecordSection
      *         configured or enabled
      */
     List<RecordElement> getEnabledElements();
-
-    /**
-     * The list of elements displayed in the patient record by this section, taking into account the consent given by
-     * the patient.
-     *
-     * @param consent an instance of {@link ConsentTracker} for a particular patient
-     * @return an unmodifiable ordered list of {@link RecordElement#isEnabled()} enabled and consented elements, empty
-     *         if none are configured or enabled
-     */
-    List<RecordElement> getEnabledElements(ConsentTracker consent);
 }

@@ -3,12 +3,15 @@ package org.phenotips.configuration.internal.configured;
 import java.util.*;
 
 /**
- * Configuration for what {@link org.phenotips.configuration.RecordElement}s are enabled given the consent of a patient.
+ * Configuration for what {@link org.phenotips.configuration.RecordElement}s are enabled given the consent of a
+ * patient.
  */
-public class ConsentConfiguration {
+public class ConsentConfiguration
+{
     private Map<String, List<String>> configuration = new HashMap<>();
 
-    public ConsentConfiguration() {
+    public ConsentConfiguration()
+    {
         List<String> real = getRealConsentDependants();
         List<String> genetic = getGeneticConsentDependants();
         List<String> share = getShareConsentDependants();
@@ -27,31 +30,36 @@ public class ConsentConfiguration {
         return Collections.unmodifiableMap(configuration);
     }
 
-    private List<String> getRealConsentDependants(){
+    private List<String> getRealConsentDependants()
+    {
         List<String> dependants = Arrays.asList();
 
         return dependants;
     }
 
-    private List<String> getGeneticConsentDependants(){
+    private List<String> getGeneticConsentDependants()
+    {
         List<String> dependants = Arrays.asList();
 
         return dependants;
     }
 
-    private List<String> getShareConsentDependants(){
+    private List<String> getShareConsentDependants()
+    {
         List<String> dependants = Arrays.asList();
 
         return dependants;
     }
 
-    private List<String> getShareImagesConsentDependants(){
+    private List<String> getShareImagesConsentDependants()
+    {
         List<String> dependants = Arrays.asList();
 
         return dependants;
     }
 
-    private List<String> getMatchingConsentDependants(){
+    private List<String> getMatchingConsentDependants()
+    {
         List<String> dependants = Arrays.asList();
 
         return dependants;

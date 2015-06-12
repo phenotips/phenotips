@@ -17,7 +17,7 @@
  */
 package org.phenotips.configuration.script;
 
-import org.phenotips.configuration.ConsentTracker;
+import org.phenotips.configuration.ConsentManager;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordConfigurationManager;
 
@@ -69,7 +69,7 @@ public class RecordConfigurationManagerScriptService implements ScriptService
         return this.configuration.getActiveConfiguration();
     }
 
-    public ConsentTracker getConsentManager(DocumentReference patientReference)
+    public ConsentManager getConsentManager(DocumentReference patientReference)
     {
         Patient patient = null;
         try {

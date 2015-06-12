@@ -17,7 +17,7 @@
  */
 package org.phenotips.configuration.internal.global;
 
-import org.phenotips.configuration.ConsentTracker;
+import org.phenotips.configuration.ConsentManager;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 
@@ -47,8 +47,6 @@ public class DefaultRecordSection implements RecordSection
 
     /** Sorts fields by their declared order. */
     protected final UIExtensionFilter orderFilter;
-
-    private ConsentTracker consentTracker;
 
     /**
      * Simple constructor passing all the needed components.
@@ -105,19 +103,6 @@ public class DefaultRecordSection implements RecordSection
         List<RecordElement> result = new LinkedList<RecordElement>();
         for (RecordElement element : getAllElements()) {
             if (element.isEnabled()) {
-                result.add(element);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    @Override
-    public List<RecordElement> getEnabledElements(ConsentTracker consent)
-    {
-        // if only functions could be passed around, would avoid this instance of DRY.
-        List<RecordElement> result = new LinkedList<RecordElement>();
-        for (RecordElement element : getAllElements()) {
-            if (element.isEnabled() && consent.hasConsent(element)) {
                 result.add(element);
             }
         }
