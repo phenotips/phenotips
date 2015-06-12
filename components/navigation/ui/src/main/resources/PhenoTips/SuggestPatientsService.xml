@@ -32,7 +32,7 @@
   <date>1401822197000</date>
   <contentUpdateDate>1401822197000</contentUpdateDate>
   <version>1.1</version>
-  <title>Lucene Suggestion Service</title>
+  <title>Patient Search Service</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
@@ -44,7 +44,7 @@
 #set ($input = "$!request.input.toLowerCase()")
 #set ($nb = "$!request.nb")
 #if ($nb != '')
-  #set ($nb = $mathtool.toInteger($nb) + 1)
+  #set ($nb = $mathtool.toInteger($nb))
 #else
   #set ($nb = 6)
 #end
@@ -52,13 +52,12 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
+  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where doc.name &lt;&gt; ''PatientTemplate'' and lower(doc.name) like :input ESCAPE ''!'' or lower(patient.external_id) like :input ESCAPE ''!''')
   #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
-    #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
+    #set ($query = $query.concat(' or lower(patient.first_name) like :input ESCAPE ''!'' or lower(patient.last_name) like :input ESCAPE ''!'''))
   #end
   #set ($query = $services.query.xwql($query))
-  #set ($discard = $query.setLimit($nb))
-  #set ($discard = $query.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
+  #set ($discard = $query.bindValue('input', "%${input.replaceAll('[\[_%!]', '!$0')}%"))
   #set ($results = $query.execute())
   #if ($request.permission)
     #set ($requiredPermissions = $request.permission)
@@ -73,7 +72,7 @@
     &lt;?xml version="1.0" encoding="UTF-8"?&gt;
     &lt;results&gt;
   #end
-  #set ($first = true)
+  #set ($count = 0)
   #foreach ($item in $results)
     #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
       #set ($itemdoc = $xwiki.getDocument($item))
@@ -103,15 +102,17 @@
         #end
         #set ($description = "$description)")
       #end
-      #if ($request.json &amp;&amp; !$first)
+      #if ($request.json &amp;&amp; $count &gt; 0)
         ,
-      #else
-        #set ($first = false)
       #end
       #if ($request.json)
         { "id": "$phenotipsId", "url": "$url", "identifier": "${externalId}", "textSummary": "$description" }##
       #else
         &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
+      #end
+      #set ($count = $count + 1)
+      #if ($count &gt;= $nb)
+        #break($foreach)
       #end
     #end
   #end

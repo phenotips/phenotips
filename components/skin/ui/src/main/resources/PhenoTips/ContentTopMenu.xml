@@ -667,26 +667,33 @@
     </property>
     <property>
       <code>document.observe("xwiki:dom:loaded", function () {
-  var exportLinks = $$('.editbody .export-link');
+  var exportLinks = $$(' .export-link');
   exportLinks.invoke('observe', 'click', function (event) {
     event.stop();
-    new XWiki.widgets.ConfirmationBox(
-      {
-        onYes : function() {
-          var exportAfterSave = function() {
+    if (typeof event.findElement('.editbody') !== "undefined") {
+      // We are in edit mode. Ask whether to save first
+      new XWiki.widgets.ConfirmationBox(
+        {
+          onYes : function() {
+            var myWindow = window.open("","_blank");
+            var exportAfterSave = function() {
+              myWindow.location = event.findElement().href;
+              document.stopObserving('xwiki:document:saved', exportAfterSave);
+            };
+            document.observe('xwiki:document:saved', exportAfterSave);
+            document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+          },
+          onNo : function() {
             window.open(event.findElement().href,"_blank");
-            document.stopObserving('xwiki:document:saved', exportAfterSave);
-          };
-          document.observe('xwiki:document:saved', exportAfterSave);
-          document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+          }
         },
-        onNo : function() {
-          window.open(event.findElement().href,"_blank");
-        }
-      },
-      /* Interaction parameters */
-      { confirmationText: "$services.localization.render('phenotips.contentTopMenu.saveBeforeExport')", showCancelButton: true }
-    );
+        /* Interaction parameters */
+        { confirmationText: "$services.localization.render('phenotips.contentTopMenu.saveBeforeExport')", showCancelButton: true }
+      );
+    } else {
+      // View mode
+      window.open(event.findElement().href,"_blank");
+    }
   });
 });</code>
     </property>

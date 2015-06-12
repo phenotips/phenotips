@@ -4372,7 +4372,9 @@ document.observe("xwiki:dom:loaded", function() {
       }
 
       this.container = new Element('div', {'class' : 'fuzzy-date-picker'});
-      this.__input.insert({after : this.container});
+      
+      //Insertion is done before, so that validation errors can appear after it
+      this.__input.insert({before : this.container});
       var format = (this.__input.title || 'yyyy-MM-dd').split(/\W+/);
       for (var i = 0; i &lt; format.length; ++i) {
         switch (format[i][0]) {
