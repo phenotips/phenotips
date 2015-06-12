@@ -54,7 +54,7 @@ import net.sf.json.JSONObject;
  * Handles the patients gene variants.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.2M1
  */
 @Component(roles = { PatientDataController.class })
 @Named("variant")

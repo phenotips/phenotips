@@ -300,7 +300,6 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
           var dataTable = rejectTrigger.up('table.extradata-list');
           if (dataRow) {
             dataRow.remove();
-            Event.fire(dataTable, 'extradata:rejected', {'element' : dataRow, 'transferToClass' : transferToClass});
             Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});
           }
           if (dataTable) {
