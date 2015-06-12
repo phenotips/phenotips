@@ -141,59 +141,41 @@
 #set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
-  #set ($date = $services.jodatime.mutableDateTime)
-  #if ("$!xwiki.getUserPreference('timezone')" != '')
-    #set ($discard = $date.setZone($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-  #end
-  #if (!$value)
-    #set ($value = $date)
-  #else
+  #if ($value)
     #set ($value = $services.jodatime.getMutableDateTime($value.time))
-    #if ("$!xwiki.getUserPreference('timezone')" != '')
-      #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
-    #end
+    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
   #end
-  #if ($format.indexOf('d') &lt; 0)
-    &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value.toDate())"/&gt;
-      #set ($selMonth = $value.monthOfYear)
-      #set ($selYear= $value.year)
-      #set ($mFormat = $format.replaceAll("[^M]", ''))
-      #set ($yFormat = $format.replaceAll("[^y]", ''))
-
-      &lt;select name="$prefix${name}_month" class="month"&gt;
-      #foreach ($val in [1..12])
-        #set ($date.monthOfYear = $val)
-        &lt;option value="$mathtool.sub($val, 1)"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $mFormat)&lt;/option&gt;
-      #end
-      &lt;/select&gt;
-
-      #set ($startYear = $date.year - 99)
-      #set ($endYear = $date.year + 1)
-
-      &lt;select name="$prefix${name}_year" class="year"&gt;
-      #foreach ($val in [$startYear..$endYear])
-        #set ($date.year = $val)
-        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $yFormat)&lt;/option&gt;
-      #end
-      &lt;/select&gt;
-    &lt;/span&gt;
-  #else
-    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#formatdateISO($value.toDate())"/&gt;
-  #end
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
 #else
-#if ($value)
-  #set ($value = $services.jodatime.getMutableDateTime($value.time))
-  #if ("$!xwiki.getUserPreference('timezone')" != '')
-    #set ($discard = $value.setZoneRetainFields($services.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+#set ($enteredValue = $object.getProperty("${name}_entered").value)
+#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
+  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #if ($enteredValue.decade)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #else
+    #set ($displayedValue = $format)
+    #if ($enteredValue.year)
+      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
+      #if ($enteredValue.month)
+        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
+        #if ($enteredValue.day)
+          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
+        #end
+      #end
+    #end
+    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
   #end
-  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
+#elseif ($value)
+  #set ($value = $services.jodatime.getMutableDateTime($value.time))
+  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
 #end
 #end
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
-        <emptyIsToday>1</emptyIsToday>
+        <emptyIsToday>0</emptyIsToday>
         <name>date_of_birth</name>
         <number>6</number>
         <picker>1</picker>
@@ -204,6 +186,82 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
       </date_of_birth>
+      <date_of_birth_entered>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>date_of_birth_entered</name>
+        <number>45</number>
+        <picker>0</picker>
+        <prettyName>date_of_birth_entered</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </date_of_birth_entered>
+      <date_of_death>
+        <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+  #if ($value)
+    #set ($value = $services.jodatime.getMutableDateTime($value.time))
+    #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  #end
+  &lt;input type='text' id='${prefix}${name}' title="$!escapetool.xml($format)" name='${prefix}${name}' class='fuzzy-date' value="$!services.jodatime.getDateTimeFormatterForPattern($definedFormat).print($value)" alt="$!services.jodatime.ISODateTimeFormatter.print($value)"/&gt;&lt;input type='hidden' name='${prefix}${name}_entered' id='${prefix}${name}_entered' value="$!{escapetool.xml($object.getProperty("${name}_entered").value)}"/&gt;
+#else
+#set ($enteredValue = $object.getProperty("${name}_entered").value)
+#if ("$!enteredValue" != '' &amp;&amp; "$!enteredValue" != '{}')
+  #set ($enteredValue = $jsontool.parse($enteredValue))
+  #if ($enteredValue.decade)
+    &lt;span class="date"&gt;$!escapetool.xml($enteredValue.decade)&lt;/span&gt;
+  #else
+    #set ($displayedValue = $format)
+    #if ($enteredValue.year)
+      #set ($displayedValue = $displayedValue.replaceAll('y+', $enteredValue.year))
+      #if ($enteredValue.month)
+        #set ($displayedValue = $displayedValue.replaceAll('M+', $enteredValue.month))
+        #if ($enteredValue.day)
+          #set ($displayedValue = $displayedValue.replaceAll('d+', $enteredValue.day))
+        #end
+      #end
+    #end
+    #set ($displayedValue = $displayedValue.replaceAll('[a-zA-Z]+(\W|$)', '').replaceAll('^\W+|\W+$', ''))
+    &lt;span class="date"&gt;$!escapetool.xml($displayedValue)&lt;/span&gt;
+  #end
+#elseif ($value)
+  #set ($value = $services.jodatime.getMutableDateTime($value.time))
+  #set ($discard = $value.setZoneRetainFields($services.jodatime.UTCTimezone))
+  &lt;span class="date"&gt;$!services.jodatime.getDateTimeFormatterForPattern($format).print($value)&lt;/span&gt;
+#end
+#end
+{{/html}}{{/velocity}}</customDisplay>
+        <dateFormat>yyyy-MM-dd</dateFormat>
+        <disabled>0</disabled>
+        <emptyIsToday>0</emptyIsToday>
+        <name>date_of_death</name>
+        <number>43</number>
+        <picker>1</picker>
+        <prettyName>Date of death</prettyName>
+        <size>20</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+      </date_of_death>
+      <date_of_death_entered>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>date_of_death_entered</name>
+        <number>44</number>
+        <picker>0</picker>
+        <prettyName>date_of_death_entered</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </date_of_death_entered>
       <diagnosis_notes>
         <customDisplay/>
         <disabled>0</disabled>
@@ -486,7 +544,15 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </gender>
       <gestation>
-        <customDisplay/>
+        <customDisplay>{{velocity}}
+#if ($type == 'edit')
+  {{html clean="false"}}&lt;div class="controlled-group complete-hide"&gt;&lt;div class="controller exclude"&gt;&lt;label for="${prefix}${name}_term"&gt;&lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_term" value="40"#if($value == 40) checked="checked"#end /&gt; {{/html}}{{translation key="PhenoTips.PatientClass_gestation_term" /}}{{html clean="false"}}&lt;/label&gt;&lt;/div&gt;&lt;div class="controlled"&gt;&lt;input type="text" name="${prefix}${name}" value="$!{escapetool.xml($value)}" /&gt;&lt;/div&gt;&lt;/div&gt;{{/html}}
+#elseif ($value == 40)
+  {{translation key="PhenoTips.PatientClass_gestation_term" /}} ##
+#else
+  $!value
+#end
+{{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>gestation</name>
         <number>26</number>
@@ -503,7 +569,6 @@
         <classname/>
         <customDisplay>{{velocity}}
 #set ($order = [
-  'HP:0011007',
   'HP:0003577',
   'HP:0011460',
   'HP:0011461',
@@ -516,7 +581,7 @@
   'HP:0003596',
   'HP:0003584'
 ])
-#set ($startWith = 'HP:0011007')
+#set ($startWith = 'HP:0003674')
 {{/velocity}}
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
@@ -573,14 +638,14 @@
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
         <disabled>0</disabled>
-        <displayType>select</displayType>
+        <displayType>checkbox</displayType>
         <idField/>
-        <multiSelect>0</multiSelect>
+        <multiSelect>1</multiSelect>
         <name>global_mode_of_inheritance</name>
         <number>9</number>
         <picker>0</picker>
         <prettyName>Global mode of inheritance</prettyName>
-        <relationalStorage>0</relationalStorage>
+        <relationalStorage>1</relationalStorage>
         <separator> </separator>
         <separators/>
         <size>1</size>
@@ -977,6 +1042,67 @@
         <valueField/>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </reports_history>
+      <solved>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>solved</name>
+        <number>40</number>
+        <prettyName>Case solved</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </solved>
+      <solved__gene_id>
+        <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='Enter a gene ID' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>solved__gene_id</name>
+        <number>42</number>
+        <picker>0</picker>
+        <prettyName>Gene ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </solved__gene_id>
+      <solved__notes>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>solved__notes</name>
+        <number>46</number>
+        <picker>0</picker>
+        <prettyName>Resolution notes</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </solved__notes>
+      <solved__pubmed_id>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>solved__pubmed_id</name>
+        <number>41</number>
+        <picker>0</picker>
+        <prettyName>Pubmed ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </solved__pubmed_id>
       <unaffected>
         <customDisplay/>
         <defaultValue/>
