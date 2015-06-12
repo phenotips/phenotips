@@ -1119,19 +1119,124 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       </unaffected>
     </class>
     <property>
+      <apgar1>unknown</apgar1>
+    </property>
+    <property>
+      <apgar5>unknown</apgar5>
+    </property>
+    <property>
+      <date_of_birth/>
+    </property>
+    <property>
+      <date_of_birth_entered/>
+    </property>
+    <property>
+      <date_of_death/>
+    </property>
+    <property>
+      <date_of_death_entered/>
+    </property>
+    <property>
+      <diagnosis_notes/>
+    </property>
+    <property>
+      <exam_date/>
+    </property>
+    <property>
+      <extended_negative_phenotype/>
+    </property>
+    <property>
+      <extended_negative_prenatal_phenotype/>
+    </property>
+    <property>
+      <extended_phenotype/>
+    </property>
+    <property>
+      <extended_prenatal_phenotype/>
+    </property>
+    <property>
+      <external_id/>
+    </property>
+    <property>
+      <family_history/>
+    </property>
+    <property>
+      <family_of/>
+    </property>
+    <property>
+      <first_name/>
+    </property>
+    <property>
+      <gender/>
+    </property>
+    <property>
+      <gestation/>
+    </property>
+    <property>
+      <global_age_of_onset/>
+    </property>
+    <property>
+      <global_mode_of_inheritance/>
+    </property>
+    <property>
+      <health_card/>
+    </property>
+    <property>
+      <identifier/>
+    </property>
+    <property>
+      <indication_for_referral/>
+    </property>
+    <property>
+      <last_name/>
+    </property>
+    <property>
+      <maternal_ethnicity/>
+    </property>
+    <property>
+      <medical_history/>
+    </property>
+    <property>
       <negative_phenotype/>
     </property>
     <property>
       <negative_prenatal_phenotype/>
     </property>
     <property>
+      <omim_id/>
+    </property>
+    <property>
+      <paternal_ethnicity/>
+    </property>
+    <property>
+      <pedigree/>
+    </property>
+    <property>
       <phenotype/>
+    </property>
+    <property>
+      <prenatal_development/>
     </property>
     <property>
       <prenatal_phenotype/>
     </property>
     <property>
       <proband>1</proband>
+    </property>
+    <property>
+      <reports_history/>
+    </property>
+    <property>
+      <solved>0</solved>
+    </property>
+    <property>
+      <solved__gene_id/>
+    </property>
+    <property>
+      <solved__notes/>
+    </property>
+    <property>
+      <solved__pubmed_id/>
     </property>
     <property>
       <unaffected>0</unaffected>
