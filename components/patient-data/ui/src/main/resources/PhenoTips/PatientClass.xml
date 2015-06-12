@@ -117,6 +117,34 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </assistedReproduction_surrogacy>
+    <assistedReproduction_donoregg>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_donoregg</name>
+      <number>47</number>
+      <prettyName>Donor egg</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_donoregg>
+    <assistedReproduction_donorsperm>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_donorsperm</name>
+      <number>48</number>
+      <prettyName>Donor sperm</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_donorsperm>
     <consanguinity>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
@@ -707,6 +735,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </ivf>
+    <icsi>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>icsi</name>
+      <number>49</number>
+      <prettyName>Intra-cytoplasmic sperm injection</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </icsi>
     <last_name>
       <customDisplay/>
       <disabled>0</disabled>
