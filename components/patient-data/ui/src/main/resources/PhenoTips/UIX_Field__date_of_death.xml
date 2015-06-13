@@ -111,14 +111,22 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-(% class="controlled-group complete-hide" %)(((
-  (% class="controlled" %) (((
-  #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+#__hasDataToDisplay('date_of_death', $showDod)
+#__hasBooleanDataToDisplay('date_of_death_unknown' $showDodu)
+#if ($showDod || $showDodu)
+  (% class="controlled-group complete-hide" %)(((
+  #if ($showDod)
+    (% class="controlled" %) (((
+    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+    )))
+  #end
+  #if ($showDodu)
+    (% class="controller" %)(((
+    #__displayFormatted('2-col' 'date_of_death_unknown')
+    )))
+  #end
   )))
-  (% class="controller" %)(((
-  #__displayFormatted('2-col' 'date_of_death_unknown')
-  )))
-)))
+#end
 {{/velocity}}</content>
     </property>
     <property>
@@ -132,7 +140,7 @@
 enabled=true
 required=
 order=6
-fields=date_of_death
+fields=date_of_death, date_of_death_unknown
 contains_PII=true
 privacy_level=1</parameters>
     </property>
