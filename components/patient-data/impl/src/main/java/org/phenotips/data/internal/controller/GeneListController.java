@@ -62,7 +62,7 @@ import net.sf.json.JSONObject;
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
     /** The XClass used for storing gene data. */
-    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String GENES_STRING = "genes";

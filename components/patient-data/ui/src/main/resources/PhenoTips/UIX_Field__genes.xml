@@ -534,7 +534,7 @@
 {{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
-#set ($targetClassName = 'PhenoTips.InvestigationClass')
+#set ($targetClassName = 'PhenoTips.GeneClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
 
