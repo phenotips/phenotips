@@ -68,14 +68,14 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-        "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
         "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-        { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-        { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-        { "category" } };
+            { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+            { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+            { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -91,7 +91,7 @@ public class DataToCellConverter
 
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -265,8 +265,8 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
-        { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
-        { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
+            { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
+            { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -288,7 +288,7 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "genes" }, { "classification", "genes" }, { "evidence", "classification", "genes" },
-        { "comments", "evidence", "classification", "genes" } };
+            { "comments", "evidence", "classification", "genes" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -698,19 +698,19 @@ public class DataToCellConverter
             PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            int y = 0;
-            if (modeTermList != null && !modeTermList.isEmpty()) {
-                for (SolrVocabularyTerm term : modeTermList) {
-                    String mode = term != null ? term.getName() : "";
-                    DataCell cell = new DataCell(mode, x, y);
+                int y = 0;
+                if (modeTermList != null && !modeTermList.isEmpty()) {
+                    for (SolrVocabularyTerm term : modeTermList) {
+                        String mode = term != null ? term.getName() : "";
+                        DataCell cell = new DataCell(mode, x, y);
+                        bodySection.addCell(cell);
+                        y++;
+                    }
+                } else {
+                    DataCell cell = new DataCell("", x, y);
                     bodySection.addCell(cell);
-                    y++;
                 }
-            } else {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
-            x++;
+                x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -914,7 +914,7 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-        "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
         Set<String> present = new HashSet<String>();
@@ -933,7 +933,7 @@ public class DataToCellConverter
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
