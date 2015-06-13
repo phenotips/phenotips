@@ -69,7 +69,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Named("R70190PhenoTips#1280")
 @Singleton
 public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigration implements
-HibernateCallback<Object>
+    HibernateCallback<Object>
 {
     private static final String GENE_NAME = "gene";
 
@@ -118,7 +118,7 @@ HibernateCallback<Object>
         XWiki xwiki = context.getWiki();
         DocumentReference patientClassReference =
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
-        DocumentReference GeneClassReference =
+        DocumentReference geneClassReference =
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "GeneClass");
         DocumentReference rejectedGenesClassReference =
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "RejectedGenesClass");
@@ -127,25 +127,25 @@ HibernateCallback<Object>
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
                 + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
                 + SOLVED_NAME + "' and p.value <> ''");
-        setSolvedGenes(q, xwiki, patientClassReference, GeneClassReference, context, session);
+        setSolvedGenes(q, xwiki, patientClassReference, geneClassReference, context, session);
 
-        q = session.createQuery(BEGINNING + this.serializer.serialize(GeneClassReference) + ENDING);
-        setCandidateGenes(q, xwiki, GeneClassReference, context, session);
+        q = session.createQuery(BEGINNING + this.serializer.serialize(geneClassReference) + ENDING);
+        setCandidateGenes(q, xwiki, geneClassReference, context, session);
 
         q = session.createQuery(BEGINNING + this.serializer.serialize(rejectedGenesClassReference) + ENDING);
-        setRejectedGenes(q, xwiki, rejectedGenesClassReference, GeneClassReference, context, session);
+        setRejectedGenes(q, xwiki, rejectedGenesClassReference, geneClassReference, context, session);
 
         return null;
     }
 
-    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference GeneClassReference,
+    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference geneClassReference,
         XWikiContext context, Session session) throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
         for (String docName : docs) {
             XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
-            BaseObject gene = doc.getXObject(GeneClassReference);
+            BaseObject gene = doc.getXObject(geneClassReference);
             gene.set(CLASSIFICATION_NAME, "candidate", context);
             doc.setComment("Adding 'candidate' classification to existing "
                 + "candidate gene values in the GeneClass objects");
@@ -161,8 +161,8 @@ HibernateCallback<Object>
     }
 
     private void setSolvedGenes(Query q, XWiki xwiki, DocumentReference patientClassReference,
-        DocumentReference GeneClassReference, XWikiContext context, Session session)
-            throws HibernateException, XWikiException
+        DocumentReference geneClassReference, XWikiContext context, Session session)
+        throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
         List<String> documents = q.list();
@@ -171,7 +171,7 @@ HibernateCallback<Object>
             BaseObject patient = doc.getXObject(patientClassReference);
             StringProperty oldTarget = (StringProperty) patient.get(SOLVED_NAME);
             patient.removeField(SOLVED_NAME);
-            BaseObject gene = doc.newXObject(GeneClassReference, context);
+            BaseObject gene = doc.newXObject(geneClassReference, context);
             gene.set(GENE_NAME, oldTarget.getValue(), context);
             gene.set(CLASSIFICATION_NAME, "solved", context);
             doc.setComment("Migrate solved gene values to the GeneClass objects");
@@ -189,8 +189,8 @@ HibernateCallback<Object>
     }
 
     private void setRejectedGenes(Query q, XWiki xwiki, DocumentReference rejectedGenesClassReference,
-        DocumentReference GeneClassReference, XWikiContext context, Session session)
-            throws HibernateException, XWikiException
+        DocumentReference geneClassReference, XWikiContext context, Session session)
+        throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
         List<String> docums = q.list();
@@ -199,7 +199,7 @@ HibernateCallback<Object>
             BaseObject gene = doc.getXObject(rejectedGenesClassReference);
             StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
             LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
-            BaseObject newgene = doc.newXObject(GeneClassReference, context);
+            BaseObject newgene = doc.newXObject(geneClassReference, context);
             newgene.set(GENE_NAME, oldGeneName.getValue(), context);
             newgene.set(COMMENTS_NAME, oldGeneComments.getValue(), context);
             newgene.set(CLASSIFICATION_NAME, "rejected", context);
