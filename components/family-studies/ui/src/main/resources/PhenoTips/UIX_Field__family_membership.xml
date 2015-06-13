@@ -228,6 +228,15 @@ if (newFamilyTrigger) {
   var fieldHolder = $('PhenoTips.FamilyReference_0_reference');
   var searchInput = fieldHolder.previous("input");
 
+  /* A link that points to the family page that the user selected after the search.
+  A nice way for the user to be able to confirm that the correct family was selected. */
+  var searchWrapper = fieldHolder.up().up();
+  var searchedLink = searchWrapper.down('a');
+  var searchAgain = searchWrapper.down('a.search-again').up();
+  var searchedLinkVisible = true;
+
+  toggleSearchedLink();
+
   if (fieldHolder != null &amp;&amp; !searchInput.hasClassName('initialized')) {
     fieldHolder.hide();
     searchInput._suggest = new PhenoTips.widgets.Suggest(searchInput, {
@@ -238,7 +247,6 @@ if (newFamilyTrigger) {
       json: true,
       resultId: "id",
       resultValue: "textSummary",
-      resultInfo: {},
       enableHierarchy: false,
       fadeOnClear: false,
       timeout: 30000,
@@ -250,20 +258,55 @@ if (newFamilyTrigger) {
     {
       Form.Element.clear(searchInput);
     });
+    searchAgain.observe("click", function(event) {
+      event.stop();
+      toggleSearchedLink();
+      addRemoveFamily(Form.Element.getValue(fieldHolder), false);
+    });
+
     Event.observe(searchInput, "ms:suggest:selected", function (event) {
       fieldHolder.value = event.memo.id;
-      var url = addMemberUrl + event.memo.id;
-      new Ajax.Request(url, {
-        method: 'get',
-        onSuccess: function (transport) {
-          var response = transport.responseText;
-          if (response) {
-            Form.Element.clear(searchInput);
-            new PhenoTips.widgets.ModalPopup(response, {}, {title: "Could not add to family"}).show();
-          }
+      toggleSearchedLink(event.memo.id);
+      addRemoveFamily(event.memo.id, true);
+    });
+  }
+
+  function addRemoveFamily(id, add) {
+    var url = addMemberUrl + id;
+    var errorTitle = "";
+    if (add) {
+      url += "&amp;add=true";
+      errorTitle = "Could not remove from family " + id;
+    } else {
+      url += "&amp;remove=true";
+      errorTitle = "Could not add to family " + id;
+    }
+    new Ajax.Request(url, {
+      method: 'get',
+      onSuccess: function (transport) {
+        var response = transport.responseText;
+        if (response) {
+          Form.Element.clear(searchInput);
+          new PhenoTips.widgets.ModalPopup(response, {}, {title: errorTitle}).show();
         }
-      });
-    })
+      }
+    });
+  }
+
+  function toggleSearchedLink(id) {
+    if (searchedLinkVisible &amp;&amp; !id) {
+      searchedLinkVisible = false;
+      searchInput.show();
+      searchedLink.hide();
+      searchAgain.hide();
+    } else {
+      searchedLinkVisible = true;
+      searchedLink.writeAttribute("href", new XWiki.Document(id).getURL("edit"));
+      searchedLink.innerHTML = id;
+      searchInput.hide();
+      searchedLink.show();
+      searchAgain.show();
+    }
   }
 })();
 </code>
@@ -369,7 +412,13 @@ if (newFamilyTrigger) {
   margin-top: 0;
   margin-right: 0;
 }
-</code>
+.family-study .family-wrapper a.family-link {
+  float: left;
+  margin-top: 0.2em;
+}
+.family-study .family-wrapper div.search-again {
+  margin-left: 10px;
+}</code>
     </property>
     <property>
       <name/>
@@ -456,9 +505,6 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 #set ($family = $services.families.getPatientsFamily($doc.getDocument()))
 #set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
 #if ($xcontext.action != 'view' || $hasFamily)
-  #if ($xcontext.action == 'edit')
-    $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
-  #end
   ##
   (% class="clear family-study" %)(((##
   ##=== $services.localization.render('phenotips.UIXField.family.heading') ===
@@ -469,6 +515,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
         &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;Open family page&lt;/a&gt;##
     &lt;/div&gt;##
     #else##
+      #if ($xcontext.action == 'edit')
+        $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
+      #end
       #if (!$family)##
         #set ($family = $doc.getObject('PhenoTips.FamilyReference', true))##
         $doc.save()##
@@ -479,8 +528,16 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
           &lt;/div&gt;##
           &lt;div class="separator"&gt;&amp;#8212; OR Search &amp;#8212;&lt;/div&gt;##
           &lt;div class="half-width"&gt;
-              &lt;input type="text" class="family-search-input"&gt;
-              $family.display('reference', 'edit')
+              &lt;span&gt;
+                  &lt;input type="text" class="family-search-input"&gt;
+                  $family.display('reference', 'edit')
+              &lt;/span&gt;
+              &lt;span&gt;
+                  &lt;a href="" class="family-link" target="_blank"&gt;&lt;/a&gt;
+                  &lt;div class="buttonwrapper search-again"&gt;##
+                      &lt;a class="search-again" class="button" href="#"&gt;Search again&lt;/a&gt;##
+                  &lt;/div&gt;
+              &lt;/span&gt;
           &lt;/div&gt;##
           &lt;span class="clear"&gt;&lt;/span&gt;##
       &lt;/div&gt;##

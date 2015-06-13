@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>AddPatientToFamily</name>
+  <name>AddRemovePatientToFamily</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -29,15 +29,18 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1433187200000</date>
-  <contentUpdateDate>1433187200000</contentUpdateDate>
+  <date>1434223490000</date>
+  <contentUpdateDate>1434223490000</contentUpdateDate>
   <version>1.1</version>
-  <title>AddPatientToFamily</title>
+  <title>AddRemovePatientToFamily</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
+##
+## fixme. this needs to be migrated to a script service
+##
 #set($familyId = $request.get("familyId"))
 #set($patientId = $request.get("patientId"))
 #set($response = $services.families.verifyLinkable($familyId, $patientId))
@@ -50,15 +53,31 @@
     Unknown error has occurred
     #end
   #elseif ($json.get('validLink') == true)
+    #set ($patientDoc = $xwiki.getDocument("data.$patientId"))
     #set($familyDoc = $xwiki.getDocument("data.$familyId"))
     #set($familyObject = $familyDoc.getObject('PhenoTips.FamilyClass'))
     #set($membersProperty = $familyObject.getProperty('members'))
     #set($membersList = $membersProperty.getProperty().getList())
-    #if (!$membersList.contains($patientId))
-      #set($discard = $membersList.add($patientId))
+    ##
+    #if ("$!{request.add}" == 'true')
+      #set($familyReference = $patientDoc.getObject('PhenoTips.FamilyReference', true))
+      #set($discard = $familyReference.set('reference', $familyId))
+      ##
+      #if (!$membersList.contains($patientId))
+        #set($discard = $membersList.add($patientId))
+      #end
+      ##
+      $familyDoc.save("Added a member", true)
+      $patientDoc.save("Set family reference", true)
+      ## need to account for deletions
+    #elseif("$!{request.remove}" == true)
+      #set($familyReference = $patientDoc.getObject('PhenoTips.FamilyReference', true))
+      #set($discard = $familyReference.set('reference', ''))
+      #set($discard = $membersList.remove($patientId))
+      ##
+      $familyDoc.save("Removed a member", true)
+      $patientDoc.save("Removed family reference", true)
     #end
-    $familyDoc.save("Added a member")
-    ## need to account for deletions
   #end
 #end
 {{/velocity}}
