@@ -51,7 +51,7 @@ import com.xpn.xwiki.web.Utils;
  * (header present) but there is no data to put inside the cells, do not return null as cell value or no cell at all,
  * return a cell containing an empty string. Otherwise, the header will not be matched with the body.
  *
- * @version $Id: 822d522652255523f61e8091e728ce5c8b66557c $
+ * @version $Id$
  * @since 1.0RC1
  */
 public class DataToCellConverter
