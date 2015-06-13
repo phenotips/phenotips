@@ -1,0 +1,3 @@
+org.phenotips.data.rest.internal.ConfigureISODatesInJson
+org.phenotips.data.rest.internal.DefaultDomainObjectFactory
+org.phenotips.data.rest.internal.DefaultPatientsResourceImpl
