@@ -40,6 +40,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.LargeStringProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
@@ -102,7 +103,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(50291);
+        return new XWikiDBVersion(70190);
     }
 
     @Override
@@ -198,14 +199,14 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
             BaseObject gene = doc.getXObject(rejectedGenesClassReference);
             StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
-            StringProperty oldGeneComments = (StringProperty) gene.get(COMMENTS_NAME);
+            LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
             BaseObject newgene = doc.newXObject(investigationClassReference, context);
             newgene.set(GENE_NAME, oldGeneName.getValue(), context);
             newgene.set(COMMENTS_NAME, oldGeneComments.getValue(), context);
             newgene.set(CLASSIFICATION_NAME, "rejected", context);
             doc.setComment("Migrating rejected genes to the InvestigationClass objects");
             doc.setMinorEdit(true);
-            session.delete(docName);
+            doc.removeXObjects(rejectedGenesClassReference);
             try {
                 session.clear();
                 ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
