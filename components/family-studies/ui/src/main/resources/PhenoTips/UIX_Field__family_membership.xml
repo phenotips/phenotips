@@ -524,7 +524,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
       #end##
       &lt;div class="family-wrapper"&gt;##
           &lt;div class="buttonwrapper"&gt;##
-              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL("Family.CreateFamily")?patient_id=$doc.getName()"&gt;Create a family&lt;/a&gt;##
+              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=$doc.getName()")"&gt;Create a family&lt;/a&gt;##
           &lt;/div&gt;##
           &lt;div class="separator"&gt;&amp;#8212; OR Search &amp;#8212;&lt;/div&gt;##
           &lt;div class="half-width"&gt;
@@ -541,7 +541,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
           &lt;/div&gt;##
           &lt;span class="clear"&gt;&lt;/span&gt;##
       &lt;/div&gt;##
-      &lt;input id="addFamilyMemberUrl" type="hidden" value="/bin/get/PhenoTips/AddPatientToFamily?outputSyntax=plain&amp;patientId=${doc.getName()}&amp;familyId="&gt;
+      &lt;input id="addFamilyMemberUrl" type="hidden" value="$xwiki.getURL('PhenoTips.AddRemovePatientToFamily', 'get', "outputSyntax=plain&amp;patientId=${doc.getName()}&amp;familyId=")"&gt;
     #end##
   {{/html}}##
   )))##
