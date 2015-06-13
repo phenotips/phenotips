@@ -81,9 +81,22 @@
   )))
   (% id='warning' class='chapter clinical-info' %)(((
     == Warning ==
-    #__displayFormatted('2-col' 'warning' '' '' '')
-    #__displayFormatted('2-col' 'warning_message' '' '' '')
-##    $obj.display("warning")
+    #__hasBooleanDataToDisplay('warning' $showWarning)
+    #__hasDataToDisplay('warning_message', $showWarningMessage)
+    #if ($showWarningMessage || $showWarning)
+      (% class="controlled-group complete-hide exclude" %)(((
+      #if ($showWarningMessage)
+        (% class="controller" %) (((
+        #__displayFormatted('2-col' 'warning' '' '' '')
+        )))
+      #end
+      #if ($showWarning)
+        (% class="controlled" %)(((
+        #__displayFormatted('2-col' 'warning_message' '' '' '')
+        )))
+      #end
+      )))
+    #end
   )))
 {{/velocity}}
 </content>
