@@ -27,6 +27,7 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -73,6 +74,10 @@ public class DefaultGroupManager implements GroupManager
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
 
+    @Inject
+    @Named("compactwiki")
+    private EntityReferenceSerializer<String> compactSerializer;
+
     @Override
     public Set<Group> getGroupsForUser(User user)
     {
@@ -85,8 +90,9 @@ public class DefaultGroupManager implements GroupManager
         Set<Group> result = new LinkedHashSet<Group>();
         try {
             Query q =
-                this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:usr)", Query.XWQL);
-            q.bindValue("usr", profile.toString());
+                this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL);
+            q.bindValue("u", profile.toString());
+            q.bindValue("su", this.compactSerializer.serialize(profile));
             List<Object> groups = q.execute();
             List<Object> nestedGroups = new ArrayList<Object>(groups);
             while (!nestedGroups.isEmpty()) {

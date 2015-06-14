@@ -27,6 +27,7 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -68,11 +69,15 @@ public class DefaultGroupManagerTest
         User u = mock(User.class);
         DocumentReference userProfile = new DocumentReference("xwiki", "XWiki", "Admin");
         when(u.getProfileDocument()).thenReturn(userProfile);
+        EntityReferenceSerializer<String> serializer =
+            this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING, "compactwiki");
+        when(serializer.serialize(userProfile)).thenReturn("XWiki.Admin");
 
         QueryManager qm = this.mocker.getInstance(QueryManager.class);
         Query q = mock(Query.class);
-        when(q.bindValue("usr", "xwiki:XWiki.Admin")).thenReturn(q);
-        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:usr)", Query.XWQL))
+        when(q.bindValue("u", "xwiki:XWiki.Admin")).thenReturn(q);
+        when(q.bindValue("su", "XWiki.Admin")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL))
             .thenReturn(q);
         List<Object> groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
