@@ -1,1 +1,0 @@
-REWRITE_SYSTEM "http://www.xwiki.org/" "maven:org.xwiki.platform:xwiki-platform-rest-model!/"
