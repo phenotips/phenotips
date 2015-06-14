@@ -28,7 +28,6 @@
   <artifactId>phenotips-record-locking-api</artifactId>
   <name>PhenoTips - Record Locking - API</name>
   <properties>
-    <checkstyle.skip>true</checkstyle.skip>
     <coverage.instructionRatio>0.99</coverage.instructionRatio>
   </properties>
   <dependencies>
@@ -74,9 +73,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
-      <!-- It should always be provided, otherwise containers will complain about it. -->
-      <scope>provided</scope>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
