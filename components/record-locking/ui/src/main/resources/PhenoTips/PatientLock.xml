@@ -287,7 +287,6 @@
     <property>
       <code>.locking-container {
   float: left;
-  margin: 1em 0 0 0;
 }</code>
     </property>
     <property>
@@ -384,7 +383,7 @@
   #set ($lockingServiceRequestParams = "sheet=${lockDocName}&amp;token=$!{escapetool.xml($services.csrf.token)}")
   {{html}}
   ##Macro used to create help button.
-  #macro (_createLockButton $link $icon $text)&lt;span class='buttonwrapper'&gt;&lt;a id="record-locking-button" class="button" href="${link}"&gt;&lt;span class = "fa fa-${icon}"&gt;&lt;/span&gt; ${text}&lt;/a&gt; &lt;span class="fa fa-question-circle xHelpButton" title="$services.localization.render('phenotips.patientLock.action.hint')"&gt;&lt;/span&gt;&lt;/span&gt;#end
+  #macro (_createLockButton $link $icon $text)&lt;p&gt;&lt;span class='buttonwrapper'&gt;&lt;a id="record-locking-button" class="button" href="${link}"&gt;&lt;span class = "fa fa-${icon}"&gt;&lt;/span&gt; ${text}&lt;/a&gt; &lt;span class="fa fa-question-circle xHelpButton" title="$services.localization.render('phenotips.patientLock.action.hint')"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;#end
     &lt;div class="locking-container"&gt;
     #if (!$services.recordLocking.isLocked($patient))
       #if ($patientAccess.hasAccessLevel('manage'))
