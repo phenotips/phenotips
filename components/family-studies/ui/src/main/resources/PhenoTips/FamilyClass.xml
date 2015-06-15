@@ -106,7 +106,7 @@
 #end
 {{/velocity}}
 
-{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
       <idField/>
