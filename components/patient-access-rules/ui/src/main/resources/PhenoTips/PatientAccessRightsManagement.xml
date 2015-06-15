@@ -932,7 +932,7 @@ document.observe("xwiki:dom:loaded", function() {
   border-radius: 3px;
   display: inline-block;
   font-weight: bold;
-  margin: 5px 5px 0 0;
+  margin: 0 5px 0 0;
   padding: 2px 3px;
 }
 #access-rights-summary a.button {
