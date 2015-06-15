@@ -58,8 +58,8 @@ import java.util.Set;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -96,7 +96,6 @@ public class HPOScriptServiceTest
     private final String testIDValue = "HP:0000118";
 
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         MockitoAnnotations.initMocks(this);
@@ -104,13 +103,11 @@ public class HPOScriptServiceTest
 
         SolrVocabularyResourceManager externalServicesAccess =
                 this.mocker.getInstance(SolrVocabularyResourceManager.class);
-        when(externalServicesAccess.getSolrConnection()).thenReturn(this.server);
+        Mockito.doReturn(this.server).when(externalServicesAccess).getSolrConnection();
 
         CacheManager cacheFactory = this.mocker.getInstance(CacheManager.class);
-        when(cacheFactory.createNewLocalCache(any(CacheConfiguration.class))).thenReturn((Cache) this.cache);
-
+        Mockito.doReturn(this.cache).when(cacheFactory).createNewLocalCache(any(CacheConfiguration.class));
         this.service = (HPOScriptService) this.mocker.getComponentUnderTest();
-
     }
 
     @Test
@@ -128,7 +125,7 @@ public class HPOScriptServiceTest
     public void getUsesServer() throws IOException, SolrServerException
     {
 
-        when(this.server.query(any(SolrParams.class))).thenReturn(this.response);
+        Mockito.doReturn(this.response).when(this.server).query(any(SolrParams.class));
         this.service.get(testIDValue);
 
         verify(this.server).query(Matchers.argThat(new IsMatchingIDQuery(testIDValue, "id")));
@@ -142,20 +139,19 @@ public class HPOScriptServiceTest
         SolrDocument expectedDoc = mock(SolrDocument.class);
         SolrDocument unexpectedDoc = mock(SolrDocument.class);
         String cacheKey = "{id:"+ testIDValue + "\n}";
-        when(this.cache.get(anyString())).thenReturn(unexpectedDoc);
-        when(this.cache.get(cacheKey)).thenReturn(expectedDoc);
+        Mockito.doReturn(unexpectedDoc).when(this.cache).get(anyString());
+        Mockito.doReturn(expectedDoc).when(this.cache).get(cacheKey);
         SolrDocument result = this.service.get(testIDValue);
         verify(this.server, never()).query((SolrParams)any());
         Assert.assertSame(expectedDoc, result);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void getCantFindIdReturnsNull() throws IOException, SolrServerException
     {
-        when(this.server.query(any(SolrParams.class))).thenReturn(response);
-        when(this.cache.get(anyString())).thenReturn(null);
-        when(this.service.search(anyMap(), 1, 0)).thenReturn(null);
+        Mockito.doReturn(response).when(this.server).query(any(SolrParams.class));
+        Mockito.doReturn(null).when(this.cache).get(anyString());
+        when(this.service.search(anyMapOf(String.class, String.class), 1, 0)).thenReturn(null);
         SolrDocument result = this.service.get(testIDValue);
         verify(this.cache, atLeast(1)).get(anyString());
         Assert.assertNull(result);
@@ -165,7 +161,7 @@ public class HPOScriptServiceTest
     public void getAllAncestorsAndSelfIDsReturnsAllAncestors() throws IOException, SolrServerException
     {
         this.indexMockSolrDocListFromResource();
-        when(this.server.query(any(SolrParams.class))).thenAnswer(new QueryAnswer());
+        Mockito.doAnswer(new QueryAnswer()).when(this.server).query(any(SolrParams.class));
 
         Set<String> actualResult = this.service.getAllAncestorsAndSelfIDs("HP:0001507");
         Set<String> expectedResult = new HashSet<>();
@@ -186,63 +182,57 @@ public class HPOScriptServiceTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void SolrServerExceptionIsCaughtWhenIndexing() throws IOException, SolrServerException {
-        when(this.server.add(anyCollectionOf(SolrInputDocument.class))).thenThrow(SolrServerException.class);
+        Mockito.doThrow(SolrServerException.class).when(this.server).add(anyCollectionOf(SolrInputDocument.class));
         this.service.index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
         Mockito.reset(server);
-        when(this.server.add(anyCollectionOf(SolrInputDocument.class))).thenReturn(new UpdateResponse());
-        when(this.server.commit()).thenThrow(SolrServerException.class);
+        Mockito.doReturn(new UpdateResponse()).when(this.server).add(anyCollectionOf(SolrInputDocument.class));
+        Mockito.doThrow(SolrServerException.class).when(this.server).commit();
         this.service.index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void IOExceptionIsCaughtWhenIndexing() throws IOException, SolrServerException {
-        when(this.server.add(anyCollectionOf(SolrInputDocument.class))).thenThrow(IOException.class);
+        Mockito.doThrow(IOException.class).when(this.server).add(anyCollectionOf(SolrInputDocument.class));
         this.service.index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
         Mockito.reset(server);
-        when(this.server.add(anyCollectionOf(SolrInputDocument.class))).thenReturn(new UpdateResponse());
-        when(this.server.commit()).thenThrow(IOException.class);
+        Mockito.doReturn(new UpdateResponse()).when(this.server).add(anyCollectionOf(SolrInputDocument.class));
+        Mockito.doThrow(IOException.class).when(this.server).commit();
         this.service.index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void SolrServerExceptionIsCaughtWhenClearing() throws IOException, SolrServerException {
-        when(this.server.deleteByQuery(anyString())).thenThrow(SolrServerException.class);
+        Mockito.doThrow(SolrServerException.class).when(this.server).deleteByQuery(anyString());
         this.service.clear();
         Mockito.reset(server);
-        when(this.server.deleteByQuery(anyString())).thenReturn(new UpdateResponse());
-        when(this.server.commit()).thenThrow(SolrServerException.class);
+        Mockito.doReturn(new UpdateResponse()).when(this.server).deleteByQuery(anyString());
+        Mockito.doThrow(SolrServerException.class).when(this.server).commit();
         this.service.clear();
     }
 
 
     @Test
-    @SuppressWarnings("unchecked")
     public void IOExceptionIsCaughtWhenClearing() throws IOException, SolrServerException {
-        when(this.server.deleteByQuery(anyString())).thenThrow(IOException.class);
+        Mockito.doThrow(IOException.class).when(this.server).deleteByQuery(anyString());
         this.service.clear();
         Mockito.reset(server);
-        when(this.server.deleteByQuery(anyString())).thenReturn(new UpdateResponse());
-        when(this.server.commit()).thenThrow(IOException.class);
+        Mockito.doReturn(new UpdateResponse()).when(this.server).deleteByQuery(anyString());
+        Mockito.doThrow(IOException.class).when(this.server).commit();
         this.service.clear();
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void SolrServerExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException {
-        when(this.cache.get(anyString())).thenReturn(null);
-        when(this.server.query(any(SolrParams.class))).thenThrow(SolrServerException.class);
+        Mockito.doReturn(null).when(this.cache).get(anyString());
+        Mockito.doThrow(SolrServerException.class).when(this.server).query(any(SolrParams.class));
         this.service.get(testIDValue);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void IOExceptionIsCaughtWhenQueryFails() throws IOException, SolrServerException {
-        when(this.cache.get(anyString())).thenReturn(null);
-        when(this.server.query(any(SolrParams.class))).thenThrow(IOException.class);
+        Mockito.doReturn(null).when(this.cache).get(anyString());
+        Mockito.doThrow(IOException.class).when(this.server).query(any(SolrParams.class));
         this.service.get(testIDValue);
     }
 
@@ -253,11 +243,10 @@ public class HPOScriptServiceTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void getAncestorsReturnsEmptyListWhenIDCantBeFound() throws IOException, SolrServerException {
-        when(this.server.query(any(SolrParams.class))).thenReturn(response);
-        when(this.cache.get(anyString())).thenReturn(null);
-        when(this.service.search(anyMap(), 1, 0)).thenReturn(null);
+        Mockito.doReturn(response).when(this.server).query(any(SolrParams.class));
+        Mockito.doReturn(null).when(this.cache).get(anyString());
+        when(this.service.search(anyMapOf(String.class, String.class), 1, 0)).thenReturn(null);
         Set<String> result = this.service.getAllAncestorsAndSelfIDs("");
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isEmpty());
@@ -266,7 +255,7 @@ public class HPOScriptServiceTest
     private void indexMockSolrDocListFromResource() throws IOException, SolrServerException
     {
         CapturingMatcher<Collection<SolrInputDocument>> allTermsCap = new CapturingMatcher<>();
-        when(this.server.add(Matchers.argThat(allTermsCap))).thenReturn(new UpdateResponse());
+        Mockito.doReturn(new UpdateResponse()).when(this.server).add(Matchers.argThat(allTermsCap));
 
         indexReturn = this.service.index(this.getClass().getResource("/hpo-test.obo").toString(), fieldNames);
 
@@ -285,7 +274,7 @@ public class HPOScriptServiceTest
         {
             SolrParams params = (SolrParams) invocationOnMock.getArguments()[0];
             if (params == null) {
-                when(response.getResults()).thenReturn(mock(SolrDocumentList.class));
+                Mockito.doReturn(mock(SolrDocumentList.class)).when(response).getResults();
                 return response;
             }
             for (SolrDocument item : solrDocList) {
@@ -294,11 +283,11 @@ public class HPOScriptServiceTest
                 if (params.get(CommonParams.Q).contains(fieldValue)) {
                     SolrDocumentList matchedItem = new SolrDocumentList();
                     matchedItem.add(item);
-                    when(response.getResults()).thenReturn(matchedItem);
+                    Mockito.doReturn(matchedItem).when(response).getResults();
                     return response;
                 }
             }
-            when(response.getResults()).thenReturn(mock(SolrDocumentList.class));
+            Mockito.doReturn(mock(SolrDocumentList.class)).when(response).getResults();
             return  response;
         }
     }
