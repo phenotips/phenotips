@@ -923,7 +923,6 @@ document.observe("xwiki:dom:loaded", function() {
       <code>#template("colorThemeInit.vm")
 
 #access-rights-summary {
-  font-size: .87em;
   float: right;
 }
 #access-rights-summary .access-rights-info {
@@ -934,11 +933,6 @@ document.observe("xwiki:dom:loaded", function() {
   font-weight: bold;
   margin: 0 5px 0 0;
   padding: 2px 3px;
-}
-#access-rights-summary a.button {
-  font-size: 1em;
-  text-transform: none;
-  font-weight: normal;
 }
 
 #access-levels-manager h2 {

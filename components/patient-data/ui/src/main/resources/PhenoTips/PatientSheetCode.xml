@@ -3743,11 +3743,18 @@ hr {
 #document-head #document-authors .document-author {
   font-weight: bold;
 }
-.space-data .before-patient-data {
+.before-patient-data {
   border: 0 none;
+  font-size: .87em;
   margin: 0 -11px;
   padding: 5px 10px;
 }
+.before-patient-data a.button {
+  font-size: 1em;
+  text-transform: none;
+  font-weight: normal
+}
+
 #xwikicontent {
   overflow: visible;
 }
