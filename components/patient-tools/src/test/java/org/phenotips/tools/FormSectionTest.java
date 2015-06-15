@@ -29,19 +29,22 @@ import static org.mockito.Mockito.mock;
 public class FormSectionTest {
 
     private FormSection testFormSection;
+    private FormField testFormField;
+    private FormGroup testFormGroup;
 
     @Before
     public void setUp(){
         List<String> categories = new LinkedList<String>();
         testFormSection = new FormSection("title", "phenotype", categories);
+        testFormField = mock(FormField.class);
+        testFormGroup = mock(FormGroup.class);
     }
 
     @Test
-    public void testAddCustomElement(){
-        FormField testField = mock(FormField.class);
-        FormGroup testGroup = mock(FormGroup.class);
-        Assert.assertNotNull(testFormSection.addCustomElement(testField));
-        Assert.assertNotNull(testFormSection.addCustomElement(testGroup));
+    public void testCustomElement(){
+        Assert.assertNotNull(testFormSection.addCustomElement(testFormField));
+        Assert.assertNotNull(testFormSection.addCustomElement(testFormGroup));
+        Assert.assertNotNull(testFormSection.getCustomElements());
     }
 
     @Test
@@ -49,8 +52,9 @@ public class FormSectionTest {
         String[] fieldNames = new String[]{"phenotype", "negative_phenotype"};
         Assert.assertEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
         Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
-        FormField testField = mock(FormField.class);
-        testFormSection.addCustomElement(testField);
+        testFormSection.addCustomElement(testFormField);
         Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
+        testFormSection.addCustomElement(testFormGroup);
+        Assert.assertNotEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
     }
 }
