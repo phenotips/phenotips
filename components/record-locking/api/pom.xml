@@ -37,8 +37,23 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-script</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-security-bridge</artifactId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-model</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
