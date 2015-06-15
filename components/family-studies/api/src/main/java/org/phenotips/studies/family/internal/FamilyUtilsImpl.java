@@ -56,6 +56,9 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.LargeStringProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
 /**
  * Provides utility methods for working with family documents and patients.
  *
@@ -142,11 +145,26 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException
+    public XWikiDocument getFamily(String anchorId) throws XWikiException
     {
-        DocumentReference patientRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
-        XWikiDocument patientDoc = this.getDoc(patientRef);
+        XWikiDocument patientDoc = this.getFromDataSpace(anchorId);
         return this.getFamilyDoc(patientDoc);
+    }
+
+    @Override
+    public JSON getPedigree(String anchorId) throws XWikiException
+    {
+        XWikiDocument docWithPedigree = getFamily(anchorId);
+        if (docWithPedigree == null) {
+            // either anchor id is invalid or it is a patient id
+            docWithPedigree = this.getFromDataSpace(anchorId);
+        }
+        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
+        if (pedigree != null && !pedigree.isEmpty()) {
+            return pedigree.getData();
+        } else {
+            return new JSONObject(true);
+        }
     }
 
     @Override

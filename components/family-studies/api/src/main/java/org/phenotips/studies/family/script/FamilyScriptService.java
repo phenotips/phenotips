@@ -74,7 +74,7 @@ public class FamilyScriptService implements ScriptService
     public DocumentReference createFamily(String patientId)
     {
         try {
-            XWikiDocument familyDoc = this.utils.getFamilyOfPatient(patientId);
+            XWikiDocument familyDoc = this.utils.getFamily(patientId);
             if (familyDoc == null) {
                 familyDoc = this.utils.createFamilyDoc(patientId);
             }
@@ -123,14 +123,32 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
+     * Returns a patient's pedigree, which is the pedigree of a family that patient belongs to, or the patient's own
+     * pedigree if the patient does not belong to a family.
+     *
+     * @param id must be a valid family id or a patient id
+     * @return JSON of the data portion of a family or patient pedigree
+     */
+    public JSON getPedigree(String id)
+    {
+        try {
+            return utils.getPedigree(id);
+        } catch (XWikiException ex) {
+            this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
+                id, ex.getMessage());
+            return new JSONObject(true);
+        }
+    }
+
+    /**
      * Verifies that a patient can be added to a family.
      *
      * @param thisId could be a family id or a patient id. If it is a patient id, finds the family that the patient
-     *            belongs to. This family is the one into which the `otherId` patient is added to
+     * belongs to. This family is the one into which the `otherId` patient is added to
      * @param otherId must be a valid patient id
      * @return {@link JSON} with 'validLink' field set to {@link false} if everything is ok, or {@link false} if the
-     *         `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also
-     *         contain 'errorMessage' and 'errorType'
+     * `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also contain
+     * 'errorMessage' and 'errorType'
      */
     public JSON verifyLinkable(String thisId, String otherId)
     {
@@ -145,15 +163,13 @@ public class FamilyScriptService implements ScriptService
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
      * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
-     *            processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
-     *            does belong to a family, or a family id is passed in as the `anchorId`, there is processing of the
-     *            pedigree, which is then saved to all patient records that belong to the family and the family
-     *            documents itself.
+     * processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient does belong
+     * to a family, or a family id is passed in as the `anchorId`, there is processing of the pedigree, which is then
+     * saved to all patient records that belong to the family and the family documents itself.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
      * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
-     *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
-     *         'errorType'
+     * error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and 'errorType'
      */
     public JSON processPedigree(String anchorId, String json, String image)
     {
