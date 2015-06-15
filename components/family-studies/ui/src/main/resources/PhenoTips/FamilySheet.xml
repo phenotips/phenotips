@@ -55,7 +55,7 @@
   #end
   {{html clean='false' wiki='true'}}
   &lt;div id='members' class='chapter clinical-info'&gt;
-    == List of members ==
+    == $services.localization.render('phenotips.familysheet.section.list_of_members') ==
     &lt;div class='fieldset'&gt;
       #foreach ($m in $members)
         #set ($patient = $xwiki.getDocument("data.${m}"))
@@ -68,14 +68,12 @@
   &lt;/div&gt;
   #__hasDataToDisplay('reports', $showReports)
   #if($showReports)
-    ##if ($xcontext.action != 'view' || !$doc.getObject('PhenoTips.FamilyClass').getProperty('reports').getValue().isEmpty())
       &lt;div id='reports' class='chapter clinical-info'&gt;
-        == Reports ==
+        == $services.localization.render('phenotips.familysheet.section.reports') ==
         &lt;div class='fieldset'&gt;
         $doc.display('reports', $obj)
         &lt;/div&gt;
       &lt;/div&gt;
-    ##end
   #end
   {{/html}}##
   (% id='pedigree' class='chapter clinical-info pedigree-family-section' %)(((
@@ -90,8 +88,8 @@
   #__hasDataToDisplay('warning_message', $showWarningMessage)
   #if ($showWarningMessage || $showWarning)
   (% id='warning' class='chapter clinical-info' %)(((
-    == Warning ==
-      (% class="controlled-group complete-hide exclude" %)(((
+    == $services.localization.render('phenotips.familysheet.section.sensitive') ==
+  (% class="controlled-group complete-hide exclude" %)(((
       #if ($showWarningMessage)
         (% class="controller" %) (((
         #__displayFormatted('2-col' 'warning' '' '' '')

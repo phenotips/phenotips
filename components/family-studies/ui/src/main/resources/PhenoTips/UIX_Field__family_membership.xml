@@ -62,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -107,10 +107,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -165,7 +165,7 @@ if (newFamilyTrigger) {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -210,10 +210,10 @@ if (newFamilyTrigger) {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -345,7 +345,7 @@ if (newFamilyTrigger) {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -361,6 +361,22 @@ if (newFamilyTrigger) {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -390,10 +406,10 @@ if (newFamilyTrigger) {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -419,6 +435,9 @@ if (newFamilyTrigger) {
 .family-study .family-wrapper div.search-again {
   margin-left: 10px;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
@@ -492,7 +511,7 @@ if (newFamilyTrigger) {
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -507,12 +526,13 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 #if ($xcontext.action != 'view' || $hasFamily)
   ##
   (% class="clear family-study" %)(((##
-  ##=== $services.localization.render('phenotips.UIXField.family.heading') ===
-  === Family ===##
+  === $services.localization.render('phenotips.UIXField.family_membership.heading') ===
   {{html wiki='true' clean='false'}}##
     #if ($hasFamily)##
     &lt;div class="buttonwrapper"&gt;##
-        &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;Open family page&lt;/a&gt;##
+        &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;
+          $services.localization.render('phenotips.UIXField.family_membership.open')
+        &lt;/a&gt;##
     &lt;/div&gt;##
     #else##
       #if ($xcontext.action == 'edit')
@@ -524,9 +544,13 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
       #end##
       &lt;div class="family-wrapper"&gt;##
           &lt;div class="buttonwrapper"&gt;##
-              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=$doc.getName()")"&gt;Create a family&lt;/a&gt;##
+              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=$doc.getName()")"&gt;
+                $services.localization.render('phenotips.UIXField.family_membership.create')
+              &lt;/a&gt;##
           &lt;/div&gt;##
-          &lt;div class="separator"&gt;&amp;#8212; OR Search &amp;#8212;&lt;/div&gt;##
+          &lt;div class="separator"&gt;
+            $services.localization.render('phenotips.UIXField.family_membership.search_separator')
+          &lt;/div&gt;##
           &lt;div class="half-width"&gt;
               &lt;span&gt;
                   &lt;input type="text" class="family-search-input"&gt;
@@ -535,7 +559,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
               &lt;span&gt;
                   &lt;a href="" class="family-link" target="_blank"&gt;&lt;/a&gt;
                   &lt;div class="buttonwrapper search-again"&gt;##
-                      &lt;a class="search-again" class="button" href="#"&gt;Search again&lt;/a&gt;##
+                      &lt;a class="search-again" class="button" href="#"&gt;
+                        $services.localization.render('phenotips.UIXField.family_membership.search_again')
+                      &lt;/a&gt;##
                   &lt;/div&gt;
               &lt;/span&gt;
           &lt;/div&gt;##
@@ -556,7 +582,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
       <name>org.phenotips.patientSheet.field.family</name>
     </property>
     <property>
-      <parameters>title=Family##$services.localization.render('phenotips.UIXField.family_membership')
+      <parameters>title=$services.localization.render('phenotips.UIXField.family_membership.extension_id')
 enabled=true
 required=
 order=1
