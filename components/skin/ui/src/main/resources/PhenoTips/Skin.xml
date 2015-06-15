@@ -209,7 +209,13 @@
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
-#macro (__img $name)$xwiki.getDocument('PhenoTips.Skin').getAttachmentURL("${name}.png")#end
+
+## Remove this after it's implemented by default in the base skin
+*::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
 #body {
   font-family: Arial,Verdana,sans-serif;
 }
@@ -279,7 +285,6 @@
 }
 
 #create-patient-record {
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   background: transparent;
   border: 0 none;
@@ -296,9 +301,6 @@
 }
 #create-patient-record:hover {
   text-decoration: underline;
-}
-#create-patient-record::-moz-focus-inner {
-  border: 0;
 }
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
   color: $theme.menuLinkColor;
@@ -393,7 +395,6 @@ input[type=text], textarea {
   width: 100%;
 }
 textarea {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
 }

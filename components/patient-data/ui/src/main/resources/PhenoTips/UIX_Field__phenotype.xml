@@ -694,7 +694,7 @@ label.selected, label.subterm-selected {
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__phenotype', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##

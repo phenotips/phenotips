@@ -93,6 +93,7 @@ public class ModularRightServiceImplTest
     {
         MockitoAnnotations.initMocks(this);
         Utils.setComponentManager(this.cm);
+        when(this.cm.getInstance(ComponentManager.class, "context")).thenReturn(this.cm);
 
         when(this.cm.getInstance(AuthorizationService.class, "default")).thenReturn(this.internalService);
         when(this.internalService.hasAccess(this.user, Right.VIEW, this.documentReference)).thenReturn(true);
@@ -106,7 +107,7 @@ public class ModularRightServiceImplTest
         when(this.userManager.getUser(null, true)).thenReturn(this.guestUser);
 
         when(this.context.getWiki()).thenReturn(this.xwiki);
-        when(this.context.getDatabase()).thenReturn("xwiki");
+        when(this.context.getWikiId()).thenReturn("xwiki");
 
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "user")).thenReturn(this.userResolver);
         when(this.userResolver.resolve("jdoe", new WikiReference("xwiki"))).thenReturn(this.userReference);

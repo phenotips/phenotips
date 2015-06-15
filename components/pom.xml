@@ -34,6 +34,7 @@
     <module>constants</module>
     <module>component-registry</module>
     <module>jodatime-service</module>
+    <module>default-settings</module>
     <module>widgets</module>
     <module>skin</module>
     <module>navigation</module>
@@ -59,5 +60,6 @@
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>proxy-authentication</module>
+    <module>record-locking</module>
   </modules>
 </project>

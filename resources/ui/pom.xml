@@ -34,14 +34,20 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-default-settings</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-administration-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.enterprise</groupId>
-      <artifactId>xwiki-enterprise-ui-admin-user</artifactId>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-skin-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
     </dependency>
@@ -84,6 +90,30 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-colorthemes-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-icon-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-icon-fontawesome</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-mail-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-xclass-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
     </dependency>

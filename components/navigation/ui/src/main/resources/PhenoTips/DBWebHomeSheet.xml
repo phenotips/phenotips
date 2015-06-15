@@ -873,7 +873,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   clear: both;
 }
 .date-range label {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   display: inline-block;
   font-size: .9em;
@@ -886,7 +885,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   padding-right: 0.5em;
 }
 .xform input[type="text"] {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
 }

@@ -76,7 +76,7 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </description>
     <image>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}
+      <customDisplay>{{include reference="PhenoTips.ImageDisplayer" /}}
 (% class="clearfloats" %)((()))</customDisplay>
       <disabled>0</disabled>
       <name>image</name>

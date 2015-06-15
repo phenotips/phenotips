@@ -108,17 +108,21 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.ChartServiceMacros" /}}
+      <content>{{include reference="PhenoTips.ChartServiceMacros" /}}
 
-{{include document="PhenoTips.PatientSheetMacros" /}}
+{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #set ($targetClassName = 'PhenoTips.MeasurementsClass')
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% class="growth-charts-section" %)(((
-    === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
-
-    #__expandTools()
+    #if($xcontext.action == 'edit')
+      (% class="expandable" %)
+      === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
+      #__expandTools()
+    #else
+      === $services.localization.render('phenotips.UIXField.growthCharts.heading') ===
+    #end
 
     (% id="charts"%)(((
       #_measurementCharts({'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})

@@ -87,7 +87,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         throws XWikiException
     {
         User user = this.userManager.getUser(StringUtils.endsWith(username, "XWikiGuest") ? null : username, true);
-        WikiReference wikiReference = new WikiReference(context.getDatabase());
+        WikiReference wikiReference = new WikiReference(context.getWikiId());
         DocumentReference document = resolveDocumentName(docname, wikiReference);
         return this.service.hasAccess(user, Right.toRight(right), document);
     }
@@ -107,7 +107,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
             try {
                 XWikiUser user = context.getWiki().checkAuth(context);
                 if (user != null) {
-                    userReference = resolveUserName(user.getUser(), new WikiReference(context.getDatabase()));
+                    userReference = resolveUserName(user.getUser(), new WikiReference(context.getWikiId()));
                 }
             } catch (XWikiException e) {
                 // Authentication failure, this should have been logged downstream
