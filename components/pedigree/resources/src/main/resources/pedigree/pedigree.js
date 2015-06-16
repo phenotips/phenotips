@@ -51,7 +51,7 @@ var PedigreeEditor = Class.create({
         this._probandData = new ProbandDataLoader();
 
         this._preferencesManager.load( function() {
-                // load proband data and load the graph after proband data is available 
+                // load proband data and load the graph after proband data is available
                 this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
                 // generate various dialogues after preferences have been loaded
@@ -372,8 +372,8 @@ var PedigreeEditor = Class.create({
 
     /**
      * Returns true if any of the node menus are visible
-     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom) 
-     * 
+     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom)
+     *
      * @method isAnyMenuVisible
      */
     isAnyMenuVisible: function() {

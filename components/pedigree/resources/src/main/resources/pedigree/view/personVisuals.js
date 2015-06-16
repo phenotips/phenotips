@@ -10,11 +10,11 @@
  */
 
 var PersonVisuals = Class.create(AbstractPersonVisuals, {
-    
+
     initialize: function($super, node, x, y) {
         //var timer = new Timer();
     	//console.log("person visuals");
-        $super(node, x, y);    	
+        $super(node, x, y);
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
@@ -39,7 +39,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
         }
     },
- 
+
     /**
      * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
      * Updates the disorder shapes.
@@ -137,19 +137,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * Updates the external ID label for this Person
      *
      * @method updateExternalIDLabel
-     */    
+     */
     updateExternalIDLabel: function() {
         this._externalIDLabel && this._externalIDLabel.remove();
-                
+
         if (this.getNode().getExternalID()) {
             var text = '[' + this.getNode().getExternalID() + "]";
-            this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.externalIDLabels);            
+            this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.externalIDLabels);
         } else {
             this._externalIDLabel = null;
         }
-        this.drawLabels();        
+        this.drawLabels();
     },
-    
+
     /**
      * Returns the Person's external ID label
      *
@@ -158,8 +158,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getExternalIDLabel: function() {
         return this._externalIDLabel;
-    },    
-    
+    },
+
     /**
      * Updates the name label for this Person
      *
@@ -169,7 +169,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel && this._nameLabel.remove();
         var text =  "";
         this.getNode().getFirstName() && (text = this.getNode().getFirstName());
-                
+
         if (this.getNode().getLastName()) {
             text += ' ' + this.getNode().getLastName();
             this.getNode().getLastNameAtBirth() &&
@@ -178,7 +178,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else
             this.getNode().getLastNameAtBirth() && (text += ' ' + this.getNode().getLastNameAtBirth());
-        
+
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {
             this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.nameLabels);
@@ -495,7 +495,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      *
      * @method getEvaluationGraphics
      * @return {Raphael.el}
-     */    
+     */
     getEvaluationGraphics: function() {
         return this._evalLabel;
     },
@@ -548,7 +548,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     editor.getPaper().path("M "+startX + " " + endY +
                                            "L " + (this.getX()) + " " + (this.getY()+this._radius*1.1) +
                                            "L " + (startX + PedigreeEditor.attributes.presymptomaticShapeWidth) + " " + endY + "Z").attr(PedigreeEditor.attributes.presymptomaticShape);
-                }   
+                }
                 this._carrierGraphic = editor.getPaper().setFinish();
             }
             if (editor.isReadOnlyMode())
@@ -565,11 +565,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      *
      * @method getCarrierGraphics
      * @return {Raphael.el}
-     */    
+     */
     getCarrierGraphics: function() {
         return this._carrierGraphic;
     },
-    
+
     /**
      * Returns this Person's stillbirth label
      *
@@ -586,15 +586,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateSBLabel
      */
     updateSBLabel: function() {
-        this.getSBLabel() && this.getSBLabel().remove();        
-        if (this.getNode().getLifeStatus() == 'stillborn') {        
+        this.getSBLabel() && this.getSBLabel().remove();
+        if (this.getNode().getLifeStatus() == 'stillborn') {
             this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
         } else {
             this._stillBirthLabel = null;
         }
         this.drawLabels();
     },
-       
+
     /**
      * Returns this Person's comments label
      *
@@ -611,7 +611,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateCommentsLabel
      */
     updateCommentsLabel: function() {
-        this.getCommentsLabel() && this.getCommentsLabel().remove();        
+        this.getCommentsLabel() && this.getCommentsLabel().remove();
         if (this.getNode().getComments() != "") {
             // note: raphael positions text which starts with a new line in a strange way
             //       also, blank lines are ignored unless replaced with a space
@@ -624,7 +624,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this._commentsLabel = null;
         }
         this.drawLabels();
-    },    
+    },
 
     /**
      * Displays the correct graphics to represent the current life status for this Person.
@@ -678,7 +678,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method shiftLabels
      */
     shiftLabels: function() {
-        var shift  = this._labelSelectionOffset(); 
+        var shift  = this._labelSelectionOffset();
         var labels = this.getLabels();
         for(var i = 0; i<labels.length; i++) {
             labels[i].stop().animate({"y": labels[i].oy + shift}, 200,">");
@@ -708,7 +708,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var labels = editor.getPaper().set();
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
-        this.getAgeLabel() && labels.push(this.getAgeLabel());        
+        this.getAgeLabel() && labels.push(this.getAgeLabel());
         this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
         this.getCommentsLabel() && labels.push(this.getCommentsLabel());
         return labels;
@@ -724,9 +724,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var selectionOffset = this._labelSelectionOffset();
         var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditor.attributes.label['font-size'] : 0;
         childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditor.attributes.infertileMarkerHeight + 2) : 0);
-                    
+
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
-                
+
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
             var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
@@ -743,16 +743,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         //if(!editor.isUnsupportedBrowser())
         //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
-    
+
     _labelSelectionOffset: function() {
         var selectionOffset = this.isSelected() ? PedigreeEditor.attributes.radius/1.4 : 0;
 
         if (this.isSelected() && this.getNode().isPersonGroup())
             selectionOffset += PedigreeEditor.attributes.radius * (1-PedigreeEditor.attributes.groupNodesScale) + 5;
-        
+
         if (this.getChildlessStatusLabel())
             selectionOffset = selectionOffset/2;
-        return selectionOffset;        
+        return selectionOffset;
     },
 
     /**
@@ -792,7 +792,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @param {Function} callback a function that will be called at the end of the animation
      */
     setPos: function($super, x, y, animate, callback) {
-        var funct = callback;        
+        var funct = callback;
         if(animate) {
             var me = this;
             this.getHoverBox().disable();
