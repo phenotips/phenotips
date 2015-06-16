@@ -21,8 +21,10 @@ package org.phenotips.data.internal;
 import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.List;
@@ -83,6 +85,16 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
 
     private static final String ENDING = "'";
 
+    private static final EntityReference PATIENT_CLASS = new EntityReference("PatientClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
+    private static final EntityReference GENE_CLASS = new EntityReference("GeneClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
+    private static final EntityReference REJECTED_CLASS = new EntityReference("RejectedGenesClass",
+        EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
     @Named("current")
@@ -92,6 +104,11 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     @Inject
     @Named("compactwiki")
     private EntityReferenceSerializer<String> serializer;
+
+    /** Resolves class names to the current wiki. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<EntityReference> entityResolver;
 
     @Override
     public String getDescription()
@@ -117,11 +134,14 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
         DocumentReference patientClassReference =
-            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
+            // new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
+            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(PATIENT_CLASS);
         DocumentReference geneClassReference =
-            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "GeneClass");
+            // new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "GeneClass");
+            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(GENE_CLASS);
         DocumentReference rejectedGenesClassReference =
-            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "RejectedGenesClass");
+            // new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "RejectedGenesClass");
+            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(REJECTED_CLASS);
 
         Query q =
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
