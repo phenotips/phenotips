@@ -60,8 +60,7 @@ var NodetypeSelectionBubble = Class.create({
             params: { "twins": true, "parameters": {"gender": "U"} },
             expandsTo: 'expandTwins',
             inSiblingMode: true
-        }, 
-           {
+        }, {
             key: "m",
             type: "person",
             label: "Multiple",
