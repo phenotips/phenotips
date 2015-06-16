@@ -538,7 +538,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
 
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'defaults': {'classification': 'candidate'}})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action, 'defaults': {'classification': 'candidate'}})
 #end
 {{/velocity}}</content>
     </property>
