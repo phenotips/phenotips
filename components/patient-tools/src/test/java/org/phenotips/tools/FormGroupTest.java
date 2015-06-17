@@ -27,29 +27,25 @@ public class FormGroupTest {
 
      private FormGroup testGroup;
      private String[] fieldnames;
-     private String[] fieldnamesWithoutNO;
 
      @Before
      public void setUp(){
          testGroup = new FormGroup("Test Group");
          fieldnames = new String[] { "phenotype", "negative_phenotype" };
-         fieldnamesWithoutNO = new String[] { "phenotype" };
-
      }
 
     @Test
     public void checkElementsAreAdded(){
-        FormField testNullField = null;
-        Assert.assertEquals(false, testGroup.addElement(testNullField));
+        Assert.assertFalse(testGroup.addElement(null));
         FormField testField = mock(FormField.class);
-        Assert.assertEquals(true, testGroup.addElement(testField));
+        Assert.assertTrue(testGroup.addElement(testField));
         Assert.assertTrue(testGroup.elements.contains(testField));
     }
 
     @Test
     public void checkEmptyFormGroupDisplay(){
-        Assert.assertEquals(testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }), "");
-        Assert.assertEquals(testGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }), "");
+        Assert.assertEquals("", testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }));
+        Assert.assertEquals("", testGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }));
     }
 
     @Test

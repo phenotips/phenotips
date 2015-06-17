@@ -29,12 +29,12 @@ public class FormSubsectionTest {
         String type = "type";
 
         FormSubsection testSubsection = new FormSubsection(title, type);
-        Assert.assertEquals(testSubsection.display(
-            DisplayMode.Edit, new String[]{ "phenotype", "negative_phenotype" }), "");
+        Assert.assertEquals("", testSubsection.display(
+            DisplayMode.Edit, new String[]{ "phenotype", "negative_phenotype" }));
         FormField testFormField = mock(FormField.class);
         testSubsection.addElement(testFormField);
-        Assert.assertEquals(testSubsection.display(
-            DisplayMode.Edit, new String[]{"phenotype", "negative_phenotype"}),
-            "<label class='section'>" + title + "</label><div class='subsection "+ type + "'>null</div>");
+        Assert.assertEquals("<label class='section'>" + title + "</label><div class='subsection "
+            + type + "'>null</div>", testSubsection.display(
+            DisplayMode.Edit, new String[]{"phenotype", "negative_phenotype"}));
     }
 }

@@ -31,26 +31,25 @@ public class FormConditionalSubsectionTest {
         FormElement testYesNoPicker = mock(FormField.class);
         FormConditionalSubsection testConditionalSubsection = new FormConditionalSubsection(
             title, type, testYesNoPicker, false);
-        Assert.assertEquals(testConditionalSubsection.display(
-            DisplayMode.Edit, new String[]{"phenotypes", "negative_phenotypes"}), "");
-        Assert.assertEquals(testConditionalSubsection.display(
-            DisplayMode.View, new String[]{"phenotypes", "negative_phenotypes"}), "");
+        Assert.assertEquals("", testConditionalSubsection.display(
+            DisplayMode.Edit, new String[]{"phenotypes", "negative_phenotypes"}));
+        Assert.assertEquals("", testConditionalSubsection.display(
+            DisplayMode.View, new String[]{"phenotypes", "negative_phenotypes"}));
     }
 
     @Test
     public void SelectedDisplay(){
         FormElement testYesNoPicker = mock(FormField.class);
         FormConditionalSubsection testConditionalSubsection = new FormConditionalSubsection(
-                title, type, testYesNoPicker, true);
+            title, type, testYesNoPicker, true);
         FormField testFormField = mock(FormField.class);
         testConditionalSubsection.addElement(testFormField);
 
-        Assert.assertEquals(testConditionalSubsection.display(
-            DisplayMode.Edit, new String[]{"phenotypes", "negative_phenotypes"}),
-            "<div class='section'>null<div class='dropdown invisible " + type + "'><div>null</div></div></div>");
-        Assert.assertEquals(testConditionalSubsection.display(
-            DisplayMode.View, new String[]{"phenotypes", "negative_phenotypes"}),
-            "<label class='section'>title</label><div class='subsection " + type + "'>null</div>");
+        Assert.assertEquals("<div class='section'>null<div class='dropdown invisible " + type
+            + "'><div>null</div></div></div>", testConditionalSubsection.display(
+            DisplayMode.Edit, new String[]{"phenotypes", "negative_phenotypes"}));
+        Assert.assertEquals("<label class='section'>title</label><div class='subsection " + type + "'>null</div>",
+            testConditionalSubsection.display(DisplayMode.View, new String[]{"phenotypes", "negative_phenotypes"}));
     }
 
 }
