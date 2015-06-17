@@ -20,15 +20,15 @@
   xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
 
   <complexType name="Link">
-    <attribute name="href" type="string"></attribute>
-    <attribute name="rel" type="string"></attribute>
-    <attribute name="type" type="string"></attribute>
-    <attribute name="hrefLang" type="string"></attribute>
+    <attribute name="href" type="string"/>
+    <attribute name="rel" type="string"/>
+    <attribute name="type" type="string"/>
+    <attribute name="hrefLang" type="string"/>
   </complexType>
 
   <complexType name="LinkCollection">
     <sequence>
-      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"></element>
+      <element name="link" type="phenotips:Link" minOccurs="0" maxOccurs="unbounded"/>
     </sequence>
   </complexType>
 
@@ -69,13 +69,12 @@
       <complexContent>
         <extension base="phenotips:LinkCollection">
           <sequence>
-            <element name="patientSummary" type="phenotips:PatientSummary"
-              minOccurs="0" maxOccurs="unbounded"></element>
+            <element name="patientSummary" type="phenotips:PatientSummary" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="patient" type="phenotips:Patient"></element>
+  <element name="patient" type="phenotips:Patient"/>
 </schema>
