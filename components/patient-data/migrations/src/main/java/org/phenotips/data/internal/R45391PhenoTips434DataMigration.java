@@ -88,7 +88,7 @@ public class R45391PhenoTips434DataMigration extends AbstractHibernateDataMigrat
         getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("PhenotypeMetaClass"));
         getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("ExternalFileClass"));
         getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("ExternalImageClass"));
-        getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("InvestigationClass"));
+        getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("GeneClass"));
         getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback("VariantClass"));
     }
 

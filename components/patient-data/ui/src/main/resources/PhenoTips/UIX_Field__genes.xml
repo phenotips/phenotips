@@ -534,11 +534,11 @@
 {{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
-#set ($targetClassName = 'PhenoTips.InvestigationClass')
+#set ($targetClassName = 'PhenoTips.GeneClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
 
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action, 'rejectToClass' : "RejectedGenesClass"})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action, 'defaults': {'classification': 'candidate'}})
 #end
 {{/velocity}}</content>
     </property>
