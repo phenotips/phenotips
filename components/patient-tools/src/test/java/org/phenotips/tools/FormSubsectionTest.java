@@ -16,25 +16,39 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.tools;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.mockito.Mockito.mock;
 
 public class FormSubsectionTest {
 
+    private FormField testFormField;
+    private String[] fieldnames;
+    String title = "title";
+    String type = "type";
+
+    @Before
+    public void setUp(){
+        testFormField = mock(FormField.class);
+        fieldnames = new String[]{ "phenotype", "negative_phenotype" };
+    }
+
     @Test
-    public void testSubsectionDisplay(){
-
-        String title = "title";
-        String type = "type";
-
+    public void testSubsectionDisplayTitleAndType(){
         FormSubsection testSubsection = new FormSubsection(title, type);
-        Assert.assertEquals("", testSubsection.display(
-            DisplayMode.Edit, new String[]{ "phenotype", "negative_phenotype" }));
-        FormField testFormField = mock(FormField.class);
+        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, fieldnames));
         testSubsection.addElement(testFormField);
         Assert.assertEquals("<label class='section'>" + title + "</label><div class='subsection "
-            + type + "'>null</div>", testSubsection.display(
-            DisplayMode.Edit, new String[]{"phenotype", "negative_phenotype"}));
+            + type + "'>null</div>", testSubsection.display(DisplayMode.Edit, fieldnames));
+    }
+
+    @Test
+    public void SubsectionDisplayTitleOnly(){
+        FormSubsection testSubsection = new FormSubsection(title);
+        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, fieldnames));
+        testSubsection.addElement(testFormField);
+        Assert.assertEquals("<label class='section'>" + title + "</label><div class='subsection '>null</div>",
+            testSubsection.display(DisplayMode.Edit, fieldnames));
     }
 }
