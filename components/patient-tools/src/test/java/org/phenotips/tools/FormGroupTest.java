@@ -21,40 +21,51 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class FormGroupTest {
 
      private FormGroup testGroup;
+     private String[] fieldnames;
+     private String[] fieldnamesWithoutNO;
 
      @Before
      public void setUp(){
          testGroup = new FormGroup("Test Group");
+         fieldnames = new String[] { "phenotype", "negative_phenotype" };
+         fieldnamesWithoutNO = new String[] { "phenotype" };
+
      }
 
     @Test
-    public void testAddElement(){
-        Assert.assertEquals(false, testGroup.addElement(null));
+    public void checkElementsAreAdded(){
+        FormField testNullField = null;
+        Assert.assertEquals(false, testGroup.addElement(testNullField));
         FormField testField = mock(FormField.class);
         Assert.assertEquals(true, testGroup.addElement(testField));
+        Assert.assertTrue(testGroup.elements.contains(testField));
     }
 
     @Test
-    public void testEmptyGroupDisplay(){
+    public void checkEmptyFormGroupDisplay(){
         Assert.assertEquals(testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }), "");
         Assert.assertEquals(testGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }), "");
     }
 
     @Test
-    public void testEditModeDisplay(){
+    public void checkBehaviorOnEditAndViewMode() {
         FormField testField1 = mock(FormField.class);
         FormField testField2 = mock(FormField.class);
         testGroup.addElement(testField1);
         testGroup.addElement(testField2);
 
-        String output = testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" });
-        Assert.assertNotNull(output);
-        output = testGroup.display(DisplayMode.Edit, new String[] { "phenotype" });
-        Assert.assertNotNull(output);
+        testGroup.display(DisplayMode.Edit, fieldnames);
+        verify(testField1).display(DisplayMode.Edit, fieldnames);
+        verify(testField2).display(DisplayMode.Edit,  fieldnames);
+
+        testGroup.display(DisplayMode.View, fieldnames);
+        verify(testField1).display(DisplayMode.View, fieldnames);
+        verify(testField2).display(DisplayMode.View, fieldnames);
     }
 
 }

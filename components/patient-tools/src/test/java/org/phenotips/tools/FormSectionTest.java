@@ -31,30 +31,53 @@ public class FormSectionTest {
     private FormSection testFormSection;
     private FormField testFormField;
     private FormGroup testFormGroup;
+    private String[] fieldNames;
+
+    String title = "title";
+    String propertyName = "phenotype";
 
     @Before
     public void setUp(){
         List<String> categories = new LinkedList<String>();
-        testFormSection = new FormSection("title", "phenotype", categories);
+        testFormSection = new FormSection(title, propertyName, categories);
         testFormField = mock(FormField.class);
         testFormGroup = mock(FormGroup.class);
+        fieldNames = new String[]{"phenotype", "negative_phenotype"};
     }
 
     @Test
-    public void testCustomElement(){
+    public void addAndGetCustomElements(){
         Assert.assertNotNull(testFormSection.addCustomElement(testFormField));
         Assert.assertNotNull(testFormSection.addCustomElement(testFormGroup));
         Assert.assertNotNull(testFormSection.getCustomElements());
     }
 
     @Test
-    public void testSectionDisplay(){
-        String[] fieldNames = new String[]{"phenotype", "negative_phenotype"};
+    public void displaySection() {
+        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
         Assert.assertEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
-        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
+
         testFormSection.addCustomElement(testFormField);
-        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
-        testFormSection.addCustomElement(testFormGroup);
-        Assert.assertNotEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
+        String expectedCustomDisplay = "<div class='phenotype-group' style='" + "display:none"
+                + "'><h3 id='Htitle'><span>" + title + "</span></h3><div class='phenotype-main predefined-entries'></div>"
+                + "<div class='phenotype-other custom-entries'><div class=\"custom-display-data\">null</div>"
+                + "<label for='phenotype_0." + "\\d+" + "' class='label-other label-other-phenotype'>Other</label>"
+                + "<input type='text' name='phenotype' class='suggested multi suggest-hpo generateYesNo accept-value'"
+                + " value='' size='16' id='phenotype_0." + "\\d+" + "' placeholder='enter free text and choose among "
+                + "suggested ontology terms'/><input type='hidden' value='' name='_category'/></div></div>";
+
+        String customDisplayResult = testFormSection.display(DisplayMode.Edit, fieldNames);
+        Assert.assertTrue(customDisplayResult.matches(expectedCustomDisplay));
+
+        testFormSection.addElement(testFormGroup);
+        String expectedDisplay = "<div class='phenotype-group' style=''><h3 id='Htitle'><span>" + title + "</span></h3>"
+            + "<div class='phenotype-main predefined-entries'>null</div><div class='phenotype-other custom-entries'>"
+            + "<div class=\"custom-display-data\">null</div><label for='phenotype_0." + "\\d+" + "' class='label-other "
+            + "label-other-phenotype'>Other</label><input type='text' name='phenotype' class='suggested multi suggest-hpo "
+            + "generateYesNo accept-value' value='' size='16' id='phenotype_0." + "\\d+" + "' placeholder='enter free "
+            + "text and choose among suggested ontology terms'/><input type='hidden' value='' name='_category'/></div>"
+            + "</div>";
+        String displayResult = testFormSection.display(DisplayMode.Edit, fieldNames);
+        Assert.assertTrue(displayResult.matches(expectedDisplay));
     }
 }
