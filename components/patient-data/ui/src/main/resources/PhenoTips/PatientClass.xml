@@ -285,54 +285,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </date_of_death_entered>
-    <delivery_mode>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay>{{velocity}}
-#set ($order = [
-  'HP:0030369',
-
-  'HP:0005268',
-
-  'HP:0001623',
-
-  'HP:0011410',
-  'HP:0030363',
-  'HP:0030364',
-
-  'HP:0011411',
-
-  'HP:0011412',
-
-  'HP:0030365',
-
-  'HP:0030366'
-
-])
-#set ($startWith = 'HP:0001787')
-{{/velocity}}
-
-{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
-      <disabled>0</disabled>
-      <displayType>radio</displayType>
-      <idField/>
-      <multiSelect>0</multiSelect>
-      <name>delivery_mode</name>
-      <number>47</number>
-      <picker>0</picker>
-      <prettyName>Delivery mode</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </delivery_mode>
     <date_of_death_unknown>
       <customDisplay/>
       <defaultValue/>
@@ -937,6 +889,20 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </negative_prenatal_phenotype>
+    <normal_delivery>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>normal_delivery</name>
+      <number>52</number>
+      <prettyName>This patient was delivered normally</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </normal_delivery>
     <omim_id>
       <cache>0</cache>
       <classname/>
