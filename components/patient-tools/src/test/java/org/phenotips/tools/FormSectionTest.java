@@ -53,18 +53,25 @@ public class FormSectionTest {
     }
 
     @Test
-    public void displaySection() {
-        Assert.assertNotEquals(testFormSection.display(DisplayMode.Edit, fieldNames), "");
-        Assert.assertEquals(testFormSection.display(DisplayMode.View, fieldNames), "");
+    public void setCustomElements(){
+        FormGroup customElementFormGroup = mock(FormGroup.class);
+        testFormSection.setCustomElements(customElementFormGroup);
+        Assert.assertEquals(customElementFormGroup, testFormSection.getCustomElements());
+    }
+
+    @Test
+    public void displaySectionInEditMode() {
+        Assert.assertNotEquals("", testFormSection.display(DisplayMode.Edit, fieldNames));
+        Assert.assertEquals("", testFormSection.display(DisplayMode.View, fieldNames));
 
         testFormSection.addCustomElement(testFormField);
         String expectedCustomDisplay = "<div class='phenotype-group' style='" + "display:none"
-                + "'><h3 id='Htitle'><span>" + title + "</span></h3><div class='phenotype-main predefined-entries'></div>"
-                + "<div class='phenotype-other custom-entries'><div class=\"custom-display-data\">null</div>"
-                + "<label for='phenotype_0." + "\\d+" + "' class='label-other label-other-phenotype'>Other</label>"
-                + "<input type='text' name='phenotype' class='suggested multi suggest-hpo generateYesNo accept-value'"
-                + " value='' size='16' id='phenotype_0." + "\\d+" + "' placeholder='enter free text and choose among "
-                + "suggested ontology terms'/><input type='hidden' value='' name='_category'/></div></div>";
+            + "'><h3 id='Htitle'><span>" + title + "</span></h3><div class='phenotype-main predefined-entries'></div>"
+            + "<div class='phenotype-other custom-entries'><div class=\"custom-display-data\">null</div>"
+            + "<label for='phenotype_0." + "\\d+" + "' class='label-other label-other-phenotype'>Other</label>"
+            + "<input type='text' name='phenotype' class='suggested multi suggest-hpo generateYesNo accept-value'"
+            + " value='' size='16' id='phenotype_0." + "\\d+" + "' placeholder='enter free text and choose among "
+            + "suggested ontology terms'/><input type='hidden' value='' name='_category'/></div></div>";
 
         String customDisplayResult = testFormSection.display(DisplayMode.Edit, fieldNames);
         Assert.assertTrue(customDisplayResult.matches(expectedCustomDisplay));
@@ -79,5 +86,20 @@ public class FormSectionTest {
             + "</div>";
         String displayResult = testFormSection.display(DisplayMode.Edit, fieldNames);
         Assert.assertTrue(displayResult.matches(expectedDisplay));
+    }
+
+    @Test
+    public void displaySectionInViewMode(){
+        testFormSection.addElement(testFormField);
+        String expectedElementDisplay = "<div class='phenotype-group' style=''><h3 id='Htitle'><span>" + title + "</span></h3>"
+            + "<div class='phenotype-main predefined-entries'>null</div><div class='phenotype-other custom-entries'>"
+            + "</div></div>";
+        Assert.assertEquals(expectedElementDisplay, testFormSection.display(DisplayMode.View, fieldNames));
+
+        testFormSection.addCustomElement(testFormGroup);
+        String expectedCustomElementDisplay = "<div class='phenotype-group' style=''><h3 id='Htitle'><span>" + title
+            + "</span></h3><div class='phenotype-main predefined-entries'>null</div><div class='phenotype-other "
+            + "custom-entries'><div class=\"custom-display-data\">null</div></div></div>";
+        Assert.assertEquals(expectedCustomElementDisplay, testFormSection.display(DisplayMode.View, fieldNames));
     }
 }
