@@ -33,6 +33,7 @@
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
     <!-- There are no sources to cover -->
     <coverage.instructionRatio>0</coverage.instructionRatio>
+    <jacoco.skip>true</jacoco.skip>
   </properties>
 
   <dependencies>
@@ -123,14 +124,6 @@
           </includes>
           <!-- There's only one browser, it can't run parallel tests -->
           <parallel>suites</parallel>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
-        <configuration>
-          <skip>true</skip>
         </configuration>
       </plugin>
     </plugins>
