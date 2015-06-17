@@ -73,13 +73,14 @@ public class HGVSVariantManager implements VariantManager
     @Override
     public JSONObject validateVariant(String id)
     {
-        String url = null;
+        String safeID;
         try {
-            url = SERVICE_URL + URLEncoder.encode(id, "UTF-8");
+            safeID = URLEncoder.encode(id, Consts.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            safeID = id.replaceAll("\\s", "");
+            this.logger.warn("Could not find the encoding: {}", Consts.UTF_8.name());
         }
-        HttpGet method = new HttpGet(url);
+        HttpGet method = new HttpGet(SERVICE_URL + safeID);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);

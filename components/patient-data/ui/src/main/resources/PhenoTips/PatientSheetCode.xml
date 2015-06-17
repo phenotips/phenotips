@@ -5010,7 +5010,6 @@ form .extradata-list tr:hover td {
   display: block;
 }
 .LV_valid {
-  /*display: none;*/
   color : green;
 }
 input.LV_invalid_field {

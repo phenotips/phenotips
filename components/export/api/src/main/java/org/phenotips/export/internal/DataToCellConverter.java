@@ -66,20 +66,9 @@ public class DataToCellConverter
 
     public static final Integer charactersPerLine = 100;
 
-    public void phenotypeSetup(Set<String> enabledFields) throws Exception
+    private Set<String> addHeaders(String[] fieldIds, String[][] headerIds, Set<String> enabledFields)
     {
-        String sectionName = "phenotype";
-        String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
-        "phenotype_by_section" };
-        // FIXME These will not work properly in different configurations
-        String[][] headerIds =
-        { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-            { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-            { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-            { "category" } };
         Set<String> present = new HashSet<String>();
-
         int counter = 0;
         for (String fieldId : fieldIds) {
             if (enabledFields.remove(fieldId)) {
@@ -89,11 +78,27 @@ public class DataToCellConverter
             }
             counter++;
         }
-        this.enabledHeaderIdsBySection.put(sectionName, present);
+        return present;
+    }
 
+    public void phenotypeSetup(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "phenotype";
+        String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
+        "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+        "phenotype_by_section" };
+        // FIXME These will not work properly in different configurations
+        String[][] headerIds =
+        { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
+        { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+        { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+        { "category" } };
+
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
+        this.enabledHeaderIdsBySection.put(sectionName, present);
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-        .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -267,19 +272,9 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
-            { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
-            { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
-        Set<String> present = new HashSet<String>();
-
-        int counter = 0;
-        for (String fieldId : fieldIds) {
-            if (enabledFields.remove(fieldId)) {
-                for (String headerId : headerIds[counter]) {
-                    present.add(headerId);
-                }
-            }
-            counter++;
-        }
+        { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
+        { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
 
@@ -290,18 +285,8 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "genes" }, { "classification", "genes" }, { "evidence", "classification", "genes" },
-            { "comments", "evidence", "classification", "genes" } };
-        Set<String> present = new HashSet<String>();
-
-        int counter = 0;
-        for (String fieldId : fieldIds) {
-            if (enabledFields.remove(fieldId)) {
-                for (String headerId : headerIds[counter]) {
-                    present.add(headerId);
-                }
-            }
-            counter++;
-        }
+        { "comments", "evidence", "classification", "genes" } };
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
 
@@ -699,19 +684,19 @@ public class DataToCellConverter
             PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-                int y = 0;
-                if (modeTermList != null && !modeTermList.isEmpty()) {
-                    for (SolrVocabularyTerm term : modeTermList) {
-                        String mode = term != null ? term.getName() : "";
-                        DataCell cell = new DataCell(mode, x, y);
-                        bodySection.addCell(cell);
-                        y++;
-                    }
-                } else {
-                    DataCell cell = new DataCell("", x, y);
+            int y = 0;
+            if (modeTermList != null && !modeTermList.isEmpty()) {
+                for (SolrVocabularyTerm term : modeTermList) {
+                    String mode = term != null ? term.getName() : "";
+                    DataCell cell = new DataCell(mode, x, y);
                     bodySection.addCell(cell);
+                    y++;
                 }
-                x++;
+            } else {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
+            x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -915,26 +900,16 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+        "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
-        Set<String> present = new HashSet<String>();
-
-        int counter = 0;
-        for (String fieldId : fieldIds) {
-            if (enabledFields.remove(fieldId)) {
-                for (String headerId : headerIds[counter]) {
-                    present.add(headerId);
-                }
-            }
-            counter++;
-        }
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-        .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
@@ -1067,17 +1042,7 @@ public class DataToCellConverter
         String[] fieldIds = { "omim_id", "omim_id_code", "omim_id_combined", "diagnosis_notes" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "disorder" }, { "code" }, { "disorder", "code" }, { "notes" } };
-        Set<String> present = new HashSet<String>();
-
-        int counter = 0;
-        for (String fieldId : fieldIds) {
-            if (enabledFields.remove(fieldId)) {
-                for (String headerId : headerIds[counter]) {
-                    present.add(headerId);
-                }
-            }
-            counter++;
-        }
+        Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
 
         // Must be linked to keep order; in other sections as well
