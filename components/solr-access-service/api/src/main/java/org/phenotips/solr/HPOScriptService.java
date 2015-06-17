@@ -25,6 +25,7 @@ import org.xwiki.component.annotation.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -65,6 +66,7 @@ public class HPOScriptService extends AbstractSolrScriptService
      * @param id the HPO identifier to search for, in the {@code HP:1234567} format
      * @return the full set of ancestors-or-self IDs, or an empty set if the requested ID was not found in the index
      */
+    @SuppressWarnings("unchecked")
     public Set<String> getAllAncestorsAndSelfIDs(final String id)
     {
         Set<String> results = new HashSet<String>();
@@ -77,10 +79,15 @@ public class HPOScriptService extends AbstractSolrScriptService
         while (!nodes.isEmpty()) {
             crt = nodes.poll();
             results.add(String.valueOf(crt.get(ID_FIELD_NAME)));
-            @SuppressWarnings("unchecked")
-            List<String> parents = (List<String>) crt.get("is_a");
-            if (parents == null) {
+            Object rawParents = crt.get("is_a");
+            if (rawParents == null) {
                 continue;
+            }
+            List<String> parents;
+            if (rawParents instanceof String) {
+                parents = Collections.singletonList(String.valueOf(rawParents));
+            } else {
+                parents = (List<String>) rawParents;
             }
             for (String pid : parents) {
                 nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
