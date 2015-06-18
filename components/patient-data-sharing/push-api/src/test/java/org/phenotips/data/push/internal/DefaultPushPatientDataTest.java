@@ -17,15 +17,24 @@
  */
 package org.phenotips.data.push.internal;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import org.apache.http.NameValuePair;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.push.PushPatientData;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +42,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class DefaultPushPatientDataTest {
 
@@ -46,8 +56,30 @@ public class DefaultPushPatientDataTest {
     @Mock
     private List<NameValuePair> data;
 
+    @Mock
+    private Execution execution;
+
+    @Mock
+    private XWiki xWiki;
+
+    @Mock
+    private XWikiContext xWikiContext;
+
+    @Mock
+    private XWikiDocument xWikiDocument;
+
+    @Mock
+    private ExecutionContext executionContext;
+
+
+    @Before
+    public void setUp()
+    {
+           MockitoAnnotations.initMocks(this);
+    }
+
     @Test
-    public void getBaseUrlTest() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
+    public void getBaseUrlReturnsCorrectString() throws ComponentLookupException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException {
         // set up access for the private method
         Method method = DefaultPushPatientData.class.getDeclaredMethod("getBaseURL", BaseObject.class);
@@ -56,7 +88,6 @@ public class DefaultPushPatientDataTest {
         Assert.assertNull(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration));
 
         // test case when serverConfiguration gives http string
-        MockitoAnnotations.initMocks(this);
         when(serverConfiguration.getStringValue("url")).thenReturn("http://");
         Assert.assertEquals(method.invoke(this.mocker.getComponentUnderTest(), serverConfiguration),
                 "http:/bin/receivePatientData");
@@ -106,5 +137,16 @@ public class DefaultPushPatientDataTest {
                 "passWord", "");
         Assert.assertEquals("password", result.get(4).getName());
         Assert.assertEquals("passWord", result.get(4).getValue());
+    }
+
+    @Test
+    public void getRemoteConfigurationPerformsCorrectly() throws ComponentLookupException, XWikiException
+    {
+        when(this.execution.getContext()).thenReturn(this.executionContext);
+        when(this.executionContext.getProperty(Matchers.anyString())).thenReturn(this.xWikiContext);
+        when(this.xWikiContext.getWiki()).thenReturn(xWiki);
+        when(xWiki.getDocument(Matchers.any(DocumentReference.class), Matchers.any(XWikiContext.class))).thenReturn(this.xWikiDocument);
+        this.mocker.getComponentUnderTest().getRemoteConfiguration("id", "name", "pass", "token");
+        verify(this.execution).getContext();
     }
 }
