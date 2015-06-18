@@ -37,12 +37,12 @@ import com.xpn.xwiki.doc.XWikiAttachment;
  */
 public class DeleteAttachmentTransactionRunnable extends TransactionRunnable<XWikiHibernateTransaction>
 {
-	
+
     /**
      * The logger.
      */
     private Logger logger = LoggerFactory.getLogger(DeleteAttachmentTransactionRunnable.class);
-	
+
     /**
      * Constructor.
      * 
@@ -58,8 +58,8 @@ public class DeleteAttachmentTransactionRunnable extends TransactionRunnable<XWi
          * This is simply a composite transaction that contains first the removal of the attachment metadata and then
          * the removal of the actual data in the blobstore.
          */
-    	new DeleteAttachmentMetaDataTransactionRunnable(xwikiAttachment, xwikiContext, updateDocument).runIn(this);
-    	new DeleteAttachmentDataTransactionRunnable(xwikiAttachment.getReference(), blobStoreProvider).runIn(this);
+        new DeleteAttachmentMetaDataTransactionRunnable(xwikiAttachment, xwikiContext, updateDocument).runIn(this);
+        new DeleteAttachmentDataTransactionRunnable(xwikiAttachment.getReference(), blobStoreProvider).runIn(this);
     }
 
 }
