@@ -27,10 +27,10 @@ import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -137,15 +137,13 @@ public class PhenoTipsPatientRepository implements PatientRepository
         try {
             // FIXME Take these from the configuration
             String prefix = "P";
-            String targetSpace = Patient.DEFAULT_DATA_SPACE.getName();
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             long id = getLastUsedId();
             DocumentReference newDoc;
-            SpaceReference space =
-                new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                newDoc = new DocumentReference(prefix + String.format("%07d", ++id), space);
+                newDoc = this.referenceResolver.resolve(new EntityReference(
+                    prefix + String.format("%07d", ++id), EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE));
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);

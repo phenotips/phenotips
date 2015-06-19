@@ -111,7 +111,26 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+#__hasDataToDisplay('date_of_death', $showDod)
+#__hasBooleanDataToDisplay('date_of_death_unknown' $showDodUnknown)
+#if ($showDod || $showDodUnknown)
+  (% class="controlled-group complete-hide" %)(((
+  #if ($showDodUnknown)
+  (% class="controller" %)(((
+    #if ($xcontext.action == 'edit')
+      $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
+    #else
+      $class.get('date_of_death_unknown').translatedPrettyName
+    #end
+  )))
+  #end
+  #if ($showDod)
+    (% class="controlled" %) (((
+    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+    )))
+  #end
+  )))
+#end
 {{/velocity}}</content>
     </property>
     <property>
@@ -125,7 +144,7 @@
 enabled=true
 required=
 order=6
-fields=date_of_death
+fields=date_of_death, date_of_death_unknown
 contains_PII=true
 privacy_level=1</parameters>
     </property>
