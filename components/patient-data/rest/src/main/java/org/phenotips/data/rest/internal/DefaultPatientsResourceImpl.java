@@ -19,8 +19,8 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
-import org.phenotips.data.rest.model.DomainObjectFactory;
 import org.phenotips.data.rest.model.Patients;
 
 import org.xwiki.component.annotation.Component;

@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.rest.model;
+package org.phenotips.data.rest;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.rest.model.PatientSummary;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
