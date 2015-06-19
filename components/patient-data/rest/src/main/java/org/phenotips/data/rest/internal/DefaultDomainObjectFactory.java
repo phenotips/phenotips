@@ -29,10 +29,9 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.net.URI;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -61,7 +60,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     private DocumentAccessBridge documentAccessBridge;
 
     @Override
-    public PatientSummary createPatientSummary(Patient patient, URI baseURI)
+    public PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo)
     {
         PatientSummary result = new PatientSummary();
 

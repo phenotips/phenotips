@@ -133,7 +133,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             List<String> records = query.execute();
             for (String recordId : records) {
                 Patient patient = this.repository.getPatientById(recordId);
-                result.getPatientSummaries().add(this.factory.createPatientSummary(patient, this.uriInfo.getBaseUri()));
+                result.getPatientSummaries().add(this.factory.createPatientSummary(patient, this.uriInfo));
             }
         } catch (Exception e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

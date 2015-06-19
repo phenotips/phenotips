@@ -22,7 +22,7 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.net.URI;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * Factory class for generating REST representations of various types of entities.
@@ -38,9 +38,9 @@ public interface DomainObjectFactory
      * Create the REST representation for a {@link Patient}'s summary.
      *
      * @param patient the patient to serialize
-     * @param baseURI the base URI for the rest system
+     * @param uriInfo the URI information for the rest system and the current request
      * @return a patient summary, or {@code null} if the current user doesn't have access to the patient or accessing
      *         the patient data fails
      */
-    PatientSummary createPatientSummary(Patient patient, URI baseURI);
+    PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo);
 }
