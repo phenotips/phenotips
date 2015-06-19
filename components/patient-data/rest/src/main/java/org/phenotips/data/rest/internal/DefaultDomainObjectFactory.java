@@ -19,6 +19,9 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.rest.DomainObjectFactory;
+import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.Relations;
+import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientSummary;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -83,6 +86,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withVersion(doc.getVersion());
         result.withCreatedOn(new DateTime(doc.getCreationDate()).withZone(DateTimeZone.UTC));
         result.withLastModifiedOn(new DateTime(doc.getDate()).withZone(DateTimeZone.UTC));
+        Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
+            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patient.getId()).toString());
+        result.getLinks().add(l);
         return result;
     }
 }
