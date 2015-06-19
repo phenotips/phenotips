@@ -106,6 +106,10 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
      */
     private RecordConfiguration getBoundConfiguration()
     {
+        if (this.dab.getCurrentDocumentReference() == null) {
+            // Non-interactive requests, use the default configuration
+            return null;
+        }
         String boundConfig =
             (String) this.dab.getProperty(this.dab.getCurrentDocumentReference(),
                 this.resolver.resolve(STUDY_BINDING_CLASS_REFERENCE), "studyReference");
