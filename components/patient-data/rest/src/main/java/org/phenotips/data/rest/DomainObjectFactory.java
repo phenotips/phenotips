@@ -18,10 +18,14 @@
 package org.phenotips.data.rest;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.rest.model.Alternative;
+import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
+
+import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -44,4 +48,23 @@ public interface DomainObjectFactory
      *         the patient data fails
      */
     PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo);
+
+    /**
+     * Create the REST representation for a list of links to {@link Patient}s.
+     *
+     * @param alternativeIdentifiers the {@link Patient#getId() identifiers} of the patients to link to
+     * @param uriInfo the URI information for the rest system and the current request
+     * @return a list of links to the REST address for accessing each patient record accessible to the current user; may
+     *         be empty
+     */
+    Alternatives createAlternatives(List<String> alternativeIdentifiers, UriInfo uriInfo);
+
+    /**
+     * Create the REST representation for a link to a {@link Patient}.
+     *
+     * @param id the {@link Patient#getId() identifier} of the patient to link to
+     * @param uriInfo the URI information for the rest system and the current request
+     * @return a link to the REST address for accessing the patient record
+     */
+    Alternative createAlternative(String id, UriInfo uriInfo);
 }
