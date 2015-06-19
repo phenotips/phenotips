@@ -18,7 +18,7 @@
 package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.rest.model.DomainObjectFactory;
+import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.model.PatientSummary;
 
 import org.xwiki.bridge.DocumentAccessBridge;
