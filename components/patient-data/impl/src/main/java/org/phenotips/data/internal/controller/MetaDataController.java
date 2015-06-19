@@ -25,6 +25,7 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -133,7 +134,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
     protected List<String> getProperties()
     {
         // Not used, since there's a custom load method
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
