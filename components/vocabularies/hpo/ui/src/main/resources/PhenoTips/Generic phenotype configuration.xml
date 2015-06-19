@@ -337,7 +337,7 @@
         "type"  : "conditionalSubsection",
         "id"    : "HP:0001787",
         "group_type" : "multi-select",
-        "title" : "Abnormal delivery (Non-SVD)",
+        "title" : "Abnormal delivery (Non-NSVD)",
         "data"  : [
           {"id" : "HP:0030369"},
           {"id" : "HP:0005268"},
