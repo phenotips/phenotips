@@ -21,18 +21,25 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
+import org.phenotips.data.rest.model.Alternative;
+import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientSummary;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.List;
+
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
@@ -62,6 +69,11 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
+    /** Parses string representations of document references into proper references. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> stringResolver;
+
     @Override
     public PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo)
     {
@@ -89,6 +101,33 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
             uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patient.getId()).toString());
         result.getLinks().add(l);
+        return result;
+    }
+
+    @Override
+    public Alternatives createAlternatives(List<String> alternativeIdentifiers, UriInfo uriInfo)
+    {
+        Alternatives result = new Alternatives();
+        User currentUser = this.users.getCurrentUser();
+        result.getLinks().add(new Link().withRel(Relations.SELF).withHref(uriInfo.getRequestUri().toString()));
+        for (String id : alternativeIdentifiers) {
+            DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
+            if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
+                reference)) {
+                continue;
+            }
+            result.getPatients().add(createAlternative(reference.getName(), uriInfo));
+        }
+        return result;
+    }
+
+    @Override
+    public Alternative createAlternative(String id, UriInfo uriInfo)
+    {
+        Alternative result = new Alternative();
+        result.withId(id);
+        result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD).withHref(
+            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(id).toString()));
         return result;
     }
 }
