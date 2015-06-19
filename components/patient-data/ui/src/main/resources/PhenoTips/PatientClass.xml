@@ -889,20 +889,6 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </negative_prenatal_phenotype>
-    <normal_delivery>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>normal_delivery</name>
-      <number>52</number>
-      <prettyName>This patient was delivered normally</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </normal_delivery>
     <omim_id>
       <cache>0</cache>
       <classname/>

@@ -334,19 +334,16 @@
     "categories" : ["HP:0001197"],
     "data"       : [
       {
-        "type"  : "subsection",
-        "id"    : "HP:0001197",
+        "type"  : "conditionalSubsection",
+        "id"    : "HP:0001787",
         "group_type" : "multi-select",
-        "title" : "Delivery Mode",
+        "title" : "Abnormal delivery (Non-SVD)",
         "data"  : [
           {"id" : "HP:0030369"},
           {"id" : "HP:0005268"},
           {"id" : "HP:0001623"},
           {"id" : "HP:0011410"},
-          {"id" : "HP:0011411"},
-          {"id" : "HP:0011412"},
           {"id" : "HP:0030365"},
-          {"id" : "HP:0030366"}
         ]
       },
       {"id" : "HP:0001562"},
