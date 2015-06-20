@@ -33,6 +33,7 @@
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
     <!-- There are no sources to cover -->
     <coverage.instructionRatio>0</coverage.instructionRatio>
+    <jacoco.skip>true</jacoco.skip>
   </properties>
 
   <dependencies>
