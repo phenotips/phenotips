@@ -36,7 +36,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>Allows attaching VCF files to patient records.</content>
   <class>
     <name>PhenoTips.VCF</name>
