@@ -21,6 +21,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
+import org.phenotips.data.rest.Relations;
+import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
 
@@ -147,6 +149,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
                     }
                 }
             }
+            result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
         } catch (Exception ex) {
             this.logger.error("Failed to list patients: {}", ex.getMessage(), ex);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
