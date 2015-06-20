@@ -40,7 +40,7 @@ import javax.ws.rs.core.UriInfo;
 public interface DomainObjectFactory
 {
     /**
-     * Create the REST representation for a {@link Patient}'s summary.
+     * Create the REST representation for a {@link Patient}'s summary, starting from an actual Patient object.
      *
      * @param patient the patient to serialize
      * @param uriInfo the URI information for the rest system and the current request
@@ -48,6 +48,17 @@ public interface DomainObjectFactory
      *         the patient data fails
      */
     PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo);
+
+    /**
+     * Create the REST representation for a {@link Patient}'s summary, starting from the raw values needed for the
+     * summary.
+     *
+     * @param summaryData the needed patient information to serialize
+     * @param uriInfo the URI information for the rest system and the current request
+     * @return a patient summary, or {@code null} if the current user doesn't have access to the patient or accessing
+     *         the patient data fails
+     */
+    PatientSummary createPatientSummary(Object[] summaryData, UriInfo uriInfo);
 
     /**
      * Create the REST representation for a list of links to {@link Patient}s.

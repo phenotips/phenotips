@@ -36,6 +36,7 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,6 +44,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -100,6 +102,33 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         result.withLastModifiedOn(new DateTime(doc.getDate()).withZone(DateTimeZone.UTC));
         Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
             uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patient.getId()).toString());
+        result.getLinks().add(l);
+        return result;
+    }
+
+    @Override
+    public PatientSummary createPatientSummary(Object[] summaryData, UriInfo uriInfo)
+    {
+        if (summaryData == null || summaryData.length != 7
+            || !(summaryData[3] instanceof Date && summaryData[6] instanceof Date)) {
+            return null;
+        }
+        PatientSummary result = new PatientSummary();
+        User currentUser = this.users.getCurrentUser();
+        DocumentReference doc = this.stringResolver.resolve(String.valueOf(summaryData[0]));
+
+        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(), doc)) {
+            return null;
+        }
+
+        result.withId(doc.getName()).withEid(StringUtils.defaultString((String) summaryData[1]));
+        result.withCreatedBy(String.valueOf(summaryData[2])).withLastModifiedBy(
+            String.valueOf(summaryData[5]));
+        result.withVersion(String.valueOf(summaryData[4]));
+        result.withCreatedOn(new DateTime(summaryData[3]).withZone(DateTimeZone.UTC));
+        result.withLastModifiedOn(new DateTime(summaryData[6]).withZone(DateTimeZone.UTC));
+        Link l = new Link().withRel(Relations.PATIENT_RECORD).withHref(
+            uriInfo.getBaseUriBuilder().path(PatientResource.class).build(doc.getName()).toString());
         result.getLinks().add(l);
         return result;
     }
