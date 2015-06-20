@@ -21,6 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
+import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
 
 import org.xwiki.component.annotation.Component;
@@ -127,15 +128,27 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
                 safeOrder = " desc";
             }
             Query query = this.queries.createQuery(
-                "from doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                "select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                    + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
                     + safeOrderField + safeOrder, "xwql");
-            query.bindValue("t", "PatientTemplate").setOffset(start).setLimit(number);
-            List<String> records = query.execute();
-            for (String recordId : records) {
-                Patient patient = this.repository.getPatientById(recordId);
-                result.getPatientSummaries().add(this.factory.createPatientSummary(patient, this.uriInfo));
+            query.bindValue("t", "PatientTemplate");
+
+            List<Object[]> records = query.execute();
+            int skipped = 0;
+            for (Object[] record : records) {
+                PatientSummary summary = this.factory.createPatientSummary(record, this.uriInfo);
+                // Since raw queries can't take into account access rights, we must do our own paging with rights checks
+                if (summary != null) {
+                    if (++skipped > start) {
+                        result.getPatientSummaries().add(summary);
+                    }
+                    if (result.getPatientSummaries().size() >= number) {
+                        break;
+                    }
+                }
             }
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            this.logger.error("Failed to list patients: {}", ex.getMessage(), ex);
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
