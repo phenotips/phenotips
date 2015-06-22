@@ -132,7 +132,8 @@
 enabled=true
 required=
 order=4
-fields=</parameters>
+fields=
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>
