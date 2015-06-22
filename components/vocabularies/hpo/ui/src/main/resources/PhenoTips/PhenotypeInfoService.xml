@@ -36,7 +36,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>{{velocity}}
 #if ($xcontext.action != 'get')
   **Usage**: //http[s]:~/~/&lt;hostname&gt;[:&lt;port&gt;]/&lt;appname&gt;/bin/get/PhenoTips/PhenotypeInfoService?id=&lt;hpo identifier&gt;//
