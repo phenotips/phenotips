@@ -80,7 +80,7 @@ public class FamilyUtilsImpl implements FamilyUtils
 
     private static final String ALLOW = "allow";
 
-    private static final String DEFAULT_RIGHTS = "view,edit";
+    private static final String OWNER_RIGHTS = "view,edit,delete";
 
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
@@ -243,6 +243,9 @@ public class FamilyUtilsImpl implements FamilyUtils
         String nextStringId = String.format("%s%07d", PREFIX, nextId);
         EntityReference nextRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument newFamilyDoc = wiki.getDocument(nextRef, context);
+
+        User currentUser = this.userManager.getCurrentUser();
+        newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());
         if (!newFamilyDoc.isNew()) {
             throw new IllegalArgumentException("The new family id was already taken.");
         } else {
@@ -254,13 +257,12 @@ public class FamilyUtilsImpl implements FamilyUtils
             BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
             familyObject.set("identifier", nextId, context);
 
-            User currentUser = this.userManager.getCurrentUser();
             BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
             ownerObject.set("owner", currentUser.getId(), context);
 
-            BaseObject permissions = newFamilyDoc.newXObject(RIGHTS_CLASS, context);
+            BaseObject permissions = newFamilyDoc.getXObject(RIGHTS_CLASS);
             permissions.set(RIGHTS_USERS_FIELD, currentUser.getId(), context);
-            permissions.set(RIGHTS_LEVELS_FIELD, DEFAULT_RIGHTS, context);
+            permissions.set(RIGHTS_LEVELS_FIELD, OWNER_RIGHTS, context);
             permissions.set(ALLOW, 1, context);
 
             if (save) {

@@ -56,6 +56,9 @@ public interface FamilyUtils
     EntityReference RIGHTS_CLASS =
         new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
+    /** The set of rights awarded to any user that holds edit rights on any patient record that belongs to a family. */
+    String DEFAULT_RIGHTS = "view,edit";
+
     /**
      * A wrapper around {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}.
      *
