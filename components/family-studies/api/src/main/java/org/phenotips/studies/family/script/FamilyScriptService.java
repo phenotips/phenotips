@@ -66,6 +66,21 @@ public class FamilyScriptService implements ScriptService
     private Validation validation;
 
     /**
+     * Always creates a new family, with no family members.
+     * @return reference to the new family document. Can be {@link null}
+     */
+    public DocumentReference createFamily()
+    {
+        try {
+            XWikiDocument familyDoc = this.utils.createProbandlessFamilyDoc(true);
+            return familyDoc != null ? familyDoc.getDocumentReference() : null;
+        } catch (Exception ex) {
+            this.logger.error("Could not create a new blank family document: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
      * @param patientId the id of the patient to use when searching for or creating a new family

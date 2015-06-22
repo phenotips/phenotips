@@ -29,6 +29,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,8 +75,15 @@ public class FamilyUtilsImpl implements FamilyUtils
     private static final EntityReference FAMILY_TEMPLATE =
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final EntityReference RELATIVEREFERENCE =
+    private static final EntityReference RELATIVE_REFERENCE =
         new EntityReference("RelativeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final EntityReference OWNER_CLASS =
+        new EntityReference("OwnerClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final String ALLOW = "allow";
+
+    private static final String DEFAULT_RIGHTS = "view,edit";
 
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
@@ -91,9 +100,14 @@ public class FamilyUtilsImpl implements FamilyUtils
     @Inject
     private Provider<XWikiContext> provider;
 
-    /** Runs queries for finding families. */
+    /**
+     * Runs queries for finding families.
+     */
     @Inject
     private QueryManager qm;
+
+    @Inject
+    private UserManager userManager;
 
     @Inject
     @Named("current")
@@ -171,7 +185,7 @@ public class FamilyUtilsImpl implements FamilyUtils
     public Collection<String> getRelatives(XWikiDocument patientDoc) throws XWikiException
     {
         if (patientDoc != null) {
-            List<BaseObject> relativeObjects = patientDoc.getXObjects(RELATIVEREFERENCE);
+            List<BaseObject> relativeObjects = patientDoc.getXObjects(RELATIVE_REFERENCE);
             if (relativeObjects == null) {
                 return Collections.emptySet();
             }
@@ -197,19 +211,18 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public synchronized XWikiDocument createFamilyDoc(XWikiDocument patientDoc)
-        throws QueryException, XWikiException
+    public synchronized XWikiDocument createFamilyDoc(XWikiDocument patientDoc) throws QueryException, XWikiException
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
         XWikiDocument newFamilyDoc = this.createFamilyDoc(patientDoc, false);
 
-        BaseObject permissions = newFamilyDoc.getXObject(RIGHTS_CLASS);
+        BaseObject permissions = newFamilyDoc.newXObject(RIGHTS_CLASS, context);
         String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
         permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
         permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
-        permissions.set(RIGHTS_LEVELS_FIELD, "view,edit", context);
-        permissions.set("allow", 1, context);
+        permissions.set(RIGHTS_LEVELS_FIELD, DEFAULT_RIGHTS, context);
+        permissions.set(ALLOW, 1, context);
 
         this.setFamilyReference(patientDoc, newFamilyDoc, context);
 
@@ -222,6 +235,25 @@ public class FamilyUtilsImpl implements FamilyUtils
 
     @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
+        throws IllegalArgumentException, QueryException, XWikiException
+    {
+        XWikiContext context = this.provider.get();
+        XWikiDocument newFamilyDoc = createProbandlessFamilyDoc(false);
+        BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
+        // adding the creating patient as a member
+        List<String> members = new LinkedList<>();
+        members.add(probandDoc.getDocumentReference().getName());
+        familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
+
+        if (save) {
+            XWiki wiki = context.getWiki();
+            wiki.saveDocument(newFamilyDoc, context);
+        }
+        return newFamilyDoc;
+    }
+
+    @Override
+    public synchronized XWikiDocument createProbandlessFamilyDoc(boolean save)
         throws IllegalArgumentException, QueryException, XWikiException
     {
         XWikiContext context = this.provider.get();
@@ -241,10 +273,14 @@ public class FamilyUtilsImpl implements FamilyUtils
             BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
             familyObject.set("identifier", nextId, context);
 
-            // adding the creating patient as a member
-            List<String> members = new LinkedList<>();
-            members.add(probandDoc.getDocumentReference().getName());
-            familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
+            User currentUser = this.userManager.getCurrentUser();
+            BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
+            ownerObject.set("owner", currentUser.getId(), context);
+
+            BaseObject permissions = newFamilyDoc.newXObject(RIGHTS_CLASS, context);
+            permissions.set(RIGHTS_USERS_FIELD, currentUser.getId(), context);
+            permissions.set(RIGHTS_LEVELS_FIELD, DEFAULT_RIGHTS, context);
+            permissions.set(ALLOW, 1, context);
 
             if (save) {
                 wiki.saveDocument(newFamilyDoc, context);

@@ -152,7 +152,7 @@ public interface FamilyUtils
      *            does not set the patient's family reference.
      * @param save if true calls {@link com.xpn.xwiki.XWiki#saveDocument(XWikiDocument, String, XWikiContext)} on the
      *            newly created family document
-     * @return a blank family document with no rights or pedigree, but with the `probandDoc` patient included in the
+     * @return a blank family document with no pedigree, but with the `probandDoc` patient included in the
      *         list of members
      * @throws XWikiException one of many possible reasons for XWiki to fail
      * @throws NamingException could happen during document creation
@@ -160,6 +160,19 @@ public interface FamilyUtils
      */
     XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException;
+
+    /**
+     * Allocates an id for a family, and uses a template to create a new document.
+     * Unlike {@link #createFamilyDoc(XWikiDocument, boolean)}, creates a family with no proband (no members).
+     *
+     * @param save if true calls {@link com.xpn.xwiki.XWiki#saveDocument(XWikiDocument, String, XWikiContext)} on the
+     *            newly created family document
+     * @return a blank family document with no pedigree
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
+     */
+    XWikiDocument createProbandlessFamilyDoc(boolean save) throws NamingException, QueryException, XWikiException;
 
     /**
      * Gets the reference to the document of a family that the patient belongs to.
