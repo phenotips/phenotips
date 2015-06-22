@@ -42,6 +42,7 @@ import javax.inject.Singleton;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -62,6 +63,9 @@ import net.sf.json.JSONObject;
 @Singleton
 public class ProcessingImpl implements Processing
 {
+    @Inject
+    private Logger logger;
+
     @Inject
     private PatientRepository patientRepository;
 
@@ -223,7 +227,13 @@ public class ProcessingImpl implements Processing
             XWikiException
     {
         XWikiContext context = this.provider.get();
-        BaseObject rightsObject = familyDocument.getXObject(FamilyUtils.RIGHTS_CLASS);
+        BaseObject rightsObject = getDefaultRightsObject(familyDocument);
+        if (rightsObject == null) {
+            logger.error("Could not find a permission object attached to the family document "
+                + familyDocument.getDocumentReference().getName());
+            return;
+        }
+
         Set<String> usersUnion = new HashSet<>();
         Set<String> groupsUnion = new HashSet<>();
         for (String patientId : patientIds) {
@@ -235,8 +245,23 @@ public class ProcessingImpl implements Processing
         }
         rightsObject.set("users", setToString(usersUnion), context);
         rightsObject.set("groups", setToString(groupsUnion), context);
-        rightsObject.set("levels", "view,edit", context);
         rightsObject.set("allow", 1, context);
+    }
+
+    /**
+     * A document can have several rights objects.
+     *
+     * @return XWiki {@link BaseObject} that corresponds to the default rights
+     */
+    private BaseObject getDefaultRightsObject(XWikiDocument doc)
+    {
+        List<BaseObject> rights = doc.getXObjects(FamilyUtils.RIGHTS_CLASS);
+        for (BaseObject single : rights) {
+            if (StringUtils.equalsIgnoreCase(single.getStringValue("levels"), FamilyUtils.DEFAULT_RIGHTS)) {
+                return single;
+            }
+        }
+        return null;
     }
 
     private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException
