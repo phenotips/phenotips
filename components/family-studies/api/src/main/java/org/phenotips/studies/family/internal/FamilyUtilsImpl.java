@@ -301,11 +301,11 @@ public class FamilyUtilsImpl implements FamilyUtils
                 Object groupAccessObject = rights.getField(RIGHTS_GROUPS_FIELD);
                 if (userAccessObject != null) {
                     String[] usersAccess = ((LargeStringProperty) userAccessObject).getValue().split(COMMA);
-                    users.addAll(Arrays.asList(usersAccess));
+                    users.addAll(removeEmptyFromArray(usersAccess));
                 }
                 if (groupAccessObject != null) {
                     String[] groupsAccess = ((LargeStringProperty) groupAccessObject).getValue().split(COMMA);
-                    groups.addAll(Arrays.asList(groupsAccess));
+                    groups.addAll(removeEmptyFromArray(groupsAccess));
                 }
             }
         }
@@ -313,6 +313,16 @@ public class FamilyUtilsImpl implements FamilyUtils
         fullRights.add(users);
         fullRights.add(groups);
         return fullRights;
+    }
+
+    private List<String> removeEmptyFromArray(String[] array) {
+        List<String> cleanList = new LinkedList<>();
+        for (String element : array) {
+            if (StringUtils.isNotBlank(element)) {
+                cleanList.add(element);
+            }
+        }
+        return cleanList;
     }
 
     @Override
