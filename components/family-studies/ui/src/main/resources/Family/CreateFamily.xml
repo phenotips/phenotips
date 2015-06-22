@@ -38,7 +38,6 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-  #if ("$!{request.patient_id}" != '')
     {{html wiki="true"}}
       &lt;form&gt;
 
@@ -55,13 +54,18 @@
       &lt;/form&gt;
     {{/html}}
     #if ("$!{request.confirmation}" == 'true')
-	  #set ($family = $services.families.createFamily($request.patient_id))
+			#if ("$!{request.patient_id}" != '')
+				#set ($family = $services.families.createFamily($request.patient_id))
+        #set ($failureUrl = "data.${request.patient_id}")
+			#else
+				#set ($family = $services.families.createFamily())
+        #set ($failureUrl = "data.WebHome")
+			#end
 	  #if ("$!{family}" != '')
 	    $response.sendRedirect($xwiki.getURL($family, 'edit'))
 	  #else
-	    $response.sendRedirect($xwiki.getURL("data.${request.patient_id}", 'edit'))
+	    $response.sendRedirect($xwiki.getURL($failureUrl, 'view'))
 	  #end
-	#end
   #end
 {{/velocity}}</content>
 </xwikidoc>
