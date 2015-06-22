@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 
 import org.xwiki.model.EntityType;
@@ -191,6 +192,30 @@ public final class PedigreeUtils
             }
         } catch (XWikiException ex) {
             // do nothing
+        }
+    }
+
+
+    /**
+     * A patient can either have their own pedigree or a family pedigree (if they belong to one).
+     *
+     * @param anchorId a valid family or patient id
+     * @param utils an instance of {@link FamilyUtils} for working with XWiki
+     * @return data portion of a pedigree, which could be the family pedigree or the patient's own pedigree
+     * @throws XWikiException can occur while getting patient document or family document
+     */
+    public static JSON getPedigree(String anchorId, FamilyUtils utils) throws XWikiException
+    {
+        XWikiDocument docWithPedigree = utils.getFamily(anchorId);
+        if (docWithPedigree == null) {
+            // either anchor id is invalid or it is a patient id
+            docWithPedigree = utils.getFromDataSpace(anchorId);
+        }
+        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
+        if (pedigree != null && !pedigree.isEmpty()) {
+            return pedigree.getData();
+        } else {
+            return new JSONObject(true);
         }
     }
 

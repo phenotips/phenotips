@@ -20,6 +20,7 @@ package org.phenotips.studies.family.script;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -147,7 +148,7 @@ public class FamilyScriptService implements ScriptService
     public JSON getPedigree(String id)
     {
         try {
-            return utils.getPedigree(id);
+            return PedigreeUtils.getPedigree(id, utils);
         } catch (XWikiException ex) {
             this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
                 id, ex.getMessage());

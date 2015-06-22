@@ -35,8 +35,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import net.sf.json.JSON;
-
 /**
  * Utility methods for manipulating families.
  *
@@ -97,15 +95,6 @@ public interface FamilyUtils
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getFamily(String anchorId) throws XWikiException;
-
-    /**
-     * A patient can either have their own pedigree or a family pedigree (if they belong to one).
-     *
-     * @param anchorId a valid family or patient id
-     * @return data portion of a pedigree, which could be the family pedigree or the patient's own pedigree
-     * @throws XWikiException can occur while getting patient document or family document
-     */
-    JSON getPedigree(String anchorId) throws XWikiException;
 
     /**
      * Interfaces with the old family studies, which recorded external patient id and relationship to the `patient`.
