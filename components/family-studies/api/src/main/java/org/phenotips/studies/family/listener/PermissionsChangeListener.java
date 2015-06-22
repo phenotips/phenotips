@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.events.PatientChangedEvent;
+import org.phenotips.data.events.PatientDeletedEvent;
 import org.phenotips.data.events.PatientDeletingEvent;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
@@ -66,7 +67,7 @@ public class PermissionsChangeListener extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PermissionsChangeListener()
     {
-        super("family-studies-permissions-listener", new PatientChangedEvent(), new PatientDeletingEvent());
+        super("family-studies-permissions-listener", new PatientChangedEvent(), new PatientDeletedEvent());
     }
 
     @Override
