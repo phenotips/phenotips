@@ -395,8 +395,7 @@
       <picker>0</picker>
       <prettyName>extended_negative_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator>
-</separator>
+      <separator/>
       <separators/>
       <size>1</size>
       <sort>none</sort>
