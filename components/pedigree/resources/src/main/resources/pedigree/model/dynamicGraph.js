@@ -1244,9 +1244,9 @@ DynamicPositionedGraph.prototype = {
                 moved.push(v);
             }
         }
-        
+
         var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
-        
+
         moved = moved.concat(movedNodes);
         moved = filterUnique(moved);
         removeFirstOccurrenceByValue(moved, placeholderId);
@@ -1367,7 +1367,7 @@ DynamicPositionedGraph.prototype = {
 
         return {"moved": movedNodes};
     },
-    
+
     updateYPositioning: function ()
     {
         var positionsBefore  = this.DG.positions; //.slice(0); not changing, no need to copy
@@ -1391,7 +1391,7 @@ DynamicPositionedGraph.prototype = {
         var removedNodes = this._getAllNodes(1);  // all nodes from 1 and up
 
         var emptyGraph = (this.DG.GG.getNumVertices() == 0);
-                
+
         var node0properties = emptyGraph ? {} : this.getProperties(0);
 
         // it is easier to create abrand new graph transferirng node 0 propertie sthna to remove on-by-one
@@ -1405,7 +1405,7 @@ DynamicPositionedGraph.prototype = {
 
         if (emptyGraph)
             return {"new": [0], "makevisible": [0]};
-            
+
         return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
     },
 
@@ -1477,28 +1477,28 @@ DynamicPositionedGraph.prototype = {
                 this.deleteEmptyProperty(i, "carrierStatus");
                 this.deleteEmptyProperty(i, "comments");
                 this.deleteEmptyProperty(i, "disorders");
-            }            
+            }
          }
     },
-    
-    deleteEmptyProperty: function(nodeID, propName) {        
+
+    deleteEmptyProperty: function(nodeID, propName) {
         if (this.DG.GG.properties[nodeID].hasOwnProperty(propName)) {
             if (Object.prototype.toString.call(this.DG.GG.properties[nodeID][propName]) === '[object Array]' &&
                 this.DG.GG.properties[nodeID][propName].length == 0) {
                 delete this.DG.GG.properties[nodeID][propName];
-            } else if (this.DG.GG.properties[nodeID][propName] == "") { 
+            } else if (this.DG.GG.properties[nodeID][propName] == "") {
                 delete this.DG.GG.properties[nodeID][propName];
             }
         }
     },
-    
+
     toJSONObject: function ()
     {
         this.stripUnusedProperties();
-        
+
         //var timer = new Timer();
         var output = {};
-        
+
         // note: when saving positioned graph, need to save the version of the graph which has virtual edge pieces
         output["GG"] = this.DG.GG.serialize();
 
@@ -1556,9 +1556,9 @@ DynamicPositionedGraph.prototype = {
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         } else if (importType == "simpleJSON") {
             var baseGraph = PedigreeImport.initFromSimpleJSON(importString);
-            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes            
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         }  else if (importType == "phenotipsJSON") {
-            
+
             // TODO
         }
 
