@@ -20,13 +20,12 @@ package org.phenotips.studies.family.script;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal.FamilyInformation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,7 +37,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -65,6 +63,9 @@ public class FamilyScriptService implements ScriptService
 
     @Inject
     private Validation validation;
+
+    @Inject
+    private FamilyInformation familyInformation;
 
     /**
      * Always creates a new family, with no family members.
@@ -131,7 +132,7 @@ public class FamilyScriptService implements ScriptService
         try {
             XWikiDocument doc = this.utils.getFromDataSpace(id);
             XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
-            return familyInfoResponse(familyDoc, this.utils.getFamilyMembers(familyDoc));
+            return familyInformation.getResponse(familyDoc);
         } catch (XWikiException ex) {
             this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
             return new JSONObject(true);
@@ -194,24 +195,5 @@ public class FamilyScriptService implements ScriptService
         } catch (Exception ex) {
             return new JSONObject(true);
         }
-    }
-
-    private JSON familyInfoResponse(XWikiDocument family, List<String> members) throws XWikiException
-    {
-        JSONObject json = new JSONObject();
-        json.put("familyPage", family == null ? null : family.getDocumentReference().getName());
-        json.put("warning", utils.getWarningMessage(family));
-
-        JSONArray membersJson = new JSONArray();
-        for (String member : members) {
-            JSONObject memberJson = new JSONObject();
-            memberJson.put("id", member);
-            memberJson.put("identifier", "");
-            memberJson.put("name", "");
-            membersJson.add(memberJson);
-        }
-        json.put("familyMembers", membersJson);
-
-        return json;
     }
 }
