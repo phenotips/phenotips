@@ -229,6 +229,8 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        var sex = "M";
        if (pedigree.GG.properties[i]["gender"] == "F") {
            sex = "F";
+       } else if (pedigree.GG.properties[i]["gender"] == "O") {
+           sex = "U";
        } else if (pedigree.GG.properties[i]["gender"] == "U") {
            // check partner gender(s) and if possible assign the opposite gender
            var possibleGenders = dynamicPedigree.getPossibleGenders(i);
@@ -410,6 +412,8 @@ PedigreeExport.convertProperty = function(internalPropertyName, value) {
             value = "male";
         else if (value == "F")
             value = "female";
+        else if (value == "O")
+            value = "other";
         else
             value = "unknown";
     }

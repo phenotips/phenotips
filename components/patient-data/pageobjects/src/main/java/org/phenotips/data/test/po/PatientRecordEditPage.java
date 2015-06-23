@@ -52,6 +52,9 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "xwiki-form-gender-0-1")
     WebElement genderFemale;
 
+    @FindBy(id = "xwiki-form-gender-0-2")
+    WebElement genderOther;
+
     @FindBy(id = "HFamilyhistory")
     WebElement familyHistorySectionTitle;
 
@@ -621,6 +624,12 @@ public class PatientRecordEditPage extends InlinePage
     public void setFemaleGender()
     {
         this.genderFemale.click();
+        this.body.click();
+    }
+
+    public void setOtherGender()
+    {
+        this.genderOther.click();
         this.body.click();
     }
 

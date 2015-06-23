@@ -550,7 +550,7 @@ DynamicPositionedGraph.prototype = {
         // returns: - any gender if no partners or all partners are of unknown genders;
         //          - opposite of the partner gender if partner genders do not conflict
         //          - "U" if has partners of different genders (for now this is suported)
-        var possible = {"M": true, "F": true, "U": true};
+        var possible = {"M": true, "F": true, "O": true, "U": true};
 
         var partners = this.DG.GG.getAllPartners(v);
 
