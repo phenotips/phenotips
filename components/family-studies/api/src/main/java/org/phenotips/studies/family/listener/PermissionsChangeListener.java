@@ -19,7 +19,6 @@ package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.events.PatientChangedEvent;
 import org.phenotips.data.events.PatientDeletedEvent;
-import org.phenotips.data.events.PatientDeletingEvent;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 
@@ -79,7 +78,7 @@ public class PermissionsChangeListener extends AbstractEventListener
             XWikiDocument familyDoc = utils.getFamilyDoc(doc);
             if (familyDoc != null) {
                 List<String> members = utils.getFamilyMembers(familyDoc);
-                if (event instanceof PatientDeletingEvent) {
+                if (event instanceof PatientDeletedEvent) {
                     members.remove(doc.getDocumentReference().getName());
                     utils.setFamilyMembers(familyDoc, members);
                 }

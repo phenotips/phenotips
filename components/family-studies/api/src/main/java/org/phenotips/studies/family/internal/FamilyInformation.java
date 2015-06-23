@@ -108,11 +108,8 @@ public class FamilyInformation
     {
         private JSONObject json = new JSONObject();
 
-        private String id;
-
         public FamilyMemberInformationJson setId(String id)
         {
-            this.id = id;
             this.json.put("id", id);
             return this;
         }
@@ -133,7 +130,7 @@ public class FamilyInformation
 
         public FamilyMemberInformationJson setPermissions(FamilyMemberPermissionsJson permissions)
         {
-            this.json.put("permisssions", permissions.getJson());
+            this.json.put("permissions", permissions.getJson());
             return this;
         }
     }
