@@ -275,7 +275,10 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this.unmark();
         this._genderGraphics && this._genderGraphics.remove();
 
-        this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;
+        var gender = this.getNode().getGender();
+        this._shapeRadius = (gender == 'U' || gender == 'O') ?
+            PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) :
+            PedigreeEditor.attributes.radius;
         if (this.getNode().isPersonGroup())
             this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;
 
@@ -284,7 +287,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             y      = this.getY(),
             radius = this._shapeRadius;
 
-        if (this.getNode().getGender() == 'F') {
+        if (gender == 'F') {
             shape = editor.getPaper().circle(x, y, radius);
         }
         else {
@@ -292,13 +295,16 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
         }
 
-        if (this.getNode().getGender() == 'U') {
+        if (gender == 'U') {
             shape.attr(PedigreeEditor.attributes.nodeShapeDiag);
             shape.attr({transform: "...R45"});
-        } else if (this.getNode().getGender() == 'M') {
+        } else if (gender == 'O') {
+            shape.attr(PedigreeEditor.attributes.nodeShapeOther);
+            shape.attr({transform: "...R45"});
+        } else if (gender == 'M') {
             shape.attr(PedigreeEditor.attributes.nodeShapeMale);
             //shape.node.setAttribute("shape-rendering","crispEdges");
-        } else if (this.getNode().getGender() == 'F') {
+        } else if (gender == 'F') {
             shape.attr(PedigreeEditor.attributes.nodeShapeFemale);
         }
 

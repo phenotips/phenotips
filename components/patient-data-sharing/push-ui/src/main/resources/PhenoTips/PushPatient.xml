@@ -823,7 +823,12 @@
         return new Element('dd').insert(id);
     },
     __displaySex : function(sex) {
-        return new Element('dd').insert((sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" : (sex == "M" ? "$services.localization.render('phenotips.PushPatient.male')" : "$services.localization.render('phenotips.PushPatient.unknown')"));
+        console.log("push patient");
+        return new Element('dd').insert(
+           (sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" :
+           (sex == "M") ? "$services.localization.render('phenotips.PushPatient.male')" :
+           (sex == "O") ? "$services.localization.render('phenotips.PushPatient.other')" :
+           "$services.localization.render('phenotips.PushPatient.unknown')");
     },
 
     __displayFeatures : function(features) {

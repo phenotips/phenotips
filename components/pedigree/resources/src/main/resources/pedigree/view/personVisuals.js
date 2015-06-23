@@ -70,13 +70,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 shape.attr("stroke-width", 5);
             }
 
-            if(this.getNode().getGender() == 'U') {
+            var gender = this.getNode().getGender();
+            if(gender == 'U' || gender == 'O') {
                 this._genderGraphics = shape;
             }
             else {
                 x = this.getX();
                 y = this.getY() + radius/1.4;
-                var text = (this.getNode().getGender() == 'M') ? "Male" : "Female";
+                var text = (gender == 'M') ? "Male" : "Female";
                 var genderLabel = editor.getPaper().text(x, y, text).attr(PedigreeEditor.attributes.label);
                 this._genderGraphics = editor.getPaper().set(shape, genderLabel);
             }

@@ -8,7 +8,7 @@
  * @constructor
  * @param {Number} x The x coordinate on the canvas
  * @param {Number} y The y coordinate on the canvas
- * @param {String} gender Can be "M", "F", or "U"
+ * @param {String} gender Can be "M", "F", "O" or "U"
  * @param {Number} [id] The id of the node
  */
 
@@ -37,19 +37,22 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /**
-     * Reads a string of input and converts it into the standard gender format of "M","F" or "U".
+     * Reads a string of input and converts it into the standard gender format of "M","F","O" or "U".
      * Defaults to "U" if string is not recognized
      *
      * @method parseGender
      * @param {String} gender The string to be parsed
-     * @return {String} the gender in the standard form ("M", "F", or "U")
+     * @return {String} the gender in the standard form ("M", "F", "O" or "U")
      */
     parseGender: function(gender) {
-        return (gender.toUpperCase() == 'M' || gender.toUpperCase() == 'F') ? gender.toUpperCase() : 'U';
+        var genderUpperCase = gender.toUpperCase();
+        return (genderUpperCase == 'M'
+           || genderUpperCase == 'F'
+           || genderUpperCase == 'O') ? genderUpperCase : 'U';
     },
 
     /**
-     * Returns "U", "F" or "M" depending on the gender of this node
+     * Returns "U", "F", "O" or "M" depending on the gender of this node
      *
      * @method getGender
      * @return {String}
@@ -69,7 +72,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Updates the gender of this node
      *
      * @method setGender
-     * @param {String} gender Should be "U", "F", or "M" depending on the gender
+     * @param {String} gender Should be "U", "F", "O" or "M" depending on the gender
      */
     setGender: function(gender) {
         var gender = this.parseGender(gender);

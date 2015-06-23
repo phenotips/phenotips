@@ -60,6 +60,8 @@ PedigreeImport.initFromPhenotipsInternal = function(inputG)
                  var genderString = inputG[v]["gender"].toLowerCase();
                  if( genderString == "female" || genderString == "f")
                     properties["gender"] = "F";
+                 if( genderString == "other" || genderString == "o")
+                    properties["gender"] = "O";
                 else if( genderString == "male" || genderString == "m")
                     properties["gender"] = "M";
             }
@@ -639,7 +641,7 @@ PedigreeImport.validateBaseGraph = function(newG)
  *   - "lastNameAtBirth": string (default: none)
  *   - "comments": string (default: none)
  *   - "externalId": string (default: none)
- *   - "sex": one of "male" or "m", "female" or "f", "unknown" or "u" (default: "unknown")
+ *   - "sex": one of "male" or "m", "female" or "f", "other" or "o", "unknown" or "u" (default: "unknown")
  *   - "twinGroup": integer. All children of the sam eparents with the same twin group are considered twins. (fefault: none)
  *   - "monozygotic": boolean. (only applicable for twins)
  *   - "adoptedIn": boolean (default: false)
@@ -718,6 +720,8 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
                        properties["gender"] = "F";
                    else if( genderString == "male" || genderString == "m")
                        properties["gender"] = "M";
+                   else if( genderString == "other" || genderString == "o")
+                       properties["gender"] = "O";
                } else if (property == "id") {
                    if (externalIDToID.hasOwnProperty(value)) {
                        throw "Unable to import pedigree: multiple persons with the same ID [" + value + "]";
