@@ -15,7 +15,7 @@
 var AbstractPerson = Class.create(AbstractNode, {
 
     initialize: function($super, x, y, gender, id) {
-    	//console.log("abstract person");            
+    	//console.log("abstract person");
         this._gender = this.parseGender(gender);
         this._adoptedStatus = "";
         !this._type && (this._type = "AbstractPerson");
@@ -60,11 +60,11 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /**
      * @method isPersonGroup
-     */    
+     */
     isPersonGroup: function() {
         return (this._type == "PersonGroup");
     },
-    
+
     /**
      * Updates the gender of this node
      *
@@ -108,7 +108,7 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /**
      * Returns an object containing all the properties of this node
-     * except id, x, y & type 
+     * except id, x, y & type
      *
      * @method getProperties
      * @return {Object} in the form
@@ -135,9 +135,9 @@ var AbstractPerson = Class.create(AbstractNode, {
             return false;
         if (!properties.gender)
             return false;
-        
+
         if(this.getGender() != this.parseGender(properties.gender))
-            this.setGender(properties.gender);        
+            this.setGender(properties.gender);
         return true;
     }
 });
