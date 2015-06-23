@@ -823,7 +823,6 @@
         return new Element('dd').insert(id);
     },
     __displaySex : function(sex) {
-        console.log("push patient");
         return new Element('dd').insert(
            (sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" :
            (sex == "M") ? "$services.localization.render('phenotips.PushPatient.male')" :
