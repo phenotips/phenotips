@@ -18,6 +18,7 @@
 package org.phenotips.data.rest.internal;
 
 import org.junit.Rule;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.xwiki.users.UserManager;
 import javax.ws.rs.core.UriInfo;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DefaultDomainObjectFactoryTest {
@@ -61,14 +63,27 @@ public class DefaultDomainObjectFactoryTest {
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+
+
+        when(this.users.getCurrentUser()).thenReturn(null);
     }
 
     @Test
-    public void canCreatePatientSummaryProperly() throws ComponentLookupException
+    public void cannotCreatePatientWithNoAccess() throws ComponentLookupException
     {
         when(this.patient.getDocument()).thenReturn(null);
         when(this.users.getCurrentUser()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
+    }
+
+    @Test
+    public void createPatientDocumentExceptionReturnsNull() throws Exception
+    {
+        DocumentReference documentReference = mock(DocumentReference.class);
+        when(this.patient.getDocument()).thenReturn(documentReference);
+        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
+        when(this.documentAccessBridge.getDocument(documentReference)).thenThrow(Exception.class);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
 }
