@@ -29,11 +29,23 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.environment.Environment;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.CoreDescriptor;
+import org.apache.solr.core.SolrCore;
 
 /**
  * Default implementation for the {@link SolrVocabularyResourceManager} component.
@@ -51,6 +63,8 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     /** @see #getTermCache() */
     private Cache<VocabularyTerm> cache;
 
+    private SolrCore score;
+
     /** Provides access to the Solr cores. */
     @Inject
     private SolrCoreContainerHandler cores;
@@ -59,16 +73,84 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     @Inject
     private CacheManager cacheFactory;
 
+    @Inject
+    private Environment environment;
+
     @Override
     public void initialize(String vocabularyName) throws InitializationException
     {
+        // Get jars home path to where the jar resources are stored
+        Class<DefaultSolrVocabularyResourceManager> clazz = DefaultSolrVocabularyResourceManager.class;
+        String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String jarsHome = jarPath.substring(0, jarPath.lastIndexOf('/'));
+        // Get data Solr home path
+        File solrHome = new File(this.environment.getPermanentDirectory().getAbsolutePath(), "solr");
+        File dest = solrHome;
+
+        CoreContainer container = this.cores.getContainer();
+
+        // Check if the core doesn't exist already
+        if (container.getCore(vocabularyName) != null) {
+            return;
+        }
+
         try {
-            this.core = new EmbeddedSolrServer(this.cores.getContainer(), vocabularyName);
+            File dir = new File(jarsHome);
+            File[] directoryListing = dir.listFiles();
+
+            if (directoryListing == null) {
+                return;
+            }
+
+            for (File file : directoryListing) {
+                JarFile jar = new JarFile(file);
+                String jarName = jar.getName().substring(jarsHome.length());
+                if ("jar".equals(FilenameUtils.getExtension(file.toPath().toString()))
+                    && jarName.startsWith("vocabulary-" + vocabularyName)) {
+                    copyConfigsFromJar(jar, vocabularyName, dest);
+                }
+            }
+
+            CoreDescriptor dcore =
+                new CoreDescriptor(container, vocabularyName, solrHome.toPath().resolve(vocabularyName).toString());
+
+            this.core = new EmbeddedSolrServer(container, vocabularyName);
+
+            this.score = container.create(dcore);
+
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid Solr core: " + ex.getMessage());
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
+        } catch (IOException ex) {
+            throw new InitializationException("Invalid Solr resource: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Copy configuration files from a jar file specified by jar to a destination folder on the filesystem dest.
+     *
+     * @param jar the jar file
+     * @param vocabularyName the name of the vocabulary being managed
+     * @param dest the destination
+     * @throws IOException
+     */
+    private static void copyConfigsFromJar(JarFile jar, String vocabularyName, File dest) throws IOException
+    {
+        // return if vocabulary directory already exists
+        if (Files.isDirectory(dest.toPath().resolve(vocabularyName))) {
+            return;
+        }
+
+        for (JarEntry entry : Collections.list(jar.entries())) {
+            if (entry.getName().startsWith(vocabularyName)) {
+                if (entry.isDirectory()) {
+                    Files.createDirectories(dest.toPath().resolve(entry.getName()));
+                } else {
+                    Files.copy(jar.getInputStream(entry), dest.toPath().resolve(entry.getName()));
+                }
+            }
         }
     }
 
@@ -82,5 +164,15 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     public SolrClient getSolrConnection()
     {
         return this.core;
+    }
+
+    /**
+     * Get the Solr core of the vocabulary.
+     *
+     * @return a Solr core
+     */
+    public SolrCore getSolrCore()
+    {
+        return this.score;
     }
 }
