@@ -17,15 +17,19 @@
  */
 package org.phenotips.studies.family.script;
 
+import org.phenotips.studies.family.FamilyInformation;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
-import org.phenotips.studies.family.internal.FamilyInformation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -132,7 +136,7 @@ public class FamilyScriptService implements ScriptService
         try {
             XWikiDocument doc = this.utils.getFromDataSpace(id);
             XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
-            return familyInformation.getResponse(familyDoc);
+            return familyInformation.getBasicInfo(familyDoc);
         } catch (XWikiException ex) {
             this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
             return new JSONObject(true);
@@ -194,6 +198,21 @@ public class FamilyScriptService implements ScriptService
             return this.processing.processPatientPedigree(anchorId, JSONObject.fromObject(json), image).asProcessing();
         } catch (Exception ex) {
             return new JSONObject(true);
+        }
+    }
+
+    /**
+     * Family page should aggregate medical reports of all its members.
+     * @param familyDoc to determine which patients' reports should be included
+     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
+     */
+    public Map<String, Iterator<Map.Entry<String, String>>> getReports(XWikiDocument familyDoc)
+    {
+        try {
+            return familyInformation.getMedicalReports(familyDoc);
+        } catch (Exception ex) {
+            logger.error("Could not retrieve medical reports from all members of the family. {}", ex.getMessage());
+            return new HashMap<>();
         }
     }
 }
