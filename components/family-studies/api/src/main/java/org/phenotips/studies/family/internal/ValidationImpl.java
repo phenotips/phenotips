@@ -74,6 +74,10 @@ public class ValidationImpl implements Validation
     @Named("edit")
     private AccessLevel editAccess;
 
+    @Inject
+    @Named("view")
+    private AccessLevel viewAccess;
+
     /**
      * Checks if the patient is already present within the family members list.
      */
@@ -168,9 +172,19 @@ public class ValidationImpl implements Validation
     public boolean hasPatientEditAccess(String patientId)
     {
         User currentUser = this.userManager.getCurrentUser();
-        PatientAccess patientAccess =
-            this.permissionsManager.getPatientAccess(patientRepository.getPatientById(patientId));
-        AccessLevel patientAccessLevel = patientAccess.getAccessLevel(currentUser.getProfileDocument());
-        return patientAccessLevel.compareTo(this.editAccess) >= 0;
+        return hasPatientAccess(patientRepository.getPatientById(patientId), this.editAccess, currentUser);
+    }
+
+    @Override
+    public boolean hasPatientViewAccess(Patient patient, User user)
+    {
+        return hasPatientAccess(patient, this.viewAccess, user);
+    }
+
+    private boolean hasPatientAccess(Patient patient, AccessLevel accessLevel, User user)
+    {
+        PatientAccess patientAccess = this.permissionsManager.getPatientAccess(patient);
+        AccessLevel patientAccessLevel = patientAccess.getAccessLevel(user.getProfileDocument());
+        return patientAccessLevel.compareTo(accessLevel) >= 0;
     }
 }
