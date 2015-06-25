@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -44,7 +45,9 @@ import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -114,18 +117,16 @@ public class DefaultDomainObjectFactoryTest {
         when(this.patient.getDocument()).thenReturn(patientDocument);
         when(this.access.hasAccess(Right.VIEW, null, patientDocument)).thenReturn(true);
         when(this.documentAccessBridge.getDocument(patientDocument)).thenReturn(documentReference);
-
-        when(creatorDocument.toString()).thenReturn("creator");
-
         when(this.patient.getId()).thenReturn("id");
         when(this.patient.getExternalId()).thenReturn("externalid");
         when(this.patient.getReporter()).thenReturn(creatorDocument);
 
+        when(creatorDocument.toString()).thenReturn("creator");
         when(documentReference.getAuthorReference()).thenReturn(creatorDocument);
         when(documentReference.getVersion()).thenReturn("version");
         when(documentReference.getCreationDate()).thenReturn(creationDate);
         when(documentReference.getDate()).thenReturn(creationDate);
-        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
         when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
         when(uriBuilder.build("id")).thenReturn(uri);
 
@@ -177,8 +178,8 @@ public class DefaultDomainObjectFactoryTest {
 
         when(this.stringResolver.resolve("doc")).thenReturn(documentReference);
         when(this.access.hasAccess(Right.VIEW, null, documentReference)).thenReturn(true);
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
 
-        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
         when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
         when(uriBuilder.build("pagename")).thenReturn(uri);
 
@@ -193,5 +194,34 @@ public class DefaultDomainObjectFactoryTest {
         assertTrue(patientSummary.getLastModifiedOn() instanceof DateTime);
         assertEquals(1, patientSummary.getLinks().size());
         assertEquals("uri", patientSummary.getLinks().get(0).getHref());
+    }
+
+    @Test
+    public void createAlternativesPerformsCorrectly() throws ComponentLookupException, URISyntaxException
+    {
+        UriBuilder uriBuilder = mock(UriBuilder.class);
+        URI uri = new URI("uri");
+        List<String> idList = new ArrayList<>();
+        idList.add("page1");
+        idList.add("page2");
+        DocumentReference doc1 = new DocumentReference("wikiname", "spacename", "page1");
+        DocumentReference doc2 = new DocumentReference("wikiname", "spacename", "page2");
+
+        when(this.uriInfo.getRequestUri()).thenReturn(uri);
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(this.stringResolver.resolve("page1", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc1);
+        when(this.stringResolver.resolve("page2", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc2);
+        when(this.access.hasAccess(Right.VIEW, null, doc1)).thenReturn(true);
+        when(this.access.hasAccess(Right.VIEW, null, doc2)).thenReturn(true);
+
+        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
+        when(uriBuilder.build("page1")).thenReturn(uri);
+        when(uriBuilder.build("page2")).thenReturn(uri);
+
+        Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
+
+        assertEquals(2, alternatives.getPatients().size());
+        assertEquals("page1", alternatives.getPatients().get(0).getId());
+        assertEquals("page2", alternatives.getPatients().get(1).getId());
     }
 }
