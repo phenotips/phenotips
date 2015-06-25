@@ -130,4 +130,26 @@ public class DefaultDomainObjectFactoryTest {
         assertEquals(1, patientSummary.getLinks().size());
         assertEquals("uri", patientSummary.getLinks().get(0).getHref());
     }
+
+    @Test
+    public void createPatientFromSummaryWrongLength() throws Exception
+    {
+        Object[] summary = {new Object()};
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
+    }
+
+    @Test
+    public void createPatientFromSummaryWrongObjectTypes() throws Exception
+    {
+        Object[] summary = {new Object(), new Object(), new Object(), new Object(), new Object(), new Object(), new Object()};
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
+    }
+
+    @Test
+    public void createPatientFromSummaryNoAccess() throws Exception
+    {
+        when(this.patient.getDocument()).thenReturn(null);
+        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));   
+    }
 }
