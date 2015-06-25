@@ -82,7 +82,7 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
         // Get jars home path to where the jar resources are stored
         Class<DefaultSolrVocabularyResourceManager> clazz = DefaultSolrVocabularyResourceManager.class;
         String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String jarsHome = jarPath.substring(0, jarPath.lastIndexOf('/'));
+        File jarFile = new File(jarPath);
         // Get data Solr home path
         File solrHome = new File(this.environment.getPermanentDirectory().getAbsolutePath(), "solr");
         File dest = solrHome;
@@ -95,8 +95,8 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
         }
 
         try {
-            File dir = new File(jarsHome);
-            File[] directoryListing = dir.listFiles();
+            File jarsDir = jarFile.getParentFile();
+            File[] directoryListing = jarsDir.listFiles();
 
             if (directoryListing == null) {
                 return;
@@ -104,8 +104,8 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
 
             for (File file : directoryListing) {
                 JarFile jar = new JarFile(file);
-                String jarName = jar.getName().substring(jarsHome.length());
-                if ("jar".equals(FilenameUtils.getExtension(file.toPath().toString()))
+                String jarName = file.getName();
+                if ("jar".equals(FilenameUtils.getExtension(jarName))
                     && jarName.startsWith("vocabulary-" + vocabularyName)) {
                     copyConfigsFromJar(jar, vocabularyName, dest);
                 }
@@ -113,18 +113,14 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
 
             CoreDescriptor dcore =
                 new CoreDescriptor(container, vocabularyName, solrHome.toPath().resolve(vocabularyName).toString());
-
             this.core = new EmbeddedSolrServer(container, vocabularyName);
-
             this.score = container.create(dcore);
-
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-        } catch (RuntimeException ex) {
-            throw new InitializationException("Invalid Solr core: " + ex.getMessage());
+
         } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
+            throw new InitializationException("Cannot create cache: ", ex);
         } catch (IOException ex) {
-            throw new InitializationException("Invalid Solr resource: " + ex.getMessage());
+            throw new InitializationException("Invalid Solr resource: ", ex);
         }
     }
 
@@ -138,11 +134,6 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
      */
     private static void copyConfigsFromJar(JarFile jar, String vocabularyName, File dest) throws IOException
     {
-        // return if vocabulary directory already exists
-        if (Files.isDirectory(dest.toPath().resolve(vocabularyName))) {
-            return;
-        }
-
         for (JarEntry entry : Collections.list(jar.entries())) {
             if (entry.getName().startsWith(vocabularyName)) {
                 if (entry.isDirectory()) {
