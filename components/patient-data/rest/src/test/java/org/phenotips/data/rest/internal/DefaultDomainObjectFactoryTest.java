@@ -224,4 +224,31 @@ public class DefaultDomainObjectFactoryTest {
         assertEquals("page1", alternatives.getPatients().get(0).getId());
         assertEquals("page2", alternatives.getPatients().get(1).getId());
     }
+
+    @Test
+    public void createTwoAlternativesOneNoAccess() throws ComponentLookupException, URISyntaxException
+    {
+        UriBuilder uriBuilder = mock(UriBuilder.class);
+        URI uri = new URI("uri");
+        List<String> idList = new ArrayList<>();
+        idList.add("page1");
+        idList.add("page2");
+        DocumentReference doc1 = new DocumentReference("wikiname", "spacename", "page1");
+        DocumentReference doc2 = new DocumentReference("wikiname", "spacename", "page2");
+
+        when(this.uriInfo.getRequestUri()).thenReturn(uri);
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(this.stringResolver.resolve("page1", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc1);
+        when(this.stringResolver.resolve("page2", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc2);
+        when(this.access.hasAccess(Right.VIEW, null, doc1)).thenReturn(true);
+        when(this.access.hasAccess(Right.VIEW, null, doc2)).thenReturn(false);
+
+        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
+        when(uriBuilder.build("page1")).thenReturn(uri);
+
+        Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
+
+        assertEquals(1, alternatives.getPatients().size());
+        assertEquals("page1", alternatives.getPatients().get(0).getId());
+    }
 }
