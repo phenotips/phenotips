@@ -30,14 +30,18 @@ import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.PatientSummary;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.UserManager;
 
+import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -58,11 +62,17 @@ public class DefaultDomainObjectFactoryTest {
     @Mock
     private UriInfo uriInfo;
 
+    private ParameterizedType stringResolverType = new DefaultParameterizedType(null, DocumentReferenceResolver.class,
+            String.class);
+
     private AuthorizationManager access;
 
     private UserManager users;
 
     private DocumentAccessBridge documentAccessBridge;
+
+    @Named("current")
+    private DocumentReferenceResolver<String> stringResolver;
 
     @Before
     public void setUp() throws ComponentLookupException {
@@ -70,6 +80,7 @@ public class DefaultDomainObjectFactoryTest {
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        this.stringResolver = this.mocker.getInstance(this.stringResolverType, "current");
 
         when(this.users.getCurrentUser()).thenReturn(null);
     }
@@ -150,6 +161,37 @@ public class DefaultDomainObjectFactoryTest {
     {
         when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
-        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));   
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
+    }
+
+    @Test
+    public void createPatientFromSummaryPerformsCorrectly() throws Exception
+    {
+        Date createdOn = new Date();
+        Date modifiedOn = new Date();
+        UriBuilder uriBuilder = mock(UriBuilder.class);
+        URI uri = new URI("uri");
+        DocumentReference documentReference = new DocumentReference("wikiname", "spacename", "pagename");
+
+        Object[] summary = {"doc", "externalid", "creator", createdOn, "version", "creator", modifiedOn};
+
+        when(this.stringResolver.resolve("doc")).thenReturn(documentReference);
+        when(this.access.hasAccess(Right.VIEW, null, documentReference)).thenReturn(true);
+
+        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
+        when(uriBuilder.build("pagename")).thenReturn(uri);
+
+        PatientSummary patientSummary = mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo);
+
+        assertEquals("pagename", patientSummary.getId());
+        assertEquals("externalid", patientSummary.getEid());
+        assertEquals("creator", patientSummary.getCreatedBy());
+        assertEquals("creator", patientSummary.getLastModifiedBy());
+        assertEquals("version", patientSummary.getVersion());
+        assertTrue(patientSummary.getCreatedOn() instanceof DateTime);
+        assertTrue(patientSummary.getLastModifiedOn() instanceof DateTime);
+        assertEquals(1, patientSummary.getLinks().size());
+        assertEquals("uri", patientSummary.getLinks().get(0).getHref());
     }
 }
