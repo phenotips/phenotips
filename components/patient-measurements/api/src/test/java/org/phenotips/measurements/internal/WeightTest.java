@@ -47,9 +47,9 @@ public class WeightTest
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().valueToPercentile(true, 0, 1000));
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToPercentile(false, 0, 0));
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().valueToPercentile(false, 0, 1000));
-        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 1000, 70.6));
-        Assert.assertEquals(37, this.mocker.getComponentUnderTest().valueToPercentile(true, 349, 67.0));
-        Assert.assertEquals(12, this.mocker.getComponentUnderTest().valueToPercentile(false, 359, 49.0));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 1000, 71.9));
+        Assert.assertEquals(32, this.mocker.getComponentUnderTest().valueToPercentile(true, 349, 67.0));
+        Assert.assertEquals(15, this.mocker.getComponentUnderTest().valueToPercentile(false, 359, 49.0));
         Assert.assertEquals(-1, this.mocker.getComponentUnderTest().valueToPercentile(true, -1, 4.0));
     }
 
@@ -58,10 +58,10 @@ public class WeightTest
     {
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 0, 3.35), 1.0E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 0, 3.23), 1.0E-2);
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 70.6), 1.0E-2);
-        Assert.assertEquals(-0.332, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 349, 67.0),
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 71.9), 1.0E-2);
+        Assert.assertEquals(-0.463, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 349, 67.0),
             1.0E-2);
-        Assert.assertEquals(-1.175, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 359, 49.0),
+        Assert.assertEquals(-1.030, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 359, 49.0),
             1.0E-2);
         Assert.assertTrue(Double.isNaN(this.mocker.getComponentUnderTest().valueToStandardDeviation(true, -1, 4.0)));
     }
@@ -75,9 +75,9 @@ public class WeightTest
         Assert.assertEquals(4.91, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 100), 1.0E-2);
         Assert.assertEquals(2.1, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 0), 1.0E-2);
         Assert.assertEquals(4.68, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 100), 1.0E-2);
-        Assert.assertEquals(70.6, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
-        Assert.assertEquals(67.0, this.mocker.getComponentUnderTest().percentileToValue(true, 349, 37), 1.0E-2);
-        Assert.assertEquals(49.04, this.mocker.getComponentUnderTest().percentileToValue(false, 359, 12), 1.0E-2);
+        Assert.assertEquals(71.9, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(68.34, this.mocker.getComponentUnderTest().percentileToValue(true, 349, 37), 1.0E-2);
+        Assert.assertEquals(47.86, this.mocker.getComponentUnderTest().percentileToValue(false, 359, 12), 1.0E-2);
     }
 
     @Test
@@ -92,10 +92,10 @@ public class WeightTest
         .assertEquals(2.1, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, -2.807), 1.0E-2);
         Assert
         .assertEquals(4.68, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807), 1.0E-2);
-        Assert.assertEquals(70.6, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
-        Assert.assertEquals(67.0, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
+        Assert.assertEquals(71.9, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
+        Assert.assertEquals(68.34, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
             1.0E-2);
-        Assert.assertEquals(49.04, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, -1.175),
+        Assert.assertEquals(47.86, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, -1.175),
             1.0E-2);
         Assert.assertEquals(0,
             this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, Integer.MIN_VALUE), 1.0E-2);
