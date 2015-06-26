@@ -59,6 +59,12 @@ public class IndexedPatientData<T> implements PatientData<T>
     }
 
     @Override
+    public int size()
+    {
+        return this.internalList.size();
+    }
+
+    @Override
     public T get(int index)
     {
         if (this.internalList == null || index < 0 || index >= this.internalList.size()) {

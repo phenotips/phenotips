@@ -60,6 +60,12 @@ public class DictionaryPatientData<T> implements PatientData<T>
     }
 
     @Override
+    public int size()
+    {
+        return this.internalMap.size();
+    }
+
+    @Override
     public T get(String name)
     {
         if (this.internalMap != null) {
