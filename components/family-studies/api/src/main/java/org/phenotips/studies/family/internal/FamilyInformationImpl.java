@@ -71,13 +71,16 @@ public class FamilyInformationImpl implements FamilyInformation
     {
         List<String> members = this.utils.getFamilyMembers(familyDoc);
         FamilyInformationJson family = new FamilyInformationJson();
+        User user = this.userManager.getCurrentUser();
         family.setFamily(familyDoc).setWarning(utils);
 
         for (String memberId : members) {
+            Patient patient = this.patientRepository.getPatientById(memberId);
             FamilyMemberInformationJson member = new FamilyMemberInformationJson();
             FamilyMemberPermissionsJson permissions = new FamilyMemberPermissionsJson();
-            permissions.setEditRights(memberId, validation);
-            member.setId(memberId).setExternalId().setName().setPermissions(permissions);
+            permissions.setViewRights(patient, user).setEditRights(patient, user);
+            member.setId(patient).setExternalId(patient).setName(patient).setMedicalReports(patient, user, this)
+                .setPermissions(permissions);
             family.addMember(member);
         }
 
@@ -85,32 +88,47 @@ public class FamilyInformationImpl implements FamilyInformation
     }
 
     @Override
-    public Map<String, Iterator<Map.Entry<String, String>>> getMedicalReports(XWikiDocument familyDoc)
+    public Map<String, Map<String, String>> getMedicalReports(XWikiDocument familyDoc)
         throws XWikiException
     {
-        Map<String, Iterator<Map.Entry<String, String>>> allFamilyLinks = new HashMap<>();
+        Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
         User currentUser = this.userManager.getCurrentUser();
         List<String> members = utils.getFamilyMembers(familyDoc);
         for (String member : members) {
             Patient patient = this.patientRepository.getPatientById(member);
-            PatientData<String> links = patient.getData("medicalreports");
-            if (this.validation.hasPatientViewAccess(patient, currentUser)) {
-                allFamilyLinks.put(patient.getId(), links.dictionaryIterator());
-            }
+            allFamilyLinks.put(patient.getId(), getMedicalReports(patient, currentUser));
         }
         return allFamilyLinks;
     }
 
+    private Map<String, String> getMedicalReports(Patient patient, User user)
+    {
+        PatientData<String> links = patient.getData("medicalreports");
+        Map<String, String> mapOfLinks = new HashMap<>();
+        if (this.validation.hasPatientViewAccess(patient, user)) {
+            if (links != null) {
+                Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    mapOfLinks.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return mapOfLinks;
+    }
+
     private static class FamilyInformationJson extends AbstractInformationJson
     {
+        private static final String FAMILY_MEMBERS = "familyMembres";
+
         private JSONArray members = new JSONArray();
 
         private XWikiDocument family;
 
         public FamilyInformationJson()
         {
-            this.json.put("familyMembers", members);
+            this.json.put(FAMILY_MEMBERS, members);
         }
 
         public FamilyInformationJson setFamily(XWikiDocument family)
@@ -129,31 +147,38 @@ public class FamilyInformationImpl implements FamilyInformation
         public FamilyInformationJson addMember(FamilyMemberInformationJson member)
         {
             members.add(member.getJson());
+            this.json.put(FAMILY_MEMBERS, members);
             return this;
         }
     }
 
     private static class FamilyMemberInformationJson extends AbstractInformationJson
     {
-        private JSONObject json = new JSONObject();
-
-        public FamilyMemberInformationJson setId(String id)
+        public FamilyMemberInformationJson setId(Patient patient)
         {
-            this.json.put("id", id);
+            this.json.put("id", patient.getId());
             return this;
         }
 
-        public FamilyMemberInformationJson setExternalId()
+        public FamilyMemberInformationJson setExternalId(Patient patient)
         {
-            // todo
-            this.json.put("identifier", "");
+            this.json.put("identifier", patient.getExternalId());
             return this;
         }
 
-        public FamilyMemberInformationJson setName()
+        public FamilyMemberInformationJson setName(Patient patient)
         {
-            // todo
-            this.json.put("name", "");
+            PatientData<String> names = patient.getData("patientName");
+
+            this.json.put("name", String.format("%s %s", nullToEmpty(names.get("first_name")),
+                nullToEmpty(names.get("last_name"))).trim());
+            return this;
+        }
+
+        public FamilyMemberInformationJson setMedicalReports(Patient patient, User user,
+            FamilyInformationImpl familyInfo)
+        {
+            this.json.put("reports", familyInfo.getMedicalReports(patient, user));
             return this;
         }
 
@@ -162,13 +187,24 @@ public class FamilyInformationImpl implements FamilyInformation
             this.json.put("permissions", permissions.getJson());
             return this;
         }
+
+        private String nullToEmpty(String str)
+        {
+            return str == null ? "" : str;
+        }
     }
 
-    private static class FamilyMemberPermissionsJson extends AbstractInformationJson
+    private class FamilyMemberPermissionsJson extends AbstractInformationJson
     {
-        public FamilyMemberPermissionsJson setEditRights(String id, Validation validation)
+        public FamilyMemberPermissionsJson setEditRights(Patient patient, User user)
         {
-            this.json.put("hasEdit", validation.hasPatientEditAccess(id));
+            this.json.put("hasEdit", validation.hasPatientEditAccess(patient, user));
+            return this;
+        }
+
+        public FamilyMemberPermissionsJson setViewRights(Patient patient, User user)
+        {
+            this.json.put("hasView", validation.hasPatientViewAccess(patient, user));
             return this;
         }
     }

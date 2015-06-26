@@ -28,7 +28,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -206,7 +205,7 @@ public class FamilyScriptService implements ScriptService
      * @param familyDoc to determine which patients' reports should be included
      * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
      */
-    public Map<String, Iterator<Map.Entry<String, String>>> getReports(XWikiDocument familyDoc)
+    public Map<String, Map<String, String>> getReports(XWikiDocument familyDoc)
     {
         try {
             return familyInformation.getMedicalReports(familyDoc);

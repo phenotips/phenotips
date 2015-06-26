@@ -19,7 +19,6 @@ package org.phenotips.studies.family;
 
 import org.xwiki.component.annotation.Role;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import com.xpn.xwiki.XWikiException;
@@ -52,6 +51,6 @@ public interface FamilyInformation
      * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
      * @throws XWikiException could occur while getting family members
      */
-    Map<String, Iterator<Map.Entry<String, String>>> getMedicalReports(XWikiDocument familyDoc) throws XWikiException;
+    Map<String, Map<String, String>> getMedicalReports(XWikiDocument familyDoc) throws XWikiException;
 }
 
