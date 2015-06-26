@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
@@ -51,6 +52,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DefaultDomainObjectFactoryTest {
@@ -97,10 +99,9 @@ public class DefaultDomainObjectFactoryTest {
 
     @Test
     public void createPatientDocumentExceptionReturnsNull() throws Exception {
-        DocumentReference documentReference = mock(DocumentReference.class);
-        when(this.patient.getDocument()).thenReturn(documentReference);
+        when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
-        when(this.documentAccessBridge.getDocument(documentReference)).thenThrow(Exception.class);
+        when(this.documentAccessBridge.getDocument(Matchers.any(DocumentReference.class))).thenThrow(Exception.class);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
 
