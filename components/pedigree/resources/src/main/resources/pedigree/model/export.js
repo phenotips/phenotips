@@ -5,9 +5,9 @@ PedigreeExport.prototype = {
 };
 
 /* ===============================================================================================
- * 
+ *
  * Creates and returns a JSON in the "simple JSON" format (see PedigreeImport.initFromSimpleJSON)
- * 
+ *
  *  Simple JSON format: an array of objects, each object representing one person, e.g.:
  *
  *    [ { "name": "f11", "sex": "female", "lifeStatus": "deceased" },
@@ -18,7 +18,7 @@ PedigreeExport.prototype = {
  *      { "name": "f21", "sex": "female", "mother": "f12", "father": "m12" },
  *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true } ]
  *
- * @param pedigree {PositionedGraph} 
+ * @param pedigree {PositionedGraph}
  * ===============================================================================================
  */
 PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
@@ -27,15 +27,15 @@ PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
 
    for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
        if (!pedigree.GG.isPerson(i)) continue;
-       
+
        var person = {"id": i};
-       
+
        // mother & father
        var parents = pedigree.GG.getParents(i);
        if (parents.length > 0) {
            var father = parents[0];
            var mother = parents[1];
-           
+
            if ( pedigree.GG.properties[parents[0]]["gender"] == "F" ||
                 pedigree.GG.properties[parents[1]]["gender"] == "M" ) {
                father = parents[1];
@@ -44,7 +44,7 @@ PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
            person["father"] = father;
            person["mother"] = mother;
        }
-       
+
        // all other properties
        var properties = pedigree.GG.properties[i];
        for (var property in properties) {
@@ -88,23 +88,23 @@ PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
 PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
 {
    var output = "";
-   
+
    var familyID = XWiki.currentDocument.page;
 
    var idToPedId = PedigreeExport.createNewIDs(pedigree, idGenerationPreference);
-   
+
    for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
        if (!pedigree.GG.isPerson(i)) continue;
        if (pedigree.GG.isPlaceholder(i)) continue;
-       
-       output += familyID + " " + idToPedId[i] + " "; 
-       
+
+       output += familyID + " " + idToPedId[i] + " ";
+
        // mother & father
        var parents = pedigree.GG.getParents(i);
        if (parents.length > 0) {
            var father = parents[0];
            var mother = parents[1];
-           
+
            if ( pedigree.GG.properties[parents[0]]["gender"] == "F" ||
                 pedigree.GG.properties[parents[1]]["gender"] == "M" ) {
                father = parents[1];
@@ -114,7 +114,7 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
        } else {
            output += "0 0 ";
        }
-       
+
        var sex = 3;
        if (pedigree.GG.properties[i]["gender"] == "M") {
            sex = 1;
@@ -123,7 +123,7 @@ PedigreeExport.exportAsPED = function(pedigree, idGenerationPreference)
            sex = 2;
        }
        output += (sex + " ");
-       
+
        var status = -9; //missing
        if (pedigree.GG.properties[i].hasOwnProperty("carrierStatus")) {
            if (pedigree.GG.properties[i]["carrierStatus"] == "affected" ||
@@ -229,6 +229,8 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        var sex = "M";
        if (pedigree.GG.properties[i]["gender"] == "F") {
            sex = "F";
+       } else if (pedigree.GG.properties[i]["gender"] == "O") {
+           sex = "U";
        } else if (pedigree.GG.properties[i]["gender"] == "U") {
            // check partner gender(s) and if possible assign the opposite gender
            var possibleGenders = dynamicPedigree.getPossibleGenders(i);
@@ -399,21 +401,23 @@ PedigreeExport.internalToJSONPropertyMapping = {
  * support aliases for some terms and weed out unsupported terms.
  */
 PedigreeExport.convertProperty = function(internalPropertyName, value) {
-    
+
     if (!PedigreeExport.internalToJSONPropertyMapping.hasOwnProperty(internalPropertyName))
         return null;
-            
+
     var externalPropertyName = PedigreeExport.internalToJSONPropertyMapping[internalPropertyName];
-    
+
     if (externalPropertyName == "sex") {
         if (value == "M")
             value = "male";
         else if (value == "F")
             value = "female";
+        else if (value == "O")
+            value = "other";
         else
             value = "unknown";
     }
-        
+
     return {"propertyName": externalPropertyName, "value": value };
 }
 
