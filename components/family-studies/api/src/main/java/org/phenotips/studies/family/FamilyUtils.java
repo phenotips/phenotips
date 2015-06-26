@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.studies.family;
 
@@ -224,7 +224,7 @@ public interface FamilyUtils
 
     /**
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree.
-     * 
+     *
      * @param familyDoc which might contain a warning message
      * @return if there is a warning to display, then returns the warning message, otherwise an empty string
      * @throws XWikiException one of many possible reasons for XWiki to fail

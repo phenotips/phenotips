@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.studies.family.internal;
 
@@ -79,24 +79,26 @@ public final class SvgUpdater
     private static List<SvgElementHolder> findAgain(Iterable<SvgElementHolder> elements, String svg)
     {
         List<SvgElementHolder> found = new LinkedList<>();
-        for (SvgElementHolder element : elements) {
+        for (SvgElementHolder element : elements)
+        {
             element.startPosition = svg.indexOf(element.content);
             element.endPosition = element.startPosition + element.content.length();
         }
-        Collections.sort(found, new Comparator<SvgElementHolder>()
+        Collections.sort(found,
+            new Comparator<SvgElementHolder>()
             {
-            @Override
-            public int compare(SvgElementHolder o1, SvgElementHolder o2)
-            {
-                return o1.startPosition < o2.startPosition ? -1 : 1;
-            }
+                @Override
+                public int compare(SvgElementHolder o1, SvgElementHolder o2)
+                {
+                    return o1.startPosition < o2.startPosition ? -1 : 1;
+                }
             });
         return found;
     }
 
     private static List<SvgElementHolder> findAndParseAllElements(String svg, List<SvgElementHolder> elementList,
         SvgElementParser parser)
-        {
+    {
         String remainingSvg = svg;
         int potentialStart;
         // the index of the opening tag, so that we know which closing tag to look for
@@ -128,7 +130,7 @@ public final class SvgUpdater
             }
         }
         return elementList;
-        }
+    }
 
     private static String parsePatientIdFromLink(SvgElementHolder link) throws Exception
     {
@@ -168,7 +170,7 @@ public final class SvgUpdater
      */
     private static List<SvgElementHolder> filterByCurrentPatient(List<SvgElementHolder> links, String patientId,
         boolean removeCurrent)
-        {
+    {
         Iterator<SvgElementHolder> iterator = links.iterator();
         while (iterator.hasNext()) {
             SvgElementHolder holder = iterator.next();
@@ -183,7 +185,7 @@ public final class SvgUpdater
             }
         }
         return links;
-        }
+    }
 
     private static Iterable<SvgElementHolder> filterByProbandStatus(Iterable<SvgElementHolder> elements)
     {
@@ -247,7 +249,7 @@ public final class SvgUpdater
      */
     private static Iterable<SvgElementHolder> synchronizeOnNodeIds(Iterable<SvgElementHolder> toSynchronize,
         Iterable<SvgElementHolder> authority)
-        {
+    {
         Iterator<SvgElementHolder> toSynchronizeIterator = toSynchronize.iterator();
         while (toSynchronizeIterator.hasNext()) {
             SvgElementHolder s = toSynchronizeIterator.next();
@@ -263,7 +265,7 @@ public final class SvgUpdater
             }
         }
         return toSynchronize;
-        }
+    }
 
     /**
      * Processes the SVG to visually mark a patient with current patient style.
@@ -514,8 +516,8 @@ public final class SvgUpdater
         protected abstract void performAdditionalOperations(SvgElementHolder holder);
 
         @Override
-        public void iterativeAdd(int start, String svg, int offset, int nextSubstringStart, List<SvgElementHolder>
-            elementList)
+        public void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
+            List<SvgElementHolder> elementList)
         {
             int absoluteStart = start + offset;
             int absoluteEnd = nextSubstringStart + offset;
@@ -547,8 +549,8 @@ public final class SvgUpdater
 
         boolean test(String testPiece);
 
-        void iterativeAdd(int start, String svg, int offset, int nextSubstringStart, List<SvgElementHolder>
-            elementList);
+        void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
+            List<SvgElementHolder> elementList);
     }
 
     private static class SvgRemoveAction implements SvgAction

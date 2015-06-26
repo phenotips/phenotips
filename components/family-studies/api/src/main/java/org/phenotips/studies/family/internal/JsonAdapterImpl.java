@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.studies.family.internal;
 
@@ -208,10 +208,10 @@ public class JsonAdapterImpl implements JsonAdapter
         DateTime jodaDate;
         if (pedigreeDate.containsKey(yearString)) {
             Integer year = Integer.parseInt(pedigreeDate.getString(yearString));
-            Integer month =
-                pedigreeDate.containsKey(monthString) ? Integer.parseInt(pedigreeDate.getString(monthString)) : 1;
-            Integer day =
-                pedigreeDate.containsKey(dayString) ? Integer.parseInt(pedigreeDate.getString(dayString)) : 1;
+            Integer month = pedigreeDate.containsKey(monthString)
+                ? Integer.parseInt(pedigreeDate.getString(monthString)) : 1;
+            Integer day = pedigreeDate.containsKey(dayString)
+                ? Integer.parseInt(pedigreeDate.getString(dayString)) : 1;
             jodaDate = new DateTime(year, month, day, 0, 0);
         } else {
             String decade = pedigreeDate.getString("decade").substring(0, 4);
