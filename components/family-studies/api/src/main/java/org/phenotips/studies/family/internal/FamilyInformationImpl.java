@@ -120,7 +120,7 @@ public class FamilyInformationImpl implements FamilyInformation
 
     private static class FamilyInformationJson extends AbstractInformationJson
     {
-        private static final String FAMILY_MEMBERS = "familyMembres";
+        private static final String FAMILY_MEMBERS = "familyMembers";
 
         private JSONArray members = new JSONArray();
 
