@@ -79,23 +79,25 @@ public final class SvgUpdater
     private static List<SvgElementHolder> findAgain(Iterable<SvgElementHolder> elements, String svg)
     {
         List<SvgElementHolder> found = new LinkedList<>();
-        for (SvgElementHolder element : elements) {
+        for (SvgElementHolder element : elements)
+        {
             element.startPosition = svg.indexOf(element.content);
             element.endPosition = element.startPosition + element.content.length();
         }
-        Collections.sort(found, new Comparator<SvgElementHolder>()
-        {
-            @Override
-            public int compare(SvgElementHolder o1, SvgElementHolder o2)
+        Collections.sort(found,
+            new Comparator<SvgElementHolder>()
             {
-                return o1.startPosition < o2.startPosition ? -1 : 1;
-            }
-        });
+                @Override
+                public int compare(SvgElementHolder o1, SvgElementHolder o2)
+                {
+                    return o1.startPosition < o2.startPosition ? -1 : 1;
+                }
+            });
         return found;
     }
 
     private static List<SvgElementHolder> findAndParseAllElements(String svg, List<SvgElementHolder> elementList,
-                                                                  SvgElementParser parser)
+        SvgElementParser parser)
     {
         String remainingSvg = svg;
         int potentialStart;
@@ -167,7 +169,7 @@ public final class SvgUpdater
      * @param removeCurrent inverts this filter
      */
     private static List<SvgElementHolder> filterByCurrentPatient(List<SvgElementHolder> links, String patientId,
-                                                                 boolean removeCurrent)
+        boolean removeCurrent)
     {
         Iterator<SvgElementHolder> iterator = links.iterator();
         while (iterator.hasNext()) {
@@ -246,7 +248,7 @@ public final class SvgUpdater
      * @return toSynchronize
      */
     private static Iterable<SvgElementHolder> synchronizeOnNodeIds(Iterable<SvgElementHolder> toSynchronize,
-                                                                   Iterable<SvgElementHolder> authority)
+        Iterable<SvgElementHolder> authority)
     {
         Iterator<SvgElementHolder> toSynchronizeIterator = toSynchronize.iterator();
         while (toSynchronizeIterator.hasNext()) {
@@ -510,8 +512,9 @@ public final class SvgUpdater
 
         protected abstract void performAdditionalOperations(SvgElementHolder holder);
 
-        public void iterativeAdd(int start, String svg, int offset, int nextSubstringStart, List<SvgElementHolder>
-                elementList)
+        @Override
+        public void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
+            List<SvgElementHolder> elementList)
         {
             int absoluteStart = start + offset;
             int absoluteEnd = nextSubstringStart + offset;
@@ -543,8 +546,8 @@ public final class SvgUpdater
 
         boolean test(String testPiece);
 
-        void iterativeAdd(int start, String svg, int offset, int nextSubstringStart, List<SvgElementHolder>
-                elementList);
+        void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
+            List<SvgElementHolder> elementList);
     }
 
     private static class SvgRemoveAction implements SvgAction

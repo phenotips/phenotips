@@ -224,6 +224,7 @@ public interface FamilyUtils
 
     /**
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree.
+     *
      * @param familyDoc which might contain a warning message
      * @return if there is a warning to display, then returns the warning message, otherwise an empty string
      * @throws XWikiException one of many possible reasons for XWiki to fail

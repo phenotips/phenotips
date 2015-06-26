@@ -208,10 +208,10 @@ public class JsonAdapterImpl implements JsonAdapter
         DateTime jodaDate;
         if (pedigreeDate.containsKey(yearString)) {
             Integer year = Integer.parseInt(pedigreeDate.getString(yearString));
-            Integer month =
-                pedigreeDate.containsKey(monthString) ? Integer.parseInt(pedigreeDate.getString(monthString)) : 1;
-            Integer day =
-                pedigreeDate.containsKey(dayString) ? Integer.parseInt(pedigreeDate.getString(dayString)) : 1;
+            Integer month = pedigreeDate.containsKey(monthString)
+                ? Integer.parseInt(pedigreeDate.getString(monthString)) : 1;
+            Integer day = pedigreeDate.containsKey(dayString)
+                ? Integer.parseInt(pedigreeDate.getString(dayString)) : 1;
             jodaDate = new DateTime(year, month, day, 0, 0);
         } else {
             String decade = pedigreeDate.getString("decade").substring(0, 4);
