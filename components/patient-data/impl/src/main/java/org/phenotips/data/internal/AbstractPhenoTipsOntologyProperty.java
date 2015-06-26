@@ -13,14 +13,14 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.OntologyProperty;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
@@ -97,9 +97,9 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
             return this.name;
         }
         try {
-            OntologyManager om =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
-            OntologyTerm term = om.resolveTerm(this.id);
+            VocabularyManager om =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
+            VocabularyTerm term = om.resolveTerm(this.id);
             if (term != null && StringUtils.isNotEmpty(term.getName())) {
                 this.name = term.getName();
                 return this.name;

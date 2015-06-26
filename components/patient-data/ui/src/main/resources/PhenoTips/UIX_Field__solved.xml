@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #__hasBooleanDataToDisplay('solved', $showSolved)
@@ -118,7 +118,7 @@
   (% class="controlled-group complete-hide exclude" %)(((
   (% class="fieldset unaffected controller" %)(((
   #if ($xcontext.action == 'edit')
-    $doc.display('solved') #__label('solved' '' "$class.get('solved').prettyName") {{icon name="question-circle" cssClass="xHelpButton controlled" title="$services.localization.render("PhenoTips.PatientClass_solvedCase_hint").replace('"', '~~~"')"/}}
+    $doc.display('solved') #__label('solved' '' "$class.get('solved').prettyName") {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_solvedCase_hint").replace('"', '~~~"')"/}}
 
   #else
     #if ($showSolved)$class.get('solved').translatedPrettyName#end
@@ -144,7 +144,8 @@
 enabled=true
 required=
 order=1
-fields=solved,solved__pubmed_id,solved__gene_id,solved__notes</parameters>
+fields=solved,solved__pubmed_id,solved__gene_id,solved__notes
+privacy_level=1</parameters>
     </property>
     <property>
       <scope>wiki</scope>

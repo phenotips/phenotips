@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -89,8 +89,8 @@
     #end
     ## FIXME: Add support for ordering on properties from another XClass
     #set($tableAlias = $order)
-    ## only safe version should be used in SQL queries
-    #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
+    ## Only safe version should be used in SQL queries
+    #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]', '')}")
     ##
     #if($order.startsWith('doc.'))
       #set($orderSql = " order by ${safe_tableAlias.replace('_','.')} ${orderDirection}")
@@ -152,7 +152,7 @@
  *#
 #macro(gridresult_buildRowsJSON $map)
   #set($offset = $mathtool.toInteger($request.get('offset')))
-  ## offset starts from 0 in velocity and 1 in javascript
+  ## Offset starts from 0 in velocity and 1 in javascript
   #set($offset = $offset - 1)
   #if (!$offset || $offset &lt; 0)
     #set($offset = 0)
@@ -242,7 +242,7 @@
     #end
     ## Retrieve the property type as it might be usefull
     #set($propType = '')
-    #if($listtool.contains($propClass.getPropertyNames(), $colname))
+    #if($propClass.getPropertyNames().contains($colname))
       #set($propType = "$!propClass.get($colname).type")
     #end
     #set($fieldValue = "$!itemDoc.getValue($colname)")
@@ -256,7 +256,7 @@
       #set($fieldDisplayValue = $services.localization.render("${request.transprefix}emptyvalue"))
     #end
     #set($fieldUrl = '')
-    ## only retrieve an URL for a DBListClass item
+    ## Only retrieve an URL for a DBListClass item
     #if($propType == 'DBListClass' &amp;&amp; $propClass.get($colname).getProperty('multiSelect').value != 1)
       #set($fieldUrl = $xwiki.getURL($fieldValue))
       #if($fieldUrl == $xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI'))))
@@ -266,7 +266,7 @@
     #set($discard = $row.put($colname, $fieldDisplayValue.replaceFirst($regextool.quote('{{html clean="false" wiki="false"}}'), '').replaceAll("$regextool.quote('{{/html}}')$", '')))
     #set($discard = $row.put("${colname}_value", $fieldValue))
     #set($discard = $row.put("${colname}_url", $fieldUrl))
-    ## reset to the default class
+    ## Reset to the default class
     #set($discard = $itemDoc.use($className))
   #end
 #end
@@ -327,7 +327,7 @@
     #set($propClass = $class)
   #end
   #set($propType = '')
-  #if($listtool.contains($propClass.getPropertyNames(), $colname))
+  #if($propClass.getPropertyNames().contains($colname))
     #set($propType = "$!{propClass.get($colname).type}")
   #end
   #if($propType == 'NumberClass')
@@ -389,7 +389,7 @@
   #set ($targetedObject = 'obj')
   #if($propClassName != '')
     #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
-    #if ($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
+    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
       #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
       #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
       #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
@@ -400,7 +400,7 @@
   #else
     #set($propClass = $class)
   #end
-  #if($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname))
+  #if($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname))
     #set($propType = "$!{propClass.get($colname).type}")
   #elseif (!$colname.startsWith('doc.'))
     #break($macro)
@@ -411,8 +411,8 @@
     #set($discard = $tablelist.add($tableAlias))
     #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
-        #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?) ESCAPE '_'")
-        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%]', '_$0')}%"))
+        #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?) ESCAPE '!'")
+        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias} &gt;= ?")
@@ -439,16 +439,16 @@
           #set($whereSql = "${whereSql} ${colname} = ?")
           #set($discard = $whereParams.add("${stringtool.substringAfter($filterValue, ':')}"))
         #else
-          #set($whereSql = "${whereSql} upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '_'")
-          #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%]', '_$0')}%"))
+          #set($whereSql = "${whereSql} upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '!'")
+          #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
         #end
         #if (!$foreach.hasNext)
           #set ($whereSql = "${whereSql})")
         #end
       #end
     #elseif($colname.startsWith('doc.'))
-      #set($whereSql = "${whereSql} and upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '_'")
-      #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%]', '_$0')}%"))
+      #set($whereSql = "${whereSql} and upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '!'")
+      #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
     #elseif($propType == 'NumberClass' || $propType == 'BooleanClass')
       #livetable_getTableName($colname)
       #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
@@ -459,8 +459,8 @@
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ?")
       #set($discard = $whereParams.add("${colname}"))
       #if ($filterValue != '')
-        #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?) ESCAPE '_'")
-        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%]', '_$0')}%"))
+        #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?) ESCAPE '!'")
+        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
       #else
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
@@ -475,8 +475,8 @@
       #end
     #elseif($propType == 'TextAreaClass' || $propType == 'UsersClass' || $propType == 'GroupsClass')
       #set($fromSql = "${fromSql}, LargeStringProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '_'")
-      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%]', '_$0')}%"]))
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
+      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%!]', '!$0')}%"]))
     #elseif($propType == 'StaticListClass' || $propType == 'DBListClass' || $propType == 'DBTreeListClass')
       #set($multiSelect = $propClass.get($colname).getProperty('multiSelect').getValue())
       #set($relationalStorage = $propClass.get($colname).getProperty('relationalStorage').getValue())
@@ -506,8 +506,8 @@
           #end
         #else
           #set($fromSql = "${fromSql}, StringListProperty ${safe_tableAlias}")
-          #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?) ESCAPE '_'")
-          #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue.replaceAll('[\[_%]', '_$0')}|%"]))
+          #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?) ESCAPE '!'")
+          #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue.replaceAll('[\[_%!]', '!$0')}|%"]))
         #end
       #else
         #set ($joinOperator = "$!{request.get(""${colname}/join_mode"").toUpperCase()}")
@@ -538,8 +538,8 @@
       #end
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '_'")
-      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%]', '_$0')}%"]))
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
+      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%!]', '!$0')}%"]))
     #end
   #end
  #end

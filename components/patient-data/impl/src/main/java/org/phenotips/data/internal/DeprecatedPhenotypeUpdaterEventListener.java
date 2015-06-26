@@ -13,14 +13,14 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangingEvent;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -54,7 +54,7 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListener
 {
     @Inject
-    private OntologyManager ontologyManager;
+    private VocabularyManager ontologyManager;
 
     @Inject
     private Execution execution;
@@ -94,7 +94,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
                 List<String> terms = currentTermList.getList();
                 Set<String> correctSet = new LinkedHashSet<String>();
                 for (String term : terms) {
-                    OntologyTerm properTerm = this.ontologyManager.resolveTerm(term);
+                    VocabularyTerm properTerm = this.ontologyManager.resolveTerm(term);
                     if (properTerm != null) {
                         correctSet.add(properTerm.getId());
                     } else {

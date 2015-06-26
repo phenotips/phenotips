@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -51,11 +51,11 @@
     #set ($negativeAncestors = $collectionstool.set)
     #foreach ($piece in $!request.getParameterValues('symptom'))
       #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $ancestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
+      #set ($discard = $ancestors.addAll($services.vocabularies.resolveTerm($piece).get('term_category')))
     #end
     #foreach ($piece in $!request.getParameterValues('not_symptom'))
       #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $negativeAncestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
+      #set ($discard = $negativeAncestors.addAll($services.vocabularies.resolveTerm($piece).get('term_category')))
     #end
     #set ($discard = $negativeAncestors.removeAll($ancestors))
     #if ($!request.getParameterValues('not_symptom'))

@@ -16,11 +16,13 @@ org.phenotips.data.internal.controller.APGARController
 org.phenotips.data.internal.controller.PrenatalPerinatalHistoryController
 org.phenotips.data.internal.controller.PrenatalPhenotypeController
 org.phenotips.data.internal.controller.FamilyHistoryController
+org.phenotips.data.internal.controller.MetaDataController
 org.phenotips.data.internal.controller.EthnicityController
 org.phenotips.data.internal.controller.GeneListController
 org.phenotips.data.internal.controller.RejectedGeneListController
 org.phenotips.data.internal.controller.ClinicalStatusController
 org.phenotips.data.internal.controller.SolvedController
+org.phenotips.data.internal.controller.MedicalReportsController
 org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater

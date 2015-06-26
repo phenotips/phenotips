@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.internal.controller;
 
@@ -81,8 +81,8 @@ public class ClinicalStatusController implements PatientDataController<String>
                 return new SimpleValuePatientData<String>(getName(), unaffected);
             }
         } catch (Exception e) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading");
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }

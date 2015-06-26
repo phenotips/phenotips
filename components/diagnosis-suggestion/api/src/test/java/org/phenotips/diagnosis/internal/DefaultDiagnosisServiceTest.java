@@ -13,13 +13,13 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.environment.Environment;
@@ -95,7 +95,7 @@ public class DefaultDiagnosisServiceTest
 
         int invalidPhenotypes = 2;
 
-        OntologyManager ontology = this.mocker.getInstance(OntologyManager.class);
+        VocabularyManager ontology = this.mocker.getInstance(VocabularyManager.class);
         Environment env = this.mocker.getInstance(Environment.class);
         Utils utils = this.mocker.getInstance(Utils.class);
 
@@ -114,13 +114,13 @@ public class DefaultDiagnosisServiceTest
         doReturn(tempSpy).when(utilsEnv).getTemporaryDirectory();
         workingUtilsComponent.loadDataFiles(ontologyPath, annotationPath);
 
-        doAnswer(new Answer<OntologyTerm>()
+        doAnswer(new Answer<VocabularyTerm>()
         {
             @Override
-            public OntologyTerm answer(InvocationOnMock invocationOnMock) throws Throwable
+            public VocabularyTerm answer(InvocationOnMock invocationOnMock) throws Throwable
             {
                 String id = (String) invocationOnMock.getArguments()[0];
-                OntologyTerm term = mock(OntologyTerm.class);
+                VocabularyTerm term = mock(VocabularyTerm.class);
                 doReturn(id).when(term).getId();
                 doReturn("test").when(term).getName();
                 return term;
@@ -137,9 +137,9 @@ public class DefaultDiagnosisServiceTest
         List<String> nonstandardPhenotypeSet = new LinkedList<>();
         nonstandardPhenotypeSet.add("Non-standard term");
         for (List<String> phenotypeSet : phenotypes) {
-            List<OntologyTerm> diagnoses = diagnosisService.getDiagnosis(phenotypeSet, nonstandardPhenotypeSet, limit);
+            List<VocabularyTerm> diagnoses = diagnosisService.getDiagnosis(phenotypeSet, nonstandardPhenotypeSet, limit);
             List<String> diagnosisIds = new LinkedList<>();
-            for (OntologyTerm diagnosis : diagnoses) {
+            for (VocabularyTerm diagnosis : diagnoses) {
                 diagnosisIds.add(diagnosis.getId());
             }
             assertTrue(diagnosisIds.containsAll(disorderIds.get(i)));

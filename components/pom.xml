@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -34,6 +34,7 @@
     <module>constants</module>
     <module>component-registry</module>
     <module>jodatime-service</module>
+    <module>default-settings</module>
     <module>widgets</module>
     <module>skin</module>
     <module>navigation</module>
@@ -41,7 +42,7 @@
     <module>family-studies</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
-    <module>ontology-access</module>
+    <module>vocabularies</module>
     <module>patient-data</module>
     <module>security</module>
     <module>patient-access-rules</module>
@@ -55,7 +56,6 @@
     <module>patient-tools</module>
     <module>storage-migrators</module>
     <module>ncbieutils-services</module>
-    <module>phenotype-mapping-service</module>
     <module>specificity-meter</module>
     <module>medsavant-client</module>
     <module>diagnosis-suggestion</module>

@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.export.internal;
 
@@ -22,7 +22,7 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.reference.DocumentReference;
@@ -672,12 +672,12 @@ public class DataToCellConverter
         PatientData<List<String>> ethnicities = patient.getData("ethnicity");
         Integer x = 0;
         if (present.contains("global_mode_of_inheritance")) {
-            PatientData<List<SolrOntologyTerm>> globalControllers = patient.getData("global-qualifiers");
-            List<SolrOntologyTerm> modeTermList =
+            PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
+            List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
             int y = 0;
             if (modeTermList != null && !modeTermList.isEmpty()) {
-                for (SolrOntologyTerm term : modeTermList) {
+                for (SolrVocabularyTerm term : modeTermList) {
                     String mode = term != null ? term.getName() : "";
                     DataCell cell = new DataCell(mode, x, y);
                     bodySection.addCell(cell);
@@ -1160,11 +1160,11 @@ public class DataToCellConverter
 
         Integer x = 0;
         if (present.contains("global_age_of_onset")) {
-            PatientData<List<SolrOntologyTerm>> qualifiers = patient.getData("global-qualifiers");
-            List<SolrOntologyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
+            PatientData<List<SolrVocabularyTerm>> qualifiers = patient.getData("global-qualifiers");
+            List<SolrVocabularyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
             int y = 0;
             if (ageOfOnsetList != null && !ageOfOnsetList.isEmpty()) {
-                for (SolrOntologyTerm term : ageOfOnsetList) {
+                for (SolrVocabularyTerm term : ageOfOnsetList) {
                     String onset = term != null ? term.getName() : "";
                     DataCell cell = new DataCell(onset, x, y);
                     bodySection.addCell(cell);

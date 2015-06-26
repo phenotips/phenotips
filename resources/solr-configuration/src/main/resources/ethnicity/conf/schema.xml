@@ -73,7 +73,7 @@
     <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.LowerCaseTokenizerFactory"/>
-        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10" side="front"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.LowerCaseTokenizerFactory"/>

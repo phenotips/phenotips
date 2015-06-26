@@ -14,7 +14,7 @@ REM MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 REM GNU Affero General Public License for more details.
 REM
 REM You should have received a copy of the GNU Affero General Public License
-REM along with this program.  If not, see <http://www.gnu.org/licenses/>.
+REM along with this program.  If not, see http://www.gnu.org/licenses/
 REM -------------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ REM -------------------------------------------------------------------------
 setlocal EnableDelayedExpansion
 
 set JETTY_HOME=jetty
-if not defined START_OPTS set START_OPTS=-Xmx512m -XX:MaxPermSize=192m
+if not defined START_OPTS set START_OPTS=-Xmx1024m -XX:MaxPermSize=192m
 
 REM The port on which to start Jetty can be defined in an enviroment variable called JETTY_PORT
 if not defined JETTY_PORT (

@@ -13,25 +13,21 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.security.authorization.internal;
 
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.security.authorization.AuthorizationService;
 
+import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Provider;
+import java.lang.reflect.Type;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,8 +61,6 @@ public class DefaultAuthorizationServiceTest
     @Mock
     private DocumentReference document;
 
-    private Provider<List<AuthorizationModule>> modules;
-
     @Mock
     private AuthorizationModule lowPriorityModule;
 
@@ -77,27 +71,26 @@ public class DefaultAuthorizationServiceTest
     private AuthorizationModule highPriorityModule;
 
     @Before
-    public void setupMocks() throws ComponentLookupException
+    public void setupMocks() throws Exception
     {
         // FIXME This should be done in MockitoComponentMockingRule automatically
         MockitoAnnotations.initMocks(this);
-        this.modules =
-            this.mocker.getInstance(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
-                null, List.class, AuthorizationModule.class)));
         resetMocks();
     }
 
     @Test
     public void defaultDecisionIsDeny() throws ComponentLookupException
     {
-        when(this.modules.get()).thenReturn(Collections.<AuthorizationModule>emptyList());
+        for (ComponentDescriptor<?> cd : this.mocker.getComponentDescriptorList((Type) AuthorizationModule.class)) {
+            this.mocker.unregisterComponent(cd);
+        }
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
     @Test
-    public void moduleDecisionIsUsed() throws ComponentLookupException
+    public void moduleDecisionIsUsed() throws Exception
     {
-        when(this.modules.get()).thenReturn(Collections.singletonList(this.lowPriorityModule));
+        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
 
         when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
@@ -110,10 +103,11 @@ public class DefaultAuthorizationServiceTest
     }
 
     @Test
-    public void modulesAreCascadedUntilNonNullIsReturned() throws ComponentLookupException
+    public void modulesAreCascadedUntilNonNullIsReturned() throws Exception
     {
-        when(this.modules.get()).thenReturn(
-            Arrays.asList(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule));
+        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "medium", this.mediumPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "high", this.highPriorityModule);
 
         // By default all modules return null
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
@@ -151,9 +145,10 @@ public class DefaultAuthorizationServiceTest
     }
 
     @Test
-    public void exceptionsInModulesAreIgnored() throws ComponentLookupException
+    public void exceptionsInModulesAreIgnored() throws Exception
     {
-        when(this.modules.get()).thenReturn(Arrays.asList(this.lowPriorityModule, this.highPriorityModule));
+        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "high", this.highPriorityModule);
 
         when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenThrow(
             new NullPointerException());
@@ -162,10 +157,11 @@ public class DefaultAuthorizationServiceTest
     }
 
     @Test
-    public void modulesWithSamePriorityGetSortedByName() throws ComponentLookupException
+    public void modulesWithSamePriorityGetSortedByName() throws Exception
     {
-        when(this.modules.get()).thenReturn(
-            Arrays.<AuthorizationModule>asList(new BModule(), new AModule(), new CModule()));
+        this.mocker.registerComponent(AuthorizationModule.class, "B", new BModule());
+        this.mocker.registerComponent(AuthorizationModule.class, "A", new AModule());
+        this.mocker.registerComponent(AuthorizationModule.class, "C", new CModule());
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 

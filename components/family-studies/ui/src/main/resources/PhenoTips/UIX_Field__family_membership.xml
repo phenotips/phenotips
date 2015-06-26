@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -62,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -107,10 +107,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -165,7 +165,7 @@ if (newFamilyTrigger) {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -210,10 +210,10 @@ if (newFamilyTrigger) {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -224,8 +224,18 @@ if (newFamilyTrigger) {
       <code>(function ()
 {
   var familySearchUrl = "$xwiki.getURL('PhenoTips.FamilySearch', 'get', 'outputSyntax=plain')";
+  var addMemberUrl = Form.Element.getValue($('addFamilyMemberUrl'));
   var fieldHolder = $('PhenoTips.FamilyReference_0_reference');
   var searchInput = fieldHolder.previous("input");
+
+  /* A link that points to the family page that the user selected after the search.
+  A nice way for the user to be able to confirm that the correct family was selected. */
+  var searchWrapper = fieldHolder.up().up();
+  var searchedLink = searchWrapper.down('a');
+  var searchAgain = searchWrapper.down('a.search-again').up();
+  var searchedLinkVisible = true;
+
+  toggleSearchedLink();
 
   if (fieldHolder != null &amp;&amp; !searchInput.hasClassName('initialized')) {
     fieldHolder.hide();
@@ -237,7 +247,6 @@ if (newFamilyTrigger) {
       json: true,
       resultId: "id",
       resultValue: "textSummary",
-      resultInfo: {},
       enableHierarchy: false,
       fadeOnClear: false,
       timeout: 30000,
@@ -249,9 +258,55 @@ if (newFamilyTrigger) {
     {
       Form.Element.clear(searchInput);
     });
+    searchAgain.observe("click", function(event) {
+      event.stop();
+      toggleSearchedLink();
+      addRemoveFamily(Form.Element.getValue(fieldHolder), false);
+    });
+
     Event.observe(searchInput, "ms:suggest:selected", function (event) {
-        fieldHolder.value = event.memo.id;
-    })
+      fieldHolder.value = event.memo.id;
+      toggleSearchedLink(event.memo.id);
+      addRemoveFamily(event.memo.id, true);
+    });
+  }
+
+  function addRemoveFamily(id, add) {
+    var url = addMemberUrl + id;
+    var errorTitle = "";
+    if (add) {
+      url += "&amp;add=true";
+      errorTitle = "Could not remove from family " + id;
+    } else {
+      url += "&amp;remove=true";
+      errorTitle = "Could not add to family " + id;
+    }
+    new Ajax.Request(url, {
+      method: 'get',
+      onSuccess: function (transport) {
+        var response = transport.responseText;
+        if (response) {
+          Form.Element.clear(searchInput);
+          new PhenoTips.widgets.ModalPopup(response, {}, {title: errorTitle}).show();
+        }
+      }
+    });
+  }
+
+  function toggleSearchedLink(id) {
+    if (searchedLinkVisible &amp;&amp; !id) {
+      searchedLinkVisible = false;
+      searchInput.show();
+      searchedLink.hide();
+      searchAgain.hide();
+    } else {
+      searchedLinkVisible = true;
+      searchedLink.writeAttribute("href", new XWiki.Document(id).getURL("edit"));
+      searchedLink.innerHTML = id;
+      searchInput.hide();
+      searchedLink.show();
+      searchAgain.show();
+    }
   }
 })();
 </code>
@@ -290,7 +345,7 @@ if (newFamilyTrigger) {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -306,6 +361,22 @@ if (newFamilyTrigger) {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -335,10 +406,10 @@ if (newFamilyTrigger) {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -357,7 +428,16 @@ if (newFamilyTrigger) {
   margin-top: 0;
   margin-right: 0;
 }
-</code>
+.family-study .family-wrapper a.family-link {
+  float: left;
+  margin-top: 0.2em;
+}
+.family-study .family-wrapper div.search-again {
+  margin-left: 10px;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
@@ -431,7 +511,7 @@ if (newFamilyTrigger) {
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -444,34 +524,50 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 #set ($family = $services.families.getPatientsFamily($doc.getDocument()))
 #set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
 #if ($xcontext.action != 'view' || $hasFamily)
-  #if ($xcontext.action == 'edit')
-    $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
-  #end
   ##
   (% class="clear family-study" %)(((##
-  ##=== $services.localization.render('phenotips.UIXField.family.heading') ===
-  === Family ===##
+  === $services.localization.render('phenotips.UIXField.family_membership.heading') ===
   {{html wiki='true' clean='false'}}##
     #if ($hasFamily)##
     &lt;div class="buttonwrapper"&gt;##
-        &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;Open family page&lt;/a&gt;##
+        &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL($family, 'edit')"&gt;
+          $services.localization.render('phenotips.UIXField.family_membership.open')
+        &lt;/a&gt;##
     &lt;/div&gt;##
     #else##
+      #if ($xcontext.action == 'edit')
+        $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
+      #end
       #if (!$family)##
         #set ($family = $doc.getObject('PhenoTips.FamilyReference', true))##
         $doc.save()##
       #end##
       &lt;div class="family-wrapper"&gt;##
           &lt;div class="buttonwrapper"&gt;##
-              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL("Family.CreateFamily")?patient_id=$doc.getName()"&gt;Create a family&lt;/a&gt;##
+              &lt;a id="new-family-trigger" class="button" href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=${escapetool.url($doc.getName())}")"&gt;
+                $services.localization.render('phenotips.UIXField.family_membership.create')
+              &lt;/a&gt;##
           &lt;/div&gt;##
-          &lt;div class="separator"&gt;&amp;#8212; OR Search &amp;#8212;&lt;/div&gt;##
+          &lt;div class="separator"&gt;
+            $services.localization.render('phenotips.UIXField.family_membership.search_separator')
+          &lt;/div&gt;##
           &lt;div class="half-width"&gt;
-              &lt;input type="text" class="family-search-input"&gt;
-              $family.display('reference', 'edit')
+              &lt;span&gt;
+                  &lt;input type="text" class="family-search-input"&gt;
+                  $family.display('reference', 'edit')
+              &lt;/span&gt;
+              &lt;span&gt;
+                  &lt;a href="" class="family-link" target="_blank"&gt;&lt;/a&gt;
+                  &lt;div class="buttonwrapper search-again"&gt;##
+                      &lt;a class="search-again" class="button" href="#"&gt;
+                        $services.localization.render('phenotips.UIXField.family_membership.search_again')
+                      &lt;/a&gt;##
+                  &lt;/div&gt;
+              &lt;/span&gt;
           &lt;/div&gt;##
           &lt;span class="clear"&gt;&lt;/span&gt;##
       &lt;/div&gt;##
+      &lt;input id="addFamilyMemberUrl" type="hidden" value="$xwiki.getURL('PhenoTips.AddRemovePatientToFamily', 'get', "outputSyntax=plain&amp;patientId=${escapetool.url($doc.getName())}&amp;familyId=")"&gt;
     #end##
   {{/html}}##
   )))##
@@ -486,7 +582,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
       <name>org.phenotips.patientSheet.field.family</name>
     </property>
     <property>
-      <parameters>title=Family##$services.localization.render('phenotips.UIXField.family_membership')
+      <parameters>title=$services.localization.render('phenotips.UIXField.family_membership.extension_id')
 enabled=true
 required=
 order=1

@@ -56,6 +56,9 @@ public interface FamilyUtils
     EntityReference RIGHTS_CLASS =
         new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
 
+    /** The set of rights awarded to any user that holds edit rights on any patient record that belongs to a family. */
+    String DEFAULT_RIGHTS = "view,edit";
+
     /**
      * A wrapper around {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}.
      *
@@ -88,13 +91,13 @@ public interface FamilyUtils
     XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
     /**
-     * Gets the family document to which the patient with `patientId` belongs to.
+     * Gets the family document to which the `anchorId` belongs to.
      *
-     * @param patientId cannot be {@link null}, and should be a valid id
+     * @param anchorId cannot be {@link null}, and should be a valid id of either a patient or a family
      * @return {@link null} if the patient does not belong to a family, otherwise the family document
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
-    XWikiDocument getFamilyOfPatient(String patientId) throws XWikiException;
+    XWikiDocument getFamily(String anchorId) throws XWikiException;
 
     /**
      * Interfaces with the old family studies, which recorded external patient id and relationship to the `patient`.
@@ -141,14 +144,27 @@ public interface FamilyUtils
      *            does not set the patient's family reference.
      * @param save if true calls {@link com.xpn.xwiki.XWiki#saveDocument(XWikiDocument, String, XWikiContext)} on the
      *            newly created family document
-     * @return a blank family document with no rights or pedigree, but with the `probandDoc` patient included in the
-     *         list of members
+     * @return a blank family document with no pedigree, but with the `probandDoc` patient included in the list of
+     *         members
      * @throws XWikiException one of many possible reasons for XWiki to fail
      * @throws NamingException could happen during document creation
      * @throws QueryException could happen when looking for a patient
      */
     XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws NamingException, QueryException, XWikiException;
+
+    /**
+     * Allocates an id for a family, and uses a template to create a new document. Unlike
+     * {@link #createFamilyDoc(XWikiDocument, boolean)}, creates a family with no proband (no members).
+     *
+     * @param save if true calls {@link com.xpn.xwiki.XWiki#saveDocument(XWikiDocument, String, XWikiContext)} on the
+     *            newly created family document
+     * @return a blank family document with no pedigree
+     * @throws XWikiException one of many possible reasons for XWiki to fail
+     * @throws NamingException could happen during document creation
+     * @throws QueryException could happen when looking for a patient
+     */
+    XWikiDocument createProbandlessFamilyDoc(boolean save) throws NamingException, QueryException, XWikiException;
 
     /**
      * Gets the reference to the document of a family that the patient belongs to.
@@ -208,6 +224,7 @@ public interface FamilyUtils
 
     /**
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree.
+     * 
      * @param familyDoc which might contain a warning message
      * @return if there is a warning to display, then returns the warning message, otherwise an empty string
      * @throws XWikiException one of many possible reasons for XWiki to fail

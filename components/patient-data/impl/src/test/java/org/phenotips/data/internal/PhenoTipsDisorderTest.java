@@ -13,14 +13,14 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -53,10 +53,10 @@ public class PhenoTipsDisorderTest
     private Provider<ComponentManager> mockProvider;
 
     @Mock
-    private OntologyManager om;
+    private VocabularyManager om;
 
     @Mock
-    private OntologyTerm mim200100;
+    private VocabularyTerm mim200100;
 
     @Before
     public void setup() throws ComponentLookupException
@@ -66,7 +66,7 @@ public class PhenoTipsDisorderTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(DiffManager.class)).thenReturn(null);
-        when(this.cm.getInstance(OntologyManager.class)).thenReturn(this.om);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.om);
 
         when(this.mim200100.getId()).thenReturn("MIM:200100");
         when(this.mim200100.getName()).thenReturn("#200100 ABETALIPOPROTEINEMIA");

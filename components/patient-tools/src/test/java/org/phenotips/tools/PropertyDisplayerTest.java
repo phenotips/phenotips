@@ -13,18 +13,18 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.tools;
 
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
@@ -67,8 +67,8 @@ public class PropertyDisplayerTest
         Mockito.when(doc.getObjects("PhenoTips.PhenotypeMetaClass")).thenReturn(new Vector<com.xpn.xwiki.api.Object>());
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
-        OntologyService ontologyService = Mockito.mock(OntologyService.class);
-        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService)
+        Vocabulary ontologyService = Mockito.mock(Vocabulary.class);
+        Mockito.doReturn(new LinkedList<VocabularyTerm>()).when(ontologyService)
             .search(Matchers.anyMapOf(String.class, Object.class));
 
         PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);

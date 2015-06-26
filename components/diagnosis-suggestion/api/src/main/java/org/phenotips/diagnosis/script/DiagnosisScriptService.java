@@ -13,12 +13,12 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.diagnosis.script;
 
 import org.phenotips.diagnosis.DiagnosisService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -53,7 +53,7 @@ public class DiagnosisScriptService implements ScriptService
      * @param limit the maximum number of diagnoses to return; must be a positive number
      * @return a list of suggested diagnoses
      */
-    public List<OntologyTerm> get(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
+    public List<VocabularyTerm> get(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
         return this.service.getDiagnosis(phenotypes, nonstandardPhenotypes, limit);
     }

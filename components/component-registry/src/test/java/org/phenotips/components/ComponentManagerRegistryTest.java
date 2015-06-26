@@ -13,28 +13,21 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.components;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.observation.event.ApplicationStartedEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
-
-import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link ComponentManagerRegistry} component.
@@ -51,10 +44,7 @@ public class ComponentManagerRegistryTest
     @Test
     public void testGetContextComponentManager() throws ComponentLookupException
     {
-        ParameterizedType cmType = new DefaultParameterizedType(null, Provider.class, ComponentManager.class);
-        Provider<ComponentManager> provider = this.mocker.getInstance(cmType, "context");
-        ComponentManager cm = Mockito.mock(ComponentManager.class);
-        when(provider.get()).thenReturn(cm);
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         Assert.assertSame(cm, this.mocker.getComponentUnderTest().getContextComponentManager());
     }
 

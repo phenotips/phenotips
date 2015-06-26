@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -70,7 +70,7 @@
     #end
     $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
-  #if ($services.ontologies.hpo.size() &lt;= 0)
+  #if ($services.vocabularies.hpo.size() &lt;= 0)
     {{error}}{{translation key="phenotips.patientRecord.phenotypes.error.hpoNotIndexed"/}}{{/error}}
 
   #end

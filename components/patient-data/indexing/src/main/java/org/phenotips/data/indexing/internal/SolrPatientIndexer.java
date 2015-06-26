@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.indexing.internal;
 
@@ -22,7 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.ontology.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.SolrCoreContainerHandler;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -37,7 +37,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -62,7 +62,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     private SolrCoreContainerHandler cores;
 
     /** The Solr server instance used. */
-    private SolrServer server;
+    private SolrClient server;
 
     /** Allows querying for patients. */
     @Inject

@@ -14,7 +14,7 @@
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see http://www.gnu.org/licenses/
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -46,7 +46,7 @@ JETTY_HOME=jetty
 
 # If no START_OPTS env variable has been defined use default values.
 if [ -z "$START_OPTS" ] ; then
-  START_OPTS="-Xmx512m -XX:MaxPermSize=192m"
+  START_OPTS="-Xmx1024m -XX:MaxPermSize=192m"
 fi
 
 # The port on which to start Jetty can be defined in an enviroment variable called JETTY_PORT

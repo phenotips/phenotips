@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -30,7 +30,7 @@
   <packaging>pom</packaging>
   <description>Packages a Jetty installation for use in the standalone distribution</description>
   <properties>
-    <jetty.version>8.1.16.v20140903</jetty.version>
+    <jetty.version>8.1.17.v20150415</jetty.version>
   </properties>
   <modules>
     <module>log-writer</module>

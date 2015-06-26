@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -98,7 +98,7 @@
     #else
       #set ($pValue = $entry.percentile)
       #set ($sdValue = $entry.deviation)
-      #set ($dValue = "${pValue}#if($pValue%10==1)&lt;sup&gt;st&lt;/sup&gt;#elseif($pValue%10==2)&lt;sup&gt;nd&lt;/sup&gt;#elseif($pValue%10==3)&lt;sup&gt;rd&lt;/sup&gt;#{else}&lt;sup&gt;th&lt;/sup&gt;#end pctl (#if ($sdValue &gt;= 0)+#end${mathtool.roundTo(2, $sdValue)}SD)")
+      #set ($dValue = "${pValue}#if($pValue&gt;10 &amp;&amp; $pValue&lt;20)&lt;sup&gt;th&lt;/sup&gt;#elseif($pValue%10==1)&lt;sup&gt;st&lt;/sup&gt;#elseif($pValue%10==2)&lt;sup&gt;nd&lt;/sup&gt;#elseif($pValue%10==3)&lt;sup&gt;rd&lt;/sup&gt;#{else}&lt;sup&gt;th&lt;/sup&gt;#end pctl (#if ($sdValue &gt;= 0)+#end${mathtool.roundTo(2, $sdValue)}SD)")
     #end
     "$entry.id" : {
         "value" : "#dashIfEmpty($entry.value)",

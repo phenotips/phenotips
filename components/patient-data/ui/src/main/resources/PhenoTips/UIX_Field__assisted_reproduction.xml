@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #if ($xcontext.action == 'edit')
@@ -133,7 +133,8 @@ $displayedContent.trim()
 enabled=true
 required=
 order=2
-fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy</parameters>
+fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy
+privacy_level=3</parameters>
     </property>
     <property>
       <scope>wiki</scope>

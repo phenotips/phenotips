@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -139,11 +139,11 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.2-SNAPSHOT</phenotips.version>
-    <xwiki.version>5.4.7</xwiki.version>
+    <xwiki.version>7.0.1</xwiki.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <buildtools.version>1.1</buildtools.version>
-    <testframework.version>1.0-milestone-3</testframework.version>
-    <solr.version>4.10.4</solr.version>
+    <buildtools.version>1.2</buildtools.version>
+    <testframework.version>1.0-milestone-5</testframework.version>
+    <solr.version>5.1.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
@@ -194,8 +194,8 @@
       <!-- Most plugins depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
         <!-- It should always be provided, otherwise containers will complain about it. -->
         <scope>provided</scope>
       </dependency>
@@ -282,6 +282,13 @@
         <artifactId>xalan</artifactId>
         <version>2.7.2</version>
       </dependency>
+      <!-- Use the latest Selenium version for browser compatibility -->
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>2.45.0</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -343,6 +350,42 @@
               <method>java.util.List get(java.util.List, int)</method>
               <justification>The script service passes both ontology terms and non-standard features to the API.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/ontology/SolrOntologyServiceInitializer</className>
+              <differenceType>7006</differenceType>
+              <method>org.apache.solr.client.solrj.SolrServer getServer()</method>
+              <to>org.apache.solr.client.solrj.SolrClient</to>
+              <justification>SolrServer was replaced by SolrClient in Solr 5.0.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/solr/AbstractSolrScriptService</className>
+              <differenceType>6004</differenceType>
+              <field>server</field>
+              <from>org.apache.solr.client.solrj.SolrServer</from>
+              <to>org.apache.solr.client.solrj.SolrClient</to>
+              <justification>SolrServer was replaced by SolrClient in Solr 5.0.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/ontology/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/solr/AbstractSolrScriptService</className>
+              <differenceType>6004</differenceType>
+              <field>initializer</field>
+              <from>org.phenotips.ontology.SolrOntologyServiceInitializer</from>
+              <to>org.phenotips.vocabulary.SolrVocabularyResourceManager</to>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/tools/PropertyDisplayer</className>
+              <differenceType>6004</differenceType>
+              <field>ontologyService</field>
+              <from>org.phenotips.ontology.OntologyService</from>
+              <to>org.phenotips.vocabulary.Vocabulary</to>
+              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
@@ -373,7 +416,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.2.201409121644</version>
+        <version>0.7.5.201505241946</version>
         <executions>
           <execution>
             <id>jacoco-prepare</id>
@@ -512,7 +555,7 @@
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10</version>
+          <version>2.11</version>
           <configuration>
             <skip>${license.skip}</skip>
             <header>license.txt</header>
@@ -700,7 +743,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -790,7 +833,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10.1</version>
+          <version>2.10.3</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>

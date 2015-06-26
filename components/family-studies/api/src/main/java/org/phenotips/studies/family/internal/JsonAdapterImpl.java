@@ -18,9 +18,9 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.configuration.RecordConfigurationManager;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
 import org.phenotips.studies.family.JsonAdapter;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
@@ -57,11 +57,11 @@ public class JsonAdapterImpl implements JsonAdapter
 
     @Inject
     @Named("hpo")
-    private OntologyService hpoService;
+    private Vocabulary hpoService;
 
     @Inject
     @Named("omim")
-    private OntologyService omimService;
+    private Vocabulary omimService;
 
     @Override
     public List<JSONObject> convert(JSONObject toConvert)
@@ -94,9 +94,9 @@ public class JsonAdapterImpl implements JsonAdapter
     {
         private Logger logger;
 
-        private OntologyService hpo;
+        private Vocabulary hpo;
 
-        private OntologyService omim;
+        private Vocabulary omim;
 
         private DateFormat dateFormat;
     }
@@ -143,17 +143,17 @@ public class JsonAdapterImpl implements JsonAdapter
         if (ex.containsKey(dob)) {
             inter.put("date_of_birth", format.format(
                 JsonAdapterImpl.pedigreeDateToDate(ex.getJSONObject(dob))
-            ));
+                ));
         }
         if (ex.containsKey(dod)) {
             inter.put("date_of_death", format.format(
                 JsonAdapterImpl.pedigreeDateToDate(ex.getJSONObject(dod))
-            ));
+                ));
         }
         return inter;
     }
 
-    private static JSONObject exchangePhenotypes(JSONObject ex, JSONObject inter, OntologyService hpoService)
+    private static JSONObject exchangePhenotypes(JSONObject ex, JSONObject inter, Vocabulary hpoService)
         throws Exception
     {
         JSONArray internalTerms = new JSONArray();
@@ -161,7 +161,7 @@ public class JsonAdapterImpl implements JsonAdapter
 
         if (externalTerms != null) {
             for (Object termIdObj : externalTerms) {
-                OntologyTerm term = hpoService.getTerm(termIdObj.toString());
+                VocabularyTerm term = hpoService.getTerm(termIdObj.toString());
                 if (term != null) {
                     JSONObject termJson = JSONObject.fromObject(term.toJson());
                     termJson.put("observed", "yes");
@@ -175,7 +175,7 @@ public class JsonAdapterImpl implements JsonAdapter
         return inter;
     }
 
-    private static JSONObject exchangeDisorders(JSONObject ex, JSONObject inter, OntologyService omimService)
+    private static JSONObject exchangeDisorders(JSONObject ex, JSONObject inter, Vocabulary omimService)
         throws Exception
     {
         String disordersKey = "disorders";
@@ -184,7 +184,7 @@ public class JsonAdapterImpl implements JsonAdapter
 
         if (externalTerms != null) {
             for (Object termIdObj : externalTerms) {
-                OntologyTerm term = omimService.getTerm(termIdObj.toString());
+                VocabularyTerm term = omimService.getTerm(termIdObj.toString());
                 if (term != null) {
                     internalTerms.add(term.toJson());
                 }

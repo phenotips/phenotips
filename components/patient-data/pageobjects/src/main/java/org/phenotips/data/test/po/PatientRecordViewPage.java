@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.data.test.po;
 
@@ -236,7 +236,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public String getPatientRecordId()
     {
-        this.waitUntilElementIsVisible(By.cssSelector("#document-title h1"));
+        this.getDriver().waitUntilElementIsVisible(By.cssSelector("#document-title h1"));
         return this.recordId.getText();
     }
 
@@ -249,7 +249,7 @@ public class PatientRecordViewPage extends ViewPage
     public String getPatientName()
     {
 
-        this.waitUntilElementIsVisible(By
+        this.getDriver().waitUntilElementIsVisible(By
             .xpath("//span[text() = 'Patient name:']/following-sibling::span[@class = 'displayed-value']"));
         return this.patientName.getText();
 
@@ -520,7 +520,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public boolean checkIfWentToEditPage(By by)
     {
-        this.waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_indication_for_referral"));
+        this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_indication_for_referral"));
         try {
             getDriver().findElement(By.id("PhenoTips.PatientClass_0_indication_for_referral"));
             return true;

@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.security.authorization;
 
@@ -93,6 +93,7 @@ public class ModularRightServiceImplTest
     {
         MockitoAnnotations.initMocks(this);
         Utils.setComponentManager(this.cm);
+        when(this.cm.getInstance(ComponentManager.class, "context")).thenReturn(this.cm);
 
         when(this.cm.getInstance(AuthorizationService.class, "default")).thenReturn(this.internalService);
         when(this.internalService.hasAccess(this.user, Right.VIEW, this.documentReference)).thenReturn(true);

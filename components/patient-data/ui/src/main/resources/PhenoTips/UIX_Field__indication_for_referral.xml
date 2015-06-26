@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -108,7 +108,7 @@
       </scope>
     </class>
     <property>
-      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #__displayIfNotEmpty('indication_for_referral')
@@ -126,7 +126,8 @@ enabled=true
 required=
 order=11
 fields=indication_for_referral
-contains_PII=true</parameters>
+contains_PII=true
+privacy_level=1</parameters>
     </property>
     <property>
       <scope>wiki</scope>

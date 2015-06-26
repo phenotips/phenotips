@@ -13,11 +13,11 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.diagnosis;
 
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -43,5 +43,5 @@ public interface DiagnosisService
      * @param limit the maximum number of diagnoses to return; must be a positive number
      * @return a list of suggested diagnoses
      */
-    List<OntologyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit);
+    List<VocabularyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit);
 }

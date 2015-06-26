@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.configuration.internal.global;
 
@@ -89,7 +89,7 @@ public class GlobalRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("disabled_section");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
@@ -149,7 +149,7 @@ public class GlobalRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("disabled_section");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
@@ -179,7 +179,7 @@ public class GlobalRecordConfigurationTest
         List<RecordSection> result = c.getAllSections();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("Patient information", result.get(0).getName());
-        Assert.assertEquals("Family history", result.get(1).getName());
+        Assert.assertEquals("Family history and pedigree", result.get(1).getName());
         Assert.assertEquals("Clinical observations", result.get(2).getName());
         Assert.assertEquals("Prenatal history", result.get(3).getName());
     }
@@ -588,7 +588,7 @@ public class GlobalRecordConfigurationTest
         ex = mock(UIExtension.class);
         when(ex.getId()).thenReturn("disabled_section");
         params = new HashMap<String, String>();
-        params.put("title", "Family history");
+        params.put("title", "Family history and pedigree");
         params.put("enabled", "false");
         params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);

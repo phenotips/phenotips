@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -65,7 +65,7 @@
     &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
     &lt;span class="title"&gt;${item.name}&lt;/span&gt;
     &lt;span class="hidden term-category"&gt;
-    #foreach ($c in $services.ontologies.resolveTerm($item.id).get('term_category'))
+    #foreach ($c in $services.vocabularies.resolveTerm($item.id).get('term_category'))
       &lt;input type="hidden" value="$c"&gt;
     #end
     &lt;/span&gt;

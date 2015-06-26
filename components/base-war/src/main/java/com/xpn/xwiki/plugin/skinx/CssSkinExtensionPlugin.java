@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package com.xpn.xwiki.plugin.skinx;
 
@@ -26,6 +26,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
  * Skin Extension plugin that allows pulling CSS code stored inside wiki documents as
@@ -109,6 +110,32 @@ public class CssSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
     public String endParsing(String content, XWikiContext context)
     {
         return super.endParsing(content, context);
+    }
+
+    @Override
+    public BaseClass getExtensionClass(XWikiContext context)
+    {
+        // First, let the parent do its job
+        super.getExtensionClass(context);
+        // Now adding the content type field
+        try {
+            XWikiDocument doc = context.getWiki().getDocument(getExtensionClassName(), context);
+            boolean needsUpdate = false;
+
+            BaseClass bclass = doc.getXClass();
+            if (context.get("initdone") != null) {
+                return bclass;
+            }
+            needsUpdate |= bclass.addStaticListField("contentType", "Content Type", "CSS|LESS");
+
+            if (needsUpdate) {
+                context.getWiki().saveDocument(doc, context);
+            }
+            return bclass;
+        } catch (Exception ex) {
+            LOGGER.error("Cannot initialize skin extension class [{}]", getExtensionClassName(), ex);
+        }
+        return null;
     }
 
     private int getHash(String documentName, XWikiContext context)

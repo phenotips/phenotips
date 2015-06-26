@@ -13,12 +13,13 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package com.xpn.xwiki.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -46,8 +47,8 @@ public class XWikiServletResponse implements XWikiResponse
     }
 
     /**
-     * Note that in Servlet 3.0 there's a better way to get the servlet response's code by calling <a
-     * href="http://download.oracle.com/javaee/6/api/javax/servlet/http/HttpServletResponse.html#getStatus%28%29">
+     * Note that in Servlet 3.0 there's a better way to get the servlet response's code by calling
+     * <a href="http://download.oracle.com/javaee/6/api/javax/servlet/http/HttpServletResponse.html#getStatus%28%29">
      * getStatus()</a>.
      *
      * @return the HTTP response status (200, 302, etc)
@@ -311,5 +312,23 @@ public class XWikiServletResponse implements XWikiResponse
     public String getContentType()
     {
         return this.response.getContentType();
+    }
+
+    @Override
+    public String getHeader(String s)
+    {
+        return this.response.getHeader(s);
+    }
+
+    @Override
+    public Collection<String> getHeaders(String s)
+    {
+        return this.response.getHeaders(s);
+    }
+
+    @Override
+    public Collection<String> getHeaderNames()
+    {
+        return this.response.getHeaderNames();
     }
 }

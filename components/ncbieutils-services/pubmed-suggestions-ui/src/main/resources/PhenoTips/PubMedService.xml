@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc>
@@ -312,7 +312,7 @@ $xwiki.jsx.use('PhenoTips.PubMedService')##
       <scope>wiki</scope>
     </property>
   </object>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
+  <content>{{include reference="PhenoTips.JSONMacros" /}}
 
 {{velocity filter="indent"}}
 #if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')

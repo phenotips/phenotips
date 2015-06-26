@@ -190,7 +190,7 @@ var SaveLoadEngine = Class.create( {
                             alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
                     }
                 }
-                
+
                 var JSONString = _this.serialize();
 
                 editor.getActionStack().addState(null, null, JSONString);
@@ -307,7 +307,7 @@ var SaveLoadEngine = Class.create( {
                     } else {
                         me._notSaved = false;
                         editor.getActionStack().addSaveEvent();
-                        savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));
+                        savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
                     }
                 } else  {
                     savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));

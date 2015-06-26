@@ -13,12 +13,12 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.tools;
 
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -60,7 +60,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     @Inject
     @Named("hpo")
-    private OntologyService ontologyService;
+    private Vocabulary ontologyService;
 
     public void use(String prefix, String name)
     {
@@ -153,7 +153,7 @@ public class PhenotypeDisplayTools implements ScriptService
             List<String> correctNegativeIds = new LinkedList<String>();
             if (data.getSelectedValues() != null && !data.getSelectedValues().isEmpty()) {
                 for (String id : data.getSelectedValues()) {
-                    OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                    VocabularyTerm properTerm = this.ontologyService.getTerm(id);
                     if (properTerm != null) {
                         correctIds.add(properTerm.getId());
                     } else {
@@ -164,7 +164,7 @@ public class PhenotypeDisplayTools implements ScriptService
             data.setSelectedValues(correctIds);
             if (data.getSelectedNegativeValues() != null && !data.getSelectedNegativeValues().isEmpty()) {
                 for (String id : data.getSelectedNegativeValues()) {
-                    OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                    VocabularyTerm properTerm = this.ontologyService.getTerm(id);
                     if (properTerm != null) {
                         correctNegativeIds.add(properTerm.getId());
                     } else {

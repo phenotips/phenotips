@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <configuration>
@@ -35,6 +35,11 @@
   <logger name="com.xpn.xwiki" level="warn"/>
   <logger name="com.xpn.xwiki.store.migration" level="info"/>
   <logger name="com.xpn.xwiki.render.XWikiRadeoxRenderEngine" level="warn"/>
+
+  <!-- Special loggers, not using class names -->
+
+  <!-- Set it to DEBUG to get logs for shuts down operations -->
+  <logger name="org.xwiki.shutdown" level="info"/>
 
   <!-- Hibernate logging options -->
 

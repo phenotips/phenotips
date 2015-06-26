@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -162,10 +162,16 @@ xwiki.store.attachment.recyclebin.hint=file
             <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
             <version>${xwiki.version}</version>
           </dependency>
+          <!-- Needed by the distribution manager, which doesn't declare it as a dependency -->
+          <dependency>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-wiki-default</artifactId>
+            <version>${xwiki.version}</version>
+          </dependency>
           <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
           </dependency>
         </dependencies>
         <executions>

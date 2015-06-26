@@ -17,15 +17,18 @@
  */
 package org.phenotips.studies.family.script;
 
+import org.phenotips.studies.family.FamilyInformation;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,7 +40,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -65,6 +67,25 @@ public class FamilyScriptService implements ScriptService
     @Inject
     private Validation validation;
 
+    @Inject
+    private FamilyInformation familyInformation;
+
+    /**
+     * Always creates a new family, with no family members.
+     *
+     * @return reference to the new family document. Can be {@link null}
+     */
+    public DocumentReference createFamily()
+    {
+        try {
+            XWikiDocument familyDoc = this.utils.createProbandlessFamilyDoc(true);
+            return familyDoc != null ? familyDoc.getDocumentReference() : null;
+        } catch (Exception ex) {
+            this.logger.error("Could not create a new blank family document: {}", ex.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
@@ -74,7 +95,7 @@ public class FamilyScriptService implements ScriptService
     public DocumentReference createFamily(String patientId)
     {
         try {
-            XWikiDocument familyDoc = this.utils.getFamilyOfPatient(patientId);
+            XWikiDocument familyDoc = this.utils.getFamily(patientId);
             if (familyDoc == null) {
                 familyDoc = this.utils.createFamilyDoc(patientId);
             }
@@ -115,9 +136,27 @@ public class FamilyScriptService implements ScriptService
         try {
             XWikiDocument doc = this.utils.getFromDataSpace(id);
             XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
-            return familyInfoResponse(familyDoc, this.utils.getFamilyMembers(familyDoc));
+            return this.familyInformation.getBasicInfo(familyDoc);
         } catch (XWikiException ex) {
             this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
+            return new JSONObject(true);
+        }
+    }
+
+    /**
+     * Returns a patient's pedigree, which is the pedigree of a family that patient belongs to, or the patient's own
+     * pedigree if the patient does not belong to a family.
+     *
+     * @param id must be a valid family id or a patient id
+     * @return JSON of the data portion of a family or patient pedigree
+     */
+    public JSON getPedigree(String id)
+    {
+        try {
+            return PedigreeUtils.getPedigree(id, this.utils);
+        } catch (XWikiException ex) {
+            this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
+                id, ex.getMessage());
             return new JSONObject(true);
         }
     }
@@ -164,22 +203,19 @@ public class FamilyScriptService implements ScriptService
         }
     }
 
-    private JSON familyInfoResponse(XWikiDocument family, List<String> members) throws XWikiException
+    /**
+     * Family page should aggregate medical reports of all its members.
+     *
+     * @param familyDoc to determine which patients' reports should be included
+     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
+     */
+    public Map<String, Map<String, String>> getReports(XWikiDocument familyDoc)
     {
-        JSONObject json = new JSONObject();
-        json.put("familyPage", family == null ? null : family.getDocumentReference().getName());
-        json.put("warning", utils.getWarningMessage(family));
-
-        JSONArray membersJson = new JSONArray();
-        for (String member : members) {
-            JSONObject memberJson = new JSONObject();
-            memberJson.put("id", member);
-            memberJson.put("identifier", "");
-            memberJson.put("name", "");
-            membersJson.add(memberJson);
+        try {
+            return this.familyInformation.getMedicalReports(familyDoc);
+        } catch (Exception ex) {
+            this.logger.error("Could not retrieve medical reports from all members of the family. {}", ex.getMessage());
+            return new HashMap<>();
         }
-        json.put("familyMembers", membersJson);
-
-        return json;
     }
 }

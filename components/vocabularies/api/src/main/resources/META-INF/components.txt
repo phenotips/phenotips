@@ -1,0 +1,6 @@
+org.phenotips.vocabulary.internal.DefaultVocabularyManager
+org.phenotips.vocabulary.script.OntologyScriptService
+org.phenotips.vocabulary.script.VocabularyScriptService
+org.phenotips.vocabulary.internal.solr.DefaultSolrCoreContainerHandler
+org.phenotips.vocabulary.internal.solr.DefaultSolrVocabularyResourceManager
+org.phenotips.vocabulary.listeners.PatientVocabularyVersionRecorder

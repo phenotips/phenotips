@@ -15,7 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -861,7 +861,7 @@ Date.prototype.getMonthName = function (abbrev) {
 Date.prototype._toString = Date.prototype.toString;
 
 /**
- * Converts the value of the current Date object to its equivalent string representation.
+ * Converts the value of the current Date object to its equivalent UTC string representation.
  * Format Specifiers
 &lt;pre&gt;
 Format  Description                                                                  Example
@@ -900,7 +900,7 @@ Format  Description                                                             
  * @return {String}  A string representation of the current Date object.
  */
 Date.prototype.toString = function (format) {
-    var self = this;
+    var self = this.toUTC();
 
     var p = function p(s) {
         return (s.toString().length == 1) ? "0" + s : s;
@@ -952,7 +952,7 @@ Date.prototype.toString = function (format) {
         case "zzz":
         case "zz":
         case "z":
-            return "";
+            return 'Z';
         }
     }
     ) : this._toString();
@@ -2059,9 +2059,7 @@ CalendarDateSelect = Class.create({
   },
   dayHover: function(element) {
     var hover_date = new Date(this.selected_date);
-    hover_date.setYear(element.year);
-    hover_date.setMonth(element.month);
-    hover_date.setDate(element.day);
+    hover_date.setFullYear(element.year, element.month, element.day);
     this.updateFooter(hover_date.toFormattedString(this.options));
   },
   dayHoverOut: function(element) { this.updateFooter(); },
@@ -2125,9 +2123,7 @@ CalendarDateSelect = Class.create({
     }
     if (parts.get("day")) {
       var t_selected_date = this.selected_date, vdc = this.options.valid_date_check;
-      t_selected_date.setYear(parts.get("year"));
-      t_selected_date.setMonth(parts.get("month"));
-      t_selected_date.setDate(parts.get("day"));
+      t_selected_date.setFullYear(parts.get("year"), parts.get("month"), parts.get("day"));
       
       if (vdc &amp;&amp; ! vdc(t_selected_date.clearTime())) { return false; }
       this.selected_date = t_selected_date;
