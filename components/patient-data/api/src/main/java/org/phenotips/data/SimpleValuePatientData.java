@@ -56,6 +56,12 @@ public class SimpleValuePatientData<T> implements PatientData<T>
     }
 
     @Override
+    public int size()
+    {
+        return 1;
+    }
+
+    @Override
     public T getValue()
     {
         return this.value;
