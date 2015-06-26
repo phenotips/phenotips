@@ -57,7 +57,7 @@ public class RecordLockingScriptTest
     {
         MockitoAnnotations.initMocks(this);
 
-        //Mocked injected components
+        // Mocked injected components
         this.lockManager = this.mocker.getInstance(PatientRecordLockManager.class);
         this.pr = this.mocker.getInstance(PatientRepository.class);
     }
@@ -65,8 +65,8 @@ public class RecordLockingScriptTest
     @Test
     public void respondsOkOnSuccessfulLock() throws ComponentLookupException
     {
-        Mockito.doReturn(patient).when(pr).getPatientById(Matchers.anyString());
-        Mockito.doReturn(true).when(lockManager).lockPatientRecord(patient);
+        Mockito.doReturn(this.patient).when(this.pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(true).when(this.lockManager).lockPatientRecord(this.patient);
 
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_OK, lockingService.lockPatient("123"));
@@ -75,8 +75,8 @@ public class RecordLockingScriptTest
     @Test
     public void respondsWithErrorOnUnsuccessfulLock() throws ComponentLookupException
     {
-        Mockito.doReturn(patient).when(pr).getPatientById(Matchers.anyString());
-        Mockito.doReturn(false).when(lockManager).lockPatientRecord(patient);
+        Mockito.doReturn(this.patient).when(this.pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(false).when(this.lockManager).lockPatientRecord(this.patient);
 
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, lockingService.lockPatient("123"));
@@ -85,7 +85,7 @@ public class RecordLockingScriptTest
     @Test
     public void respondsWithErrorWhenLockingNonExistentPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(null).when(this.pr).getPatientById(Matchers.anyString());
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, lockingService.lockPatient("123"));
     }
@@ -93,8 +93,8 @@ public class RecordLockingScriptTest
     @Test
     public void respondsOkOnSuccessfulUnlock() throws ComponentLookupException
     {
-        Mockito.doReturn(patient).when(pr).getPatientById(Matchers.anyString());
-        Mockito.doReturn(true).when(lockManager).unlockPatientRecord(patient);
+        Mockito.doReturn(this.patient).when(this.pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(true).when(this.lockManager).unlockPatientRecord(this.patient);
 
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_OK, lockingService.unlockPatient("123"));
@@ -103,8 +103,8 @@ public class RecordLockingScriptTest
     @Test
     public void respondsWithErrorOnUnsuccessfulUnlock() throws ComponentLookupException
     {
-        Mockito.doReturn(patient).when(pr).getPatientById(Matchers.anyString());
-        Mockito.doReturn(false).when(lockManager).lockPatientRecord(patient);
+        Mockito.doReturn(this.patient).when(this.pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(false).when(this.lockManager).lockPatientRecord(this.patient);
 
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, lockingService.unlockPatient("123"));
@@ -113,18 +113,18 @@ public class RecordLockingScriptTest
     @Test
     public void respondsWithErrorWhenUnlockingNonExistentPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(pr).getPatientById(Matchers.anyString());
+        Mockito.doReturn(null).when(this.pr).getPatientById(Matchers.anyString());
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
         Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, lockingService.lockPatient("123"));
     }
 
     @Test
-    public void isLockedCallsInternalLockManager () throws ComponentLookupException
+    public void isLockedCallsInternalLockManager() throws ComponentLookupException
     {
-        Mockito.doReturn(true).when(lockManager).isLocked(patient);
+        Mockito.doReturn(true).when(this.lockManager).isLocked(this.patient);
         RecordLockingService lockingService = this.mocker.getComponentUnderTest();
-        lockingService.isLocked(patient);
-        verify(lockManager).isLocked(patient);
+        lockingService.isLocked(this.patient);
+        verify(this.lockManager).isLocked(this.patient);
     }
 
 }

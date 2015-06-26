@@ -50,6 +50,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Tests for the {@link DefaultPatientRecordLockManager}.
+ *
  * @version $Id$
  */
 public class DefaultPatientRecordLockManagerTest
@@ -85,62 +86,61 @@ public class DefaultPatientRecordLockManagerTest
     @Mock
     private PatientAccess patientAccess;
 
-
-
     @Before
     public void setup() throws ComponentLookupException, XWikiException
     {
         MockitoAnnotations.initMocks(this);
 
-        //Mock injected components
+        // Mock injected components
         this.pm = this.mocker.getInstance(PermissionsManager.class);
         this.manageAccessLevel = this.mocker.getInstance(AccessLevel.class, "manage");
 
-        //Provider is special and must be mocked differently
+        // Provider is special and must be mocked differently
         ParameterizedType cpType = new DefaultParameterizedType(null, Provider.class, XWikiContext.class);
-        contextProvider = this.mocker.getInstance(cpType);
+        this.contextProvider = this.mocker.getInstance(cpType);
 
-        //Common behaviour to mock
-        Mockito.doReturn(context).when(contextProvider).get();
-        Mockito.doReturn(xwiki).when(context).getWiki();
-        Mockito.doReturn(patientDocumentReference).when(patient).getDocument();
-        Mockito.doReturn(patientDocument).when(xwiki).getDocument(patientDocumentReference, context);
-        Mockito.doReturn(patientAccess).when(pm).getPatientAccess(patient);
+        // Common behaviour to mock
+        Mockito.doReturn(this.context).when(this.contextProvider).get();
+        Mockito.doReturn(this.xwiki).when(this.context).getWiki();
+        Mockito.doReturn(this.patientDocumentReference).when(this.patient).getDocument();
+        Mockito.doReturn(this.patientDocument).when(this.xwiki).getDocument(this.patientDocumentReference,
+            this.context);
+        Mockito.doReturn(this.patientAccess).when(this.pm).getPatientAccess(this.patient);
 
     }
 
     @Test
     public void canLockPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
 
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertTrue(mockedLockManager.lockPatientRecord(patient));
+        Assert.assertTrue(mockedLockManager.lockPatientRecord(this.patient));
     }
 
     @Test
     public void wontLockWithoutManageAccess() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(false).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.lockPatientRecord(patient));
+        Assert.assertFalse(mockedLockManager.lockPatientRecord(this.patient));
     }
 
     @Test
     public void wontLockLockedPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(lock).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(this.lock).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.lockPatientRecord(patient));
+        Assert.assertFalse(mockedLockManager.lockPatientRecord(this.patient));
     }
 
     @Test
     public void returnsFalseWhenLockingNullPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
         Assert.assertFalse(mockedLockManager.lockPatientRecord(null));
@@ -149,63 +149,61 @@ public class DefaultPatientRecordLockManagerTest
     @Test
     public void canUnlockPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(lock).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(this.lock).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertTrue(mockedLockManager.unlockPatientRecord(patient));
+        Assert.assertTrue(mockedLockManager.unlockPatientRecord(this.patient));
     }
 
     @Test
     public void wontUnlockWithoutManageAccess() throws ComponentLookupException
     {
-        Mockito.doReturn(lock).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(this.lock).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(false).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.unlockPatientRecord(patient));
+        Assert.assertFalse(mockedLockManager.unlockPatientRecord(this.patient));
     }
-
 
     @Test
     public void wontUnlockUnlockedPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.unlockPatientRecord(patient));
+        Assert.assertFalse(mockedLockManager.unlockPatientRecord(this.patient));
     }
 
     @Test
     public void returnsFalseWhenUnlockingNullPatient() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         Mockito.doReturn(true).when(this.patientAccess).hasAccessLevel(this.manageAccessLevel);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
         Assert.assertFalse(mockedLockManager.unlockPatientRecord(null));
     }
 
-
     @Test
     public void testIsLockedTrue() throws ComponentLookupException
     {
-        Mockito.doReturn(lock).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(this.lock).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertTrue(mockedLockManager.isLocked(patient));
+        Assert.assertTrue(mockedLockManager.isLocked(this.patient));
     }
 
     @Test
     public void testIsLockedFalse() throws ComponentLookupException
     {
-        Mockito.doReturn(null).when(patientDocument).getXObject(Matchers.<EntityReference>any());
+        Mockito.doReturn(null).when(this.patientDocument).getXObject(Matchers.<EntityReference>any());
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.isLocked(patient));
+        Assert.assertFalse(mockedLockManager.isLocked(this.patient));
     }
 
     @Test
     public void returnsFalseAfterXWikiExceptionWhileRetrievingDocument() throws ComponentLookupException, XWikiException
     {
-        Mockito.doThrow(new XWikiException()).when(xwiki).getDocument(patientDocumentReference, context);
+        Mockito.doThrow(new XWikiException()).when(this.xwiki).getDocument(this.patientDocumentReference, this.context);
         PatientRecordLockManager mockedLockManager = this.mocker.getComponentUnderTest();
-        Assert.assertFalse(mockedLockManager.lockPatientRecord(patient));
+        Assert.assertFalse(mockedLockManager.lockPatientRecord(this.patient));
     }
 
 }
