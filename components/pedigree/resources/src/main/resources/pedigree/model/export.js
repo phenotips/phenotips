@@ -227,11 +227,10 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        }
 
        var sex = "M";
-       if (pedigree.GG.properties[i]["gender"] == "F") {
+       var gender = pedigree.GG.properties[i]["gender"];
+       if (gender == "F") {
            sex = "F";
-       } else if (pedigree.GG.properties[i]["gender"] == "O") {
-           sex = "U";
-       } else if (pedigree.GG.properties[i]["gender"] == "U") {
+       } else if (gender == "U" || gender == "O") {
            // check partner gender(s) and if possible assign the opposite gender
            var possibleGenders = dynamicPedigree.getPossibleGenders(i);
            if (!possibleGenders["F"] && !possibleGenders["M"]) {
@@ -351,8 +350,8 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        }
        if (alertUnknownGenderFound) {
            warningText += (numberWarnings ? "1) " : "") +
-                           "BOADICEA format does not support unknown genders.\n\n" +
-                          "All persons of unknown gender were either assigned a gender "+
+                           "BOADICEA format does not support unknown or other genders.\n\n" +
+                          "All persons of unknown or other gender were either assigned a gender "+
                           "opposite to their partner's gender or saved as male in the export file";
        }
        if (warnAboutMissingDOB) {
