@@ -50,6 +50,8 @@ public class HeadCircumferenceTest
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 36, 50.22));
         Assert.assertEquals(1, this.mocker.getComponentUnderTest().valueToPercentile(true, 24, 46.01));
         Assert.assertEquals(92, this.mocker.getComponentUnderTest().valueToPercentile(false, 24, 49.80));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 192, 55.77));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(false, 192, 54.31));
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 1000, 56.75));
     }
 
@@ -62,6 +64,10 @@ public class HeadCircumferenceTest
         Assert.assertEquals(-2.21, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 24, 46.01),
             1.0E-2);
         Assert.assertEquals(1.39, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 24, 49.80),
+            1.0E-2);
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 192, 55.77),
+            1.0E-2);
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 192, 54.31),
             1.0E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 56.75), 1.0E-2);
     }
@@ -78,6 +84,8 @@ public class HeadCircumferenceTest
         Assert.assertEquals(50.22, this.mocker.getComponentUnderTest().percentileToValue(true, 36, 50), 1.0E-2);
         Assert.assertEquals(46.47, this.mocker.getComponentUnderTest().percentileToValue(true, 24, 3), 1.0E-2);
         Assert.assertEquals(50.11, this.mocker.getComponentUnderTest().percentileToValue(false, 24, 95), 1.0E-2);
+        Assert.assertEquals(55.77, this.mocker.getComponentUnderTest().percentileToValue(true, 192, 50), 1.0E-2);
+        Assert.assertEquals(54.31, this.mocker.getComponentUnderTest().percentileToValue(false, 192, 50), 1.0E-2);
         Assert.assertEquals(56.75, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
     }
 
@@ -91,6 +99,8 @@ public class HeadCircumferenceTest
             1.0E-2);
         Assert.assertEquals(50.11, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 24, 1.645),
             1.0E-2);
+        Assert.assertEquals(54.31, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 192, 0), 1.0E-2);
+        Assert.assertEquals(54.31, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 192, 0), 1.0E-2);
         Assert.assertEquals(56.75, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
     }
 
