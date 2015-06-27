@@ -38,6 +38,8 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link org.phenotips.recordLocking.script.RecordLockingService}
+ *
+ * @version $Id$
  */
 public class RecordLockingScriptTest
 {

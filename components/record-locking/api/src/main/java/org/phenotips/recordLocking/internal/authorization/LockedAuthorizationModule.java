@@ -42,7 +42,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * regardless of which user is trying to edit the document.
  *
  * @version $Id$
- * @since 1.2
+ * @since 1.2RC1
  */
 @Component
 @Named("locked")
