@@ -87,7 +87,7 @@ public class ProcessingImpl implements Processing
 
     @Override
     public StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
-            throws XWikiException, NamingException, QueryException
+        throws XWikiException, NamingException, QueryException
     {
         LogicInterDependantVariables variables = new LogicInterDependantVariables();
         variables.json = json;
@@ -123,7 +123,7 @@ public class ProcessingImpl implements Processing
     }
 
     private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables)
-            throws XWikiException
+        throws XWikiException
     {
         if (variables.familyDoc != null) {
             StatusResponse individualAccess = this.canAddEveryMember(variables.familyDoc, variables.updatedMembers);
@@ -139,7 +139,7 @@ public class ProcessingImpl implements Processing
             }
             // storing first, because pedigree depends on this.
             StatusResponse storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
-                    .updatedMembers, variables.json, variables.image);
+                .updatedMembers, variables.json, variables.image);
             if (storingResponse.statusCode != 200) {
                 variables.response = storingResponse;
                 return variables;
@@ -160,7 +160,7 @@ public class ProcessingImpl implements Processing
             // when saving just a patient's pedigree that does not belong to a family
             XWikiContext context = this.provider.get();
             PedigreeUtils.storePedigreeWithSave(variables.anchorDoc, variables.json, variables.image, context,
-                    context.getWiki());
+                context.getWiki());
         }
         return variables;
     }
@@ -170,7 +170,7 @@ public class ProcessingImpl implements Processing
      * family and patient records.
      */
     private LogicInterDependantVariables executePreUpdateLogic(LogicInterDependantVariables variables)
-            throws XWikiException, NamingException, QueryException
+        throws XWikiException, NamingException, QueryException
     {
         if (variables.updatedMembers.size() < 1) {
             // the list of members should not be empty.
@@ -196,23 +196,29 @@ public class ProcessingImpl implements Processing
     }
 
     /**
-     * Used to pass around variables for logic heavy functions inside {@link #processPatientPedigree(String,
-     * JSONObject, String)}.
+     * Used to pass around variables for logic heavy functions inside
+     * {@link #processPatientPedigree(String, JSONObject, String)}.
      */
     private class LogicInterDependantVariables
     {
         protected StatusResponse response = new StatusResponse();
 
         protected JSONObject json;
+
         protected String image;
 
         protected XWikiDocument familyDoc;
+
         protected XWikiDocument anchorDoc;
+
         protected DocumentReference anchorRef;
+
         protected String anchorId;
 
         protected List<String> updatedMembers = new LinkedList<>();
+
         protected List<String> members = new LinkedList<>();
+
         protected boolean isNew;
     }
 
@@ -223,13 +229,14 @@ public class ProcessingImpl implements Processing
      * @param patientIds List of PhenoTips patient IDs of patients in the family.
      * @throws XWikiException TODO: review if need to throw on error.
      */
+    @Override
     public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-            XWikiException
+        XWikiException
     {
         XWikiContext context = this.provider.get();
         BaseObject rightsObject = getDefaultRightsObject(familyDocument);
         if (rightsObject == null) {
-            logger.error("Could not find a permission object attached to the family document "
+            this.logger.error("Could not find a permission object attached to the family document "
                 + familyDocument.getDocumentReference().getName());
             return;
         }
@@ -311,7 +318,7 @@ public class ProcessingImpl implements Processing
      * @throws XWikiException
      */
     private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
-                                                     JSON familyContents, String image) throws XWikiException
+        JSON familyContents, String image) throws XWikiException
     {
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
@@ -332,7 +339,7 @@ public class ProcessingImpl implements Processing
      * Removes records from the family that are no longer in the updated family structure.
      */
     private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers)
-            throws XWikiException
+        throws XWikiException
     {
         List<String> toRemove = new LinkedList<>();
         toRemove.addAll(currentMembers);
@@ -353,7 +360,7 @@ public class ProcessingImpl implements Processing
                     PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
                     if (pedigree != null) {
                         JSONObject strippedPedigree =
-                                this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
+                            this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
                         String image = SvgUpdater.removeLinks(pedigree.getImage(), oldMemberId);
                         PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
                     }
@@ -370,10 +377,10 @@ public class ProcessingImpl implements Processing
     {
         if (pedigree != null) {
             List<JSONObject> patientProperties =
-                    PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
+                PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
             for (JSONObject properties : patientProperties) {
                 if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
-                        .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId)) {
+                    .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId)) {
                     properties.remove(PATIENT_LINK_JSON_KEY);
                 }
             }
@@ -384,7 +391,7 @@ public class ProcessingImpl implements Processing
     }
 
     private void addNewMembers(List<String> currentMembers, List<String> updatedMembers, XWikiDocument familyDoc)
-            throws XWikiException
+        throws XWikiException
     {
         List<String> newMembers = new LinkedList<>();
         newMembers.addAll(updatedMembers);

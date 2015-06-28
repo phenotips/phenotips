@@ -72,6 +72,7 @@ public class FamilyScriptService implements ScriptService
 
     /**
      * Always creates a new family, with no family members.
+     *
      * @return reference to the new family document. Can be {@link null}
      */
     public DocumentReference createFamily()
@@ -135,7 +136,7 @@ public class FamilyScriptService implements ScriptService
         try {
             XWikiDocument doc = this.utils.getFromDataSpace(id);
             XWikiDocument familyDoc = this.utils.getFamilyDoc(doc);
-            return familyInformation.getBasicInfo(familyDoc);
+            return this.familyInformation.getBasicInfo(familyDoc);
         } catch (XWikiException ex) {
             this.logger.error(FAMILY_NOT_FOUND, ex.getMessage());
             return new JSONObject(true);
@@ -152,7 +153,7 @@ public class FamilyScriptService implements ScriptService
     public JSON getPedigree(String id)
     {
         try {
-            return PedigreeUtils.getPedigree(id, utils);
+            return PedigreeUtils.getPedigree(id, this.utils);
         } catch (XWikiException ex) {
             this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
                 id, ex.getMessage());
@@ -164,11 +165,11 @@ public class FamilyScriptService implements ScriptService
      * Verifies that a patient can be added to a family.
      *
      * @param thisId could be a family id or a patient id. If it is a patient id, finds the family that the patient
-     * belongs to. This family is the one into which the `otherId` patient is added to
+     *            belongs to. This family is the one into which the `otherId` patient is added to
      * @param otherId must be a valid patient id
      * @return {@link JSON} with 'validLink' field set to {@link false} if everything is ok, or {@link false} if the
-     * `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also contain
-     * 'errorMessage' and 'errorType'
+     *         `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also
+     *         contain 'errorMessage' and 'errorType'
      */
     public JSON verifyLinkable(String thisId, String otherId)
     {
@@ -183,13 +184,15 @@ public class FamilyScriptService implements ScriptService
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
      * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
-     * processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient does belong
-     * to a family, or a family id is passed in as the `anchorId`, there is processing of the pedigree, which is then
-     * saved to all patient records that belong to the family and the family documents itself.
+     *            processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
+     *            does belong to a family, or a family id is passed in as the `anchorId`, there is processing of the
+     *            pedigree, which is then saved to all patient records that belong to the family and the family
+     *            documents itself.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
      * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
-     * error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and 'errorType'
+     *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
+     *         'errorType'
      */
     public JSON processPedigree(String anchorId, String json, String image)
     {
@@ -202,15 +205,16 @@ public class FamilyScriptService implements ScriptService
 
     /**
      * Family page should aggregate medical reports of all its members.
+     *
      * @param familyDoc to determine which patients' reports should be included
      * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
      */
     public Map<String, Map<String, String>> getReports(XWikiDocument familyDoc)
     {
         try {
-            return familyInformation.getMedicalReports(familyDoc);
+            return this.familyInformation.getMedicalReports(familyDoc);
         } catch (Exception ex) {
-            logger.error("Could not retrieve medical reports from all members of the family. {}", ex.getMessage());
+            this.logger.error("Could not retrieve medical reports from all members of the family. {}", ex.getMessage());
             return new HashMap<>();
         }
     }

@@ -190,7 +190,7 @@ var SaveLoadEngine = Class.create( {
                             alert("Gender defined in Phenotips for patient " + patient + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
                     }
                 }
-                
+
                 var JSONString = _this.serialize();
 
                 editor.getActionStack().addState(null, null, JSONString);

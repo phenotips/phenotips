@@ -53,7 +53,7 @@ public final class PedigreeUtils
      * XWiki class that holds pedigree data (image, structure, etc).
      */
     public static final EntityReference PEDIGREE_CLASS =
-            new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String DATA = "data";
 
@@ -105,17 +105,17 @@ public final class PedigreeUtils
     }
 
     /**
-     * Does not do permission checks. Modifies pedigree's image style. Stores the modified image, and data (as is)
-     * into the `document`.
+     * Does not do permission checks. Modifies pedigree's image style. Stores the modified image, and data (as is) into
+     * the `document`.
      *
      * @param document destination for storing the pedigree
      * @param pedigree data section of a pedigree
-     * @param image    could be null. If it is, no changes will be made to the image.
-     * @param context  needed for XWiki calls
+     * @param image could be null. If it is, no changes will be made to the image.
+     * @param context needed for XWiki calls
      * @throws XWikiException one of many possible XWiki exceptions
      */
     public static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context)
-            throws XWikiException
+        throws XWikiException
     {
         BaseObject pedigreeObject = document.getXObject(PedigreeUtils.PEDIGREE_CLASS);
         if (image != null) {
@@ -130,13 +130,13 @@ public final class PedigreeUtils
      *
      * @param document {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
      * @param pedigree {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param image    {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param context  {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param wiki     Used for saving the `document`
+     * @param image {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param context {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
+     * @param wiki Used for saving the `document`
      * @throws XWikiException one of many possible XWikiExceptions
      */
     public static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
-                                             XWiki wiki) throws XWikiException
+        XWiki wiki) throws XWikiException
     {
         PedigreeUtils.storePedigree(document, pedigree, image, context);
         wiki.saveDocument(document, context);
@@ -146,8 +146,8 @@ public final class PedigreeUtils
      * Retrieves a pedigree (both image and data).
      *
      * @param doc in which to look for a pedigree
-     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there
-     * is no pedigree, or the existing pedigree.
+     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
+     *         no pedigree, or the existing pedigree.
      */
     public static Pedigree getPedigree(XWikiDocument doc)
     {
@@ -170,11 +170,11 @@ public final class PedigreeUtils
     }
 
     /**
-     * Overwrites a pedigree in one document given an existing pedigree in another document.
-     * Will not throw an exception if fails. Does not save any documents.
+     * Overwrites a pedigree in one document given an existing pedigree in another document. Will not throw an exception
+     * if fails. Does not save any documents.
      *
-     * @param from    in which to look for an existing pedigree
-     * @param to      into which document to copy the pedigree found in the `from` document
+     * @param from in which to look for an existing pedigree
+     * @param to into which document to copy the pedigree found in the `from` document
      * @param context needed for overwriting pedigree fields in the `to` document
      */
     public static void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
@@ -194,7 +194,6 @@ public final class PedigreeUtils
             // do nothing
         }
     }
-
 
     /**
      * A patient can either have their own pedigree or a family pedigree (if they belong to one).

@@ -143,12 +143,12 @@ public class JsonAdapterImpl implements JsonAdapter
         if (ex.containsKey(dob)) {
             inter.put("date_of_birth", format.format(
                 JsonAdapterImpl.pedigreeDateToDate(ex.getJSONObject(dob))
-            ));
+                ));
         }
         if (ex.containsKey(dod)) {
             inter.put("date_of_death", format.format(
                 JsonAdapterImpl.pedigreeDateToDate(ex.getJSONObject(dod))
-            ));
+                ));
         }
         return inter;
     }

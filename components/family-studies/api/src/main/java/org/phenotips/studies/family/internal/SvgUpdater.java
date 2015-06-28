@@ -51,7 +51,7 @@ public final class SvgUpdater
     /**
      * Removes all HTML links from a SVG, except for the current patient's link.
      *
-     * @param svg              which to parse for links
+     * @param svg which to parse for links
      * @param currentPatientId whose link should not be removed
      * @return SVG with `<a></a>` corresponding to patient records cut out
      */
@@ -59,9 +59,9 @@ public final class SvgUpdater
     {
         // must be a list, so that the iterator will return links in order they occur
         List<SvgElementHolder> links =
-                SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
+            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
         Iterable<SvgElementHolder> labels =
-                SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgTextParser());
+            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgTextParser());
 
         links = SvgUpdater.filterByCurrentPatient(links, currentPatientId, true);
         labels = SvgUpdater.synchronizeOnNodeIds(labels, links);
@@ -143,7 +143,7 @@ public final class SvgUpdater
      * Gets a node id from any string (usually SVG id or class attributes).
      *
      * @return -1 if {@link SvgElementHolder#nodeIdTokenStart} is -1 or if fails to find a numeric node id. Otherwise
-     * returns the node id
+     *         returns the node id
      */
     private static int parseNodeIdFromElement(SvgElementHolder element, String tokenStartString)
     {
@@ -202,7 +202,7 @@ public final class SvgUpdater
      * Concatenates parts of the svg that are not links to patient records.
      *
      * @param elements must be a deterministic iterator, returning links in order that they occur in the svg
-     * @param svg      must not be null
+     * @param svg must not be null
      * @return modified svg
      */
     private static String applyActionToSvg(Iterator<SvgElementHolder> elements, SvgAction action, String svg)
@@ -233,7 +233,7 @@ public final class SvgUpdater
 
                 Double newYPosition = yPosition + shiftBy;
                 element.content = element.content.substring(0, startYPosition) + newYPosition.toString()
-                        + element.content.substring(endYPosition);
+                    + element.content.substring(endYPosition);
             }
         }
         return elements;
@@ -244,7 +244,7 @@ public final class SvgUpdater
      * determined by {@link SvgElementHolder}s `nodeId`.
      *
      * @param toSynchronize from which elements will be removed
-     * @param authority     the authority that decides which elements should be removed
+     * @param authority the authority that decides which elements should be removed
      * @return toSynchronize
      */
     private static Iterable<SvgElementHolder> synchronizeOnNodeIds(Iterable<SvgElementHolder> toSynchronize,
@@ -270,17 +270,17 @@ public final class SvgUpdater
     /**
      * Processes the SVG to visually mark a patient with current patient style.
      *
-     * @param svg       can not be null
+     * @param svg can not be null
      * @param patientId the id of the patient that should be visually marked as current
      * @return svg with the style for current patient applied to the node with id `currentUserId` and proband style
-     * retained
+     *         retained
      */
     public static String setPatientStylesInSvg(String svg, String patientId)
     {
         List<SvgElementHolder> links =
-                SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
+            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
         List<SvgElementHolder> nodeShapes =
-                SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgNodeShapeParser());
+            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgNodeShapeParser());
 
         // would be appropriate to rename these to currentPatientLinks
         links = SvgUpdater.filterByCurrentPatient(links, patientId, false);
@@ -291,7 +291,7 @@ public final class SvgUpdater
         probandShape = addProbandStyle(probandShape);
         // can only be 0 or 1
         Iterable<SvgElementHolder> currentPatientShape =
-                SvgUpdater.synchronizeOnNodeIds(copyIntoSetIterable(nodeShapes), links);
+            SvgUpdater.synchronizeOnNodeIds(copyIntoSetIterable(nodeShapes), links);
         currentPatientShape = addCurrentPatientStyle(currentPatientShape);
 
         String updatedSvg = SvgUpdater.applyActionToSvg(nodeShapes.iterator(), new SvgUpdateAction(), svg);
@@ -348,11 +348,11 @@ public final class SvgUpdater
             int tokenStart = element.content.indexOf(STROKE_ATTR_TOKEN);
             int tokenEnd = element.content.indexOf('"', tokenStart + STROKE_ATTR_TOKEN.length());
             element.content = element.content.substring(0, tokenStart + STROKE_ATTR_TOKEN.length()) + width + element
-                    .content.substring(tokenEnd);
+                .content.substring(tokenEnd);
         } else {
             int closingBracketPos = element.content.indexOf('>');
             element.content = element.content.substring(0, closingBracketPos) + " " + STROKE_ATTR_TOKEN + width + '"'
-                    + element.content.substring(closingBracketPos);
+                + element.content.substring(closingBracketPos);
         }
         return element;
     }
@@ -502,12 +502,15 @@ public final class SvgUpdater
     {
         protected static final String PEDIGREE_NODE_ID = "pedigreeNodeID=\"";
 
+        @Override
         public abstract List<String> getSvgTagOpen();
 
+        @Override
         public abstract List<String> getSvgTagClosed();
 
         protected abstract String getNodeIdTokenStartString();
 
+        @Override
         public abstract boolean test(String testPiece);
 
         protected abstract void performAdditionalOperations(SvgElementHolder holder);

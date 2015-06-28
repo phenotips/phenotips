@@ -315,7 +315,8 @@ public class FamilyUtilsImpl implements FamilyUtils
         return fullRights;
     }
 
-    private List<String> removeEmptyFromArray(String[] array) {
+    private List<String> removeEmptyFromArray(String[] array)
+    {
         List<String> cleanList = new LinkedList<>();
         for (String element : array) {
             if (StringUtils.isNotBlank(element)) {

@@ -172,7 +172,7 @@ public class ValidationImpl implements Validation
     public boolean hasPatientEditAccess(String patientId)
     {
         User currentUser = this.userManager.getCurrentUser();
-        return hasPatientAccess(patientRepository.getPatientById(patientId), this.editAccess, currentUser);
+        return hasPatientAccess(this.patientRepository.getPatientById(patientId), this.editAccess, currentUser);
     }
 
     @Override
