@@ -18,7 +18,7 @@ BaseGraph = function ( defaultPersonNodeWidth, defaultNonPersonNodeWidth )
     this.weights  = [];        // for each V contains outgoing edge weights as {target1: weight1, t2: w2}
 
     this.type       = [];      // for each V node type (see TYPE)
-    this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"U", etc.}
+    this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"O"/"U", etc.}
 
     this.vWidth = [];
     this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 10;
@@ -610,6 +610,9 @@ BaseGraph.prototype = {
             throw "Assertion failed: attempting to get gender of a non-person";
 
         if (this.getGender(v) == "U") {
+            return "U";
+        }
+        else if(this.getGender(v) == "O") {
             return "U";
         }
         else if(this.getGender(v) == "M") {

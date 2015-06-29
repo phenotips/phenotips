@@ -51,7 +51,7 @@ var PedigreeEditor = Class.create({
         this._probandData = new ProbandDataLoader();
 
         this._preferencesManager.load( function() {
-                // load proband data and load the graph after proband data is available 
+                // load proband data and load the graph after proband data is available
                 this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
                 // generate various dialogues after preferences have been loaded
@@ -372,8 +372,8 @@ var PedigreeEditor = Class.create({
 
     /**
      * Returns true if any of the node menus are visible
-     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom) 
-     * 
+     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom)
+     *
      * @method isAnyMenuVisible
      */
     isAnyMenuVisible: function() {
@@ -414,6 +414,7 @@ var PedigreeEditor = Class.create({
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
                     { 'actual' : 'F', 'displayed' : 'Female' },
+                    { 'actual' : 'O', 'displayed' : 'Other' },
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
@@ -647,6 +648,7 @@ var PedigreeEditor = Class.create({
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
                     { 'actual' : 'F', 'displayed' : 'Female' },
+                    { 'actual' : 'O', 'displayed' : 'Other' },
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
@@ -844,6 +846,7 @@ PedigreeEditor.attributes = {
     evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
     nodeShapeFemale: {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
     nodeShapeMale:   {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#696969"},
+    nodeShapeOther:  {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     nodeShapeDiag:   {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     nodeShapeAborted:{fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
     nodeShapeMenuOn:         {fill: "#000", stroke: "none", "fill-opacity": 0.1},
