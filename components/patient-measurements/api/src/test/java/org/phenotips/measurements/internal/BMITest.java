@@ -138,14 +138,14 @@ public class BMITest
     @Test
     public void testValueToStandardDeviation() throws ComponentLookupException
     {
-        Assert.assertEquals(0, getComponent().valueToStandardDeviation(true, 0, 3.34, 49.9), 1.0E-2);//
-        Assert.assertEquals(0, getComponent().valueToStandardDeviation(false, 0, 3.32, 49.9), 1.0E-2);//
-        Assert.assertEquals(-1, getComponent().valueToStandardDeviation(true, 42, 14.26, 100.0), 1.0E-2);//
-        Assert.assertEquals(1, getComponent().valueToStandardDeviation(true, 42, 16.76, 100.0), 1.0E-2);//
-        Assert.assertEquals(-2, getComponent().valueToStandardDeviation(true, 42, 13.19, 100.0), 1.0E-2);//
-        Assert.assertEquals(2, getComponent().valueToStandardDeviation(true, 42, 18.21, 100.0), 1.0E-2);//
-        Assert.assertEquals(-3, getComponent().valueToStandardDeviation(true, 42, 12.22, 100.0), 1.0E-2);//
-        Assert.assertEquals(3, getComponent().valueToStandardDeviation(true, 42, 19.85, 100.0), 1.0E-2);//
+        Assert.assertEquals(0, getComponent().valueToStandardDeviation(true, 0, 3.34, 49.9), 1.0E-2);
+        Assert.assertEquals(0, getComponent().valueToStandardDeviation(false, 0, 3.32, 49.9), 1.0E-2);
+        Assert.assertEquals(-1, getComponent().valueToStandardDeviation(true, 42, 14.26, 100.0), 1.0E-2);
+        Assert.assertEquals(1, getComponent().valueToStandardDeviation(true, 42, 16.76, 100.0), 1.0E-2);
+        Assert.assertEquals(-2, getComponent().valueToStandardDeviation(true, 42, 13.19, 100.0), 1.0E-2);
+        Assert.assertEquals(2, getComponent().valueToStandardDeviation(true, 42, 18.21, 100.0), 1.0E-2);
+        Assert.assertEquals(-3, getComponent().valueToStandardDeviation(true, 42, 12.22, 100.0), 1.0E-2);
+        Assert.assertEquals(3, getComponent().valueToStandardDeviation(true, 42, 19.85, 100.0), 1.0E-2);
     }
 
     @Test
