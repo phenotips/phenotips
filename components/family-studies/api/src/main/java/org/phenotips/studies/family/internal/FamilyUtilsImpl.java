@@ -385,4 +385,11 @@ public class FamilyUtilsImpl implements FamilyUtils
             return familyObject.getStringValue("warning_message");
         }
     }
+
+    @Override
+    public String getViewUrl(DocumentReference ref)
+    {
+        XWikiContext context = provider.get();
+        return context.getWiki().getURL(ref, "view", context);
+    }
 }

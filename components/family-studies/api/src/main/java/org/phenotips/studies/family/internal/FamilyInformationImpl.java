@@ -80,7 +80,7 @@ public class FamilyInformationImpl implements FamilyInformation
             FamilyMemberPermissionsJson permissions = new FamilyMemberPermissionsJson();
             permissions.setViewRights(patient, user).setEditRights(patient, user);
             member.setId(patient).setExternalId(patient).setName(patient).setMedicalReports(patient, user, this)
-                .setPermissions(permissions);
+                .setUrl(patient, utils).setPermissions(permissions);
             family.addMember(member);
         }
 
@@ -179,6 +179,11 @@ public class FamilyInformationImpl implements FamilyInformation
             FamilyInformationImpl familyInfo)
         {
             this.json.put("reports", familyInfo.getMedicalReports(patient, user));
+            return this;
+        }
+
+        public FamilyMemberInformationJson setUrl(Patient patient, FamilyUtils utils) {
+            this.json.put("url", utils.getViewUrl(patient.getDocument()));
             return this;
         }
 
