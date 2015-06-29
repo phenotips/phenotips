@@ -101,7 +101,7 @@ public class DefaultDomainObjectFactoryTest {
     public void createPatientDocumentExceptionReturnsNull() throws Exception {
         when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
-        
+
         doThrow(Exception.class).when(this.documentAccessBridge).getDocument(Matchers.any(DocumentReference.class));
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
@@ -163,7 +163,7 @@ public class DefaultDomainObjectFactoryTest {
     @Test
     public void createPatientFromSummaryNoAccess() throws Exception
     {
-        Object[] summary = {new Object()};
+        Object[] summary = {"", "", "", new Date(), "", "", new Date()};
         when(this.stringResolver.resolve(Matchers.anyString())).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
