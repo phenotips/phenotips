@@ -40,24 +40,23 @@
   <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-  $xwiki.ssx.use('PhenoTips.PatientSheetCode')
-  $xwiki.ssx.use('PhenoTips.FamilySheet')
-  $xwiki.jsx.use('PhenoTips.FamilySheet')
+  $xwiki.ssx.use('PhenoTips.PatientSheetCode')##
+  $xwiki.ssx.use('PhenoTips.FamilySheet')##
+  $xwiki.jsx.use('PhenoTips.FamilySheet')##
   #set($obj = $doc.getObject('PhenoTips.FamilyClass'))
-  #set($members = $obj.getProperty('members').getValue())
   #set($class = $obj.xWikiClass)
   #set($discard = $doc.use($obj))
   #set($familyInfo = $services.families.getFamilyInfo($doc.getName()))
   ##
   ## This is where all information about a family is inserted.
-  {{html clean='false'}}&lt;div id="family-info-json" class="hide"&gt;$familyInfo&lt;/div&gt;{{/html}}
-  ##
+  {{html clean='false'}}&lt;div id="family-info-json" class="hidden"&gt;$familyInfo&lt;/div&gt;{{/html}}
+
   #__hasDataToDisplay('external_id', $showExternalId)
   #if($showExternalId)
-  (% class='chapter clinical-info' %)(((
-    == $services.localization.render('phenotips.familysheet.section.identifier') ==
-    #__displayFormatted('2-col' 'external_id' '' '' '')
-  )))
+    (% class='chapter clinical-info' %)(((
+      == $services.localization.render('phenotips.familysheet.section.identifier') ==
+      #__displayFormatted('2-col' 'external_id' '' '' '')
+    )))
   #end
   {{html clean='false' wiki='true'}}
   #__hasDataToDisplay('members', $showMembers)
@@ -69,7 +68,7 @@
   #end
   ##
   #__hasDataToDisplay('reports', $showReports)
-  &lt;div id='reports' class='chapter clinical-info #if(!${showReports})hide#end'&gt;
+  &lt;div id='reports' class='chapter clinical-info #if(!${showReports})hidden#end'&gt;
     == $services.localization.render('phenotips.familysheet.section.reports') ==
     &lt;div class='fieldset'&gt;
     #if($showReports)$doc.display('reports', $obj)#end
@@ -387,119 +386,6 @@
     </property>
     <property>
       <parse>1</parse>
-    </property>
-    <property>
-      <use>currentPage</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.FamilySheet</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>772a81b5-d542-4a47-abf6-cf4f549fd4cb</guid>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>.hide {
-  display: none;
-}</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse/>
     </property>
     <property>
       <use>currentPage</use>
