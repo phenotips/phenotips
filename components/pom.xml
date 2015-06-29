@@ -43,6 +43,7 @@
     <module>solr-access-service</module>
     <module>vocabularies</module>
     <module>patient-data</module>
+    <module>patient-data-extra</module>
     <module>security</module>
     <module>patient-access-rules</module>
     <module>patient-data-sharing</module>

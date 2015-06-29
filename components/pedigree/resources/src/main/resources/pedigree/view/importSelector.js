@@ -29,12 +29,12 @@ var ImportSelector = Class.create( {
                     // some older browsers do not allow setting value of a file input element and may generate a security error
                 }
             })        
-            var uploadLink = new Element('div', {'class': 'import-upload'}).update("(<a>Select a local file to be imported</a>)");
-            uploadLink.observe('click', function(event) {
+            var uploadButton = new Element('input', {type: 'button', 'value': 'Select a local file to be imported', 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'});
+            uploadButton.observe('click', function(event) {
                 var fileElem = document.getElementById("pedigreeInputFile");
                 fileElem.click();
             })
-            mainDiv.insert(uploadFileSelector).insert(uploadLink);
+            mainDiv.insert(uploadFileSelector).insert(uploadButton);
         }
         
         var _addTypeOption = function (checked, labelText, value) {

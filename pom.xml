@@ -337,7 +337,7 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.2M2 -->
+            <!-- Remove the following ignores after we release 1.2 -->
             <difference>
               <className>org/phenotips/diagnosis/DiagnosisService</className>
               <differenceType>7004</differenceType>
@@ -385,6 +385,12 @@
               <from>org.phenotips.ontology.OntologyService</from>
               <to>org.phenotips.vocabulary.Vocabulary</to>
               <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/PatientData</className>
+              <differenceType>7012</differenceType>
+              <method>int size()</method>
+              <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
           </ignored>
           <excludes>

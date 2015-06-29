@@ -38,10 +38,11 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- *  An authorization module to check if a given Patient Document has a lock on it. Will return false if a lock is
- *  found regardless of which user is trying to edit the document.
+ * An authorization module to check if a given Patient Document has a lock on it. Will return false if a lock is found
+ * regardless of which user is trying to edit the document.
+ *
  * @version $Id$
- * @since 1.2
+ * @since 1.2RC1
  */
 @Component
 @Named("locked")
@@ -56,14 +57,16 @@ public class LockedAuthorizationModule implements AuthorizationModule
     @Inject
     private Provider<XWikiContext> contextProvider;
 
-    @Override public int getPriority()
+    @Override
+    public int getPriority()
     {
         return 110;
     }
 
-    @Override public Boolean hasAccess(User user, Right access, DocumentReference document)
+    @Override
+    public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        XWikiContext context = contextProvider.get();
+        XWikiContext context = this.contextProvider.get();
 
         try {
             XWikiDocument doc = context.getWiki().getDocument(document, context);

@@ -60,6 +60,8 @@ public class SexController implements PatientDataController<String>
 
     private static final String SEX_FEMALE = "F";
 
+    private static final String SEX_OTHER = "O";
+
     private static final String SEX_UNKNOWN = "U";
 
     private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
@@ -78,7 +80,9 @@ public class SexController implements PatientDataController<String>
 
     private String parseGender(String gender)
     {
-        return (StringUtils.equals(SEX_FEMALE, gender) || StringUtils.equals(SEX_MALE, gender)) ? gender : SEX_UNKNOWN;
+        return (StringUtils.equals(SEX_FEMALE, gender)
+            || StringUtils.equals(SEX_MALE, gender)
+            || StringUtils.equals(SEX_OTHER, gender)) ? gender : SEX_UNKNOWN;
     }
 
     @Override
