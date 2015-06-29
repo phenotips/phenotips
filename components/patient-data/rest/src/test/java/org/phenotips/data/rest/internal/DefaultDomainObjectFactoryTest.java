@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -113,7 +114,8 @@ public class DefaultDomainObjectFactoryTest {
         DocumentReference creatorDocument = mock(DocumentReference.class);
         UriBuilder uriBuilder = mock(UriBuilder.class);
         URI uri = new URI("uri");
-        Date creationDate = new Date(1);
+        Date creationDate = new Date(0);
+        DateTime creationDateTime = new DateTime(creationDate).withZone(DateTimeZone.UTC);
 
         when(this.patient.getDocument()).thenReturn(patientDocument);
         when(this.access.hasAccess(Right.VIEW, null, patientDocument)).thenReturn(true);
@@ -138,8 +140,8 @@ public class DefaultDomainObjectFactoryTest {
         assertEquals("creator", patientSummary.getCreatedBy());
         assertEquals("creator", patientSummary.getLastModifiedBy());
         assertEquals("version", patientSummary.getVersion());
-        assertTrue(patientSummary.getCreatedOn() instanceof DateTime);
-        assertTrue(patientSummary.getLastModifiedOn() instanceof DateTime);
+        assertEquals(creationDateTime, patientSummary.getCreatedOn());
+        assertEquals(creationDateTime, patientSummary.getLastModifiedOn());
         assertEquals(1, patientSummary.getLinks().size());
         assertEquals("uri", patientSummary.getLinks().get(0).getHref());
     }
@@ -154,7 +156,7 @@ public class DefaultDomainObjectFactoryTest {
     @Test
     public void createPatientFromSummaryWrongObjectTypes() throws Exception
     {
-        Object[] summary = {new Object(), new Object(), new Object(), new Object(), new Object(), new Object(), new Object()};
+        Object[] summary = new Object[7];
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
@@ -172,6 +174,8 @@ public class DefaultDomainObjectFactoryTest {
     {
         Date createdOn = new Date();
         Date modifiedOn = new Date();
+        DateTime createdOnDateTime = new DateTime(createdOn).withZone(DateTimeZone.UTC);
+        DateTime modifiedOnDateTime = new DateTime(modifiedOn).withZone(DateTimeZone.UTC);
         UriBuilder uriBuilder = mock(UriBuilder.class);
         URI uri = new URI("uri");
         DocumentReference documentReference = new DocumentReference("wikiname", "spacename", "pagename");
@@ -192,8 +196,8 @@ public class DefaultDomainObjectFactoryTest {
         assertEquals("creator", patientSummary.getCreatedBy());
         assertEquals("creator", patientSummary.getLastModifiedBy());
         assertEquals("version", patientSummary.getVersion());
-        assertTrue(patientSummary.getCreatedOn() instanceof DateTime);
-        assertTrue(patientSummary.getLastModifiedOn() instanceof DateTime);
+        assertEquals(createdOnDateTime, patientSummary.getCreatedOn());
+        assertEquals(modifiedOnDateTime, patientSummary.getLastModifiedOn());
         assertEquals(1, patientSummary.getLinks().size());
         assertEquals("uri", patientSummary.getLinks().get(0).getHref());
     }
