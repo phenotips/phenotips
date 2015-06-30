@@ -154,12 +154,12 @@ public class XWikiFamilyRepository implements FamilyRepository
     }
 
     /**
-     * Sets the reference to the family document in the patient document
-     * 
+     * Sets the reference to the family document in the patient document.
+     *
      * @param patientDoc to set the family reference
      * @param familyDoc family of the patient
-     * @param context
-     * @throws XWikiException
+     * @param context context
+     * @throws XWikiException error when creating a reference
      */
     // TODO should move to XWikiFamily?
     public static void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
