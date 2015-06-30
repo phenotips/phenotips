@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.rest.internal;
 
-import groovy.transform.stc.ThirdParam;
 import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.Mock;
@@ -35,9 +34,6 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.UserManager;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 public class DefaultPatientByExternalIdResourceImplTest {
 
     @Rule
@@ -46,6 +42,8 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
     @Mock
     private Patient patiet;
+
+    private EntityReferenceResolver<EntityReference> currentResolver;
 
     private Logger logger;
 
@@ -59,12 +57,16 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
     private UserManager users;
 
-    private EntityReferenceResolver<EntityReference> currentResolver;
-
     @Before
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.currentResolver = this.mocker.getInstance(EntityReferenceResolver.TYPE_STRING, "explicit");
+        this.currentResolver = this.mocker.getInstance(EntityReferenceResolver.TYPE_STRING, "current");
+        this.logger = this.mocker.getInstance(Logger.class);
+        this.repository = this.mocker.getInstance(PatientRepository.class);
+        this.factory = this.mocker.getInstance(DomainObjectFactory.class);
+        this.qm = this.mocker.getInstance(QueryManager.class);
+        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.users = this.mocker.getInstance(UserManager.class);
     }
 }
