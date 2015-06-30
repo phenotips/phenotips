@@ -27,7 +27,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
@@ -182,7 +181,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(true).when(this.access).hasAccess(Right.VIEW, null, null);
         doReturn(new JSONObject()).when(this.patient).toJSON();
 
-        Response response = this.patientResource.getPatient(this.id);
+        this.patientResource.getPatient(this.id);
 
         verify(this.logger).debug("Retrieving patient record [{}] via REST", this.id);
     }
@@ -318,7 +317,7 @@ public class DefaultPatientResourceImplTest {
 
         WebApplicationException ex = null;
         try {
-            Response response = this.patientResource.deletePatient(this.id);
+            this.patientResource.deletePatient(this.id);
         } catch(WebApplicationException temp) {
             ex = temp;
         }
