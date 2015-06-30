@@ -43,6 +43,8 @@ public interface FamilyRepository
     Family getFamilyById(String id);
 
     /**
+     * Creates a new empty family.
+     *
      * @return new Family object
      */
     Family createFamily();
