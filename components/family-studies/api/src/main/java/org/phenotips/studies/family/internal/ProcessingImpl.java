@@ -348,34 +348,48 @@ public class ProcessingImpl implements Processing
             XWikiContext context = this.provider.get();
             XWiki wiki = context.getWiki();
             for (String oldMemberId : toRemove) {
-                Patient patient = this.patientRepository.getPatientById(oldMemberId);
-                XWikiDocument patientDoc = null;
-                BaseObject familyRefObj = null;
-                if (patient != null) {
-                    patientDoc = wiki.getDocument(patient.getDocument(), context);
-                    familyRefObj = patientDoc.getXObject(FamilyUtils.FAMILY_REFERENCE);
-                }
-                if (familyRefObj != null) {
-                    patientDoc.removeXObject(familyRefObj);
-                    PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
-                    if (pedigree != null) {
-                        JSONObject strippedPedigree =
-                            this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
-                        String image = SvgUpdater.removeLinks(pedigree.getImage(), oldMemberId);
-                        PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
-                    }
-                    wiki.saveDocument(patientDoc, context);
+                this.removeMember(oldMemberId, wiki, context);
+            }
+        }
+    }
+
+    @Override
+    public void removeMember(String id, XWiki wiki, XWikiContext context) throws XWikiException
+    {
+        Patient patient = this.patientRepository.getPatientById(id);
+        XWikiDocument patientDoc = null;
+        BaseObject familyRefObj = null;
+        if (patient != null) {
+            patientDoc = wiki.getDocument(patient.getDocument(), context);
+            familyRefObj = patientDoc.getXObject(FamilyUtils.FAMILY_REFERENCE);
+        }
+        if (familyRefObj != null) {
+            patientDoc.removeXObject(familyRefObj);
+            PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
+            if (pedigree != null && !pedigree.isEmpty()) {
+                /* Should not prevent saving the document */
+                try {
+                    JSONObject strippedPedigree =
+                        this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
+                    String image = SvgUpdater.removeLinks(pedigree.getImage(), id);
+                    PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
+                } catch (Exception ex) {
+                    logger.error("Could not modify patients pedigree while removing from a family. {}",
+                        ex.getMessage());
                 }
             }
+            wiki.saveDocument(patientDoc, context);
         }
     }
 
     /**
      * Strips out all linked ids from a pedigree.
+     *
+     * @return null if the pedigree data is empty
      */
     private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId)
     {
-        if (pedigree != null) {
+        if (pedigree != null && !pedigree.isEmpty()) {
             List<JSONObject> patientProperties =
                 PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
             for (JSONObject properties : patientProperties) {

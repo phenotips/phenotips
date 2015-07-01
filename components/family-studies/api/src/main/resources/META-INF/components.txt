@@ -5,3 +5,4 @@ org.phenotips.studies.family.internal.ValidationImpl
 org.phenotips.studies.family.internal.JsonAdapterImpl
 org.phenotips.studies.family.internal.FamilyInformationImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener
+org.phenotips.studies.family.listener.FamilyDeletingListener
