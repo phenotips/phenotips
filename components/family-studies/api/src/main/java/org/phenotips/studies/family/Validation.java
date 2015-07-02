@@ -82,6 +82,14 @@ public interface Validation
     boolean hasPatientEditAccess(Patient patient, User user);
 
     /**
+     * Checks if current user has at least view access to a patient.
+     *
+     * @param patient must not be null
+     * @return true if has access; false otherwise
+     */
+    boolean hasPatientViewAccess(Patient patient);
+
+    /**
      * Checks if the user has at least view access to a patient.
      *
      * @param patient must not be null
