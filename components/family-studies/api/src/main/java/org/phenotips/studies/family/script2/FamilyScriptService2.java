@@ -77,6 +77,17 @@ public class FamilyScriptService2
     }
 
     /**
+     * Creates an empty family
+     *
+     * @return DocumentReference to the newly created family
+     */
+    public DocumentReference createFamily()
+    {
+        Family family = this.familyRepository.createFamily();
+        return family.getDocumentReference();
+    }
+
+    /**
      * Returns a reference to a patient's family, or null if doesn't exist. TODO - change call to pass patientId and not
      * XWikiDocument ($doc.getDocument() -> $doc.getDocument().getName()). Also change name to getFamilyForPatientId
      *
