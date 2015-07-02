@@ -81,18 +81,6 @@ public class DefaultPatientResourceImplTest {
         new MockitoComponentMockingRule<PatientResource>(DefaultPatientResourceImpl.class);
 
     @Mock
-    private Logger logger;
-
-    @Mock
-    private PatientRepository repository;
-
-    @Mock
-    private AuthorizationManager access;
-
-    @Mock
-    private UserManager users;
-
-    @Mock
     private User currentUser;
 
     @Mock
@@ -100,6 +88,14 @@ public class DefaultPatientResourceImplTest {
 
     @Mock
     private UriInfo uriInfo;
+
+    private Logger logger;
+
+    private PatientRepository repository;
+
+    private AuthorizationManager access;
+
+    private UserManager users;
 
     private URI uri;
 
@@ -122,6 +118,11 @@ public class DefaultPatientResourceImplTest {
         doReturn(mock(XWikiContext.class)).when(executionContext).getProperty("xwikicontext");
 
         this.patientResource = (DefaultPatientResourceImpl)this.mocker.getComponentUnderTest();
+        this.logger = this.mocker.getMockedLogger();
+        this.repository = this.mocker.getInstance(PatientRepository.class);
+        this.access = this.mocker.getInstance(AuthorizationManager.class);
+        this.users = this.mocker.getInstance(UserManager.class);
+
 
         doReturn(this.currentUser).when(this.users).getCurrentUser();
         doReturn(null).when(this.currentUser).getProfileDocument();
@@ -132,10 +133,6 @@ public class DefaultPatientResourceImplTest {
         this.uri = new URI(this.uriString);
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
 
-        ReflectionUtils.setFieldValue(this.patientResource, "logger", this.logger);
-        ReflectionUtils.setFieldValue(this.patientResource, "repository", this.repository);
-        ReflectionUtils.setFieldValue(this.patientResource, "access", this.access);
-        ReflectionUtils.setFieldValue(this.patientResource, "users", this.users);
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
     }
 
@@ -214,7 +211,7 @@ public class DefaultPatientResourceImplTest {
             ex = temp;
         }
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
-                "when the User did not have edit rights", ex);
+            "when the User did not have edit rights", ex);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
     }
