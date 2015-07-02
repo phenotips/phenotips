@@ -39,6 +39,9 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Tests for the {@link ConfigureISODatesInJson} component.
  *
@@ -90,12 +93,12 @@ public class ConfigureISODatesInJsonTest{
         converterList.add(converter);
         converterList.add(jacksonConverter);
         Engine.setInstance(engine);
-        Mockito.when(engine.getRegisteredConverters()).thenReturn(converterList);
-        Mockito.when(jacksonConverter.getObjectMapper()).thenReturn(objectMapper);
+        when(engine.getRegisteredConverters()).thenReturn(converterList);
+        when(jacksonConverter.getObjectMapper()).thenReturn(objectMapper);
 
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
 
-        Mockito.verify(objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        verify(objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 
 
     }
