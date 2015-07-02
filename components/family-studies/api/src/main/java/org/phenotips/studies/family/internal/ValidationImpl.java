@@ -176,6 +176,13 @@ public class ValidationImpl implements Validation
     }
 
     @Override
+    public boolean hasPatientEditAccess(Patient patient)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+        return hasPatientAccess(patient, this.editAccess, currentUser);
+    }
+
+    @Override
     public boolean hasPatientEditAccess(Patient patient, User user)
     {
         return hasPatientAccess(patient, this.editAccess, user);
