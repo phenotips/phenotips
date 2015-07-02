@@ -16,6 +16,7 @@ var Legend = Class.create( {
                                        // schemes, e.g. "green" for "that and that cancer", even
                                        // if that particular cancer is not yet present on the pedigree;
                                        // also used to assign the same disorder colors after save and load
+        this._previousHighightedNode = null;
 
         var legendContainer = $('legend-container');
         if (legendContainer == undefined) {
@@ -55,7 +56,7 @@ var Legend = Class.create( {
         });
 
         if (allowDrop) {
-            Droppables.add(editor.getWorkspace().canvas, {accept: 'drop-'+this._getPrefix(), onDrop: this._onDropWrapper.bind(this)});
+            Droppables.add(editor.getWorkspace().canvas, {accept: 'drop-'+this._getPrefix(), onDrop: this._onDropWrapper.bind(this), onHover: this._onHoverWrapper.bind(this)});
         }
     },
 
@@ -306,6 +307,35 @@ var Legend = Class.create( {
         if (node) {
             var id = label.select('input')[0].value;
             this._onDropObject(node, id);
+        }
+    },
+
+    /**
+     * Callback for moving around/hovering an object from the legend over nodes. Converts canvas coordinates
+     * to nodeID and calls the actual drop holder once the grunt UI work is done.
+     *
+     * @method _onHoverWrapper
+     * @param {HTMLElement} [label]
+     * @param {HTMLElement} [target]
+     * @param {int} [the percentage of overlapping]
+     * @private
+     */
+    _onHoverWrapper: function(label, target, overlap, event) {
+        if (editor.isReadOnlyMode()) {
+            return;
+        }
+        var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
+        var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
+        var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
+        if (node) {
+            editor.getView().setCurrentDraggable(null);
+            node.getGraphics().getHoverBox().setHighlighted(true);
+            this._previousHighightedNode = node;
+        } else {
+            if (this._previousHighightedNode) {
+                this._previousHighightedNode.getGraphics().getHoverBox().setHighlighted(false);
+                this._previousHighightedNode = null;
+            }
         }
     },
 

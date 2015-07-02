@@ -437,7 +437,7 @@ var View = Class.create({
      *
      * @method enterHoverMode
      * @param sourceNode The node whose handle is being dragged, or the placeholder that is being dragged
-     * @param hoverTypes Should be 'parent', 'child' or 'partner'. Only nodes which can be in the correponding
+     * @param hoverType Enum includes 'parent', 'child', 'partner' or 'sibling'. Only nodes which can be in the correponding
      *                   relationship with sourceNode will be highlighted
      * dragged on top of them.
      */
