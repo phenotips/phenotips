@@ -19,8 +19,11 @@ package org.phenotips.studies.family.internal2;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyUtils;
+import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -30,13 +33,17 @@ import org.xwiki.model.reference.DocumentReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -48,6 +55,10 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.LargeStringProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * XWiki implementation of Family.
  *
@@ -55,6 +66,8 @@ import com.xpn.xwiki.objects.StringProperty;
  */
 public class XWikiFamily implements Family
 {
+    private static final String WARNING = "warning";
+
     private static final String FAMILY_MEMBERS_FIELD = "members";
 
     private static final String RIGHTS_USERS_FIELD = "users";
@@ -66,7 +79,13 @@ public class XWikiFamily implements Family
     private static final String COMMA = ",";
 
     @Inject
+    private Validation validation;
+
+    @Inject
     private Logger logger;
+
+    @Inject
+    private PatientRepository patientRepository;
 
     private XWikiDocument familyDocument;
 
@@ -173,7 +192,52 @@ public class XWikiFamily implements Family
         return members.contains(patientId);
     }
 
+    @Override
+    // TODO remove FamilyInformation and FamilyInformationImpl
+    public JSON getInformationAsJSON()
+    {
+        JSONObject familyJSON = new JSONObject();
+        familyJSON.put("familyPage", getId());
+        familyJSON.put(WARNING, getWarningMessage());
+
+        JSONArray patientsJSONArray = new JSONArray();
+        for (String memberId : getMembers()) {
+            Patient patient = this.patientRepository.getPatientById(memberId);
+
+            JSONObject patientJSON = getPatientInformationAsJSON(patient);
+            patientsJSONArray.add(patientJSON);
+        }
+        familyJSON.put("familyMembres", patientsJSONArray);
+
+        return familyJSON;
+    }
+
     // ///////////////////////////////////////
+    private JSONObject getPatientInformationAsJSON(Patient patient)
+    {
+        JSONObject patientJSON = new JSONObject();
+
+        // handle patient names
+        PatientData<String> patientNames = patient.getData("patientName");
+        String firstName = StringUtils.defaultString(patientNames.get("first_name"));
+        String lastName = StringUtils.defaultString(patientNames.get("last_name"));
+        String patientNameForJSON = String.format("%s %s", firstName, lastName).trim();
+
+        // add data to json
+        patientJSON.put("id", patient.getId());
+        patientJSON.put("identifier", patient.getExternalId());
+        patientJSON.put("name", patientNameForJSON);
+        patientJSON.put("reports", getMedicalReports(patient));
+
+        // add permissions information
+        JSONObject permissionJSON = new JSONObject();
+        permissionJSON.put("hasEdit", this.validation.hasPatientEditAccess(patient));
+        permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
+        patientJSON.put("permissions", permissionJSON);
+
+        return patientJSON;
+    }
+
     private void setXwikiFamilyPermissions(XWikiDocument newFamilyDoc, XWikiDocument patientDoc)
     {
         // FIXME - The permissions for the family should be copied from the patient, and giving all permissions to the
@@ -242,4 +306,36 @@ public class XWikiFamily implements Family
         XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
         return context;
     }
+
+    /*
+     * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
+     * function returns a warning to display, or empty string
+     */
+    private String getWarningMessage()
+    {
+        BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
+        if (familyObject.getIntValue(WARNING) == 0) {
+            return "";
+        } else {
+            return familyObject.getStringValue("warning_message");
+        }
+    }
+
+    // TODO should this be in the patient object?
+    private Map<String, String> getMedicalReports(Patient patient)
+    {
+        PatientData<String> links = patient.getData("medicalreports");
+        Map<String, String> mapOfLinks = new HashMap<>();
+        if (this.validation.hasPatientViewAccess(patient)) {
+            if (links != null) {
+                Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    mapOfLinks.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return mapOfLinks;
+    }
+
 }

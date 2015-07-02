@@ -26,6 +26,8 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
 
+import net.sf.json.JSON;
+
 /**
  * @version $Id$
  */
@@ -70,4 +72,12 @@ public interface Family
      * @return true if removal was successful
      */
     boolean removeMember(Patient patient);
+
+    /**
+     * Generates a JSON data structure that describes the family and its members.
+     *
+     * @return JSON with info about the family, each member and the current user's permissions.
+     */
+    JSON getInformationAsJSON();
+
 }

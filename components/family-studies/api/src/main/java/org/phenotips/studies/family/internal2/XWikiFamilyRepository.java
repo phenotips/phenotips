@@ -58,14 +58,14 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class XWikiFamilyRepository implements FamilyRepository
 {
+    /** XWiki class that represents a family. */
+    public static final EntityReference FAMILY_CLASS =
+        new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     private static final String PREFIX = "FAM";
 
     private static final EntityReference FAMILY_TEMPLATE =
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    /** XWiki class that represents a family. */
-    private static final EntityReference FAMILY_CLASS =
-        new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** XWiki class that represents objects that contain a string reference to a family document. */
     private static final EntityReference FAMILY_REFERENCE =

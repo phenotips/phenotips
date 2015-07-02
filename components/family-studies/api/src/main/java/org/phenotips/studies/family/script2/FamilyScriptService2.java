@@ -31,6 +31,9 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
 /**
  * Script service for working with families.
  *
@@ -102,5 +105,34 @@ public class FamilyScriptService2
             return null;
         }
         return family.getDocumentReference();
+    }
+
+    /**
+     * Gets a family id or patient id. If the id is a patient id, finds the patient's family and returns a family
+     * information JSON. If the id is a family id, returns the family information.
+     *
+     * @param id family id or the id of a patient who belongs to a family
+     * @return JSON data structure with information about the family
+     */
+    public JSON getFamilyInfo(String id)
+    {
+        Family family = null;
+
+        Patient patient = this.patientRepository.getPatientById(id);
+        if (patient != null) {
+            // id belonged to a patient. Get patient's family
+            family = this.familyRepository.getFamilyForPatient(patient);
+        } else {
+            // id is not a patient's id. Check if it is a family id
+            family = this.familyRepository.getFamilyById(id);
+        }
+
+        if (family == null) {
+            // id is not a family id, nor a patient's id
+            this.logger.error("getFamilyInfo, id:[{}]. Id does not identify a family or a patient", id);
+            return new JSONObject(true);
+        }
+
+        return family.getInformationAsJSON();
     }
 }
