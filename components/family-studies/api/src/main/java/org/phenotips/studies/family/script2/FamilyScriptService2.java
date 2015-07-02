@@ -80,7 +80,7 @@ public class FamilyScriptService2
     }
 
     /**
-     * Creates an empty family
+     * Creates an empty family.
      *
      * @return DocumentReference to the newly created family
      */
