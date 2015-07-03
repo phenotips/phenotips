@@ -135,13 +135,13 @@ public class XWikiFamilyRepository implements FamilyRepository
         String patientId = patient.getId();
         XWikiFamilyRepository.logger.debug("getFamilyForPatient, patient's id: [{}]", patientId);
 
-        Family family = getFamilyOfPatientFromCache(patient);
+        Family family = getFamilyForPatientFromCache(patient);
         if (family != null) {
             XWikiFamilyRepository.logger.debug("Family not found in cache for patient [{}]", patientId);
             return family;
         }
 
-        XWikiDocument familyDocument = getFamilyOfPatientFromXWiki(patient);
+        XWikiDocument familyDocument = getFamilyForPatientFromXWiki(patient);
         if (familyDocument == null) {
             XWikiFamilyRepository.logger.debug("Family not found for patient [{}]", patientId);
             return null;
@@ -195,7 +195,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         return familyReference;
     }
 
-    private Family getFamilyOfPatientFromCache(Patient patient)
+    private Family getFamilyForPatientFromCache(Patient patient)
     {
         for (Family family : families) {
             if (family.isMember(patient)) {
@@ -205,7 +205,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         return null;
     }
 
-    private XWikiDocument getFamilyOfPatientFromXWiki(Patient patient)
+    private XWikiDocument getFamilyForPatientFromXWiki(Patient patient)
     {
         XWikiDocument patientDocument = null;
         try {
