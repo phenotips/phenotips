@@ -349,5 +349,4 @@ public class XWikiFamily implements Family
         }
         return mapOfLinks;
     }
-
 }
