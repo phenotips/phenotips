@@ -17,20 +17,12 @@
  */
 package org.phenotips.data.rest.internal;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Alternatives;
 import org.phenotips.data.rest.model.PatientSummary;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -41,9 +33,6 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.UserManager;
 
-import javax.inject.Named;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,15 +40,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class DefaultDomainObjectFactoryTest {
+public class DefaultDomainObjectFactoryTest
+{
 
     @Rule
     public MockitoComponentMockingRule<DomainObjectFactory> mocker =
-            new MockitoComponentMockingRule<DomainObjectFactory>(DefaultDomainObjectFactory.class);
+        new MockitoComponentMockingRule<DomainObjectFactory>(DefaultDomainObjectFactory.class);
 
     @Mock
     private Patient patient;
@@ -68,7 +75,7 @@ public class DefaultDomainObjectFactoryTest {
     private UriInfo uriInfo;
 
     private ParameterizedType stringResolverType = new DefaultParameterizedType(null, DocumentReferenceResolver.class,
-            String.class);
+        String.class);
 
     private AuthorizationManager access;
 
@@ -80,7 +87,8 @@ public class DefaultDomainObjectFactoryTest {
     private DocumentReferenceResolver<String> stringResolver;
 
     @Before
-    public void setUp() throws ComponentLookupException {
+    public void setUp() throws ComponentLookupException
+    {
         MockitoAnnotations.initMocks(this);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
@@ -91,14 +99,16 @@ public class DefaultDomainObjectFactoryTest {
     }
 
     @Test
-    public void cannotCreatePatientWithNoAccess() throws ComponentLookupException {
+    public void cannotCreatePatientWithNoAccess() throws ComponentLookupException
+    {
         when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
 
     @Test
-    public void createPatientDocumentExceptionReturnsNull() throws Exception {
+    public void createPatientDocumentExceptionReturnsNull() throws Exception
+    {
         when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
 
@@ -133,7 +143,8 @@ public class DefaultDomainObjectFactoryTest {
         when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
         when(uriBuilder.build("id")).thenReturn(uri);
 
-        PatientSummary patientSummary = mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo);
+        PatientSummary patientSummary =
+            this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo);
 
         assertEquals("id", patientSummary.getId());
         assertEquals("externalid", patientSummary.getEid());
@@ -149,7 +160,7 @@ public class DefaultDomainObjectFactoryTest {
     @Test
     public void createPatientFromSummaryWrongLength() throws Exception
     {
-        Object[] summary = {new Object()};
+        Object[] summary = { new Object() };
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
@@ -163,7 +174,7 @@ public class DefaultDomainObjectFactoryTest {
     @Test
     public void createPatientFromSummaryNoAccess() throws Exception
     {
-        Object[] summary = {"", "", "", new Date(), "", "", new Date()};
+        Object[] summary = { "", "", "", new Date(), "", "", new Date() };
         when(this.stringResolver.resolve(Matchers.anyString())).thenReturn(null);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
@@ -180,7 +191,7 @@ public class DefaultDomainObjectFactoryTest {
         URI uri = new URI("uri");
         DocumentReference documentReference = new DocumentReference("wikiname", "spacename", "pagename");
 
-        Object[] summary = {"doc", "externalid", "creator", createdOn, "version", "creator", modifiedOn};
+        Object[] summary = { "doc", "externalid", "creator", createdOn, "version", "creator", modifiedOn };
 
         when(this.stringResolver.resolve("doc")).thenReturn(documentReference);
         when(this.access.hasAccess(Right.VIEW, null, documentReference)).thenReturn(true);
@@ -189,7 +200,7 @@ public class DefaultDomainObjectFactoryTest {
         when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
         when(uriBuilder.build("pagename")).thenReturn(uri);
 
-        PatientSummary patientSummary = mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo);
+        PatientSummary patientSummary = this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo);
 
         assertEquals("pagename", patientSummary.getId());
         assertEquals("externalid", patientSummary.getEid());
