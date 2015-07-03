@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -81,6 +82,8 @@ public class XWikiFamily implements Family
 
     private static PatientRepository patientRepository;
 
+    private static Provider<XWikiContext> provider;
+
     @Inject
     private Logger logger;
 
@@ -92,6 +95,8 @@ public class XWikiFamily implements Family
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
             XWikiFamily.validation =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(Validation.class);
+            XWikiFamily.provider =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -248,6 +253,11 @@ public class XWikiFamily implements Family
         patientJSON.put("identifier", patient.getExternalId());
         patientJSON.put("name", patientNameForJSON);
         patientJSON.put("reports", getMedicalReports(patient));
+
+        // Patient URL
+        XWikiContext context = XWikiFamily.provider.get();
+        String url = context.getWiki().getURL(patient.getDocument(), "view", context);
+        patientJSON.put("url", url);
 
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
