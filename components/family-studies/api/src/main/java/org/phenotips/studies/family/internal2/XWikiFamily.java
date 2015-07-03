@@ -51,9 +51,8 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.DBStringListProperty;
-import com.xpn.xwiki.objects.LargeStringProperty;
-import com.xpn.xwiki.objects.StringProperty;
+import com.xpn.xwiki.objects.BaseStringProperty;
+import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -117,9 +116,9 @@ public class XWikiFamily implements Family
             return new LinkedList<String>();
         }
 
-        DBStringListProperty xwikiRelativesList;
+        ListProperty xwikiRelativesList;
         try {
-            xwikiRelativesList = (DBStringListProperty) familyObject.get(FAMILY_MEMBERS_FIELD);
+            xwikiRelativesList = (ListProperty) familyObject.get(FAMILY_MEMBERS_FIELD);
         } catch (XWikiException e) {
             this.logger.error("error reading family members: {}", e);
             return null;
@@ -286,16 +285,16 @@ public class XWikiFamily implements Family
         Set<String> users = new HashSet<>();
         Set<String> groups = new HashSet<>();
         for (BaseObject rights : rightsObjects) {
-            String[] levels = ((StringProperty) rights.getField(RIGHTS_LEVELS_FIELD)).getValue().split(COMMA);
+            String[] levels = ((BaseStringProperty) rights.getField(RIGHTS_LEVELS_FIELD)).getValue().split(COMMA);
             if (Arrays.asList(levels).contains("edit")) {
-                Object userAccessObject = rights.getField(RIGHTS_USERS_FIELD);
-                Object groupAccessObject = rights.getField(RIGHTS_GROUPS_FIELD);
+                BaseStringProperty userAccessObject = (BaseStringProperty) rights.getField(RIGHTS_USERS_FIELD);
+                BaseStringProperty groupAccessObject = (BaseStringProperty) rights.getField(RIGHTS_GROUPS_FIELD);
                 if (userAccessObject != null) {
-                    String[] usersAccess = ((LargeStringProperty) userAccessObject).getValue().split(COMMA);
+                    String[] usersAccess = userAccessObject.getValue().split(COMMA);
                     users.addAll(Arrays.asList(usersAccess));
                 }
                 if (groupAccessObject != null) {
-                    String[] groupsAccess = ((LargeStringProperty) groupAccessObject).getValue().split(COMMA);
+                    String[] groupsAccess = groupAccessObject.getValue().split(COMMA);
                     groups.addAll(Arrays.asList(groupsAccess));
                 }
             }
