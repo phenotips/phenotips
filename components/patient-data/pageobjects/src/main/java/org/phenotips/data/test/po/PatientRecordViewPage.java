@@ -837,4 +837,9 @@ public class PatientRecordViewPage extends ViewPage
         return this.checkRelativeOfPatient.getText();
     }
 
+    @Override
+    public void waitUntilPageJSIsLoaded()
+    {
+        getDriver().waitUntilJavascriptCondition("return window.Prototype != null && window.Prototype.Version != null");
+    }
 }

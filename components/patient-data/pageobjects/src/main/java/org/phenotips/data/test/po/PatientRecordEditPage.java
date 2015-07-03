@@ -2320,4 +2320,10 @@ public class PatientRecordEditPage extends InlinePage
     {
         return new PatientRecordViewPage();
     }
+
+    @Override
+    public void waitUntilPageJSIsLoaded()
+    {
+        getDriver().waitUntilJavascriptCondition("return window.Prototype != null && window.Prototype.Version != null");
+    }
 }
