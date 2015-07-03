@@ -21,6 +21,10 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.FamilyUtils;
+import org.phenotips.studies.family.Processing;
+import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -33,6 +37,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWikiException;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -56,6 +62,15 @@ public class FamilyScriptService2
 
     @Inject
     private PatientRepository patientRepository;
+
+    @Inject
+    private FamilyUtils utils;
+
+    @Inject
+    private Processing processing;
+
+    @Inject
+    private Validation validation;
 
     /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family. TODO - change Name to
@@ -155,4 +170,65 @@ public class FamilyScriptService2
         }
         return family.getMedicalReports();
     }
+
+    /**
+     * Returns a patient's pedigree, which is the pedigree of a family that patient belongs to, or the patient's own
+     * pedigree if the patient does not belong to a family.
+     *
+     * @param id must be a valid family id or a patient id
+     * @return JSON of the data portion of a family or patient pedigree
+     */
+    public JSON getPedigree(String id)
+    {
+        try {
+            return PedigreeUtils.getPedigree(id, this.utils);
+        } catch (XWikiException ex) {
+            this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
+                id, ex.getMessage());
+            return new JSONObject(true);
+        }
+    }
+
+    /**
+     * Verifies that a patient can be added to a family.
+     *
+     * @param thisId could be a family id or a patient id. If it is a patient id, finds the family that the patient
+     *            belongs to. This family is the one into which the `otherId` patient is added to
+     * @param otherId must be a valid patient id
+     * @return {@link JSON} with 'validLink' field set to {@link false} if everything is ok, or {@link false} if the
+     *         `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also
+     *         contain 'errorMessage' and 'errorType'
+     */
+    public JSON verifyLinkable(String thisId, String otherId)
+    {
+        try {
+            return this.validation.canAddToFamily(thisId, otherId).asVerification();
+        } catch (XWikiException ex) {
+            return new JSONObject(true);
+        }
+    }
+
+    /**
+     * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
+     *
+     * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
+     *            processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
+     *            does belong to a family, or a family id is passed in as the `anchorId`, there is processing of the
+     *            pedigree, which is then saved to all patient records that belong to the family and the family
+     *            documents itself.
+     * @param json part of the pedigree data
+     * @param image svg part of the pedigree data
+     * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
+     *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
+     *         'errorType'
+     */
+    public JSON processPedigree(String anchorId, String json, String image)
+    {
+        try {
+            return this.processing.processPatientPedigree(anchorId, JSONObject.fromObject(json), image).asProcessing();
+        } catch (Exception ex) {
+            return new JSONObject(true);
+        }
+    }
+
 }
