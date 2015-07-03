@@ -190,7 +190,7 @@ public class XWikiFamilyRepository implements FamilyRepository
             return null;
         }
 
-        DocumentReference familyReference = referenceResolver.resolve(familyDocName, Patient.DEFAULT_DATA_SPACE);
+        DocumentReference familyReference = referenceResolver.resolve(familyDocName, Family.DATA_SPACE);
 
         return familyReference;
     }
@@ -242,7 +242,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         String nextStringId = String.format("%s%07d", PREFIX, nextId);
 
         EntityReference newFamilyRef =
-            new EntityReference(nextStringId, EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE);
+            new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
         XWikiDocument newFamilyDoc = wiki.getDocument(newFamilyRef, context);
         if (!newFamilyDoc.isNew()) {
             throw new IllegalArgumentException("The new family id was already taken.");
