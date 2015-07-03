@@ -220,7 +220,7 @@ public class XWikiFamily implements Family
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.add(patientJSON);
         }
-        familyJSON.put("familyMembres", patientsJSONArray);
+        familyJSON.put("familyMembers", patientsJSONArray);
 
         return familyJSON;
     }
