@@ -21,6 +21,7 @@ import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.QueryException;
 
@@ -230,4 +231,11 @@ public interface FamilyUtils
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     String getWarningMessage(XWikiDocument familyDoc) throws XWikiException;
+
+    /**
+     * Returns a url to a document (view mode).
+     * @param ref cannot be null
+     * @return relative url from root
+     */
+    String getViewUrl(DocumentReference ref);
 }

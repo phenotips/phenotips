@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -70,4 +72,14 @@ public interface Processing
      */
     void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
         XWikiException;
+
+    /**
+     * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
+     *
+     * @param id of the patient to delete
+     * @param wiki for getting documents
+     * @param context for saving documents
+     * @throws XWikiException while retrieving or saving a document
+     */
+    void removeMember(String id, XWiki wiki, XWikiContext context) throws XWikiException;
 }

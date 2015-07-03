@@ -7,3 +7,4 @@ org.phenotips.studies.family.internal.FamilyInformationImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener
 org.phenotips.studies.family.internal2.XWikiFamilyRepository
 org.phenotips.studies.family.script2.FamilyScriptService2
+org.phenotips.studies.family.listener.FamilyDeletingListener
