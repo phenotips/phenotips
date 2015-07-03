@@ -118,7 +118,19 @@ public class XWikiFamilyRepository implements FamilyRepository
     @Override
     public Family getFamilyById(String id)
     {
-        // TODO
+        // Look for family in cache
+        Family family = getFamilyByIdFromCache(id);
+        if (family != null) {
+            return family;
+        }
+
+        // Look for family not in cache
+        XWikiDocument familyDocument = getFamilyByIdFromXWiki(id);
+        if (familyDocument != null) {
+            return createFamilyAndAdd(familyDocument);
+        }
+
+        XWikiFamilyRepository.logger.info("Requested family [{}] not found", id);
         return null;
     }
 
@@ -205,6 +217,19 @@ public class XWikiFamilyRepository implements FamilyRepository
         return null;
     }
 
+    private Family getFamilyByIdFromCache(String id)
+    {
+        if (id == null) {
+            return null;
+        }
+        for (Family family : families) {
+            if (id.equals(family.getId())) {
+                return family;
+            }
+        }
+        return null;
+    }
+
     private XWikiDocument getFamilyForPatientFromXWiki(Patient patient)
     {
         XWikiDocument patientDocument = null;
@@ -226,6 +251,21 @@ public class XWikiFamilyRepository implements FamilyRepository
             XWikiFamilyRepository.logger.error("Can't find family document for patient [{}]", patient.getId());
             return null;
         }
+    }
+
+    private XWikiDocument getFamilyByIdFromXWiki(String id)
+    {
+        DocumentReference reference = XWikiFamilyRepository.referenceResolver.resolve(id, Family.DATA_SPACE);
+        XWikiContext context = XWikiFamilyRepository.provider.get();
+        try {
+            XWikiDocument familyDocument = context.getWiki().getDocument(reference, context);
+            if (familyDocument.getXObject(Family.CLASS_REFERENCE) != null) {
+                return familyDocument;
+            }
+        } catch (XWikiException ex) {
+            XWikiFamilyRepository.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
+        }
+        return null;
     }
 
     /*
