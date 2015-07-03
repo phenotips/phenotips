@@ -150,9 +150,11 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         XWiki xwiki = context.getWiki();
         try {
             xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
-        } catch (XWikiException e) {
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to delete patient record [{}]: {}", id, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
+        this.logger.debug("Deleted patient record [{}]", id);
         return Response.noContent().build();
     }
 }

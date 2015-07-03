@@ -161,9 +161,11 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         XWiki xwiki = context.getWiki();
         try {
             xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
-        } catch (XWikiException e) {
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
+        this.logger.debug("Deleted patient record with external id [{}]", eid);
         return Response.noContent().build();
     }
 
