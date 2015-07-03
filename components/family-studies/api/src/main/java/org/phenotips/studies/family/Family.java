@@ -25,6 +25,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSON;
 
@@ -80,4 +81,10 @@ public interface Family
      */
     JSON getInformationAsJSON();
 
+    /**
+     * Retrieves medical reports for all family members.
+     *
+     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
+     */
+    Map<String, Map<String, String>> getMedicalReports();
 }

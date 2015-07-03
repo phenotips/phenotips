@@ -212,6 +212,18 @@ public class XWikiFamily implements Family
         return familyJSON;
     }
 
+    @Override
+    public Map<String, Map<String, String>> getMedicalReports()
+    {
+        Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
+
+        for (String member : getMembers()) {
+            Patient patient = this.patientRepository.getPatientById(member);
+            allFamilyLinks.put(patient.getId(), getMedicalReports(patient));
+        }
+        return allFamilyLinks;
+    }
+
     // ///////////////////////////////////////
     private JSONObject getPatientInformationAsJSON(Patient patient)
     {
