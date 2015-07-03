@@ -31,6 +31,7 @@ import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.lang.reflect.ParameterizedType;
@@ -42,6 +43,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.DateTime;
@@ -71,8 +73,30 @@ public class DefaultDomainObjectFactoryTest
     @Mock
     private Patient patient;
 
+    private DocumentReference patientReference1 = new DocumentReference("wiki", "data", "P0000001");
+
+    private DocumentReference patientReference2 = new DocumentReference("wiki", "data", "P0000002");
+
+    private String eid = "P1";
+
+    private DocumentReference userReference1 = new DocumentReference("wiki", "XWiki", "padams");
+
+    private DocumentReference userReference2 = new DocumentReference("wiki", "XWiki", "hmccoy");
+
     @Mock
     private UriInfo uriInfo;
+
+    @Mock
+    private UriBuilder uriBuilder;
+
+    private String requestUri = "http://host/rest/patients/eid/P1";
+
+    private String uri1 = "http://host/rest/patients/P0000001";
+
+    private String uri2 = "http://host/rest/patients/P0000002";
+
+    @Mock
+    private User user;
 
     private ParameterizedType stringResolverType = new DefaultParameterizedType(null, DocumentReferenceResolver.class,
         String.class);
@@ -87,7 +111,8 @@ public class DefaultDomainObjectFactoryTest
     private DocumentReferenceResolver<String> stringResolver;
 
     @Before
-    public void setUp() throws ComponentLookupException
+    public void setUp()
+        throws ComponentLookupException, IllegalArgumentException, UriBuilderException, URISyntaxException
     {
         MockitoAnnotations.initMocks(this);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
@@ -95,23 +120,43 @@ public class DefaultDomainObjectFactoryTest
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         this.stringResolver = this.mocker.getInstance(this.stringResolverType, "current");
 
-        when(this.users.getCurrentUser()).thenReturn(null);
+        when(this.patient.getDocument()).thenReturn(this.patientReference1);
+        when(this.patient.getId()).thenReturn(this.patientReference1.getName());
+        when(this.patient.getExternalId()).thenReturn(this.eid);
+        when(this.patient.getReporter()).thenReturn(this.userReference1);
+
+        when(this.users.getCurrentUser()).thenReturn(this.user);
+        when(this.user.getProfileDocument()).thenReturn(this.userReference1);
+        when(this.stringResolver.resolve(this.patientReference1.getName(), Patient.DEFAULT_DATA_SPACE))
+            .thenReturn(this.patientReference1);
+        when(this.stringResolver.resolve("data.P0000001")).thenReturn(this.patientReference1);
+        when(this.stringResolver.resolve(this.patientReference2.getName(), Patient.DEFAULT_DATA_SPACE))
+            .thenReturn(this.patientReference2);
+        when(this.stringResolver.resolve("data.P0000002")).thenReturn(this.patientReference2);
+        when(this.uriInfo.getRequestUri()).thenReturn(new URI(this.requestUri));
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(this.uriBuilder);
+        when(this.uriBuilder.path(PatientResource.class)).thenReturn(this.uriBuilder);
+        when(this.uriBuilder.build(this.patientReference1.getName())).thenReturn(new URI(this.uri1));
+        when(this.uriBuilder.build(this.patientReference2.getName())).thenReturn(new URI(this.uri2));
+        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(true);
+    }
+
+    @Test
+    public void createPatientWithNullPatientReturnsNull() throws ComponentLookupException
+    {
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary((Patient) null, this.uriInfo));
     }
 
     @Test
     public void cannotCreatePatientWithNoAccess() throws ComponentLookupException
     {
-        when(this.patient.getDocument()).thenReturn(null);
-        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
+        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
 
     @Test
     public void createPatientDocumentExceptionReturnsNull() throws Exception
     {
-        when(this.patient.getDocument()).thenReturn(null);
-        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
-
         doThrow(Exception.class).when(this.documentAccessBridge).getDocument(Matchers.any(DocumentReference.class));
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo));
     }
@@ -119,64 +164,85 @@ public class DefaultDomainObjectFactoryTest
     @Test
     public void createPatientPerformsCorrectly() throws ComponentLookupException, URISyntaxException, Exception
     {
-        XWikiDocument documentReference = mock(XWikiDocument.class);
-        DocumentReference patientDocument = mock(DocumentReference.class);
-        DocumentReference creatorDocument = mock(DocumentReference.class);
-        UriBuilder uriBuilder = mock(UriBuilder.class);
-        URI uri = new URI("uri");
+        XWikiDocument document = mock(XWikiDocument.class);
         Date creationDate = new Date(0);
         DateTime creationDateTime = new DateTime(creationDate).withZone(DateTimeZone.UTC);
 
-        when(this.patient.getDocument()).thenReturn(patientDocument);
-        when(this.access.hasAccess(Right.VIEW, null, patientDocument)).thenReturn(true);
-        when(this.documentAccessBridge.getDocument(patientDocument)).thenReturn(documentReference);
-        when(this.patient.getId()).thenReturn("id");
-        when(this.patient.getExternalId()).thenReturn("externalid");
-        when(this.patient.getReporter()).thenReturn(creatorDocument);
+        when(this.documentAccessBridge.getDocument(this.patientReference1)).thenReturn(document);
 
-        when(creatorDocument.toString()).thenReturn("creator");
-        when(documentReference.getAuthorReference()).thenReturn(creatorDocument);
-        when(documentReference.getVersion()).thenReturn("version");
-        when(documentReference.getCreationDate()).thenReturn(creationDate);
-        when(documentReference.getDate()).thenReturn(creationDate);
-        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
-        when(uriBuilder.build("id")).thenReturn(uri);
+        when(document.getAuthorReference()).thenReturn(this.userReference2);
+        when(document.getVersion()).thenReturn("version");
+        when(document.getCreationDate()).thenReturn(creationDate);
+        when(document.getDate()).thenReturn(creationDate);
 
         PatientSummary patientSummary =
             this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo);
 
-        assertEquals("id", patientSummary.getId());
-        assertEquals("externalid", patientSummary.getEid());
-        assertEquals("creator", patientSummary.getCreatedBy());
-        assertEquals("creator", patientSummary.getLastModifiedBy());
+        assertEquals(this.patientReference1.getName(), patientSummary.getId());
+        assertEquals(this.eid, patientSummary.getEid());
+        assertEquals("wiki:XWiki.padams", patientSummary.getCreatedBy());
+        assertEquals("wiki:XWiki.hmccoy", patientSummary.getLastModifiedBy());
         assertEquals("version", patientSummary.getVersion());
         assertEquals(creationDateTime, patientSummary.getCreatedOn());
         assertEquals(creationDateTime, patientSummary.getLastModifiedOn());
         assertEquals(1, patientSummary.getLinks().size());
-        assertEquals("uri", patientSummary.getLinks().get(0).getHref());
+        assertEquals(this.uri1, patientSummary.getLinks().get(0).getHref());
     }
 
     @Test
-    public void createPatientFromSummaryWrongLength() throws Exception
+    public void createPatientWithNoCurrentUserSucceeds() throws Exception
+    {
+        when(this.users.getCurrentUser()).thenReturn(null);
+        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
+
+        XWikiDocument document = mock(XWikiDocument.class);
+        Date creationDate = new Date(0);
+
+        when(this.documentAccessBridge.getDocument(this.patientReference1)).thenReturn(document);
+
+        when(document.getAuthorReference()).thenReturn(this.userReference2);
+        when(document.getVersion()).thenReturn("version");
+        when(document.getCreationDate()).thenReturn(creationDate);
+        when(document.getDate()).thenReturn(creationDate);
+
+        PatientSummary patientSummary =
+            this.mocker.getComponentUnderTest().createPatientSummary(this.patient, this.uriInfo);
+
+        assertEquals(this.patientReference1.getName(), patientSummary.getId());
+        assertEquals(this.eid, patientSummary.getEid());
+        assertEquals("wiki:XWiki.padams", patientSummary.getCreatedBy());
+        assertEquals("wiki:XWiki.hmccoy", patientSummary.getLastModifiedBy());
+        assertEquals("version", patientSummary.getVersion());
+        assertEquals(1, patientSummary.getLinks().size());
+        assertEquals(this.uri1, patientSummary.getLinks().get(0).getHref());
+    }
+
+    @Test
+    public void createPatientFromSummaryWithWrongLengthReturnsNull() throws Exception
     {
         Object[] summary = { new Object() };
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
     @Test
-    public void createPatientFromSummaryWrongObjectTypes() throws Exception
+    public void createPatientFromSummaryWithNullSummaryReturnsNull() throws Exception
+    {
+        assertNull(this.mocker.getComponentUnderTest().createPatientSummary((Object[]) null, this.uriInfo));
+    }
+
+    @Test
+    public void createPatientFromSummaryWithWrongObjectTypesReturnsNull() throws Exception
     {
         Object[] summary = new Object[7];
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
     @Test
-    public void createPatientFromSummaryNoAccess() throws Exception
+    public void createPatientFromSummaryWithNoAccessReturnsNull() throws Exception
     {
-        Object[] summary = { "", "", "", new Date(), "", "", new Date() };
-        when(this.stringResolver.resolve(Matchers.anyString())).thenReturn(null);
-        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(false);
+        Object[] summary =
+            { "data.P0000001", this.eid, "XWiki.padams", new Date(), "version", "XWiki.hmccoy", new Date() };
+        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference1)).thenReturn(false);
         assertNull(this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo));
     }
 
@@ -187,85 +253,81 @@ public class DefaultDomainObjectFactoryTest
         Date modifiedOn = new Date();
         DateTime createdOnDateTime = new DateTime(createdOn).withZone(DateTimeZone.UTC);
         DateTime modifiedOnDateTime = new DateTime(modifiedOn).withZone(DateTimeZone.UTC);
-        UriBuilder uriBuilder = mock(UriBuilder.class);
-        URI uri = new URI("uri");
-        DocumentReference documentReference = new DocumentReference("wikiname", "spacename", "pagename");
 
-        Object[] summary = { "doc", "externalid", "creator", createdOn, "version", "creator", modifiedOn };
-
-        when(this.stringResolver.resolve("doc")).thenReturn(documentReference);
-        when(this.access.hasAccess(Right.VIEW, null, documentReference)).thenReturn(true);
-        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
-        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
-        when(uriBuilder.build("pagename")).thenReturn(uri);
+        Object[] summary =
+            { "data.P0000001", this.eid, "XWiki.padams", createdOn, "version", "XWiki.hmccoy", modifiedOn };
 
         PatientSummary patientSummary = this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo);
 
-        assertEquals("pagename", patientSummary.getId());
-        assertEquals("externalid", patientSummary.getEid());
-        assertEquals("creator", patientSummary.getCreatedBy());
-        assertEquals("creator", patientSummary.getLastModifiedBy());
+        assertEquals(this.patientReference1.getName(), patientSummary.getId());
+        assertEquals(this.eid, patientSummary.getEid());
+        assertEquals("XWiki.padams", patientSummary.getCreatedBy());
+        assertEquals("XWiki.hmccoy", patientSummary.getLastModifiedBy());
         assertEquals("version", patientSummary.getVersion());
         assertEquals(createdOnDateTime, patientSummary.getCreatedOn());
         assertEquals(modifiedOnDateTime, patientSummary.getLastModifiedOn());
         assertEquals(1, patientSummary.getLinks().size());
-        assertEquals("uri", patientSummary.getLinks().get(0).getHref());
+        assertEquals(this.uri1, patientSummary.getLinks().get(0).getHref());
+    }
+
+    @Test
+    public void createPatientFromSummaryWithNoCurrentUserPerformsCorrectly() throws Exception
+    {
+        when(this.users.getCurrentUser()).thenReturn(null);
+        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
+
+        Date createdOn = new Date();
+        Date modifiedOn = new Date();
+        DateTime createdOnDateTime = new DateTime(createdOn).withZone(DateTimeZone.UTC);
+        DateTime modifiedOnDateTime = new DateTime(modifiedOn).withZone(DateTimeZone.UTC);
+
+        Object[] summary =
+            { "data.P0000001", this.eid, "XWiki.padams", createdOn, "version", "XWiki.hmccoy", modifiedOn };
+
+        PatientSummary patientSummary = this.mocker.getComponentUnderTest().createPatientSummary(summary, this.uriInfo);
+
+        assertEquals(this.patientReference1.getName(), patientSummary.getId());
+        assertEquals(this.eid, patientSummary.getEid());
+        assertEquals("XWiki.padams", patientSummary.getCreatedBy());
+        assertEquals("XWiki.hmccoy", patientSummary.getLastModifiedBy());
+        assertEquals("version", patientSummary.getVersion());
+        assertEquals(createdOnDateTime, patientSummary.getCreatedOn());
+        assertEquals(modifiedOnDateTime, patientSummary.getLastModifiedOn());
+        assertEquals(1, patientSummary.getLinks().size());
+        assertEquals(this.uri1, patientSummary.getLinks().get(0).getHref());
     }
 
     @Test
     public void createAlternativesPerformsCorrectly() throws ComponentLookupException, URISyntaxException
     {
-        UriBuilder uriBuilder = mock(UriBuilder.class);
-        URI uri = new URI("uri");
         List<String> idList = new ArrayList<>();
-        idList.add("page1");
-        idList.add("page2");
-        DocumentReference doc1 = new DocumentReference("wikiname", "spacename", "page1");
-        DocumentReference doc2 = new DocumentReference("wikiname", "spacename", "page2");
+        idList.add(this.patientReference1.getName());
+        idList.add(this.patientReference2.getName());
 
-        when(this.uriInfo.getRequestUri()).thenReturn(uri);
-        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-        when(this.stringResolver.resolve("page1", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc1);
-        when(this.stringResolver.resolve("page2", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc2);
-        when(this.access.hasAccess(Right.VIEW, null, doc1)).thenReturn(true);
-        when(this.access.hasAccess(Right.VIEW, null, doc2)).thenReturn(true);
-
-        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
-        when(uriBuilder.build("page1")).thenReturn(uri);
-        when(uriBuilder.build("page2")).thenReturn(uri);
+        when(this.access.hasAccess(Right.VIEW, this.userReference1, this.patientReference2)).thenReturn(true);
 
         Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
 
         assertEquals(2, alternatives.getPatients().size());
-        assertEquals("page1", alternatives.getPatients().get(0).getId());
-        assertEquals("page2", alternatives.getPatients().get(1).getId());
+        assertEquals(this.patientReference1.getName(), alternatives.getPatients().get(0).getId());
+        assertEquals(this.patientReference2.getName(), alternatives.getPatients().get(1).getId());
     }
 
     @Test
     public void createTwoAlternativesOneNoAccess() throws ComponentLookupException, URISyntaxException
     {
-        UriBuilder uriBuilder = mock(UriBuilder.class);
-        URI uri = new URI("uri");
+        when(this.users.getCurrentUser()).thenReturn(null);
+
         List<String> idList = new ArrayList<>();
-        idList.add("page1");
-        idList.add("page2");
-        DocumentReference doc1 = new DocumentReference("wikiname", "spacename", "page1");
-        DocumentReference doc2 = new DocumentReference("wikiname", "spacename", "page2");
+        idList.add(this.patientReference1.getName());
+        idList.add(this.patientReference2.getName());
 
-        when(this.uriInfo.getRequestUri()).thenReturn(uri);
-        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-        when(this.stringResolver.resolve("page1", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc1);
-        when(this.stringResolver.resolve("page2", Patient.DEFAULT_DATA_SPACE)).thenReturn(doc2);
-        when(this.access.hasAccess(Right.VIEW, null, doc1)).thenReturn(true);
-        when(this.access.hasAccess(Right.VIEW, null, doc2)).thenReturn(false);
-
-        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
-        when(uriBuilder.build("page1")).thenReturn(uri);
+        when(this.access.hasAccess(Right.VIEW, null, this.patientReference1)).thenReturn(true);
+        when(this.access.hasAccess(Right.VIEW, null, this.patientReference2)).thenReturn(false);
 
         Alternatives alternatives = this.mocker.getComponentUnderTest().createAlternatives(idList, this.uriInfo);
 
         assertEquals(1, alternatives.getPatients().size());
-        assertEquals("page1", alternatives.getPatients().get(0).getId());
+        assertEquals(this.patientReference1.getName(), alternatives.getPatients().get(0).getId());
     }
 }
