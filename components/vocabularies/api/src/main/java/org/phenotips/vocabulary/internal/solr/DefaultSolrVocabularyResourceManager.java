@@ -33,14 +33,13 @@ import org.xwiki.environment.Environment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
@@ -57,6 +56,10 @@ import org.apache.solr.core.SolrCore;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResourceManager
 {
+    /** List of config Solr files. */
+    public static final List<String> CONFIG_FILES = Arrays.asList("/conf/schema.xml", "/conf/solrconfig.xml",
+        "/conf/protwords.txt", "/conf/stopwords.txt", "/conf/synonyms.txt", "/core.properties.properties");
+
     /** @see #getSolrConnection() */
     private SolrClient core;
 
@@ -79,10 +82,6 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     @Override
     public void initialize(String vocabularyName) throws InitializationException
     {
-        // Get jars home path to where the jar resources are stored
-        Class<DefaultSolrVocabularyResourceManager> clazz = DefaultSolrVocabularyResourceManager.class;
-        String jarPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
-        File jarFile = new File(jarPath);
         // Get data Solr home path
         File solrHome = new File(this.environment.getPermanentDirectory().getAbsolutePath(), "solr");
         File dest = solrHome;
@@ -95,20 +94,15 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
         }
 
         try {
-            File jarsDir = jarFile.getParentFile();
-            File[] directoryListing = jarsDir.listFiles();
 
-            if (directoryListing == null) {
-                return;
-            }
+            Files.createDirectories(dest.toPath().resolve(vocabularyName + "/conf"));
 
-            for (File file : directoryListing) {
-                JarFile jar = new JarFile(file);
-                String jarName = file.getName();
-                if ("jar".equals(FilenameUtils.getExtension(jarName))
-                    && jarName.startsWith("vocabulary-" + vocabularyName)) {
-                    copyConfigsFromJar(jar, vocabularyName, dest);
+            for (String file : CONFIG_FILES) {
+                InputStream in = this.getClass().getResourceAsStream("/" + vocabularyName + file);
+                if (in == null) {
+                    continue;
                 }
+                Files.copy(in, dest.toPath().resolve(vocabularyName + file));
             }
 
             CoreDescriptor dcore =
@@ -121,27 +115,6 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
             throw new InitializationException("Cannot create cache: ", ex);
         } catch (IOException ex) {
             throw new InitializationException("Invalid Solr resource: ", ex);
-        }
-    }
-
-    /**
-     * Copy configuration files from a jar file specified by jar to a destination folder on the filesystem dest.
-     *
-     * @param jar the jar file
-     * @param vocabularyName the name of the vocabulary being managed
-     * @param dest the destination
-     * @throws IOException
-     */
-    private static void copyConfigsFromJar(JarFile jar, String vocabularyName, File dest) throws IOException
-    {
-        for (JarEntry entry : Collections.list(jar.entries())) {
-            if (entry.getName().startsWith(vocabularyName)) {
-                if (entry.isDirectory()) {
-                    Files.createDirectories(dest.toPath().resolve(entry.getName()));
-                } else {
-                    Files.copy(jar.getInputStream(entry), dest.toPath().resolve(entry.getName()));
-                }
-            }
         }
     }
 
