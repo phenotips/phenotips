@@ -77,16 +77,25 @@ public class XWikiFamily implements Family
 
     private static final String COMMA = ",";
 
-    @Inject
-    private Validation validation;
+    private static Validation validation;
+
+    private static PatientRepository patientRepository;
 
     @Inject
     private Logger logger;
 
-    @Inject
-    private PatientRepository patientRepository;
-
     private XWikiDocument familyDocument;
+
+    static {
+        try {
+            XWikiFamily.patientRepository =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
+            XWikiFamily.validation =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(Validation.class);
+        } catch (ComponentLookupException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * @param familyDocument not-null document associated with the family
@@ -201,7 +210,7 @@ public class XWikiFamily implements Family
 
         JSONArray patientsJSONArray = new JSONArray();
         for (String memberId : getMembers()) {
-            Patient patient = this.patientRepository.getPatientById(memberId);
+            Patient patient = XWikiFamily.patientRepository.getPatientById(memberId);
 
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.add(patientJSON);
@@ -217,7 +226,7 @@ public class XWikiFamily implements Family
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
         for (String member : getMembers()) {
-            Patient patient = this.patientRepository.getPatientById(member);
+            Patient patient = XWikiFamily.patientRepository.getPatientById(member);
             allFamilyLinks.put(patient.getId(), getMedicalReports(patient));
         }
         return allFamilyLinks;
@@ -242,8 +251,8 @@ public class XWikiFamily implements Family
 
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit", this.validation.hasPatientEditAccess(patient));
-        permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
+        permissionJSON.put("hasEdit", XWikiFamily.validation.hasPatientEditAccess(patient));
+        permissionJSON.put("hasView", XWikiFamily.validation.hasPatientViewAccess(patient));
         patientJSON.put("permissions", permissionJSON);
 
         return patientJSON;
@@ -337,7 +346,7 @@ public class XWikiFamily implements Family
     {
         PatientData<String> links = patient.getData("medicalreports");
         Map<String, String> mapOfLinks = new HashMap<>();
-        if (this.validation.hasPatientViewAccess(patient)) {
+        if (XWikiFamily.validation.hasPatientViewAccess(patient)) {
             if (links != null) {
                 Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
                 while (iterator.hasNext()) {
