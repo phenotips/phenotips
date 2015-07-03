@@ -27,7 +27,7 @@ import org.xwiki.users.User;
  * Represents all events affecting whole family records: creation, modification, deletion.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.3M1
  */
 @Unstable
 public interface FamilyEvent extends Event
