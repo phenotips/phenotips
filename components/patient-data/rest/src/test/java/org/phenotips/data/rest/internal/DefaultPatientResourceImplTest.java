@@ -321,6 +321,7 @@ public class DefaultPatientResourceImplTest {
         Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected " +
             "when catching an XWikiException", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
+        verify(this.logger).warn(eq("Failed to delete patient record [{}]: {}"), eq(this.id), anyString());
     }
 
     @Test
