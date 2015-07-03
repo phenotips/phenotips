@@ -159,7 +159,6 @@ public class XWikiFamilyRepository implements FamilyRepository
             return null;
         }
 
-        // TODO test this branch
         XWikiFamilyRepository.logger.debug("Family found for patient [{}], but not in cache", patientId);
         family = createFamilyAndAdd(familyDocument);
         return family;
