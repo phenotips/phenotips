@@ -690,7 +690,7 @@ public class PatientRecordEditPage extends InlinePage
     /**
      * Sets the gender of the patient
      *
-     * @param gender this either the string "male" or the string "female"
+     * @param gender one of {@code male}, {@code female} or {@code other}
      */
     public void setPatientGender(String gender)
     {
@@ -698,13 +698,9 @@ public class PatientRecordEditPage extends InlinePage
             this.patientGenderMale.click();
         } else if (gender == "female") {
             this.patientGenderFemale.click();
+        } else if (gender == "other") {
+            this.patientGenderOther.click();
         }
-        this.body.click();
-    }
-
-    public void setOtherGender()
-    {
-        this.patientGenderOther.click();
         this.body.click();
     }
 
