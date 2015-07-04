@@ -587,10 +587,10 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_medical_history")
     WebElement medicalHistory;
 
-    @FindBy(css = "#extradata-list-PhenoTips\\2e InvestigationClass-molecular > tbody > tr.new > td.gene > input")
+    @FindBy(css = "#extradata-list-PhenoTips\\2e InvestigationClass-molecular td.gene input[name=\"PhenoTips.InvestigationClass_0_gene\"]")
     WebElement geneCandidateSearch;
 
-    @FindBy(id = "PhenoTips.InvestigationClass_0_comments")
+    @FindBy(css = "#extradata-list-PhenoTips\\2e InvestigationClass-molecular td.comments textarea[name=\"PhenoTips.InvestigationClass_0_comments\"]")
     WebElement geneCandidateComment;
 
     @FindBy(css = ".chapter.genotype #extradata-list-PhenoTips\\2e InvestigationClass-molecular + .list-actions .add-data-button")
