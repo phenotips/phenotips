@@ -35,6 +35,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -170,8 +172,8 @@ public class FamilyInformationImpl implements FamilyInformation
         {
             PatientData<String> names = patient.getData("patientName");
 
-            this.json.put("name", String.format("%s %s", nullToEmpty(names.get("first_name")),
-                nullToEmpty(names.get("last_name"))).trim());
+            this.json.put("name", String.format("%s %s", StringUtils.defaultString(names.get("first_name")),
+                StringUtils.defaultString(names.get("last_name"))).trim());
             return this;
         }
 
@@ -191,11 +193,6 @@ public class FamilyInformationImpl implements FamilyInformation
         {
             this.json.put("permissions", permissions.getJson());
             return this;
-        }
-
-        private String nullToEmpty(String str)
-        {
-            return str == null ? "" : str;
         }
     }
 

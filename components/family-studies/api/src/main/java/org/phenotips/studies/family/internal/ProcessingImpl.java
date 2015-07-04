@@ -237,8 +237,8 @@ public class ProcessingImpl implements Processing
         XWikiContext context = this.provider.get();
         BaseObject rightsObject = getDefaultRightsObject(familyDocument);
         if (rightsObject == null) {
-            this.logger.error("Could not find a permission object attached to the family document "
-                + familyDocument.getDocumentReference().getName());
+            this.logger.error("Could not find a permission object attached to the family document {}",
+                familyDocument.getDocumentReference().getName());
             return;
         }
 
