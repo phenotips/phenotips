@@ -17,12 +17,13 @@
  */
 package org.phenotips.data.test.ui;
 
-import org.junit.runner.RunWith;
 import org.xwiki.test.ui.PageObjectSuite;
+
+import org.junit.runner.RunWith;
 
 /**
  * Runs all functional tests found in the classpath. This allows to start/stop XWiki only once.
- * 
+ *
  * @version $Id$
  * @since 5.0M2
  */

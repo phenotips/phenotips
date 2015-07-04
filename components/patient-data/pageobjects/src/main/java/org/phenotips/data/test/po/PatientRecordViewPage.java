@@ -312,7 +312,7 @@ public class PatientRecordViewPage extends ViewPage
 
     @FindBy(css = ".ivf > div > label")
     WebElement fieldIVF;
-    
+
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(1) > span.displayed-value")
     WebElement fieldPrenatalFirstField;
 
@@ -335,15 +335,14 @@ public class PatientRecordViewPage extends ViewPage
     WebElement fieldAPGARScoreFiveMinutes;
 
     @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.prenatal_development > div")
-    WebElement  fieldPrenatalNotes;
+    WebElement fieldPrenatalNotes;
 
     @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div")
     WebElement fieldPrematureBirth;
 
     public String getPrenatalAndPerinatalHistorySummary(String option)
     {
-        switch(option)
-        {
+        switch (option) {
             case "fieldConceptionAfterFertility":
                 return this.fieldConceptionAfterFertility.getText();
             case "fieldIVF":
@@ -368,8 +367,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public String getFamilyHistorySummary(String option)
     {
-        switch(option)
-        {
+        switch (option) {
             case "fieldRelativeDescription":
                 return this.fieldRelativeDescription.getText();
             case "fieldRelativeOfPatientWithIdentifier":
@@ -394,8 +392,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public String getPatientInformationSummary(String option)
     {
-        switch(option)
-        {
+        switch (option) {
             case "fieldPatientName":
                 return this.summaryPatientNameField.getText();
             case "fieldDateOfBirth":
@@ -412,8 +409,7 @@ public class PatientRecordViewPage extends ViewPage
 
     public String getCaseResolutionSummary(String option)
     {
-        switch(option) 
-        {
+        switch (option) {
             case "titlePubmed":
                 return this.summaryPubmedIDTitle.getText();
             case "fieldPubmed":
@@ -431,7 +427,6 @@ public class PatientRecordViewPage extends ViewPage
         }
         return "";
     }
-
 
     ///////////////////
     public static PatientRecordViewPage gotoPage(String patientId)
