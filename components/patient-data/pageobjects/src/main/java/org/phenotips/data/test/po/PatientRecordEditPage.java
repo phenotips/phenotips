@@ -34,6 +34,9 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class PatientRecordEditPage extends InlinePage
 {
+    @FindBy(css = "#document-title h1")
+    private WebElement recordId;
+
     @FindBy(id = "HFamilyhistoryandpedigree")
     WebElement familyHistorySectionHeading;
 
@@ -632,6 +635,11 @@ public class PatientRecordEditPage extends InlinePage
     public void clickBody()
     {
         this.body.click();
+    }
+
+    public String getPatientRecordId()
+    {
+        return this.recordId.getText();
     }
 
     /* PATIENT INFORMATION */
