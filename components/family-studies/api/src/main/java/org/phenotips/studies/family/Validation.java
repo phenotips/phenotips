@@ -23,6 +23,8 @@ import org.phenotips.studies.family.internal.StatusResponse;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.users.User;
 
+import java.util.List;
+
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -46,7 +48,8 @@ public interface Validation
     StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException;
 
     /**
-     * Runs several different checks to determine if a patient is eligible to be added as a member to a family document.
+     * Runs several different checks to determine if a patient is eligible to be added as a member to a family
+     * document.
      *
      * @param familyDoc to which the patient will be potentially added to
      * @param patientId patient id who will potentially be added to the family
@@ -89,4 +92,15 @@ public interface Validation
      * @return true if has access; false otherwise
      */
     boolean hasPatientViewAccess(Patient patient, User user);
+
+    /**
+     * Checks if all `members` can be added to the `family`.
+     *
+     * @param family document to which the members will be added
+     * @param members which are to be added
+     * @return 200 status code if everything is ok, or one of the code that {@link #canAddToFamily(XWikiDocument,
+     * String)} returns
+     * @throws XWikiException if {@link #canAddToFamily(XWikiDocument, String)} fails
+     */
+    StatusResponse canAddEveryMember(XWikiDocument family, List<String> members) throws XWikiException;
 }

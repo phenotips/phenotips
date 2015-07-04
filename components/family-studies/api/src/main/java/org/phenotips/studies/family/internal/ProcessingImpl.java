@@ -126,7 +126,8 @@ public class ProcessingImpl implements Processing
         throws XWikiException
     {
         if (variables.familyDoc != null) {
-            StatusResponse individualAccess = this.canAddEveryMember(variables.familyDoc, variables.updatedMembers);
+            StatusResponse individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
+                variables.updatedMembers);
             if (individualAccess.statusCode != 200) {
                 variables.response = individualAccess;
                 return variables;
@@ -269,20 +270,6 @@ public class ProcessingImpl implements Processing
             }
         }
         return null;
-    }
-
-    private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException
-    {
-        StatusResponse defaultResponse = new StatusResponse();
-        defaultResponse.statusCode = 200;
-
-        for (String member : updatedMembers) {
-            StatusResponse patientResponse = this.validation.canAddToFamily(family, member);
-            if (patientResponse.statusCode != 200) {
-                return patientResponse;
-            }
-        }
-        return defaultResponse;
     }
 
     private StatusResponse updatePatientsFromJson(JSON familyContents)
