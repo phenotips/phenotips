@@ -65,6 +65,7 @@ public class PatientRecordTest extends AbstractTest
         this.patientEdit.moreInfoSex();
         Assert.assertTrue(this.patientEdit.checkMoreInfoSex().contains(
             "Sex should be recorded as biological sex rather than gender."));
+        this.patientEdit.clickBody();
         this.patientEdit.setIndicationForReferral("indicate referral");
         // check hint
         this.patientEdit.moreInfoIndicationForReferral();
@@ -73,6 +74,7 @@ public class PatientRecordTest extends AbstractTest
                 .checkMoreInfoIndicationForReferral()
                 .contains(
                     "This content can be a short summary or include content from the patient record. DO NOT RECORD any Protected Health Information."));
+        this.patientEdit.clickBody();
 
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
         Assert.assertEquals("Ceasar, Salad", patientView.getPatientInformationSummary("fieldPatientName"));
