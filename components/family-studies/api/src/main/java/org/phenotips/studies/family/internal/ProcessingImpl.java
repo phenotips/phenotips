@@ -369,6 +369,17 @@ public class ProcessingImpl implements Processing
         }
     }
 
+    @Override
+    public void removeMember(String id)
+    {
+        XWikiContext context = provider.get();
+        try {
+            this.removeMember(id, context.getWiki(), context);
+        } catch (Exception ex) {
+            this.logger.error("Could not remove patient {} from their family. {}", id, ex.getMessage());
+        }
+    }
+
     /**
      * Strips out all linked ids from a pedigree.
      *

@@ -17,8 +17,9 @@
  */
 package org.phenotips.studies.family.events;
 
-import org.xwiki.users.User;
 import org.phenotips.studies.family.Family;
+
+import org.xwiki.users.User;
 
 import org.apache.commons.lang3.StringUtils;
 
