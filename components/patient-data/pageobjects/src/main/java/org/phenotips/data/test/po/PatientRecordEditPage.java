@@ -662,17 +662,12 @@ public class PatientRecordEditPage extends InlinePage
      */
     public void setPatientDateOfBirth(String day, String month, String year)
     {
-        // date
-        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
-            .selectByVisibleText(day);
-
-        // month
-        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
-            .selectByVisibleText(month);
-
-        // year
         new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(1) > select")))
             .selectByVisibleText(year);
+        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
+            .selectByVisibleText(month);
+        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
+            .selectByVisibleText(day);
     }
 
     /**
@@ -684,17 +679,12 @@ public class PatientRecordEditPage extends InlinePage
      */
     public void setPatientDateOfDeath(String day, String month, String year)
     {
-        // date
-        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
-            .selectByVisibleText(day);
-
-        // month
-        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
-            .selectByVisibleText(month);
-
-        // year
         new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(1) > select")))
             .selectByVisibleText(year);
+        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
+            .selectByVisibleText(month);
+        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
+            .selectByVisibleText(day);
     }
 
     /**
