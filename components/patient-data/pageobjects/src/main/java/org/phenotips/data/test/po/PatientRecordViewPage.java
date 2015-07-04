@@ -232,25 +232,25 @@ public class PatientRecordViewPage extends ViewPage
 
     /* CASE RESOLUTION */
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(1) > p > span")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(1) > p > span")
     WebElement summaryPubmedIDTitle;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(1) > p > span")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(1) > p > span")
     WebElement summaryGeneIDTitle;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(1) > p > span")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(1) > p > span")
     WebElement summaryResolutionNotesTitle;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(2) > div")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(2) > div")
     WebElement summaryPubmedIDField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div")
     WebElement summaryGeneIDField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(2) > div")
+    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(2) > div")
     WebElement summaryResolutionNotesField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.case-resolution.chapter > div > div.fieldset.unaffected.controller > p")
+    @FindBy(css = ".case-resolution.chapter > div > div.fieldset.unaffected.controller > p")
     WebElement summaryCaseResolution;
 
     /* PATIENT INFORMATION */
@@ -258,19 +258,19 @@ public class PatientRecordViewPage extends ViewPage
     // TODO: REFER TO ELEMENTS AS 1st, 2nd, 3rd.. and so on that dont have class names
     // identifier is not tested since it must be unique everytime. The work around is to delete it everytime
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
+    @FindBy(css = ".patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
     WebElement summaryPatientNameField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(4) > span.displayed-value > span")
+    @FindBy(css = ".patient-info.chapter > p:nth-child(4) > span.displayed-value > span")
     WebElement summaryDateOfBirthField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(5) > span.displayed-value > span")
+    @FindBy(css = ".patient-info.chapter > p:nth-child(5) > span.displayed-value > span")
     WebElement summaryDateOfDeathField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > p:nth-child(6) > span.displayed-value")
+    @FindBy(css = ".patient-info.chapter > p:nth-child(6) > span.displayed-value")
     WebElement summarySexField;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.patient-info.chapter > div.fieldset.indication_for_referral > div")
+    @FindBy(css = ".patient-info.chapter > div.fieldset.indication_for_referral > div")
     WebElement summaryIndicationForReferralField;
 
     /* FAMILY HISTORY */
@@ -281,13 +281,13 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = "#extradata-list-PhenoTips\\2e RelativeClass > tbody > tr:nth-child(2) > td.relative_of")
     WebElement fieldRelativeOfPatientWithIdentifier;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.ethnicity > div.half-width.maternal_ethnicity > div > ol > li")
+    @FindBy(css = ".family-info.chapter > div.fieldset.ethnicity > div.half-width.maternal_ethnicity > div > ol > li")
     WebElement fieldMaternalEthnicity;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.ethnicity > div.half-width.paternal_ethnicity > div > ol > li")
+    @FindBy(css = ".family-info.chapter > div.fieldset.ethnicity > div.half-width.paternal_ethnicity > div > ol > li")
     WebElement fieldPaternalEthnicity;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.family-info.chapter > div.fieldset.family_history > div")
+    @FindBy(css = ".family-info.chapter > div.fieldset.family_history > div")
     WebElement fieldHealthConditions;
 
     @FindBy(css = ".global_mode_of_inheritance > div")
@@ -325,7 +325,7 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(1)")
     WebElement fieldFirstAssistedReproduction;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.ivf > div > label")
+    @FindBy(css = ".prenatal-info.chapter > div.fieldset.ivf > div > label")
     WebElement fieldSecondAssistedReproduction;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(2)")
@@ -334,7 +334,7 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")
     WebElement fieldAPGARScoreFiveMinutes;
 
-    @FindBy(css = "#xwikicontent > div.clear.clinical-info.prenatal-info.chapter > div.fieldset.prenatal_development > div")
+    @FindBy(css = ".prenatal-info.chapter > div.fieldset.prenatal_development > div")
     WebElement fieldPrenatalNotes;
 
     @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div")
