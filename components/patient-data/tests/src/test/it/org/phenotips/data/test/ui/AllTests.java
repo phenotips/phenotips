@@ -22,10 +22,10 @@ import org.xwiki.test.ui.PageObjectSuite;
 import org.junit.runner.RunWith;
 
 /**
- * Runs all functional tests found in the classpath. This allows to start/stop XWiki only once.
+ * Runs all functional tests found in the classpath. This allows to start/stop PhenoTips only once.
  *
  * @version $Id$
- * @since 5.0M2
+ * @since 1.0RC1
  */
 @RunWith(PageObjectSuite.class)
 public class AllTests
