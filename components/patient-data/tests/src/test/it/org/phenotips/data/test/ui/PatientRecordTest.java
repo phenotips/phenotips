@@ -56,7 +56,7 @@ public class PatientRecordTest extends AbstractTest
         /* PATIENT INFORMATION */
         this.patientEdit.setPatientName("Ceasar", "Salad");
         this.patientEdit.setPatientDateOfBirth("01", "04", "2013");
-        this.patientEdit.setPatientDateOfDeath("02", "03", "2001");
+        this.patientEdit.setPatientDateOfDeath("02", "03", "2014");
         this.patientEdit.setPatientGender("male");
         // Need unique identifier each time so use current time
         long currentTime = System.currentTimeMillis();
@@ -77,7 +77,7 @@ public class PatientRecordTest extends AbstractTest
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
         Assert.assertEquals("Ceasar, Salad", patientView.getPatientInformationSummary("fieldPatientName"));
         Assert.assertEquals("2013-04-01", patientView.getPatientInformationSummary("fieldDateOfBirth"));
-        Assert.assertEquals("2001-03-02", patientView.getPatientInformationSummary("fieldDateOfDeath"));
+        Assert.assertEquals("2014-03-02", patientView.getPatientInformationSummary("fieldDateOfDeath"));
         Assert.assertEquals("Male", patientView.getPatientInformationSummary("fieldSex"));
         Assert.assertEquals("indicate referral",
             patientView.getPatientInformationSummary("fieldIndicationForReferral"));
