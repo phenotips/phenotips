@@ -255,8 +255,8 @@ public class PatientRecordViewPage extends ViewPage
 
     /* PATIENT INFORMATION */
 
-    // TODO: REFER TO ELEMENTS AS 1st, 2nd, 3rd.. and so on that dont have class names
-    // identifier is not tested since it must be unique everytime. The work around is to delete it everytime
+    // TODO: REFER TO ELEMENTS AS 1st, 2nd, 3rd.. and so on that don't have class names
+    // identifier is not tested since it must be unique every time. The work around is to delete it every time
 
     @FindBy(css = ".patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
     WebElement summaryPatientNameField;
