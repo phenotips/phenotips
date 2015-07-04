@@ -35,7 +35,7 @@ import org.openqa.selenium.support.ui.Select;
 public class PatientRecordEditPage extends InlinePage
 {
     @FindBy(id = "HFamilyhistoryandpedigree")
-    WebElement expandFamilyHistory;
+    WebElement familyHistorySectionHeading;
 
     @FindBy(id = "PhenoTips.PatientClass_0_maternal_ethnicity_2")
     WebElement maternalEthnicity;
@@ -44,7 +44,7 @@ public class PatientRecordEditPage extends InlinePage
     WebElement paternalEthnicity;
 
     @FindBy(id = "HPrenatalandperinatalhistory")
-    WebElement expandPrenatalAndPerinatalHistory;
+    WebElement prenatalAndPerinatalHistorySectionHeading;
 
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     WebElement familyHealthConditions;
@@ -53,10 +53,10 @@ public class PatientRecordEditPage extends InlinePage
     WebElement gestationAtDelivery;
 
     @FindBy(id = "HMedicalhistory")
-    WebElement expandMedicalHistory;
+    WebElement medicalHistorySectionHeading;
 
     @FindBy(id = "HMeasurements")
-    WebElement expandMeasurements;
+    WebElement measurementsSectionHeading;
 
     @FindBy(css = ".measurement-info.chapter > div.list-actions > p > span.buttonwrapper > a")
     WebElement newEntryMeasurements;
@@ -118,13 +118,13 @@ public class PatientRecordEditPage extends InlinePage
     WebElement measurementRightFootLength;
 
     @FindBy(id = "HGenotypeinformation")
-    WebElement expandGenotypeInformation;
+    WebElement genotypeInformationSectionHeading;
 
     @FindBy(id = "PhenoTips.PatientClass_0_unaffected")
     WebElement patientIsClinicallyNormal;
 
     @FindBy(id = "HDiagnosis")
-    WebElement expandDiagnosis;
+    WebElement diagnosisSectionHeading;
     //
 
     @FindBy(id = "PhenoTips.PatientClass_0_diagnosis_notes")
@@ -530,7 +530,7 @@ public class PatientRecordEditPage extends InlinePage
     WebElement patientGenderFemale;
 
     @FindBy(id = "xwiki-form-gender-0-2")
-    WebElement genderOther;
+    WebElement patientGenderOther;
 
     @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0003745")
     WebElement globalInheritanceSporadic;
@@ -603,7 +603,7 @@ public class PatientRecordEditPage extends InlinePage
     WebElement newEntryPreviouslyTested;
 
     @FindBy(id = "HCaseresolution")
-    WebElement caseResolution;
+    WebElement caseResolutionSectionHeading;
 
     @FindBy(css = "#PhenoTips\\2e PatientClass_0_solved")
     WebElement caseSolved;
@@ -714,13 +714,13 @@ public class PatientRecordEditPage extends InlinePage
 
     public void setOtherGender()
     {
-        this.genderOther.click();
+        this.patientGenderOther.click();
         this.body.click();
     }
 
     public void expandFamilyHistory()
     {
-        this.expandFamilyHistory.click();
+        this.familyHistorySectionHeading.click();
     }
 
     /**
@@ -772,7 +772,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandPrenatalAndPerinatalHistory()
     {
-        this.expandPrenatalAndPerinatalHistory.click();
+        this.prenatalAndPerinatalHistorySectionHeading.click();
     }
 
     /**
@@ -921,7 +921,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandCaseResolution()
     {
-        this.caseResolution.click();
+        this.caseResolutionSectionHeading.click();
     }
 
     public void setCaseSolved()
@@ -953,12 +953,12 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandMedicalHistory()
     {
-        this.expandMedicalHistory.click();
+        this.medicalHistorySectionHeading.click();
     }
 
     public void expandMeasurements()
     {
-        this.expandMeasurements.click();
+        this.measurementsSectionHeading.click();
     }
 
     public void createNewMeasurementsEntry()
@@ -1102,7 +1102,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandGenotypeInformation()
     {
-        this.expandGenotypeInformation.click();
+        this.genotypeInformationSectionHeading.click();
     }
 
     ///////////////////////////////////
@@ -1522,7 +1522,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandDiagnosis()
     {
-        this.expandDiagnosis.click();
+        this.diagnosisSectionHeading.click();
     }
 
     public void setDiagnosisAdditionalComments(String value)
