@@ -261,10 +261,10 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
     WebElement summaryPatientNameField;
 
-    @FindBy(css = ".patient-info.chapter > p:nth-child(4) > span.displayed-value > span")
+    @FindBy(xpath = "//div[contains(@class, 'patient-info')]//p[./span[text() = 'Date of birth:']]/span[contains(@class, 'displayed-value')]")
     WebElement summaryDateOfBirthField;
 
-    @FindBy(css = ".patient-info.chapter > p:nth-child(5) > span.displayed-value > span")
+    @FindBy(xpath = "//div[contains(@class, 'patient-info')]//p[./span[text() = 'Date of death:']]/span[contains(@class, 'displayed-value')]")
     WebElement summaryDateOfDeathField;
 
     @FindBy(css = ".patient-info.chapter > p:nth-child(6) > span.displayed-value")
