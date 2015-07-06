@@ -232,4 +232,14 @@ public class FamilyScriptService2 implements ScriptService
         }
     }
 
+    /**
+     * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
+     *
+     * @param id of the patient to delete
+     */
+    // TODO change to XWikiFamily api
+    public void removeMember(String id)
+    {
+        this.processing.removeMember(id);
+    }
 }
