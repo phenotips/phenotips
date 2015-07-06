@@ -27,7 +27,7 @@ public class FormConditionalSubsectionTest {
     String type = "type";
 
     @Test
-    public void EmptyUnselectedDisplay(){
+    public void emptyUnselectedDisplay(){
         FormElement testYesNoPicker = mock(FormField.class);
         FormConditionalSubsection testConditionalSubsection = new FormConditionalSubsection(
             title, type, testYesNoPicker, false);
@@ -38,7 +38,7 @@ public class FormConditionalSubsectionTest {
     }
 
     @Test
-    public void SelectedDisplay(){
+    public void selectedDisplay(){
         FormElement testYesNoPicker = mock(FormField.class);
         FormConditionalSubsection testConditionalSubsection = new FormConditionalSubsection(
             title, type, testYesNoPicker, true);

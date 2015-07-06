@@ -44,7 +44,7 @@ public class FormSubsectionTest {
     }
 
     @Test
-    public void SubsectionDisplayTitleOnly(){
+    public void subsectionDisplayTitleOnly(){
         FormSubsection testSubsection = new FormSubsection(title);
         Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, fieldnames));
         testSubsection.addElement(testFormField);
