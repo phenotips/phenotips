@@ -163,8 +163,7 @@ public class XWikiFamily implements Family
         List<String> members = getMembers();
         if (!members.contains(patientAsString)) {
             members.add(patientAsString);
-        }
-        else {
+        } else {
             this.logger.info("Patient [{}] already a member of family [{}]. Not adding", patientAsString, getId());
             return false;
         }
