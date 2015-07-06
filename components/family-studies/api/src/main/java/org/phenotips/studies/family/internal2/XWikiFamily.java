@@ -157,10 +157,17 @@ public class XWikiFamily implements Family
                 patient.getId(), e.getMessage());
             return false;
         }
+        String patientAsString = patientReference.toString();
 
         // Add member to Xwiki family
         List<String> members = getMembers();
-        members.add(patientReference.toString());
+        if (!members.contains(patientAsString)) {
+            members.add(patientAsString);
+        }
+        else {
+            this.logger.info("Patient [{}] already a member of family [{}]. Not adding", patientAsString, getId());
+            return false;
+        }
         BaseObject familyObject = this.familyDocument.getXObject(FamilyUtils.FAMILY_CLASS);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
