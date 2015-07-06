@@ -183,8 +183,8 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public XWikiDocument createFamilyDoc(String patientId) throws IllegalArgumentException, QueryException,
-        XWikiException
+    public XWikiDocument createFamilyDoc(String patientId)
+        throws IllegalArgumentException, QueryException, XWikiException
     {
         DocumentReference docRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
         XWikiDocument doc = getDoc(docRef);
@@ -344,7 +344,7 @@ public class FamilyUtilsImpl implements FamilyUtils
             this.qm.createQuery(
                 "select family.identifier from Document doc, doc.object(PhenoTips.FamilyClass) as family"
                     + " where family.identifier is not null order by family.identifier desc", Query.XWQL)
-                .setLimit(1);
+                    .setLimit(1);
         List<Long> crtMaxIDList = q.execute();
         if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
             crtMaxID = crtMaxIDList.get(0);
@@ -389,7 +389,7 @@ public class FamilyUtilsImpl implements FamilyUtils
     @Override
     public String getViewUrl(DocumentReference ref)
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         return context.getWiki().getURL(ref, "view", context);
     }
 }
