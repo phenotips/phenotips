@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.script2;
+package org.phenotips.studies.family.script;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
@@ -53,7 +53,7 @@ import net.sf.json.JSONObject;
 @Component
 @Singleton
 @Named("families")
-public class FamilyScriptService2 implements ScriptService
+public class FamilyScriptService implements ScriptService
 {
     @Inject
     private Logger logger;
