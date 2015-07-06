@@ -25,7 +25,6 @@ import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.script.service.ScriptService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,7 @@ import net.sf.json.JSONObject;
 @Component
 @Singleton
 @Named("families")
-public class FamilyScriptService implements ScriptService
+public class FamilyScriptService
 {
     private static final String FAMILY_NOT_FOUND = "Could not get patient's family {}";
 
