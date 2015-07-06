@@ -39,6 +39,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -101,9 +102,13 @@ public class DefaultPatientResourceImplTest {
 
     private String uriString = "http://self/uri";
 
-    private DefaultPatientResourceImpl patientResource;
-
     private String id = "00000001";
+
+    private DocumentReference patientDocument;
+
+    private DocumentReference userProfileDocument;
+
+    private DefaultPatientResourceImpl patientResource;
 
 
     @Before
@@ -123,12 +128,13 @@ public class DefaultPatientResourceImplTest {
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
 
-
+        this.userProfileDocument = new DocumentReference("wiki", "user", "00000001");
         doReturn(this.currentUser).when(this.users).getCurrentUser();
-        doReturn(null).when(this.currentUser).getProfileDocument();
+        doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
 
+        this.patientDocument = new DocumentReference("wiki", "data", "P0000001");
         doReturn(this.patient).when(this.repository).getPatientById(this.id);
-        doReturn(null).when(this.patient).getDocument();
+        doReturn(this.patientDocument).when(this.patient).getDocument();
 
         this.uri = new URI(this.uriString);
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
@@ -149,7 +155,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void getPatientUserDoesNotHaveAccess() throws XWikiRestException {
-        doReturn(false).when(this.access).hasAccess(Right.VIEW, null, null);
+        doReturn(false).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.getPatient(this.id);
 
@@ -160,7 +166,7 @@ public class DefaultPatientResourceImplTest {
     @Test
     @SuppressWarnings("unchecked")
     public void getPatientAddsLinksToPatientJSON() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.VIEW, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
 
         Response response = this.patientResource.getPatient(this.id);
@@ -175,7 +181,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void getPatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.VIEW, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
 
         this.patientResource.getPatient(this.id);
@@ -203,7 +209,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void updatePatientUserDoesNotHaveAccess() throws XWikiRestException {
-        doReturn(false).when(this.access).hasAccess(Right.EDIT, null, null);
+        doReturn(false).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         WebApplicationException ex = null;
         try {
             this.patientResource.updatePatient("", this.id);
@@ -218,7 +224,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void updatePatientSentWrongIdInJSON() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
         json.put("id", "!!!!!");
         doReturn(this.id).when(this.patient).getId();
@@ -235,7 +241,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void updatePatientCatchesExceptionFromUpdateFromJSON() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
@@ -256,7 +262,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void updatePatientReturnsNoContentResponse() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
@@ -268,7 +274,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void updatePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
@@ -291,7 +297,7 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void deletePatientUserDoesNotHaveAccess() throws XWikiRestException {
-        doReturn(false).when(this.access).hasAccess(Right.DELETE, null, null);
+        doReturn(false).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
 
@@ -308,7 +314,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(wiki).when(context).getWiki();
         ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
 
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(context));
 
@@ -333,7 +339,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(wiki).when(context).getWiki();
         ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
 
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
 
@@ -349,7 +355,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(wiki).when(context).getWiki();
         ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
 
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
+        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         this.patientResource.deletePatient(this.id);
 
