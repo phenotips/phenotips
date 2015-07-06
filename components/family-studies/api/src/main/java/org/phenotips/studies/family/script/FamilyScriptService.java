@@ -242,4 +242,33 @@ public class FamilyScriptService implements ScriptService
     {
         this.processing.removeMember(id);
     }
+
+    /**
+     * Add a patient to a family.
+     *
+     * @param familyId to identify which family to add it
+     * @param patientId to identify the patient to add
+     * @return true if operation was successful
+     */
+    public boolean addPatientToFamily(String familyId, String patientId)
+    {
+        Patient patient = this.patientRepository.getPatientById(patientId);
+        if (patient == null) {
+            this.logger.error("Could not retrieve patient [{}]", patientId);
+            return false;
+        }
+        Family patientsfamily = this.familyRepository.getFamilyForPatient(patient);
+        if (patientsfamily != null) {
+            this.logger.info("Patient [{}] is already associated with family [{}].", patientId, patientsfamily.getId());
+            return false;
+        }
+
+        Family family = this.familyRepository.getFamilyById(familyId);
+        if (family == null) {
+            this.logger.error("Could not retrieve family [{}]", familyId);
+            return false;
+        }
+        family.addMember(patient);
+        return true;
+    }
 }
