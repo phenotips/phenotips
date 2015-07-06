@@ -231,8 +231,8 @@ public class ProcessingImpl implements Processing
      * @throws XWikiException TODO: review if need to throw on error.
      */
     @Override
-    public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-        XWikiException
+    public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds)
+        throws XWikiException
     {
         XWikiContext context = this.provider.get();
         BaseObject rightsObject = getDefaultRightsObject(familyDocument);
@@ -361,7 +361,7 @@ public class ProcessingImpl implements Processing
                     String image = SvgUpdater.removeLinks(pedigree.getImage(), id);
                     PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
                 } catch (Exception ex) {
-                    logger.error("Could not modify patients pedigree while removing from a family. {}",
+                    this.logger.error("Could not modify patients pedigree while removing from a family. {}",
                         ex.getMessage());
                 }
             }
@@ -372,7 +372,7 @@ public class ProcessingImpl implements Processing
     @Override
     public void removeMember(String id)
     {
-        XWikiContext context = provider.get();
+        XWikiContext context = this.provider.get();
         try {
             this.removeMember(id, context.getWiki(), context);
         } catch (Exception ex) {
