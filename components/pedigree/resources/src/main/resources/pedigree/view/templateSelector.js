@@ -45,7 +45,10 @@ var TemplateSelector = Class.create( {
             pictureBox.update("Loading...");
             this.mainDiv.insert(pictureBox);
             var href = getSelectorFromXML(objects[i], "link", "rel", "http://www.xwiki.org/rel/properties").getAttribute("href");
-            new Ajax.Request(href, {
+            //should use only path when running PhenoTips behind a reverse proxy via mod_proxy_http
+            var pathh = href.substring(href.indexOf("//") + 2);
+            var path = pathh.substring(pathh.indexOf("/"));
+            new Ajax.Request(path, {
                 method: 'GET',
                 onSuccess: this._onTemplateAvailable.bind(this, pictureBox)
             });
