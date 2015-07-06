@@ -34,6 +34,8 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -140,6 +142,22 @@ public class ValidationImpl implements Validation
                     + "this one.", patientId);
             return response;
         }
+    }
+
+    @Override
+    public StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers)
+        throws XWikiException
+    {
+        StatusResponse defaultResponse = new StatusResponse();
+        defaultResponse.statusCode = 200;
+
+        for (String member : updatedMembers) {
+            StatusResponse patientResponse = this.canAddToFamily(family, member);
+            if (patientResponse.statusCode != 200) {
+                return patientResponse;
+            }
+        }
+        return defaultResponse;
     }
 
     private boolean safeIsInFamilyCheck(XWikiDocument familyDoc, String patientId) throws XWikiException

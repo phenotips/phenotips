@@ -126,7 +126,8 @@ public class ProcessingImpl implements Processing
         throws XWikiException
     {
         if (variables.familyDoc != null) {
-            StatusResponse individualAccess = this.canAddEveryMember(variables.familyDoc, variables.updatedMembers);
+            StatusResponse individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
+                variables.updatedMembers);
             if (individualAccess.statusCode != 200) {
                 variables.response = individualAccess;
                 return variables;
@@ -236,8 +237,8 @@ public class ProcessingImpl implements Processing
         XWikiContext context = this.provider.get();
         BaseObject rightsObject = getDefaultRightsObject(familyDocument);
         if (rightsObject == null) {
-            this.logger.error("Could not find a permission object attached to the family document "
-                + familyDocument.getDocumentReference().getName());
+            this.logger.error("Could not find a permission object attached to the family document {}",
+                familyDocument.getDocumentReference().getName());
             return;
         }
 
@@ -269,20 +270,6 @@ public class ProcessingImpl implements Processing
             }
         }
         return null;
-    }
-
-    private StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers) throws XWikiException
-    {
-        StatusResponse defaultResponse = new StatusResponse();
-        defaultResponse.statusCode = 200;
-
-        for (String member : updatedMembers) {
-            StatusResponse patientResponse = this.validation.canAddToFamily(family, member);
-            if (patientResponse.statusCode != 200) {
-                return patientResponse;
-            }
-        }
-        return defaultResponse;
     }
 
     private StatusResponse updatePatientsFromJson(JSON familyContents)
@@ -379,6 +366,17 @@ public class ProcessingImpl implements Processing
                 }
             }
             wiki.saveDocument(patientDoc, context);
+        }
+    }
+
+    @Override
+    public void removeMember(String id)
+    {
+        XWikiContext context = provider.get();
+        try {
+            this.removeMember(id, context.getWiki(), context);
+        } catch (Exception ex) {
+            this.logger.error("Could not remove patient {} from their family. {}", id, ex.getMessage());
         }
     }
 

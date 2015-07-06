@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * Base class for implementing {@link FamilyEvent}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.3M1
  */
 public abstract class AbstractFamilyEvent implements FamilyEvent
 {

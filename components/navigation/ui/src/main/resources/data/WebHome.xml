@@ -2317,7 +2317,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>1, 3</position>
     </property>
     <property>
-      <title>{{translation key="phenotips.homepage.myFam.title"/}}#if($hasCreatePage) (%class="gadget-action"%)[[{{icon name='plus-circle'/}}$services.localization.render('phenotips.homepage.myFam.createFamily')&gt;&gt;Family.CreateFamily]](%%)#end</title>
+      <title>{{translation key="phenotips.homepage.myFamily.title"/}}#if($hasCreatePage) (%class="gadget-action"%)[[{{icon name='plus-circle'/}}$services.localization.render('phenotips.homepage.myFamily.createFamily')&gt;&gt;Family.CreateFamily]](%%)#end</title>
     </property>
   </object>
   <object>

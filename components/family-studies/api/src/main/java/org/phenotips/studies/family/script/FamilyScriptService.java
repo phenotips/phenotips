@@ -217,4 +217,14 @@ public class FamilyScriptService
             return new HashMap<>();
         }
     }
+
+    /**
+     * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
+     *
+     * @param id of the patient to delete
+     */
+    public void removeMember(String id)
+    {
+        this.processing.removeMember(id);
+    }
 }

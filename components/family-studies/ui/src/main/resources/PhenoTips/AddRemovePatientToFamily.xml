@@ -50,7 +50,7 @@
     #if ("$json.get('errorMessage')" != "")
       $json.get('errorMessage')
     #else
-    Unknown error has occurred
+      Unknown error has occurred
     #end
   #elseif ($json.get('validLink') == true)
     #set ($patientDoc = $xwiki.getDocument("data.$patientId"))
@@ -71,9 +71,7 @@
       $patientDoc.save("Set family reference", true)
       ## need to account for deletions
     #elseif("$!{request.remove}" == true)
-      #set($familyReference = $patientDoc.getObject('PhenoTips.FamilyReference', true))
-      #set($discard = $familyReference.set('reference', ''))
-      #set($discard = $membersList.remove($patientId))
+      #set($familyReference = $services.families.removeMember($patientId))
       ##
       $familyDoc.save("Removed a member", true)
       $patientDoc.save("Removed family reference", true)
