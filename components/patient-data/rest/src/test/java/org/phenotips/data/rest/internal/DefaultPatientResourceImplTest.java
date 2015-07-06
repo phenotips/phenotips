@@ -36,6 +36,7 @@ import org.phenotips.data.rest.Relations;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -108,6 +109,8 @@ public class DefaultPatientResourceImplTest {
 
     private DocumentReference userProfileDocument;
 
+    private XWikiContext context;
+
     private DefaultPatientResourceImpl patientResource;
 
 
@@ -138,6 +141,10 @@ public class DefaultPatientResourceImplTest {
 
         this.uri = new URI(this.uriString);
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
+
+        Provider<XWikiContext> provider = this.mocker.getInstance(
+            new DefaultParameterizedType(null, Provider.class, XWikiContext.class));
+        this.context = provider.get();
 
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
     }
@@ -307,12 +314,8 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void deletePatientCatchesXWikiException() throws XWikiRestException, XWikiException {
-        Provider provider = mock(Provider.class);
-        XWikiContext context = mock(XWikiContext.class);
         XWiki wiki = mock(XWiki.class);
-        doReturn(context).when(provider).get();
-        doReturn(wiki).when(context).getWiki();
-        ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
+        doReturn(wiki).when(this.context).getWiki();
 
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
@@ -332,12 +335,8 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void deletePatientReturnsNoContentResponse() throws XWikiRestException {
-        Provider provider = mock(Provider.class);
-        XWikiContext context = mock(XWikiContext.class);
         XWiki wiki = mock(XWiki.class);
-        doReturn(context).when(provider).get();
-        doReturn(wiki).when(context).getWiki();
-        ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
+        doReturn(wiki).when(this.context).getWiki();
 
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
@@ -348,12 +347,8 @@ public class DefaultPatientResourceImplTest {
 
     @Test
     public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
-        Provider provider = mock(Provider.class);
-        XWikiContext context = mock(XWikiContext.class);
         XWiki wiki = mock(XWiki.class);
-        doReturn(context).when(provider).get();
-        doReturn(wiki).when(context).getWiki();
-        ReflectionUtils.setFieldValue(this.patientResource, "xcontextProvider", provider);
+        doReturn(wiki).when(this.context).getWiki();
 
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
