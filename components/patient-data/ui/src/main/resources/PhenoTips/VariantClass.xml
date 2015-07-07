@@ -130,6 +130,27 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </end>
+    <reference_genome>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>reference_genome</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Reference genome</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </reference_genome>
     <start>
       <customDisplay/>
       <disabled>0</disabled>
@@ -164,26 +185,5 @@
       <values>del=Deletion|dup=Duplication</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </type>
-    <reference_genome>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>reference_genome</name>
-      <number>1</number>
-      <picker>0</picker>
-      <prettyName>Reference genome</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </reference_genome>
   </class>
 </xwikidoc>
