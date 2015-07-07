@@ -21,6 +21,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
+import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
@@ -43,8 +44,11 @@ public class DefaultPatientsResourceImplTest {
     @Mock
     private User currentUser;
 
+    @Mock
     private Logger logger;
+
     private PatientRepository repository;
+
     private QueryManager queries;
     private AuthorizationManager access;
     private UserManager users;
@@ -73,6 +77,7 @@ public class DefaultPatientsResourceImplTest {
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.patientsResource = (DefaultPatientsResourceImpl)this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
+        this.queries = this.mocker.getInstance(QueryManager.class);
 
         doReturn(this.currentUser).when(this.users).getCurrentUser();
         doReturn(null).when(this.currentUser).getProfileDocument();
@@ -90,7 +95,6 @@ public class DefaultPatientsResourceImplTest {
         doReturn(true).when(this.access).hasAccess(Right.EDIT, null, mock(EntityReference.class));
         Response response = this.patientsResource.addPatient(null);
         verify(this.logger).error("Could not process remote matching request: {}", anyString(), anyObject());
-        Assert.assertEquals(Response.status(Response.Status.BAD_REQUEST).build(), response);
     }
 
     @Test
@@ -101,16 +105,31 @@ public class DefaultPatientsResourceImplTest {
         System.out.println(response);
     }
 
-    @Test(expected = WebApplicationException.class)
+    @Test
     public void listPatientsNullOrderField() throws XWikiRestException {
-        Patients result = this.patientsResource.listPatients(0, 30, null, "asc");
-        verify(this.logger).error("Failed to list patients: {}", anyString(), anyObject());
+        WebApplicationException exception = new WebApplicationException();
+        try {
+            Patients result = this.patientsResource.listPatients(0, 30, null, "asc");
+        }
+        catch (WebApplicationException ex){
+            exception = ex;
+        }
+        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), exception.getResponse().getStatus());
+        verify(this.logger).error(eq("Failed to list patients: {}"), anyString(), anyObject());
     }
 
     @Test(expected = WebApplicationException.class)
     public void listPatientsNullOrder() throws XWikiRestException {
         Patients result = this.patientsResource.listPatients(0, 30, "id", null);
         verify(this.logger).error("Failed to list patients: {}", anyString(), anyObject());
+    }
+
+    @Test
+    public void listPatientsDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException {
+        Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        verify(this.queries.createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                + "doc.name" + " asc", "xwql"));
     }
 
 }
