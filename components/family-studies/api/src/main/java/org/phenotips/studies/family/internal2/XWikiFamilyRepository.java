@@ -98,16 +98,8 @@ public class XWikiFamilyRepository implements FamilyRepository
     private static DocumentReferenceResolver<String> referenceResolver;
 
     @Override
-    /**
-     * creates a new
-     * {@inheritDoc}
-     *
-     * @see org.phenotips.studies.family.FamilyRepository#createFamily()
-     */
     public Family createFamily()
     {
-        XWikiFamilyRepository.logger.debug("createFamily()");
-
         XWikiDocument newFamilyDocument = null;
         try {
             newFamilyDocument = this.createFamilyDocument();
@@ -153,7 +145,6 @@ public class XWikiFamilyRepository implements FamilyRepository
     public Family getFamilyForPatient(Patient patient)
     {
         String patientId = patient.getId();
-        XWikiFamilyRepository.logger.debug("getFamilyForPatient, patient's id: [{}]", patientId);
 
         Family family = getFamilyForPatientFromCache(patient);
         if (family != null) {
@@ -180,7 +171,6 @@ public class XWikiFamilyRepository implements FamilyRepository
      * @param context context
      * @throws XWikiException error when creating a reference
      */
-    // TODO should move to XWikiFamily?
     public static void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
         throws XWikiException
     {
@@ -196,7 +186,6 @@ public class XWikiFamilyRepository implements FamilyRepository
     /*
      * returns a reference to a family document from an XWiki patient document.
      */
-    // TODO should move to XWikiFamily? (what about static
     private static DocumentReference getFamilyReference(XWikiDocument patientDocument)
     {
         BaseObject familyObject = patientDocument.getXObject(FAMILY_REFERENCE);
