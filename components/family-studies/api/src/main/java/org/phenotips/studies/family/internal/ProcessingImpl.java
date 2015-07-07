@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
@@ -95,6 +96,9 @@ public class ProcessingImpl implements Processing
 
         variables.anchorId = anchorId;
         variables.anchorRef = this.referenceResolver.resolve(anchorId, Patient.DEFAULT_DATA_SPACE);
+        if (variables.anchorRef == null) {
+            variables.anchorRef = this.referenceResolver.resolve(anchorId, Family.DATA_SPACE);
+        }
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
 

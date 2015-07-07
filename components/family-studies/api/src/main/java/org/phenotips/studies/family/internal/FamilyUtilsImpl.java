@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyUtils;
 
 import org.xwiki.component.annotation.Component;
@@ -121,7 +122,11 @@ public class FamilyUtilsImpl implements FamilyUtils
     @Override
     public XWikiDocument getFromDataSpace(String id) throws XWikiException
     {
-        return getDoc(this.referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
+        XWikiDocument doc = getDoc(this.referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
+        if (doc != null) {
+            return doc;
+        }
+        return getDoc(this.referenceResolver.resolve(id, Family.DATA_SPACE));
     }
 
     @Override
@@ -134,7 +139,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         if (familyPointer != null) {
             String familyDocName = familyPointer.getStringValue(FAMILY_REFERENCE_FIELD);
             if (StringUtils.isNotBlank(familyDocName)) {
-                return this.referenceResolver.resolve(familyDocName, Patient.DEFAULT_DATA_SPACE);
+                return this.referenceResolver.resolve(familyDocName, Family.DATA_SPACE);
             }
         }
         return null;
@@ -241,7 +246,7 @@ public class FamilyUtilsImpl implements FamilyUtils
         XWiki wiki = context.getWiki();
         long nextId = getLastUsedId() + 1;
         String nextStringId = String.format("%s%07d", PREFIX, nextId);
-        EntityReference nextRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Patient.DEFAULT_DATA_SPACE);
+        EntityReference nextRef = new EntityReference(nextStringId, EntityType.DOCUMENT, Family.DATA_SPACE);
         XWikiDocument newFamilyDoc = wiki.getDocument(nextRef, context);
 
         User currentUser = this.userManager.getCurrentUser();
