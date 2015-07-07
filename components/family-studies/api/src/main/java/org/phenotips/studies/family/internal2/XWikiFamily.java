@@ -212,7 +212,6 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    // TODO remove FamilyInformation and FamilyInformationImpl
     public JSON getInformationAsJSON()
     {
         JSONObject familyJSON = new JSONObject();
