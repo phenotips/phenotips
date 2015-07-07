@@ -91,7 +91,7 @@ public class XWikiFamilyRepository implements FamilyRepository
     private static QueryManager qm;
 
     @Inject
-    private UserManager userManager;
+    private static UserManager userManager;
 
     @Inject
     @Named("current")
@@ -302,7 +302,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         }
 
         // Adding additional values to family
-        User currentUser = this.userManager.getCurrentUser();
+        User currentUser = XWikiFamilyRepository.userManager.getCurrentUser();
         BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
         ownerObject.set("owner", currentUser.getId(), context);
 
