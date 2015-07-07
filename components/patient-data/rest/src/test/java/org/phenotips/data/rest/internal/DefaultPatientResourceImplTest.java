@@ -99,8 +99,6 @@ public class DefaultPatientResourceImplTest {
 
     private UserManager users;
 
-    private URI uri;
-
     private String uriString = "http://self/uri";
 
     private String id = "00000001";
@@ -139,8 +137,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(this.patient).when(this.repository).getPatientById(this.id);
         doReturn(this.patientDocument).when(this.patient).getDocument();
 
-        this.uri = new URI(this.uriString);
-        doReturn(this.uri).when(this.uriInfo).getRequestUri();
+        doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
 
         Provider<XWikiContext> provider = this.mocker.getInstance(
