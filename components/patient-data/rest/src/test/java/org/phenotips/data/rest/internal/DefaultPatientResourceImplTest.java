@@ -117,15 +117,15 @@ public class DefaultPatientResourceImplTest {
     @Before
     public void setUp() throws ComponentLookupException, URISyntaxException {
         MockitoAnnotations.initMocks(this);
+
         Execution execution = mock(Execution.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
-
         ComponentManager componentManager = this.mocker.getInstance(ComponentManager.class, "context");
         when(componentManager.getInstance(Execution.class)).thenReturn(execution);
         doReturn(executionContext).when(execution).getContext();
         doReturn(mock(XWikiContext.class)).when(executionContext).getProperty("xwikicontext");
-
         this.patientResource = (DefaultPatientResourceImpl)this.mocker.getComponentUnderTest();
+
         this.logger = this.mocker.getMockedLogger();
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
@@ -141,12 +141,11 @@ public class DefaultPatientResourceImplTest {
 
         this.uri = new URI(this.uriString);
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
+        ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
 
         Provider<XWikiContext> provider = this.mocker.getInstance(
             new DefaultParameterizedType(null, Provider.class, XWikiContext.class));
         this.context = provider.get();
-
-        ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
     }
 
     //----------------------------Get Patient Tests----------------------------
@@ -154,6 +153,7 @@ public class DefaultPatientResourceImplTest {
     @Test
     public void getPatientCantFindPatient() throws XWikiRestException {
         doReturn(null).when(this.repository).getPatientById(anyString());
+
         Response response = this.patientResource.getPatient(this.id);
 
         verify(this.logger).debug("No such patient record: [{}]", this.id);
@@ -201,12 +201,14 @@ public class DefaultPatientResourceImplTest {
     @Test
     public void updatePatientCantFindPatient() throws XWikiRestException {
         doReturn(null).when(this.repository).getPatientById(anyString());
+
         WebApplicationException ex = null;
         try {
             this.patientResource.updatePatient("", this.id);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
+
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when the patient could not be found", ex);
         Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), ex.getResponse().getStatus());
@@ -217,12 +219,14 @@ public class DefaultPatientResourceImplTest {
     @Test
     public void updatePatientUserDoesNotHaveAccess() throws XWikiRestException {
         doReturn(false).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
+
         WebApplicationException ex = null;
         try {
             this.patientResource.updatePatient("", this.id);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
+
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when the User did not have edit rights", ex);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
@@ -235,12 +239,14 @@ public class DefaultPatientResourceImplTest {
         JSONObject json = new JSONObject();
         json.put("id", "!!!!!");
         doReturn(this.id).when(this.patient).getId();
+
         WebApplicationException ex = null;
         try {
             this.patientResource.updatePatient(json.toString(), this.id);
         } catch (WebApplicationException temp) {
             ex = temp;
         }
+
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when json id did not match patient id", ex);
         Assert.assertEquals(Status.CONFLICT.getStatusCode(), ex.getResponse().getStatus());
@@ -260,6 +266,7 @@ public class DefaultPatientResourceImplTest {
         } catch (WebApplicationException temp) {
             ex = temp;
         }
+
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when catching an Exception from Patient.updateFromJSON", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
@@ -273,10 +280,10 @@ public class DefaultPatientResourceImplTest {
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
+
         Response response = this.patientResource.updatePatient(json.toString(), this.id);
 
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
-
     }
 
     @Test
@@ -285,6 +292,7 @@ public class DefaultPatientResourceImplTest {
         JSONObject json = new JSONObject();
         json.put("id", this.id);
         doReturn(this.id).when(this.patient).getId();
+
         this.patientResource.updatePatient(json.toString(), this.id);
 
         verify(this.logger).debug("Updating patient record [{}] via REST with JSON: {}", this.id, json.toString());
@@ -316,9 +324,7 @@ public class DefaultPatientResourceImplTest {
     public void deletePatientCatchesXWikiException() throws XWikiRestException, XWikiException {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
-
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
-
         doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(context));
 
         WebApplicationException ex = null;
@@ -327,6 +333,7 @@ public class DefaultPatientResourceImplTest {
         } catch(WebApplicationException temp) {
             ex = temp;
         }
+
         Assert.assertNotNull("deletePatient did not throw a WebApplicationException as expected " +
             "when catching an XWikiException", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
@@ -337,7 +344,6 @@ public class DefaultPatientResourceImplTest {
     public void deletePatientReturnsNoContentResponse() throws XWikiRestException {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
-
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
@@ -349,7 +355,6 @@ public class DefaultPatientResourceImplTest {
     public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
-
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         this.patientResource.deletePatient(this.id);
