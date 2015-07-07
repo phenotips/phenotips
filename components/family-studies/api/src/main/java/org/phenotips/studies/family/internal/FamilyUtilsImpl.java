@@ -120,6 +120,9 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
+    /*
+     * id could be patient id or family id
+     */
     public XWikiDocument getFromDataSpace(String id) throws XWikiException
     {
         XWikiDocument doc = getDoc(this.referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
