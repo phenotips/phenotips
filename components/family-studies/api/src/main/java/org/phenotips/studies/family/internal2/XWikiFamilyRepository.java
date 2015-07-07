@@ -30,6 +30,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +73,9 @@ public class XWikiFamilyRepository implements FamilyRepository
     private static final EntityReference FAMILY_REFERENCE =
         new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
+    private static final EntityReference OWNER_CLASS =
+        new EntityReference("OwnerClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
     private static List<Family> families = new LinkedList<Family>();
@@ -84,6 +89,9 @@ public class XWikiFamilyRepository implements FamilyRepository
     /** Runs queries for finding families. */
     @Inject
     private static QueryManager qm;
+
+    @Inject
+    private UserManager userManager;
 
     @Inject
     @Named("current")
@@ -287,13 +295,21 @@ public class XWikiFamilyRepository implements FamilyRepository
             throw new IllegalArgumentException("The new family id was already taken.");
         }
 
+        // Copying all objects from template to family
         XWikiDocument template = wiki.getDocument(FAMILY_TEMPLATE, context);
-        // copying all objects from template
         for (Map.Entry<DocumentReference, List<BaseObject>> templateObject : template.getXObjects().entrySet()) {
             newFamilyDoc.newXObject(templateObject.getKey(), context);
         }
+
+        // Adding additional values to family
+        User currentUser = this.userManager.getCurrentUser();
+        BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
+        ownerObject.set("owner", currentUser.getId(), context);
+
         BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
         familyObject.set("identifier", nextId, context);
+
+        newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());
 
         wiki.saveDocument(newFamilyDoc, context);
 
