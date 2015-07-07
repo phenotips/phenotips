@@ -1,0 +1,3 @@
+org.xwiki.blobstore.attachments.legacy.internal.BlobStoreAttachmentStore
+org.xwiki.blobstore.attachments.legacy.internal.BlobStoreAttachmentRecycleBinStore
+org.xwiki.blobstore.attachments.legacy.internal.BlobStoreAttachmentVersioningStore

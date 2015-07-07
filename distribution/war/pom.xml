@@ -629,7 +629,22 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-wiki</artifactId>
       <version>${project.version}</version>
+    </dependency>  
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-cloud-blobstore-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-cloud-blobstore-attachments</artifactId>
+      <version>${project.version}</version>
+    </dependency>   
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-cloud-blobstore-s3</artifactId>
+      <version>${project.version}</version>
+    </dependency>     
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-api</artifactId>

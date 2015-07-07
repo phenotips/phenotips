@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+
+<!--
+  *
+  * See the NOTICE file distributed with this work for additional
+  * information regarding copyright ownership.
+  *
+  * This is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU Lesser General Public License as
+  * published by the Free Software Foundation; either version 2.1 of
+  * the License, or (at your option) any later version.
+  *
+  * This software is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  * Lesser General Public License for more details.
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this software; if not, write to the Free
+  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  *
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.contrib</groupId>
+    <artifactId>xwiki-platform-cloud-distribution</artifactId>
+    <version>4.0</version>
+  </parent>
+  <artifactId>xwiki-platform-cloud-distribution-cloudfoundry</artifactId>
+  <packaging>war</packaging>
+
+  <name>XWiki Platform - Cloud - Distribution - CloudFoundry</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <!-- Disable enforcer checks because we declare a dependency on a legacy module -->
+    <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.enterprise</groupId>
+      <artifactId>xwiki-enterprise-web</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>xwiki-platform-cloud-legacy-oldcore</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <!-- Old core gets in the dependency tree. Exclude it. -->
+        <exclusion>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-oldcore</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>xwiki-platform-cloud-configuration-default</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>xwiki-platform-cloud-configuration-hibernate-cloudfoundry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.2.8</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.18</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <dependentWarExcludes />
+          <overlays>
+            <overlay>
+              <groupId>org.xwiki.enterprise</groupId>
+              <artifactId>xwiki-enterprise-web</artifactId>
+              <type>war</type>
+              <excludes>
+                <!-- Exclude the standard legacy oldcore because we are going to use the patched one. -->
+                <exclude>WEB-INF/lib/xwiki-platform-legacy-oldcore*.jar</exclude>
+                <!-- We exclude redirect as well beacuse it seems to cause problems at startup when deployed on Beanstalk -->
+                <!-- <exclude>redirect</exclude> -->
+              </excludes>
+            </overlay>
+          </overlays>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+  "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+
+    <!-- Please refer to the installation guide on
+         http://platform.xwiki.org/xwiki/bin/view/AdminGuide/Installation for configuring your
+         database. You'll need to do 2 things:
+         1) Copy your database driver JAR in WEB-INF/lib or in some shared lib directory
+         2) Uncomment the properties below for your specific DB (and comment the default 
+            database configuration if it doesn't match your DB)
+    -->
+
+    <!-- Generic parameters common to all Databases -->
+
+    <property name="show_sql">false</property>
+    <property name="use_outer_join">true</property>
+
+    <property name="dbcp.defaultAutoCommit">false</property>
+    <property name="dbcp.maxActive">50</property>
+    <property name="dbcp.maxIdle">5</property>
+    <property name="dbcp.maxWait">30000</property>
+    <property name="dbcp.whenExhaustedAction">1</property>
+    <property name="dbcp.ps.whenExhaustedAction">1</property>
+    <property name="dbcp.ps.maxActive">20</property>
+    <property name="dbcp.ps.maxWait">120000</property>
+    <property name="dbcp.ps.maxIdle">20</property>
+    <!-- Without it, some queries fail in MS SQL. XWiki doesn't need scrollable result sets, anyway. -->
+    <property name="jdbc.use_scrollable_resultset">false</property>
+
+    <!-- Configuration for the default database.
+         Comment out this section and uncomment other sections below if you want to use another database.
+         Note that the database tables will be created automatically if they don't already exist.
+    -->
+    <property name="connection.url">jdbc:hsqldb:file:database_hsqldb/xwiki_db;shutdown=true</property>
+    <property name="connection.username">sa</property>
+    <property name="connection.password"></property>
+    <property name="connection.driver_class">org.hsqldb.jdbcDriver</property>
+    <property name="dialect">org.hibernate.dialect.HSQLDialect</property>
+    <property name="connection.provider_class">com.xpn.xwiki.store.DBCPConnectionProvider</property>
+    <property name="connection.pool_size">2</property>
+    <property name="statement_cache.size">2</property>
+    <mapping resource="xwiki.hbm.xml"/>
+    <mapping resource="feeds.hbm.xml"/>
+    <mapping resource="activitystream.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
