@@ -91,12 +91,12 @@ public final class XWikiFamilyPermissions
     }
 
     /**
-     * Gives a patient permissions on a family.
+     * Grants edit permission on the family to everyone who had edit permission on the patient
      *
-     * @param familyDoc family to give permissions on
-     * @param patientDoc patient to give permissions to
+     * @param familyDoc family to give permissions to
+     * @param patientDoc patient to read permissions from
      */
-    public static void setFamilyPermissionsToPatient(XWikiDocument familyDoc, XWikiDocument patientDoc)
+    public static void setFamilyPermissionsFromPatient(XWikiDocument familyDoc, XWikiDocument patientDoc)
     {
         // FIXME - The permissions for the family should be copied from the patient, and giving all permissions to the
         // creating user
@@ -112,7 +112,7 @@ public final class XWikiFamilyPermissions
     }
 
     /**
-     * Set permissions on a family to current user.
+     * Grants owner permissions to current user
      *
      * @param familyDoc family to give permissions on
      */

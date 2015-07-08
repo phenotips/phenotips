@@ -155,7 +155,7 @@ public class XWikiFamily implements Family
         BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
-        XWikiFamilyPermissions.setFamilyPermissionsToPatient(this.familyDocument, patientDocument);
+        XWikiFamilyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
 
         try {
             XWikiFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
