@@ -22,7 +22,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 
@@ -167,7 +166,7 @@ public class XWikiFamily implements Family
             this.logger.info("Patient [{}] already a member of family [{}]. Not adding", patientAsString, getId());
             return false;
         }
-        BaseObject familyObject = this.familyDocument.getXObject(FamilyUtils.FAMILY_CLASS);
+        BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
         setXwikiFamilyPermissions(this.familyDocument, patientDocument);
