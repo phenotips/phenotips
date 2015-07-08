@@ -191,38 +191,6 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public XWikiDocument createFamilyDoc(String patientId)
-        throws IllegalArgumentException, QueryException, XWikiException
-    {
-        DocumentReference docRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
-        XWikiDocument doc = getDoc(docRef);
-        return createFamilyDoc(doc);
-    }
-
-    @Override
-    public synchronized XWikiDocument createFamilyDoc(XWikiDocument patientDoc) throws QueryException, XWikiException
-    {
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-        XWikiDocument newFamilyDoc = this.createFamilyDoc(patientDoc, false);
-
-        BaseObject permissions = newFamilyDoc.newXObject(RIGHTS_CLASS, context);
-        String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
-        permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
-        permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
-        permissions.set(RIGHTS_LEVELS_FIELD, DEFAULT_RIGHTS, context);
-        permissions.set(ALLOW, 1, context);
-
-        this.setFamilyReference(patientDoc, newFamilyDoc, context);
-
-        PedigreeUtils.copyPedigree(patientDoc, newFamilyDoc, context);
-
-        wiki.saveDocument(newFamilyDoc, context);
-        wiki.saveDocument(patientDoc, context);
-        return newFamilyDoc;
-    }
-
-    @Override
     public synchronized XWikiDocument createFamilyDoc(XWikiDocument probandDoc, boolean save)
         throws IllegalArgumentException, QueryException, XWikiException
     {

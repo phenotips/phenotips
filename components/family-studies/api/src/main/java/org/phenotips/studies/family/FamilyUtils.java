@@ -110,35 +110,6 @@ public interface FamilyUtils
     Collection<String> getRelatives(XWikiDocument patient) throws XWikiException;
 
     /**
-     * Resolves the `patientId` into a {@link XWikiDocument}, and then uses {@link #createFamilyDoc(XWikiDocument)} to
-     * create a family document.
-     *
-     * @param patientId patient who will be included into a new family
-     * @return a newly created family document with rights set according to {@link #createFamilyDoc(XWikiDocument)} and
-     *         pedigree of the patient copied to the newly created family.
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     * @throws NamingException could happen during document creation
-     * @throws QueryException could happen when looking for a patient
-     */
-    XWikiDocument createFamilyDoc(String patientId) throws NamingException, QueryException, XWikiException;
-
-    /**
-     * Uses {@link #createFamilyDoc(XWikiDocument, boolean)} to create a new family document. Grants 'Edit' permissions
-     * to the family document to all users who have 'Edit' permissions to the patient. Copies the pedigree of the
-     * patient into the newly created family document. Uses {@link #createFamilyDoc(XWikiDocument, boolean)} internally
-     * to create a family document.
-     *
-     * @param patient who will be added to the newly created family. If this patient already belongs to a family, the
-     *            family reference will be silently overwritten, without the patient being removed from the family they
-     *            belong to.
-     * @return a newly created family document
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     * @throws NamingException could happen during document creation
-     * @throws QueryException could happen when looking for a patient
-     */
-    XWikiDocument createFamilyDoc(XWikiDocument patient) throws NamingException, QueryException, XWikiException;
-
-    /**
      * Allocates an id for a family, and uses a template to create a new document.
      *
      * @param probandDoc document of a patient who will be included as a member in the family members list. This method
