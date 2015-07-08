@@ -91,7 +91,7 @@ public final class XWikiFamilyPermissions
     }
 
     /**
-     * Grants edit permission on the family to everyone who had edit permission on the patient
+     * Grants edit permission on the family to everyone who had edit permission on the patient.
      *
      * @param familyDoc family to give permissions to
      * @param patientDoc patient to read permissions from
@@ -112,7 +112,7 @@ public final class XWikiFamilyPermissions
     }
 
     /**
-     * Grants owner permissions to current user
+     * Grants owner permissions to current user.
      *
      * @param familyDoc family to give permissions on
      */
