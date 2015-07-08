@@ -29,16 +29,11 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -51,7 +46,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSON;
@@ -68,14 +62,6 @@ public class XWikiFamily implements Family
     private static final String WARNING = "warning";
 
     private static final String FAMILY_MEMBERS_FIELD = "members";
-
-    private static final String RIGHTS_USERS_FIELD = "users";
-
-    private static final String RIGHTS_GROUPS_FIELD = "groups";
-
-    private static final String RIGHTS_LEVELS_FIELD = "levels";
-
-    private static final String COMMA = ",";
 
     private static Validation validation;
 
@@ -169,7 +155,7 @@ public class XWikiFamily implements Family
         BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
-        setXwikiFamilyPermissions(this.familyDocument, patientDocument);
+        XWikiFamilyPermissions.setFamilyPermissionsToPatient(this.familyDocument, patientDocument);
 
         try {
             XWikiFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
@@ -270,62 +256,6 @@ public class XWikiFamily implements Family
         patientJSON.put("permissions", permissionJSON);
 
         return patientJSON;
-    }
-
-    private void setXwikiFamilyPermissions(XWikiDocument newFamilyDoc, XWikiDocument patientDoc)
-    {
-        // FIXME - The permissions for the family should be copied from the patient, and giving all permissions to the
-        // creating user
-
-        XWikiContext context = getXContext();
-        BaseObject permissions = newFamilyDoc.getXObject(FamilyUtils.RIGHTS_CLASS);
-        String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
-        permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
-        permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
-        permissions.set(RIGHTS_LEVELS_FIELD, "view,edit", context);
-        permissions.set("allow", 1, context);
-    }
-
-    /** users, groups. */
-    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
-    {
-        String[] fullRights = new String[2];
-        int i = 0;
-        for (Set<String> category : this.getEntitiesWithEditAccess(patientDoc)) {
-            String categoryString = "";
-            for (String user : category) {
-                categoryString += user + COMMA;
-            }
-            fullRights[i] = categoryString;
-            i++;
-        }
-        return fullRights;
-    }
-
-    private List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
-    {
-        Collection<BaseObject> rightsObjects = patientDoc.getXObjects(FamilyUtils.RIGHTS_CLASS);
-        Set<String> users = new HashSet<>();
-        Set<String> groups = new HashSet<>();
-        for (BaseObject rights : rightsObjects) {
-            String[] levels = ((BaseStringProperty) rights.getField(RIGHTS_LEVELS_FIELD)).getValue().split(COMMA);
-            if (Arrays.asList(levels).contains("edit")) {
-                BaseStringProperty userAccessObject = (BaseStringProperty) rights.getField(RIGHTS_USERS_FIELD);
-                BaseStringProperty groupAccessObject = (BaseStringProperty) rights.getField(RIGHTS_GROUPS_FIELD);
-                if (userAccessObject != null) {
-                    String[] usersAccess = userAccessObject.getValue().split(COMMA);
-                    users.addAll(Arrays.asList(usersAccess));
-                }
-                if (groupAccessObject != null) {
-                    String[] groupsAccess = groupAccessObject.getValue().split(COMMA);
-                    groups.addAll(Arrays.asList(groupsAccess));
-                }
-            }
-        }
-        List<Set<String>> fullRights = new ArrayList<>();
-        fullRights.add(users);
-        fullRights.add(groups);
-        return fullRights;
     }
 
     private XWikiContext getXContext()

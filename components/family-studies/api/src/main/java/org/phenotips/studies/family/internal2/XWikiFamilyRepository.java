@@ -298,6 +298,8 @@ public class XWikiFamilyRepository implements FamilyRepository
 
         newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());
 
+        XWikiFamilyPermissions.setFamilyPermissionsToCurrentUser(newFamilyDoc);
+
         wiki.saveDocument(newFamilyDoc, context);
 
         return newFamilyDoc;
