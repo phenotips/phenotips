@@ -23,6 +23,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
@@ -40,7 +41,10 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.query.internal.DefaultQuery;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -55,6 +59,7 @@ import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -125,6 +130,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
         Response response = this.mocker.getComponentUnderTest().getPatient("eid");
         verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", null, "id");
+        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", "eid");
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
@@ -149,7 +155,20 @@ public class DefaultPatientByExternalIdResourceImplTest {
         JSONObject json = new JSONObject().accumulate("links", links);
 
         assertEquals(json, response.getEntity());
-        assertEquals(200, response.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
+    {
+        Query query = mock(DefaultQuery.class);
+        when(this.repository.getPatientByExternalId("eid")).thenReturn(null);
+        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
+        when(query.execute()).thenReturn(new ArrayList<Object>());
+
+        Response response = this.mocker.getComponentUnderTest().getPatient("eid");
+        verify(this.logger).debug("No patient record with external ID [{}] exists yet", "eid");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
 
