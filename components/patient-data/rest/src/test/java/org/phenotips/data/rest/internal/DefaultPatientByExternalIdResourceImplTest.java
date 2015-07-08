@@ -171,5 +171,18 @@ public class DefaultPatientByExternalIdResourceImplTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
+    @Test
+    public void updatePatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
+    {
+        Query query = mock(DefaultQuery.class);
+        when(this.repository.getPatientByExternalId("eid")).thenReturn(null);
+        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
+        when(query.execute()).thenReturn(new ArrayList<Object>());
+
+        Response response = this.mocker.getComponentUnderTest().updatePatient("json", "eid");
+        verify(this.logger).debug("No patient record with external ID [{}] exists yet", "eid");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
 
 }
