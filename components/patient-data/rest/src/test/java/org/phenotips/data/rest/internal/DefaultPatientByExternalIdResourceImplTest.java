@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import com.xpn.xwiki.XWikiContext;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,10 +29,13 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientByExternalIdResource;
+import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.Relations;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.EntityReference;
@@ -43,6 +47,7 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.UserManager;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -62,7 +67,11 @@ public class DefaultPatientByExternalIdResourceImplTest {
     @Mock
     private Patient patient;
 
-    private EntityReferenceResolver<EntityReference> currentResolver;
+    @Mock
+    private UriInfo uriInfo;
+
+    @Mock
+    private UriBuilder uriBuilder;
 
     private Logger logger;
 
@@ -76,24 +85,15 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
     private UserManager users;
 
-    @Mock
-    private UriInfo uriInfo;
-
-    @Mock
-    private UriBuilder uriBuilder;
-
     private URI uri;
 
-    private ParameterizedType entityResolverType = new DefaultParameterizedType(null, EntityReferenceResolver.class,
-                                                                                String.class);
+    private DefaultPatientByExternalIdResourceImpl component;
 
     @Before
     public void setUp() throws ComponentLookupException, URISyntaxException
     {
         MockitoAnnotations.initMocks(this);
-        uri = new URI("uri");
-//        this.currentResolver = this.mocker.getInstance(this.entityResolverType, "current");
-//        this.logger = this.mocker.getInstance(Logger.class);
+        this.uri = new URI("uri");
 
         Execution execution = mock(Execution.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
@@ -107,38 +107,49 @@ public class DefaultPatientByExternalIdResourceImplTest {
         this.qm = this.mocker.getInstance(QueryManager.class);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
         this.users = this.mocker.getInstance(UserManager.class);
+        this.component = (DefaultPatientByExternalIdResourceImpl) this.mocker.getComponentUnderTest();
+        this.logger = this.mocker.getMockedLogger();
+        ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
 
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
+        when(this.patient.getId()).thenReturn("id");
+        when(this.users.getCurrentUser()).thenReturn(null);
+        when(this.patient.getDocument()).thenReturn(null);
     }
 
     @Test
     public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
     {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
-        when(this.users.getCurrentUser()).thenReturn(null);
-        when(this.patient.getDocument()).thenReturn(null);
         when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(false);
 
         Response response = this.mocker.getComponentUnderTest().getPatient("eid");
+        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", null, "id");
+
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void getPatientPerformsCorrectly() throws ComponentLookupException
+    public void getPatientPerformsCorrectly() throws ComponentLookupException, XWikiRestException
     {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
-        when(this.users.getCurrentUser()).thenReturn(null);
-        when(this.patient.getDocument()).thenReturn(null);
-        when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(false);
+        when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
 
         JSONObject jsonObject = new JSONObject();
-//        when(this.uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-//        when(uriBuilder.path(PatientResource.class)).thenReturn(uriBuilder);
-//        when(uriBuilder.build("id")).thenReturn(uri);
-
         when(this.patient.toJSON()).thenReturn(jsonObject);
+        when(this.uriInfo.getBaseUriBuilder()).thenReturn(this.uriBuilder);
+        when(this.uriBuilder.path(PatientResource.class)).
+                thenReturn(uriBuilder);
+        when(this.uriBuilder.build("id")).thenReturn(this.uri);
 
-        Response response = this.mocker.getComponentUnderTest().getPatient("id");
+        Response response = this.mocker.getComponentUnderTest().getPatient("eid");
+        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", "eid");
+
+        JSONObject links = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href", "uri");
+        JSONObject json = new JSONObject().accumulate("links", links);
+
+        assertEquals(json, response.getEntity());
+        assertEquals(200, response.getStatus());
     }
 
 
