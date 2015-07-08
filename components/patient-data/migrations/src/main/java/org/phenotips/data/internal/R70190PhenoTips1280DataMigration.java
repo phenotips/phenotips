@@ -27,6 +27,7 @@ import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -81,9 +82,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
 
     private static final String CLASSIFICATION_NAME = "classification";
 
-    private static final String BEGINNING = "select distinct o.name from BaseObject o where o.className = '";
-
-    private static final String ENDING = "'";
+    private static final String OR = "' or o.className = '";
 
     private static final EntityReference PATIENT_CLASS = new EntityReference("PatientClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
@@ -148,103 +147,145 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
 
         Query q =
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
+                + this.serializer.serialize(geneClassReference) + OR
+                + this.serializer.serialize(rejectedGenesClassReference) + OR
                 + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
                 + SOLVED_NAME + "' and p.value <> ''");
-        setSolvedGenes(q, xwiki, patientClassReference, geneClassReference, context, session);
 
-        q = session.createQuery(BEGINNING + this.serializer.serialize(geneClassReference) + ENDING);
-        setCandidateGenes(q, xwiki, investigationClassReference, geneClassReference, context, session);
-
-        q = session.createQuery(BEGINNING + this.serializer.serialize(rejectedGenesClassReference) + ENDING);
-        setRejectedGenes(q, xwiki, rejectedGenesClassReference, geneClassReference, context, session);
-
-        return null;
-    }
-
-    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference investigationClassReference,
-        DocumentReference geneClassReference, XWikiContext context, Session session)
-        throws HibernateException, XWikiException
-    {
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
         for (String docName : docs) {
             XWikiDocument doc =
                 xwiki.getDocument(R70190PhenoTips1280DataMigration.this.resolver.resolve(docName), context);
-            BaseObject gene = doc.getXObject(investigationClassReference);
-            StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
-            LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
-            BaseObject newgene = doc.newXObject(geneClassReference, context);
-            newgene.setStringValue(GENE_NAME, oldGeneName.getValue());
-            newgene.setStringValue(COMMENTS_NAME, oldGeneComments.getValue());
-            newgene.setStringValue(CLASSIFICATION_NAME, "candidate");
-            doc.setComment("Migrate 'candidate' genes to the GeneClass objects");
-            doc.setMinorEdit(true);
-            doc.removeXObjects(investigationClassReference);
-            try {
-                session.clear();
-                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-                session.flush();
-            } catch (DataMigrationException e) {
-                //
-            }
+            List<String> geneList = new ArrayList<>();
+            setSolvedGenes(doc, xwiki, patientClassReference, geneClassReference, context, session, geneList);
+            setRejectedGenes(doc, xwiki, rejectedGenesClassReference, geneClassReference, context, session, geneList);
+            setCandidateGenes(doc, xwiki, investigationClassReference, geneClassReference, context, session, geneList);
+        }
+
+        return null;
+    }
+
+    private void setSolvedGenes(XWikiDocument doc, XWiki xwiki, DocumentReference patientClassReference,
+        DocumentReference geneClassReference, XWikiContext context, Session session, List<String> geneList)
+        throws HibernateException, XWikiException
+    {
+        BaseObject patient = doc.getXObject(patientClassReference);
+        StringProperty oldTarget = (StringProperty) patient.get(SOLVED_NAME);
+        patient.removeField(SOLVED_NAME);
+        BaseObject gene = doc.newXObject(geneClassReference, context);
+        gene.setStringValue(GENE_NAME, oldTarget.getValue());
+        gene.setStringValue(CLASSIFICATION_NAME, "solved");
+        geneList.add(oldTarget.getValue());
+        doc.setComment("Migrate 'solved' genes to the GeneClass objects");
+        doc.setMinorEdit(true);
+        try {
+            // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
+            // so we must clear the session cache first.
+            session.clear();
+            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+            session.flush();
+        } catch (DataMigrationException e) {
+            //
         }
     }
 
-    private void setSolvedGenes(Query q, XWiki xwiki, DocumentReference patientClassReference,
-        DocumentReference geneClassReference, XWikiContext context, Session session)
-        throws HibernateException, XWikiException
+    private void setRejectedGenes(XWikiDocument doc, XWiki xwiki, DocumentReference rejectedGenesClassReference,
+        DocumentReference geneClassReference, XWikiContext context, Session session, List<String> geneList)
+            throws HibernateException, XWikiException
     {
-        @SuppressWarnings("unchecked")
-        List<String> documents = q.list();
-        for (String docName : documents) {
-            XWikiDocument doc =
-                xwiki.getDocument(R70190PhenoTips1280DataMigration.this.resolver.resolve(docName), context);
-            BaseObject patient = doc.getXObject(patientClassReference);
-            StringProperty oldTarget = (StringProperty) patient.get(SOLVED_NAME);
-            patient.removeField(SOLVED_NAME);
-            BaseObject gene = doc.newXObject(geneClassReference, context);
-            gene.setStringValue(GENE_NAME, oldTarget.getValue());
-            gene.setStringValue(CLASSIFICATION_NAME, "solved");
-            doc.setComment("Migrate 'solved' genes to the GeneClass objects");
-            doc.setMinorEdit(true);
-            try {
-                // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
-                // so we must clear the session cache first.
-                session.clear();
-                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-                session.flush();
-            } catch (DataMigrationException e) {
-                //
+        List<BaseObject> genes = doc.getXObjects(rejectedGenesClassReference);
+        for (BaseObject gene : genes) {
+            StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
+            LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
+            if (!geneList.contains(oldGeneName.getValue())) {
+                BaseObject newgene = doc.newXObject(geneClassReference, context);
+                newgene.setStringValue(GENE_NAME, oldGeneName.getValue());
+                newgene.setLargeStringValue(COMMENTS_NAME, oldGeneComments.getValue());
+                newgene.setStringValue(CLASSIFICATION_NAME, "rejected");
+                geneList.add(oldGeneName.getValue());
+            } else {
+                // we have a duplicate in solved genes - updating its comment
+                String commentUpend = "\n-----\nAutomatic migration: gene was duplicated in the excluded gene section.";
+                if (!oldGeneComments.getValue().isEmpty()) {
+                    commentUpend += "\nOriginal comment: \n" + oldGeneComments.getValue();
+                }
+                updateComment(oldGeneName, doc, commentUpend, geneClassReference, session, context);
             }
+        }
+        doc.setComment("Migrating 'rejected' genes to the GeneClass objects");
+        doc.setMinorEdit(true);
+        doc.removeXObjects(rejectedGenesClassReference);
+        try {
+            session.clear();
+            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+            session.flush();
+        } catch (DataMigrationException e) {
+            //
         }
     }
 
-    private void setRejectedGenes(Query q, XWiki xwiki, DocumentReference rejectedGenesClassReference,
-        DocumentReference geneClassReference, XWikiContext context, Session session)
+    private void setCandidateGenes(XWikiDocument doc, XWiki xwiki, DocumentReference investigationClassReference,
+        DocumentReference geneClassReference, XWikiContext context, Session session, List<String> geneList)
         throws HibernateException, XWikiException
     {
-        @SuppressWarnings("unchecked")
-        List<String> docums = q.list();
-        for (String docName : docums) {
-            XWikiDocument doc =
-                xwiki.getDocument(R70190PhenoTips1280DataMigration.this.resolver.resolve(docName), context);
-            BaseObject gene = doc.getXObject(rejectedGenesClassReference);
+        List<BaseObject> genes = doc.getXObjects(investigationClassReference);
+        for (BaseObject gene : genes) {
             StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
             LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
-            BaseObject newgene = doc.newXObject(geneClassReference, context);
-            newgene.setStringValue(GENE_NAME, oldGeneName.getValue());
-            newgene.setStringValue(COMMENTS_NAME, oldGeneComments.getValue());
-            newgene.setStringValue(CLASSIFICATION_NAME, "rejected");
-            doc.setComment("Migrating 'rejected' genes to the GeneClass objects");
-            doc.setMinorEdit(true);
-            doc.removeXObjects(rejectedGenesClassReference);
-            try {
-                session.clear();
-                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-                session.flush();
-            } catch (DataMigrationException e) {
-                //
+            if (!geneList.contains(oldGeneName.getValue())) {
+                BaseObject newgene = doc.newXObject(geneClassReference, context);
+                newgene.setStringValue(GENE_NAME, oldGeneName.getValue());
+                newgene.setLargeStringValue(COMMENTS_NAME, oldGeneComments.getValue());
+                newgene.setStringValue(CLASSIFICATION_NAME, "candidate");
+            } else {
+                // we have a duplicate in either solved or rejected genes - updating its comment
+                String commentUpend =
+                    "\n-----\nAutomatic migration: gene was duplicated in the candidate gene section.";
+                if (!oldGeneComments.getValue().isEmpty()) {
+                    commentUpend += "\nOriginal comment:\n" + oldGeneComments.getValue();
+                }
+                updateComment(oldGeneName, doc, commentUpend, geneClassReference, session, context);
             }
         }
+        doc.setComment("Migrate 'candidate' genes to the GeneClass objects");
+        doc.setMinorEdit(true);
+        doc.removeXObjects(investigationClassReference);
+        try {
+            session.clear();
+            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+            session.flush();
+        } catch (DataMigrationException e) {
+            //
+        }
     }
+
+    private void updateComment(StringProperty oldGeneName, XWikiDocument doc,
+        String commentUpend, DocumentReference geneClassReference, Session session, XWikiContext context)
+            throws HibernateException, XWikiException
+    {
+        List<BaseObject> genes = doc.getXObjects(geneClassReference);
+        for (BaseObject gene : genes) {
+            StringProperty geneName = (StringProperty) gene.get(GENE_NAME);
+            if (geneName.getValue().equals(oldGeneName.getValue())) {
+                LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
+                // StringProperty geneClassification = (StringProperty) gene.get(CLASSIFICATION_NAME);
+                if (oldGeneComments == null) {
+                    gene.setLargeStringValue(COMMENTS_NAME, commentUpend);
+                } else {
+                    gene.setLargeStringValue(COMMENTS_NAME, oldGeneComments.getValue() + commentUpend);
+                }
+            }
+        }
+        doc.setComment("Update comments for duplicate genes");
+        doc.setMinorEdit(true);
+        try {
+            session.clear();
+            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+            session.flush();
+        } catch (DataMigrationException e) {
+            //
+        }
+    }
+
 }
