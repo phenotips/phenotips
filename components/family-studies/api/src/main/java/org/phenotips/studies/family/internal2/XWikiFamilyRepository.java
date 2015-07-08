@@ -270,8 +270,6 @@ public class XWikiFamilyRepository implements FamilyRepository
     private synchronized XWikiDocument createFamilyDocument()
         throws IllegalArgumentException, QueryException, XWikiException
     {
-        XWikiFamilyRepository.logger.debug("createFamilyDocument()");
-
         XWikiContext context = XWikiFamilyRepository.provider.get();
         XWiki wiki = context.getWiki();
         long nextId = getLastUsedId() + 1;
