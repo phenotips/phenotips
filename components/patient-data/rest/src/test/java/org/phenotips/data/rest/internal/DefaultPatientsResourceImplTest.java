@@ -24,8 +24,10 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
+import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.query.internal.DefaultQuery;
 import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -39,6 +41,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -98,6 +102,7 @@ public class DefaultPatientsResourceImplTest {
         this.uri = new URI("http://uri");
 
         doReturn(this.uri).when(this.uriInfo).getBaseUri();
+        doReturn(this.uri).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientsResource, "uriInfo", this.uriInfo);
 
         doReturn("00000001").when(this.patient).getId();
@@ -133,7 +138,6 @@ public class DefaultPatientsResourceImplTest {
         JSONObject json = new JSONObject();
         Response response = this.patientsResource.addPatient(json.toString());
         verify(this.logger).debug("Importing new patient from JSON via REST: {}", json.toString());
-        System.out.println(response.getEntity().toString());
     }
 
     @Test
@@ -163,11 +167,16 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientsDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException {
+    public void listPatientsDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException
+    {
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(new ArrayList<Object[]>()).when(query).execute();
         Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
-        verify(this.queries.createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+        verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
-                + "doc.name" + " asc", "xwql"));
+                + "doc.name" + " asc", "xwql");
     }
 
 }
