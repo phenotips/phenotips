@@ -51,6 +51,7 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.UserManager;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -182,6 +183,17 @@ public class DefaultPatientByExternalIdResourceImplTest {
         Response response = this.mocker.getComponentUnderTest().updatePatient("json", "eid");
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", "eid");
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
+    {
+        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(false);
+
+        Response response = this.mocker.getComponentUnderTest().updatePatient("json", "eid");
+        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, "id");
+        verify(this.logger).debug("Updating patient record with external ID [{}] via REST", "eid");
     }
 
 
