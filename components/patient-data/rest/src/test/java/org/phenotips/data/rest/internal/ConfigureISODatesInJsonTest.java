@@ -82,8 +82,8 @@ public class ConfigureISODatesInJsonTest{
     }
 
     @Test
-    public void checkConstruction() {
-        ConfigureISODatesInJson testInstance = new ConfigureISODatesInJson();
+    public void checkConstruction() throws ComponentLookupException {
+        ConfigureISODatesInJson testInstance = (ConfigureISODatesInJson)this.mocker.getComponentUnderTest();
         Assert.assertEquals("ConfigureISODatesInJson", testInstance.getName());
         Assert.assertTrue(testInstance.getEvents().get(0).getClass() == ApplicationStartedEvent.class);
     }
@@ -99,7 +99,5 @@ public class ConfigureISODatesInJsonTest{
         this.mocker.getComponentUnderTest().onEvent(event, source, data);
 
         verify(objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-
     }
 }
