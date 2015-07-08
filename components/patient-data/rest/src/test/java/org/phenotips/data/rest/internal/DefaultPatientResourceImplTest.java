@@ -140,8 +140,7 @@ public class DefaultPatientResourceImplTest {
         doReturn(new URI(this.uriString)).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientResource, "uriInfo", this.uriInfo);
 
-        Provider<XWikiContext> provider = this.mocker.getInstance(
-            new DefaultParameterizedType(null, Provider.class, XWikiContext.class));
+        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.context = provider.get();
     }
 
