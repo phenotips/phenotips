@@ -200,7 +200,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void updatePatientBlankJSONBais() throws ComponentLookupException, XWikiRestException
+    public void updatePatientBlankJSONBails() throws ComponentLookupException, XWikiRestException
     {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
