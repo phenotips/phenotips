@@ -54,7 +54,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * Default implementation of {@link DomainObjectFactory}.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 @Component
