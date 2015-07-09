@@ -5,4 +5,5 @@ org.phenotips.studies.family.internal.ValidationImpl
 org.phenotips.studies.family.internal.JsonAdapterImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener
 org.phenotips.studies.family.internal2.XWikiFamilyRepository
+org.phenotips.studies.family.internal2.XWikiFamilyPermissions
 org.phenotips.studies.family.listener.FamilyDeletingListener

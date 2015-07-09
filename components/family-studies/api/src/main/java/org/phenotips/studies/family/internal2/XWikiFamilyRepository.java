@@ -97,6 +97,9 @@ public class XWikiFamilyRepository implements FamilyRepository
     @Named("current")
     private static DocumentReferenceResolver<String> referenceResolver;
 
+    @Inject
+    private static XWikiFamilyPermissions familyPermissions;
+
     @Override
     public Family createFamily()
     {
@@ -298,7 +301,7 @@ public class XWikiFamilyRepository implements FamilyRepository
 
         newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());
 
-        XWikiFamilyPermissions.setFamilyPermissionsToCurrentUser(newFamilyDoc);
+        XWikiFamilyRepository.familyPermissions.setFamilyPermissionsToCurrentUser(newFamilyDoc);
 
         wiki.saveDocument(newFamilyDoc, context);
 

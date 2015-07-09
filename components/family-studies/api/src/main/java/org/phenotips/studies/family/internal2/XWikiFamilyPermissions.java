@@ -17,10 +17,7 @@
  */
 package org.phenotips.studies.family.internal2;
 
-import org.phenotips.components.ComponentManagerRegistry;
-
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.users.User;
@@ -49,9 +46,9 @@ import com.xpn.xwiki.objects.BaseStringProperty;
  *
  * @version $Id$
  */
-@Component
+@Component(roles = { XWikiFamilyPermissions.class })
 @Singleton
-public final class XWikiFamilyPermissions
+public class XWikiFamilyPermissions
 {
     /** XWiki class that contains rights to XWiki documents. */
     private static final EntityReference RIGHTS_CLASS =
@@ -70,25 +67,10 @@ public final class XWikiFamilyPermissions
     private static final String ALLOW = "allow";
 
     @Inject
-    private static Provider<XWikiContext> provider;
+    private Provider<XWikiContext> provider;
 
     @Inject
-    private static UserManager userManager;
-
-    static {
-        try {
-            XWikiFamilyPermissions.userManager =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(UserManager.class);
-            XWikiFamilyPermissions.provider =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
-        } catch (ComponentLookupException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private XWikiFamilyPermissions()
-    {
-    }
+    private UserManager userManager;
 
     /**
      * Grants edit permission on the family to everyone who had edit permission on the patient.
@@ -96,15 +78,15 @@ public final class XWikiFamilyPermissions
      * @param familyDoc family to give permissions to
      * @param patientDoc patient to read permissions from
      */
-    public static void setFamilyPermissionsFromPatient(XWikiDocument familyDoc, XWikiDocument patientDoc)
+    public void setFamilyPermissionsFromPatient(XWikiDocument familyDoc, XWikiDocument patientDoc)
     {
         // FIXME - The permissions for the family should be copied from the patient, and giving all permissions to the
         // creating user
 
-        XWikiContext context = XWikiFamilyPermissions.provider.get();
+        XWikiContext context = this.provider.get();
 
         BaseObject permissions = familyDoc.getXObject(XWikiFamilyPermissions.RIGHTS_CLASS);
-        String[] fullRights = XWikiFamilyPermissions.getEntitiesWithEditAccessAsString(patientDoc);
+        String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
         permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
         permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
         permissions.set(RIGHTS_LEVELS_FIELD, "view,edit", context);
@@ -116,10 +98,10 @@ public final class XWikiFamilyPermissions
      *
      * @param familyDoc family to give permissions on
      */
-    public static void setFamilyPermissionsToCurrentUser(XWikiDocument familyDoc)
+    public void setFamilyPermissionsToCurrentUser(XWikiDocument familyDoc)
     {
-        User currentUser = XWikiFamilyPermissions.userManager.getCurrentUser();
-        XWikiContext context = XWikiFamilyPermissions.provider.get();
+        User currentUser = this.userManager.getCurrentUser();
+        XWikiContext context = this.provider.get();
 
         BaseObject permissions = familyDoc.getXObject(XWikiFamilyPermissions.RIGHTS_CLASS);
         permissions.set(RIGHTS_USERS_FIELD, currentUser.getId(), context);
@@ -127,11 +109,11 @@ public final class XWikiFamilyPermissions
         permissions.set(ALLOW, 1, context);
     }
 
-    private static String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
+    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
     {
         String[] fullRights = new String[2];
         int i = 0;
-        for (Set<String> category : XWikiFamilyPermissions.getEntitiesWithEditAccess(patientDoc)) {
+        for (Set<String> category : this.getEntitiesWithEditAccess(patientDoc)) {
             String categoryString = "";
             for (String user : category) {
                 categoryString += user + COMMA;
@@ -146,7 +128,7 @@ public final class XWikiFamilyPermissions
      * Returns all the users and groups that can edit the patient. First set in returned list contains all the users
      * that can edit the patient, second set contains all the groups that can edit the patient.
      */
-    private static List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
+    private List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
     {
         Collection<BaseObject> rightsObjects = patientDoc.getXObjects(XWikiFamilyPermissions.RIGHTS_CLASS);
         Set<String> users = new HashSet<>();

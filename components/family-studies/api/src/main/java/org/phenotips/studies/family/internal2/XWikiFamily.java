@@ -69,6 +69,8 @@ public class XWikiFamily implements Family
 
     private static Provider<XWikiContext> provider;
 
+    private static XWikiFamilyPermissions familyPermissions;
+
     @Inject
     private Logger logger;
 
@@ -80,6 +82,8 @@ public class XWikiFamily implements Family
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
             XWikiFamily.validation =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(Validation.class);
+            XWikiFamily.familyPermissions =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyPermissions.class);
             XWikiFamily.provider =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
         } catch (ComponentLookupException e) {
@@ -155,7 +159,7 @@ public class XWikiFamily implements Family
         BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
-        XWikiFamilyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
+        XWikiFamily.familyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
 
         try {
             XWikiFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
