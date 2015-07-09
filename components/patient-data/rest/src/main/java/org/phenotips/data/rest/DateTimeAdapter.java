@@ -33,8 +33,8 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class DateTimeAdapter extends XmlAdapter<String, DateTime>
 {
-    private static final DateTimeFormatter ISO_DATETIME_FORMATTER = ISODateTimeFormat.dateTime().withZone(
-        DateTimeZone.UTC);
+    private static final DateTimeFormatter ISO_DATETIME_FORMATTER =
+        ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
     @Override
     public DateTime unmarshal(String v) throws Exception
