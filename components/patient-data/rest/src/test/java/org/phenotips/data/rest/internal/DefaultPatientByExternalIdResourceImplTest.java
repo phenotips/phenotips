@@ -18,6 +18,7 @@
 package org.phenotips.data.rest.internal;
 
 import com.xpn.xwiki.XWikiContext;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.Before;
@@ -49,6 +50,7 @@ import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.text.StringUtils;
 import org.xwiki.users.UserManager;
 
 import javax.ws.rs.WebApplicationException;
@@ -62,6 +64,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -195,6 +198,16 @@ public class DefaultPatientByExternalIdResourceImplTest {
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, "id");
         verify(this.logger).debug("Updating patient record with external ID [{}] via REST", "eid");
     }
+
+    @Test
+    public void updatePatientBlankJSONBais() throws ComponentLookupException, XWikiRestException
+    {
+        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
+
+        Response response = this.mocker.getComponentUnderTest().updatePatient("{\"key\":\"value\"}", "eid");
+    }
+
 
 
 }
