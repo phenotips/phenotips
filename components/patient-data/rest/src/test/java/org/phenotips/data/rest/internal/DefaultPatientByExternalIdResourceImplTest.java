@@ -136,7 +136,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(false);
 
-        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", null, this.patient.getId());
 
@@ -156,7 +156,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
                 thenReturn(uriBuilder);
         when(this.uriBuilder.build(this.patient.getId())).thenReturn(this.uri);
 
-        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
 
         JSONObject links = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href", "uri");
@@ -174,7 +174,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
-        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        Response response = this.component.getPatient(this.eid);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -187,7 +187,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("json", this.eid);
+        Response response = this.component.updatePatient("json", this.eid);
         verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -198,7 +198,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(false);
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("json", this.eid);
+        Response response = this.component.updatePatient("json", this.eid);
         verify(this.logger).debug("Updating patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
@@ -272,7 +272,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
 
-        this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"notid\"}", "eid");
+        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
     }
 
     @Test(expected=WebApplicationException.class)
@@ -282,7 +282,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
         doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
 
-        this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
+        this.component.updatePatient("{\"id\":\"id\"}", "eid");
         verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
                 this.id, "{\"id\":\"id\"}");
     }
@@ -292,7 +292,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
+        Response response = this.component.updatePatient("{\"id\":\"id\"}", "eid");
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
