@@ -208,7 +208,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"notid\"}", "eid");
     }
 
-    @Test(expected=Exception.class)
+    @Test(expected=WebApplicationException.class)
     public void updatePatientFromJSONException() throws ComponentLookupException, XWikiRestException
     {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
