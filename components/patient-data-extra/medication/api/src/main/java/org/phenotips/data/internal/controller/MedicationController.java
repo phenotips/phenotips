@@ -50,7 +50,7 @@ import net.sf.json.JSONObject;
  * Handles the patient's medication records.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component(roles = { PatientDataController.class })
 @Named("medication")

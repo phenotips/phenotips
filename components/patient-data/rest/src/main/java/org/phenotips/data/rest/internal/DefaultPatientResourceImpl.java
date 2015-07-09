@@ -53,7 +53,7 @@ import net.sf.json.JSONObject;
  * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientResourceImpl")

@@ -29,7 +29,7 @@ import org.joda.time.format.ISODateTimeFormat;
  * {@code XMLGregorianCalendar}.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 public class DateTimeAdapter extends XmlAdapter<String, DateTime>
 {

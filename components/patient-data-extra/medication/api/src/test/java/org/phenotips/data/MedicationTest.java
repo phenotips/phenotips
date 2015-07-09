@@ -28,7 +28,7 @@ import net.sf.json.JSONObject;
  * Tests for the {@link Medication} class.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 public class MedicationTest
 {

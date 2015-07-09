@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
  * Tests for the {@link MedicationController} class.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 public class MedicationControllerTest
 {

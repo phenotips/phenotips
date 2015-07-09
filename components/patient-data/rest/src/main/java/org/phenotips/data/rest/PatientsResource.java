@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  * Root resource for working with patient records.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Path("/patients")
 public interface PatientsResource
