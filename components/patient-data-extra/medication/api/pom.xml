@@ -28,10 +28,6 @@
   <artifactId>phenotips-medication-api</artifactId>
   <name>PhenoTips - Extra fields for patient data - Medication - Java APIs</name>
 
-  <properties>
-    <coverage.instructionRatio>0.69</coverage.instructionRatio>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

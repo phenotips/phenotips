@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
  * all users. Locks may be added or removed by the patient's managers.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Role
 public interface PatientRecordLockManager

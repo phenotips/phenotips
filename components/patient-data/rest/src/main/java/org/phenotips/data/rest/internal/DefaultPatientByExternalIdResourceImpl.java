@@ -61,7 +61,7 @@ import net.sf.json.JSONObject;
  * Default implementation for {@link PatientByExternalIdResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientByExternalIdResourceImpl")
@@ -161,9 +161,11 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
         XWiki xwiki = context.getWiki();
         try {
             xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
-        } catch (XWikiException e) {
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to delete patient record with external id [{}]: {}", eid, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
+        this.logger.debug("Deleted patient record with external id [{}]", eid);
         return Response.noContent().build();
     }
 

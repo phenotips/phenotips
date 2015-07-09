@@ -54,7 +54,7 @@ public interface PatientData<T> extends Iterable<T>
      * and dictionary values, the size is the size of the list or dictionary, respectively.
      *
      * @return a positive integer
-     * @since 1.2RC1
+     * @since 1.2M5
      */
     int size();
 

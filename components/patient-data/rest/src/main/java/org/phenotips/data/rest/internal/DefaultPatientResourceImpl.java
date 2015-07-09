@@ -53,7 +53,7 @@ import net.sf.json.JSONObject;
  * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientResourceImpl")
@@ -150,9 +150,11 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         XWiki xwiki = context.getWiki();
         try {
             xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
-        } catch (XWikiException e) {
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to delete patient record [{}]: {}", id, ex.getMessage());
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
+        this.logger.debug("Deleted patient record [{}]", id);
         return Response.noContent().build();
     }
 }

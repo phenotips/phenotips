@@ -17,8 +17,11 @@
  */
 package org.phenotips.data.rest.internal;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import net.sf.json.JSON;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.Before;
@@ -53,6 +56,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.text.StringUtils;
 import org.xwiki.users.UserManager;
 
+import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -66,6 +70,7 @@ import java.util.ArrayList;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class DefaultPatientByExternalIdResourceImplTest {
@@ -96,7 +101,11 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
     private URI uri;
 
+    private XWikiContext context;
+
     private DefaultPatientByExternalIdResourceImpl component;
+    
+    private final String eid = "eid";
 
     @Before
     public void setUp() throws ComponentLookupException, URISyntaxException
@@ -118,10 +127,12 @@ public class DefaultPatientByExternalIdResourceImplTest {
         this.users = this.mocker.getInstance(UserManager.class);
         this.component = (DefaultPatientByExternalIdResourceImpl) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
+        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.context = provider.get();
         ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
 
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
-        when(this.patient.getId()).thenReturn("id");
+        when(this.patient.getId()).thenReturn(this.eid);
         when(this.users.getCurrentUser()).thenReturn(null);
         when(this.patient.getDocument()).thenReturn(null);
     }
@@ -129,12 +140,12 @@ public class DefaultPatientByExternalIdResourceImplTest {
     @Test
     public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
     {
-        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(false);
 
-        Response response = this.mocker.getComponentUnderTest().getPatient("eid");
-        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", null, "id");
-        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", "eid");
+        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
+        verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", null, this.patient.getId());
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
@@ -142,7 +153,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     @Test
     public void getPatientPerformsCorrectly() throws ComponentLookupException, XWikiRestException
     {
-        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.VIEW, null, null)).thenReturn(true);
 
         JSONObject jsonObject = new JSONObject();
@@ -150,10 +161,10 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.uriInfo.getBaseUriBuilder()).thenReturn(this.uriBuilder);
         when(this.uriBuilder.path(PatientResource.class)).
                 thenReturn(uriBuilder);
-        when(this.uriBuilder.build("id")).thenReturn(this.uri);
+        when(this.uriBuilder.build(this.patient.getId())).thenReturn(this.uri);
 
-        Response response = this.mocker.getComponentUnderTest().getPatient("eid");
-        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", "eid");
+        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
 
         JSONObject links = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href", "uri");
         JSONObject json = new JSONObject().accumulate("links", links);
@@ -166,12 +177,12 @@ public class DefaultPatientByExternalIdResourceImplTest {
     public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
     {
         Query query = mock(DefaultQuery.class);
-        when(this.repository.getPatientByExternalId("eid")).thenReturn(null);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
-        Response response = this.mocker.getComponentUnderTest().getPatient("eid");
-        verify(this.logger).debug("No patient record with external ID [{}] exists yet", "eid");
+        Response response = this.mocker.getComponentUnderTest().getPatient(this.eid);
+        verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
@@ -179,24 +190,86 @@ public class DefaultPatientByExternalIdResourceImplTest {
     public void updatePatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
     {
         Query query = mock(DefaultQuery.class);
-        when(this.repository.getPatientByExternalId("eid")).thenReturn(null);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
         when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
         when(query.execute()).thenReturn(new ArrayList<Object>());
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("json", "eid");
-        verify(this.logger).debug("No patient record with external ID [{}] exists yet", "eid");
+        Response response = this.mocker.getComponentUnderTest().updatePatient("json", this.eid);
+        verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
     @Test(expected=WebApplicationException.class)
     public void updatePatientNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
     {
-        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(false);
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("json", "eid");
-        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, "id");
-        verify(this.logger).debug("Updating patient record with external ID [{}] via REST", "eid");
+        Response response = this.mocker.getComponentUnderTest().updatePatient("json", this.eid);
+        verify(this.logger).debug("Updating patient record with external ID [{}] via REST", this.eid);
+        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
+
+    }
+
+    @Test
+    public void deletePatientCantFindPatient() throws QueryException, XWikiRestException
+    {
+        Query query = mock(DefaultQuery.class);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+        when(this.qm.createQuery(Matchers.anyString(), Matchers.anyString())).thenReturn(query);
+        when(query.execute()).thenReturn(new ArrayList<Object>());
+
+        Response response = this.component.deletePatient(this.eid);
+
+        verify(this.logger).debug("No patient record with external ID [{}] exists yet", this.eid);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void deletePatientNoAccessReturnsForbiddenCode() throws XWikiRestException
+    {
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+        when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(false);
+
+        Response response = this.component.deletePatient(this.eid);
+
+        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", null, this.patient.getId());
+        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void deletePatientCatchesXWikiException() throws XWikiException, XWikiRestException
+    {
+        XWiki wiki = mock(XWiki.class);
+        doReturn(wiki).when(this.context).getWiki();
+        doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(this.context));
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+        when(this.access.hasAccess(Right.DELETE, null, null)).thenReturn(true);
+
+        WebApplicationException ex = null;
+        try {
+            this.component.deletePatient(this.eid);
+        } catch (WebApplicationException temp) {
+            ex = temp;
+        }
+
+        assertNotNull("deletePatient did not throw a WebApplicationException as expect "
+                + "when catching an XWikiException", ex);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
+        verify(this.logger).warn(eq("Failed to delete patient record with external id [{}]: {}"), eq(this.eid), anyString());
+    }
+
+    @Test
+    public void deletePatientReturnsNoContentResponse() throws XWikiRestException {
+        XWiki wiki = mock(XWiki.class);
+        doReturn(wiki).when(this.context).getWiki();
+        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+
+        Response response = this.component.deletePatient(this.eid);
+
+        verify(this.logger).debug("Deleted patient record with external id [{}]", this.eid);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test(expected=WebApplicationException.class)
@@ -228,5 +301,15 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
         Response response = this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    @Test
+    public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
+        XWiki wiki = mock(XWiki.class);
+        doReturn(wiki).when(this.context).getWiki();
+        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
+
+        this.component.deletePatient(this.eid);
+
+        verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
     }
 }

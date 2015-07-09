@@ -131,8 +131,8 @@ public class BMITest
         Assert.assertEquals(92, getComponent().valueToPercentile(false, 42, 17.36, 100.0));
         Assert.assertEquals(0, getComponent().valueToPercentile(true, 100, 18, 130.0));
         Assert.assertEquals(100, getComponent().valueToPercentile(true, 100, 90, 110.0));
-        Assert.assertEquals(16, getComponent().valueToPercentile(true, 349, 67.0, 181.0));
-        Assert.assertEquals(0, getComponent().valueToPercentile(false, 359, 49.0, 173.0));
+        Assert.assertEquals(26, getComponent().valueToPercentile(true, 349, 67.0, 181.0));
+        Assert.assertEquals(0, getComponent().valueToPercentile(false, 359, 49.0, 190.0));
     }
 
     @Test
@@ -157,9 +157,9 @@ public class BMITest
         Assert.assertEquals(17.74, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 100), 1.0E-2);
         Assert.assertEquals(10.3, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 0), 1.0E-2);
         Assert.assertEquals(17.34, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 100), 1.0E-2);
-        Assert.assertEquals(23.04, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
-        Assert.assertEquals(22.07, this.mocker.getComponentUnderTest().percentileToValue(true, 349, 37), 1.0E-2);
-        Assert.assertEquals(18.7, this.mocker.getComponentUnderTest().percentileToValue(false, 359, 12), 1.0E-2);
+        Assert.assertEquals(22.19, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(21.27, this.mocker.getComponentUnderTest().percentileToValue(true, 349, 37), 1.0E-2);
+        Assert.assertEquals(18.26, this.mocker.getComponentUnderTest().percentileToValue(false, 359, 12), 1.0E-2);
     }
 
     @Test
@@ -175,10 +175,10 @@ public class BMITest
             1.0E-2);
         Assert.assertEquals(17.34, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 2.807),
             1.0E-2);
-        Assert.assertEquals(23.04, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
-        Assert.assertEquals(22.07, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
+        Assert.assertEquals(22.19, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1.0E-2);
+        Assert.assertEquals(21.27, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 349, -0.332),
             1.0E-2);
-        Assert.assertEquals(18.7, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, -1.175),
+        Assert.assertEquals(18.26, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, -1.175),
             1.0E-2);
     }
 

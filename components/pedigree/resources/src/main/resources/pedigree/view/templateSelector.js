@@ -45,7 +45,9 @@ var TemplateSelector = Class.create( {
             pictureBox.update("Loading...");
             this.mainDiv.insert(pictureBox);
             var href = getSelectorFromXML(objects[i], "link", "rel", "http://www.xwiki.org/rel/properties").getAttribute("href");
-            new Ajax.Request(href, {
+            // Use only the path, since the REST module returns the wrong host behind a reverse proxy
+            var path = href.substring(href.indexOf("/", href.indexOf("//") + 2));
+            new Ajax.Request(path, {
                 method: 'GET',
                 onSuccess: this._onTemplateAvailable.bind(this, pictureBox)
             });

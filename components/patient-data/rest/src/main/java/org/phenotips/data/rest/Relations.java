@@ -21,7 +21,7 @@ package org.phenotips.data.rest;
  * Common relation types used for PhenoTips data.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 public final class Relations
 {

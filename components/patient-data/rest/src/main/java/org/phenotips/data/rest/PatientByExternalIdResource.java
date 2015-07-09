@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient records, identified by their given "external" identifier.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Path("/patients/eid/{eid}")
 public interface PatientByExternalIdResource
