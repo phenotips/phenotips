@@ -107,6 +107,8 @@ public class DefaultPatientByExternalIdResourceImplTest {
     
     private final String eid = "eid";
 
+    private final String id = "id";
+
     @Before
     public void setUp() throws ComponentLookupException, URISyntaxException
     {
@@ -132,7 +134,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         ReflectionUtils.setFieldValue(this.component, "uriInfo", this.uriInfo);
 
         doReturn(this.uriBuilder).when(this.uriInfo).getBaseUriBuilder();
-        when(this.patient.getId()).thenReturn(this.eid);
+        when(this.patient.getId()).thenReturn(this.id);
         when(this.users.getCurrentUser()).thenReturn(null);
         when(this.patient.getDocument()).thenReturn(null);
     }
@@ -208,6 +210,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
         Response response = this.mocker.getComponentUnderTest().updatePatient("json", this.eid);
         verify(this.logger).debug("Updating patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
+        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
     }
 
@@ -290,19 +293,21 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
         this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
         verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
-                "id", "{\"id\":\"id\"}");
+                this.id, "{\"id\":\"id\"}");
     }
 
     @Test
-    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException, XWikiRestException
-    {
+    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException, XWikiRestException {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
 
         Response response = this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
     @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException {
+    public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException
+    {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
         doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
