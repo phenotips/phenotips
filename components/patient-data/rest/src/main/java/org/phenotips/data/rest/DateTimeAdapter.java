@@ -19,6 +19,7 @@ package org.phenotips.data.rest;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -39,12 +40,18 @@ public class DateTimeAdapter extends XmlAdapter<String, DateTime>
     @Override
     public DateTime unmarshal(String v)
     {
+        if (StringUtils.isBlank(v)) {
+            return null;
+        }
         return DateTime.parse(v);
     }
 
     @Override
     public String marshal(DateTime v)
     {
+        if (v == null) {
+            return null;
+        }
         return ISO_DATETIME_FORMATTER.print(v);
     }
 }
