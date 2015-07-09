@@ -37,13 +37,13 @@ public class DateTimeAdapter extends XmlAdapter<String, DateTime>
         ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
     @Override
-    public DateTime unmarshal(String v) throws Exception
+    public DateTime unmarshal(String v)
     {
         return DateTime.parse(v);
     }
 
     @Override
-    public String marshal(DateTime v) throws Exception
+    public String marshal(DateTime v)
     {
         return ISO_DATETIME_FORMATTER.print(v);
     }
