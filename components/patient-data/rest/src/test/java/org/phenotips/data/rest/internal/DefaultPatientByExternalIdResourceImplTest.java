@@ -329,4 +329,17 @@ public class DefaultPatientByExternalIdResourceImplTest {
                 2, this.eid, results);
         assertEquals(300, response.getStatus());
     }
+
+    @Test
+    public void checkForMultipleRecordsLogsWhenThrowsQueryException() throws QueryException, XWikiRestException
+    {
+        doThrow(QueryException.class).when(this.qm)
+                .createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
+
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+
+        Response response = this.component.getPatient(this.eid);
+        verify(this.logger).warn("Failed to retrieve patient with external id [{}]: {}", this.eid, null);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
 }
