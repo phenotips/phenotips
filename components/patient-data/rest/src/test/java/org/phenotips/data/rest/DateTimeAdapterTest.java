@@ -25,15 +25,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Test for the {@link DateTimeAdapter} class
+ * Test for the {@link DateTimeAdapter} class.
  */
-public class DateTimeAdapterTest {
+public class DateTimeAdapterTest
+{
 
     private DateTimeAdapter adapter;
 
     private DateTime dateTime;
 
-    private String ValidDateString;
+    private String validDateString;
 
 
     @Before
@@ -41,7 +42,7 @@ public class DateTimeAdapterTest {
     {
         this.adapter = new DateTimeAdapter();
         this.dateTime = new DateTime(2015, 1, 1, 12, 0, DateTimeZone.UTC);
-        this.ValidDateString = "2015-01-01T12:00:00.000Z";
+        this.validDateString = "2015-01-01T12:00:00.000Z";
     }
 
     //-------------------------Marshal Tests-------------------------
@@ -49,7 +50,7 @@ public class DateTimeAdapterTest {
     @Test
     public void marshalReturnsCorrectString() throws Exception
     {
-        Assert.assertEquals(this.ValidDateString, this.adapter.marshal(this.dateTime));
+        Assert.assertEquals(this.validDateString, this.adapter.marshal(this.dateTime));
     }
 
     @Ignore
@@ -64,7 +65,7 @@ public class DateTimeAdapterTest {
     @Test
     public void unMarshalReturnsCorrectDateTime() throws Exception
     {
-        Assert.assertEquals(this.dateTime, this.adapter.unmarshal(this.ValidDateString));
+        Assert.assertEquals(this.dateTime, this.adapter.unmarshal(this.validDateString));
     }
 
     @Test(expected = Exception.class)
@@ -90,7 +91,7 @@ public class DateTimeAdapterTest {
     @Test
     public void testReflexivity() throws Exception
     {
-        Assert.assertEquals(this.ValidDateString, this.adapter.marshal(this.adapter.unmarshal(this.ValidDateString)));
+        Assert.assertEquals(this.validDateString, this.adapter.marshal(this.adapter.unmarshal(this.validDateString)));
         Assert.assertEquals(this.dateTime, this.adapter.unmarshal(this.adapter.marshal(this.dateTime)));
     }
 }
