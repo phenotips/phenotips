@@ -19,6 +19,7 @@ package org.phenotips.data.rest;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.IllegalFieldValueException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -48,48 +49,47 @@ public class DateTimeAdapterTest
     //-------------------------Marshal Tests-------------------------
 
     @Test
-    public void marshalReturnsCorrectString() throws Exception
+    public void marshalReturnsCorrectString()
     {
         Assert.assertEquals(this.validDateString, this.adapter.marshal(this.dateTime));
     }
 
-    @Ignore
-    @Test(expected = Exception.class)
-    public void marshalThrowsExceptionWhenPassedNull() throws Exception
+    @Test
+    public void marshalReturnsNullWhenPassedNull()
     {
-        this.adapter.marshal(null);
+        Assert.assertNull(this.adapter.marshal(null));
     }
 
     //-------------------------UnMarshal Tests-------------------------
 
     @Test
-    public void unMarshalReturnsCorrectDateTime() throws Exception
+    public void unMarshalReturnsCorrectDateTime()
     {
         Assert.assertEquals(this.dateTime, this.adapter.unmarshal(this.validDateString));
     }
 
-    @Test(expected = Exception.class)
-    public void unMarshalThrowsExceptionWhenPassedInvalidString() throws Exception
+    @Test(expected = IllegalFieldValueException.class)
+    public void unMarshalThrowsExceptionWhenPassedInvalidString()
     {
         this.adapter.unmarshal("2015-02-29T12:00:00.000Z");
     }
 
-    @Test(expected = Exception.class)
-    public void unMarshalThrowsExceptionWhenPassedEmptyString() throws Exception
+    @Test
+    public void unMarshalReturnsNullWhenPassedEmptyString()
     {
-        this.adapter.unmarshal("");
+        Assert.assertNull(this.adapter.unmarshal(""));
     }
 
-    @Test(expected = Exception.class)
-    public void unMarshalThrowsExceptionWhenPassedNull() throws Exception
+    @Test
+    public void unMarshalReturnsNullWhenPassedNull()
     {
-        this.adapter.unmarshal(null);
+        Assert.assertNull(this.adapter.unmarshal(null));
     }
 
     //-------------------------Reflexivity Test-------------------------
 
     @Test
-    public void testReflexivity() throws Exception
+    public void testReflexivity()
     {
         Assert.assertEquals(this.validDateString, this.adapter.marshal(this.adapter.unmarshal(this.validDateString)));
         Assert.assertEquals(this.dateTime, this.adapter.unmarshal(this.adapter.marshal(this.dateTime)));
