@@ -19,11 +19,9 @@ package org.phenotips.data.rest.internal;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import net.sf.json.JSON;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,12 +37,9 @@ import org.phenotips.data.rest.Relations;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -53,22 +48,18 @@ import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
-import org.xwiki.text.StringUtils;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -316,5 +307,26 @@ public class DefaultPatientByExternalIdResourceImplTest {
         this.component.deletePatient(this.eid);
 
         verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
+    }
+
+    @Test
+    public void checkForMultipleRecordsPerformsCorrectly() throws QueryException, XWikiRestException
+    {
+        Query q = mock(DefaultQuery.class);
+        doReturn(q).when(this.qm)
+                .createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
+
+        List<String> results = new ArrayList<>();
+        results.add(this.eid);
+        results.add(this.eid);
+        doReturn(results).when(q).execute();
+
+        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
+
+        Response response = this.component.getPatient(this.eid);
+        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
+        verify(this.logger).debug("Multiple patient records ({}) with external ID [{}]: {}",
+                2, this.eid, results);
+        assertEquals(300, response.getStatus());
     }
 }
