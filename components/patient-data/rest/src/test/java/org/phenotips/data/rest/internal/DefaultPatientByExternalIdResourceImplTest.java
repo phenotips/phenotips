@@ -208,6 +208,18 @@ public class DefaultPatientByExternalIdResourceImplTest {
         this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"notid\"}", "eid");
     }
 
+    @Test(expected=Exception.class)
+    public void updatePatientFromJSONException() throws ComponentLookupException, XWikiRestException
+    {
+        when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
+        when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
+        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
+
+        this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"id\"}", "eid");
+        verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
+                                  "id", "{\"id\":\"id\"}");
+    }
+
 
 
 }
