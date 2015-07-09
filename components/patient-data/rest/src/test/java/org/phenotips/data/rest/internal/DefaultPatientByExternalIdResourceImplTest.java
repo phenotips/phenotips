@@ -199,13 +199,13 @@ public class DefaultPatientByExternalIdResourceImplTest {
         verify(this.logger).debug("Updating patient record with external ID [{}] via REST", "eid");
     }
 
-    @Test
-    public void updatePatientBlankJSONBails() throws ComponentLookupException, XWikiRestException
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientWrongJSONId() throws ComponentLookupException, XWikiRestException
     {
         when(this.repository.getPatientByExternalId("eid")).thenReturn(this.patient);
         when(this.access.hasAccess(Right.EDIT, null, null)).thenReturn(true);
 
-        Response response = this.mocker.getComponentUnderTest().updatePatient("{\"key\":\"value\"}", "eid");
+        this.mocker.getComponentUnderTest().updatePatient("{\"id\":\"notid\"}", "eid");
     }
 
 
