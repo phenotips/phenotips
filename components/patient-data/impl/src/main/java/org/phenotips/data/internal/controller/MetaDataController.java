@@ -51,7 +51,7 @@ import net.sf.json.JSONObject;
  * Exposes the metainfo about the document.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component(roles = { PatientDataController.class })
 @Named("metadata")

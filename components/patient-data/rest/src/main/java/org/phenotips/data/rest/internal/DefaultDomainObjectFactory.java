@@ -54,7 +54,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * Default implementation of {@link DomainObjectFactory}.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 @Component
@@ -79,14 +79,17 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public PatientSummary createPatientSummary(Patient patient, UriInfo uriInfo)
     {
-        PatientSummary result = new PatientSummary();
-
+        if (patient == null) {
+            return null;
+        }
         User currentUser = this.users.getCurrentUser();
 
         if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
             patient.getDocument())) {
             return null;
         }
+
+        PatientSummary result = new PatientSummary();
 
         XWikiDocument doc;
         try {
