@@ -93,7 +93,7 @@
       <name>classification</name>
       <number>3</number>
       <picker>0</picker>
-      <prettyName>Classification</prettyName>
+      <prettyName>Status</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>

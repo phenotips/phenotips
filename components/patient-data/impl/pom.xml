@@ -124,6 +124,10 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <coverage.instructionRatio>0.14</coverage.instructionRatio>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

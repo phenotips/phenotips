@@ -85,14 +85,14 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-        "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
         "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-        { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-        { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-        { "category" } };
+            { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+            { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+            { "category" } };
 
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
@@ -272,10 +272,9 @@ public class DataToCellConverter
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
-        { "interpretation", "genesymbol", "hgvs_id" },
-        { "status", "inheritance", "interpretation", "genesymbol", "hgvs_id" },
-        { "inheritance", "status", "inheritance", "interpretation", "genesymbol", "hgvs_id" },
-        { "validated", "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" } };
+            { "status", "interpretation", "genesymbol", "hgvs_id" },
+            { "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" },
+            { "validated", "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -283,11 +282,11 @@ public class DataToCellConverter
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
-        String[] fieldIds = { "genes", "genes_classification", "genes_comments" };
+        String[] fieldIds = { "genes", "genes_classification", "genes_evidence", "genes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "genes" }, { "classification", "genes" }, { "evidence", "classification", "genes" },
-        { "comments", "evidence", "classification", "genes" } };
+            { "comments", "evidence", "classification", "genes" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -479,19 +478,16 @@ public class DataToCellConverter
                     String geneName = gene.get("gene");
                     cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
-
                     if (present.contains("classification")) {
                         String classification = gene.get("classification");
                         cell = new DataCell(classification, 2, y);
                         section.addCell(cell);
                     }
-
                     if (present.contains("evidence")) {
                         String classification = gene.get("evidence");
                         cell = new DataCell(classification, 2, y);
                         section.addCell(cell);
                     }
-
                     if (present.contains("comments")) {
                         String comment = gene.get("comments");
                         cell = new DataCell(comment, 3, y);
@@ -504,8 +500,8 @@ public class DataToCellConverter
 
         /* Creating empties */
         if (!hasGenes) {
-            /* Status, and gene name columns are always present */
-            int columns = present.contains("comments") ? 3 : 2;
+            /* Status and gene name columns are always present */
+            int columns = present.size();
             Integer emptyX = 0;
             for (int i = 0; i < columns; i++) {
                 DataCell cell = new DataCell("", emptyX, 0);
@@ -1027,7 +1023,7 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-        "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
