@@ -30,11 +30,10 @@ import org.mockito.MockitoAnnotations;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
-import org.phenotips.data.rest.model.Patient;
+import org.phenotips.data.Patient;
 import org.phenotips.data.rest.model.Patients;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -59,7 +58,6 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -87,6 +85,10 @@ public class DefaultPatientsResourceImplTest {
 
     private DomainObjectFactory factory;
 
+    private DocumentReference userProfileDocument;
+
+    private DocumentReference patientDocument;
+
     @Mock
     private Patient patient;
 
@@ -106,9 +108,11 @@ public class DefaultPatientsResourceImplTest {
         Execution execution = mock(Execution.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
         ComponentManager compManager = this.mocker.getInstance(ComponentManager.class, "context");
+        Provider<XWikiContext> provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.context = provider.get();
         when(compManager.getInstance(Execution.class)).thenReturn(execution);
         doReturn(executionContext).when(execution).getContext();
-        doReturn(mock(XWikiContext.class)).when(executionContext).getProperty("xwikicontext");
+        doReturn(this.context).when(executionContext).getProperty("xwikicontext");
 
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.users = this.mocker.getInstance(UserManager.class);
@@ -117,20 +121,21 @@ public class DefaultPatientsResourceImplTest {
         this.logger = this.mocker.getMockedLogger();
         this.queries = this.mocker.getInstance(QueryManager.class);
         this.uri = new URI("http://uri");
+        this.userProfileDocument = new DocumentReference("wiki", "user", "00000001");
 
         doReturn(this.uri).when(this.uriInfo).getBaseUri();
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
         ReflectionUtils.setFieldValue(this.patientsResource, "uriInfo", this.uriInfo);
 
-        doReturn("00000001").when(this.patient).getId();
+        doReturn("P00000001").when(this.patient).getId();
         doReturn(this.currentUser).when(this.users).getCurrentUser();
-        doReturn(null).when(this.currentUser).getProfileDocument();
+        doReturn(this.userProfileDocument).when(this.currentUser).getProfileDocument();
     }
 
     @Test
     public void addPatientUserDoesNotHaveAccess() throws XWikiRestException {
         WebApplicationException exception = new WebApplicationException();
-        doReturn(false).when(this.access).hasAccess(Right.EDIT, null, mock(EntityReference.class));
+        doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
         try {
             Response response = this.patientsResource.addPatient("");
         }
@@ -138,62 +143,91 @@ public class DefaultPatientsResourceImplTest {
             exception = ex;
         }
         Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), exception.getResponse().getStatus());
-        verify(this.logger).debug("Importing new patient from JSON via REST: {}", "");
     }
 
     @Test
-    public void addNullPatient() throws XWikiRestException {
+    public void addEmptyPatient() throws XWikiRestException {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
+        doReturn(this.patient).when(this.repository).createNewPatient();
         Response response = this.patientsResource.addPatient(null);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        verify(this.logger).debug("Importing new patient from JSON via REST: {}", (String) null);
+    }
+
+    @Test
+    public void creatingPatientFails() throws XWikiRestException {
+        JSONObject json = new JSONObject();
+        Exception exception = new NullPointerException();
+        doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
+        doThrow(exception).when(this.repository).createNewPatient();
+        Response response = this.patientsResource.addPatient(json.toString());
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        verify(this.logger).error(eq("Could not process remote matching request: {}"), anyString(), anyObject());
+        verify(this.logger).error("Could not process remote matching request: {}", exception.getMessage(), exception);
     }
 
     @Test
     public void addPatientAsJSON() throws XWikiRestException {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
-        JSONObject json = new JSONObject();
-        Response response = this.patientsResource.addPatient(json.toString());
-        verify(this.logger).debug("Importing new patient from JSON via REST: {}", json.toString());
+        doReturn(this.patient).when(this.repository).createNewPatient();
+        JSONObject jsonPatient = new JSONObject();
+        Response response = this.patientsResource.addPatient(jsonPatient.toString());
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        verify(this.logger).debug("Importing new patient from JSON via REST: {}", jsonPatient.toString());
     }
 
     @Test
-    public void listPatientsNullOrderField() throws XWikiRestException {
-        WebApplicationException exception = new WebApplicationException();
-        try {
-            Patients result = this.patientsResource.listPatients(0, 30, null, "asc");
-        }
-        catch (WebApplicationException ex){
-            exception = ex;
-        }
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), exception.getResponse().getStatus());
-        verify(this.logger).error(eq("Failed to list patients: {}"), anyString(), anyObject());
+    public void listPatientsNullOrderField() throws XWikiRestException, QueryException {
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(new ArrayList<Object[]>()).when(query).execute();
+        Patients result = this.patientsResource.listPatients(0, 30, null, "asc");
+        verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                + "doc.name" + " asc", "xwql");
     }
 
     @Test
-    public void listPatientsNullOrder() throws XWikiRestException {
-        WebApplicationException exception = new WebApplicationException();
-        try {
-            Patients result = this.patientsResource.listPatients(0, 30, "id", null);
-        }
-        catch (WebApplicationException ex){
-            exception = ex;
-        }
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), exception.getResponse().getStatus());
-        verify(this.logger).error(eq("Failed to list patients: {}"), anyString(), anyObject());
+    public void listPatientsNullOrder() throws XWikiRestException, QueryException {
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(new ArrayList<Object[]>()).when(query).execute();
+        Patients result = this.patientsResource.listPatients(0, 30, "id", null);
+        verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                + "doc.name" + " asc", "xwql");
     }
 
     @Test
-    public void listPatientsDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException
+    public void listPatientsNonDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException
     {
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(new ArrayList<Object[]>()).when(query).execute();
-        Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        Patients result = this.patientsResource.listPatients(0, 30, "eid", "desc");
         verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
-                + "doc.name" + " asc", "xwql");
+                + "p.external_id" + " desc", "xwql");
+    }
+
+    @Test
+    public void listPatientFailureHandling() throws XWikiRestException, QueryException {
+        WebApplicationException exception = new WebApplicationException();
+        Query query = mock(DefaultQuery.class);
+        QueryException queryException= new QueryException("query.execute() failed", query, new Exception());
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doThrow(queryException).when(query).execute();
+        try {
+            Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        }
+        catch (WebApplicationException ex){
+            exception = ex;
+        }
+        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), exception.getResponse().getStatus());
+        verify(this.logger).error("Failed to list patients: {}", queryException.getMessage(), queryException);
     }
 
 }
