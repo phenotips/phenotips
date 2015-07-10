@@ -133,7 +133,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void addPatientUserDoesNotHaveAccess() throws XWikiRestException {
+    public void addPatientUserDoesNotHaveAccess() {
         WebApplicationException exception = new WebApplicationException();
         doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
         try {
@@ -146,7 +146,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void addEmptyPatient() throws XWikiRestException {
+    public void addEmptyPatient() {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
         doReturn(this.patient).when(this.repository).createNewPatient();
         Response response = this.patientsResource.addPatient(null);
@@ -155,7 +155,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void creatingPatientFails() throws XWikiRestException {
+    public void creatingPatientFails() {
         JSONObject json = new JSONObject();
         Exception exception = new NullPointerException();
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
@@ -166,7 +166,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void addPatientAsJSON() throws XWikiRestException {
+    public void addPatientAsJSON() {
         doReturn(true).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
         doReturn(this.patient).when(this.repository).createNewPatient();
         JSONObject jsonPatient = new JSONObject();
@@ -176,7 +176,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientsNullOrderField() throws XWikiRestException, QueryException {
+    public void listPatientsNullOrderField() throws QueryException {
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
@@ -188,7 +188,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientsNullOrder() throws XWikiRestException, QueryException {
+    public void listPatientsNullOrder() throws QueryException {
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
@@ -200,8 +200,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientsNonDefaultBehaviour() throws WebApplicationException, XWikiRestException, QueryException
-    {
+    public void listPatientsNonDefaultBehaviour() throws WebApplicationException, QueryException {
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
@@ -213,7 +212,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientFailureHandling() throws XWikiRestException, QueryException {
+    public void listPatientFailureHandling() throws QueryException {
         WebApplicationException exception = new WebApplicationException();
         Query query = mock(DefaultQuery.class);
         QueryException queryException= new QueryException("query.execute() failed", query, new Exception());
