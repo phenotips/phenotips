@@ -120,7 +120,7 @@
   </dependencies>
 
   <properties>
-    <coverage.instructionRatio>0.15</coverage.instructionRatio>
+    <coverage.instructionRatio>0.14</coverage.instructionRatio>
   </properties>
 
   <build>
