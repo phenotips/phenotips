@@ -126,7 +126,7 @@ public class DefaultPatientsResourceImplTest {
 
     @Test
     public void addPatientUserDoesNotHaveAccess() {
-        WebApplicationException exception = new WebApplicationException();
+        WebApplicationException exception = null;
         doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class), any(EntityReference.class));
         try {
             Response response = this.patientsResource.addPatient("");
@@ -134,6 +134,7 @@ public class DefaultPatientsResourceImplTest {
         catch (WebApplicationException ex){
             exception = ex;
         }
+        Assert.assertNotNull(exception);
         Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), exception.getResponse().getStatus());
     }
 
@@ -205,8 +206,8 @@ public class DefaultPatientsResourceImplTest {
 
     @Test
     public void listPatientFailureHandling() throws QueryException {
-        WebApplicationException exception = new WebApplicationException();
         Query query = mock(DefaultQuery.class);
+        WebApplicationException exception = null;
         QueryException queryException= new QueryException("query.execute() failed", query, new Exception());
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
@@ -217,6 +218,7 @@ public class DefaultPatientsResourceImplTest {
         catch (WebApplicationException ex){
             exception = ex;
         }
+        Assert.assertNotNull(exception);
         Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), exception.getResponse().getStatus());
         verify(this.logger).error("Failed to list patients: {}", queryException.getMessage(), queryException);
     }
