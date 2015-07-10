@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.Patient;
 import org.phenotips.data.rest.model.Patients;
@@ -44,7 +43,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.internal.DefaultQuery;
-import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -71,7 +69,13 @@ public class DefaultPatientsResourceImplTest {
     private User currentUser;
 
     @Mock
+    private Patient patient;
+
+    @Mock
     private Logger logger;
+
+    @Mock
+    private UriInfo uriInfo;
 
     private PatientRepository repository;
 
@@ -81,21 +85,9 @@ public class DefaultPatientsResourceImplTest {
 
     private UserManager users;
 
-    private EntityReferenceResolver<EntityReference> currentResolver;
-
-    private DomainObjectFactory factory;
-
     private DocumentReference userProfileDocument;
 
-    private DocumentReference patientDocument;
-
-    @Mock
-    private Patient patient;
-
     private URI uri;
-
-    @Mock
-    private UriInfo uriInfo;
 
     private DefaultPatientsResourceImpl patientsResource;
 
