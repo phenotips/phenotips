@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>pt-22</title>
+	<style>
+		.measurement > label {
+			display: block;
+			float: left;
+			width: 180px;
+		}
+		.measurement-set.proto {
+			display: none;
+		}
+		.measurement-set {
+			border: 1px solid #aaa;
+			padding: 10px;
+			float: left;
+			clear: both;
+			overflow: auto;
+			margin: 5px;
+		}
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.2/prototype.js"></script>
+	<script>
+		var measurements = [
+			{
+				name: "Weight",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "kg",
+			},
+			{
+				name: "Height",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Arm Span",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Head Circumference",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Outer Canthal Distance",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Inner Canthal Distance",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Hand Length",
+				isTwoSided: true,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Palm Length",
+				isTwoSided: true,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Foot Length",
+				isTwoSided: true,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Sitting Height",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "BMI",
+				isTwoSided: false,
+				isComputed: true,
+				unit: null,
+			},
+			{
+				name: "Philtrum Length",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Ear Length",
+				isTwoSided: true,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Palpebral Fissure Length",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Interpupilary Distance",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Middle Finger Length",
+				isTwoSided: true,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Internipple Distance",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Chest Circumference",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Internipple Index",
+				isTwoSided: false,
+				isComputed: true,
+				unit: null,
+			},
+			{
+				name: "Upper Segment",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "Lower Segment",
+				isTwoSided: false,
+				isComputed: false,
+				unit: "cm",
+			},
+			{
+				name: "US:LS Ratio",
+				isTwoSided: false,
+				isComputed: true,
+				unit: null,
+			},
+		];
+		var linkedMeasurements = [
+			["Weight", "Height", "BMI"],
+			["Internipple Distance", "Chest Circumference", "Internipple Index"],
+			["Upper Segment", "Lower Segment", "US:LS Ratio"],
+		];
+
+		var defaultMeasurements = [
+			"Weight", "Height", "BMI", "Head Circumference"
+		];
+
+		/*
+		measurement: {
+
+		}
+		*/
+		var addMeasurement = function(measurement) {
+			var container = new Element('div').addClassName('measurement');
+
+			var label = new Element('label');
+			label.innerHTML = measurement.name;
+
+			var input = new Element('input');
+			input.type = "text";
+			input.size = 6;
+
+			var unit = new Element('span').addClassName('unit');
+			unit.innerHTML = measurement.unit;
+
+			container.insert(label);
+			container.insert(input);
+			container.insert(unit);
+			this.insert(container);
+
+			var opts = this.up().select('.new-measurement-select')[0].options;
+			for (var i = 0; i < opts.length; i++) {
+				if (opts[i].value == measurement.name) {
+					opts[i].remove();
+				}
+			}
+		};
+
+		var addDefaults = function() {
+			for (var i = 0; i < defaultMeasurements.length; i++) {
+				addMeasurement.apply(this, [measurements[i]]);
+			}
+		};
+
+		var addMeasurementHandler = function() {
+			var selection = this.up().select('.new-measurement-select')[0];
+			var selectionName = selection.selectedIndex >= 0 ? selection.options[selection.selectedIndex].innerHTML : undefined;
+			
+			for (var i = 0; i < measurements.length; i++) {
+				if (measurements[i].name == selectionName) {
+					addMeasurement.apply(this.up().select('.measurements')[0], [measurements[i]]);
+
+					return;
+				}
+			}
+		};
+
+		var addMeasurementSet = function() {
+			var clone = $$('.measurement-set.proto')[0].clone(true);
+			clone.removeClassName('proto');
+			clone.select('.btn_add-measurement')[0].observe('click', addMeasurementHandler);
+			$('measurements').insert(clone);
+			return clone;
+		};
+
+		var handleAddMeasurementSet = function() {
+			$$('.btn_add-measurement-set')[0].observe('click', function() {
+				debugger;
+				addDefaults.apply(addMeasurementSet().select('.measurements')[0]);
+			});
+		};
+
+		var init = function() {
+			handleAddMeasurementSet();
+			addMeasurementSet();
+			addDefaults.apply($$('.measurement-set:not(.proto) .measurements')[0]);
+		};
+	</script>
+</head>
+<body>
+	<div id="measurements">
+		<div class="measurement-set proto">
+			<label for="date">Date:</label> <input class="date" type="date">
+			<label for="">Age:</label> <input type="text" size="2">y <input type="text" size="2">m
+
+			<div class="measurements">
+				
+			</div>
+
+			<h3>Add a measurement:</h3>
+			<select class="new-measurement-select">
+				<option>Weight</option>
+				<option>Height</option>
+				<option>Arm Span</option>
+				<option>Head Circumference</option>
+				<option>Outer Canthal Distance</option>
+				<option>Inner Canthal Distance</option>
+				<option>Hand Length</option>
+				<option>Palm Length</option>
+				<option>Foot Length</option>
+				<option>Sitting Height</option>
+				<option>BMI</option>
+				<option>Philtrum Length</option>
+				<option>Ear Length</option>
+				<option>Palpebral Fissure Length</option>
+				<option>Interpupilary Distance</option>
+				<option>Middle Finger Length</option>
+				<option>Internipple Distance</option>
+				<option>Chest Circumference</option>
+				<option>Internipple Index</option>
+				<option>Upper Segment</option>
+				<option>Lower Segment</option>
+				<option>US:LS Ratio</option>
+			</select>
+			<button class="btn_add-measurement">Add</button>		
+		</div>
+	</div>
+
+	<p style="clear: both;">
+		<button class="btn_add-measurement-set">Add measurement set</button>
+	</p>
+
+	<script>
+		init();
+	</script>
+</body>
+</html>
