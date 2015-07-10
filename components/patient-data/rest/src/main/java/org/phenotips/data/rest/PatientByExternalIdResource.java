@@ -17,8 +17,6 @@
  */
 package org.phenotips.data.rest;
 
-import org.xwiki.rest.XWikiRestException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +30,7 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient records, identified by their given "external" identifier.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Path("/patients/eid/{eid}")
 public interface PatientByExternalIdResource
@@ -45,10 +43,9 @@ public interface PatientByExternalIdResource
      *
      * @param eid the patient's given "external" identifier, see {@link org.phenotips.data.Patient#getExternalId()}
      * @return the JSON representation of the requested patient, or a status message in case of error
-     * @throws XWikiRestException if processing the request fails
      */
     @GET
-    Response getPatient(@PathParam("eid") String eid) throws XWikiRestException;
+    Response getPatient(@PathParam("eid") String eid);
 
     /**
      * Update a patient record, identified by its given "external" identifier, from its JSON representation. If the
@@ -60,11 +57,10 @@ public interface PatientByExternalIdResource
      * @param json the JSON representation of the new patient to add
      * @param eid the patient's given "external" identifier, see {@link org.phenotips.data.Patient#getExternalId()}
      * @return a status message
-     * @throws XWikiRestException if processing the request fails
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updatePatient(String json, @PathParam("eid") String eid) throws XWikiRestException;
+    Response updatePatient(String json, @PathParam("eid") String eid);
 
     /**
      * Delete a patient record, identified by its given "external" identifier. If the indicated patient record doesn't
@@ -74,9 +70,8 @@ public interface PatientByExternalIdResource
      *
      * @param eid the patient's given "external" identifier, see {@link org.phenotips.data.Patient#getExternalId()}
      * @return a status message
-     * @throws XWikiRestException if processing the request fails
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    Response deletePatient(@PathParam("eid") String eid) throws XWikiRestException;
+    Response deletePatient(@PathParam("eid") String eid);
 }

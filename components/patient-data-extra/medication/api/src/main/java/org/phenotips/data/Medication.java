@@ -35,7 +35,7 @@ import net.sf.json.JSONObject;
  * Information about the medication taken by a patient.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 public final class Medication

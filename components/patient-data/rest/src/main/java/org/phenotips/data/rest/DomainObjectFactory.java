@@ -33,7 +33,7 @@ import javax.ws.rs.core.UriInfo;
  * Factory class for generating REST representations of various types of entities.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 @Role
@@ -53,7 +53,8 @@ public interface DomainObjectFactory
      * Create the REST representation for a {@link Patient}'s summary, starting from the raw values needed for the
      * summary.
      *
-     * @param summaryData the needed patient information to serialize
+     * @param summaryData the needed patient information to serialize, in order: document name, external identifier,
+     *            creator, creation date, current version, last author, last modification date
      * @param uriInfo the URI information for the rest system and the current request
      * @return a patient summary, or {@code null} if the current user doesn't have access to the patient or accessing
      *         the patient data fails

@@ -17,8 +17,6 @@
  */
 package org.phenotips.data.rest;
 
-import org.xwiki.rest.XWikiRestException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,7 +30,7 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient records, identified by their internal PhenoTips identifier.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Path("/patients/{id}")
 public interface PatientResource
@@ -44,10 +42,9 @@ public interface PatientResource
      *
      * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
      * @return the JSON representation of the requested patient, or a status message in case of error
-     * @throws XWikiRestException if processing the request fails
      */
     @GET
-    Response getPatient(@PathParam("id") String id) throws XWikiRestException;
+    Response getPatient(@PathParam("id") String id);
 
     /**
      * Update a patient record, identified by its internal PhenoTips identifier, from its JSON representation. If the
@@ -58,11 +55,10 @@ public interface PatientResource
      * @param json the JSON representation of the new patient to add
      * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
      * @return a status message
-     * @throws XWikiRestException if processing the request fails
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    Response updatePatient(String json, @PathParam("id") String id) throws XWikiRestException;
+    Response updatePatient(String json, @PathParam("id") String id);
 
     /**
      * Delete a patient record, identified by its internal PhenoTips identifier. If the indicated patient record doesn't
@@ -71,9 +67,8 @@ public interface PatientResource
      *
      * @param id the patient's internal identifier, see {@link org.phenotips.data.Patient#getId()}
      * @return a status message
-     * @throws XWikiRestException if processing the request fails
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    Response deletePatient(@PathParam("id") String id) throws XWikiRestException;
+    Response deletePatient(@PathParam("id") String id);
 }

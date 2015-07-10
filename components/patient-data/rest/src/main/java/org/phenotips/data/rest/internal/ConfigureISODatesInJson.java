@@ -35,7 +35,7 @@ import org.restlet.ext.jackson.JacksonConverter;
  * simple numerical timestamps.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("ConfigureISODatesInJson")

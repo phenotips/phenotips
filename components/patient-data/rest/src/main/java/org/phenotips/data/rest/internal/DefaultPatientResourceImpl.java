@@ -26,7 +26,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -53,7 +52,7 @@ import net.sf.json.JSONObject;
  * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientResourceImpl")
@@ -78,7 +77,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     private EntityReferenceResolver<EntityReference> currentResolver;
 
     @Override
-    public Response getPatient(String id) throws XWikiRestException
+    public Response getPatient(String id)
     {
         this.logger.debug("Retrieving patient record [{}] via REST", id);
         Patient patient = this.repository.getPatientById(id);
@@ -100,7 +99,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     }
 
     @Override
-    public Response updatePatient(String json, String id) throws XWikiRestException
+    public Response updatePatient(String json, String id)
     {
         this.logger.debug("Updating patient record [{}] via REST with JSON: {}", id, json);
         Patient patient = this.repository.getPatientById(id);
@@ -132,7 +131,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
     }
 
     @Override
-    public Response deletePatient(String id) throws XWikiRestException
+    public Response deletePatient(String id)
     {
         this.logger.debug("Deleting patient record [{}] via REST", id);
         Patient patient = this.repository.getPatientById(id);

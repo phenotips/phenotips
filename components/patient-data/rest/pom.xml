@@ -27,9 +27,11 @@
   </parent>
   <artifactId>patient-data-rest</artifactId>
   <name>PhenoTips - Patient Data - REST services</name>
+
   <properties>
-    <coverage.instructionRatio>0.16</coverage.instructionRatio>
+    <coverage.instructionRatio>0.2</coverage.instructionRatio>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -119,7 +121,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!-- Test Dependencies -->
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>

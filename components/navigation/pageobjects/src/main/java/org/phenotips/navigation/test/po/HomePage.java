@@ -78,4 +78,10 @@ public class HomePage extends ViewPage
     {
         return getUtil().hasElement(this.activeGroupsGadget, By.xpath(".//a[contains(text(), 'Manage groups')]"));
     }
+
+    @Override
+    public void waitUntilPageJSIsLoaded()
+    {
+        getDriver().waitUntilJavascriptCondition("return window.Prototype != null && window.Prototype.Version != null");
+    }
 }

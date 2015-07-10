@@ -19,8 +19,6 @@ package org.phenotips.data.rest;
 
 import org.phenotips.data.rest.model.Patients;
 
-import org.xwiki.rest.XWikiRestException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -34,7 +32,7 @@ import javax.ws.rs.core.Response;
  * Root resource for working with patient records.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Path("/patients")
 public interface PatientsResource
@@ -44,11 +42,10 @@ public interface PatientsResource
      *
      * @param json the JSON representation of the new patient to add
      * @return the location of the newly created patient if the operation was successful, or an error report otherwise
-     * @throws XWikiRestException if processing the request fails
      */
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
-    Response addPatient(String json) throws XWikiRestException;
+    Response addPatient(String json);
 
     /**
      * @param start for large result set paging, the index of the first patient to display in the returned page
@@ -56,13 +53,11 @@ public interface PatientsResource
      * @param orderField field used for ordering the patients, can be one of {@code id} (default) or {@code eid}
      * @param order the sorting order, can be one of {@code asc} (default) or {@code desc}
      * @return a list of patient records
-     * @throws XWikiRestException if processing the request fails
      */
     @GET
     Patients listPatients(
         @QueryParam("start") @DefaultValue("0") Integer start,
         @QueryParam("number") @DefaultValue("30") Integer number,
         @QueryParam("orderField") @DefaultValue("id") String orderField,
-        @QueryParam("order") @DefaultValue("asc") String order
-        ) throws XWikiRestException;
+        @QueryParam("order") @DefaultValue("asc") String order);
 }

@@ -51,4 +51,10 @@ public class AllRecordsPage extends ViewPage
     {
         return new AllRecordsTable();
     }
+
+    @Override
+    public void waitUntilPageJSIsLoaded()
+    {
+        getDriver().waitUntilJavascriptCondition("return window.Prototype != null && window.Prototype.Version != null");
+    }
 }

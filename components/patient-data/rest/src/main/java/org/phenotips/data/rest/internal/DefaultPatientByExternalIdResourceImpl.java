@@ -32,7 +32,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -61,7 +60,7 @@ import net.sf.json.JSONObject;
  * Default implementation for {@link PatientByExternalIdResource} using XWiki's support for REST resources.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientByExternalIdResourceImpl")
@@ -92,7 +91,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     private EntityReferenceResolver<EntityReference> currentResolver;
 
     @Override
-    public Response getPatient(String eid) throws XWikiRestException
+    public Response getPatient(String eid)
     {
         this.logger.debug("Retrieving patient record with external ID [{}] via REST", eid);
         Patient patient = this.repository.getPatientByExternalId(eid);
@@ -114,7 +113,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     @Override
-    public Response updatePatient(String json, String eid) throws XWikiRestException
+    public Response updatePatient(String json, String eid)
     {
         this.logger.debug("Updating patient record with external ID [{}] via REST with JSON: {}", eid, json);
         Patient patient = this.repository.getPatientByExternalId(eid);
@@ -144,7 +143,7 @@ public class DefaultPatientByExternalIdResourceImpl extends XWikiResource implem
     }
 
     @Override
-    public Response deletePatient(String eid) throws XWikiRestException
+    public Response deletePatient(String eid)
     {
         this.logger.debug("Deleting patient record with external ID [{}] via REST", eid);
         Patient patient = this.repository.getPatientByExternalId(eid);
