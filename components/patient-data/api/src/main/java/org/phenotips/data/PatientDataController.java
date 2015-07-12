@@ -40,10 +40,9 @@ import net.sf.json.JSONObject;
  * </p>
  * <p>
  * The {@link #writeJSON(Patient, JSONObject)} method serializes custom data into the JSON being generated for a
- * patient, and {@link #readJSON(Patient, JSONObject)} reads back data from a JSON into a patient record. Since
- * different components might serialize their custom data into the same JSON property, the
- * {@link #writeJSON(Patient, JSONObject)} method should not always create a new property, but first try to extend an
- * existing one.
+ * patient, and {@link #readJSON(JSONObject)} reads back data from a JSON into a patient record. Since different
+ * components might serialize their custom data into the same JSON property, the {@link #writeJSON(Patient, JSONObject)}
+ * method should not always create a new property, but first try to extend an existing one.
  * </p>
  *
  * @param <T> the type of data being managed by this component, usually {@code String}, but other types are possible,
