@@ -149,7 +149,7 @@ public class DefaultPatientResourceImplTest
     //----------------------------Get Patient Tests----------------------------
 
     @Test
-    public void getPatientCantFindPatient()
+    public void getPatientWhenRepositoryReturnsNullPatient()
     {
         doReturn(null).when(this.repository).getPatientById(anyString());
 
@@ -160,7 +160,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void getPatientUserDoesNotHaveAccess()
+    public void getPatientWhenUserDoesNotHaveAccess()
     {
         doReturn(false).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
 
@@ -172,7 +172,7 @@ public class DefaultPatientResourceImplTest
 
     @Test
     @SuppressWarnings("unchecked")
-    public void getPatientAddsLinksToPatientJSON()
+    public void checkGetPatientNormalBehaviour()
     {
         doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
@@ -188,7 +188,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void getPatientAlwaysSendsLoggerMessageOnRequest()
+    public void checkGetPatientAlwaysSendsLoggerMessageOnRequest()
     {
         doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
         doReturn(new JSONObject()).when(this.patient).toJSON();
@@ -201,7 +201,7 @@ public class DefaultPatientResourceImplTest
     //----------------------------Update Patient Tests----------------------------
 
     @Test
-    public void updatePatientCantFindPatient()
+    public void updatePatientWhenRepositoryReturnsNullPatient()
     {
         doReturn(null).when(this.repository).getPatientById(anyString());
 
@@ -220,7 +220,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void updatePatientUserDoesNotHaveAccess()
+    public void updatePatientWhenUserDoesNotHaveAccess()
     {
         doReturn(false).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
 
@@ -238,7 +238,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void updatePatientSentWrongIdInJSON()
+    public void checkUpdatePatientThrowsExceptionWhenSentWrongIdInJSON()
     {
         doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
@@ -258,7 +258,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void updatePatientCatchesExceptionFromUpdateFromJSON()
+    public void checkUpdatePatientCatchesExceptionFromUpdateFromJSON()
     {
         doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
@@ -281,7 +281,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void updatePatientReturnsNoContentResponse()
+    public void checkUpdatePatientNormalBehaviour()
     {
         doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
@@ -294,7 +294,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void updatePatientAlwaysSendsLoggerMessageOnRequest()
+    public void checkUpdatePatientAlwaysSendsLoggerMessageOnRequest()
     {
         doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
         JSONObject json = new JSONObject();
@@ -309,7 +309,7 @@ public class DefaultPatientResourceImplTest
     //----------------------------Delete Patient Tests----------------------------
 
     @Test
-    public void deletePatientCantFindPatient()
+    public void deletePatientWhenRepositoryReturnsNullPatient()
     {
         doReturn(null).when(this.repository).getPatientById(anyString());
 
@@ -320,7 +320,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void deletePatientUserDoesNotHaveAccess()
+    public void deletePatientWhenUserDoesNotHaveAccess()
     {
         doReturn(false).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
@@ -331,7 +331,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void deletePatientCatchesXWikiException() throws XWikiException
+    public void checkDeletePatientCatchesXWikiException() throws XWikiException
     {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
@@ -352,7 +352,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void deletePatientReturnsNoContentResponse()
+    public void checkDeletePatientNormalBehaviour()
     {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
@@ -364,7 +364,7 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest()
+    public void checkDeletePatientAlwaysSendsLoggerMessageOnRequest()
     {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
