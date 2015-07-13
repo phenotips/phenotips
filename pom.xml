@@ -147,6 +147,7 @@
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
+    <license.skip>false</license.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
 
     <!-- Functional test environment -->
