@@ -141,7 +141,7 @@
     <phenotips.version>1.2-SNAPSHOT</phenotips.version>
     <xwiki.version>7.0.1</xwiki.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <buildtools.version>1.2</buildtools.version>
+    <buildtools.version>1.3</buildtools.version>
     <testframework.version>1.0-milestone-5</testframework.version>
     <solr.version>5.1.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
@@ -845,6 +845,25 @@
             <excludePackageNames>*.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
             <maxmemory>300m</maxmemory>
+            <taglets>
+              <taglet>
+                <tagletClass>org.phenotips.tools.javadoc.NoteTaglet</tagletClass>
+              </taglet>
+              <taglet>
+                <tagletClass>org.phenotips.tools.javadoc.TodoTaglet</tagletClass>
+              </taglet>
+              <taglet>
+                <tagletClass>org.phenotips.tools.javadoc.FixmeTaglet</tagletClass>
+              </taglet>
+              <taglet>
+                <tagletClass>org.phenotips.tools.javadoc.WarningTaglet</tagletClass>
+              </taglet>
+            </taglets>
+            <tagletArtifact>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>phenotips-taglets</artifactId>
+              <version>${buildtools.version}</version>
+            </tagletArtifact>
           </configuration>
         </plugin>
         <plugin>
