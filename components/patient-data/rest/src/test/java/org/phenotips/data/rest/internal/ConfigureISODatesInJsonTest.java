@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
@@ -39,6 +38,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,7 +86,7 @@ public class ConfigureISODatesInJsonTest{
     public void checkConstruction() throws ComponentLookupException {
         ConfigureISODatesInJson testInstance = (ConfigureISODatesInJson)this.mocker.getComponentUnderTest();
         Assert.assertEquals("ConfigureISODatesInJson", testInstance.getName());
-        Assert.assertTrue(testInstance.getEvents().get(0).getClass() == ApplicationStartedEvent.class);
+        Assert.assertThat(testInstance.getEvents(), hasItem(isA(ApplicationStartedEvent.class)));
     }
 
     @Test
