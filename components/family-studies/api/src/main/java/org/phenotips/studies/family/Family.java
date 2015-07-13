@@ -87,4 +87,16 @@ public interface Family
      * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
      */
     Map<String, Map<String, String>> getMedicalReports();
+
+    /**
+     * @return external id
+     */
+    String getExternalId();
+
+    /**
+     * @param actions to get URL for
+     * @return URL
+     */
+    String getURL(String actions);
+
 }

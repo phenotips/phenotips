@@ -231,6 +231,29 @@ public class XWikiFamily implements Family
         return allFamilyLinks;
     }
 
+    @Override
+    public String getExternalId()
+    {
+        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
+        Object externalId = null;
+        String externalIdString = null;
+        try {
+            externalId = familyObject.get("external_id");
+            if (externalId != null) {
+                externalIdString = externalId.toString();
+            }
+        } catch (XWikiException e) {
+            this.logger.error("Error reading external id of family [{}]: [{}]", getId(), e.getMessage());
+        }
+        return externalIdString;
+    }
+
+    @Override
+    public String getURL(String actions)
+    {
+        return this.familyDocument.getURL(actions, getXContext());
+    }
+
     // ///////////////////////////////////////
     private JSONObject getPatientInformationAsJSON(Patient patient)
     {
