@@ -185,6 +185,7 @@ public class DefaultPatientResourceImplTest
         Assert.assertThat(json, hasValue(hasEntry("href", this.uriString)));
         Map<String, List<MediaType>> actualMap = (Map)response.getMetadata();
         Assert.assertThat(actualMap, hasValue(hasItem(MediaType.APPLICATION_JSON_TYPE)));
+        Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -290,6 +291,7 @@ public class DefaultPatientResourceImplTest
 
         Response response = this.patientResource.updatePatient(json.toString(), this.id);
 
+        verify(this.patient).updateFromJSON(any(JSONObject.class));
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
@@ -352,14 +354,17 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void checkDeletePatientNormalBehaviour()
-    {
+    public void checkDeletePatientNormalBehaviour() throws XWikiException {
         XWiki wiki = mock(XWiki.class);
+        XWikiDocument patientXWikiDoc = mock(XWikiDocument.class);
         doReturn(wiki).when(this.context).getWiki();
+        doReturn(patientXWikiDoc).when(wiki).getDocument(this.patientDocument, this.context);
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
 
         Response response = this.patientResource.deletePatient(this.id);
 
+        verify(wiki).getDocument(this.patientDocument, this.context);
+        verify(wiki).deleteDocument(patientXWikiDoc, this.context);
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
