@@ -1,14 +1,45 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>pt-22</title>
 	<style>
-		.measurement > label {
+		.measurement {
+			padding: 0.2em 0;
+			clear: both;
+		}
+		.measurement > * {
+			float: left;
+		}
+		.measurement .delete {
+			width: 15px;
+			cursor: pointer;
+			font-size: 80%;
+			font-weight: bold;
+		}
+		.measurement-row > * {
 			display: block;
 			float: left;
+			min-height: 1px;
+		}
+		.measurement-row span.side-label {
+			width: 15px;
+			font-size: 80%;
+			font-weight: bold;
+		}
+		.measurement-row span.unit {
+			width: 25px;
+		}
+		.measurement-row span.pctl {
+			width: 100px;
+			font-size: 80%;
+		}
+		.measurement-row label {
 			width: 180px;
 		}
+		.pctl.sd-0 { color: green; }
+		.pctl.sd-1 { color: orange; }
+		.pctl.sd-2 { color: red; }
 		.measurement-set.proto {
 			display: none;
 		}
@@ -19,9 +50,22 @@
 			clear: both;
 			overflow: auto;
 			margin: 5px;
+			position: relative;
+		}
+		.measurement-set > .delete {
+			width: 15px;
+			font-size: 80%;
+			font-weight: bold;
+			cursor: pointer;
+			position: absolute;
+			top: 10px; right: 10px;
+		}
+		.new-measurement-select {
+			width: 190px;
 		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.2/prototype.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 	<script>
 		var measurements = [
 			{
@@ -88,7 +132,8 @@
 				name: "BMI",
 				isTwoSided: false,
 				isComputed: true,
-				unit: null,
+				unit: "kg/m^2",
+				computationDep: ["Weight", "Height"]
 			},
 			{
 				name: "Philtrum Length",
@@ -137,6 +182,7 @@
 				isTwoSided: false,
 				isComputed: true,
 				unit: null,
+				computationDep: ["Internipple Distance", "Chest Circumference"],
 			},
 			{
 				name: "Upper Segment",
@@ -155,12 +201,8 @@
 				isTwoSided: false,
 				isComputed: true,
 				unit: null,
+				computationDep: ["Upper Segment", "Lower Segment"],
 			},
-		];
-		var linkedMeasurements = [
-			["Weight", "Height", "BMI"],
-			["Internipple Distance", "Chest Circumference", "Internipple Index"],
-			["Upper Segment", "Lower Segment", "US:LS Ratio"],
 		];
 
 		var defaultMeasurements = [
@@ -172,22 +214,71 @@
 
 		}
 		*/
-		var addMeasurement = function(measurement) {
-			var container = new Element('div').addClassName('measurement');
+		var addMeasurementRow = function(measurementRow) {
+			var container = new Element('div').addClassName('measurement-row');
 
 			var label = new Element('label');
-			label.innerHTML = measurement.name;
+			label.innerHTML = measurementRow.name;
+
+			var sideLabel = new Element('span').addClassName('side-label');
+			if (measurementRow.side) {
+				sideLabel.innerHTML = measurementRow.side;
+			}
 
 			var input = new Element('input');
 			input.type = "text";
 			input.size = 6;
+			if (measurementRow.isReadOnly) {
+				input.readOnly = true;
+			}
+			input.observe('input', measurementInputHandler);
 
 			var unit = new Element('span').addClassName('unit');
-			unit.innerHTML = measurement.unit;
+			unit.innerHTML = measurementRow.unit;
+
+			var pctl = new Element('span').addClassName('pctl');
 
 			container.insert(label);
+			container.insert(sideLabel);
 			container.insert(input);
 			container.insert(unit);
+			container.insert(pctl);
+			this.insert(container);
+		};
+
+		var addMeasurement = function(measurement) {
+			var container = new Element('div').addClassName('measurement');
+
+			var deleteButton = new Element('span').addClassName('delete');
+			deleteButton.innerHTML = '&times;';
+			deleteButton.observe('click', function() {
+				this.up().remove();
+			});
+			container.insert(deleteButton);
+
+			if (measurement.computationDep && measurement.computationDep.length) {
+				for (var i = 0; i < measurement.computationDep.length; i++) {
+					addMeasurement.apply(this, [getMeasurementByName(measurement.computationDep[i])]);
+				}
+			}
+
+			if (measurement.isTwoSided) {
+				addMeasurementRow.apply(container, [{
+					name: measurement.name,
+					unit: measurement.unit,
+					side: 'R',
+				}]);
+				addMeasurementRow.apply(container, [{
+					name: '',
+					unit: measurement.unit,
+					side: 'L',
+				}]);
+			} else {
+				var row = Object.clone(measurement);
+				row.isReadOnly = measurement.isComputed;
+				addMeasurementRow.apply(container, [row]);
+			}
+
 			this.insert(container);
 
 			var opts = this.up().select('.new-measurement-select')[0].options;
@@ -204,32 +295,63 @@
 			}
 		};
 
+		var getMeasurementByName = function(name) {
+			for (var i = 0; i < measurements.length; i++) {
+				if (measurements[i].name == name) {
+					return measurements[i];
+				}
+			}
+
+			return null;
+		};
+
 		var addMeasurementHandler = function() {
 			var selection = this.up().select('.new-measurement-select')[0];
 			var selectionName = selection.selectedIndex >= 0 ? selection.options[selection.selectedIndex].innerHTML : undefined;
-			
-			for (var i = 0; i < measurements.length; i++) {
-				if (measurements[i].name == selectionName) {
-					addMeasurement.apply(this.up().select('.measurements')[0], [measurements[i]]);
 
-					return;
-				}
-			}
+			addMeasurement.apply(this.up().select('.measurements')[0], [getMeasurementByName(selectionName)]);
 		};
 
 		var addMeasurementSet = function() {
 			var clone = $$('.measurement-set.proto')[0].clone(true);
 			clone.removeClassName('proto');
 			clone.select('.btn_add-measurement')[0].observe('click', addMeasurementHandler);
+			clone.select('.date')[0].observe('input', dateChangeHandler);
+			clone.select('> .delete')[0].observe('click', function() {
+				this.up().remove();
+			});
 			$('measurements').insert(clone);
 			return clone;
 		};
 
 		var handleAddMeasurementSet = function() {
 			$$('.btn_add-measurement-set')[0].observe('click', function() {
-				debugger;
 				addDefaults.apply(addMeasurementSet().select('.measurements')[0]);
 			});
+		};
+
+		var measurementInputHandler = function() {
+			if (parseInt(this.value) > 1) {
+				var className = 'sd-0';
+				var pctlText = '50th pctl (0SD)';
+			} else {
+				var className = 'sd-1';
+				var pctlText = '25th pctl (1SD)';
+			}
+
+			var pctl = this.up().select('.pctl')[0];
+			pctl.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
+			pctl.addClassName(className);
+			pctl.innerText = pctlText;
+		};
+
+		var dateChangeHandler = function() {
+			if (!this.value || !$('bday').value) return;
+
+			var bday = moment($('bday').value);
+			var ageYears = moment().diff(bday, 'years');
+			this.up().select('input.years')[0].value = ageYears;
+			this.up().select('input.months')[0].value = moment().diff(bday, 'months') - ageYears*12;
 		};
 
 		var init = function() {
@@ -240,16 +362,18 @@
 	</script>
 </head>
 <body>
+	<label>Birthdate:</label> 
+	<input type="date" id="bday">
 	<div id="measurements">
 		<div class="measurement-set proto">
+			<span class="delete">&times;</span>
 			<label for="date">Date:</label> <input class="date" type="date">
-			<label for="">Age:</label> <input type="text" size="2">y <input type="text" size="2">m
+			<label for="">Age:</label> <input type="text" size="2" class="years">y <input type="text" size="2" class="months">m
 
 			<div class="measurements">
 				
 			</div>
 
-			<h3>Add a measurement:</h3>
 			<select class="new-measurement-select">
 				<option>Weight</option>
 				<option>Height</option>
