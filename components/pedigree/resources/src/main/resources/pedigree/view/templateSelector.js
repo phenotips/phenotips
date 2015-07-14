@@ -105,8 +105,8 @@ var TemplateSelector = Class.create( {
     show: function() {
         this.dialog.show();
         var availableHeight = document.viewport.getHeight() - 80;
-        this.myHeight = this.mainDiv.getHeight();
-        if (this.myHeight > availableHeight) {
+        var myHeight = this.mainDiv.getHeight();
+        if (myHeight > availableHeight) {
             this.mainDiv.setStyle({'height': availableHeight + 'px', 'overflow-y': 'scroll'});
         } else {
             this.mainDiv.setStyle({'height': 'auto', 'overflow-y': 'auto'});
