@@ -50,7 +50,7 @@ public class DefaultAuthorizationService implements AuthorizationService
 
     /** Provides the list of all the available authorization modules, which perform the actual rights checking. */
     @Inject
-    private Provider<List<AuthorizationModule>> modules;
+    private AuthorizationModuleListProvider modules;
 
     @Override
     public boolean hasAccess(User user, Right access, DocumentReference document)
