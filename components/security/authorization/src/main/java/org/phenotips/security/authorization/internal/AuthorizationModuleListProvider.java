@@ -19,6 +19,7 @@ package org.phenotips.security.authorization.internal;
 
 import org.phenotips.security.authorization.AuthorizationModule;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Provides an ordered list of authorization modules.
@@ -37,6 +39,8 @@ import javax.inject.Provider;
  * @version $Id$
  * @since 1.2RC1
  */
+@Component
+@Singleton
 public class AuthorizationModuleListProvider implements Provider<List<AuthorizationModule>>
 {
     @Inject
