@@ -21,6 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.studies.family.internal.StatusResponse;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
 import java.util.List;
@@ -119,4 +120,13 @@ public interface Validation
      * @throws XWikiException if {@link #canAddToFamily(XWikiDocument, String)} fails
      */
     StatusResponse canAddEveryMember(XWikiDocument family, List<String> members) throws XWikiException;
+
+    /**
+     * Checks if a user has an access on a document with permissions.
+     *
+     * @param document document to check access for
+     * @param permissions permissions current user needs to have on the family
+     * @return true is user has an access on the family with permissions
+     */
+    boolean hasAccess(DocumentReference document, String permissions);
 }

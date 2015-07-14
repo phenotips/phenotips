@@ -38,8 +38,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -79,6 +84,12 @@ public class ValidationImpl implements Validation
     @Inject
     @Named("view")
     private AccessLevel viewAccess;
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private Provider<XWikiContext> provider;
 
     /**
      * Checks if the patient is already present within the family members list.
@@ -224,5 +235,28 @@ public class ValidationImpl implements Validation
         PatientAccess patientAccess = this.permissionsManager.getPatientAccess(patient);
         AccessLevel patientAccessLevel = patientAccess.getAccessLevel(user.getProfileDocument());
         return patientAccessLevel.compareTo(accessLevel) >= 0;
+    }
+
+    @Override
+    public boolean hasAccess(DocumentReference document, String permissions)
+    {
+        XWikiDocument xWikiDoc = null;
+        try {
+            xWikiDoc = this.familyUtils.getDoc(document);
+        } catch (XWikiException e) {
+            this.logger.error("Error retrieving family document for family [{}]: [{}]",
+                document.getName(), e.getMessage());
+        }
+
+        XWikiContext context = this.provider.get();
+        XWiki wiki = context.getWiki();
+
+        try {
+            return wiki.checkAccess(permissions, xWikiDoc, context);
+        } catch (XWikiException e) {
+            this.logger.error("Error checking permissions on [{}]: [{}]",
+                xWikiDoc.getName(), e.getMessage());
+        }
+        return false;
     }
 }
