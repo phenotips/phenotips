@@ -302,7 +302,8 @@ public class XWikiFamily implements Family
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
      * function returns a warning to display, or empty string
      */
-    private String getWarningMessage()
+    @Override
+    public String getWarningMessage()
     {
         BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
         if (familyObject.getIntValue(WARNING) == 0) {

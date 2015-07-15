@@ -99,4 +99,12 @@ public interface Family
      */
     String getURL(String actions);
 
+    /**
+     * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
+     * function returns a warning to display, or empty string
+     *
+     * @return warning message
+     */
+    String getWarningMessage();
+
 }
