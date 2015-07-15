@@ -323,11 +323,15 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
 
-        Response response = this.component.getPatient(this.eid);
-        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
-        verify(this.logger).debug("Multiple patient records ({}) with external ID [{}]: {}",
+        Response responseGet = this.component.getPatient(this.eid);
+        Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
+        Response responseDelete = this.component.deletePatient(this.eid);
+        verify(this.logger, times(3)).debug("Multiple patient records ({}) with external ID [{}]: {}",
                 2, this.eid, results);
-        assertEquals(300, response.getStatus());
+
+        assertEquals(300, responseGet.getStatus());
+        assertEquals(300, responseUpdate.getStatus());
+        assertEquals(300, responseDelete.getStatus());
     }
 
     @Test
@@ -338,8 +342,13 @@ public class DefaultPatientByExternalIdResourceImplTest {
 
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
 
-        Response response = this.component.getPatient(this.eid);
-        verify(this.logger).warn("Failed to retrieve patient with external id [{}]: {}", this.eid, null);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        Response responseGet = this.component.getPatient(this.eid);
+        Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
+        Response responseDelete = this.component.deletePatient(this.eid);
+
+        verify(this.logger, times(3)).warn("Failed to retrieve patient with external id [{}]: {}", this.eid, null);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseGet.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseUpdate.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseDelete.getStatus());
     }
 }
