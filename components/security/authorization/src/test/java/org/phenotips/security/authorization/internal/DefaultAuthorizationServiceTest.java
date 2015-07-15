@@ -61,13 +61,13 @@ public class DefaultAuthorizationServiceTest
     private DocumentReference document;
 
     @Mock
-    private AuthorizationModule lowPriorityModule;
+    private AuthorizationModule moduleOne;
 
     @Mock
-    private AuthorizationModule mediumPriorityModule;
+    private AuthorizationModule moduleTwo;
 
     @Mock
-    private AuthorizationModule highPriorityModule;
+    private AuthorizationModule moduleThree;
 
     @Before
     public void setupMocks() throws Exception
@@ -89,70 +89,64 @@ public class DefaultAuthorizationServiceTest
     @Test
     public void moduleDecisionIsUsed() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "low", this.moduleOne);
 
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
 
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(false);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(false);
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
 
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(null);
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
     @Test
     public void modulesAreCascadedUntilNonNullIsReturned() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
-        this.mocker.registerComponent(AuthorizationModule.class, "medium", this.mediumPriorityModule);
-        this.mocker.registerComponent(AuthorizationModule.class, "high", this.highPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "one", this.moduleOne);
+        this.mocker.registerComponent(AuthorizationModule.class, "two", this.moduleTwo);
+        this.mocker.registerComponent(AuthorizationModule.class, "three", this.moduleThree);
 
         // By default all modules return null
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
-        verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
-        verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleThree).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
 
-        // The last module queried is the low priority module
         resetMocks();
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
 
-        // Then the middle priority one
         resetMocks();
-        when(this.mediumPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(false);
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(false);
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
 
-        // And finally the high priority one
         resetMocks();
-        when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleThree.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleThree).hasAccess(this.user, this.access, this.document);
     }
 
     @Test
     public void exceptionsInModulesAreIgnored() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "low", this.lowPriorityModule);
-        this.mocker.registerComponent(AuthorizationModule.class, "high", this.highPriorityModule);
+        this.mocker.registerComponent(AuthorizationModule.class, "one", this.moduleOne);
+        this.mocker.registerComponent(AuthorizationModule.class, "two", this.moduleTwo);
 
-        when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenThrow(
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenThrow(
                 new NullPointerException());
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
     private void resetMocks()
     {
-        Mockito.reset(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule);
-        when(this.lowPriorityModule.getPriority()).thenReturn(1);
-        when(this.mediumPriorityModule.getPriority()).thenReturn(2);
-        when(this.highPriorityModule.getPriority()).thenReturn(3);
-        when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
-        when(this.mediumPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
-        when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
+        Mockito.reset(this.moduleOne, this.moduleTwo, this.moduleThree);
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(null);
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(null);
+        when(this.moduleThree.hasAccess(this.user, this.access, this.document)).thenReturn(null);
     }
 }
