@@ -25,6 +25,7 @@ import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
+import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -72,6 +73,9 @@ public class FamilyScriptService implements ScriptService
 
     @Inject
     private Validation validation;
+
+    @Inject
+    private XWikiFamilyExport familyExport;
 
     /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family. TODO - change Name to
@@ -270,5 +274,19 @@ public class FamilyScriptService implements ScriptService
         }
         family.addMember(patient);
         return true;
+    }
+
+    /**
+     * return a JSON object with a list of families that fit the input search criterion.
+     *
+     * @param input beginning of string of family
+     * @param resultsLimit maximum number of results
+     * @param requiredPermissions only families on which the user has requiredPermissions will be returned
+     * @param returnAsJSON if true, the result is returned as JSON, otherwise as HTML
+     * @return list of families
+     */
+    public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
+    {
+        return this.familyExport.searchFamilies(input, resultsLimit, requiredPermissions, returnAsJSON);
     }
 }
