@@ -59,10 +59,6 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class XWikiFamilyRepository implements FamilyRepository
 {
-    /** XWiki class that represents a family. */
-    public static final EntityReference FAMILY_CLASS =
-        new EntityReference("FamilyClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final String PREFIX = "FAM";
 
     private static final EntityReference FAMILY_TEMPLATE =
@@ -297,7 +293,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
         ownerObject.set("owner", currentUser.getId(), context);
 
-        BaseObject familyObject = newFamilyDoc.getXObject(FAMILY_CLASS);
+        BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
         familyObject.set("identifier", nextId, context);
 
         newFamilyDoc.setCreatorReference(currentUser.getProfileDocument());

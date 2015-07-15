@@ -147,7 +147,7 @@ public class XWikiFamily implements Family
             this.logger.info("Patient [{}] already a member of family [{}]. Not adding", patientAsString, getId());
             return false;
         }
-        BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
+        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
         XWikiFamily.familyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
@@ -254,7 +254,7 @@ public class XWikiFamily implements Family
     @Override
     public String getWarningMessage()
     {
-        BaseObject familyObject = this.familyDocument.getXObject(XWikiFamilyRepository.FAMILY_CLASS);
+        BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         if (familyObject.getIntValue(WARNING) == 0) {
             return "";
         } else {
