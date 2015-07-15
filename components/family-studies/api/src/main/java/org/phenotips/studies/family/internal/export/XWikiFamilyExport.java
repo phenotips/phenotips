@@ -17,6 +17,9 @@
  */
 package org.phenotips.studies.family.internal.export;
 
+import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Validation;
@@ -63,7 +66,13 @@ public class XWikiFamilyExport
     private FamilyRepository familyRepository;
 
     @Inject
+    private PatientRepository patientRepository;
+
+    @Inject
     private Validation validation;
+
+    @Inject
+    private RecordConfigurationManager configuration;
 
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
@@ -111,6 +120,40 @@ public class XWikiFamilyExport
     private void queryPatients(String input, String requiredPermissions, int resultsLimit,
         List<FamilySearchResult> resultsList)
     {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append("from doc.object(PhenoTips.PatientClass) as patient, ");
+        querySb.append(" doc.object(PhenoTips.FamilyReference) as familyref ");
+        querySb.append("  where lower(doc.name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+        querySb.append(" or lower(patient.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+
+        boolean usePatientName = this.configuration.getActiveConfiguration().getEnabledFieldNames()
+            .contains("first_name");
+        if (usePatientName)
+        {
+            querySb.append(" or lower(patient.first_name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+            querySb.append(" or lower(patient.last_name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+        }
+
+        List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
+
+        // Process family query results
+        for (String queryResult : queryResults) {
+            Patient patient = this.patientRepository.getPatientById(queryResult);
+            if (patient == null) {
+                continue;
+            }
+
+            if (!this.validation.hasAccess(patient.getDocument(), requiredPermissions)) {
+                continue;
+            }
+
+            Family family = this.familyRepository.getFamilyForPatient(patient);
+            if (family == null) {
+                continue;
+            }
+
+            resultsList.add(new FamilySearchResult(patient, usePatientName, family, requiredPermissions));
+        }
     }
 
     private List<String> runQuery(String queryString, String input, int resultsLimit)

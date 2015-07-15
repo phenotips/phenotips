@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.internal.export;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.studies.family.Family;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +66,9 @@ public class FamilySearchResult
      */
     public FamilySearchResult(Patient patient, boolean usePatientName, Family family, String requiredPermissions)
     {
+        this(family, requiredPermissions);
+        addPatientDescription(patient, usePatientName);
+
     }
 
     private void setBasicDescription()
@@ -73,6 +77,35 @@ public class FamilySearchResult
         if (StringUtils.isNotEmpty(this.externalId)) {
             descriptionSb.append(" (").append(this.externalId).append(")");
         }
+        this.description = descriptionSb.toString();
+    }
+
+    private void addPatientDescription(Patient patient, boolean usePatientName)
+    {
+        StringBuilder descriptionSb = new StringBuilder(this.getDescription());
+
+        descriptionSb.append(" [");
+        descriptionSb.append("Patient ").append(patient.getId());
+
+        String patientExternalId = patient.getExternalId();
+        if (StringUtils.isNotEmpty(patientExternalId)) {
+            descriptionSb.append(", identifier: ").append(patientExternalId);
+        }
+
+        if (usePatientName) {
+            String patientName = "";
+            if (usePatientName) {
+                PatientData<String> patientNames = patient.getData("patientName");
+                String firstName = StringUtils.defaultString(patientNames.get("first_name"));
+                String lastName = StringUtils.defaultString(patientNames.get("last_name"));
+                patientName = (firstName + " " + lastName).trim();
+            }
+            if (StringUtils.isNotEmpty(patientName)) {
+                descriptionSb.append(", name: ").append(patientName);
+            }
+        }
+        descriptionSb.append("]");
+
         this.description = descriptionSb.toString();
     }
 
