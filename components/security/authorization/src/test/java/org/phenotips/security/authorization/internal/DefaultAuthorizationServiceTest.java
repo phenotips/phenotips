@@ -33,12 +33,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -111,37 +110,27 @@ public class DefaultAuthorizationServiceTest
 
         // By default all modules return null
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        InOrder order = Mockito.inOrder(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule);
-        order.verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
 
         // The last module queried is the low priority module
         resetMocks();
         when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        order = Mockito.inOrder(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule);
-        order.verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
+        verify(this.lowPriorityModule).hasAccess(this.user, this.access, this.document);
 
         // Then the middle priority one
         resetMocks();
         when(this.mediumPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(false);
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        order = Mockito.inOrder(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule);
-        order.verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.lowPriorityModule, never()).hasAccess(this.user, this.access, this.document);
+        verify(this.mediumPriorityModule).hasAccess(this.user, this.access, this.document);
 
         // And finally the high priority one
         resetMocks();
         when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        order = Mockito.inOrder(this.lowPriorityModule, this.mediumPriorityModule, this.highPriorityModule);
-        order.verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
-        order.verify(this.mediumPriorityModule, never()).hasAccess(this.user, this.access, this.document);
-        order.verify(this.lowPriorityModule, never()).hasAccess(this.user, this.access, this.document);
+        verify(this.highPriorityModule).hasAccess(this.user, this.access, this.document);
     }
 
     @Test
@@ -151,17 +140,8 @@ public class DefaultAuthorizationServiceTest
         this.mocker.registerComponent(AuthorizationModule.class, "high", this.highPriorityModule);
 
         when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenThrow(
-            new NullPointerException());
+                new NullPointerException());
         when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(true);
-        Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-    }
-
-    @Test
-    public void modulesWithSamePriorityGetSortedByName() throws Exception
-    {
-        this.mocker.registerComponent(AuthorizationModule.class, "B", new BModule());
-        this.mocker.registerComponent(AuthorizationModule.class, "A", new AModule());
-        this.mocker.registerComponent(AuthorizationModule.class, "C", new CModule());
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
@@ -174,34 +154,5 @@ public class DefaultAuthorizationServiceTest
         when(this.lowPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
         when(this.mediumPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
         when(this.highPriorityModule.hasAccess(this.user, this.access, this.document)).thenReturn(null);
-    }
-
-    private static class AModule implements AuthorizationModule
-    {
-        @Override
-        public int getPriority()
-        {
-            return 0;
-        }
-
-        @Override
-        public Boolean hasAccess(User user, Right access, DocumentReference document)
-        {
-            return Boolean.TRUE;
-        }
-    }
-
-    private static class BModule extends AModule
-    {
-        @Override
-        public Boolean hasAccess(User user, Right access, DocumentReference document)
-        {
-            return Boolean.FALSE;
-        }
-    }
-
-    private static class CModule extends BModule
-    {
-        // All the methods of B are reused
     }
 }
