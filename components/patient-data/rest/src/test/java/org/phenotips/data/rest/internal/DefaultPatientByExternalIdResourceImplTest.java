@@ -215,7 +215,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientCantFindPatient() throws QueryException, XWikiRestException
+    public void deletePatientReturnsNotFoundStatus() throws QueryException, XWikiRestException
     {
         Query query = mock(DefaultQuery.class);
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
