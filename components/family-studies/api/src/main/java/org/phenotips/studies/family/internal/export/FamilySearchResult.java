@@ -20,6 +20,8 @@ package org.phenotips.studies.family.internal.export;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Contains information to be returned in a family search (specifically in XWikiFamilyExport).
  *
@@ -45,6 +47,12 @@ public class FamilySearchResult
      */
     public FamilySearchResult(Family family, String requiredPermissions)
     {
+        this.externalId = family.getExternalId();
+        this.id = family.getId();
+        this.reference = family.getDocumentReference().toString();
+        this.url = family.getURL(requiredPermissions);
+
+        setBasicDescription();
     }
 
     /**
@@ -57,6 +65,15 @@ public class FamilySearchResult
      */
     public FamilySearchResult(Patient patient, boolean usePatientName, Family family, String requiredPermissions)
     {
+    }
+
+    private void setBasicDescription()
+    {
+        StringBuilder descriptionSb = new StringBuilder(this.getId());
+        if (StringUtils.isNotEmpty(this.externalId)) {
+            descriptionSb.append(" (").append(this.externalId).append(")");
+        }
+        this.description = descriptionSb.toString();
     }
 
     /**

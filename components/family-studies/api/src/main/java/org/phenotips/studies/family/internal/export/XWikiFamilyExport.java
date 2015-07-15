@@ -17,12 +17,24 @@
  */
 package org.phenotips.studies.family.internal.export;
 
-import org.xwiki.component.annotation.Component;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.Validation;
 
+import org.xwiki.component.annotation.Component;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
+import org.xwiki.xml.XMLUtils;
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -36,6 +48,23 @@ import net.sf.json.JSONObject;
 @Singleton
 public class XWikiFamilyExport
 {
+    private static final String INPUT_PARAMETER = "input";
+
+    private static final String INPUT_FORMAT = "%s%%";
+
+    /** Runs queries for finding families. */
+    @Inject
+    private QueryManager qm;
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private FamilyRepository familyRepository;
+
+    @Inject
+    private Validation validation;
+
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
      * The list is returned as JSON if returnAsJSON is true or as HTML otherwise.
@@ -57,11 +86,50 @@ public class XWikiFamilyExport
     private void queryFamilies(String input, String requiredPermissions, int resultsLimit,
         List<FamilySearchResult> resultsList)
     {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append(" from doc.object(PhenoTips.FamilyClass) as family ");
+        querySb.append(" where lower(doc.name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+        querySb.append(" or lower(family.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+
+        List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
+
+        // Process family query results
+        for (String queryResult : queryResults) {
+            Family family = this.familyRepository.getFamilyById(queryResult);
+            if (family == null) {
+                continue;
+            }
+
+            if (!this.validation.hasAccess(family.getDocumentReference(), requiredPermissions)) {
+                continue;
+            }
+
+            resultsList.add(new FamilySearchResult(family, requiredPermissions));
+        }
     }
 
     private void queryPatients(String input, String requiredPermissions, int resultsLimit,
         List<FamilySearchResult> resultsList)
     {
+    }
+
+    private List<String> runQuery(String queryString, String input, int resultsLimit)
+    {
+        String formattedInput = String.format(XWikiFamilyExport.INPUT_FORMAT, input);
+
+        // Query patients
+        Query query = null;
+        List<String> queryResults = null;
+        try {
+            query = this.qm.createQuery(queryString, Query.XWQL);
+            query.setLimit(resultsLimit);
+            query.bindValue(XWikiFamilyExport.INPUT_PARAMETER, formattedInput);
+            queryResults = query.execute();
+        } catch (QueryException e) {
+            this.logger.error("Error while performing patiets query: [{}] ", e.getMessage());
+            return Collections.emptyList();
+        }
+        return queryResults;
     }
 
     private String formatResults(List<FamilySearchResult> resultsList, boolean returnAsJSON)
@@ -79,6 +147,24 @@ public class XWikiFamilyExport
         }
 
         for (FamilySearchResult searchResult : resultsList) {
+            if (returnAsJSON) {
+                JSONObject familyJson = new JSONObject();
+                familyJson.put("id", searchResult.getId());
+                familyJson.put("url", searchResult.getUrl());
+                familyJson.put("identifier", searchResult.getExternalId());
+                familyJson.put("textSummary", searchResult.getDescription());
+                familyArray.add(familyJson);
+            } else {
+                String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
+                String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
+
+                htmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
+                htmlResult.append("info=\"").append(escapedReference).append("\">");
+
+                htmlResult.append(escapedDescription);
+
+                htmlResult.append("</rs>");
+            }
         }
 
         if (returnAsJSON) {
