@@ -60,6 +60,22 @@ import net.sf.json.JSONObject;
 @Singleton
 public class XWikiFamilyExport
 {
+    private static final String LAST_NAME = "last_name";
+
+    private static final String FIRST_NAME = "first_name";
+
+    private static final String PERMISSIONS = "permissions";
+
+    private static final String URL = "url";
+
+    private static final String REPORTS = "reports";
+
+    private static final String NAME = "name";
+
+    private static final String IDENTIFIER = "identifier";
+
+    private static final String ID = "id";
+
     private static final String INPUT_PARAMETER = "input";
 
     private static final String INPUT_FORMAT = "%s%%";
@@ -134,26 +150,26 @@ public class XWikiFamilyExport
 
         // handle patient names
         PatientData<String> patientNames = patient.getData("patientName");
-        String firstName = StringUtils.defaultString(patientNames.get("first_name"));
-        String lastName = StringUtils.defaultString(patientNames.get("last_name"));
+        String firstName = StringUtils.defaultString(patientNames.get(FIRST_NAME));
+        String lastName = StringUtils.defaultString(patientNames.get(LAST_NAME));
         String patientNameForJSON = String.format("%s %s", firstName, lastName).trim();
 
         // add data to json
-        patientJSON.put("id", patient.getId());
-        patientJSON.put("identifier", patient.getExternalId());
-        patientJSON.put("name", patientNameForJSON);
-        patientJSON.put("reports", getMedicalReports(patient));
+        patientJSON.put(ID, patient.getId());
+        patientJSON.put(IDENTIFIER, patient.getExternalId());
+        patientJSON.put(NAME, patientNameForJSON);
+        patientJSON.put(REPORTS, getMedicalReports(patient));
 
         // Patient URL
         XWikiContext context = this.provider.get();
         String url = context.getWiki().getURL(patient.getDocument(), "view", context);
-        patientJSON.put("url", url);
+        patientJSON.put(URL, url);
 
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
         permissionJSON.put("hasEdit", this.validation.hasPatientEditAccess(patient));
         permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
-        patientJSON.put("permissions", permissionJSON);
+        patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
     }
@@ -193,7 +209,7 @@ public class XWikiFamilyExport
         querySb.append(" or lower(patient.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
 
         boolean usePatientName = this.configuration.getActiveConfiguration().getEnabledFieldNames()
-            .contains("first_name");
+            .contains(FIRST_NAME);
         if (usePatientName)
         {
             querySb.append(" or lower(patient.first_name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
@@ -258,9 +274,9 @@ public class XWikiFamilyExport
         for (FamilySearchResult searchResult : resultsList) {
             if (returnAsJSON) {
                 JSONObject familyJson = new JSONObject();
-                familyJson.put("id", searchResult.getId());
-                familyJson.put("url", searchResult.getUrl());
-                familyJson.put("identifier", searchResult.getExternalId());
+                familyJson.put(ID, searchResult.getId());
+                familyJson.put(URL, searchResult.getUrl());
+                familyJson.put(IDENTIFIER, searchResult.getExternalId());
                 familyJson.put("textSummary", searchResult.getDescription());
                 familyArray.add(familyJson);
             } else {
