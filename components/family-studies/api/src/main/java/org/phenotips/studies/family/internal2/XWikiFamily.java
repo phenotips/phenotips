@@ -19,26 +19,22 @@ package org.phenotips.studies.family.internal2;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
+import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -49,8 +45,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * XWiki implementation of Family.
@@ -63,13 +57,11 @@ public class XWikiFamily implements Family
 
     private static final String FAMILY_MEMBERS_FIELD = "members";
 
-    private static Validation validation;
-
     private static PatientRepository patientRepository;
 
-    private static Provider<XWikiContext> provider;
-
     private static XWikiFamilyPermissions familyPermissions;
+
+    private static XWikiFamilyExport familyExport;
 
     @Inject
     private Logger logger;
@@ -80,12 +72,10 @@ public class XWikiFamily implements Family
         try {
             XWikiFamily.patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-            XWikiFamily.validation =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(Validation.class);
             XWikiFamily.familyPermissions =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyPermissions.class);
-            XWikiFamily.provider =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+            XWikiFamily.familyExport =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyExport.class);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -203,20 +193,7 @@ public class XWikiFamily implements Family
     @Override
     public JSON getInformationAsJSON()
     {
-        JSONObject familyJSON = new JSONObject();
-        familyJSON.put("familyPage", getId());
-        familyJSON.put(WARNING, getWarningMessage());
-
-        JSONArray patientsJSONArray = new JSONArray();
-        for (String memberId : getMembers()) {
-            Patient patient = XWikiFamily.patientRepository.getPatientById(memberId);
-
-            JSONObject patientJSON = getPatientInformationAsJSON(patient);
-            patientsJSONArray.add(patientJSON);
-        }
-        familyJSON.put("familyMembers", patientsJSONArray);
-
-        return familyJSON;
+        return XWikiFamily.familyExport.getInformationAsJSON(this);
     }
 
     @Override
@@ -226,7 +203,7 @@ public class XWikiFamily implements Family
 
         for (String member : getMembers()) {
             Patient patient = XWikiFamily.patientRepository.getPatientById(member);
-            allFamilyLinks.put(patient.getId(), getMedicalReports(patient));
+            allFamilyLinks.put(patient.getId(), XWikiFamily.familyExport.getMedicalReports(patient));
         }
         return allFamilyLinks;
     }
@@ -255,35 +232,6 @@ public class XWikiFamily implements Family
     }
 
     // ///////////////////////////////////////
-    private JSONObject getPatientInformationAsJSON(Patient patient)
-    {
-        JSONObject patientJSON = new JSONObject();
-
-        // handle patient names
-        PatientData<String> patientNames = patient.getData("patientName");
-        String firstName = StringUtils.defaultString(patientNames.get("first_name"));
-        String lastName = StringUtils.defaultString(patientNames.get("last_name"));
-        String patientNameForJSON = String.format("%s %s", firstName, lastName).trim();
-
-        // add data to json
-        patientJSON.put("id", patient.getId());
-        patientJSON.put("identifier", patient.getExternalId());
-        patientJSON.put("name", patientNameForJSON);
-        patientJSON.put("reports", getMedicalReports(patient));
-
-        // Patient URL
-        XWikiContext context = XWikiFamily.provider.get();
-        String url = context.getWiki().getURL(patient.getDocument(), "view", context);
-        patientJSON.put("url", url);
-
-        // add permissions information
-        JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit", XWikiFamily.validation.hasPatientEditAccess(patient));
-        permissionJSON.put("hasView", XWikiFamily.validation.hasPatientViewAccess(patient));
-        patientJSON.put("permissions", permissionJSON);
-
-        return patientJSON;
-    }
 
     private XWikiContext getXContext()
     {
@@ -311,22 +259,5 @@ public class XWikiFamily implements Family
         } else {
             return familyObject.getStringValue("warning_message");
         }
-    }
-
-    // TODO should this be in the patient object?
-    private Map<String, String> getMedicalReports(Patient patient)
-    {
-        PatientData<String> links = patient.getData("medicalreports");
-        Map<String, String> mapOfLinks = new HashMap<>();
-        if (XWikiFamily.validation.hasPatientViewAccess(patient)) {
-            if (links != null) {
-                Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> entry = iterator.next();
-                    mapOfLinks.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-        return mapOfLinks;
     }
 }

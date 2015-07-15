@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal.export;
 
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
@@ -31,14 +32,22 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
+
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -74,6 +83,9 @@ public class XWikiFamilyExport
     @Inject
     private RecordConfigurationManager configuration;
 
+    @Inject
+    private Provider<XWikiContext> provider;
+
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermissions on each family.
      * The list is returned as JSON if returnAsJSON is true or as HTML otherwise.
@@ -90,6 +102,60 @@ public class XWikiFamilyExport
         queryFamilies(input, requiredPermissions, resultsLimit, resultsList);
         queryPatients(input, requiredPermissions, resultsLimit, resultsList);
         return formatResults(resultsList, returnAsJSON);
+    }
+
+    /**
+     * returns information about the family in JSON format.
+     *
+     * @param family family
+     * @return JSON object with family information
+     */
+    public JSON getInformationAsJSON(Family family)
+    {
+        JSONObject familyJSON = new JSONObject();
+        familyJSON.put("familyPage", family.getId());
+        familyJSON.put("warning", family.getWarningMessage());
+
+        JSONArray patientsJSONArray = new JSONArray();
+        for (String memberId : family.getMembers()) {
+            Patient patient = this.patientRepository.getPatientById(memberId);
+
+            JSONObject patientJSON = getPatientInformationAsJSON(patient);
+            patientsJSONArray.add(patientJSON);
+        }
+        familyJSON.put("familyMembers", patientsJSONArray);
+
+        return familyJSON;
+    }
+
+    private JSONObject getPatientInformationAsJSON(Patient patient)
+    {
+        JSONObject patientJSON = new JSONObject();
+
+        // handle patient names
+        PatientData<String> patientNames = patient.getData("patientName");
+        String firstName = StringUtils.defaultString(patientNames.get("first_name"));
+        String lastName = StringUtils.defaultString(patientNames.get("last_name"));
+        String patientNameForJSON = String.format("%s %s", firstName, lastName).trim();
+
+        // add data to json
+        patientJSON.put("id", patient.getId());
+        patientJSON.put("identifier", patient.getExternalId());
+        patientJSON.put("name", patientNameForJSON);
+        patientJSON.put("reports", getMedicalReports(patient));
+
+        // Patient URL
+        XWikiContext context = this.provider.get();
+        String url = context.getWiki().getURL(patient.getDocument(), "view", context);
+        patientJSON.put("url", url);
+
+        // add permissions information
+        JSONObject permissionJSON = new JSONObject();
+        permissionJSON.put("hasEdit", this.validation.hasPatientEditAccess(patient));
+        permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
+        patientJSON.put("permissions", permissionJSON);
+
+        return patientJSON;
     }
 
     private void queryFamilies(String input, String requiredPermissions, int resultsLimit,
@@ -217,5 +283,27 @@ public class XWikiFamilyExport
             htmlResult.append("</results>");
             return htmlResult.toString();
         }
+    }
+
+    /**
+     * Returns all medical reports associated with a patient.
+     *
+     * @param patient to get medical reports for
+     * @return Map with medical reports
+     */
+    public Map<String, String> getMedicalReports(Patient patient)
+    {
+        PatientData<String> links = patient.getData("medicalreports");
+        Map<String, String> mapOfLinks = new HashMap<>();
+        if (this.validation.hasPatientViewAccess(patient)) {
+            if (links != null) {
+                Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    mapOfLinks.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return mapOfLinks;
     }
 }
