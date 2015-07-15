@@ -35,7 +35,6 @@ import org.xwiki.users.UserManager;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -96,6 +95,11 @@ public class XWikiFamilyRepository implements FamilyRepository
     @Inject
     @Named("current")
     private static DocumentReferenceResolver<String> referenceResolver;
+
+    /** Fills in missing reference fields with those from the current context document to create a full reference. */
+    @Inject
+    @Named("current")
+    private static DocumentReferenceResolver<EntityReference> entityReferenceResolver;
 
     @Inject
     private static XWikiFamilyPermissions familyPermissions;
@@ -286,10 +290,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         }
 
         // Copying all objects from template to family
-        XWikiDocument template = wiki.getDocument(FAMILY_TEMPLATE, context);
-        for (Map.Entry<DocumentReference, List<BaseObject>> templateObject : template.getXObjects().entrySet()) {
-            newFamilyDoc.newXObject(templateObject.getKey(), context);
-        }
+        newFamilyDoc.readFromTemplate(XWikiFamilyRepository.entityReferenceResolver.resolve(FAMILY_TEMPLATE), context);
 
         // Adding additional values to family
         User currentUser = XWikiFamilyRepository.userManager.getCurrentUser();
