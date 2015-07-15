@@ -43,6 +43,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
+import com.xpn.xwiki.objects.StringProperty;
 
 import net.sf.json.JSON;
 
@@ -212,12 +213,12 @@ public class XWikiFamily implements Family
     public String getExternalId()
     {
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
-        Object externalId = null;
+        StringProperty externalId = null;
         String externalIdString = null;
         try {
-            externalId = familyObject.get("external_id");
+            externalId = (StringProperty) familyObject.get("external_id");
             if (externalId != null) {
-                externalIdString = externalId.toString();
+                externalIdString = externalId.getValue();
             }
         } catch (XWikiException e) {
             this.logger.error("Error reading external id of family [{}]: [{}]", getId(), e.getMessage());
