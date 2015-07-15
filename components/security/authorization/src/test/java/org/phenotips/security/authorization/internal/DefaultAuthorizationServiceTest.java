@@ -17,6 +17,7 @@
  */
 package org.phenotips.security.authorization.internal;
 
+import org.mockito.InOrder;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.security.authorization.AuthorizationService;
 
@@ -37,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,6 +67,9 @@ public class DefaultAuthorizationServiceTest
 
     @Mock
     private AuthorizationModule moduleTwo;
+
+    @Mock
+    private AuthorizationModule moduleThree;
 
     @Before
     public void setupMocks() throws Exception
@@ -101,23 +106,49 @@ public class DefaultAuthorizationServiceTest
     @Test
     public void modulesAreCascadedUntilNonNullIsReturned() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "one", this.moduleOne);
-        this.mocker.registerComponent(AuthorizationModule.class, "two", this.moduleTwo);
+        this.mocker.registerComponent(AuthorizationModule.class, "A", this.moduleOne);
+        this.mocker.registerComponent(AuthorizationModule.class, "B", this.moduleTwo);
+        this.mocker.registerComponent(AuthorizationModule.class, "C", this.moduleThree);
 
         // By default all modules return null
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
-        verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        InOrder order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
+        order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleThree).hasAccess(this.user, this.access, this.document);
 
         resetMocks();
         when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
+        order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleTwo, never()).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
 
         resetMocks();
         when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(false);
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
-        verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
+        order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
+        order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
+        verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
+    }
+
+    @Test
+    public void firstNonNullDecisionIsReturned() throws Exception
+    {
+        this.mocker.registerComponent(AuthorizationModule.class, "A", this.moduleOne);
+        this.mocker.registerComponent(AuthorizationModule.class, "B", this.moduleTwo);
+
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(false);
+
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
+
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(false);
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
     @Test
@@ -134,8 +165,9 @@ public class DefaultAuthorizationServiceTest
 
     private void resetMocks()
     {
-        Mockito.reset(this.moduleOne, this.moduleTwo);
+        Mockito.reset(this.moduleOne, this.moduleTwo, this.moduleThree);
         when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(null);
         when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(null);
+        when(this.moduleThree.hasAccess(this.user, this.access, this.document)).thenReturn(null);
     }
 }
