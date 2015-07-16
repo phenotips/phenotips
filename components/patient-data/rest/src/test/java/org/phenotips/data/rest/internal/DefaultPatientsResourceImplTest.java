@@ -28,8 +28,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.rest.DomainObjectFactory;
 import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.Patient;
+import org.phenotips.data.rest.model.PatientSummary;
 import org.phenotips.data.rest.model.Patients;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -56,6 +58,7 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -76,6 +79,8 @@ public class DefaultPatientsResourceImplTest {
 
     @Mock
     private UriInfo uriInfo;
+
+    private DomainObjectFactory factory;
 
     private PatientRepository repository;
 
@@ -114,6 +119,7 @@ public class DefaultPatientsResourceImplTest {
         this.queries = this.mocker.getInstance(QueryManager.class);
         this.uri = new URI("http://uri");
         this.userProfileDocument = new DocumentReference("wiki", "user", "00000001");
+        this.factory = this.mocker.getInstance(DomainObjectFactory.class);
 
         doReturn(this.uri).when(this.uriInfo).getBaseUri();
         doReturn(this.uri).when(this.uriInfo).getRequestUri();
@@ -193,7 +199,7 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
-    public void listPatientsNonDefaultBehaviour() throws WebApplicationException, QueryException {
+    public void listPatientsNonDefaultBehaviour() throws QueryException {
         Query query = mock(DefaultQuery.class);
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
@@ -202,6 +208,23 @@ public class DefaultPatientsResourceImplTest {
         verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
                 + "p.external_id" + " desc", "xwql");
+    }
+
+    @Test
+    public void listPatientsNoUserAccess() throws QueryException {
+        Object[] patientSummaryData = new Object[0];
+        List<Object[]> patientList = new ArrayList<Object[]>();
+        patientList.add(patientSummaryData);
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(patientList).when(query).execute();
+        doReturn(false).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
+        Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                + "doc.name" + " asc", "xwql");
+        Assert.assertTrue(result.getPatientSummaries().isEmpty());
     }
 
     @Test
