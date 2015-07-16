@@ -228,6 +228,24 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
+    public void listPatientsUserHasAccess() throws QueryException {
+        Object[] patientSummaryData = new Object[0];
+        List<Object[]> patientList = new ArrayList<Object[]>();
+        patientList.add(patientSummaryData);
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(patientList).when(query).execute();
+        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
+        doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
+        Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
+                + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
+                + "doc.name" + " asc", "xwql");
+        Assert.assertFalse(result.getPatientSummaries().isEmpty());
+    }
+
+    @Test
     public void listPatientFailureHandling() throws QueryException {
         Query query = mock(DefaultQuery.class);
         WebApplicationException exception = null;
