@@ -21,14 +21,17 @@ import org.mockito.InOrder;
 import org.phenotips.security.authorization.AuthorizationModule;
 import org.phenotips.security.authorization.AuthorizationService;
 
-import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
-import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,9 +41,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import javax.inject.Provider;
+
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 /**
  * Tests for the default {@link AuthorizationService} component, {@link DefaultAuthorizationService}.
@@ -71,27 +78,32 @@ public class DefaultAuthorizationServiceTest
     @Mock
     private AuthorizationModule moduleThree;
 
+    @Mock
+    private Provider<List<AuthorizationModule>> modules;
+
+    private List<AuthorizationModule> moduleList;
+
     @Before
     public void setupMocks() throws Exception
     {
         // FIXME This should be done in MockitoComponentMockingRule automatically
         MockitoAnnotations.initMocks(this);
         resetMocks();
+        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "modules", this.modules);
     }
 
     @Test
     public void defaultDecisionIsDeny() throws ComponentLookupException
     {
-        for (ComponentDescriptor<?> cd : this.mocker.getComponentDescriptorList((Type) AuthorizationModule.class)) {
-            this.mocker.unregisterComponent(cd);
-        }
+        doReturn(new LinkedList<>()).when(this.modules).get();
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
     @Test
     public void moduleDecisionIsUsed() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "low", this.moduleOne);
+        this.moduleList = Collections.singletonList(this.moduleOne);
+        doReturn(this.moduleList).when(this.modules).get();
 
         when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
@@ -106,9 +118,8 @@ public class DefaultAuthorizationServiceTest
     @Test
     public void modulesAreCascadedUntilNonNullIsReturned() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "A", this.moduleOne);
-        this.mocker.registerComponent(AuthorizationModule.class, "B", this.moduleTwo);
-        this.mocker.registerComponent(AuthorizationModule.class, "C", this.moduleThree);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo, this.moduleThree);
+        doReturn(this.moduleList).when(this.modules).get();
 
         // By default all modules return null
         Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
@@ -132,13 +143,21 @@ public class DefaultAuthorizationServiceTest
         order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
         order.verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
         verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
+
+        resetMocks();
+        when(this.moduleThree.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
+        order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
+        order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleThree).hasAccess(this.user, this.access, this.document);
     }
 
     @Test
     public void firstNonNullDecisionIsReturned() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "A", this.moduleOne);
-        this.mocker.registerComponent(AuthorizationModule.class, "B", this.moduleTwo);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo);
+        doReturn(this.moduleList).when(this.modules).get();
 
         when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(false);
@@ -154,12 +173,12 @@ public class DefaultAuthorizationServiceTest
     @Test
     public void exceptionsInModulesAreIgnored() throws Exception
     {
-        this.mocker.registerComponent(AuthorizationModule.class, "one", this.moduleOne);
-        this.mocker.registerComponent(AuthorizationModule.class, "two", this.moduleTwo);
+        this.moduleList = Arrays.asList(this.moduleOne, this.moduleTwo);
+        doReturn(this.moduleList).when(this.modules).get();
 
-        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenThrow(
+        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenThrow(
                 new NullPointerException());
-        when(this.moduleOne.hasAccess(this.user, this.access, this.document)).thenReturn(true);
+        when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
     }
 
