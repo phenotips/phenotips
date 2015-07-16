@@ -184,7 +184,20 @@ public class XWikiFamilyRepository implements FamilyRepository
         pointer.set(FAMILY_REFERENCE_FIELD, familyDoc.getDocumentReference().toString(), context);
     }
 
-    // //////////////////////////////////////////////
+    /**
+     * Removes a family reference from a patient.
+     *
+     * @param patientDoc to set the family reference
+     * @return true if successful
+     */
+    public static boolean removeFamilyReference(XWikiDocument patientDoc)
+    {
+        BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
+        if (pointer != null) {
+            return patientDoc.removeXObject(pointer);
+        }
+        return false;
+    }
 
     /*
      * returns a reference to a family document from an XWiki patient document.
