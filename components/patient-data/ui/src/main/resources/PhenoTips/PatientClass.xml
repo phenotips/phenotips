@@ -47,6 +47,20 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <affectedRelatives>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>affectedRelatives</name>
+      <number>51</number>
+      <prettyName>Other living affected relatives</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </affectedRelatives>
     <apgar1>
       <cache>0</cache>
       <customDisplay/>
