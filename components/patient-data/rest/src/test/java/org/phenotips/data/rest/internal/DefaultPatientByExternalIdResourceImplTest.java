@@ -63,6 +63,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -334,9 +335,10 @@ public class DefaultPatientByExternalIdResourceImplTest {
         Response responseGet = this.component.getPatient(this.eid);
         Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
         Response responseDelete = this.component.deletePatient(this.eid);
+
         verify(this.logger, times(3)).debug("Multiple patient records ({}) with external ID [{}]: {}",
                 2, this.eid, results);
-
+        verify(this.factory, times(3)).createAlternatives(anyListOf(String.class), eq(this.uriInfo));
         assertEquals(300, responseGet.getStatus());
         assertEquals(300, responseUpdate.getStatus());
         assertEquals(300, responseDelete.getStatus());
