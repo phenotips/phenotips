@@ -31,6 +31,7 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,7 @@ public class VersionsController extends AbstractSimpleController
     protected List<String> getProperties()
     {
         // Not used, since there's a custom load method
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

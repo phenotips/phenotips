@@ -50,6 +50,15 @@ public interface PatientData<T> extends Iterable<T>
     String getName();
 
     /**
+     * Return the number of elements contained in this data. For a simple value, the size is always {@code 1}. For list
+     * and dictionary values, the size is the size of the list or dictionary, respectively.
+     *
+     * @return a positive integer
+     * @since 1.2M5
+     */
+    int size();
+
+    /**
      * If this type of data is structured as a dictionary, will look up the value attached to the key.
      *
      * @param key the name of the value to return

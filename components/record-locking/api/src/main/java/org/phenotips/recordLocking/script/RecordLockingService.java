@@ -33,8 +33,9 @@ import org.apache.commons.httpclient.HttpStatus;
 /**
  * A service to add or remove a lock object to a record. The lock object will remove edit rights for all users on the
  * document.
+ *
  * @version $Id$
- * @since 1.3
+ * @since 1.2M5
  */
 @Component
 @Named("recordLocking")
@@ -49,48 +50,58 @@ public class RecordLockingService implements ScriptService
 
     /**
      * Locks the patient record.
+     *
      * @param patient The patient to be locked
      * @return A {@link HttpStatus} indicating the status of the request.
      */
-    public int lockPatient(Patient patient) {
-        return lockManager.lockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+    public int lockPatient(Patient patient)
+    {
+        return this.lockManager.lockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
     }
 
     /**
      * Unlocks the patient record.
+     *
      * @param patient The patient to be unlocked
      * @return A {@link HttpStatus} indicating the status of the request.
      */
-    public int unlockPatient(Patient patient) {
-        return lockManager.unlockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
+    public int unlockPatient(Patient patient)
+    {
+        return this.lockManager.unlockPatientRecord(patient) ? HttpStatus.SC_OK : HttpStatus.SC_BAD_REQUEST;
     }
 
     /**
      * Locks the patient record.
+     *
      * @param patientID The id of the patient to be locked
      * @return A {@link HttpStatus} indicating the status of the request.
      */
-    public int lockPatient(String patientID) {
+    public int lockPatient(String patientID)
+    {
         Patient patient = this.pr.getPatientById(patientID);
         return patient == null ? HttpStatus.SC_BAD_REQUEST : this.lockPatient(patient);
     }
 
     /**
      * Unlocks the patient record.
+     *
      * @param patientID The id of the patient to be unlocked
      * @return A {@link HttpStatus} indicating the status of the request.
      */
-    public int unlockPatient(String patientID) {
+    public int unlockPatient(String patientID)
+    {
         Patient patient = this.pr.getPatientById(patientID);
         return patient == null ? HttpStatus.SC_BAD_REQUEST : this.unlockPatient(patient);
     }
 
     /**
      * Checks if a patient is currently locked.
+     *
      * @param patient The patient to be checked.
      * @return {@code true} if locked
      */
-    public boolean isLocked(Patient patient) {
+    public boolean isLocked(Patient patient)
+    {
         return this.lockManager.isLocked(patient);
     }
 }

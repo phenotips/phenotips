@@ -36,7 +36,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content/>
   <object>
     <name>PhenoTips.PushPatient</name>
@@ -814,7 +814,7 @@
         var result = new Element('dl');
         var _this = this;
         dataCategories.each(function(c) {
-           patientJSON[c.name] &amp;&amp; _this[c.callback] &amp;&amp; result.insert(new Element('dt').update(c.title || c.name)).insert(_this[c.callback](patientJSON[c.name]).addClassName('data-preview-section')); 
+           patientJSON[c.name] &amp;&amp; _this[c.callback] &amp;&amp; result.insert(new Element('dt').update(c.title || c.name)).insert(_this[c.callback](patientJSON[c.name]).addClassName('data-preview-section'));
         });
         return result;
     },
@@ -823,7 +823,11 @@
         return new Element('dd').insert(id);
     },
     __displaySex : function(sex) {
-        return new Element('dd').insert((sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" : (sex == "M" ? "$services.localization.render('phenotips.PushPatient.male')" : "$services.localization.render('phenotips.PushPatient.unknown')"));
+        return new Element('dd').insert(
+           (sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" :
+           (sex == "M") ? "$services.localization.render('phenotips.PushPatient.male')" :
+           (sex == "O") ? "$services.localization.render('phenotips.PushPatient.other')" :
+           "$services.localization.render('phenotips.PushPatient.unknown')");
     },
 
     __displayFeatures : function(features) {

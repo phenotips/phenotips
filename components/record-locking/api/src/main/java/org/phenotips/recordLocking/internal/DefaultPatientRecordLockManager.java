@@ -41,8 +41,9 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Default implementation of the {@link org.phenotips.recordLocking.PatientRecordLockManager}.
+ *
  * @version $Id$
- * @since 1.3
+ * @since 1.2M5
  */
 @Component
 @Singleton
@@ -52,7 +53,7 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     private EntityReference lockClassReference = new EntityReference("PatientLock", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
-    /** Allows checking of access rights on a patient.*/
+    /** Allows checking of access rights on a patient. */
     @Inject
     private PermissionsManager pm;
 
@@ -64,13 +65,14 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     private AccessLevel manageAccessLevel;
 
     @Override
-    public boolean lockPatientRecord(Patient patient) {
+    public boolean lockPatientRecord(Patient patient)
+    {
         try {
             XWikiDocument patientDocument = this.getPatientDocument(patient);
             if (!this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
-                XWikiContext context = contextProvider.get();
+                XWikiContext context = this.contextProvider.get();
                 XWiki xwiki = context.getWiki();
-                patientDocument.createXObject(lockClassReference, context);
+                patientDocument.createXObject(this.lockClassReference, context);
                 xwiki.saveDocument(patientDocument, "Locked patient record", true,
                     context);
                 return true;
@@ -83,13 +85,14 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     }
 
     @Override
-    public boolean unlockPatientRecord(Patient patient) {
+    public boolean unlockPatientRecord(Patient patient)
+    {
         try {
             XWikiDocument patientDocument = this.getPatientDocument(patient);
             if (this.isDocumentLocked(patientDocument) && this.hasLockingPermission(patient)) {
-                XWikiContext context = contextProvider.get();
+                XWikiContext context = this.contextProvider.get();
                 XWiki xwiki = context.getWiki();
-                patientDocument.removeXObjects(lockClassReference);
+                patientDocument.removeXObjects(this.lockClassReference);
                 xwiki.saveDocument(patientDocument, "Unlocked patient record", true,
                     context);
                 return true;
@@ -102,13 +105,15 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
     }
 
     @Override
-    public boolean isLocked(Patient patient) {
+    public boolean isLocked(Patient patient)
+    {
         XWikiDocument document = this.getPatientDocument(patient);
         return isDocumentLocked(document);
     }
 
-    private XWikiDocument getPatientDocument(Patient patient) {
-        XWikiContext context = contextProvider.get();
+    private XWikiDocument getPatientDocument(Patient patient)
+    {
+        XWikiContext context = this.contextProvider.get();
         XWiki xwiki = context.getWiki();
         DocumentReference patientDocumentReference = patient.getDocument();
 
@@ -119,13 +124,15 @@ public class DefaultPatientRecordLockManager implements org.phenotips.recordLock
         }
     }
 
-    private boolean hasLockingPermission(Patient patient) {
+    private boolean hasLockingPermission(Patient patient)
+    {
         PatientAccess patientAccess = this.pm.getPatientAccess(patient);
-        return patientAccess.hasAccessLevel(manageAccessLevel);
+        return patientAccess.hasAccessLevel(this.manageAccessLevel);
     }
 
-    private boolean isDocumentLocked(XWikiDocument document) {
-        BaseObject lock = document.getXObject(lockClassReference);
+    private boolean isDocumentLocked(XWikiDocument document)
+    {
+        BaseObject lock = document.getXObject(this.lockClassReference);
         return lock != null;
     }
 

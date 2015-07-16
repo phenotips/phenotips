@@ -87,45 +87,47 @@ public class LockedAuthorizationModuleTest
         ParameterizedType cpType = new DefaultParameterizedType(null, Provider.class, XWikiContext.class);
         this.contextProvider = this.mocker.getInstance(cpType);
 
-        Mockito.doReturn(context).when(contextProvider).get();
-        Mockito.doReturn(xwiki).when(context).getWiki();
-
+        Mockito.doReturn(this.context).when(this.contextProvider).get();
+        Mockito.doReturn(this.xwiki).when(this.context).getWiki();
 
     }
+
     @Test
     public void ignoresDocumentsWithoutPatientLockObjects() throws ComponentLookupException, XWikiException
     {
-        Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
-        when(document.getXObject(Matchers.<EntityReference>any())).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
+        Mockito.doReturn(this.document).when(this.xwiki).getDocument(this.documentReference, this.context);
+        when(this.document.getXObject(Matchers.<EntityReference>any())).thenReturn(null);
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.documentReference));
     }
 
     @Test
     public void ignoresWhenActionIsReadOnly() throws ComponentLookupException, XWikiException
     {
-        Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
+        Mockito.doReturn(this.document).when(this.xwiki).getDocument(this.documentReference, this.context);
 
         BaseObject lock = mock(BaseObject.class);
-        Mockito.doReturn(Boolean.TRUE).when(right).isReadOnly();
-        when(document.getXObject(Matchers.<EntityReference>any())).thenReturn(lock);
-        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
+        Mockito.doReturn(Boolean.TRUE).when(this.right).isReadOnly();
+        when(this.document.getXObject(Matchers.<EntityReference>any())).thenReturn(lock);
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.documentReference));
     }
+
     @Test
     public void returnsFalseWhenLockedAndRightCanEdit() throws ComponentLookupException, XWikiException
     {
-        Mockito.doReturn(document).when(xwiki).getDocument(documentReference, context);
+        Mockito.doReturn(this.document).when(this.xwiki).getDocument(this.documentReference, this.context);
 
         BaseObject lock = mock(BaseObject.class);
-        when(right.isReadOnly()).thenReturn(Boolean.FALSE);
-        when(document.getXObject(Matchers.<EntityReference>any())).thenReturn(lock);
-        Assert.assertFalse(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
+        when(this.right.isReadOnly()).thenReturn(Boolean.FALSE);
+        when(this.document.getXObject(Matchers.<EntityReference>any())).thenReturn(lock);
+        Assert
+            .assertFalse(this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.documentReference));
     }
 
     @Test
     public void returnsNullWhenExceptionIsThrown() throws ComponentLookupException, XWikiException
     {
-        Mockito.doThrow(new XWikiException()).when(xwiki).getDocument(documentReference, context);
-        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(user, right, documentReference));
+        Mockito.doThrow(new XWikiException()).when(this.xwiki).getDocument(this.documentReference, this.context);
+        Assert.assertNull(this.mocker.getComponentUnderTest().hasAccess(this.user, this.right, this.documentReference));
     }
 
     @Test

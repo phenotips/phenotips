@@ -437,12 +437,15 @@ public class PhenoTipsPatient implements Patient
                     if (patientData != null) {
                         this.extraData.put(patientData.getName(), patientData);
                         serializer.save(this);
-                        this.logger.warn("Successfully updated patient form JSON using serializer [{}]",
+                        this.logger.info("Successfully updated patient form JSON using serializer [{}]",
                             serializer.getName());
                     }
                 } catch (UnsupportedOperationException ex) {
-                    this.logger.warn("Unable to update patient from JSON using serializer [{}] : [{}]",
-                        serializer.getName(), ex.getMessage());
+                    this.logger.info("Unable to update patient from JSON using serializer [{}]: not supported",
+                        serializer.getName());
+                } catch (Exception ex) {
+                    this.logger.warn("Failed to update patient data from JSON using serializer [{}]: {}",
+                        serializer.getName(), ex.getMessage(), ex);
                 }
             }
         } catch (Exception ex) {

@@ -1,5 +1,5 @@
 ## Current Build Status ##
-Jenkins CI : [![Build Status](http://ci.cs.toronto.edu/jenkins/job/phenotips/badge/icon)](http://ci.cs.toronto.edu/jenkins/job/phenotips/)
+Jenkins CI : [![Build Status](https://ci.phenotips.org/job/phenotips/badge/icon)](https://ci.phenotips.org/job/phenotips/)
 
 # About #
 
