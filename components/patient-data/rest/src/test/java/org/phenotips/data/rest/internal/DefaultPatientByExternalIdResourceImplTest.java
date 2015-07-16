@@ -158,7 +158,6 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(false);
 
         Response response = this.component.getPatient(this.eid);
-        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.user, this.patient.getId());
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
@@ -216,7 +215,6 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
 
         Response response = this.component.updatePatient("json", this.eid);
-        verify(this.logger).debug("Updating patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
@@ -300,22 +298,10 @@ public class DefaultPatientByExternalIdResourceImplTest {
     @Test
     public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
     {
-
-        Response response = this.component.updatePatient("{\"id\":\"id\"}", "eid");
+        String json = "{\"id\":\"id\"}";
+        Response response = this.component.updatePatient(json, this.eid);
+        verify(this.logger).debug("Updating patient record with external ID [{}] via REST with JSON: {}", this.eid, json);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest()
-    {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
-
-        this.component.deletePatient(this.eid);
-
-        verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
     }
 
     @Test
