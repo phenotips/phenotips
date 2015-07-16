@@ -78,13 +78,12 @@ public class FamilyScriptService implements ScriptService
     private XWikiFamilyExport familyExport;
 
     /**
-     * Either creates a new family, or gets the existing one if a patient belongs to a family. TODO - change Name to
-     * getFamily
+     * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
      * @param patientId id of the patient to use when searching for or creating a new family
      * @return reference to the family document. Can be {@link null}
      */
-    public DocumentReference createFamily(String patientId)
+    public DocumentReference getOrCreateFamily(String patientId)
     {
         Patient patient = this.patientRepository.getPatientById(patientId);
         if (patient == null) {
