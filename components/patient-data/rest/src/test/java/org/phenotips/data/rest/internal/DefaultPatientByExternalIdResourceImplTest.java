@@ -45,7 +45,6 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.query.internal.DefaultQuery;
-import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -64,7 +63,16 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DefaultPatientByExternalIdResourceImplTest {
     @Rule
@@ -150,7 +158,6 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(false);
 
         Response response = this.component.getPatient(this.eid);
-        verify(this.logger).debug("Retrieving patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("View access denied to user [{}] on patient record [{}]", this.user, this.patient.getId());
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
@@ -208,10 +215,34 @@ public class DefaultPatientByExternalIdResourceImplTest {
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
 
         Response response = this.component.updatePatient("json", this.eid);
-        verify(this.logger).debug("Updating patient record with external ID [{}] via REST", this.eid);
         verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", null, this.patient.getId());
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
+    }
+    
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientWrongJSONId() throws ComponentLookupException
+    {
+        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
+    }
+
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientFromJSONException() throws ComponentLookupException
+    {
+        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
+
+        this.component.updatePatient("{\"id\":\"id\"}", "eid");
+        verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
+                this.id, "{\"id\":\"id\"}");
+    }
+
+    @Test
+    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
+    {
+        String json = "{\"id\":\"id\"}";
+        Response response = this.component.updatePatient(json, this.eid);
+        verify(this.logger).debug("Updating patient record with external ID [{}] via REST with JSON: {}", this.eid, json);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -273,43 +304,6 @@ public class DefaultPatientByExternalIdResourceImplTest {
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
-    @Test(expected=WebApplicationException.class)
-    public void updatePatientWrongJSONId() throws ComponentLookupException
-    {
-        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
-    }
-
-    @Test(expected=WebApplicationException.class)
-    public void updatePatientFromJSONException() throws ComponentLookupException
-    {
-        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
-
-        this.component.updatePatient("{\"id\":\"id\"}", "eid");
-        verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
-                this.id, "{\"id\":\"id\"}");
-    }
-
-    @Test
-    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
-    {
-
-        Response response = this.component.updatePatient("{\"id\":\"id\"}", "eid");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest()
-    {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, null, null);
-        when(this.repository.getPatientByExternalId(this.eid)).thenReturn(this.patient);
-
-        this.component.deletePatient(this.eid);
-
-        verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
-    }
-
     @Test
     public void checkForMultipleRecordsPerformsCorrectly() throws QueryException
     {
@@ -327,9 +321,10 @@ public class DefaultPatientByExternalIdResourceImplTest {
         Response responseGet = this.component.getPatient(this.eid);
         Response responseUpdate = this.component.updatePatient(this.eid, this.eid);
         Response responseDelete = this.component.deletePatient(this.eid);
+
         verify(this.logger, times(3)).debug("Multiple patient records ({}) with external ID [{}]: {}",
                 2, this.eid, results);
-
+        verify(this.factory, times(3)).createAlternatives(anyListOf(String.class), eq(this.uriInfo));
         assertEquals(300, responseGet.getStatus());
         assertEquals(300, responseUpdate.getStatus());
         assertEquals(300, responseDelete.getStatus());
