@@ -56,6 +56,8 @@ import net.sf.json.JSONObject;
 @Named("families")
 public class FamilyScriptService implements ScriptService
 {
+    private static final String COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE = "Could not retrieve patient [{}]";
+
     @Inject
     private Logger logger;
 
@@ -257,7 +259,7 @@ public class FamilyScriptService implements ScriptService
     {
         Patient patient = this.patientRepository.getPatientById(patientId);
         if (patient == null) {
-            this.logger.error("Could not retrieve patient [{}]", patientId);
+            this.logger.error(COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE, patientId);
             return false;
         }
         Family patientsfamily = this.familyRepository.getFamilyForPatient(patient);
