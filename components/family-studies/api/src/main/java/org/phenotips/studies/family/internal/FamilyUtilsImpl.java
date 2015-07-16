@@ -248,22 +248,6 @@ public class FamilyUtilsImpl implements FamilyUtils
         return newFamilyDoc;
     }
 
-    /** users, groups. */
-    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
-    {
-        String[] fullRights = new String[2];
-        int i = 0;
-        for (Set<String> category : this.getEntitiesWithEditAccess(patientDoc)) {
-            String categoryString = "";
-            for (String user : category) {
-                categoryString += user + COMMA;
-            }
-            fullRights[i] = categoryString;
-            i++;
-        }
-        return fullRights;
-    }
-
     @Override
     public List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
     {
