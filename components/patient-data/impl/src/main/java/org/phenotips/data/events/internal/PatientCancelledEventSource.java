@@ -1,0 +1,87 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+package org.phenotips.data.events.internal;
+
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.data.events.PatientCancelledEvent;
+
+import org.xwiki.bridge.event.ActionExecutedEvent;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.event.Event;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+/**
+ * Detects a patient record's edit session that ended with a cancel command and fires a {@link PatientCancelledEvent}.
+ *
+ * @version $Id$
+ * @since 1.0RC1
+ */
+@Component
+@Named("patientCancelledEventSource")
+@Singleton
+public class PatientCancelledEventSource implements EventListener
+{
+    @Inject
+    private ObservationManager observationManager;
+
+    @Inject
+    private UserManager userManager;
+
+    @Inject
+    private PatientRepository repo;
+
+    @Override
+    public String getName()
+    {
+        return "patientCancelledEventSource";
+    }
+
+    @Override
+    public List<Event> getEvents()
+    {
+        return Collections.<Event>singletonList(new ActionExecutedEvent("cancel"));
+    }
+
+    @Override
+    public void onEvent(Event event, Object source, Object data)
+    {
+        XWikiDocument doc = (XWikiDocument) source;
+
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
+        if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
+            return;
+        }
+        Patient patient = this.repo.loadPatientFromDocument(doc);
+        User user = this.userManager.getCurrentUser();
+        this.observationManager.notify(new PatientCancelledEvent(patient, user), source);
+    }
+}

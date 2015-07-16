@@ -205,7 +205,6 @@
 #set ($obj = $doc.getObject('PhenoTips.VCF'))
 #if (!$obj)
   #set ($obj = $doc.getObject('PhenoTips.VCF', true))
-  #set ($discard = $doc.save('Added mandatory PhenoTips.VCF object', true))
 #end
 #set ($class = $xwiki.getClass('PhenoTips.VCF'))
 #set ($discard = $doc.use($obj))

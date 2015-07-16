@@ -1357,6 +1357,68 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
   <object>
     <name>PhenoTips.PatientTemplate</name>
     <number>0</number>
+    <className>PhenoTips.VCF</className>
+    <guid>3ca092db-8c07-43e4-8c14-cd220aef81e3</guid>
+    <class>
+      <name>PhenoTips.VCF</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <filename>
+        <customDisplay>{{velocity output="false"}}
+#if (!$value)
+  #set ($value = [])
+#end
+{{/velocity}}
+
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <name>filename</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>VCF file</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage>vcf</validationMessage>
+        <validationRegExp>.*</validationRegExp>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </filename>
+      <reference_genome>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>reference_genome</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Reference genome</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>GRCh37=GRCh37 (hg19)|GRCh38=GRCh38 (hg38)|NCBI36=NCBI36 (hg18)</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </reference_genome>
+    </class>
+    <property>
+      <filename/>
+    </property>
+    <property>
+      <reference_genome>GRCh37</reference_genome>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientTemplate</name>
+    <number>0</number>
     <className>PhenoTips.VisibilityClass</className>
     <guid>59299982-cdf4-4ada-b52c-46f6bb61c577</guid>
     <class>
