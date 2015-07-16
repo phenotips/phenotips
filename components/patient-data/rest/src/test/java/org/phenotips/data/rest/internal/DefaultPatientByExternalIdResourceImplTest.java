@@ -219,6 +219,31 @@ public class DefaultPatientByExternalIdResourceImplTest {
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
     }
+    
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientWrongJSONId() throws ComponentLookupException
+    {
+        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
+    }
+
+    @Test(expected=WebApplicationException.class)
+    public void updatePatientFromJSONException() throws ComponentLookupException
+    {
+        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
+
+        this.component.updatePatient("{\"id\":\"id\"}", "eid");
+        verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
+                this.id, "{\"id\":\"id\"}");
+    }
+
+    @Test
+    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
+    {
+        String json = "{\"id\":\"id\"}";
+        Response response = this.component.updatePatient(json, this.eid);
+        verify(this.logger).debug("Updating patient record with external ID [{}] via REST with JSON: {}", this.eid, json);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
 
     @Test
     public void deletePatientReturnsNotFoundStatus() throws QueryException
@@ -276,31 +301,6 @@ public class DefaultPatientByExternalIdResourceImplTest {
         Response response = this.component.deletePatient(this.eid);
 
         verify(this.logger).debug("Deleting patient record with external ID [{}] via REST", this.eid);
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected=WebApplicationException.class)
-    public void updatePatientWrongJSONId() throws ComponentLookupException
-    {
-        this.component.updatePatient("{\"id\":\"notid\"}", "eid");
-    }
-
-    @Test(expected=WebApplicationException.class)
-    public void updatePatientFromJSONException() throws ComponentLookupException
-    {
-        doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
-
-        this.component.updatePatient("{\"id\":\"id\"}", "eid");
-        verify(this.logger).debug("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
-                this.id, "{\"id\":\"id\"}");
-    }
-
-    @Test
-    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
-    {
-        String json = "{\"id\":\"id\"}";
-        Response response = this.component.updatePatient(json, this.eid);
-        verify(this.logger).debug("Updating patient record with external ID [{}] via REST with JSON: {}", this.eid, json);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
