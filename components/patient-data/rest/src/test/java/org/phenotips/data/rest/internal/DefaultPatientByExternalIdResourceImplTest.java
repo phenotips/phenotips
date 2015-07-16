@@ -145,7 +145,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
+    public void getPatientWithNoAccessReturnsForbiddenCode() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.VIEW, this.userReference, this.patientReference)).thenReturn(false);
 
@@ -157,7 +157,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void getPatientPerformsCorrectly() throws ComponentLookupException, XWikiRestException
+    public void getPatientPerformsCorrectly() throws ComponentLookupException
     {
         JSONObject jsonObject = new JSONObject();
         when(this.patient.toJSON()).thenReturn(jsonObject);
@@ -177,7 +177,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
+    public void getPatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException
     {
         Query query = mock(DefaultQuery.class);
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
@@ -190,7 +190,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void updatePatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException, XWikiRestException
+    public void updatePatientNotFoundChecksForMultipleRecords() throws ComponentLookupException, QueryException
     {
         Query query = mock(DefaultQuery.class);
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
@@ -203,7 +203,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test(expected=WebApplicationException.class)
-    public void updatePatientNoAccessReturnsForbiddenCode() throws ComponentLookupException, XWikiRestException
+    public void updatePatientNoAccessReturnsForbiddenCode() throws ComponentLookupException
     {
         when(this.access.hasAccess(Right.EDIT, this.userReference, this.patientReference)).thenReturn(false);
 
@@ -215,7 +215,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientReturnsNotFoundStatus() throws QueryException, XWikiRestException
+    public void deletePatientReturnsNotFoundStatus() throws QueryException
     {
         Query query = mock(DefaultQuery.class);
         when(this.repository.getPatientByExternalId(this.eid)).thenReturn(null);
@@ -229,7 +229,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientNoAccessReturnsForbiddenCode() throws XWikiRestException
+    public void deletePatientNoAccessReturnsForbiddenCode()
     {
         when(this.access.hasAccess(Right.DELETE, this.userReference, this.patientReference)).thenReturn(false);
 
@@ -240,7 +240,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientCatchesXWikiException() throws XWikiException, XWikiRestException
+    public void deletePatientCatchesXWikiException() throws XWikiException
     {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
@@ -262,7 +262,8 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientReturnsNoContentResponse() throws XWikiRestException {
+    public void deletePatientReturnsNoContentResponse()
+    {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
 
@@ -273,13 +274,13 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test(expected=WebApplicationException.class)
-    public void updatePatientWrongJSONId() throws ComponentLookupException, XWikiRestException
+    public void updatePatientWrongJSONId() throws ComponentLookupException
     {
         this.component.updatePatient("{\"id\":\"notid\"}", "eid");
     }
 
     @Test(expected=WebApplicationException.class)
-    public void updatePatientFromJSONException() throws ComponentLookupException, XWikiRestException
+    public void updatePatientFromJSONException() throws ComponentLookupException
     {
         doThrow(Exception.class).when(this.patient).updateFromJSON(Matchers.any(JSONObject.class));
 
@@ -289,7 +290,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException, XWikiRestException
+    public void updatePatientReturnsNoContentResponse() throws ComponentLookupException
     {
 
         Response response = this.component.updatePatient("{\"id\":\"id\"}", "eid");
@@ -297,7 +298,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest() throws XWikiRestException
+    public void deletePatientAlwaysSendsLoggerMessageOnRequest()
     {
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
@@ -310,7 +311,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void checkForMultipleRecordsPerformsCorrectly() throws QueryException, XWikiRestException
+    public void checkForMultipleRecordsPerformsCorrectly() throws QueryException
     {
         Query q = mock(DefaultQuery.class);
         doReturn(q).when(this.qm)
@@ -335,7 +336,7 @@ public class DefaultPatientByExternalIdResourceImplTest {
     }
 
     @Test
-    public void checkForMultipleRecordsLogsWhenThrowsQueryException() throws QueryException, XWikiRestException
+    public void checkForMultipleRecordsLogsWhenThrowsQueryException() throws QueryException
     {
         doThrow(QueryException.class).when(this.qm)
                 .createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
