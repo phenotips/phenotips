@@ -1,2 +1,0 @@
-org.phenotips.ontology.internal.GeneHGNCNomenclature
-org.phenotips.ontology.internal.GeneNomenclature
