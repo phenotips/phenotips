@@ -17,28 +17,21 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.configuration.RecordConfigurationManager;
-import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,15 +52,18 @@ import net.sf.json.JSONObject;
  * @since 1.0M10
  */
 @Component(roles = { PatientDataController.class })
-@Named("dates")
+@Named("lifestatus")
 @Singleton
-public class DatesController implements PatientDataController<Date>
+public class LifeStatusController implements PatientDataController<String>
 {
-    protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
-    protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
-    protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
+    private static final String DATA_NAME = "life_status";
 
-    private static final String DATA_NAME = "dates";
+    private static final String PATIENT_CHECKBOX_FIELDNAME = "date_of_death_unknown";
+    private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
+
+    private static final String ALIVE    = "alive";
+    private static final String DECEASED = "deceased";
+    private static final Set<String> ALL_LIFE_STATES = new HashSet<String>(Arrays.asList(ALIVE, DECEASED));
 
     /** Logging helper object. */
     @Inject
@@ -77,15 +73,12 @@ public class DatesController implements PatientDataController<Date>
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
-    @Inject
-    private RecordConfigurationManager configurationManager;
-
     /** Provides access to the current execution context. */
     @Inject
     private Execution execution;
 
     @Override
-    public PatientData<Date> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -93,14 +86,19 @@ public class DatesController implements PatientDataController<Date>
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, Date> result = new LinkedHashMap<String, Date>();
-            for (String propertyName : getProperties()) {
-                Date date = data.getDateValue(propertyName);
-                if (date != null) {
-                    result.put(propertyName, date);
+
+            String lifeStatus = ALIVE;
+            Date date = data.getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
+            if (date != null) {
+                lifeStatus = DECEASED;
+            } else {
+                // check if "unknown death date" checkbox is checked
+                Integer deathDateUnknown = data.getIntValue(PATIENT_CHECKBOX_FIELDNAME);
+                if (deathDateUnknown != 0) {
+                    lifeStatus = DECEASED;
                 }
             }
-            return new DictionaryPatientData<Date>(DATA_NAME, result);
+            return new SimpleValuePatientData<String>(DATA_NAME, lifeStatus);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
                 + " error has occurred during controller loading ", e.getMessage());
@@ -118,16 +116,23 @@ public class DatesController implements PatientDataController<Date>
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            PatientData<Date> dates = patient.getData(DATA_NAME);
-            if (!dates.isNamed()) {
+            PatientData<String> lifeStatus = patient.getData(DATA_NAME);
+            PatientData<Date> dates        = patient.getData("dates");
+
+            Integer deathDateUnknown = 0;
+            if (lifeStatus != null && lifeStatus.getValue() == DECEASED) {
+                deathDateUnknown = 1;
+            }
+            if (dates != null && dates.isNamed()) {
+                // check if death_date is set - if it is unknown_death_date should be unset
+                Date deathDate = dates.get(PATIENT_DATEOFDEATH_FIELDNAME);
+                if (deathDate != null) {
+                    deathDateUnknown = 0;
+                }
                 return;
             }
-            for (String property : this.getProperties()) {
-                Date propertyValue = dates.get(property);
-                if (propertyValue != null) {
-                    data.setDateValue(property, dates.get(property));
-                }
-            }
+
+            data.setIntValue(PATIENT_CHECKBOX_FIELDNAME, deathDateUnknown);
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             context.getWiki().saveDocument(doc, "Updated dates from JSON", true, context);
@@ -145,57 +150,29 @@ public class DatesController implements PatientDataController<Date>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        DateFormat dateFormat =
-            new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
-
-        PatientData<Date> datesData = patient.getData(DATA_NAME);
-        if (datesData == null) {
+        PatientData<String> lifeStatusData = patient.getData(DATA_NAME);
+        if (lifeStatusData == null) {
             return;
         }
-
-        Iterator<Entry<String, Date>> data = datesData.dictionaryIterator();
-        while (data.hasNext()) {
-            Entry<String, Date> datum = data.next();
-            if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
-                json.put(datum.getKey(), dateFormat.format(datum.getValue()));
-            }
-        }
+        json.put(DATA_NAME, lifeStatusData.getValue());
     }
 
     @Override
-    public PatientData<Date> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
-        DateFormat dateFormat =
-            new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
-
-        Map<String, Date> result = new LinkedHashMap<>();
-        for (String property : this.getProperties()) {
-            if (json.has(property)) {
-                Object propertyValue = json.get(property);
-                if (propertyValue != null) {
-                    try {
-                        result.put(property, dateFormat.parse(propertyValue.toString()));
-                    } catch (ParseException ex) {
-                        // nothing to do.
-                    }
-                }
+        String propertyValue = json.optString(DATA_NAME, null);
+        if (propertyValue != null) {
+            // validate - only accept listed values
+            if (ALL_LIFE_STATES.contains(propertyValue)) {
+                return new SimpleValuePatientData<String>(DATA_NAME, propertyValue);
             }
         }
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return new DictionaryPatientData<>(DATA_NAME, result);
-        }
+        return null;
     }
 
     @Override
     public String getName()
     {
         return DATA_NAME;
-    }
-
-    protected List<String> getProperties()
-    {
-        return Arrays.asList(PATIENT_DATEOFBIRTH_FIELDNAME, PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME);
     }
 }
