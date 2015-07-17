@@ -220,6 +220,7 @@ public class DefaultPatientsResourceImplTest {
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(patientList).when(query).execute();
         doReturn(false).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
+        doReturn(null).when(this.factory).createPatientSummary(patientSummaryData, this.uriInfo);
         Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
         verify(this.queries).createQuery("select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
