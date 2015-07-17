@@ -160,6 +160,8 @@ public class XWikiFamily implements Family
             return false;
         }
 
+        // TODO: are we handling pedigree right?
+        // Shouldn't the pedigree be merged into the family rather than copied?
         PedigreeUtils.copyPedigree(patientDocument, this.familyDocument, context);
 
         try {
@@ -231,8 +233,6 @@ public class XWikiFamily implements Family
     {
         return this.familyDocument.getURL(actions, getXContext());
     }
-
-    // ///////////////////////////////////////
 
     private XWikiContext getXContext()
     {
