@@ -122,8 +122,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
 
     private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
 
-    private static Map<String, Boolean> config;
-
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
 
@@ -140,6 +138,24 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     @Override
     public void initialize() throws InitializationException
     {
+        Map<String, Boolean> config = new HashMap<String, Boolean>();
+        config.put(HGNC_ID, true);
+        config.put(APPROVED_SYMBOL, true);
+        config.put(APPROVED_NAME, true);
+        config.put(PREVIOUS_SYMBOLS, true);
+        config.put(SYNONYMS, true);
+        config.put(ACCESSION_NUMBERS, true);
+        config.put(ENTREZ_GENE_ID, true);
+        config.put(ENSEMBL_GENE_ID, true);
+        config.put(REFSEQ_IDS, true);
+        config.put(GENE_FAMILY_ID, true);
+        config.put(GENE_FAMILY_NAME, true);
+        config.put(EXTERNAL_ENTREZ_GENE_ID, true);
+        config.put(EXTERNAL_OMIM_ID, true);
+        config.put(EXTERNAL_REFSEQ, true);
+        config.put(EXTERNAL_UNIPROT_ID, true);
+        config.put(EXTERNAL_ENSEMBL_ID, true);
+        
         this.baseServiceURL =
             this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
         this.infoServiceURL = this.baseServiceURL + "info";
@@ -158,23 +174,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
                 + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
                 // those come by default in every query
                 + "&status_opt=2&where=&limit=&submit=submit";
-
-        config.put(HGNC_ID, true);
-        config.put(APPROVED_SYMBOL, true);
-        config.put(APPROVED_NAME, true);
-        config.put(PREVIOUS_SYMBOLS, true);
-        config.put(SYNONYMS, true);
-        config.put(ACCESSION_NUMBERS, true);
-        config.put(ENTREZ_GENE_ID, true);
-        config.put(ENSEMBL_GENE_ID, true);
-        config.put(REFSEQ_IDS, true);
-        config.put(GENE_FAMILY_ID, true);
-        config.put(GENE_FAMILY_NAME, true);
-        config.put(EXTERNAL_ENTREZ_GENE_ID, true);
-        config.put(EXTERNAL_OMIM_ID, true);
-        config.put(EXTERNAL_REFSEQ, true);
-        config.put(EXTERNAL_UNIPROT_ID, true);
-        config.put(EXTERNAL_ENSEMBL_ID, true);
     }
 
     @Override

@@ -74,7 +74,7 @@ import net.sf.json.JSONSerializer;
  * @since 1.0RC1
  */
 @Component
-@Named("hgnc")
+@Named("hgnc-online")
 @Singleton
 public class GeneNomenclature implements Vocabulary, Initializable
 {
@@ -99,7 +99,7 @@ public class GeneNomenclature implements Vocabulary, Initializable
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configuration;
-
+    
     private String baseServiceURL;
 
     private String searchServiceURL;
