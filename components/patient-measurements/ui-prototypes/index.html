@@ -17,6 +17,9 @@
 			font-size: 80%;
 			font-weight: bold;
 		}
+		.measurement-row {
+			clear: both;
+		}
 		.measurement-row > * {
 			display: block;
 			float: left;
@@ -67,258 +70,19 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.2/prototype.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 	<script>
-		var measurements = [
-			{
-				name: "Weight",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "kg",
-			},
-			{
-				name: "Height",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Arm Span",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Head Circumference",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Outer Canthal Distance",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Inner Canthal Distance",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Hand Length",
-				isTwoSided: true,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Palm Length",
-				isTwoSided: true,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Foot Length",
-				isTwoSided: true,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Sitting Height",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "BMI",
-				isTwoSided: false,
-				isComputed: true,
-				unit: "kg/m^2",
-				computationDep: ["Weight", "Height"]
-			},
-			{
-				name: "Philtrum Length",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Ear Length",
-				isTwoSided: true,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Palpebral Fissure Length",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Interpupilary Distance",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Middle Finger Length",
-				isTwoSided: true,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Internipple Distance",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Chest Circumference",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Internipple Index",
-				isTwoSided: false,
-				isComputed: true,
-				unit: null,
-				computationDep: ["Internipple Distance", "Chest Circumference"],
-			},
-			{
-				name: "Upper Segment",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "Lower Segment",
-				isTwoSided: false,
-				isComputed: false,
-				unit: "cm",
-			},
-			{
-				name: "US:LS Ratio",
-				isTwoSided: false,
-				isComputed: true,
-				unit: null,
-				computationDep: ["Upper Segment", "Lower Segment"],
-			},
-		];
-
-		var defaultMeasurements = [
-			"Weight", "Height", "BMI", "Head Circumference"
-		];
-
-		/*
-		measurement: {
-
-		}
-		*/
-		var addMeasurementRow = function(measurementRow) {
-			var container = new Element('div').addClassName('measurement-row');
-
-			var label = new Element('label');
-			label.innerHTML = measurementRow.name;
-
-			var sideLabel = new Element('span').addClassName('side-label');
-			if (measurementRow.side) {
-				sideLabel.innerHTML = measurementRow.side;
-			}
-
-			var input = new Element('input');
-			input.type = "text";
-			input.size = 6;
-			if (measurementRow.isReadOnly) {
-				input.readOnly = true;
-			}
-			input.observe('input', measurementInputHandler);
-
-			var unit = new Element('span').addClassName('unit');
-			unit.innerHTML = measurementRow.unit;
-
-			var pctl = new Element('span').addClassName('pctl');
-
-			container.insert(label);
-			container.insert(sideLabel);
-			container.insert(input);
-			container.insert(unit);
-			container.insert(pctl);
-			this.insert(container);
-		};
-
-		var addMeasurement = function(measurement) {
-			var container = new Element('div').addClassName('measurement');
-
-			var deleteButton = new Element('span').addClassName('delete');
-			deleteButton.innerHTML = '&times;';
-			deleteButton.observe('click', function() {
-				this.up().remove();
-			});
-			container.insert(deleteButton);
-
-			if (measurement.computationDep && measurement.computationDep.length) {
-				for (var i = 0; i < measurement.computationDep.length; i++) {
-					addMeasurement.apply(this, [getMeasurementByName(measurement.computationDep[i])]);
-				}
-			}
-
-			if (measurement.isTwoSided) {
-				addMeasurementRow.apply(container, [{
-					name: measurement.name,
-					unit: measurement.unit,
-					side: 'R',
-				}]);
-				addMeasurementRow.apply(container, [{
-					name: '',
-					unit: measurement.unit,
-					side: 'L',
-				}]);
-			} else {
-				var row = Object.clone(measurement);
-				row.isReadOnly = measurement.isComputed;
-				addMeasurementRow.apply(container, [row]);
-			}
-
-			this.insert(container);
-
-			var opts = this.up().select('.new-measurement-select')[0].options;
-			for (var i = 0; i < opts.length; i++) {
-				if (opts[i].value == measurement.name) {
-					opts[i].remove();
-				}
-			}
-		};
-
-		var addDefaults = function() {
-			for (var i = 0; i < defaultMeasurements.length; i++) {
-				addMeasurement.apply(this, [measurements[i]]);
-			}
-		};
-
-		var getMeasurementByName = function(name) {
-			for (var i = 0; i < measurements.length; i++) {
-				if (measurements[i].name == name) {
-					return measurements[i];
-				}
-			}
-
-			return null;
-		};
-
-		var addMeasurementHandler = function() {
-			var selection = this.up().select('.new-measurement-select')[0];
-			var selectionName = selection.selectedIndex >= 0 ? selection.options[selection.selectedIndex].innerHTML : undefined;
-
-			addMeasurement.apply(this.up().select('.measurements')[0], [getMeasurementByName(selectionName)]);
-		};
-
 		var addMeasurementSet = function() {
 			var clone = $$('.measurement-set.proto')[0].clone(true);
 			clone.removeClassName('proto');
-			clone.select('.btn_add-measurement')[0].observe('click', addMeasurementHandler);
 			clone.select('.date')[0].observe('input', dateChangeHandler);
+			clone.select('.measurement-row input').each(function(el) {
+				el.observe('input', measurementInputHandler)
+			});
 			clone.select('> .delete')[0].observe('click', function() {
 				this.up().remove();
+			});
+			clone.select('div.more')[0].hide();
+			clone.select('button.toggle-more')[0].observe('click', function() {
+				this.up().select('div.more')[0].toggle();
 			});
 			$('measurements').insert(clone);
 			return clone;
@@ -326,7 +90,7 @@
 
 		var handleAddMeasurementSet = function() {
 			$$('.btn_add-measurement-set')[0].observe('click', function() {
-				addDefaults.apply(addMeasurementSet().select('.measurements')[0]);
+				addMeasurementSet();
 			});
 		};
 
@@ -349,15 +113,15 @@
 			if (!this.value || !$('bday').value) return;
 
 			var bday = moment($('bday').value);
-			var ageYears = moment().diff(bday, 'years');
+			var measureDate = moment(this.value);
+			var ageYears = measureDate.diff(bday, 'years');
 			this.up().select('input.years')[0].value = ageYears;
-			this.up().select('input.months')[0].value = moment().diff(bday, 'months') - ageYears*12;
+			this.up().select('input.months')[0].value = measureDate.diff(bday, 'months') - ageYears*12;
 		};
 
 		var init = function() {
 			handleAddMeasurementSet();
 			addMeasurementSet();
-			addDefaults.apply($$('.measurement-set:not(.proto) .measurements')[0]);
 		};
 	</script>
 </head>
@@ -371,34 +135,223 @@
 			<label for="">Age:</label> <input type="text" size="2" class="years">y <input type="text" size="2" class="months">m
 
 			<div class="measurements">
-				
+				<div class="measurement">
+					<div class="measurement-row">
+						<label>Weight</label>
+						<span class="side-label"></span>
+						<input type="text" size="5">
+						<span class="unit">cm</span>
+						<span class="pctl"></span>
+					</div>
+				</div>
+				<div class="measurement">
+					<div class="measurement-row">
+						<label>Height</label>
+						<span class="side-label"></span>
+						<input type="text" size="5">
+						<span class="unit">cm</span>
+						<span class="pctl"></span>
+					</div>
+				</div>
+				<div class="measurement">
+					<div class="measurement-row">
+						<label>Arm Span</label>
+						<span class="side-label">L</span>
+						<input type="text" size="5">
+						<span class="unit">cm</span>
+						<span class="pctl"></span>
+					</div>
+					<div class="measurement-row">
+						<label></label>
+						<span class="side-label">R</span>
+						<input type="text" size="5">
+						<span class="unit">cm</span>
+						<span class="pctl"></span>
+					</div>
+				</div>
+				<div class="measurement">
+					<div class="measurement-row">
+						<label>Head Circumference</label>
+						<span class="side-label"></span>
+						<input type="text" size="5">
+						<span class="unit">cm</span>
+						<span class="pctl"></span>
+					</div>
+				</div>
+				<button class="toggle-more">+ Show more</button>
+				<div class="more">
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Outer Canthal Distance</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Inner Canthal Distance</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Hand Length</label>
+							<span class="side-label">L</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+						<div class="measurement-row">
+							<label></label>
+							<span class="side-label">R</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Palm Length</label>
+							<span class="side-label">L</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+						<div class="measurement-row">
+							<label></label>
+							<span class="side-label">R</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Foot Length</label>
+							<span class="side-label">L</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+						<div class="measurement-row">
+							<label></label>
+							<span class="side-label">R</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Sitting Height</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Philtrum Length</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Ear Length</label>
+							<span class="side-label">L</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+						<div class="measurement-row">
+							<label></label>
+							<span class="side-label">R</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Palpebral Fissure Length</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Interpupilary Distance</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Middle Finger Length</label>
+							<span class="side-label">L</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+						<div class="measurement-row">
+							<label></label>
+							<span class="side-label">R</span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Internipple Distance</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Chest Circumference</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Upper Segment</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Lower Segment</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">cm</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+				</div>
 			</div>
-
-			<select class="new-measurement-select">
-				<option>Weight</option>
-				<option>Height</option>
-				<option>Arm Span</option>
-				<option>Head Circumference</option>
-				<option>Outer Canthal Distance</option>
-				<option>Inner Canthal Distance</option>
-				<option>Hand Length</option>
-				<option>Palm Length</option>
-				<option>Foot Length</option>
-				<option>Sitting Height</option>
-				<option>BMI</option>
-				<option>Philtrum Length</option>
-				<option>Ear Length</option>
-				<option>Palpebral Fissure Length</option>
-				<option>Interpupilary Distance</option>
-				<option>Middle Finger Length</option>
-				<option>Internipple Distance</option>
-				<option>Chest Circumference</option>
-				<option>Internipple Index</option>
-				<option>Upper Segment</option>
-				<option>Lower Segment</option>
-				<option>US:LS Ratio</option>
-			</select>
-			<button class="btn_add-measurement">Add</button>		
 		</div>
 	</div>
 
