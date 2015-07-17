@@ -57,9 +57,6 @@ public class DefaultPushPatientDataTest {
     private List<NameValuePair> data;
 
     @Mock
-    private Execution execution;
-
-    @Mock
     private XWiki xWiki;
 
     @Mock
@@ -71,11 +68,16 @@ public class DefaultPushPatientDataTest {
     @Mock
     private ExecutionContext executionContext;
 
+    private Execution execution;
+
+    private DefaultPushPatientData patientData;
 
     @Before
-    public void setUp()
+    public void setUp() throws ComponentLookupException
     {
-           MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
+        this.patientData = (DefaultPushPatientData) this.mocker.getComponentUnderTest();
+        this.execution = this.mocker.getInstance(Execution.class);
     }
 
     @Test
