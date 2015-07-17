@@ -59,9 +59,9 @@ public class FormField extends AbstractFormElement
         this.selection[YES] = yesSelected;
         this.selection[NO] = noSelected;
         try {
-            VocabularyManager om =
+            VocabularyManager vm =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
-            this.term = om.resolveTerm(value);
+            this.term = vm.resolveTerm(value);
         } catch (ComponentLookupException ex) {
             this.term = null;
         }
