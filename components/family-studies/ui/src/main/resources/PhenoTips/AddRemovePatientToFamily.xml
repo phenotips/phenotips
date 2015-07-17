@@ -43,28 +43,23 @@
 ##
 #set($familyId = $request.get("familyId"))
 #set($patientId = $request.get("patientId"))
-#set($response = $services.families.verifyLinkable($familyId, $patientId))
-#if ("$!{response}" != '')
-  #set($json = $jsontool.parse($response))
-  #if ($json.get('validLink') != true)
-    #if ("$json.get('errorMessage')" != "")
-      $json.get('errorMessage')
+##
+#if ("$!{request.add}" == 'true')
+  #set($response = $services.families.verifyLinkable($familyId, $patientId))
+  #if ("$!{response}" != '')
+    #set($json = $jsontool.parse($response))
+    #if ($json.get('validLink') != true)
+      #if ("$json.get('errorMessage')" != "")
+        $json.get('errorMessage')
+      #else
+        Unknown error has occurred
+      #end
     #else
-      Unknown error has occurred
-    #end
-  #elseif ($json.get('validLink') == true)
-    #set ($patientDoc = $xwiki.getDocument("data.$patientId"))
-    #set($familyDoc = $xwiki.getDocument("data.$familyId"))
-    ##
-    #if ("$!{request.add}" == 'true')
-      #set ($familyReference = $services.families.addPatientToFamily($familyId,$patientId))
-    #elseif("$!{request.remove}" == true)
-      #set($familyReference = $services.families.removeMember($patientId))
-      ##
-      $familyDoc.save("Removed a member", true)
-      $patientDoc.save("Removed family reference", true)
+      #set ($discard = $services.families.addPatientToFamily($familyId,$patientId))
     #end
   #end
+#elseif("$!{request.remove}" == true)
+  #set($discard = $services.families.removeMember($patientId))
 #end
 {{/velocity}}
 </content>
