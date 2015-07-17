@@ -24,6 +24,8 @@ import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.localization.LocalizationContext;
+import org.xwiki.localization.LocalizationManager;
 import org.xwiki.xml.XMLUtils;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -104,11 +106,25 @@ public class FormField extends AbstractFormElement
     protected String generateSelection(final String[] fieldNames)
     {
         String selectionMarker = isSelected(YES) ? "yes-selected" : isSelected(NO) ? "no-selected" : null;
-        String termSourceMarker =
-            (this.term == null || StringUtils.isEmpty(this.term.getId()) ? " fa fa-exclamation-triangle fa-fw" : "");
+        String termSourceMarker = "";
+        if (this.term == null || StringUtils.isEmpty(this.term.getId())) {
+            String customTitle = "";
+            try {
+                LocalizationManager lm =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationManager.class);
+                LocalizationContext lc =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationContext.class);
+                String key = "phenotips.patientSheetCode.termSuggest.nonStandardPhenotype";
+                customTitle = String.valueOf(lm.getTranslation(key, lc.getCurrentLocale()).getRawSource());
+            } catch (ComponentLookupException ex) {
+                // Will not happen, and if it does, it doesn't matter, the tooltip is not that critical
+            }
+            termSourceMarker = "<span class='fa fa-exclamation-triangle fa-fw' title='" + customTitle + "'> </span>";
+        }
         String selectionPrefix = isSelected(NO) ? "NO " : "";
-        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + termSourceMarker + "'>"
-            + selectionPrefix + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
+        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>"
+            + termSourceMarker + selectionPrefix + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>")
+            : "";
     }
 
     private String generateCheckbox(String name, String value, String title, boolean selected, String labelClass,
