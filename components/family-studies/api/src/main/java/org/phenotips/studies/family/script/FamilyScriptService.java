@@ -240,12 +240,25 @@ public class FamilyScriptService implements ScriptService
     /**
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
      *
-     * @param id of the patient to delete
+     * @param patientId of the patient to delete
+     * @return true if patient was removed. false if not, for example, if the patient is not associated with a family
      */
-    // TODO change to XWikiFamily api
-    public void removeMember(String id)
+    public boolean removeMember(String patientId)
     {
-        this.processing.removeMember(id);
+        Patient patient = this.patientRepository.getPatientById(patientId);
+        if (patient == null) {
+            this.logger.error(COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE, patientId);
+            return false;
+        }
+
+        Family family = this.familyRepository.getFamilyForPatient(patient);
+        if (family == null) {
+            this.logger.error("Could not retrieve family for patient [{}]. Cannot remove patient.", patientId);
+            return false;
+        }
+
+        family.removeMember(patient);
+        return true;
     }
 
     /**
