@@ -45,7 +45,6 @@ import javax.inject.Provider;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -133,8 +132,8 @@ public class DefaultAuthorizationServiceTest
         Assert.assertTrue(this.mocker.getComponentUnderTest().hasAccess(this.user, this.access, this.document));
         order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
         order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
-        verify(this.moduleTwo, never()).hasAccess(this.user, this.access, this.document);
-        verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleTwo, never()).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
 
         resetMocks();
         when(this.moduleTwo.hasAccess(this.user, this.access, this.document)).thenReturn(false);
@@ -142,7 +141,7 @@ public class DefaultAuthorizationServiceTest
         order = Mockito.inOrder(this.moduleOne, this.moduleTwo, this.moduleThree);
         order.verify(this.moduleOne).hasAccess(this.user, this.access, this.document);
         order.verify(this.moduleTwo).hasAccess(this.user, this.access, this.document);
-        verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
+        order.verify(this.moduleThree, never()).hasAccess(this.user, this.access, this.document);
 
         resetMocks();
         when(this.moduleThree.hasAccess(this.user, this.access, this.document)).thenReturn(true);
