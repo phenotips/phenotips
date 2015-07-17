@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.vocabulary.internal.solr;
 
@@ -24,22 +24,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SolrParams;
 
 /**
  * @since 1.2RC1
@@ -52,6 +45,8 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
     protected static final String SIZE_FIELD_NAME = "size";
 
     protected static final String ROWS_FIELD_NAME = "rows";
+
+    protected static final String SYMBOL_EXACT = "symbolExact^100";
 
     /** The number of documents to be added and committed to Solr at a time. */
     protected abstract int getSolrDocsPerBatch();
@@ -132,60 +127,29 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
         return 1;
     }
 
-    private Map<String, String> getStaticSolrParams()
+    protected VocabularyTerm requestTerm(String queryString)
     {
-        Map<String, String> params = new HashMap<>();
-        params.put("lowercaseOperators", "false");
-        params.put("defType", "edismax");
-        return params;
-    }
+        QueryResponse response;
+        SolrQuery query = new SolrQuery();
+        SolrDocumentList termList;
+        VocabularyTerm term;
+        query.setQuery(queryString);
+        query.setRows(1);
+        query.set(COMMON_PARAMS_PF, SYMBOL_EXACT);
+        try {
+            response = this.externalServicesAccess.getSolrConnection().query(query);
+            termList = response.getResults();
 
-    private Map<String, String> getStaticFieldSolrParams()
-    {
-        Map<String, String> params = new HashMap<>();
-        params.put(COMMON_PARAMS_QF, "symbolExact^10 symbolPrefix^5 "
-            + "synonymExact^10 synonymPrefix^5 "
-            + "text^1 textSpell^2 textStub^0.5");
-        params.put(COMMON_PARAMS_PF, "symbolExact^100 symbolPrefix^10 "
-            + "synonymExact^30 synonymPrefix^5");
-        return params;
-    }
-
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
-    {
-        String query = originalQuery.trim();
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        String escapedQuery = ClientUtils.escapeQueryChars(query);
-        params.add(CommonParams.Q, escapedQuery);
-        params.add(CommonParams.ROWS, rows.toString());
-        if (StringUtils.isNotBlank(sort)) {
-            params.add(CommonParams.SORT, sort);
+            if (!termList.isEmpty()) {
+                term = new SolrVocabularyTerm(termList.get(0), this);
+                return term;
+            }
+        } catch (SolrServerException | SolrException ex) {
+            this.logger.warn("Failed to query ontology term: {} ", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting ontology term ", ex);
         }
-        return params;
-    }
-
-    /**
-     * Get a list of suggested terms from the vocabulary identified by user input.
-     *
-     * @param query user formatted query
-     * @param rows number of suggested terms to return
-     * @param sort sorting filters
-     * @param customFq custom filter list
-     * @return set of suggested terms
-     */
-    public Set<VocabularyTerm> termSuggest(String query, Integer rows, String sort, String customFq)
-    {
-        if (StringUtils.isBlank(query)) {
-            return new HashSet<>();
-        }
-        Map<String, String> options = this.getStaticSolrParams();
-        options.putAll(this.getStaticFieldSolrParams());
-        Set<VocabularyTerm> result = new LinkedHashSet<VocabularyTerm>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq), options)) {
-            SolrVocabularyTerm ontTerm = new SolrVocabularyTerm(doc, this);
-            result.add(ontTerm);
-        }
-        return result;
+        return null;
     }
 
     @Override

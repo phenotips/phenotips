@@ -13,7 +13,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.vocabulary.internal;
 
@@ -24,9 +24,8 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
@@ -43,9 +42,8 @@ import org.slf4j.Logger;
 public class CSVFileService
 {
     /** Collection of SolrInputDocuments. **/
-    public Collection<SolrInputDocument> solrDocuments;
+    public Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
 
-    @Inject
     private Logger logger;
 
     /**
@@ -54,9 +52,12 @@ public class CSVFileService
      * @param location the string url address from where to get the data to parse
      * @param headerToFiledMap the map between the headers in the data input stream and the correct field names
      * @param strategy represents the strategy for a CSV, mainly the separator character
+     * @param logger logger
      */
-    public CSVFileService(String location, Map<String, String> headerToFiledMap, CSVStrategy strategy)
+    public CSVFileService(String location, Map<String, String> headerToFiledMap, CSVStrategy strategy, Logger logger)
     {
+        this.logger = logger;
+
         URL url;
         try {
             url = new URL(location);
@@ -130,8 +131,10 @@ public class CSVFileService
 
                 this.solrDocuments.add(crtTerm);
             }
-        } catch (IOException e) {
-            this.logger.error(" IOException: {}", e.getMessage());
+        } catch (NullPointerException ex) {
+            this.logger.error("NullPointer: {} ", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error(" IOException: {}", ex.getMessage());
         }
     }
 
