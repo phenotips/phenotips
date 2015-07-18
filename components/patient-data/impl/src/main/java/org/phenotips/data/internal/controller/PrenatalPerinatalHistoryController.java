@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 public class PrenatalPerinatalHistoryController extends AbstractComplexController<String>
 {
     private static final String IVF = "ivf";
+
     private static final String ICSI = "icsi";
 
     private static final String ASSISTED_REPRODUCTION_FERTILITY_MEDS = "assistedReproduction_fertilityMeds";
@@ -47,6 +48,7 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     private static final String ASSISTED_REPRODUCTION_SURROGACY = "assistedReproduction_surrogacy";
 
     private static final String ASSISTED_REPRODUCTION_DONOR_EGG = "assistedReproduction_donoregg";
+
     private static final String ASSISTED_REPRODUCTION_DONOR_SPERM = "assistedReproduction_donorsperm";
 
     private static final String MULTIPLE_GESTATION = "multipleGestation";
