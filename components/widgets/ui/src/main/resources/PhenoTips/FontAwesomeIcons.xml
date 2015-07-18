@@ -126,18 +126,18 @@
   display: inline-block;
   font-family: FontAwesome;
 }
-.fa-spinner {
-  -moz-animation: none;
-  -o-animation: none;
+.fa-spin, .fa-pulse {
   -webkit-animation: none;
   animation: none;
 }
-.fa-spinner:before {
+.fa-spin:before {
   display: inline-block;
-  -moz-animation: spin 2s infinite linear;
-  -o-animation: spin 2s infinite linear;
-  -webkit-animation: spin 2s infinite linear;
-  animation: spin 2s infinite linear;
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.fa-pulse:before {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
 }
 </code>
     </property>
