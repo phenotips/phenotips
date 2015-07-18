@@ -217,7 +217,7 @@ document.observe('xwiki:dom:loaded', function() {
   // ------------------------------------------------------------------------
   ['keypress', 'keyup', 'keydown'].each(function (eventName) {
      $$('.editbody form#inline').invoke('observe', eventName, function (event) {
-        if (event.keyCode == Event.KEY_RETURN &amp;&amp; !event.findElement('textarea')) {
+        if (event.keyCode == Event.KEY_RETURN &amp;&amp; !(event.findElement('textarea') || event.findElement('.xwiki-free-multiselect-value'))) {
            event.stop();
         }
      });
