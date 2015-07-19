@@ -329,7 +329,7 @@
         <artifactId>clirr-maven-plugin</artifactId>
         <configuration>
           <!-- List of specific CLIRR excludes.
-               See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+               See http://www.mojohaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.1 -->
