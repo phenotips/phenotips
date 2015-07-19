@@ -139,6 +139,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.2-SNAPSHOT</phenotips.version>
+    <phenotips.version.previous>1.1</phenotips.version.previous>
     <xwiki.version>7.0.1</xwiki.version>
     <slf4j.version>1.7.12</slf4j.version>
     <buildtools.version>1.3</buildtools.version>
@@ -339,6 +340,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
         <configuration>
+          <comparisonVersion>${phenotips.version.previous}</comparisonVersion>
           <!-- List of specific CLIRR excludes.
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
