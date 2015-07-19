@@ -398,6 +398,17 @@
               <method>int size()</method>
               <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/*</className>
+              <differenceType>4001</differenceType>
+              <to>org/phenotips/data/OntologyProperty</to>
+              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/OntologyProperty</className>
+              <differenceType>8001</differenceType>
+              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

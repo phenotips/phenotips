@@ -73,7 +73,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     private DocumentAccessBridge documentAccessBridge;
 
     @Inject
-    private VocabularyManager ontologyManager;
+    private VocabularyManager vocabularyManager;
 
     @Override
     public PatientData<List<VocabularyTerm>> load(Patient patient)
@@ -164,7 +164,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     private void addTerms(String item, List<VocabularyTerm> holder)
     {
         if (StringUtils.isNotBlank(item)) {
-            VocabularyTerm term = this.ontologyManager.resolveTerm(item);
+            VocabularyTerm term = this.vocabularyManager.resolveTerm(item);
             if (term != null) {
                 holder.add(term);
             }

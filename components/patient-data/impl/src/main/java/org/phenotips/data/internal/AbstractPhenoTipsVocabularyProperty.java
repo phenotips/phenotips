@@ -18,7 +18,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.data.OntologyProperty;
+import org.phenotips.data.VocabularyProperty;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -31,21 +31,21 @@ import org.apache.commons.lang3.StringUtils;
 import net.sf.json.JSONObject;
 
 /**
- * Implementation of patient data based on the XWiki data model, where disease data is represented by properties in
- * objects of type {@code PhenoTips.PatientClass}.
+ * Implementation of patient data based on the XWiki data model, where data is represented by properties in objects of
+ * type {@code PhenoTips.PatientClass}.
  *
  * @version $Id$
  * @since 1.0M8
  */
-public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty, Comparable<OntologyProperty>
+public abstract class AbstractPhenoTipsVocabularyProperty implements VocabularyProperty, Comparable<VocabularyProperty>
 {
     /** Used for reading and writing properties to JSON. */
     protected static final String ID_JSON_KEY_NAME = "id";
 
     protected static final String NAME_JSON_KEY_NAME = "label";
 
-    /** Pattern used for identifying ontology terms from free text terms. */
-    private static final Pattern ONTOLOGY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
+    /** Pattern used for identifying vocabulary terms from free text terms. */
+    private static final Pattern VOCABULARY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
 
     /** @see #getId() */
     protected final String id;
@@ -56,15 +56,15 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     /**
      * Simple constructor providing the {@link #id term identifier}.
      *
-     * @param id the ontology term identifier
-     * @throws IllegalArgumentException if the identifier is {@code null} or otherwise malformed for the ontology
+     * @param id the vocabulary term identifier
+     * @throws IllegalArgumentException if the identifier is {@code null} or otherwise malformed for the vocabulary
      */
-    protected AbstractPhenoTipsOntologyProperty(String id)
+    protected AbstractPhenoTipsVocabularyProperty(String id)
     {
         if (id == null) {
             throw new IllegalArgumentException();
         }
-        if (ONTOLOGY_TERM_PATTERN.matcher(id).matches()) {
+        if (VOCABULARY_TERM_PATTERN.matcher(id).matches()) {
             this.id = id;
             this.name = null;
         } else {
@@ -78,7 +78,7 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
      *
      * @param json JSON object describing this property
      */
-    protected AbstractPhenoTipsOntologyProperty(JSONObject json)
+    protected AbstractPhenoTipsVocabularyProperty(JSONObject json)
     {
         this.id = json.has(ID_JSON_KEY_NAME) ? json.getString(ID_JSON_KEY_NAME) : "";
         this.name = json.has(NAME_JSON_KEY_NAME) ? json.getString(NAME_JSON_KEY_NAME) : null;
@@ -97,9 +97,9 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
             return this.name;
         }
         try {
-            VocabularyManager om =
+            VocabularyManager vm =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
-            VocabularyTerm term = om.resolveTerm(this.id);
+            VocabularyTerm term = vm.resolveTerm(this.id);
             if (term != null && StringUtils.isNotEmpty(term.getName())) {
                 this.name = term.getName();
                 return this.name;
@@ -130,7 +130,7 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     }
 
     @Override
-    public int compareTo(OntologyProperty o)
+    public int compareTo(VocabularyProperty o)
     {
         if (o == null) {
             // Nulls at the end
