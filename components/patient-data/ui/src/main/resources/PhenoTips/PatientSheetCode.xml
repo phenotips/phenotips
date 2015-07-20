@@ -3429,7 +3429,7 @@ document.observe('xwiki:dom:loaded', function()
     },
     validate : function(value) {
       if (this.state == 'DONE') {
-        this.value == value &amp;&amp; (this.valid || Validate.fail("this HGVS identifier not valid"));
+        this.value == value &amp;&amp; (this.valid || Validate.fail("This HGVS identifier not valid"));
       }
       this.check();
       return true;
@@ -4979,7 +4979,8 @@ form .extradata-list tr:hover td {
     <property>
       <code>#template('colorThemeInit.vm')
 .LV_validation_message {
-  position: static !important;
+  position: absolute;
+  display: block;
 }
 .LV_valid {
   display: none;
