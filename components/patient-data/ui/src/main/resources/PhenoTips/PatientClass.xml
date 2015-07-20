@@ -1140,25 +1140,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </solved>
-    <solved__gene_id>
-      <customDisplay>{{velocity}}
-#if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='Enter a gene ID' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
-#else
-$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
-#end
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <name>solved__gene_id</name>
-      <number>42</number>
-      <picker>0</picker>
-      <prettyName>Gene ID</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </solved__gene_id>
     <solved__notes>
       <contenttype>PureText</contenttype>
       <customDisplay/>

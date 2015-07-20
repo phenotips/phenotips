@@ -133,9 +133,8 @@
        'date' : "$services.localization.render('phenotips.exportPreferences.field.date')",
        'allergies' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')",
        'genes': "$services.localization.render('phenotips.exportPreferences.field.genes')",
-       'genes_comments': "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
-       'rejectedGenes': "$services.localization.render('phenotips.exportPreferences.field.rejectedGenes')",
-       'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')"
+       'genes_classification': "$services.localization.render('phenotips.exportPreferences.field.genesClassification')",
+       'genes_comments': "$services.localization.render('phenotips.exportPreferences.field.genesComments')"
   })
   #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
   #set($metaFields = ['phenotype'])
