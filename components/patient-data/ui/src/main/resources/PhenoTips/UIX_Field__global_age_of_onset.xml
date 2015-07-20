@@ -123,7 +123,7 @@
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.globalAgeOfOnset')
 enabled=true
-order=2
+order=3
 required=
 fields=global_age_of_onset
 privacy_level=1</parameters>
