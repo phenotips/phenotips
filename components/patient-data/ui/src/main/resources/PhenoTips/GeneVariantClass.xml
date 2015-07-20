@@ -66,27 +66,25 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </hgvs_id>
-    <inhertiance>
-      <cache>0</cache>
-      <customDisplay/>
+        <genesymbol>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' size='16' value="$!{escapetool.xml($value)}" readonly /&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_symbol' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
-      <displayType>radio</displayType>
-      <multiSelect>0</multiSelect>
-      <name>inhertiance</name>
-      <number>4</number>
-      <picker>0</picker>
-      <prettyName>Inhertiance</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
+      <name>genesymbol</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>Gene Symbol</prettyName>
+      <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>denovo=denovo|maternal=maternal|paternal=paternal|unknown=unknown</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </inhertiance>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </genesymbol>
     <interpretation>
       <cache>0</cache>
       <customDisplay/>
@@ -108,6 +106,27 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <values>pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </interpretation>
+    <inhertiance>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>radio</displayType>
+      <multiSelect>0</multiSelect>
+      <name>inhertiance</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Inhertiance</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>denovo=denovo|maternal=maternal|paternal=paternal|unknown=unknown</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </inhertiance>
     <validated>
       <cache>0</cache>
       <customDisplay/>
@@ -115,7 +134,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>validated</name>
-      <number>6</number>
+      <number>5</number>
       <picker>0</picker>
       <prettyName>Validated</prettyName>
       <relationalStorage>0</relationalStorage>

@@ -428,6 +428,7 @@ table.extradata-list {
     border-right: 1px solid $theme.pageContentBackgroundColor;
 }
 .extradata-list th.col-label {
+    text-align: center;
     font-weight: normal;
     font-variant: small-caps;
 }
@@ -435,7 +436,6 @@ table.extradata-list {
     text-align: center;
 }
 .viewbody td.comments, .editbody th.comments {
-    text-align: left;
     border-right: 0 none;
 }
 .extradata-list th.row-count {

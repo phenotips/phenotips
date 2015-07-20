@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>CheckHGVSvariant</name>
+  <name>CheckVariantGeneSymbol</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -44,29 +44,24 @@
   {{html wiki="false" clean="false"}}
 #end
 #if ($request.getParameter('id'))
-  #set ($data = $services.variantservice.validateVariant($request.id))  
+  #set ($term = $services.vocabularies.hgnc.getTermByAlternativeId($request.id))
 #else
   $response.setStatus(400)
   Please specify a variant to check
   #break
 #end
-#if (!$data)
+#if (!$term)
   $response.setStatus(404)
   Unknown
   #break
-#elseif ($data.sourceAccession) 
+#elseif ($term.symbol)
   $response.setStatus(200)
   $response.setContentType('application/json')
-  $jsontool.serialize({'accsymbol' : $data.sourceAccession})
+  $jsontool.serialize({'symbol' : $term.symbol})
   #break
 #else
   $response.setStatus(409)
   Invalid
-#end
-#if ("$!{request.outputSyntax}" == 'plain')
-  {{/content}}
-#else
-  {{/html}}
 #end
 {{/velocity}}</content>
 </xwikidoc>

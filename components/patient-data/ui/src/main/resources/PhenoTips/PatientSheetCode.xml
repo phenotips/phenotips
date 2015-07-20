@@ -3408,8 +3408,10 @@ document.observe('xwiki:dom:loaded', function()
       this.request = 0;
       this.value = input.value;
       this.serviceUrl = new XWiki.Document('CheckHGVSvariant', 'PhenoTips').getURL('get');
+      this.serviceUrlgene = new XWiki.Document('CheckVariantGeneSymbol', 'PhenoTips').getURL('get');
+      this.gene_symbol_input_name = "";
       if (!this.input.__validation) {
-        this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+        this.input.__validation = new LiveValidation(this.input, {validMessage: 'Valid', wait : 100});
       }
       this.input.__validation.add(this.validate.bind(this));
     },
@@ -3419,17 +3421,29 @@ document.observe('xwiki:dom:loaded', function()
         this.state = 'CHECKING';
         new Ajax.Request(this.serviceUrl, {
           parameters : { outputSyntax: 'plain', id: this.value},
-          
-          on403 : this.empty.bindAsEventListener(this),
-          on404 : this.available.bindAsEventListener(this),
+          onCreate : this.requestCreated.bind(this),
+          on404 : this.empty.bindAsEventListener(this),
+          on200 : this.available.bindAsEventListener(this),
           on409 : this.invalid.bindAsEventListener(this),
           onComplete: this.responded.bindAsEventListener(this)
         });
       }
     },
+    requestCreated : function() {
+      //constructing the gene symbol input name from this.input.name
+	  var second_occur = this.input.name.indexOf("_", this.input.name.indexOf("_") + 1);
+	  var xwikiclass_name = this.input.name.substring(0, second_occur+1)+"genesymbol";
+	  var gene_symbol_input = document.getElementsByName(xwikiclass_name)[0];
+	  gene_symbol_input.value = "";
+	  this.gene_symbol_input_name = xwikiclass_name;
+    },
     validate : function(value) {
       if (this.state == 'DONE') {
-        this.value == value &amp;&amp; (this.valid || Validate.fail("This HGVS identifier not valid"));
+        this.value == value &amp;&amp; (this.valid || Validate.fail("This HGVS identifier is not valid"));
+        if (this.valid) {
+          Validate.message = 'Valid';
+          Validate.onValid();
+        }
       }
       this.check();
       return true;
@@ -3439,6 +3453,19 @@ document.observe('xwiki:dom:loaded', function()
     },
     available : function() {
       this.valid = true;
+      if (this.valid) {
+          this.input.__validation.validMessage = 'Valid';
+	      var next_input = document.getElementsByName(this.gene_symbol_input_name)[0];
+	      next_input.value = "";
+	      var acc_symbol = response.responseJSON.accsymbol;
+	      new Ajax.Request(this.serviceUrlgene, {
+	          parameters : {id: acc_symbol},
+	          onComplete : function(response) {
+	            if (response.responseJSON.symbol)
+	      		  next_input.value = response.responseJSON.symbol;
+	          },
+	      });
+      }
     },  
     invalid : function() {
       this.valid = false;
@@ -4983,7 +5010,8 @@ form .extradata-list tr:hover td {
   display: block;
 }
 .LV_valid {
-  display: none;
+  /*display: none;*/
+  color : green;
 }
 input.LV_invalid_field {
   background-color: $theme.highlightColor;

@@ -81,7 +81,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>evidence1=Evidence 1|evidence2=Evidence 2|evidence3=Evidence 3</values>
+      <values>biological_relevance=Implicated in relevant biological process|significant_variant=Contains variant of functional significance|known_association=Verified association with relevant phenotype/disease</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </evidence>
     <classification>
@@ -108,7 +108,7 @@
     <gene>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='$services.localization.render('phenotips.investigationClass.geneNamePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='$services.localization.render('Phenotips.InvestigationClass.geneNamePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
