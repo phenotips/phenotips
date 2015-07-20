@@ -58,7 +58,7 @@ var PedigreeEditor = Class.create({
         // load global pedigree preferences before a specific pedigre eis loaded, since
         // preferences kmay affect the way it is rendered, and load provcess triggers (re-)render internally
         this._preferencesManager.load( function() {
-                // load family page info and load the pedigree after that data is loaded 
+                // load family page info and load the pedigree after that data is loaded
                 this._familyData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
                 // generate various dialogues after preferences have been loaded
@@ -96,7 +96,7 @@ var PedigreeEditor = Class.create({
         });
         var loadButton = $('action-reload');
         loadButton && loadButton.on("click", function(event) {
-            // re-load family page info and re-load the pedigree after that data is updated 
+            // re-load family page info and re-load the pedigree after that data is updated
             editor._familyData.load( editor.getSaveLoadEngine().load() );
         });
 
@@ -411,7 +411,31 @@ var PedigreeEditor = Class.create({
      * @return {Object}
      */
     getCurrentFamilyPageFamilyMembers: function() {
-        return this._familyData.getCurrentFamilyMembers();
+        return this._familyData.getAllFamilyMembersList();
+    },
+
+    /**
+     * Returns iff the given patient is a member of the current family
+     */
+    isFamilyMember: function(patientID) {
+        if (this._familyData && this._familyData.isFamilyMember(patientID)) {
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Returns permission object which as "hasEdit" and "hasView" fields.
+     * @method getPatientAccessPermissions
+     * @return {Object}
+     */
+    getPatientAccessPermissions: function(patientID) {
+        var permissions = (this._familyData && this._familyData.isFamilyMember(patientID))
+                          ? this._familyData.getPatientAccessPermissions(patientID) : null;
+        if (permissions == null) {
+            permissions = { "hasEdit": true, "hasView": true };
+        }
+        return permissions;
     },
 
     /**
@@ -449,8 +473,8 @@ var PedigreeEditor = Class.create({
 
     /**
      * Returns true if any of the node menus are visible
-     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom) 
-     * 
+     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom)
+     *
      * @method isAnyMenuVisible
      */
     isAnyMenuVisible: function() {

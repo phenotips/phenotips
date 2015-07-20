@@ -18,7 +18,7 @@ var Person = Class.create(AbstractPerson, {
         //var timer = new Timer();
         !this._type && (this._type = "Person");
         this._setDefault();
-        var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
+        var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U";
         $super(x, y, gender, id);
 
         // need to assign after super() and explicitly pass gender to super()
@@ -260,7 +260,7 @@ var Person = Class.create(AbstractPerson, {
      * @method setMonozygotic
      */
     setMonozygotic: function(monozygotic) {
-        if (monozygotic == this._monozygotic) return; 
+        if (monozygotic == this._monozygotic) return;
         this._monozygotic = monozygotic;
     },
 
@@ -280,7 +280,7 @@ var Person = Class.create(AbstractPerson, {
      * @method setEvaluated
      */
     setEvaluated: function(evaluationStatus) {
-        if (evaluationStatus == this._evaluated) return; 
+        if (evaluationStatus == this._evaluated) return;
         this._evaluated = evaluationStatus;
         this.getGraphics().updateEvaluationLabel();
     },
@@ -322,7 +322,7 @@ var Person = Class.create(AbstractPerson, {
      * (a twin group is all the twins from a given pregnancy)
      *
      * @method setTwinGroup
-     */    
+     */
     setTwinGroup: function(groupId) {
         this._twinGroup = groupId;
     },
@@ -532,7 +532,7 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method setCarrier
      * @param status One of {'', 'carrier', 'affected', 'presymptomatic', 'uncertain'}
-     */    
+     */
     setCarrierStatus: function(status) {
         var numDisorders = this.getDisorders().length;
 
@@ -608,7 +608,7 @@ var Person = Class.create(AbstractPerson, {
      * @return {Array} List of disorder IDs.
      */
     getDisorders: function() {
-        //console.log("Get disorders: " + stringifyObject(this._disorders)); 
+        //console.log("Get disorders: " + stringifyObject(this._disorders));
         return this._disorders;
     },
 
@@ -652,7 +652,7 @@ var Person = Class.create(AbstractPerson, {
      * Removes disorder from the list of this node's disorders and updates the Legend.
      *
      * @method removeDisorder
-     * @param {Number} disorderID id of the disorder to be removed 
+     * @param {Number} disorderID id of the disorder to be removed
      */
     removeDisorder: function(disorderID) {
         if(this.hasDisorder(disorderID)) {
@@ -679,7 +679,7 @@ var Person = Class.create(AbstractPerson, {
         }
         for(var i = 0; i < disorders.length; i++) {
             this.addDisorder( disorders[i] );
-        }        
+        }
         this.getGraphics().updateDisorderShapes();
         this.setCarrierStatus(); // update carrier status
     },
@@ -1010,7 +1010,7 @@ var Person = Class.create(AbstractPerson, {
         // TODO: only suggest posible birth dates which are after the latest
         //       birth date of any ancestors; only suggest death dates which are after birth date
 
-        return {
+        var summary = {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
@@ -1025,7 +1025,7 @@ var Person = Class.create(AbstractPerson, {
             adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates},
             date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
-            comments:      {value : this.getComments(), inactive: false},
+            comments:      {value : this.getComments()},
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
             childlessSelect: {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
             childlessText:   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
@@ -1038,11 +1038,22 @@ var Person = Class.create(AbstractPerson, {
             phenotipsid:   {value : this.getPhenotipsPatientId() },
             setproband:    {value : "allow", inactive: this.isProband() }
         };
+
+        // Disable input fields iff current user does not have edit permissions for this patient
+        if (!editor.getPatientAccessPermissions(this.getPhenotipsPatientId()).hasEdit) {
+            for (prop in summary) {
+                if (summary.hasOwnProperty(prop)) {
+                    summary[prop].disabled = true;
+                }
+            }
+        }
+
+        return summary;
     },
 
     /**
      * Returns an object containing all the properties of this node
-     * except id, x, y & type 
+     * except id, x, y & type
      *
      * @method getProperties
      * @return {Object} in the form
@@ -1108,7 +1119,7 @@ var Person = Class.create(AbstractPerson, {
 
      /**
       * These properties are related to pedigree structure, but not to PhenoTips patient.
-      * 
+      *
       * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
       */
      getPatientIndependentProperties: function() {

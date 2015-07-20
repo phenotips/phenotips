@@ -262,6 +262,17 @@ var Controller = Class.create({
         var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": cloneObject(event.memo.properties)}};
 
         var node    = editor.getView().getNode(nodeID);
+
+        if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
+            // UI should forbid any changes from happenig in this case, but do a final check before applying any edits
+            var updateMenuWithDiscardedChanges = function() {
+                editor.getNodeMenu().update();
+            }
+            editor.getOkCancelDialogue().showError("Can't save changes - you do not have edit rights for this patient",
+                                                   "Can't save changes", "OK", updateMenuWithDiscardedChanges);
+            return;
+        }
+
         var changed = false;
 
         var twinUpdate = undefined;
@@ -465,8 +476,9 @@ var Controller = Class.create({
 
         //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         //console.log("Undo event: " + stringifyObject(undoEvent));
-        if (!event.memo.noUndoRedo && changedValue)
+        if (!event.memo.noUndoRedo && changedValue) {
             editor.getActionStack().addState( event, undoEvent );
+        }
     },
 
     handleModification: function(event)
@@ -531,7 +543,7 @@ var Controller = Class.create({
                             // If it is, unlink and, optionally, clean that node's properties
                             var allLinkedNodes = editor.getGraph().getAllPatientLinks();
                             if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(modValue)) {
-                                var oldRepresentingNodeID = allLinkedNodes.patientToNodeMapping[modValue]; 
+                                var oldRepresentingNodeID = allLinkedNodes.patientToNodeMapping[modValue];
 
                                 var oldNode = editor.getView().getNode(oldRepresentingNodeID);
                                 oldNode.setPhenotipsPatientId("");
@@ -985,14 +997,7 @@ Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID,
                     }
 
                     var processLinking = function(topMessage, notesMessage) {
-                        var alreadyWasInFamily = false;
-                        var familyMembersWhenLoaded = editor.getCurrentFamilyPageFamilyMembers();
-                        for (var i = 0; i < familyMembersWhenLoaded.length; i++) {
-                            if (familyMembersWhenLoaded[i].id == linkID) {
-                                alreadyWasInFamily = true;
-                                break;
-                            }
-                        }
+                        var alreadyWasInFamily = editor.isFamilyMember(linkID);
                         if (!alreadyWasInFamily) {
                             editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
                                     "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+

@@ -100,7 +100,6 @@
   box-shadow: #fff 0 0 5px 0;
 }
 
-
 /* =========================================
  * CONTROLS
  */
@@ -482,7 +481,7 @@
   position: absolute;
   top: .4em;
   right: 0;
-  display: inline !important;
+  display: inline;
 }
 .field-no-user-select {
   -webkit-touch-callout: none;
@@ -929,4 +928,10 @@
 .fuzzy-date-picker .year .decade {
   font-weight: bold;
   /*text-indent: 0;*/
+}
+.fuzzy-date-picker .month:disabled {
+    opacity: .5 !important;
+}
+.fuzzy-date-picker .day:disabled {
+    opacity: .5 !important;
 }

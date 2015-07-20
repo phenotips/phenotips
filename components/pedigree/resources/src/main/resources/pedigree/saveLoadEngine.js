@@ -9,6 +9,7 @@ var FamilyDataLoader = Class.create( {
     initialize: function() {
         this.familyPage = null;
         this.familyMembers = [];
+        this.familyMembersIndex = {};
         this.warningMessage = "";
         this.probandData = {};
     },
@@ -29,8 +30,12 @@ var FamilyDataLoader = Class.create( {
             this.familyPage = (response.responseJSON.hasOwnProperty("familyPage") && response.responseJSON.familyPage) ?
                               response.responseJSON.familyPage : null;
 
-            this.familyMembers  = response.responseJSON.hasOwnProperty("familyMembers") ?
-                                  response.responseJSON.familyMembers: [];
+            this.familyMembers = response.responseJSON.hasOwnProperty("familyMembers") ?
+                                 response.responseJSON.familyMembers: [];
+
+            for (var i = 0; i < this.familyMembers.length; i++) {
+                this.familyMembersIndex[this.familyMembers[i].id] = i;
+            }
 
             this.warningMessage = response.responseJSON.hasOwnProperty("warning") ? response.responseJSON.warning : "";
             /* Will display a warning if there is a warning message */
@@ -55,12 +60,31 @@ var FamilyDataLoader = Class.create( {
         return (this.warningMessage != "");
     },
 
-    getCurrentFamilyMembers: function() {
+    getAllFamilyMembersList: function() {
         return this.familyMembers;
     },
 
     getWarningMesage: function() {
         return this.warningMessage;
+    },
+
+    isFamilyMember: function(patientID) {
+        return this.familyMembersIndex.hasOwnProperty(patientID);
+    },
+
+    getFamilyMemberByPatyientID: function(patientID) {
+        if (!this.isFamilyMember(patientID)) {
+            return null;
+        }
+        return this.familyMembers[this.familyMembersIndex[patientID]];
+    },
+
+    getPatientAccessPermissions: function(patientID) {
+        var familyhMemberData = this.getFamilyMemberByPatyientID(patientID);
+        if (familyhMemberData == null || !familyhMemberData.hasOwnProperty("permissions")) {
+            return null;
+        }
+        return familyhMemberData.permissions;
     }
 });
 

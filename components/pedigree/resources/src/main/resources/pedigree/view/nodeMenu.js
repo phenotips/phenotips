@@ -17,7 +17,7 @@
     }, ...
  ]
  }
- 
+
  Note: when an item is specified as "inactive" it is completely removed from the menu; when it
        is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
  */
@@ -475,7 +475,7 @@ NodeMenu = Class.create({
             var _generateRadioButton = function(v) {
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
                 if (v.hasOwnProperty("columnshiftPX")) {
-                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"}); 
+                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"});
                 }
                 var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
                 radioLabel.insert({'top': radioButton});
@@ -968,10 +968,10 @@ NodeMenu = Class.create({
         Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
-            _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
+            _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : false;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
-            _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
+            _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled, _this.fieldMap[name].inactive, _this.fieldMap[name].crtValue);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
         });
     },
@@ -1175,7 +1175,7 @@ NodeMenu = Class.create({
                 }
 
                 if (value.hasOwnProperty(cancerName)) {
-                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) { 
+                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) {
                         var optionStatus = statusSelect.down('option[value="affected"]');
                     } else {
                         var optionStatus = statusSelect.down('option[value="unaffected"]');
@@ -1309,9 +1309,19 @@ NodeMenu = Class.create({
 
     _setFieldDisabled : {
         'radio' : function (container, disabled) {
-            if (disabled && Object.prototype.toString.call(disabled) === '[object Array]') {
+            if (disabled) {
+                if (Object.prototype.toString.call(disabled) === '[object Array]') {
                     container.select('input[type=radio]').each(function(item) {
-                    item.disabled = (disabled.indexOf(item.value) >= 0);
+                        item.disabled = (disabled.indexOf(item.value) >= 0);
+                    });
+                } else {
+                    container.select('input[type=radio]').each(function(item) {
+                        item.disabled = true;
+                    });
+                }
+            } else {
+                container.select('input[type=radio]').each(function(item) {
+                    item.disabled = false;
                 });
             }
         },
@@ -1327,38 +1337,85 @@ NodeMenu = Class.create({
                 target.disabled = disabled;
             }
         },
-        'button' : function (container, inactive) {
-            // FIXME: Not implemented
+        'button' : function (container, disabled, inactive) {
+            if (disabled) {
+                this._toggleFieldVisibility(container, disabled);
+            } else {
+                if (!inactive) {
+                    this._toggleFieldVisibility(container, disabled);
+                }
+            }
         },
-        'textarea' : function (container, inactive) {
-            // FIXME: Not implemented
+        'textarea' : function (container, disabled) {
+            var target = container.down('textarea');
+            if (target) {
+                target.disabled = disabled;
+            }
         },
-        'date-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'date-picker' : function (container, disabled) {
+            // date picker has its own logic when to enable or disable select fields. So work around that
+            if (disabled) {
+                container.addClassName("no-mouse-interaction");
+                container.select('select').each(function(item) {
+                    item.style.opacity = 0.5;
+                });
+            } else {
+                container.removeClassName("no-mouse-interaction");
+                container.select('select').each(function(item) {
+                    item.style.opacity = 1.0;
+                });
+            }
         },
-        'disease-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'disease-picker' : function (container, disabled) {
+            this._disableSuggestPicker(container, disabled);
         },
-        'ethnicity-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'ethnicity-picker' : function (container, disabled) {
+            this._disableSuggestPicker(container, disabled);
         },
-        'hpo-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'hpo-picker' : function (container, disabled) {
+            this._disableSuggestPicker(container, disabled);
         },
-        'gene-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'gene-picker' : function (container, disabled) {
+            this._disableSuggestPicker(container, disabled);
         },
-        'phenotipsid-picker' : function (container, inactive) {
-            // FIXME: Not implemented
+        'phenotipsid-picker' : function (container, disabled) {
+            this._disableSuggestPicker(container, disabled);
         },
-        'select' : function (container, inactive) {
-            // FIXME: Not implemented
+        'select' : function (container, disabled) {
+            var target = container.down('select');
+            if (target) {
+                target.disabled = disabled;
+            }
         },
-        'cancerlist' : function (container, inactive) {
-            // FIXME: Not implemented
+        'cancerlist' : function (container, disabled) {
+            container.select('select').each(function(item) {
+                item.disabled = disabled;
+            });
         },
-        'hidden' : function (container, inactive) {
+        'phenotipsid-picker' : function (container, disabled, inactive, value) {
+            if (!disabled) {
+                this._toggleFieldVisibility(container, disabled);
+            } else {
+                if (value == "") {
+                    this._toggleFieldVisibility(container, disabled);
+                }
+            }
+            container.select('span').each(function(item) {
+                item.style.display = disabled ? "none" : "inherit";
+            });
+        },
+        'hidden' : function (container, disabled) {
             // FIXME: Not implemented
         }
+    },
+
+    _disableSuggestPicker: function (container, disabled) {
+        var target = container.down('input[type=text]');
+        if (target) {
+            target.disabled = disabled;
+        }
+        container.select('span.delete-tool').each(function(item) {
+            item.style.display = disabled ? "none" : "block";
+        });
     }
 });
