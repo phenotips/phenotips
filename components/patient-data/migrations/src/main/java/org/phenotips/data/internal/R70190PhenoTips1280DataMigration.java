@@ -51,17 +51,16 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #1280: Automatically migrate existing {@code genes} (with {@code genes_comments}),
  * {@code rejectedGenes} (with {@code rejectedGenes_comments}) and {@code solved__gene_id} values to the {@code genes}
- * (with {@code genes_comments}) objects of {@code InvestigationClass} with new additional property of
- * {@code classification} with "candidate", "rejected" and "solved" values respectively. Searches for all documents
- * containing values for the: 1.- {@code genes} (with {@code genes_comments}) property from {@code InvestigationClass}
- * and for each such document set the "candidate" value of {@code classification} of {@code InvestigationClass}. 2.-
- * {@code rejectedGenes} (with {@code rejectedGenes_comments}) property from {@code RejectedGenesClass} and for each
- * such document migrate property value to the {@code genes} (with {@code genes_comments}) object with "rejected" value
- * of {@code classification} of {@code InvestigationClass}. 3.- {@code solved__gene_id} property from
- * {@code PatientClass} and for each such document migrate property value to the {@code genes} (with
- * {@code genes_comments}) object with "solved" value of {@code classification} of {@code InvestigationClass}. The old
- * {@code rejectedGenes}, {@code rejectedGenes_comments}, {@code solved__gene_id} properties and
- * {@code RejectedGenesClass} are removed.
+ * (with {@code genes_comments}) objects of {@code GeneClass} with new additional property of {@code classification}
+ * with "candidate", "rejected" and "solved" values respectively. Searches for all documents containing values for the:
+ * 1.- {@code genes} (with {@code genes_comments}) property from {@code GeneClass} and for each such document set the
+ * "candidate" value of {@code classification} of {@code GeneClass}. 2.- {@code rejectedGenes} (with
+ * {@code rejectedGenes_comments}) property from {@code RejectedGenesClass} and for each such document migrate property
+ * value to the {@code genes} (with {@code genes_comments}) object with "rejected" value of {@code classification} of
+ * {@code GeneClass}. 3.- {@code solved__gene_id} property from {@code PatientClass} and for each such document migrate
+ * property value to the {@code genes} (with {@code genes_comments}) object with "solved" value of
+ * {@code classification} of {@code GeneClass}. The old {@code rejectedGenes}, {@code rejectedGenes_comments},
+ * {@code solved__gene_id} properties and {@code RejectedGenesClass} are removed.
  *
  * @version $Id$
  * @since 1.2M1
@@ -97,7 +96,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Migrate all existing gene values to the InvestigationClass objects";
+        return "Migrate all existing gene values to the GeneClass objects";
     }
 
     @Override
@@ -119,8 +118,8 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         XWiki xwiki = context.getWiki();
         DocumentReference patientClassReference =
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
-        DocumentReference investigationClassReference =
-            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "InvestigationClass");
+        DocumentReference geneClassReference =
+            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "GeneClass");
         DocumentReference rejectedGenesClassReference =
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "RejectedGenesClass");
 
@@ -128,28 +127,28 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
                 + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
                 + SOLVED_NAME + "' and p.value <> ''");
-        setSolvedGenes(q, xwiki, patientClassReference, investigationClassReference, context, session);
+        setSolvedGenes(q, xwiki, patientClassReference, geneClassReference, context, session);
 
-        q = session.createQuery(BEGINNING + this.serializer.serialize(investigationClassReference) + ENDING);
-        setCandidateGenes(q, xwiki, investigationClassReference, context, session);
+        q = session.createQuery(BEGINNING + this.serializer.serialize(geneClassReference) + ENDING);
+        setCandidateGenes(q, xwiki, geneClassReference, context, session);
 
         q = session.createQuery(BEGINNING + this.serializer.serialize(rejectedGenesClassReference) + ENDING);
-        setRejectedGenes(q, xwiki, rejectedGenesClassReference, investigationClassReference, context, session);
+        setRejectedGenes(q, xwiki, rejectedGenesClassReference, geneClassReference, context, session);
 
         return null;
     }
 
-    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference investigationClassReference,
+    private void setCandidateGenes(Query q, XWiki xwiki, DocumentReference geneClassReference,
         XWikiContext context, Session session) throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
         for (String docName : docs) {
             XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
-            BaseObject gene = doc.getXObject(investigationClassReference);
+            BaseObject gene = doc.getXObject(geneClassReference);
             gene.set(CLASSIFICATION_NAME, "candidate", context);
             doc.setComment("Adding 'candidate' classification to existing "
-                + "candidate gene values in the InvestigationClass objects");
+                + "candidate gene values in the GeneClass objects");
             doc.setMinorEdit(true);
             try {
                 session.clear();
@@ -162,7 +161,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     }
 
     private void setSolvedGenes(Query q, XWiki xwiki, DocumentReference patientClassReference,
-        DocumentReference investigationClassReference, XWikiContext context, Session session)
+        DocumentReference geneClassReference, XWikiContext context, Session session)
         throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
@@ -172,10 +171,10 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             BaseObject patient = doc.getXObject(patientClassReference);
             StringProperty oldTarget = (StringProperty) patient.get(SOLVED_NAME);
             patient.removeField(SOLVED_NAME);
-            BaseObject gene = doc.newXObject(investigationClassReference, context);
+            BaseObject gene = doc.newXObject(geneClassReference, context);
             gene.set(GENE_NAME, oldTarget.getValue(), context);
             gene.set(CLASSIFICATION_NAME, "solved", context);
-            doc.setComment("Migrate solved gene values to the InvestigationClass objects");
+            doc.setComment("Migrate solved gene values to the GeneClass objects");
             doc.setMinorEdit(true);
             try {
                 // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
@@ -190,7 +189,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     }
 
     private void setRejectedGenes(Query q, XWiki xwiki, DocumentReference rejectedGenesClassReference,
-        DocumentReference investigationClassReference, XWikiContext context, Session session)
+        DocumentReference geneClassReference, XWikiContext context, Session session)
         throws HibernateException, XWikiException
     {
         @SuppressWarnings("unchecked")
@@ -200,11 +199,11 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             BaseObject gene = doc.getXObject(rejectedGenesClassReference);
             StringProperty oldGeneName = (StringProperty) gene.get(GENE_NAME);
             LargeStringProperty oldGeneComments = (LargeStringProperty) gene.get(COMMENTS_NAME);
-            BaseObject newgene = doc.newXObject(investigationClassReference, context);
+            BaseObject newgene = doc.newXObject(geneClassReference, context);
             newgene.set(GENE_NAME, oldGeneName.getValue(), context);
             newgene.set(COMMENTS_NAME, oldGeneComments.getValue(), context);
             newgene.set(CLASSIFICATION_NAME, "rejected", context);
-            doc.setComment("Migrating rejected genes to the InvestigationClass objects");
+            doc.setComment("Migrating rejected genes to the GeneClass objects");
             doc.setMinorEdit(true);
             doc.removeXObjects(rejectedGenesClassReference);
             try {

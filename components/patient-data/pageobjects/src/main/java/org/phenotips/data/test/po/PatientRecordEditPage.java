@@ -35,7 +35,7 @@ import org.openqa.selenium.support.ui.Select;
 public class PatientRecordEditPage extends InlinePage
 {
     @FindBy(css = "#document-title h1")
-    private WebElement recordId;
+    WebElement recordId;
 
     @FindBy(id = "HFamilyhistoryandpedigree")
     private WebElement familyHistorySectionHeading;
@@ -46,6 +46,9 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_paternal_ethnicity_2")
     private WebElement paternalEthnicity;
 
+    @FindBy(id = "PhenoTips.PatientClass_0_global_mode_of_inheritance_HP:0010982")
+    WebElement polygenicInheritance;
+
     @FindBy(id = "HPrenatalandperinatalhistory")
     private WebElement prenatalAndPerinatalHistorySectionHeading;
 
@@ -54,6 +57,18 @@ public class PatientRecordEditPage extends InlinePage
 
     @FindBy(css = ".fieldset.gestation input[type=\"text\"]")
     private WebElement gestationAtDelivery;
+
+    @FindBy(css = ".fieldset.assistedReproduction_fertilityMeds .yes")
+    WebElement conceptionAfterFertilityMedication;
+
+    @FindBy(css = ".fieldset.ivf .yes")
+    WebElement inVitroFertilization;
+
+    @FindBy(css = ".fieldset.assistedReproduction_surrogacy .yes")
+    WebElement gestationalSurrogacy;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_prenatal_development")
+    WebElement prenatalAndPerinatalHistoryNotes;
 
     @FindBy(id = "HMedicalhistory")
     private WebElement medicalHistorySectionHeading;
@@ -64,7 +79,8 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(css = ".measurement-info.chapter .list-actions a.add-data-button")
     private WebElement newEntryMeasurements;
 
-    /* MEASUREMENT ELEMENTS */
+    @FindBy(xpath = "//*[contains(@class, 'measurement-info')]//*[@class = 'list-actions']//*[contains(@class, 'add-data-button')]")
+    WebElement newEntryMeasurements;
 
     @FindBy(id = "PhenoTips.MeasurementsClass_0_weight")
     private WebElement measurementWeight;
@@ -119,6 +135,9 @@ public class PatientRecordEditPage extends InlinePage
 
     @FindBy(id = "PhenoTips.MeasurementsClass_0_foot_right")
     private WebElement measurementRightFootLength;
+
+    @FindBy(id = "HGrowthcharts")
+    WebElement expandGrowthCharts;
 
     @FindBy(id = "HGenotypeinformation")
     private WebElement genotypeInformationSectionHeading;
@@ -351,6 +370,18 @@ public class PatientRecordEditPage extends InlinePage
 
     @FindBy(xpath = "//*[contains(@class, 'suggestItems')]//*[@class = 'hide-button-wrapper']//*[@class = 'hide-button']")
     private WebElement hideQuickSearchBarSuggestions;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_apgar1")
+    WebElement APGAR1Minute;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_apgar5")
+    WebElement APGAR5Minutes;
+
+    @FindBy(id = "PhenoTips.PatientClass_0_date_of_birth")
+    WebElement dateOfBirth;
+
+    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'year']")
+    WebElement setYearDateOfBirth;
 
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'month']")
     private WebElement setMonthDate;
@@ -632,305 +663,9 @@ public class PatientRecordEditPage extends InlinePage
         return new PatientRecordEditPage();
     }
 
-    public void clickBody()
-    {
-        this.body.click();
-    }
-
     public String getPatientRecordId()
     {
         return this.recordId.getText();
-    }
-
-    /* PATIENT INFORMATION */
-
-    /**
-     * Sets the first and last name of the patient
-     *
-     * @param first patient first name
-     * @param last patient last name
-     */
-    public void setPatientName(String first, String last)
-    {
-        // first name
-        this.patientLastName.clear();
-        this.patientLastName.sendKeys(first);
-
-        // last name
-        this.patientFirstName.clear();
-        this.patientFirstName.sendKeys(last);
-    }
-
-    /**
-     * Sets the full birthdate of the patient
-     *
-     * @param day the birthdate of the patient
-     * @param month the birthmonth of the patient
-     * @param year the birthyear of the patient
-     */
-    public void setPatientDateOfBirth(String day, String month, String year)
-    {
-        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(1) > select")))
-            .selectByVisibleText(year);
-        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
-            .selectByVisibleText(month);
-        new Select(this.birthDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
-            .selectByVisibleText(day);
-    }
-
-    /**
-     * Sets the date of passing of the patient
-     *
-     * @param day the day of death of the patient
-     * @param month the month death of the patient
-     * @param year the year death of the patient
-     */
-    public void setPatientDateOfDeath(String day, String month, String year)
-    {
-        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(1) > select")))
-            .selectByVisibleText(year);
-        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(2) > select")))
-            .selectByVisibleText(month);
-        new Select(this.deathDateSelector.findElement(By.cssSelector("span:nth-child(3) > select")))
-            .selectByVisibleText(day);
-    }
-
-    /**
-     * Sets the gender of the patient
-     *
-     * @param gender one of {@code male}, {@code female} or {@code other}
-     */
-    public void setPatientGender(String gender)
-    {
-        if (gender == "male") {
-            this.patientGenderMale.click();
-        } else if (gender == "female") {
-            this.patientGenderFemale.click();
-        } else if (gender == "other") {
-            this.patientGenderOther.click();
-        }
-        this.body.click();
-    }
-
-    public void expandFamilyHistory()
-    {
-        this.familyHistorySectionHeading.click();
-    }
-
-    /**
-     * Creates a new entry for family studies
-     *
-     * @param relative type of relative; one of "Child", "Parent", "Sibling"... etc.
-     * @param relative_id the reference if of the relative in the system
-     */
-    public void newEntryFamilyStudy(String relative, String relative_id)
-    {
-        // click new family study button
-        this.newEntryFamilyStudy.click();
-
-        // select the type of relative
-        // this.waitUntilElementIsVisible(By.id("PhenoTips.RelativeClass_0_relative_type"));
-        new Select(this.thisPatientIsThe).selectByVisibleText(relative);
-
-        // input the id of the relative
-        this.ofPatientWithIdentifier.clear();
-        this.ofPatientWithIdentifier.sendKeys(relative_id);
-    }
-
-    /**
-     * Sets ethnicities in Family History tab
-     *
-     * @param maternal the maternal ethnicity of the patient
-     * @param paternal the paternal ethnicity of the patient
-     */
-    public void setEthnicites(String maternal, String paternal)
-    {
-        this.maternalEthnicity.clear();
-        this.maternalEthnicity.sendKeys(maternal);
-
-        this.paternalEthnicity.clear();
-        this.paternalEthnicity.sendKeys(paternal);
-    }
-
-    /**
-     * Checkboxes global mode of inheritance for autosomal, polygenic and sporadic
-     */
-    public void setGlobalModeOfInheritance()
-    {
-        this.globalInheritanceAutosomal.click();
-        this.globalInheritancePolygenic.click();
-        this.globalInheritanceSporadic.click();
-    }
-
-    /* PRENETAL AND PERINATAL HISTORY */
-
-    public void expandPrenatalAndPerinatalHistory()
-    {
-        this.prenatalAndPerinatalHistorySectionHeading.click();
-    }
-
-    /**
-     * Sets prenatal gestration at birth text box and checks the term birth box if wanted
-     *
-     * @param weeks the number of weeks to input in the text box
-     */
-    public void setPrenatalGestationAtDelivery(String weeks)
-    {
-        this.gestationAtDelivery.clear();
-        this.gestationAtDelivery.sendKeys(weeks);
-    }
-
-    /**
-     * Sets the yes and no values for assisted reproduction boxes
-     */
-    public void setAssistedReproduction()
-    {
-        this.assistedReproductionFertilityYes.click();
-        this.assistedReproductionInVitroNo.click();
-    }
-
-    /**
-     * Sets APGAR scores from the one and five minute options
-     *
-     * @param oneMinute a string that this one of the numbers "1" to "10" or "Unknown" for the one minute APGAR
-     * @param fiveMinute a string that this one of the numbers "1" to "10" or "Unknown" for the five minute APGAR
-     */
-    public void setAPGARScores(String oneMinute, String fiveMinutes)
-    {
-        // this.waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_apgar1"));
-        new Select(this.APGAROneMinute).selectByVisibleText(oneMinute);
-
-        // this.waitUntilElementDisappears(By.id("PhenoTips.PatientClass_0_apgar5"));
-        new Select(this.APGARFiveMinutes).selectByVisibleText(fiveMinutes);
-    }
-
-    public void setPrenatalNotes(String notes)
-    {
-        this.prenatalNotes.clear();
-        this.prenatalNotes.sendKeys(notes);
-    }
-
-    /**
-     * Sets the prenatal growth parameters
-     *
-     * @param other the text to goes in the other text box
-     */
-    public void setPrenatalGrowthParameters(String other)
-    {
-        // doesn't work, element isn't visible
-        this.prenatalGrowthSmallGestationalYes.click();
-        this.prenatalGrowthLargeBirthYes.click();
-        this.prenatalGrowthOther.clear();
-        this.prenatalGrowthOther.sendKeys();
-    }
-
-    /**
-     * Sets the prenatal developement or birth information
-     *
-     * @param other the text that goes in the other text box
-     */
-    public void setPrenatalDevelopmentOrBirth(String other)
-    {
-        // doesn't work, element isn't visible
-        this.prenatalDevelopmentPolyhydramniosNo.click();
-        this.prenatalDevelopmentOther.clear();
-        this.prenatalDevelopmentOther.sendKeys(other);
-    }
-
-    /**
-     * Enters text in the "medical and developmental history text box
-     *
-     * @param history the text to be entered
-     */
-    public void setMedicalHistory(String history)
-    {
-        this.medicalHistory.clear();
-        this.medicalHistory.sendKeys(history);
-
-    }
-
-    /**
-     * Clicks the radio button "Late onset" in the radio group of "Global age at onset" buttons
-     */
-    public void setLateOnset()
-    {
-        this.lateOnset.click();
-    }
-
-    /**
-     * Returns the number of elements that match the css for the "upload image" button
-     *
-     * @return the number of elements matching this css
-     */
-    public int findElementsUploadImage()
-    {
-        return getDriver()
-            .findElements(
-                By.cssSelector("#PhenoTips\\2e PatientClass_0_reports_history_container > div.actions > span > a"))
-            .size();
-    }
-
-    public void clickTermBirth()
-    {
-        this.checkTermBirth.click();
-    }
-
-    public void openNewEntryListOfCandidateGenes()
-    {
-        this.newEntryListOfCandidateGenes.click();
-    }
-
-    public int checkGeneCandidateSearchHideSuggestions(String search)
-    {
-        this.geneCandidateSearch.clear();
-        this.geneCandidateSearch.sendKeys(search);
-        return getDriver()
-            .findElements(By.cssSelector("#body > div.suggestItems.ajaxsuggest > div:nth-child(1) > span")).size();
-    }
-
-    public void setGeneCandidateComment(String comment)
-    {
-        this.geneCandidateComment.clear();
-        this.geneCandidateComment.sendKeys(comment);
-    }
-
-    public void openNewEntryPreviouslyTested()
-    {
-        this.newEntryPreviouslyTested.click();
-    }
-
-    public int checkGenePreviouslySearchHideSuggestions(String search)
-    {
-        this.genePreviously.clear();
-        this.genePreviously.sendKeys(search);
-        return getDriver()
-            .findElements(By.cssSelector("#body > div.suggestItems.ajaxsuggest > div:nth-child(1) > span")).size();
-    }
-
-    public void setPreviouslyTestedGenesComment(String comment)
-    {
-        this.genePreviouslyTestedComment.clear();
-        this.genePreviouslyTestedComment.sendKeys(comment);
-    }
-
-    public void expandCaseResolution()
-    {
-        this.caseResolutionSectionHeading.click();
-    }
-
-    public void setCaseSolved()
-    {
-        this.caseSolved.click();
-    }
-
-    public void setIDsAndNotes(String pID, String gID, String notes)
-    {
-        this.pubmedID.clear();
-        this.pubmedID.sendKeys(pID);
-        this.geneID.clear();
-        this.geneID.sendKeys(gID);
-        this.resolutionNotes.clear();
-        this.resolutionNotes.sendKeys(notes);
     }
 
     public void setPatientIdentifier(String value)
@@ -939,20 +674,164 @@ public class PatientRecordEditPage extends InlinePage
         this.patientIdentifier.sendKeys(value);
     }
 
+    public void setPatientLastName(String value)
+    {
+        this.patientLastName.clear();
+        this.patientLastName.sendKeys(value);
+    }
+
+    public void setPatientFirstName(String value)
+    {
+        this.patientFirstName.clear();
+        this.patientFirstName.sendKeys(value);
+    }
+
+    public void setMaleGender()
+    {
+        this.patientGenderMale.click();
+        this.body.click();
+    }
+
+    public void setFemaleGender()
+    {
+        this.genderFemale.click();
+        this.body.click();
+    }
+
+    public void expandFamilyHistory()
+    {
+        this.familyHistorySectionTitle.click();
+    }
+
+    public boolean checkFamilyHistoryExpanded()
+    {
+        try {
+            getDriver().findElement(By.id("PhenoTips.PatientClass_0_maternal_ethnicity_2"));
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+
+        }
+    }
+
+    public void setMaternalEthnicity(String value)
+    {
+        this.maternalEthnicity.clear();
+        this.maternalEthnicity.sendKeys(value);
+    }
+
+    public void setPaternalEthnicity(String value)
+    {
+        this.paternalEthnicity.clear();
+        this.paternalEthnicity.sendKeys(value);
+    }
+
+    public void polygenicInheritance()
+    {
+        this.polygenicInheritance.click();
+    }
+
+    public void setConsanguinityYes()
+    {
+        this.yesConsanguinity.click();
+    }
+
+    public void setMiscarriagesNo()
+    {
+        /*
+         * getUtil().hasElement(By.xpath("//*[text() = 'Miscarriages']")); getDriver().findElements(null).isEmpty();
+         */
+
+        this.noMiscarriages.click();
+    }
+
     public void familyHealthConditions(String value)
     {
         this.familyHealthConditions.clear();
         this.familyHealthConditions.sendKeys(value);
     }
 
+    public void expandPrenatalAndPerinatalHistory()
+    {
+        this.expandPrenatalAndPerinatalHistory.click();
+    }
+
+    public boolean checkPrenatalAndPerinatalHistoryExpanded()
+    {
+        try {
+            getDriver().findElement(By.id("PhenoTips.PatientClass_0_gestation"));
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+
+        }
+    }
+
+    public void setGestationAtDelivery(String value)
+    {
+        this.gestationAtDelivery.clear();
+        this.gestationAtDelivery.sendKeys(value);
+    }
+
+    public void setConceptionAfterFertilityMedication()
+    {
+        this.conceptionAfterFertilityMedication.click();
+    }
+
+    public void setInVitroFertilization()
+    {
+        this.inVitroFertilization.click();
+    }
+
+    public void setGestationalSurrogacy()
+    {
+        this.gestationalSurrogacy.click();
+    }
+
+    public void setPrenatalAndPerinatalNotes(String value)
+    {
+        this.prenatalAndPerinatalHistoryNotes.clear();
+        this.prenatalAndPerinatalHistoryNotes.sendKeys(value);
+    }
+
+    public void selectPrenatalLowWeight()
+    {
+        BaseElement
+            .getUtil()
+            .findElementWithoutWaiting(getDriver(),
+                By.cssSelector("label[for='PhenoTips.PatientClass_0_prenatal_phenotype_HP:0001518']")).click();
+        ;
+    }
+
     public void expandMedicalHistory()
     {
-        this.medicalHistorySectionHeading.click();
+        this.expandMedicalHistory.click();
+    }
+
+    public String checkMedicalHistoryExpanded()
+    {
+        return this.medicalAndDevelopementalHistory.getText();
+    }
+
+    public void setMedicalAndDevelopmentalHistory(String value)
+    {
+        this.typeMedicalAndDevelopmentalHistory.clear();
+        this.typeMedicalAndDevelopmentalHistory.sendKeys(value);
+    }
+
+    public void setGlobalAgeOfOnset()
+    {
+        this.globalAgeOfOnset.click();
     }
 
     public void expandMeasurements()
     {
-        this.measurementsSectionHeading.click();
+        this.expandMeasurements.click();
+    }
+
+    public String checkIfMeasurementsExpanded()
+    {
+        return this.checkIfMeasurementsExpanded.getText();
     }
 
     public void createNewMeasurementsEntry()
@@ -960,11 +839,9 @@ public class PatientRecordEditPage extends InlinePage
         this.newEntryMeasurements.click();
     }
 
-    /* setting measurements */
-
     public void setMeasurementWeight(String value)
     {
-        // this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.MeasurementsClass_0_weight"));
+        this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.MeasurementsClass_0_weight"));
         this.measurementWeight.clear();
         this.measurementWeight.click();
         this.measurementWeight.sendKeys(value);
@@ -1075,13 +952,21 @@ public class PatientRecordEditPage extends InlinePage
         this.measurementRightFootLength.sendKeys(value);
     }
 
+    public void expandGrowthCharts()
+    {
+        this.expandGrowthCharts.click();
+    }
+
     public boolean checkIfGrowthChartsAreShowing()
     {
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']"));
+                    By.xpath("//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, boys']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1096,23 +981,31 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandGenotypeInformation()
     {
-        this.genotypeInformationSectionHeading.click();
+        this.expandGenotypeInformation.click();
     }
 
-    ///////////////////////////////////
+    public String checkIfGenotypeInformationExpanded()
+    {
+        return this.checkIfGenotypeInformationExpanded.getText();
+    }
 
-    // public void setGenotypeInformationComments(String value)
-    // {
-    // this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.InvestigationClass_0_comments"));
-    // this.genotypeInformationComments.clear();
-    // this.genotypeInformationComments.sendKeys(value);
-    // }
+    public void newEntryGenotypeInformation()
+    {
+        this.newEntryGenotypeInformation.click();
+    }
 
-    // public void setGenotypeInformationGene(String value)
-    // {
-    // this.genotypeInformationGene.clear();
-    // this.genotypeInformationGene.sendKeys(value);
-    // }
+    public void setGenotypeInformationComments(String value)
+    {
+        this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.GeneClass_0_comments"));
+        this.genotypeInformationComments.clear();
+        this.genotypeInformationComments.sendKeys(value);
+    }
+
+    public void setGenotypeInformationGene(String value)
+    {
+        this.genotypeInformationGene.clear();
+        this.genotypeInformationGene.sendKeys(value);
+    }
 
     public void setPatientClinicallyNormal()
     {
@@ -1121,7 +1014,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void expandClinicalSymptomsAndPhysicalFindings()
     {
-        this.clinicalSymptomsAndPhysicalFindings.click();
+        this.expandClinicalSymptomsAndPhysicalFindings.click();
     }
 
     public boolean checkIfClinicalSymptomsAndPhysicalFindingsExpanded(By by)
@@ -1393,21 +1286,32 @@ public class PatientRecordEditPage extends InlinePage
     public void slowPaceOfProgressionAbnormalFacialShape()
     {
 
+        this.getDriver().waitUntilElementIsVisible(
+            By.id("PhenoTips.PhenotypeMetaClass_1_pace_of_progression_HP:0003677"));
         this.slowPaceOfProgressionAbnormalFacialShape.click();
     }
 
     public void hypotelorismAddDetails()
     {
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'summary-item'][.//input[@value = 'HP:0000601']]//*[@class = 'tool'][text() = 'Add details']"));
         this.hypotelorismAddDetails.click();
     }
 
     public void severityHypotelorism()
     {
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'summary-item'][.//input[@value = 'HP:0000601']]//*[contains(@class, 'severity')]//*[@class = 'collapse-button'][text() = '►']"));
         this.severityHypotelorism.click();
     }
 
     public void moderateSeverityHypotelorism()
     {
+        this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.PhenotypeMetaClass_2_severity_HP:0012826"));
         this.moderateSeverityHypotelorism.click();
     }
 
@@ -1418,6 +1322,10 @@ public class PatientRecordEditPage extends InlinePage
 
     public void spatialPatternAbnormalityOfTheInnerEar()
     {
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'group-contents'][.//input[@value = 'HP:0000359']]//*[contains(@class, 'spatial_pattern')]//*[@class = 'collapse-button'][text() = '►']"));
         this.spatialPatternAbnormalityOfTheInnerEar.click();
     }
 
@@ -1511,12 +1419,19 @@ public class PatientRecordEditPage extends InlinePage
 
     public void quickSearchCataractYes()
     {
+        this.getDriver().waitUntilElementIsVisible(By
+            .xpath("//*[@class = 'resultContainer']//*[@class = 'yes'][//input[@value = 'HP:0000518']]"));
         this.quickSearchCataractYes.click();
     }
 
     public void expandDiagnosis()
     {
-        this.diagnosisSectionHeading.click();
+        this.expandDiagnosis.click();
+    }
+
+    public String checkDiagnosisExpaned()
+    {
+        return this.checkDiagnosisExpanded.getText();
     }
 
     public void setDiagnosisAdditionalComments(String value)
@@ -1527,14 +1442,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public void setSmithLemliOptizSyndrome()
     {
-        // this.getDriver().waitUntilElementIsVisible(By.id("result__270400"));
+        this.getDriver().waitUntilElementIsVisible(By.id("result__270400"));
         this.smithLemliOptizSyndrome.click();
 
     }
 
     public void setWatsonSyndrome()
     {
-        // this.getDriver().waitUntilElementIsVisible(By.id("result__193520"));
+        this.getDriver().waitUntilElementIsVisible(By.id("result__193520"));
         this.watsonSyndrome.click();
     }
 
@@ -1564,8 +1479,8 @@ public class PatientRecordEditPage extends InlinePage
 
     public void setDysplasticTestesYes()
     {
-        // this.getDriver().waitUntilElementIsVisible(By
-        // .xpath("//*[@class = 'resultContainer']//*[@class = 'yes'][//input[@value = 'HP:0008733']]"));
+        this.getDriver().waitUntilElementIsVisible(By
+            .xpath("//*[@class = 'resultContainer']//*[@class = 'yes'][//input[@value = 'HP:0008733']]"));
         this.dysplasticTestesYes.click();
     }
 
@@ -1683,7 +1598,7 @@ public class PatientRecordEditPage extends InlinePage
 
     public void setCriDuChatSyndromeFromBottom()
     {
-        // this.getDriver().waitUntilElementIsVisible(By.id("result__123450"));
+        this.getDriver().waitUntilElementIsVisible(By.id("result__123450"));
         this.criDuChatSyndrome.click();
     }
 
@@ -1697,8 +1612,7 @@ public class PatientRecordEditPage extends InlinePage
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'fieldset omim_id']//*[@class = 'displayed-value']//*[@class = 'accepted-suggestion'][@value = '123450']//*[@class = 'value'][text()='#123450 CRI-DU-CHAT SYNDROME ']"));
+                    By.xpath("//*[@class = 'fieldset omim_id']//*[@class = 'displayed-value']//*[@class = 'accepted-suggestion'][@value = '123450']//*[@class = 'value'][text()='#123450 CRI-DU-CHAT SYNDROME ']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1712,8 +1626,7 @@ public class PatientRecordEditPage extends InlinePage
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-item'][.//input[@value = 'HP:0004322']]//*[contains(@class, 'fa-bolt')]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-item'][.//input[@value = 'HP:0004322']]//*[contains(@class, 'fa-bolt')]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1727,8 +1640,7 @@ public class PatientRecordEditPage extends InlinePage
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-item'][.//input[@value = 'HP:0000601']]//*[contains(@class, 'fa-bolt')]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-item'][.//input[@value = 'HP:0000601']]//*[contains(@class, 'fa-bolt')]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1740,15 +1652,14 @@ public class PatientRecordEditPage extends InlinePage
     {
         getDriver()
             .findElement(
-                By.xpath(
-                    "//*[@class = 'fieldset omim_id ']//*[@class = 'displayed-value']//*[@class = 'accepted-suggestion'][@value = '123450']//*[@class = 'value'][text()='#123450 CRI-DU-CHAT SYNDROME ']"))
+                By.xpath("//*[@class = 'fieldset omim_id ']//*[@class = 'displayed-value']//*[@class = 'accepted-suggestion'][@value = '123450']//*[@class = 'value'][text()='#123450 CRI-DU-CHAT SYNDROME ']"))
             .isSelected();
         return true;
     }
 
     public void setCriDuChatFromTop()
     {
-        // this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_omim_id_123450"));
+        this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.PatientClass_0_omim_id_123450"));
         this.criDuChatOMIMTop.click();
     }
 
@@ -1760,14 +1671,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkPreauricularPitAppearsOnRight()
     {
-        // this.getDriver().waitUntilElementIsVisible(By
-        // .xpath("//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0004467']]//*[@class =
-        // 'yes'][text() = 'Preauricular pit']"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0004467']]//*[@class = 'yes'][text() = 'Preauricular pit']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0004467']]//*[@class = 'yes'][text() = 'Preauricular pit']"));
+                    By.xpath("//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0004467']]//*[@class = 'yes'][text() = 'Preauricular pit']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1783,14 +1694,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkNystagmusAppearsOnRightNO()
     {
-        // this.getDriver().waitUntilElementIsVisible(By
-        // .xpath("//*[@class = 'summary-item'][//label[@class = 'no']][//input[@value = 'HP:0000639']]//*[@class =
-        // 'no'][text() = 'Nystagmus']"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'summary-item'][//label[@class = 'no']][//input[@value = 'HP:0000639']]//*[@class = 'no'][text() = 'Nystagmus']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'summary-item'][//label[@class = 'no']][//input[@value = 'HP:0000639']]//*[@class = 'no'][text() = 'Nystagmus']"));
+                    By.xpath("//*[@class = 'summary-item'][//label[@class = 'no']][//input[@value = 'HP:0000639']]//*[@class = 'no'][text() = 'Nystagmus']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1804,8 +1715,7 @@ public class PatientRecordEditPage extends InlinePage
         try {
             return getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[contains(@class, 'term-entry')][.//*[@value = 'HP:0000639']]//label[contains(@class, 'na')]"))
+                    By.xpath("//*[contains(@class, 'term-entry')][.//*[@value = 'HP:0000639']]//label[contains(@class, 'na')]"))
                 .getAttribute("class").contains("selected");
         } catch (NoSuchElementException e) {
             return false;
@@ -1819,14 +1729,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkPolyphagiaDissapearsFromRightInvestigateBox()
     {
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[@class = 'background-search']//*[@class = 'phenotype'][//label[@class = 'yes']][//input[@value = 'HP:0002591']]//*[@class = 'initialized']//*[@class = 'yes-no-picker-label'][text() = 'polyphagia']"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[@class = 'background-search']//*[@class = 'phenotype'][//label[@class = 'yes']][//input[@value = 'HP:0002591']]//*[@class = 'initialized']//*[@class = 'yes-no-picker-label'][text() = 'polyphagia']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'background-search']//*[@class = 'phenotype'][//label[@class = 'yes']][//input[@value = 'HP:0002591']]//*[@class = 'initialized']//*[@class = 'yes-no-picker-label'][text() = 'polyphagia']"));
+                    By.xpath("//*[@class = 'background-search']//*[@class = 'phenotype'][//label[@class = 'yes']][//input[@value = 'HP:0002591']]//*[@class = 'initialized']//*[@class = 'yes-no-picker-label'][text() = 'polyphagia']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -1838,15 +1748,15 @@ public class PatientRecordEditPage extends InlinePage
     public boolean checkImmunodeficiencyDissapearsFromRightInvestigateBox()
     {
 
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
 
         try {
             return !getUtil()
                 .hasElement(
-                    By.xpath(
-                        "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
+                    By.xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0002721']]"));
         } catch (NoSuchElementException e) {
             return false;
 
@@ -1857,15 +1767,15 @@ public class PatientRecordEditPage extends InlinePage
     public boolean checkAbnormalityOfTheCartoidArteriesDissapearsFromRightInvestigateBox()
     {
 
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
 
         try {
             return !getUtil()
                 .hasElement(
-                    By.xpath(
-                        "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
+                    By.xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0005344']]"));
         } catch (NoSuchElementException e) {
             return false;
 
@@ -1876,15 +1786,15 @@ public class PatientRecordEditPage extends InlinePage
     public boolean checkBifidTongueDissapearsFromRightInvestigateBox()
     {
 
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));
 
         try {
             return !getUtil()
                 .hasElement(
-                    By.xpath(
-                        "//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));
+                    By.xpath("//*[contains(@class, 'background-search')]//label[contains(@class, 'yes')][.//input[@value = 'HP:0010297']]"));
         } catch (NoSuchElementException e) {
             return false;
 
@@ -1901,12 +1811,12 @@ public class PatientRecordEditPage extends InlinePage
     {
         this.getDriver()
             .findElement(
-                By.xpath(
-                    "//*[contains(@class, 'suggestItems')]//*[contains(@class, 'suggestItem')][//*[text() = 'Cataract']]//*[contains(@class, 'xHelpButton')]"))
+                By.xpath("//*[contains(@class, 'suggestItems')]//*[contains(@class, 'suggestItem')][//*[text() = 'Cataract']]//*[contains(@class, 'xHelpButton')]"))
             .click();
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[contains(@class, 'xTooltip')]//*[contains(text(), 'Browse related terms')]"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[contains(@class, 'xTooltip')]//*[contains(text(), 'Browse related terms')]"));
         this.browseRelatedTermsCataract.click();
     }
 
@@ -1918,9 +1828,10 @@ public class PatientRecordEditPage extends InlinePage
 
     public String abnormalityOfTheAnteriorSegmentOfTheEye()
     {
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[@class = 'ontology-tree']//*[@class = 'entry parent']//*[@class = 'value'][text() = 'Abnormality of the anterior segment of the eye']"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'ontology-tree']//*[@class = 'entry parent']//*[@class = 'value'][text() = 'Abnormality of the anterior segment of the eye']"));
         return this.abnormalityOfTheAnteriorSegmentOfTheEyeCheck.getText();
     }
 
@@ -1941,19 +1852,34 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkPhacodonesisAppearsOnRight()
     {
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0012629']]//*[@class = 'yes'][text() = 'Phacodonesis']"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0012629']]//*[@class = 'yes'][text() = 'Phacodonesis']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0012629']]//*[@class = 'yes'][text() = 'Phacodonesis']"));
+                    By.xpath("//*[@class = 'summary-item'][//label[@class = 'yes']][//input[@value = 'HP:0012629']]//*[@class = 'yes'][text() = 'Phacodonesis']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
 
         }
+    }
+
+    public void setApgar1Score(String score)
+    {
+        new Select(this.APGAR1Minute).selectByVisibleText(score);
+    }
+
+    public void setApgar5Score(String score)
+    {
+        new Select(this.APGAR5Minutes).selectByVisibleText(score);
+    }
+
+    public void openDateOfBirth()
+    {
+        this.dateOfBirth.click();
     }
 
     public void openDateOfMeasurements()
@@ -2049,6 +1975,11 @@ public class PatientRecordEditPage extends InlinePage
     public void closeMoreInfoNewEntryFamilyStudy()
     {
         this.closeMoreInfoNewEntryFamilyStudy.click();
+    }
+
+    public void newEntryFamilyStudy()
+    {
+        this.newEntryFamilyStudy.click();
     }
 
     public void setPatientIsTheRelativeOf(String relative)
@@ -2147,14 +2078,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkYouMayWantToInvestigateHid()
     {
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[@class = 'background-suggestions]//*[@class = 'phenotype'][@class = 'yes'][//input[@value = 'HP:0000878']]//*[@class = 'yes-no-picker']"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[@class = 'background-suggestions]//*[@class = 'phenotype'][@class = 'yes'][//input[@value = 'HP:0000878']]//*[@class = 'yes-no-picker']"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@class = 'background-suggestions]//*[@class = 'phenotype'][@class = 'yes'][//input[@value = 'HP:0000878']]//*[@class = 'yes-no-picker']"));
+                    By.xpath("//*[@class = 'background-suggestions]//*[@class = 'phenotype'][@class = 'yes'][//input[@value = 'HP:0000878']]//*[@class = 'yes-no-picker']"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -2223,14 +2154,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkDecreasedBodyWeight()
     {
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -2240,14 +2171,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkDecreasedBodyWeightDisappears()
     {
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004325']]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -2257,14 +2188,14 @@ public class PatientRecordEditPage extends InlinePage
 
     public boolean checkShortStature()
     {
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -2275,14 +2206,14 @@ public class PatientRecordEditPage extends InlinePage
     public boolean checkShortStatureDisappears()
     {
 
-        this.getDriver().waitUntilElementDisappears(By
-            .xpath(
-                "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
+        this.getDriver()
+        .waitUntilElementDisappears(
+            By
+            .xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
         try {
             getDriver()
                 .findElement(
-                    By.xpath(
-                        "//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
+                    By.xpath("//*[@id = 'current-phenotype-selection']//*[@class = 'summary-group']//*[@class = 'yes'][.//input[@value = 'HP:0004322']]"));
             return true;
         } catch (NoSuchElementException e) {
             return false;
@@ -2298,9 +2229,10 @@ public class PatientRecordEditPage extends InlinePage
 
     public String checkChartTitleChangesFemale()
     {
-        this.getDriver().waitUntilElementIsVisible(By
-            .xpath(
-                "//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, girls']"));
+        this.getDriver()
+        .waitUntilElementIsVisible(
+            By
+            .xpath("//*[contains(@class, 'growth-charts-section')]//*[@id = 'charts']//*[contains(@class, 'chart-wrapper')]//*[text() = 'Weight for age, birth to 36 months, girls']"));
         return this.chartTitleGirls.getText();
     }
 
@@ -2334,11 +2266,5 @@ public class PatientRecordEditPage extends InlinePage
     protected PatientRecordViewPage createViewPage()
     {
         return new PatientRecordViewPage();
-    }
-
-    @Override
-    public void waitUntilPageJSIsLoaded()
-    {
-        getDriver().waitUntilJavascriptCondition("return window.Prototype != null && window.Prototype.Version != null");
     }
 }

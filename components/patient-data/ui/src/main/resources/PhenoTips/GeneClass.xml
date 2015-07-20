@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>InvestigationClass</name>
+  <name>GeneClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>PhenoTips.InvestigationClass</name>
+    <name>PhenoTips.GeneClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -108,7 +108,7 @@
     <gene>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='$services.localization.render('Phenotips.InvestigationClass.geneNamePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' class='suggested suggest-gene gene-name' placeholder='$services.localization.render('Phenotips.GeneClass.geneNamePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_name' class='gene-name' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
