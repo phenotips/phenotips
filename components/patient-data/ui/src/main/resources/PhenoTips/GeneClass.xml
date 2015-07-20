@@ -67,7 +67,7 @@
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>radio</displayType>
+      <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>evidence</name>
       <number>4</number>
@@ -88,7 +88,7 @@
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>radio</displayType>
+      <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>classification</name>
       <number>3</number>

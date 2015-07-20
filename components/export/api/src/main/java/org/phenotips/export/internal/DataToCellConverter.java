@@ -267,13 +267,15 @@ public class DataToCellConverter
     {
         String sectionName = "variants";
         String[] fieldIds =
-        { "variants", "variants_genesymbol", "variants_interpretation", "variants_inheritance",
+        { "variants", "variants_genesymbol", "variants_interpretation", "variants_status", "variants_inheritance",
         "variants_validated" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
-        { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
-        { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
+        { "interpretation", "genesymbol", "hgvs_id" },
+        { "status", "inheritance", "interpretation", "genesymbol", "hgvs_id" },
+        { "inheritance", "status", "inheritance", "interpretation", "genesymbol", "hgvs_id" },
+        { "validated", "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -325,6 +327,131 @@ public class DataToCellConverter
         DataCell sectionHeader = new DataCell("Genotype", 0, 0, StyleOption.HEADER);
         sectionHeader.addStyle(StyleOption.LARGE_HEADER);
         section.addCell(sectionHeader);
+
+        return section;
+    }
+
+    public DataSection variantsHeader() throws Exception
+    {
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataSection section = new DataSection();
+
+        int hX = 0;
+        DataCell cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        cell = new DataCell("HGVS Variant Name", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        if (present.contains("genesymbol")) {
+            cell = new DataCell("Gene Symbol", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("interpretation")) {
+            cell = new DataCell("Interpretation (ACMG category)", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("status")) {
+            cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("inheritance")) {
+            cell = new DataCell("Inheritance", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("validated")) {
+            cell = new DataCell("Validated", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        DataCell sectionHeader = new DataCell("Genotype - Variants", 0, 0, StyleOption.HEADER);
+        sectionHeader.addStyle(StyleOption.LARGE_HEADER);
+        section.addCell(sectionHeader);
+
+        return section;
+    }
+
+    public DataSection variantsBody(Patient patient) throws Exception
+    {
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        // empties should be created in the case that there are no variants to write
+        boolean hasVariants = false;
+
+        DataSection section = new DataSection();
+        int y = 0;
+
+        if (present.contains("hgvs_id")) {
+            PatientData<Map<String, String>> variants = patient.getData("variants");
+            if (variants != null && variants.isIndexed()) {
+                DataCell cell = new DataCell("Variants", 0, y);
+                section.addCell(cell);
+                for (Map<String, String> variant : variants) {
+                    hasVariants = true;
+                    String variantName = variant.get("hgvs_id");
+                    cell = new DataCell(variantName, 1, y);
+                    section.addCell(cell);
+                    if (present.contains("genesymbol")) {
+                        String genesymbol = variant.get("genesymbol");
+                        cell = new DataCell(genesymbol, 2, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("interpretation")) {
+                        String interpretation = variant.get("interpretation");
+                        cell = new DataCell(interpretation, 3, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("status")) {
+                        String status = variant.get("status");
+                        cell = new DataCell(status, 4, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("inheritance")) {
+                        String inheritance = variant.get("inheritance");
+                        cell = new DataCell(inheritance, 5, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("validated")) {
+                        String validated = variant.get("validated");
+                        cell = new DataCell(validated, 6, y);
+                        section.addCell(cell);
+                    }
+                    y++;
+                }
+            }
+        }
+
+        /* Creating empties */
+        if (!hasVariants) {
+            /* Status and variant name columns are always present */
+            int columns = present.size();
+            Integer emptyX = 0;
+            for (int i = 0; i < columns; i++) {
+                DataCell cell = new DataCell("", emptyX, 0);
+                section.addCell(cell);
+                emptyX++;
+            }
+        }
 
         return section;
     }

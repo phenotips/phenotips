@@ -75,6 +75,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
 
+    private static final String VARIANTS_STATUS_ENABLING_FIELD_NAME = "variants_status";
+
     private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
 
     private static final String VARIANTS_VALIDATED_ENABLING_FIELD_NAME = "variants_validated";
@@ -84,6 +86,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private static final String GENESYMBOL_KEY = "genesymbol";
 
     private static final String INTERPRETATION_KEY = "interpretation";
+
+    private static final String STATUS_KEY = "status";
 
     private static final String INHERITANCE_KEY = "inheritance";
 
@@ -107,7 +111,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
+        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, INTERPRETATION_KEY, STATUS_KEY, INHERITANCE_KEY,
+            VALIDATED_KEY);
     }
 
     @Override
@@ -145,6 +150,23 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return interpretation;
     }
 
+    private String parseStatus(String value)
+    {
+        String classification = "";
+        switch (value) {
+            case "solved":
+                classification = "Confirmed causal";
+                break;
+            case "rejected":
+                classification = "Rejected";
+                break;
+            default:
+                classification = "Unknown";
+                break;
+        }
+        return classification;
+    }
+
     @Override
     public PatientData<Map<String, String>> load(Patient patient)
     {
@@ -165,6 +187,9 @@ public class VariantListController extends AbstractComplexController<Map<String,
                         switch (property) {
                             case INTERPRETATION_KEY:
                                 value = parseInterpretation(field.getValue());
+                                break;
+                            case STATUS_KEY:
+                                value = parseStatus(field.getValue());
                                 break;
                             default:
                                 value = field.getValue();
@@ -219,9 +244,10 @@ public class VariantListController extends AbstractComplexController<Map<String,
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
         List<String> keys =
-            Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
+            Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, STATUS_KEY, INHERITANCE_KEY, VALIDATED_KEY);
         List<String> enablingProperties =
             Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
+                VARIANTS_STATUS_ENABLING_FIELD_NAME,
                 VARIANTS_INHERITANCE_ENABLING_FIELD_NAME, VARIANTS_VALIDATED_ENABLING_FIELD_NAME);
 
         while (iterator.hasNext()) {
