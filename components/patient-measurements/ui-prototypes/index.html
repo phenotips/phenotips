@@ -4,6 +4,56 @@
 	<meta charset="UTF-8">
 	<title>pt-22</title>
 	<style>
+		#measurements {
+			float: left;
+			position: absolute;
+			left: 0; top: 0;
+		}
+		#charts {
+			border: 1px solid black;
+			padding: 15px;
+			padding-left: 260px;
+			position: relative;
+		}
+		#charts .sets {
+			width: 120px;
+			position: absolute; top: 0; left: 0;
+		}
+		#charts .sets > div {
+			cursor: pointer;
+			padding: 10px;
+		}
+		#charts .sets > div.selected::after {
+			content: ' >';
+		}
+		#charts .chart-thumbs {
+			width: 140px;
+			position: absolute; top: 0; left: 100px;
+			overflow-y: scroll; overflow-x: hidden;
+		}
+		#charts .chart-thumbs img {
+			width: 100px;
+			display: block;
+			margin: 0 auto;
+		}
+		#charts .chart-thumbs > div {
+			margin-bottom: 20px;
+			cursor: pointer;
+		}
+		#charts .chart-thumbs > div > span {
+			text-align: center;
+			display: block;
+			padding-top: 5px;
+		}
+		#charts img.main {
+			max-width: 100%;
+			max-height: 100%;
+		}
+		#container {
+			position: relative;
+			padding-left: 400px;
+			min-height: 200px;
+		}
 		.measurement {
 			padding: 0.2em 0;
 			clear: both;
@@ -83,8 +133,15 @@
 			clone.select('div.more')[0].hide();
 			clone.select('button.toggle-more')[0].observe('click', function() {
 				this.up().select('div.more')[0].toggle();
+				var button = this.up().select('button.toggle-more')[0];
+				if (this.up().select('div.more')[0].visible()) {
+					button.innerHTML = '- Show less';
+				} else {
+					button.innerHTML = '+ Show more';
+				}
 			});
-			$('measurements').insert(clone);
+			$('measurements').insertBefore(clone, $$('#measurements > p')[0]);
+			// $('measurements').insert(clone);
 			return clone;
 		};
 
@@ -105,8 +162,13 @@
 
 			var pctl = this.up().select('.pctl')[0];
 			pctl.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
-			pctl.addClassName(className);
-			pctl.innerText = pctlText;
+
+			if (this.value.length) {
+				pctl.addClassName(className);
+				pctl.innerText = pctlText;
+			} else {
+				pctl.innerText = '';
+			}
 		};
 
 		var dateChangeHandler = function() {
@@ -128,61 +190,20 @@
 <body>
 	<label>Birthdate:</label> 
 	<input type="date" id="bday">
-	<div id="measurements">
-		<div class="measurement-set proto">
-			<span class="delete">&times;</span>
-			<label for="date">Date:</label> <input class="date" type="date">
-			<label for="">Age:</label> <input type="text" size="2" class="years">y <input type="text" size="2" class="months">m
 
-			<div class="measurements">
-				<div class="measurement">
-					<div class="measurement-row">
-						<label>Weight</label>
-						<span class="side-label"></span>
-						<input type="text" size="5">
-						<span class="unit">cm</span>
-						<span class="pctl"></span>
-					</div>
-				</div>
-				<div class="measurement">
-					<div class="measurement-row">
-						<label>Height</label>
-						<span class="side-label"></span>
-						<input type="text" size="5">
-						<span class="unit">cm</span>
-						<span class="pctl"></span>
-					</div>
-				</div>
-				<div class="measurement">
-					<div class="measurement-row">
-						<label>Arm Span</label>
-						<span class="side-label">L</span>
-						<input type="text" size="5">
-						<span class="unit">cm</span>
-						<span class="pctl"></span>
-					</div>
-					<div class="measurement-row">
-						<label></label>
-						<span class="side-label">R</span>
-						<input type="text" size="5">
-						<span class="unit">cm</span>
-						<span class="pctl"></span>
-					</div>
-				</div>
-				<div class="measurement">
-					<div class="measurement-row">
-						<label>Head Circumference</label>
-						<span class="side-label"></span>
-						<input type="text" size="5">
-						<span class="unit">cm</span>
-						<span class="pctl"></span>
-					</div>
-				</div>
-				<button class="toggle-more">+ Show more</button>
-				<div class="more">
+	<p style="clear: both;"></p>
+
+	<div id="container">
+		<div id="measurements">
+			<div class="measurement-set proto">
+				<span class="delete">&times;</span>
+				<label for="date">Date:</label> <input class="date" type="date">
+				<label for="">Age:</label> <input type="text" size="2" class="years">y <input type="text" size="2" class="months">m
+
+				<div class="measurements">
 					<div class="measurement">
 						<div class="measurement-row">
-							<label>Outer Canthal Distance</label>
+							<label>Weight</label>
 							<span class="side-label"></span>
 							<input type="text" size="5">
 							<span class="unit">cm</span>
@@ -191,7 +212,7 @@
 					</div>
 					<div class="measurement">
 						<div class="measurement-row">
-							<label>Inner Canthal Distance</label>
+							<label>Height</label>
 							<span class="side-label"></span>
 							<input type="text" size="5">
 							<span class="unit">cm</span>
@@ -200,7 +221,7 @@
 					</div>
 					<div class="measurement">
 						<div class="measurement-row">
-							<label>Hand Length</label>
+							<label>Arm Span</label>
 							<span class="side-label">L</span>
 							<input type="text" size="5">
 							<span class="unit">cm</span>
@@ -216,148 +237,226 @@
 					</div>
 					<div class="measurement">
 						<div class="measurement-row">
-							<label>Palm Length</label>
-							<span class="side-label">L</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
-						</div>
-						<div class="measurement-row">
-							<label></label>
-							<span class="side-label">R</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
-						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Foot Length</label>
-							<span class="side-label">L</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
-						</div>
-						<div class="measurement-row">
-							<label></label>
-							<span class="side-label">R</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
-						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Sitting Height</label>
+							<label>Head Circumference</label>
 							<span class="side-label"></span>
 							<input type="text" size="5">
 							<span class="unit">cm</span>
 							<span class="pctl"></span>
 						</div>
 					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Philtrum Length</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+					<button class="toggle-more">+ Show more</button>
+					<div class="more">
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Outer Canthal Distance</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Ear Length</label>
-							<span class="side-label">L</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Inner Canthal Distance</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-						<div class="measurement-row">
-							<label></label>
-							<span class="side-label">R</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Hand Length</label>
+								<span class="side-label">L</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+							<div class="measurement-row">
+								<label></label>
+								<span class="side-label">R</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Palpebral Fissure Length</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Palm Length</label>
+								<span class="side-label">L</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+							<div class="measurement-row">
+								<label></label>
+								<span class="side-label">R</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Interpupilary Distance</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Foot Length</label>
+								<span class="side-label">L</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+							<div class="measurement-row">
+								<label></label>
+								<span class="side-label">R</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Middle Finger Length</label>
-							<span class="side-label">L</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Sitting Height</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-						<div class="measurement-row">
-							<label></label>
-							<span class="side-label">R</span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Philtrum Length</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Internipple Distance</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Ear Length</label>
+								<span class="side-label">L</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+							<div class="measurement-row">
+								<label></label>
+								<span class="side-label">R</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Chest Circumference</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Palpebral Fissure Length</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Upper Segment</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Interpupilary Distance</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
-					</div>
-					<div class="measurement">
-						<div class="measurement-row">
-							<label>Lower Segment</label>
-							<span class="side-label"></span>
-							<input type="text" size="5">
-							<span class="unit">cm</span>
-							<span class="pctl"></span>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Middle Finger Length</label>
+								<span class="side-label">L</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+							<div class="measurement-row">
+								<label></label>
+								<span class="side-label">R</span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+						</div>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Internipple Distance</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+						</div>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Chest Circumference</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+						</div>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Upper Segment</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
+						</div>
+						<div class="measurement">
+							<div class="measurement-row">
+								<label>Lower Segment</label>
+								<span class="side-label"></span>
+								<input type="text" size="5">
+								<span class="unit">cm</span>
+								<span class="pctl"></span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
+			<p style="clear: both;">
+				<button class="btn_add-measurement-set">Add measurement set</button>
+			</p>
+		</div>
+
+		<div id="charts">
+			<div class="sets">
+				<div class="selected">2012-07-15</div>
+				<div>2013-07-15</div>
+				<div>2014-07-15</div>
+				<div>2015-07-15</div>
+			</div>
+			<div class="chart-thumbs">
+				<div>
+					<img src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=height&a=65.49281314168378&height=120.0&standalone=1&f=raster" alt="">
+					<span>Height</span>
+				</div>			
+				<div>
+					<img src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=height&a=65.49281314168378&height=120.0&standalone=1&f=raster" alt="">
+					<span>Weight</span>
+				</div>			
+				<div>
+					<img src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=height&a=65.49281314168378&height=120.0&standalone=1&f=raster" alt="">
+					<span>BMI</span>
+				</div>			
+				<div>
+					<img src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=height&a=65.49281314168378&height=120.0&standalone=1&f=raster" alt="">
+					<span>Arm Span</span>
+				</div>			
+				<div>
+					<img src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=height&a=65.49281314168378&height=120.0&standalone=1&f=raster" alt="">
+					<span>Head Circumference</span>
+				</div>			
+			</div>
+			<img class="main" src="http://localhost:8080/bin/get/PhenoTips/ChartService?n=weight&a=65.49281314168378&weight=20.0&standalone=1&f=raster" alt="">
 		</div>
 	</div>
-
-	<p style="clear: both;">
-		<button class="btn_add-measurement-set">Add measurement set</button>
-	</p>
 
 	<script>
 		init();
