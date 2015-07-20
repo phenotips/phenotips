@@ -51,39 +51,43 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Handles the patients genes.
+ * Handles the patients gene variants.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 @Component(roles = { PatientDataController.class })
-@Named("gene")
+@Named("variant")
 @Singleton
-public class GeneListController extends AbstractComplexController<Map<String, String>>
+public class VariantListController extends AbstractComplexController<Map<String, String>>
 {
-    /** The XClass used for storing gene data. */
-    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+    /** The XClass used for storing variant data. */
+    private static final EntityReference VARIANT_CLASS_REFERENCE = new EntityReference("GeneVariantClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final String GENES_STRING = "genes";
+    private static final String VARIANTS_STRING = "variants";
 
-    private static final String CONTROLLER_NAME = GENES_STRING;
+    private static final String CONTROLLER_NAME = VARIANTS_STRING;
 
-    private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
+    private static final String VARIANTS_ENABLING_FIELD_NAME = VARIANTS_STRING;
 
-    private static final String GENES_CLASSIFICATION_ENABLING_FIELD_NAME = "genes_classification";
+    private static final String VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME = "variants_genesymbol";
 
-    private static final String GENES_EVIDENCE_ENABLING_FIELD_NAME = "genes_evidence";
+    private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
 
-    private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
+    private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
 
-    private static final String GENE_KEY = "gene";
+    private static final String VARIANTS_VALIDATED_ENABLING_FIELD_NAME = "variants_validated";
 
-    private static final String CLASSIFICATION_KEY = "classification";
+    private static final String VARIANT_KEY = "hgvs_id";
 
-    private static final String EVIDENCE_KEY = "evidence";
+    private static final String GENESYMBOL_KEY = "genesymbol";
 
-    private static final String COMMENTS_KEY = "comments";
+    private static final String INTERPRETATION_KEY = "interpretation";
+
+    private static final String INHERITANCE_KEY = "inheritance";
+
+    private static final String VALIDATED_KEY = "validated";
 
     @Inject
     private Logger logger;
@@ -103,7 +107,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(GENE_KEY, CLASSIFICATION_KEY, EVIDENCE_KEY, COMMENTS_KEY);
+        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
     }
 
     @Override
@@ -118,40 +122,63 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return Collections.emptyList();
     }
 
+    private String parseInterpretation(String value)
+    {
+        String interpretation = "";
+        switch (value) {
+            case "pathogenic":
+                interpretation = "Pathogenic";
+                break;
+            case "likely_pathogenic":
+                interpretation = "Likely Pathogenic";
+                break;
+            case "variant_u_s":
+                interpretation = "Variant of Unknown Significance";
+                break;
+            case "likely_benign":
+                interpretation = "Likely Benign";
+                break;
+            case "benign":
+                interpretation = "Benign";
+                break;
+            default:
+                interpretation = "Variant of Unknown Significance";
+                break;
+        }
+        return interpretation;
+    }
+
     @Override
     public PatientData<Map<String, String>> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
-            if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+            List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
+            if (variantXWikiObjects == null || variantXWikiObjects.isEmpty()) {
                 return null;
             }
 
-            List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
-            for (BaseObject geneObject : geneXWikiObjects) {
-                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+            List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
+            for (BaseObject variantObject : variantXWikiObjects) {
+                Map<String, String> singleVariant = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
-                    BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
+                    BaseStringProperty field = (BaseStringProperty) variantObject.getField(property);
                     if (field != null) {
                         String value = "";
                         switch (property) {
-                            case CLASSIFICATION_KEY:
-                                value = parseClassification(field.getValue());
-                                break;
-                            case EVIDENCE_KEY:
-                                value = parseEvidence(field.getValue());
+                            case INTERPRETATION_KEY:
+                                value = parseInterpretation(field.getValue());
                                 break;
                             default:
                                 value = field.getValue();
                                 break;
                         }
-                        singleGene.put(property, value);
+                        singleVariant.put(property, value);
                     }
                 }
-                allGenes.add(singleGene);
+                allVariants.add(singleVariant);
             }
-            return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
                 + "error has occurred during controller loading ", e.getMessage());
@@ -159,44 +186,10 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return null;
     }
 
-    private String parseEvidence(String value)
-    {
-        String evidence = "";
-        switch (value) {
-            case "biological_relevance":
-                evidence = "Implicated in relevant biological process";
-                break;
-            case "significant_variant":
-                evidence = "Contains variant of functional significance";
-                break;
-            default:
-                evidence = "Verified association with relevant phenotype/disease";
-                break;
-        }
-        return evidence;
-    }
-
-    private String parseClassification(String value)
-    {
-        String classification = "";
-        switch (value) {
-            case "solved":
-                classification = "Confirmed causal";
-                break;
-            case "rejected":
-                classification = "Excluded by testing";
-                break;
-            default:
-                classification = "Candidate";
-                break;
-        }
-        return classification;
-    }
-
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(GENES_ENABLING_FIELD_NAME)) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(VARIANTS_ENABLING_FIELD_NAME)) {
             return;
         }
 
@@ -217,24 +210,22 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
-            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
+            if (!StringUtils.isBlank(item.get(VARIANT_KEY))) {
 
-                if (StringUtils.isBlank(item.get(CLASSIFICATION_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_CLASSIFICATION_ENABLING_FIELD_NAME))) {
-                    item.remove(CLASSIFICATION_KEY);
-                }
+                List<String> properties =
+                    Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, VALIDATED_KEY);
+                List<String> enablingProperties =
+                    Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
+                        VARIANTS_INHERITANCE_ENABLING_FIELD_NAME, VARIANTS_VALIDATED_ENABLING_FIELD_NAME);
 
-                if (StringUtils.isBlank(item.get(EVIDENCE_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_EVIDENCE_ENABLING_FIELD_NAME))) {
-                    item.remove(EVIDENCE_KEY);
-                }
-
-                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                    item.remove(COMMENTS_KEY);
+                int count = 0;
+                for (String property : properties) {
+                    if (StringUtils.isBlank(item.get(property))
+                        || (selectedFieldNames != null
+                        && !selectedFieldNames.contains(enablingProperties.get(count)))) {
+                        item.remove(property);
+                    }
+                    count++;
                 }
 
                 container.add(item);

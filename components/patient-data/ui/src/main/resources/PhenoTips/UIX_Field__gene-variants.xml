@@ -116,7 +116,7 @@
 #set ($targetClassName = 'PhenoTips.GeneVariantClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
 === $services.localization.render('phenotips.vcf.sheetTitle') ===
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action, 'defaults': {'interpretation': 'variant_u_s', 'inheritance': 'unknown', 'validated': 'false'}})
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action, 'defaults': {'interpretation': 'variant_u_s', 'inheritance': 'unknown', 'validated': 'no'}})
 #end
 {{/velocity}}</content>
     </property>

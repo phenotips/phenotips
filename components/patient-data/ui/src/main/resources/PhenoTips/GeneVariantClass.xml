@@ -145,7 +145,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>true=yes|false=no</values>
+      <values>yes=yes|no=no</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </validated>
   </class>

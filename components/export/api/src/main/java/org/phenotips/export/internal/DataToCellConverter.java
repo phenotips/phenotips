@@ -93,7 +93,7 @@ public class DataToCellConverter
 
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-        .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -258,13 +258,39 @@ public class DataToCellConverter
         return section;
     }
 
+    public void variantsSetup(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "variants";
+        String[] fieldIds =
+        { "variants", "variants_genesymbol", "variants_interpretation", "variants_inheritance",
+        "variants_validated" };
+        // FIXME These will not work properly in different configurations
+        String[][] headerIds =
+        { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
+        { "inheritance", "interpretation", "genesymbol", "hgvs_id" },
+        { "validated", "inheritance", "interpretation", "genesymbol", "hgvs_id" } };
+        Set<String> present = new HashSet<String>();
+
+        int counter = 0;
+        for (String fieldId : fieldIds) {
+            if (enabledFields.remove(fieldId)) {
+                for (String headerId : headerIds[counter]) {
+                    present.add(headerId);
+                }
+            }
+            counter++;
+        }
+        this.enabledHeaderIdsBySection.put(sectionName, present);
+    }
+
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
-        String[] fieldIds = { "genes", "genes_classification", "genes_comments" };
+        String[] fieldIds = { "genes", "genes_classification", "genes_evidence", "genes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "candidate" }, { "classification", "candidate" }, { "comments", "classification", "candidate" } };
+        { { "candidate" }, { "classification", "candidate" }, { "evidence", "classification", "candidate" },
+        { "comments", "evidence", "classification", "candidate" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -318,6 +344,123 @@ public class DataToCellConverter
         return section;
     }
 
+    public DataSection variantsHeader() throws Exception
+    {
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataSection section = new DataSection();
+
+        int hX = 0;
+        DataCell cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        cell = new DataCell("HGVS Variant Name", hX, 1, StyleOption.HEADER);
+        section.addCell(cell);
+        hX++;
+
+        if (present.contains("genesymbol")) {
+            cell = new DataCell("Gene Symbol", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("interpretation")) {
+            cell = new DataCell("Interpretation (ACMG category)", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("inheritance")) {
+            cell = new DataCell("Inheritance", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        if (present.contains("validated")) {
+            cell = new DataCell("Validated", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+
+        DataCell sectionHeader = new DataCell("Genotype - Variants", 0, 0, StyleOption.HEADER);
+        sectionHeader.addStyle(StyleOption.LARGE_HEADER);
+        section.addCell(sectionHeader);
+
+        return section;
+    }
+
+    public DataSection variantsBody(Patient patient) throws Exception
+    {
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        // empties should be created in the case that there are no variants to write
+        boolean hasVariants = false;
+
+        DataSection section = new DataSection();
+        int y = 0;
+
+        if (present.contains("hgvs_id")) {
+            PatientData<Map<String, String>> variants = patient.getData("variants");
+            if (variants != null && variants.isIndexed()) {
+                DataCell cell = new DataCell("Variants", 0, y);
+                section.addCell(cell);
+                for (Map<String, String> variant : variants) {
+                    hasVariants = true;
+                    String variantName = variant.get("hgvs_id");
+                    cell = new DataCell(variantName, 1, y);
+                    section.addCell(cell);
+
+                    if (present.contains("genesymbol")) {
+                        String genesymbol = variant.get("genesymbol");
+                        cell = new DataCell(genesymbol, 2, y);
+                        section.addCell(cell);
+                    }
+
+                    if (present.contains("interpretation")) {
+                        String interpretation = variant.get("interpretation");
+                        cell = new DataCell(interpretation, 3, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("inheritance")) {
+                        String inheritance = variant.get("inheritance");
+                        cell = new DataCell(inheritance, 4, y);
+                        section.addCell(cell);
+                    }
+
+                    if (present.contains("validated")) {
+                        String validated = variant.get("validated");
+                        cell = new DataCell(validated, 5, y);
+                        section.addCell(cell);
+                    }
+                    y++;
+                }
+            }
+        }
+
+        /* Creating empties */
+        if (!hasVariants) {
+            /* Status and variant name columns are always present */
+            int columns = present.size();
+            Integer emptyX = 0;
+            for (int i = 0; i < columns; i++) {
+                DataCell cell = new DataCell("", emptyX, 0);
+                section.addCell(cell);
+                emptyX++;
+            }
+        }
+
+        return section;
+    }
+
     public DataSection genesBody(Patient patient) throws Exception
     {
         String sectionName = "genes";
@@ -348,6 +491,12 @@ public class DataToCellConverter
                         section.addCell(cell);
                     }
 
+                    if (present.contains("evidence")) {
+                        String classification = candidateGene.get("evidence");
+                        cell = new DataCell(classification, 2, y);
+                        section.addCell(cell);
+                    }
+
                     if (present.contains("comments")) {
                         String comment = candidateGene.get("comments");
                         cell = new DataCell(comment, 3, y);
@@ -360,8 +509,8 @@ public class DataToCellConverter
 
         /* Creating empties */
         if (!hasGenes) {
-            /* Status, and gene name columns are always present */
-            int columns = present.contains("comments") ? 3 : 2;
+            /* Status and gene name columns are always present */
+            int columns = present.size();
             Integer emptyX = 0;
             for (int i = 0; i < columns; i++) {
                 DataCell cell = new DataCell("", emptyX, 0);
@@ -667,19 +816,19 @@ public class DataToCellConverter
             PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-                int y = 0;
-                if (modeTermList != null && !modeTermList.isEmpty()) {
-                    for (SolrVocabularyTerm term : modeTermList) {
-                        String mode = term != null ? term.getName() : "";
-                        DataCell cell = new DataCell(mode, x, y);
-                        bodySection.addCell(cell);
-                        y++;
-                    }
-                } else {
-                    DataCell cell = new DataCell("", x, y);
+            int y = 0;
+            if (modeTermList != null && !modeTermList.isEmpty()) {
+                for (SolrVocabularyTerm term : modeTermList) {
+                    String mode = term != null ? term.getName() : "";
+                    DataCell cell = new DataCell(mode, x, y);
                     bodySection.addCell(cell);
+                    y++;
                 }
-                x++;
+            } else {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
+            x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -902,7 +1051,7 @@ public class DataToCellConverter
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-        .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception

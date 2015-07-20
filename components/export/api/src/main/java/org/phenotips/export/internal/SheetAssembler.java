@@ -55,6 +55,7 @@ public class SheetAssembler
         converter.phenotypeSetup(enabledFields);
         converter.prenatalPhenotypeSetup(enabledFields);
         converter.genesSetup(enabledFields);
+        converter.variantsSetup(enabledFields);
 
         /* Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
@@ -92,7 +93,7 @@ public class SheetAssembler
 
         /* Extend the section borders all the way to the bottom of the sheet */
         Styler
-            .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
+        .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
     /**
@@ -103,7 +104,7 @@ public class SheetAssembler
      */
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
         throws Exception
-    {
+        {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
             if (patient == null) {
@@ -120,6 +121,7 @@ public class SheetAssembler
             patientSections.add(converter.isNormalBody(patient));
             patientSections.add(converter.phenotypeBody(patient));
             patientSections.add(converter.genesBody(patient));
+            patientSections.add(converter.variantsBody(patient));
             patientSections.add(converter.disordersBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
 
@@ -134,7 +136,7 @@ public class SheetAssembler
             allSections.add(patientSections);
         }
         return allSections;
-    }
+        }
 
     /**
      * Same as {@link #generateBody(DataToCellConverter, java.util.List)} but for header sections. Most of header
@@ -153,6 +155,7 @@ public class SheetAssembler
         headerSections.add(converter.isNormalHeader(enabledFields));
         headerSections.add(converter.phenotypeHeader());
         headerSections.add(converter.genesHeader());
+        headerSections.add(converter.variantsHeader());
         headerSections.add(converter.disordersHeaders(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
 
@@ -212,8 +215,8 @@ public class SheetAssembler
     }
 
     /**
-     * @return a {@link org.phenotips.export.internal.DataSection} that contains all {@link
-     * org.phenotips.export.internal.DataCell}s
+     * @return a {@link org.phenotips.export.internal.DataSection} that contains all
+     *         {@link org.phenotips.export.internal.DataCell}s
      */
     public DataSection getAssembled()
     {
