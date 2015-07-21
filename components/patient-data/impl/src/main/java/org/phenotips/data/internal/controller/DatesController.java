@@ -86,7 +86,7 @@ public class DatesController implements PatientDataController<Date>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             Map<String, Date> result = new LinkedHashMap<String, Date>();
             for (String propertyName : getProperties()) {

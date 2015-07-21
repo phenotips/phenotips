@@ -34,7 +34,7 @@ import net.sf.json.JSONObject;
  * @version $Id$
  * @since 1.0M8
  */
-public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty implements Disorder
+public class PhenoTipsDisorder extends AbstractPhenoTipsVocabularyProperty implements Disorder
 {
     protected static final Pattern OMIM_TERM_PATTERN = Pattern.compile("\\d++");
 

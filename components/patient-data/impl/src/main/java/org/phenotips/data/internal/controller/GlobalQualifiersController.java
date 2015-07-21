@@ -73,7 +73,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     private DocumentAccessBridge documentAccessBridge;
 
     @Inject
-    private VocabularyManager ontologyManager;
+    private VocabularyManager vocabularyManager;
 
     @Override
     public PatientData<List<VocabularyTerm>> load(Patient patient)
@@ -82,7 +82,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             Map<String, List<VocabularyTerm>> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
@@ -164,7 +164,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     private void addTerms(String item, List<VocabularyTerm> holder)
     {
         if (StringUtils.isNotBlank(item)) {
-            VocabularyTerm term = this.ontologyManager.resolveTerm(item);
+            VocabularyTerm term = this.vocabularyManager.resolveTerm(item);
             if (term != null) {
                 holder.add(term);
             }
