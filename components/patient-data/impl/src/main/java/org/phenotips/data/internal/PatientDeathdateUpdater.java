@@ -90,9 +90,6 @@ public class PatientDeathdateUpdater extends AbstractEventListener
             return false;
         }
         String value = (String) request.getProperty(parameterName);
-        if (!StringUtils.isNumeric(value)) {
-            return false;
-        }
-        return (Integer.valueOf(value) == 1);
+        return StringUtils.isNumeric(value) && (Integer.valueOf(value) == 1);
     }
 }
