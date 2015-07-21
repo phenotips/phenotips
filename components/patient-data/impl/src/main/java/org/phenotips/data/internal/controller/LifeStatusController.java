@@ -122,7 +122,7 @@ public class LifeStatusController implements PatientDataController<String>
             PatientData<Date> dates = patient.getData("dates");
 
             Integer deathDateUnknown = 0;
-            if (lifeStatus != null && lifeStatus.getValue() == DECEASED) {
+            if (lifeStatus != null && lifeStatus.getValue().equals(DECEASED)) {
                 deathDateUnknown = 1;
             }
             if (dates != null && dates.isNamed()) {
