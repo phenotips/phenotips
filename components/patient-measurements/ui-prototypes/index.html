@@ -14,6 +14,8 @@
 			padding: 15px;
 			padding-left: 260px;
 			position: relative;
+			height: 100%;
+			box-sizing: border-box;
 		}
 		#charts .sets {
 			width: 120px;
@@ -30,6 +32,7 @@
 			width: 140px;
 			position: absolute; top: 0; left: 100px;
 			overflow-y: scroll; overflow-x: hidden;
+			height: 100%;
 		}
 		#charts .chart-thumbs img {
 			width: 100px;
@@ -51,12 +54,14 @@
 		}
 		#container {
 			position: relative;
-			padding-left: 400px;
+			padding-left: 450px;
 			min-height: 200px;
+			height: 100%;
 		}
 		.measurement {
 			padding: 0.2em 0;
 			clear: both;
+			overflow: auto;
 		}
 		.measurement > * {
 			float: left;
@@ -81,7 +86,7 @@
 			font-weight: bold;
 		}
 		.measurement-row span.unit {
-			width: 25px;
+			width: 60px;
 		}
 		.measurement-row span.pctl {
 			width: 100px;
@@ -116,6 +121,15 @@
 		.new-measurement-select {
 			width: 190px;
 		}
+		div.birthdate {
+			float: left;
+		}
+		.computed-values {
+			margin-top: 20px;
+		}
+		.computed-values .measurement-row input {
+			border: 1px solid white;
+		}
 	</style>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.2/prototype.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
@@ -141,7 +155,6 @@
 				}
 			});
 			$('measurements').insertBefore(clone, $$('#measurements > p')[0]);
-			// $('measurements').insert(clone);
 			return clone;
 		};
 
@@ -162,6 +175,15 @@
 
 			var pctl = this.up().select('.pctl')[0];
 			pctl.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
+
+			// this is for demo purposes only...
+			var set = this.up().up().up().up();
+			if (set.select('label:contains(Weight) ~ input')[0].value && set.select('label:contains(Height) ~ input')[0].value && this.up().select('label')[0].innerText != 'BMI') {
+				var heightMetres = (parseFloat(set.select('label:contains(Height) ~ input')[0].value)/100.0).toPrecision(5);
+				var weightKilograms = parseFloat(set.select('label:contains(Weight) ~ input')[0].value);
+				set.select('label:contains(BMI) ~ input')[0].value = (weightKilograms/(heightMetres*heightMetres).toPrecision(5)).toPrecision(2);
+				measurementInputHandler.apply(set.select('label:contains(BMI) ~ input')[0]);
+			}
 
 			if (this.value.length) {
 				pctl.addClassName(className);
@@ -184,17 +206,20 @@
 		var init = function() {
 			handleAddMeasurementSet();
 			addMeasurementSet();
+
+
 		};
 	</script>
 </head>
 <body>
-	<label>Birthdate:</label> 
-	<input type="date" id="bday">
-
 	<p style="clear: both;"></p>
 
 	<div id="container">
 		<div id="measurements">
+			<div class="birthdate">
+				<label>Birthdate:</label> 
+				<input type="date" id="bday">
+			</div>
 			<div class="measurement-set proto">
 				<span class="delete">&times;</span>
 				<label for="date">Date:</label> <input class="date" type="date">
@@ -206,7 +231,7 @@
 							<label>Weight</label>
 							<span class="side-label"></span>
 							<input type="text" size="5">
-							<span class="unit">cm</span>
+							<span class="unit">kg</span>
 							<span class="pctl"></span>
 						</div>
 					</div>
@@ -415,6 +440,36 @@
 								<span class="unit">cm</span>
 								<span class="pctl"></span>
 							</div>
+						</div>
+					</div>
+				</div>
+				<div class="computed-values">
+					<strong>Computed values</strong>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>BMI</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit">kg/cm^2</span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>Internipple index</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit"></span>
+							<span class="pctl"></span>
+						</div>
+					</div>
+					<div class="measurement">
+						<div class="measurement-row">
+							<label>US:LS ratio</label>
+							<span class="side-label"></span>
+							<input type="text" size="5">
+							<span class="unit"></span>
+							<span class="pctl"></span>
 						</div>
 					</div>
 				</div>
