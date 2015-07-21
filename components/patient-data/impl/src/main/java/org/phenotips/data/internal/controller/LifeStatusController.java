@@ -86,7 +86,7 @@ public class LifeStatusController implements PatientDataController<String>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
             String lifeStatus = ALIVE;
