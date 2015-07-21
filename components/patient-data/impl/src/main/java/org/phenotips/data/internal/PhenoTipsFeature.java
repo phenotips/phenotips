@@ -56,7 +56,7 @@ import net.sf.json.JSONObject;
  * @version $Id$
  * @since 1.0M8
  */
-public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implements Feature
+public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implements Feature
 {
     /**
      * Prefix marking negative feature.
@@ -233,10 +233,10 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         if (!this.categories.isEmpty()) {
             JSONArray categoriesList = new JSONArray();
             try {
-                VocabularyManager om =
+                VocabularyManager vm =
                     ComponentManagerRegistry.getContextComponentManager().getInstance(VocabularyManager.class);
                 for (String category : this.categories) {
-                    VocabularyTerm term = om.resolveTerm(category);
+                    VocabularyTerm term = vm.resolveTerm(category);
                     if (term != null && StringUtils.isNotEmpty(term.getName())) {
                         JSONObject categoryObject = new JSONObject();
                         categoryObject.put(ID_JSON_KEY_NAME, term.getId());

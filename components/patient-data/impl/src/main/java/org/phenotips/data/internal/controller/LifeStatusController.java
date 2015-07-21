@@ -24,15 +24,18 @@ import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -42,27 +45,27 @@ import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 /**
- * Handles the patient's date of birth and the exam date.
+ * Handles the patient's life status: alive or deceased.
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.2RC1
  */
 @Component(roles = { PatientDataController.class })
-@Named("sex")
+@Named("lifeStatus")
 @Singleton
-public class SexController implements PatientDataController<String>
+public class LifeStatusController implements PatientDataController<String>
 {
-    private static final String DATA_NAME = "sex";
+    private static final String DATA_NAME = "life_status";
 
-    private static final String INTERNAL_PROPERTY_NAME = "gender";
+    private static final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
 
-    private static final String SEX_MALE = "M";
+    private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
 
-    private static final String SEX_FEMALE = "F";
+    private static final String ALIVE = "alive";
 
-    private static final String SEX_OTHER = "O";
+    private static final String DECEASED = "deceased";
 
-    private static final String SEX_UNKNOWN = "U";
+    private static final Set<String> ALL_LIFE_STATES = new HashSet<String>(Arrays.asList(ALIVE, DECEASED));
 
     /** Logging helper object. */
     @Inject
@@ -74,14 +77,7 @@ public class SexController implements PatientDataController<String>
 
     /** Provides access to the current execution context. */
     @Inject
-    private Execution execution;
-
-    private String parseGender(String gender)
-    {
-        return (StringUtils.equals(SEX_FEMALE, gender)
-            || StringUtils.equals(SEX_MALE, gender)
-            || StringUtils.equals(SEX_OTHER, gender)) ? gender : SEX_UNKNOWN;
-    }
+    private Provider<XWikiContext> xcontext;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -92,10 +88,22 @@ public class SexController implements PatientDataController<String>
             if (data == null) {
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
-            String gender = parseGender(data.getStringValue(INTERNAL_PROPERTY_NAME));
-            return new SimpleValuePatientData<>(DATA_NAME, gender);
+
+            String lifeStatus = ALIVE;
+            Date date = data.getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
+            if (date != null) {
+                lifeStatus = DECEASED;
+            } else {
+                // check if "unknown death date" checkbox is checked
+                Integer deathDateUnknown = data.getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
+                if (deathDateUnknown == 1) {
+                    lifeStatus = DECEASED;
+                }
+            }
+            return new SimpleValuePatientData<String>(DATA_NAME, lifeStatus);
         } catch (Exception e) {
-            this.logger.error("Failed to load patient gender: [{}]", e.getMessage());
+            this.logger.error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
@@ -110,14 +118,27 @@ public class SexController implements PatientDataController<String>
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            String gender = patient.<String>getData(DATA_NAME).getValue();
+            PatientData<String> lifeStatus = patient.getData(DATA_NAME);
+            PatientData<Date> dates = patient.getData("dates");
 
-            data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
+            Integer deathDateUnknown = 0;
+            if (lifeStatus != null && lifeStatus.getValue() == DECEASED) {
+                deathDateUnknown = 1;
+            }
+            if (dates != null && dates.isNamed()) {
+                // check if death_date is set - if it is unknown_death_date should be unset
+                Date deathDate = dates.get(PATIENT_DATEOFDEATH_FIELDNAME);
+                if (deathDate != null) {
+                    deathDateUnknown = 0;
+                }
+                return;
+            }
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            context.getWiki().saveDocument(doc, "Updated gender from JSON", true, context);
+            data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);
+
+            this.xcontext.get().getWiki().saveDocument(doc, "Updated life status from JSON", true, this.xcontext.get());
         } catch (Exception e) {
-            this.logger.error("Failed to save patient gender: [{}]", e.getMessage());
+            this.logger.error("Failed to save life status: [{}]", e.getMessage());
         }
     }
 
@@ -130,33 +151,24 @@ public class SexController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(INTERNAL_PROPERTY_NAME)) {
+        PatientData<String> lifeStatusData = patient.getData(DATA_NAME);
+        if (lifeStatusData == null) {
             return;
         }
-
-        PatientData<String> patientData = patient.getData(DATA_NAME);
-        if (patientData != null && patientData.getValue() != null) {
-            json.put(DATA_NAME, patientData.getValue());
-        }
+        json.put(DATA_NAME, lifeStatusData.getValue());
     }
 
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        if (!json.containsKey(DATA_NAME)) {
-            // no supported data in provided JSON
-            return null;
+        String propertyValue = json.optString(DATA_NAME, null);
+        if (propertyValue != null) {
+            // validate - only accept listed values
+            if (ALL_LIFE_STATES.contains(propertyValue)) {
+                return new SimpleValuePatientData<String>(DATA_NAME, propertyValue);
+            }
         }
-
-        String gender = parseGender(json.getString(DATA_NAME));
-
-        if (gender.toUpperCase().equals(SEX_UNKNOWN)) {
-            // while JSON supports explicitly defined "unknown" gender PhenoTips does not;
-            // equaivalent PhenoTips setting is an empty string in the database
-            gender = "";
-        }
-
-        return new SimpleValuePatientData<>(DATA_NAME, gender);
+        return null;
     }
 
     @Override

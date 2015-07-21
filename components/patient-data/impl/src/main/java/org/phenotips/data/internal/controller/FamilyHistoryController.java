@@ -43,7 +43,9 @@ public class FamilyHistoryController extends AbstractComplexController<Integer>
 
     private static final String MISCARRIAGES = "miscarriages";
 
-    private List<String> booleans = Arrays.asList(CONSANGUINITY, MISCARRIAGES);
+    private static final String AFFECTED_RELATIVES = "affectedRelatives";
+
+    private List<String> booleans = Arrays.asList(CONSANGUINITY, MISCARRIAGES, AFFECTED_RELATIVES);
 
     @Override
     public String getName()
@@ -60,7 +62,7 @@ public class FamilyHistoryController extends AbstractComplexController<Integer>
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(CONSANGUINITY, MISCARRIAGES);
+        return Arrays.asList(CONSANGUINITY, MISCARRIAGES, AFFECTED_RELATIVES);
     }
 
     @Override

@@ -66,7 +66,7 @@ public class PhenoTipsFeatureTest
     private Provider<ComponentManager> mockProvider;
 
     @Mock
-    private VocabularyManager om;
+    private VocabularyManager vm;
 
     @Mock
     private VocabularyTerm hp0000082;
@@ -88,23 +88,23 @@ public class PhenoTipsFeatureTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(DiffManager.class)).thenReturn(null);
-        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.om);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
 
         when(this.hp0000082.getId()).thenReturn("HP:0000082");
         when(this.hp0000082.getName()).thenReturn("Decreased renal function");
-        when(this.om.resolveTerm("HP:0000082")).thenReturn(this.hp0000082);
+        when(this.vm.resolveTerm("HP:0000082")).thenReturn(this.hp0000082);
 
         when(this.hp0000100.getId()).thenReturn("HP:0000100");
         when(this.hp0000100.getName()).thenReturn("Nephrosis");
-        when(this.om.resolveTerm("HP:0000100")).thenReturn(this.hp0000100);
+        when(this.vm.resolveTerm("HP:0000100")).thenReturn(this.hp0000100);
 
         when(this.hp0003678.getId()).thenReturn("HP:0003678");
         when(this.hp0003678.getName()).thenReturn("Rapidly progressive");
-        when(this.om.resolveTerm("HP:0003678")).thenReturn(this.hp0003678);
+        when(this.vm.resolveTerm("HP:0003678")).thenReturn(this.hp0003678);
 
         when(this.hp0012211.getId()).thenReturn("HP:0012211");
         when(this.hp0012211.getName()).thenReturn("Abnormal renal physiology");
-        when(this.om.resolveTerm("HP:0012211")).thenReturn(this.hp0012211);
+        when(this.vm.resolveTerm("HP:0012211")).thenReturn(this.hp0012211);
     }
 
     @Test
