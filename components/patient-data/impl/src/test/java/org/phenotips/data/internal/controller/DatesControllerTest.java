@@ -62,7 +62,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for the {@link DatesController} Component,
- * implementation of the {@link org.phenotips.data.PatientDataController}
+ * implementation of the {@link org.phenotips.data.PatientDataController} interface
  */
 public class DatesControllerTest
 {
@@ -102,7 +102,7 @@ public class DatesControllerTest
     @Mock
     private Patient patient;
 
-    private String DATA_NAME = "dates";
+    private static final String DATA_NAME = "dates";
 
     private DateFormat dateFormat;
 
@@ -139,7 +139,8 @@ public class DatesControllerTest
         PatientData<Date> result = this.controller.load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+            + " error has occurred during controller loading ",
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
@@ -160,15 +161,15 @@ public class DatesControllerTest
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        doReturn(birthDate).when(this.data).getDateValue("date_of_birth");
-        doReturn(deathDate).when(this.data).getDateValue("date_of_death");
-        doReturn(examDate).when(this.data).getDateValue("exam_date");
+        doReturn(birthDate).when(this.data).getDateValue(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
+        doReturn(deathDate).when(this.data).getDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
+        doReturn(examDate).when(this.data).getDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME);
 
         PatientData<Date> result = this.controller.load(this.patient);
 
-        Assert.assertSame(birthDate, result.get("date_of_birth"));
-        Assert.assertSame(deathDate, result.get("date_of_death"));
-        Assert.assertSame(examDate, result.get("exam_date"));
+        Assert.assertSame(birthDate, result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
+        Assert.assertSame(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertSame(examDate, result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }
 
     @Test
@@ -178,7 +179,8 @@ public class DatesControllerTest
 
         this.controller.save(this.patient);
 
-        verify(this.logger).error("Failed to save dates: [{}]", PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+        verify(this.logger).error("Failed to save dates: [{}]",
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
     @Test
@@ -224,7 +226,8 @@ public class DatesControllerTest
         doReturn(true).when(dateData).isNamed();
         doReturn(null).when(dateData).get(anyString());
         XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class), anyString(), any(Boolean.class), any(XWikiContext.class));
+        doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
+            anyString(), any(Boolean.class), any(XWikiContext.class));
 
         this.controller.save(this.patient);
 
@@ -237,17 +240,17 @@ public class DatesControllerTest
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        datesMap.put("date_of_birth", birthDate);
-        datesMap.put("date_of_death", deathDate);
-        datesMap.put("exam_date", examDate);
+        datesMap.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
+        datesMap.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
+        datesMap.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate);
         PatientData<Date> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
 
         this.controller.save(this.patient);
 
-        verify(this.data).setDateValue("date_of_birth", birthDate);
-        verify(this.data).setDateValue("date_of_death", deathDate);
-        verify(this.data).setDateValue("exam_date", examDate);
+        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
+        verify(this.data).setDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
+        verify(this.data).setDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate);
 
         verify(this.xWiki).saveDocument(same(this.doc), anyString(), eq(true), same(this.xWikiContext));
     }
@@ -276,18 +279,21 @@ public class DatesControllerTest
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        datesMap.put("date_of_birth", birthDate);
-        datesMap.put("date_of_death", deathDate);
-        datesMap.put("exam_date", examDate);
+        datesMap.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
+        datesMap.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
+        datesMap.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate);
         PatientData<Date> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
         this.controller.writeJSON(this.patient, json);
 
-        Assert.assertEquals(this.dateFormat.format(birthDate), json.get("date_of_birth"));
-        Assert.assertEquals(this.dateFormat.format(deathDate), json.get("date_of_death"));
-        Assert.assertEquals(this.dateFormat.format(examDate), json.get("exam_date"));
+        Assert.assertEquals(this.dateFormat.format(birthDate),
+            json.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
+        Assert.assertEquals(this.dateFormat.format(deathDate),
+            json.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertEquals(this.dateFormat.format(examDate),
+            json.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }
 
     @Test
@@ -297,21 +303,23 @@ public class DatesControllerTest
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        datesMap.put("date_of_birth", birthDate);
-        datesMap.put("date_of_death", deathDate);
-        datesMap.put("exam_date", examDate);
+        datesMap.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
+        datesMap.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
+        datesMap.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, examDate);
         PatientData<Date> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
-        selectedFields.add("date_of_birth");
-        selectedFields.add("exam_date");
+        selectedFields.add(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
+        selectedFields.add(DatesController.PATIENT_EXAMDATE_FIELDNAME);
 
         this.controller.writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertEquals(this.dateFormat.format(birthDate), json.get("date_of_birth"));
-        Assert.assertNull(json.get("date_of_death"));
-        Assert.assertEquals(this.dateFormat.format(examDate), json.get("exam_date"));
+        Assert.assertEquals(this.dateFormat.format(birthDate),
+            json.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
+        Assert.assertNull(json.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertEquals(this.dateFormat.format(examDate),
+            json.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }
 
     @Test
@@ -327,15 +335,15 @@ public class DatesControllerTest
         JSONObject json = new JSONObject();
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        json.put("date_of_birth", "!!!!!!!!!!!!!!!!!!!!");
-        json.put("date_of_death", this.dateFormat.format(deathDate));
-        json.put("exam_date", this.dateFormat.format(examDate));
+        json.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, "!!!!!!!!!!!!!!!!!!!!");
+        json.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, this.dateFormat.format(deathDate));
+        json.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, this.dateFormat.format(examDate));
 
         PatientData result = this.controller.readJSON(json);
 
-        Assert.assertNull(result.get("date_of_birth"));
-        Assert.assertEquals(deathDate, result.get("date_of_death"));
-        Assert.assertEquals(examDate, result.get("exam_date"));
+        Assert.assertNull(result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
+        Assert.assertEquals(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertEquals(examDate, result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }
 
     @Test
@@ -345,15 +353,15 @@ public class DatesControllerTest
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
         Date examDate = new Date(100000);
-        json.put("date_of_birth", this.dateFormat.format(birthDate));
-        json.put("date_of_death", this.dateFormat.format(deathDate));
-        json.put("exam_date", this.dateFormat.format(examDate));
+        json.put(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, this.dateFormat.format(birthDate));
+        json.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, this.dateFormat.format(deathDate));
+        json.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, this.dateFormat.format(examDate));
 
         PatientData result = this.controller.readJSON(json);
 
-        Assert.assertEquals(birthDate, result.get("date_of_birth"));
-        Assert.assertEquals(deathDate, result.get("date_of_death"));
-        Assert.assertEquals(examDate, result.get("exam_date"));
+        Assert.assertEquals(birthDate, result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
+        Assert.assertEquals(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertEquals(examDate, result.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }
 
     @Test
