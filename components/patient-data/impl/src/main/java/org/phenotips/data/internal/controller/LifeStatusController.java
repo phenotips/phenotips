@@ -23,7 +23,6 @@ import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
@@ -59,10 +58,13 @@ public class LifeStatusController implements PatientDataController<String>
     private static final String DATA_NAME = "life_status";
 
     private static final String PATIENT_CHECKBOX_FIELDNAME = "date_of_death_unknown";
+
     private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
 
-    private static final String ALIVE    = "alive";
+    private static final String ALIVE = "alive";
+
     private static final String DECEASED = "deceased";
+
     private static final Set<String> ALL_LIFE_STATES = new HashSet<String>(Arrays.asList(ALIVE, DECEASED));
 
     /** Logging helper object. */
@@ -117,7 +119,7 @@ public class LifeStatusController implements PatientDataController<String>
             }
 
             PatientData<String> lifeStatus = patient.getData(DATA_NAME);
-            PatientData<Date> dates        = patient.getData("dates");
+            PatientData<Date> dates = patient.getData("dates");
 
             Integer deathDateUnknown = 0;
             if (lifeStatus != null && lifeStatus.getValue() == DECEASED) {
