@@ -51,13 +51,13 @@ import net.sf.json.JSONObject;
  * @since 1.2RC1
  */
 @Component(roles = { PatientDataController.class })
-@Named("lifestatus")
+@Named("lifeStatus")
 @Singleton
 public class LifeStatusController implements PatientDataController<String>
 {
     private static final String DATA_NAME = "life_status";
 
-    private static final String PATIENT_CHECKBOX_FIELDNAME = "date_of_death_unknown";
+    private static final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
 
     private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
 
@@ -95,7 +95,7 @@ public class LifeStatusController implements PatientDataController<String>
                 lifeStatus = DECEASED;
             } else {
                 // check if "unknown death date" checkbox is checked
-                Integer deathDateUnknown = data.getIntValue(PATIENT_CHECKBOX_FIELDNAME);
+                Integer deathDateUnknown = data.getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
                 if (deathDateUnknown != 0) {
                     lifeStatus = DECEASED;
                 }
@@ -134,7 +134,7 @@ public class LifeStatusController implements PatientDataController<String>
                 return;
             }
 
-            data.setIntValue(PATIENT_CHECKBOX_FIELDNAME, deathDateUnknown);
+            data.setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, deathDateUnknown);
 
             this.xcontext.get().getWiki().saveDocument(doc, "Updated life status from JSON", true, this.xcontext.get());
         } catch (Exception e) {
