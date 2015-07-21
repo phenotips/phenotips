@@ -133,9 +133,11 @@ public class APGARController implements PatientDataController<Integer>
 
     /**
      * Checks if any relevant field names were selected.
+     *
      * @return true if relevant fields were selected, false otherwise
      */
-    private boolean hasAnySelected(Collection<String> selectedFieldNames) {
+    private boolean hasAnySelected(Collection<String> selectedFieldNames)
+    {
         boolean hasAny = false;
         for (String selectedFieldName : selectedFieldNames) {
             if (StringUtils.startsWithIgnoreCase(selectedFieldName, this.getName())) {
