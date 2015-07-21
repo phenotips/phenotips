@@ -96,7 +96,7 @@ public class LifeStatusController implements PatientDataController<String>
             } else {
                 // check if "unknown death date" checkbox is checked
                 Integer deathDateUnknown = data.getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
-                if (deathDateUnknown != 0) {
+                if (deathDateUnknown == 1) {
                     lifeStatus = DECEASED;
                 }
             }
