@@ -45,10 +45,10 @@ import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 /**
- * Handles the patient's date of birth and the exam date.
+ * Handles the patient's life status: alive or deceased.
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.2RC1
  */
 @Component(roles = { PatientDataController.class })
 @Named("lifestatus")
@@ -138,7 +138,7 @@ public class LifeStatusController implements PatientDataController<String>
 
             this.xcontext.get().getWiki().saveDocument(doc, "Updated life status from JSON", true, this.xcontext.get());
         } catch (Exception e) {
-            this.logger.error("Failed to save dates: [{}]", e.getMessage());
+            this.logger.error("Failed to save life status: [{}]", e.getMessage());
         }
     }
 
