@@ -24,7 +24,6 @@ import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +33,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class LifeStatusController implements PatientDataController<String>
 
     /** Provides access to the current execution context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> xcontext;
 
     @Override
     public PatientData<String> load(Patient patient)
@@ -136,8 +136,7 @@ public class LifeStatusController implements PatientDataController<String>
 
             data.setIntValue(PATIENT_CHECKBOX_FIELDNAME, deathDateUnknown);
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            context.getWiki().saveDocument(doc, "Updated dates from JSON", true, context);
+            this.xcontext.get().getWiki().saveDocument(doc, "Updated life status from JSON", true, this.xcontext.get());
         } catch (Exception e) {
             this.logger.error("Failed to save dates: [{}]", e.getMessage());
         }
