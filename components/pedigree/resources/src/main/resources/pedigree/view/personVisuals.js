@@ -657,8 +657,21 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     		for (var cancerName in cancerData) {
                 if (cancerData.hasOwnProperty(cancerName)) {
                 	var text = cancerName.toString() + " ca.";
-                	if (cancerData[cancerName].hasOwnProperty("numericAgeAtDiagnosis") && (cancerData[cancerName].numericAgeAtDiagnosis > 0)) {
-                		text += " dx " + cancerData[cancerName].numericAgeAtDiagnosis;
+                	if (cancerData[cancerName].hasOwnProperty("ageAtDiagnosis") && (cancerData[cancerName].ageAtDiagnosis.length > 0)) {
+                		var age = cancerData[cancerName].ageAtDiagnosis;
+                		if (isNaN(parseInt(age))){
+                			if (age == "before_1") {
+                				text += " dx <1";
+                			} else if (age == "before_10") {
+                				text += " dx <10";
+                			} else {
+                				text += (age.indexOf('before_') > -1) ? " dx " + (parseInt(age.substring(7))-10) + "\'s": " dx >100";
+                			}
+                		} else {
+                			text += " dx " + cancerData[cancerName].ageAtDiagnosis;
+                		}
+                	} else {
+                		text += " dx ?";
                 	}
                 	this.getCancerAgeOfOnsetLables()[cancerName] && this.getCancerAgeOfOnsetLables()[cancerName].remove();
                 	this._cancerAgeOfOnsetLables[cancerName] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.cancerAgeOfOnsetLables);
