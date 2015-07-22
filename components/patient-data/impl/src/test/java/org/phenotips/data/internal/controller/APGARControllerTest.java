@@ -1,3 +1,20 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.data.internal.controller;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -9,19 +26,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.obo2solr.maps.IntegerMap;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -38,6 +56,10 @@ public class APGARControllerTest
             new MockitoComponentMockingRule<PatientDataController>(APGARController.class);
 
     private static final String DATA_NAME = "apgar";
+
+    private static final String APGAR_1 = "apgar1";
+
+    private static final String APGAR_5 = "apgar5";
 
     private Logger logger;
 
@@ -105,19 +127,14 @@ public class APGARControllerTest
     @Test
     public void loadReturnsExpectedIntegers()
     {
-        doReturn("1234").when(this.data).getStringValue("apgar1");
-        doReturn("4321").when(this.data).getStringValue("apgar5");
+        doReturn("1").when(this.data).getStringValue(APGAR_1);
+        doReturn("2").when(this.data).getStringValue(APGAR_5);
 
         PatientData<Integer> result = this.controller.load(this.patient);
 
-        Assert.assertEquals(Integer.valueOf(1234), result.get("apgar1"));
-        Assert.assertEquals(Integer.valueOf(4321), result.get("apgar5"));
+        Assert.assertEquals(Integer.valueOf(1), result.get(APGAR_1));
+        Assert.assertEquals(Integer.valueOf(2), result.get(APGAR_5));
         Assert.assertEquals(2, result.size());
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void saveIsUnsupported(){
-        this.controller.save(this.patient);
     }
 
     @Test
@@ -126,6 +143,8 @@ public class APGARControllerTest
         JSONObject json = new JSONObject();
 
         this.controller.writeJSON(this.patient, json);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
@@ -133,10 +152,103 @@ public class APGARControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
-        selectedFields.add("apgar1");
-        selectedFields.add("apgar5");
+        selectedFields.add(APGAR_1);
+        selectedFields.add(APGAR_5);
         
         this.controller.writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+    }
+
+    @Test
+    public void writeJSONReturnsWhenDataIsEmpty() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+        this.controller.writeJSON(this.patient, json);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsReturnsWhenDataIsEmpty() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new ArrayList<>();
+        selectedFields.add(APGAR_1);
+        selectedFields.add(APGAR_5);
+
+        this.controller.writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+    }
+
+    @Test
+    public void writeJSONAddsAllDataEntriesToJSON() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        map.put(APGAR_1, 1);
+        map.put(APGAR_5, 2);
+        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+        this.controller.writeJSON(this.patient, json);
+
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
+        Assert.assertEquals(2, json.getJSONObject(DATA_NAME).get(APGAR_5));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsAddsAllDataEntriesWhenAPGARSelected() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        map.put(APGAR_1, 1);
+        map.put(APGAR_5, 2);
+        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new ArrayList<>();
+        selectedFields.add("dates");
+        selectedFields.add("ethnicity");
+        selectedFields.add("apgar");
+        selectedFields.add("identifiers");
+
+        this.controller.writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
+        Assert.assertEquals(2, json.getJSONObject(DATA_NAME).get(APGAR_5));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsReturnsWhenAPGARNotSelected() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        map.put(APGAR_1, 1);
+        map.put(APGAR_5, 2);
+        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add("dates");
+        selectedFields.add("ethnicity");
+
+        this.controller.writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void saveIsUnsupported(){
+        this.controller.save(this.patient);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void readJSONIsUnsupported(){
+        this.controller.readJSON(new JSONObject());
     }
 
     @Test
