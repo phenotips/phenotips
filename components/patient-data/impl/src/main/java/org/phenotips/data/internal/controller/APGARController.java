@@ -127,7 +127,9 @@ public class APGARController implements PatientDataController<Integer>
         }
         while (iterator.hasNext()) {
             Entry<String, Integer> item = iterator.next();
-            container.put(item.getKey(), item.getValue());
+            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
+                container.put(item.getKey(), item.getValue());
+            }
         }
     }
 
