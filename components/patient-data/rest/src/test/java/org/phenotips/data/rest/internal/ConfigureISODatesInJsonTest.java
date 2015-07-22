@@ -84,7 +84,7 @@ public class ConfigureISODatesInJsonTest{
 
     @Test
     public void checkConstruction() throws ComponentLookupException {
-        ConfigureISODatesInJson testInstance = (ConfigureISODatesInJson)this.mocker.getComponentUnderTest();
+        EventListener testInstance = this.mocker.getComponentUnderTest();
         Assert.assertEquals("ConfigureISODatesInJson", testInstance.getName());
         Assert.assertThat(testInstance.getEvents(), hasItem(isA(ApplicationStartedEvent.class)));
     }
