@@ -278,7 +278,7 @@ var Controller = Class.create({
                 if (Object.prototype.toString.call(oldValue) === '[object Array]') {
                     oldValue = oldValue.slice(0);
                 } else if (typeof(oldValue) == 'object') {
-                	oldValue = cloneObject(oldValue);
+                    oldValue = cloneObject(oldValue);
                 }
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
