@@ -646,9 +646,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateCommentsLabel
      */
     updateCancerAgeOfOnsetLables: function() {
-    	var cancerData = this.getNode().getCancers();
+    	var cancerLabels = this.getCancerAgeOfOnsetLables();
+        if (!isObjectEmpty(cancerLabels)) {
+	        for (var cancerName in cancerLabels) {
+	        	cancerLabels[cancerName].remove();
+    		}
+    	}
+        var cancerData = this.getNode().getCancers();
     	if (!isObjectEmpty(cancerData)) {
-    		
     		for (var cancerName in cancerData) {
                 if (cancerData.hasOwnProperty(cancerName)) {
                 	var text = cancerName.toString() + " ca.";
@@ -664,7 +669,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
     		
     	} else {
-            this._cancerAgeOfOnsetLables = null;
+            this._cancerAgeOfOnsetLables = {};
         }
         this.drawLabels();
     },
