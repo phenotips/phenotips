@@ -651,13 +651,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     		
     		for (var cancerName in cancerData) {
                 if (cancerData.hasOwnProperty(cancerName)) {
-                	var ageAtDetection = cancerData[cancerName].hasOwnProperty("numericAgeAtDiagnosis") && (cancerData[cancerName].numericAgeAtDiagnosis > 0)
-                    ? cancerData[cancerName].numericAgeAtDiagnosis : "AU";
-                	
+                	var text = cancerName.toString() + " ca.";
+                	if (cancerData[cancerName].hasOwnProperty("numericAgeAtDiagnosis") && (cancerData[cancerName].numericAgeAtDiagnosis > 0)) {
+                		text += " dx " + cancerData[cancerName].numericAgeAtDiagnosis;
+                	}
                 	this.getCancerAgeOfOnsetLables()[cancerName] && this.getCancerAgeOfOnsetLables()[cancerName].remove();
-                	var text = cancerName.toString() + " cancer age of onset: age " + ageAtDetection;
                 	this._cancerAgeOfOnsetLables[cancerName] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.cancerAgeOfOnsetLables);
-                	
                 	this._cancerAgeOfOnsetLables[cancerName].node.setAttribute("class", "field-no-user-select");
                     this._cancerAgeOfOnsetLables[cancerName].alignTop = true;
                     this._cancerAgeOfOnsetLables[cancerName].addGap   = true;
