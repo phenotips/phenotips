@@ -212,7 +212,7 @@ public class DefaultPatientsResourceImplTest {
 
     @Test
     public void listPatientsNoUserAccess() throws QueryException {
-        Object[] patientSummaryData = new Object[0];
+        Object[] patientSummaryData = new Object[7];
         List<Object[]> patientList = new ArrayList<Object[]>();
         patientList.add(patientSummaryData);
         Query query = mock(DefaultQuery.class);
@@ -230,7 +230,7 @@ public class DefaultPatientsResourceImplTest {
 
     @Test
     public void listPatientsUserHasAccess() throws QueryException {
-        Object[] patientSummaryData = new Object[0];
+        Object[] patientSummaryData = new Object[7];
         List<Object[]> patientList = new ArrayList<Object[]>();
         patientList.add(patientSummaryData);
         Query query = mock(DefaultQuery.class);
@@ -250,7 +250,7 @@ public class DefaultPatientsResourceImplTest {
     public void listPatientsSpecificNumberOfRecords() throws QueryException{
         List<Object[]> patientList = new ArrayList<Object[]>();
         for(int i=0; i<30; i++ ){
-            Object[] patientSummaryData = new Object[i];
+            Object[] patientSummaryData = new Object[7];
             patientList.add(patientSummaryData);
         }
         Query query = mock(DefaultQuery.class);
@@ -269,7 +269,7 @@ public class DefaultPatientsResourceImplTest {
     public void listPatientsGetMoreRecordsThanAdded() throws QueryException{
         List<Object[]> patientList = new ArrayList<Object[]>();
         for(int i=0; i<15; i++ ){
-            Object[] patientSummaryData = new Object[i];
+            Object[] patientSummaryData = new Object[7];
             patientList.add(patientSummaryData);
         }
         Query query = mock(DefaultQuery.class);
