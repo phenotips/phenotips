@@ -247,6 +247,42 @@ public class DefaultPatientsResourceImplTest {
     }
 
     @Test
+    public void listPatientsSpecificNumberOfRecords() throws QueryException{
+        List<Object[]> patientList = new ArrayList<Object[]>();
+        for(int i=0; i<30; i++ ){
+            Object[] patientSummaryData = new Object[i];
+            patientList.add(patientSummaryData);
+        }
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(patientList).when(query).execute();
+        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
+        doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
+        Patients result1 = this.patientsResource.listPatients(0, 30, "id", "asc");
+        Assert.assertEquals(30, result1.getPatientSummaries().size());
+        Patients result2 = this.patientsResource.listPatients(15, 30, "id", "asc");
+        Assert.assertEquals(15, result2.getPatientSummaries().size());
+    }
+
+    @Test
+    public void listPatientsGetMoreRecordsThanAdded() throws QueryException{
+        List<Object[]> patientList = new ArrayList<Object[]>();
+        for(int i=0; i<15; i++ ){
+            Object[] patientSummaryData = new Object[i];
+            patientList.add(patientSummaryData);
+        }
+        Query query = mock(DefaultQuery.class);
+        doReturn(query).when(this.queries).createQuery(anyString(), anyString());
+        doReturn(query).when(query).bindValue(anyString(), anyString());
+        doReturn(patientList).when(query).execute();
+        doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
+        doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
+        Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+        Assert.assertEquals(15, result.getPatientSummaries().size());
+    }
+
+    @Test
     public void listPatientFailureHandling() throws QueryException {
         Query query = mock(DefaultQuery.class);
         WebApplicationException exception = null;
