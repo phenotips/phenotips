@@ -13,7 +13,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
     initialize: function($super, node, x, y) {
         //var timer = new Timer();
-    	//console.log("person visuals");
         $super(node, x, y);
         this._nameLabel = null;
         this._stillBirthLabel = null;
@@ -28,7 +27,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._isSelected = false;
         this._carrierGraphic = null;
         this._evalLabel = null;
-        //console.log("person visuals end");
         //timer.printSinceLast("Person visuals time");
     },
 
@@ -248,7 +246,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
                 var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
-                color = gradient(colors[k], 70);
+                color = editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")
+                        ? gradient(colors[k], 70) : colors[k];
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
@@ -268,7 +267,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
 
             for(var i = 0; i < colors.length; i++) {
-                color = gradient(colors[i], (i * disorderAngle)+delta);
+                color = editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")
+                        ? gradient(colors[i], (i * disorderAngle)+delta) : colors[i];
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), radius,
                                     this.getNode().getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }

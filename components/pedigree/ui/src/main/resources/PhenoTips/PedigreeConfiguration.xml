@@ -68,6 +68,10 @@ $xwiki.ssx.use($displayDocumentName)##
 {{/html}}##
     $doc.display("propagateFatherLastName", "edit", $targetObj)
 {{html clean="false"}}
+  Apply color gradients to pedigree nodes: ##
+{{/html}}##
+    $doc.display("uiGradientNodes", "edit", $targetObj)
+{{html clean="false"}}
   &lt;br&gt;&lt;br&gt;
   Date input format: ##
 {{/html}}##
