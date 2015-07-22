@@ -41,12 +41,24 @@
 #if ($doc.getObject('PhenoTips.PatientClass'))
   &lt;div id="document-authors"&gt;##
     &lt;span class="document-meta document-creation"&gt;## Creation
-      $services.localization.render('phenotips.patientRecord.header.creation', ["&lt;span class=""document-creator document-author""&gt;${xwiki.getUserName($tdoc.creator, false)}&lt;/span&gt;", $xwiki.formatDate($doc.creationDate)])##
+    ##Sets the creator text to a link iff the creator was not a guest. Guests are displayed in span elements
+    #if ("$!{tdoc.creator}" == '')
+      #set ($creatorElement = "&lt;span class=""document-creator document-author""&gt;${xwiki.getUserName($tdoc.creator, false)}&lt;/span&gt;")
+    #else
+      #set ($creatorElement = "&lt;a class=""document-creator document-author"" href=""${xwiki.getURL($tdoc.creator)}""&gt;${xwiki.getUserName($tdoc.creator, false)}&lt;/a&gt;")
+    #end
+      $services.localization.render('phenotips.patientRecord.header.creation', [$creatorElement, $xwiki.formatDate($doc.creationDate)])##
     &lt;/span&gt;##
     #if ($doc.date != $doc.creationDate)
       &lt;span class="sep"&gt;·&lt;/span&gt;&lt;span class="document-meta document-last-modification"&gt;## Last update
       #if ($doc.author != $doc.creator)
-        $services.localization.render('phenotips.patientRecord.header.modificationWithModifier',["&lt;span class=""document-author""&gt;${xwiki.getUserName($tdoc.author, false)}&lt;/span&gt;", $xwiki.formatDate($tdoc.date)])##
+        ##Must do the same as done for the creator above for the author
+        #if ("$!{tdoc.author}" == '')
+          #set ($authorElement = "&lt;span class=""document-author""&gt;${xwiki.getUserName($tdoc.author, false)}&lt;/span&gt;")
+        #else
+          #set ($authorElement = "&lt;a class=""document-author"" href=""${xwiki.getURL($tdoc.author)}""&gt;${xwiki.getUserName($tdoc.author, false)}&lt;/a&gt;")
+        #end
+        $services.localization.render('phenotips.patientRecord.header.modificationWithModifier',[$authorElement, $xwiki.formatDate($tdoc.date)])##
       #else
         $services.localization.render('phenotips.patientRecord.header.modificationWithoutModifier', [$xwiki.formatDate($doc.creationDate)])
       #end
