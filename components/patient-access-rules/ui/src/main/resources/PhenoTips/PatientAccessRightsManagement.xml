@@ -713,8 +713,8 @@
                   var userName = ownershipTransfer.down('.accepted-suggestions li .user-name');
                   if (!newOwnerUser.disabled &amp;&amp; userName) {
                     newOwner = userName.firstChild.nodeValue;
+                    newOwnerURL = new XWiki.Document(ownershipTransfer.down('.accepted-suggestions li .user-alias').innerHTML, 'XWiki').getURL();;
                   }
-                  newOwnerURL = new XWiki.Document(ownershipTransfer.down('.accepted-suggestions li .user-alias').innerHTML, 'XWiki').getURL();;
                 }
               }
               if (newOwner) {
