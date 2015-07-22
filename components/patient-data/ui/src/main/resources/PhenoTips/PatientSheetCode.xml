@@ -3741,6 +3741,7 @@ hr {
   margin: 0 .5em;
 }
 #document-head #document-authors .document-author {
+  color: inherit;
   font-weight: bold;
 }
 .before-patient-data {
