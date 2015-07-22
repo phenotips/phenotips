@@ -6,7 +6,6 @@ import org.phenotips.data.Patient;
 import org.xwiki.container.Container;
 import org.xwiki.container.Request;
 import org.xwiki.observation.AbstractEventListener;
-import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
 import java.util.List;
@@ -30,11 +29,8 @@ public abstract class AbstractPatientDataUpdater extends AbstractEventListener
     private Container container;
 
     /**
-     * @param name the listener's name. It's a free form text identifying this listener instance in a unique manner.
-     *            This name is used for some operations in {@link ObservationManager}.
-     * @param events the list of events this listener is configured to receive. This listener will be automatically
-     *            registered with this list of events against the {@link ObservationManager}. When an event occurs, for
-     *            each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be called.
+     * @param name the listener's name.
+     * @param events the list of events this listener is configured to receive.
      */
     public AbstractPatientDataUpdater(String name, List<? extends Event> events)
     {
@@ -42,11 +38,8 @@ public abstract class AbstractPatientDataUpdater extends AbstractEventListener
     }
 
     /**
-     * @param name the listener's name. It's a free form text identifying this listener instance in a unique manner.
-     *            This name is used for some operations in {@link ObservationManager}.
-     * @param events the list of events this listener is configured to receive. This listener will be automatically
-     *            registered with this list of events against the {@link ObservationManager}. When an event occurs, for
-     *            each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be called.
+     * @param name the listener's name.
+     * @param events the list of events this listener is configured to receive.
      */
     public AbstractPatientDataUpdater(String name, Event... events)
     {
