@@ -1,0 +1,781 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY efo "http://www.ebi.ac.uk/efo/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY obo "http://purl.obolibrary.org/obo/" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY Orphanet_ "http://www.orpha.net/ORDO/Orphanet_#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY oboInOwl "http://www.geneontology.org/formats/oboInOwl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.orpha.net/ontology/orphanet.owl#"
+     xml:base="http://www.orpha.net/ontology/orphanet.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:Orphanet_="http://www.orpha.net/ORDO/Orphanet_#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:efo="http://www.ebi.ac.uk/efo/">
+    <owl:Ontology rdf:about="http://www.orpha.net/ontology/orphanet.owl">
+        <owl:versionIRI rdf:resource="http://www.orpha.net/version2.2"/>
+        <dc:creator rdf:datatype="&xsd;string">James Malone</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Céline Rousselot</dc:creator>
+        <owl:versionInfo rdf:datatype="&xsd;string">2.3</owl:versionInfo>
+        <dc:creator rdf:datatype="&xsd;string">Ana Rath</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Samuel Demarest</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Annie Olry</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Marc Hanauer</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Valérie Lanneau</dc:creator>
+        <dc:creator rdf:datatype="&xsd;string">Drashtti Vasant</dc:creator>
+    </owl:Ontology>
+
+
+    <!-- http://purl.obolibrary.org/obo/ECO_0000218 -->
+
+    <owl:AnnotationProperty rdf:about="&obo;ECO_0000218">
+        <rdfs:label rdf:datatype="&xsd;string">manual_assertion</rdfs:label>
+    </owl:AnnotationProperty>
+
+
+    <!-- http://www.ebi.ac.uk/efo/alternative_term -->
+
+    <owl:AnnotationProperty rdf:about="&efo;alternative_term"/>
+
+
+    <!-- http://www.ebi.ac.uk/efo/definition -->
+
+    <owl:AnnotationProperty rdf:about="&efo;definition"/>
+
+
+    <!-- http://www.ebi.ac.uk/efo/definition_citation -->
+
+    <owl:AnnotationProperty rdf:about="&efo;definition_citation"/>
+
+
+    <!-- http://www.ebi.ac.uk/efo/reason_for_obsolescence -->
+
+    <owl:AnnotationProperty rdf:about="&efo;reason_for_obsolescence"/>
+
+
+    <!-- http://www.geneontology.org/formats/oboInOwl#hasDbXref -->
+
+    <owl:AnnotationProperty rdf:about="&oboInOwl;hasDbXref"/>
+
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_#symbol -->
+
+    <owl:AnnotationProperty rdf:about="&Orphanet_;symbol"/>
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- http://purl.obolibrary.org/obo/BFO_0000050 -->
+
+    <rdf:Description rdf:about="&obo;BFO_0000050">
+        <rdfs:label rdf:datatype="&xsd;string">part_of</rdfs:label>
+    </rdf:Description>
+
+    <!-- http://www.orpha.net/ORDO/ObsoleteClass -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/ObsoleteClass">
+        <rdfs:label rdf:datatype="&xsd;string">obsolete_class</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C022 -->
+
+    <rdf:Description rdf:about="http://www.orpha.net/ORDO/Orphanet_C022">
+        <efo:definition rdf:datatype="&xsd;string">Relation between a phenome and the georaphical area where it has been observed</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">present_in</rdfs:label>
+    </rdf:Description>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C024 -->
+
+    <rdf:Description rdf:about="http://www.orpha.net/ORDO/Orphanet_C024">
+        <rdfs:label rdf:datatype="&xsd;string">has_cases/families_average_value</rdfs:label>
+    </rdf:Description>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C025 -->
+
+    <owl:ObjectProperty rdf:about="http://www.orpha.net/ORDO/Orphanet_C025">
+        <rdfs:label rdf:datatype="&xsd;string">has_point_prevalence_range</rdfs:label>
+    </owl:ObjectProperty>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C016 -->
+
+    <rdf:Description rdf:about="http://www.orpha.net/ORDO/Orphanet_C016">
+        <rdfs:label rdf:datatype="&xsd;string">has_inheritance</rdfs:label>
+    </rdf:Description>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C017 -->
+
+    <rdf:Description rdf:about="http://www.orpha.net/ORDO/Orphanet_C017">
+        <efo:definition rdf:datatype="&xsd;string">Relation between a phenome and its range(s) of age of onset</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">has_AgeOfOnset</rdfs:label>
+    </rdf:Description>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409991 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409991">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C009"/>
+        <rdfs:label rdf:datatype="&xsd;string">Worldwide</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409966 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409966">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C004"/>
+        <efo:definition rdf:datatype="&xsd;string">The number of all the existing cases of a disorder in a given population at a specific point in time.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">point prevalence</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409967 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409967">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C003"/>
+        <efo:definition rdf:datatype="&xsd;string">The number of new cases that arise in a population in a given time period (year).</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">annual incidence</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409968 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409968">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C004"/>
+        <efo:definition rdf:datatype="&xsd;string">The number of infants born with the disorder compared to the total number of live births in a given time period.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">birth prevalence</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409969 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409969">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C004"/>
+        <efo:definition rdf:datatype="&xsd;string">The number of individuals in a statistical population that at some point in their lives have experienced a disorder, compared to the total number of individuals.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">lifetime prevalence</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_409979 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_409979">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_409966"/>
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_409967"/>
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_409968"/>
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_409969"/>
+        <efo:definition rdf:datatype="&xsd;string">Prevalence or incidence figures are inferior to 1 individual per 1 million inhabitants.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">&lt;1 / 1 000 000</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_1000 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_1000">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377788"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C025"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409979"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                        <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&obo;BFO_0000050"/>
+                <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <efo:definition rdf:datatype="&xsd;string">Ocular albinism with late-onset sensorineural deafness (OASD), is a rare, X-linked inherited type of ocular albinism (see this term) described in one African kindred (7 males over 3 generations) to date, characterized by severe visual impairment, translucent pale-blue iridies, a reduction in the retinal pigment and moderately severe deafness by middle age (fourth to fifth decade of life). It is unclear whether it is allelic to X-linked recessive ocular albinism (see this term) or a contiguous gene syndrome.</efo:definition>
+        <efo:definition_citation rdf:datatype="&xsd;string">orphanet</efo:definition_citation>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">ICD-10:E70.3</oboInOwl:hasDbXref>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">MeSH:C537043</oboInOwl:hasDbXref>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">OMIM:300650</oboInOwl:hasDbXref>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">UMLS:C1845069</oboInOwl:hasDbXref>
+        <rdfs:label rdf:datatype="&xsd;string">Ocular albinism with late-onset sensorineural deafness</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:E70.3</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">MeSH:C537043</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">E (exact mapping (the terms and the concepts are equivalent))</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">OMIM:300650</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">E (exact mapping (the terms and the concepts are equivalent))</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">UMLS:C1845069</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">E (exact mapping (the terms and the concepts are equivalent))</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Annotation>
+        <owl:annotatedSource>
+            <owl:Axiom>
+                <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+                <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+                <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:E70.3</owl:annotatedTarget>
+                <obo:ECO_0000218 rdf:datatype="&xsd;string">Attributed</obo:ECO_0000218>
+            </owl:Axiom>
+        </owl:annotatedSource>
+        <owl:annotatedProperty rdf:resource="&obo;ECO_0000218"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">Attributed</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Annotation>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377788"/>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Disease</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C025"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409979"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:annotatedTarget>
+        <obo:ECO_0000205 rdf:datatype="&xsd;string">Validated</obo:ECO_0000205>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_1000"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                        <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:annotatedTarget>
+        <obo:ECO_0000205 rdf:datatype="&xsd;string">Validated</obo:ECO_0000205>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_102003 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_102003">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_98006"/>  <!-- looked -->
+        <rdfs:label rdf:datatype="&xsd;string">Rare movement disorder</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_102003"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_376724 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_376724">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_156159"/>  <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>  <!-- looked -->
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">ICD-10:G24.1</oboInOwl:hasDbXref>
+        <rdfs:label rdf:datatype="&xsd;string">Generalized isolated dystonia</rdfs:label>
+    </owl:Class>
+    <owl:Annotation>
+        <owl:annotatedSource>
+            <owl:Axiom>
+                <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_376724"/> <!-- looked -->
+                <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+                <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:G24.1</owl:annotatedTarget>
+                <obo:ECO_0000218 rdf:datatype="&xsd;string">Attributed</obo:ECO_0000218> <!-- looked -->
+            </owl:Axiom>
+        </owl:annotatedSource>
+        <owl:annotatedProperty rdf:resource="&obo;ECO_0000218"/> <!-- looked -->
+        <owl:annotatedTarget rdf:datatype="&xsd;string">Attributed</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Annotation>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_376724"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_376724"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:G24.1</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_156159 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_156159">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>  <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_391799"/>  <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_68363"/>
+        <efo:alternative_term rdf:datatype="&xsd;string">Pure dystonia</efo:alternative_term>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">ICD-10:G24.1</oboInOwl:hasDbXref>
+        <rdfs:label rdf:datatype="&xsd;string">Isolated dystonia</rdfs:label>
+    </owl:Class>
+    <owl:Annotation>
+        <owl:annotatedSource>
+            <owl:Axiom>
+                <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_156159"/> <!-- looked -->
+                <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+                <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:G24.1</owl:annotatedTarget>
+                <obo:ECO_0000218 rdf:datatype="&xsd;string">Attributed</obo:ECO_0000218>
+            </owl:Axiom>
+        </owl:annotatedSource>
+        <owl:annotatedProperty rdf:resource="&obo;ECO_0000218"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">Attributed</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218> <!-- looked -->
+    </owl:Annotation>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_156159"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_156159"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:G24.1</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_90642 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_90642">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">ICD-10:H90.3</oboInOwl:hasDbXref>
+        <rdfs:label rdf:datatype="&xsd;string">Syndromic genetic deafness</rdfs:label>
+    </owl:Class>
+    <owl:Annotation>
+        <owl:annotatedSource>
+            <owl:Axiom>
+                <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+                <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+                <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:H90.3</owl:annotatedTarget>
+                <obo:ECO_0000218 rdf:datatype="&xsd;string">Attributed</obo:ECO_0000218>
+            </owl:Axiom>
+        </owl:annotatedSource>
+        <owl:annotatedProperty rdf:resource="&obo;ECO_0000218"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">Attributed</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Annotation>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:H90.3</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_90642 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_90642">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>
+        <oboInOwl:hasDbXref rdf:datatype="&xsd;string">ICD-10:H90.3</oboInOwl:hasDbXref>
+        <rdfs:label rdf:datatype="&xsd;string">Syndromic genetic deafness</rdfs:label>
+    </owl:Class>
+    <owl:Annotation>
+        <owl:annotatedSource>
+            <owl:Axiom>
+                <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+                <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+                <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:H90.3</owl:annotatedTarget>
+                <obo:ECO_0000218 rdf:datatype="&xsd;string">Attributed</obo:ECO_0000218>
+            </owl:Axiom>
+        </owl:annotatedSource>
+        <owl:annotatedProperty rdf:resource="&obo;ECO_0000218"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">Attributed</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Annotation>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+        <owl:annotatedProperty rdf:resource="&oboInOwl;hasDbXref"/>
+        <owl:annotatedTarget rdf:datatype="&xsd;string">ICD-10:H90.3</owl:annotatedTarget>
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">NTBT (narrower term maps to a broader term)</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_xxxxxx -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_xxxxxx">
+        <rdfs:label rdf:datatype="&xsd;string">Rare movement disorder</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&obo;BFO_0000050"/>
+                <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_90642"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_yyyyyy -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_yyyyyy">
+        <rdfs:label rdf:datatype="&xsd;string">Rare movement disorder</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                <owl:hasValue rdf:datatype="&xsd;string">6.0</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_zzzzzz -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_zzzzzz">
+        <rdfs:label rdf:datatype="&xsd;string">Rare movement disorder</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                        <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_zzzzzz"/>
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C022"/>
+                        <owl:someValuesFrom rdf:resource="http://www.orpha.net/ORDO/Orphanet_409991"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.orpha.net/ORDO/Orphanet_C024"/>
+                        <owl:hasValue rdf:datatype="&xsd;string">7.0</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:annotatedTarget>
+        <obo:ECO_0000205 rdf:datatype="&xsd;string">Validated</obo:ECO_0000205>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_183521 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_183521">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_71859"/> <!-- looked -->
+        <rdfs:label rdf:datatype="&xsd;string">Rare genetic movement disorder</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_183521"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_391799 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_391799">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_183521"/> <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <efo:alternative_term rdf:datatype="&xsd;string">Rare genetic dystonic disorder</efo:alternative_term>
+        <rdfs:label rdf:datatype="&xsd;string">Rare genetic dystonia</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_391799"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_71859 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_71859">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_98053"/> <!-- looked -->
+        <rdfs:label rdf:datatype="&xsd;string">Rare genetic neurological disorder</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_71859"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_68363 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_68363">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_102003"/>
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/>  <!-- looked -->
+        <efo:alternative_term rdf:datatype="&xsd;string">Rare dystonic disorder</efo:alternative_term>
+        <rdfs:label rdf:datatype="&xsd;string">Rare dystonia</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_68363"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_98053 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_98053">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <rdfs:label rdf:datatype="&xsd;string">Rare genetic disease</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_98053"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_98006 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_98006">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <efo:alternative_term rdf:datatype="&xsd;string">Rare nervous system disease</efo:alternative_term>
+        <rdfs:label rdf:datatype="&xsd;string">Rare neurologic disease</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://www.orpha.net/ORDO/Orphanet_98006"/> <!-- looked -->
+        <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
+        <owl:annotatedTarget rdf:resource="http://www.orpha.net/ORDO/Orphanet_377794"/> <!-- looked -->
+        <obo:ECO_0000218 rdf:datatype="&xsd;string">Group of phenomes</obo:ECO_0000218>
+    </owl:Axiom>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377788 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377788">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">An alteration of health status resulting from a physiopathological mechanism, and having a homogeneous clinical presentation and evolution and homogeneous therapeutic possibilities. Excludes developmental anomalies.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">disease</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377789 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377789">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A set of morphological anomalies resulting from a developmental anomaly involving more than one morphogenetic field, regardless of the cause.  Includes sequences and associations.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">malformation syndrome</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377790 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377790">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">An alteration of the normal values of biological products. Example :  hypertransferrinemia.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">biological anomaly</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377791 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377791">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A set of anomalies resulting from a developmental anomaly involving only one morphogenetic field. Includes isolated anomalies and anatomical variants.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">morphological anomaly</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377792 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377792">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A set of manifestations resulting from the alteration of a physiological state and that can be present in several diseases. Examples :  nephrotic syndrome, hepatic failure.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">clinical syndrome</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377793 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377793">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A set of manifestations presenting as a subset of a disorder under particular circumstances.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">particular clinical situation in a disease or syndrome</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377794 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377794">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A collection of different types of phenomes, sharing a given characteristic and therefore being classified together.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">group of disorders</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377795 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377795">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A subset of a disorder defined by its cause, and clinically indistinguishable from other etiological subtypes.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">etiological subtype</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377796 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377796">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A subset of a disorder defined by a distinct clinical presentation.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">clinical subtype</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_377797 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_377797">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C001"/>
+        <efo:definition rdf:datatype="&xsd;string">A subset of a disorder defined on the basis of its histological aspect.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">histopathological subtype</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_410297 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_410297">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C010"/>
+        <efo:definition rdf:datatype="&xsd;string">Chromosomal region associated with a single heritable disorder. The heritable disorder may be mapped to a chromosome but generally has not been associated to a specific gene.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">disorder-associated locus</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C001 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C001">
+        <efo:definition rdf:datatype="&xsd;string">A set of phenotypes expressed at the cell, tissue, organ or organism level. It describes the &quot;physical totality of all traits of an organism or of one of its subsystems&quot; (Mahner and Kary, 1997).</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">phenome</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_410298 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_410298">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C010"/>
+        <efo:definition rdf:datatype="&xsd;string">Basic unit of heredity, consisting of a segment of DNA arranged in a linear manner along a chromosome that is transcribed in RNA and translated in a protein.</efo:definition>
+        <efo:definition rdf:datatype="&xsd;string">Chromosomal region associated with a single heritable disorder. The heritable disorder may be mapped to a chromosome but generally has not been associated to a specific gene.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">gene with protein product</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_410299 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_410299">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C010"/>
+        <efo:definition rdf:datatype="&xsd;string">RNA encoded by a gene but not translated in protein. Ex :  Transfer RNA.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">non-coding RNA</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C003 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C003">
+        <efo:definition rdf:datatype="&xsd;string">Refers to the concepts describing the distribution of cases of a disorder in a given population at a given time.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">epidemiology</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C004 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C004">
+        <rdfs:subClassOf rdf:resource="http://www.orpha.net/ORDO/Orphanet_C003"/>
+        <efo:definition rdf:datatype="&xsd;string">Refers to the concepts describing the distribution of all current cases (new and old cases) of a disorder in a given population at a given time.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">prevalence</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C005 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C005">
+        <efo:definition rdf:datatype="&xsd;string">The way a genetic disorder can be spread to one or more members of a family.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">inheritance</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C009 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C009">
+        <efo:definition rdf:datatype="&xsd;string">Refers to a country, a continent, or the entire world.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">geography</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C010 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C010">
+        <efo:definition rdf:datatype="&xsd;string">Strands of nucleotides encompassing gene with protein product, non-coding and disease-associated locus.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">genetic material</rdfs:label>
+    </owl:Class>
+
+    <!-- http://www.orpha.net/ORDO/Orphanet_C023 -->
+
+    <owl:Class rdf:about="http://www.orpha.net/ORDO/Orphanet_C023">
+        <efo:definition rdf:datatype="&xsd;string">Age of onset of clinical manifestations related to a disorder.</efo:definition>
+        <rdfs:label rdf:datatype="&xsd;string">age of onset</rdfs:label>
+    </owl:Class>
+
+  <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://www.orpha.net/ORDO/Orphanet_C021">
+        <rdfs:label rdf:datatype="&xsd;string">part_of</rdfs:label>
+        <efo:definition rdf:datatype="&xsd;string">Relation between two phenomes, one being included in the other. Ex : clinical subtype part_of disease.</efo:definition>
+    </rdf:Description>
+</rdf:RDF>
