@@ -67,6 +67,15 @@ function cloneObject(obj) {
     return target;
 }
 
+// Assigns values to all properties which are set in Source to the Target
+function copyProperties(objectSource, objectTarget) {
+  for (var p in objectSource) {
+    if (objectSource.hasOwnProperty(p)) {
+      objectTarget[p] = objectSource[p];
+    }
+  }
+}
+
 // Equivalent to (Array.indexOf() != -1)
 function arrayContains(array, item) {
     if (Array.prototype.indexOf) {
