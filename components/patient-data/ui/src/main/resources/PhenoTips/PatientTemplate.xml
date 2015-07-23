@@ -667,7 +667,8 @@
       <validationRegExp/>
       <values/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </allergies>      <NKDA>
+    </allergies>
+    <NKDA>
         <defaultValue>1</defaultValue>
         <disabled>0</disabled>
         <displayFormType>checkbox</displayFormType>
