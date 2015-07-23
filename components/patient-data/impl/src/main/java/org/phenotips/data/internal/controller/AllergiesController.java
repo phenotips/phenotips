@@ -134,6 +134,10 @@ public class AllergiesController extends AbstractComplexController<Object>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(ALLERGIES)) {
+            return;
+        }
+
         PatientData<Object> allergiesData = patient.getData(DATA_NAME);
         if (allergiesData == null) {
             return;
