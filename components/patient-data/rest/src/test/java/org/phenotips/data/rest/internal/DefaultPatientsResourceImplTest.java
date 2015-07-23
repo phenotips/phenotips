@@ -259,10 +259,18 @@ public class DefaultPatientsResourceImplTest {
         doReturn(patientList).when(query).execute();
         doReturn(true).when(this.access).hasAccess(eq(Right.VIEW), any(DocumentReference.class), any(EntityReference.class));
         doReturn(new PatientSummary()).when(this.factory).createPatientSummary(any(Object[].class), eq(this.uriInfo));
-        Patients result1 = this.patientsResource.listPatients(0, 30, "id", "asc");
-        Assert.assertEquals(30, result1.getPatientSummaries().size());
-        Patients result2 = this.patientsResource.listPatients(15, 30, "id", "asc");
-        Assert.assertEquals(15, result2.getPatientSummaries().size());
+
+        Patients allPatients = this.patientsResource.listPatients(0, 30, "id", "asc");
+        Assert.assertEquals(30, allPatients.getPatientSummaries().size());
+
+        Patients selectedNumberOfPatients = this.patientsResource.listPatients(15, 15, "id", "asc");
+        Assert.assertEquals(15, selectedNumberOfPatients.getPatientSummaries().size());
+
+        Patients onePatient = this.patientsResource.listPatients(15, 1, "id","asc");
+        Assert.assertEquals(1, onePatient.getPatientSummaries().size());
+
+        Patients incorrectLookup = patientsResource.listPatients(31, 5, "id", "asc");
+        Assert.assertEquals(0, incorrectLookup.getPatientSummaries().size());
     }
 
     @Test
