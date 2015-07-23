@@ -20,6 +20,7 @@ package org.phenotips.vocabulary.internal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -82,8 +83,8 @@ public class CSVFileService
 
             // get correct field names for velocity
             transformHeaders(headers, headerToFiledMap);
-            parseLines(in, strategy, headers);
-
+            Reader reader = new InputStreamReader(url.openConnection().getInputStream());
+            parseLines(reader, strategy, headers);
         } catch (NullPointerException ex) {
             this.logger.error("NullPointer: {}", ex.getMessage());
         } catch (IOException ex) {
@@ -99,15 +100,14 @@ public class CSVFileService
         }
     }
 
-    private void parseLines(BufferedReader in, CSVStrategy strategy, String[] headers)
+    private void parseLines(Reader reader, CSVStrategy strategy, String[] headers)
     {
-        String line;
+        String[] pieces;
 
         try {
-            while ((line = in.readLine()) != null) {
-                String[] pieces;
+            CSVParser parser = new CSVParser(reader, strategy);
 
-                CSVParser parser = new CSVParser(new StringReader(line), strategy);
+            while ((pieces = parser.getLine()) != null) {
 
                 try {
                     pieces = parser.getLine();
@@ -137,5 +137,4 @@ public class CSVFileService
             this.logger.error(" IOException: {}", ex.getMessage());
         }
     }
-
 }
