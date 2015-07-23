@@ -116,7 +116,7 @@
   #set($exportButtonID = "push-multiple-patients")
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype'],
+    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'NKDA'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
