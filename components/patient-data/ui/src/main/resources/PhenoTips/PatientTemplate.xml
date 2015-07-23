@@ -675,7 +675,7 @@
         <displayType/>
         <name>NKDA</name>
         <number>51</number>
-        <prettyName>No known drug allergies</prettyName>
+        <prettyName>NKDA</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
