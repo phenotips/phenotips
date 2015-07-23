@@ -30,7 +30,7 @@ import net.sf.json.JSONObject;
  * @since 1.0M8
  */
 @Unstable
-public interface Feature extends OntologyProperty
+public interface Feature extends VocabularyProperty
 {
     /**
      * The category of this feature: {@code phenotype}, {@code prenatal_phenotype}, {@code past_phenotype}, etc. This
@@ -88,7 +88,7 @@ public interface Feature extends OntologyProperty
      * or empty.
      *
      * @return feature name
-     * @todo move to OntologyProperty and/or implement a OntologyProperty-to-PhenotipsPropertyName mapping service
+     * @todo move to VocabularyProperty and/or implement a VocabularyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
 }

@@ -50,7 +50,7 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
 {
     /** Needed for accessing the feature ontologies. */
     @Inject
-    private VocabularyManager ontologyManager;
+    private VocabularyManager vocabularyManager;
 
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientExtendedPhenotypeUpdater()
@@ -87,7 +87,7 @@ public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
         Set<String> sortedPhenotypes = new TreeSet<String>();
         for (String phenotype : phenotypes) {
             sortedPhenotypes.add(phenotype);
-            VocabularyTerm phenotypeTerm = this.ontologyManager.resolveTerm(phenotype);
+            VocabularyTerm phenotypeTerm = this.vocabularyManager.resolveTerm(phenotype);
             if (phenotypeTerm != null) {
                 for (VocabularyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
                     extendedPhenotypes.add(term.getId());

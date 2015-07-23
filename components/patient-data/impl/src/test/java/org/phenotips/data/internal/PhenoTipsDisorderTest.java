@@ -53,7 +53,7 @@ public class PhenoTipsDisorderTest
     private Provider<ComponentManager> mockProvider;
 
     @Mock
-    private VocabularyManager om;
+    private VocabularyManager vm;
 
     @Mock
     private VocabularyTerm mim200100;
@@ -66,11 +66,11 @@ public class PhenoTipsDisorderTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(DiffManager.class)).thenReturn(null);
-        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.om);
+        when(this.cm.getInstance(VocabularyManager.class)).thenReturn(this.vm);
 
         when(this.mim200100.getId()).thenReturn("MIM:200100");
         when(this.mim200100.getName()).thenReturn("#200100 ABETALIPOPROTEINEMIA");
-        when(this.om.resolveTerm("MIM:200100")).thenReturn(this.mim200100);
+        when(this.vm.resolveTerm("MIM:200100")).thenReturn(this.mim200100);
     }
 
     @Test

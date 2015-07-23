@@ -703,19 +703,23 @@
             if (owner &amp;&amp; ownershipTransfer) {
               var newOwner = '';
               var newOwnerGroup = ownershipTransfer.down('select');
+              var newOwnerURL = '';
               if (newOwnerGroup &amp;&amp; !newOwnerGroup.disabled &amp;&amp; newOwnerGroup.selectedIndex &gt; 0) {
                 newOwner = newOwnerGroup.options[newOwnerGroup.selectedIndex].text;
+                newOwnerURL = new XWiki.Document(newOwner, 'Groups').getURL();
               } else {
                 var newOwnerUser = ownershipTransfer.down('input[type="text"]');
                 if (newOwnerUser) {
                   var userName = ownershipTransfer.down('.accepted-suggestions li .user-name');
                   if (!newOwnerUser.disabled &amp;&amp; userName) {
                     newOwner = userName.firstChild.nodeValue;
+                    newOwnerURL = new XWiki.Document(ownershipTransfer.down('.accepted-suggestions li .user-alias').innerHTML, 'XWiki').getURL();;
                   }
                 }
               }
               if (newOwner) {
                 owner.replaceChild(document.createTextNode(newOwner), owner.lastChild);
+                owner.href = newOwnerURL;
               }
             }
             var visibility = _this._element.down('.visibility');
@@ -925,6 +929,9 @@ document.observe("xwiki:dom:loaded", function() {
 #access-rights-summary {
   float: right;
 }
+.access-rights-info a {
+  color: inherit;
+}
 #access-rights-summary .access-rights-info {
   border: 1px solid #fff;
   box-shadow: inset 1px 1px 1px $theme.borderColor, 1px 1px 1px $theme.borderColor;
@@ -1102,8 +1109,13 @@ $xwiki.ssx.use($serviceDocName)
     #set ($canTransfer = true)
   #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
+  #if ("$!{ownerReference}" != '')
+    #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;a class='owner' href=""${xwiki.getURL($ownerReference)}""&gt;{{icon name='user'/}}$ownerName&lt;/a&gt;{{/html}}")
+  #else
+    #set ($ownerElement = "{{html wiki='true' clean='false'}}&lt;span class='owner'&gt;{{icon name='user'/}}$ownerName&lt;/span&gt;{{/html}}")
+  #end
   (% id="access-rights-summary" %)(((
-    $services.localization.render("phenotips.patientAccessRightsManagement.caseOwnerandVisibility",["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='user'/}}&lt;span class='owner'&gt;$ownerName&lt;/span&gt;{{/html}}(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}${visibility.label}(%%)"])##
+    $services.localization.render("phenotips.patientAccessRightsManagement.caseOwnerandVisibility",["(% class='access-rights-info' %)$ownerElement(%%)","(% class='access-rights-info visibility' title='$!{visibility.description}' %){{icon name='$visibility'/}}${visibility.label}(%%)"])##
     ##if ($canManage),#else and#end it is (% class="access-rights-info visibility" title="$!{visibility.description}" %){{icon name="$visibility"/}}${visibility.label}(%%)##
     #if ($canManage) ##
       $services.localization.render("phenotips.patientAccessRightsManagement.collaboratorsSummary",["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;",$collaboratorsCount, "&lt;/span&gt;{{/html}}(%%)"])##

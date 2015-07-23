@@ -34,7 +34,7 @@ import net.sf.json.JSONObject;
  * @since 1.0M8
  */
 @Unstable
-public interface FeatureMetadatum extends OntologyProperty
+public interface FeatureMetadatum extends VocabularyProperty
 {
     /** The XClass used for storing phenotype metadata. */
     EntityReference CLASS_REFERENCE = new EntityReference("PhenotypeMetaClass", EntityType.DOCUMENT,
@@ -64,9 +64,9 @@ public interface FeatureMetadatum extends OntologyProperty
         private final String id;
 
         /**
-         * Constructor that initializes the {@link #getId() ontology term identifier}.
+         * Constructor that initializes the {@link #getId() vocabulary term identifier}.
          *
-         * @param id an identifier, in the format {@code ONTOLOGY:termId}
+         * @param id an identifier, in the format {@code VOCABULARY:termId}
          * @see #getId()
          */
         Type(String id)
@@ -81,9 +81,9 @@ public interface FeatureMetadatum extends OntologyProperty
         }
 
         /**
-         * Get the ontology term identifier associated to this type of meta-feature.
+         * Get the vocabulary term identifier associated to this type of meta-feature.
          *
-         * @return an identifier, in the format {@code ONTOLOGY:termId}
+         * @return an identifier, in the format {@code VOCABULARY:termId}
          */
         public String getId()
         {

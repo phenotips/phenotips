@@ -109,5 +109,15 @@
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </propagateFatherLastName>
+    <uiGradientNodes>
+      <disabled>0</disabled>
+      <defaultValue>0</defaultValue>
+      <displayFormType>select</displayFormType>
+      <name>uiGradientNodes</name>
+      <number>2</number>
+      <prettyName>Apply color gradient to pedigree symbols</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </uiGradientNodes>
   </class>
 </xwikidoc>

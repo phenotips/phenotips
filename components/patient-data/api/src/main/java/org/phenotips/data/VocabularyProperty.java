@@ -22,26 +22,26 @@ import org.xwiki.stability.Unstable;
 import net.sf.json.JSONObject;
 
 /**
- * Information about a specific {@link Patient patient} feature value, represented as a term from an ontology.
+ * Information about a specific {@link Patient patient} feature value, represented as a term from a vocabulary.
  *
  * @version $Id$
  * @since 1.0M8
  */
 @Unstable
-public interface OntologyProperty
+public interface VocabularyProperty
 {
     /**
-     * The ontology term identifier associated to this value.
+     * The vocabulary term identifier associated to this value.
      *
-     * @return an identifier, in the format {@code ONTOLOGY:termId}, or the empty string if this is a free text term,
-     *         not from an ontology
+     * @return an identifier, in the format {@code VOCABULARY:termId}, or the empty string if this is a free text term,
+     *         not from a vocabulary
      */
     String getId();
 
     /**
-     * The name associated to this term in the ontology.
+     * The name associated to this term in the vocabulary.
      *
-     * @return a user-friendly name for this term, or the term itself if this is not an ontology term
+     * @return a user-friendly name for this term, or the term itself if this is not an vocabulary term
      */
     String getName();
 
