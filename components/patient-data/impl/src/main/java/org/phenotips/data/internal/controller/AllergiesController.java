@@ -117,10 +117,7 @@ public class AllergiesController extends AbstractComplexController<Object>
             // NKDA
             IntegerProperty nkdaProperty = (IntegerProperty) data.get(NKDA);
             Integer nkdaInteger = (Integer) nkdaProperty.getValue();
-            Boolean nkda = Boolean.TRUE;
-            if (nkdaInteger != 1) {
-                nkda = Boolean.FALSE;
-            }
+            boolean nkda = nkdaInteger == 1;
             result.put(NKDA, nkda);
 
             return new DictionaryPatientData<>(getName(), result);
