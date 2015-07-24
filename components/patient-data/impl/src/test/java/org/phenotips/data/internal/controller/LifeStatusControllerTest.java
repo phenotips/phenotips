@@ -312,6 +312,7 @@ public class LifeStatusControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(DATA_NAME);
 
         this.controller.writeJSON(this.patient, json, selectedFields);
 
@@ -335,6 +336,7 @@ public class LifeStatusControllerTest
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, DECEASED)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(DATA_NAME);
 
         this.controller.writeJSON(this.patient, json, selectedFields);
 

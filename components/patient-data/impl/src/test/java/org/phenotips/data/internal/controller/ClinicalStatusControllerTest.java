@@ -145,6 +145,7 @@ public class ClinicalStatusControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(DATA_NAME);
 
         this.controller.writeJSON(this.patient, json, selectedFields);
 
