@@ -54,7 +54,7 @@ public class HomePageTest extends AbstractTest
     {
         HomePage page = HomePage.gotoPage();
         AllRecordsPage allRecords = page.clickBrowseAllRecords();
-        Assert.assertEquals(0, allRecords.getTable().getColumnIndex("Report name"));
+        Assert.assertEquals(0, allRecords.getTable().getColumnIndex("External identifier"));
     }
 
     @Test

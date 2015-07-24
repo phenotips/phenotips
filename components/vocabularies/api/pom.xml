@@ -30,7 +30,7 @@
 
   <properties>
     <!-- More tests should be added when the Solr core becomes a component -->
-    <coverage.instructionRatio>0.13</coverage.instructionRatio>
+    <coverage.instructionRatio>0.10</coverage.instructionRatio>
   </properties>
 
   <dependencies>

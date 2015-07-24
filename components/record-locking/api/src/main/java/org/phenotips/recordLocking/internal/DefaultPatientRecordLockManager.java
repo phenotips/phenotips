@@ -43,7 +43,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * Default implementation of the {@link org.phenotips.recordLocking.PatientRecordLockManager}.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Singleton

@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * The effect that a medicine has on the patient's symptoms.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 public enum MedicationEffect

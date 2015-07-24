@@ -35,7 +35,7 @@ import org.apache.commons.httpclient.HttpStatus;
  * document.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component
 @Named("recordLocking")

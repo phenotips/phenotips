@@ -95,7 +95,7 @@ public class DefaultDiagnosisServiceTest
 
         int invalidPhenotypes = 2;
 
-        VocabularyManager ontology = this.mocker.getInstance(VocabularyManager.class);
+        VocabularyManager vocabulary = this.mocker.getInstance(VocabularyManager.class);
         Environment env = this.mocker.getInstance(Environment.class);
         Utils utils = this.mocker.getInstance(Utils.class);
 
@@ -107,12 +107,12 @@ public class DefaultDiagnosisServiceTest
         Utils workingUtilsComponent = this.workingUtils.getComponentUnderTest();
         String annotationPath =
             stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
-        String ontologyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
+        String vocabularyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
 
         File tempSpyObj = new File(tempDir);
         File tempSpy = spy(tempSpyObj);
         doReturn(tempSpy).when(utilsEnv).getTemporaryDirectory();
-        workingUtilsComponent.loadDataFiles(ontologyPath, annotationPath);
+        workingUtilsComponent.loadDataFiles(vocabularyPath, annotationPath);
 
         doAnswer(new Answer<VocabularyTerm>()
         {
@@ -125,7 +125,7 @@ public class DefaultDiagnosisServiceTest
                 doReturn("test").when(term).getName();
                 return term;
             }
-        }).when(ontology).resolveTerm(anyString());
+        }).when(vocabulary).resolveTerm(anyString());
 
         doReturn(tempSpy).when(env).getTemporaryDirectory();
         doReturn(workingUtilsComponent.getGraph()).when(utils).getGraph();
@@ -145,7 +145,7 @@ public class DefaultDiagnosisServiceTest
             assertTrue(diagnosisIds.containsAll(disorderIds.get(i)));
             i++;
         }
-        verify(ontology, times(limit * (i - invalidPhenotypes))).resolveTerm(anyString());
+        verify(vocabulary, times(limit * (i - invalidPhenotypes))).resolveTerm(anyString());
     }
 
     private File stream2file(InputStream in) throws IOException

@@ -33,7 +33,7 @@ import javax.ws.rs.core.UriInfo;
  * Factory class for generating REST representations of various types of entities.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Unstable
 @Role

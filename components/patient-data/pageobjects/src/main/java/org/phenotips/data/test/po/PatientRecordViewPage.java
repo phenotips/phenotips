@@ -37,221 +37,221 @@ import org.openqa.selenium.support.FindBy;
 public class PatientRecordViewPage extends ViewPage
 {
     @FindBy(css = "#document-title h1")
-    WebElement recordId;
+    private WebElement recordId;
 
     @FindBy(id = "prActionEdit")
-    WebElement menuEditLink;
+    private WebElement menuEditLink;
 
     @FindBy(xpath = "//span[text() = 'Patient name:']/following-sibling::span[@class = 'displayed-value']")
-    WebElement patientName;
+    private WebElement patientName;
 
     @FindBy(xpath = "//*[contains(@class, 'patient-info')]//*[@class = 'displayed-value'][text() = '3']")
-    WebElement patientIdentifier;
+    private WebElement patientIdentifier;
 
     @FindBy(xpath = "//span[text() = 'Sex:']/following-sibling::span[@class = 'displayed-value']")
-    WebElement sex;
+    private WebElement sex;
 
     @FindBy(xpath = "//*[contains(@class, 'maternal_ethnicity')]//*[@class = 'xwiki-free-multiselect']")
-    WebElement maternalEthnicity;
+    private WebElement maternalEthnicity;
 
     @FindBy(xpath = "//*[contains(@class, 'global_mode_of_inheritance ')]//*[@class = 'displayed-value']")
-    WebElement globalModeOfInheritance;
+    private WebElement globalModeOfInheritance;
 
     @FindBy(css = ".fieldset.consanguinity .displayed-value .yes-no-picker-label")
-    WebElement consanguinity;
+    private WebElement consanguinity;
 
     @FindBy(css = ".fieldset.family_history .displayed-value")
-    WebElement familyHealthConditions;
+    private WebElement familyHealthConditions;
 
     @FindBy(css = ".fieldset.assistedReproduction_fertilityMeds .displayed-value")
-    WebElement conceptionAfterFertiliyMedication;
+    private WebElement conceptionAfterFertiliyMedication;
 
     @FindBy(css = ".fieldset.ivf .displayed-value")
-    WebElement inVitroFertilization;
+    private WebElement inVitroFertilization;
 
     @FindBy(css = ".fieldset.assistedReproduction_surrogacy .displayed-value")
-    WebElement gestationalSurrogacy;
+    private WebElement gestationalSurrogacy;
 
     @FindBy(css = ".fieldset.prenatal_development .displayed-value")
-    WebElement prenatalAndPerinatalHistoryNotes;
+    private WebElement prenatalAndPerinatalHistoryNotes;
 
     @FindBy(css = ".fieldset.medical_history .displayed-value")
-    WebElement medicalAndDevelopmentalHistory;
+    private WebElement medicalAndDevelopmentalHistory;
 
     @FindBy(css = ".fieldset.global_age_of_onset .displayed-value")
-    WebElement globalAgeOfOnset;
+    private WebElement globalAgeOfOnset;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Weight')]/following-sibling::td[1]")
-    WebElement measurementsWeight;
+    private WebElement measurementsWeight;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Height')]/following-sibling::td[1]")
-    WebElement measurementsHeight;
+    private WebElement measurementsHeight;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//*[@class = 'bmi displayed-value']")
-    WebElement BMI;
+    private WebElement BMI;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Arm span')]/following-sibling::td[1]")
-    WebElement measurementsArmSpan;
+    private WebElement measurementsArmSpan;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Sitting height')]/following-sibling::td[1]")
-    WebElement measurementsSittingHeight;
+    private WebElement measurementsSittingHeight;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Head circumference')]/following-sibling::td[1]")
-    WebElement measurementsHeadCircumference;
+    private WebElement measurementsHeadCircumference;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Philtrum length')]/following-sibling::td[1]")
-    WebElement measurementsPhiltrumLength;
+    private WebElement measurementsPhiltrumLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Left ear length')]/following-sibling::td[1]")
-    WebElement measurementsLeftEarLength;
+    private WebElement measurementsLeftEarLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Right ear length')]/following-sibling::td[1]")
-    WebElement measurementsRightEarLength;
+    private WebElement measurementsRightEarLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Outer canthal distance')]/following-sibling::td[1]")
-    WebElement measurementsOuterCanthalDistance;
+    private WebElement measurementsOuterCanthalDistance;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Inner canthal distance')]/following-sibling::td[1]")
-    WebElement measurementsInnerCanthalDistance;
+    private WebElement measurementsInnerCanthalDistance;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Palpebral fissure length')]/following-sibling::td[1]")
-    WebElement measurementsPalpebralFissureLenghth;
+    private WebElement measurementsPalpebralFissureLenghth;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Interpupilary distance')]/following-sibling::td[1]")
-    WebElement measurementsInterpupilaryDistance;
+    private WebElement measurementsInterpupilaryDistance;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Left hand length')]/following-sibling::td[1]")
-    WebElement measurementsLeftHandLength;
+    private WebElement measurementsLeftHandLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Left palm length')]/following-sibling::td[1]")
-    WebElement measurementsLeftPalmLength;
+    private WebElement measurementsLeftPalmLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Left foot length')]/following-sibling::td[1]")
-    WebElement measurementsLeftFootLength;
+    private WebElement measurementsLeftFootLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Right hand length')]/following-sibling::td[1]")
-    WebElement measurementsRightHandLength;
+    private WebElement measurementsRightHandLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Right palm length')]/following-sibling::td[1]")
-    WebElement measurementsRightPalmLength;
+    private WebElement measurementsRightPalmLength;
 
     @FindBy(xpath = "//div[contains(@class, 'measurement-info')]//th[contains(text(), 'Right foot length')]/following-sibling::td[1]")
-    WebElement measurementsRightFootLength;
+    private WebElement measurementsRightFootLength;
 
     @FindBy(xpath = "//div[contains(@class, 'phenotype-info')]//div[contains(@class,'controlled-group')]")
-    WebElement patientIsClinicallyNormal;
+    private WebElement patientIsClinicallyNormal;
 
     @FindBy(css = ".fieldset.diagnosis_notes .displayed-value")
-    WebElement diagnosisAdditionalComments;
+    private WebElement diagnosisAdditionalComments;
 
     @FindBy(xpath = "//div[contains(@class, 'diagnosis-info')]//p[contains(text(), '#270400 SMITH-LEMLI-OPITZ SYNDROME; SLOS ;;SLO SYNDROME;; RSH SYNDROME;; RUTLEDGE LETHAL MULTIPLE CONGENITAL ANOMALY SYNDROME;; POLYDACTYLY, SEX REVERSAL, RENAL HYPOPLASIA, AND UNILOBAR LUNG;; LETHAL ACRODYSGENITAL SYNDROME')]")
-    WebElement smithLemliOptizSyndrome;
+    private WebElement smithLemliOptizSyndrome;
 
     @FindBy(xpath = "//div[contains(@class, 'diagnosis-info')]//p[contains(text(), '#193520 WATSON SYNDROME ;;PULMONIC STENOSIS WITH CAFE-AU-LAIT SPOTS;; CAFE-AU-LAIT SPOTS WITH PULMONIC STENOSIS')]")
-    WebElement watsonSyndrome;
+    private WebElement watsonSyndrome;
 
     @FindBy(xpath = "//div[contains(@class, 'diagnosis-info')]//p[contains(text(), '#194190 WOLF-HIRSCHHORN SYNDROME; WHS ;;CHROMOSOME 4p16.3 DELETION SYNDROME;; PITT-ROGERS-DANKS SYNDROME; PRDS;; PITT SYNDROME')]")
-    WebElement wolfSyndrome;
+    private WebElement wolfSyndrome;
 
     @FindBy(xpath = "//*[contains(@class, 'genotype chapter')]//*[@class = 'comments'][text() = ' test']")
-    WebElement genotypeInformationComments;
+    private WebElement genotypeInformationComments;
 
     @FindBy(xpath = "//*[contains(@class, 'genotype chapter')]//*[@class = 'gene'][text() = ' test1']")
-    WebElement genotypeInformationGene;
+    private WebElement genotypeInformationGene;
 
     @FindBy(xpath = "//*[contains(@class, 'phenotype-info')]//div[contains(@class, 'value-checked')][text() = 'Hemihypertrophy']//*[@class = 'phenotype-details']//dd[text() = 'Neonatal onset']")
-    WebElement neonatalOnsetHemihypertrophy;
+    private WebElement neonatalOnsetHemihypertrophy;
 
     @FindBy(xpath = "//*[contains(@class, 'phenotype-info')]//div[contains(@class, 'value-checked')][text() = 'Hemihypertrophy']//*[@class = 'phenotype-details']//dd[text() = 'Subacute']")
-    WebElement subacuteTemporalPatternHemihypertrophy;
+    private WebElement subacuteTemporalPatternHemihypertrophy;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Abnormal facial shape']//*[@class = 'phenotype-details']//dd[text() = 'Slow progression']")
-    WebElement slowPaceOfProgressionAbnormalFacialShape;
+    private WebElement slowPaceOfProgressionAbnormalFacialShape;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Hypotelorism']//*[@class = 'phenotype-details']//dd[text() = 'Moderate']")
-    WebElement moderateSeverityHypotelorism;
+    private WebElement moderateSeverityHypotelorism;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Abnormality of the inner ear']//*[@class = 'phenotype-details']//dd[text() = 'Distal']")
-    WebElement distalSpatialPatternAbnormalityOfTheInnerEar;
+    private WebElement distalSpatialPatternAbnormalityOfTheInnerEar;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Arrhythmia']//*[@class = 'phenotype-details']//dd[text() = 'test']")
-    WebElement commentsArrythmia;
+    private WebElement commentsArrythmia;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Scoliosis']//*[@class = 'phenotype-details']//dd[text() = 'Right']")
-    WebElement rightLateralityScoliosis;
+    private WebElement rightLateralityScoliosis;
 
     @FindBy(xpath = "//*[contains(@class, 'value-checked')][text() = 'Seizures']//*[@class = 'phenotype-details']//dd[text() = 'Mild']")
-    WebElement mildSeveritySeizures;
+    private WebElement mildSeveritySeizures;
 
     @FindBy(css = ".fieldset.indication_for_referral .displayed-value")
-    WebElement indicationForReferral;
+    private WebElement indicationForReferral;
 
     @FindBy(xpath = "//*[contains(@class, 'yes-selected')][text() = 'Positive ferric chloride test']")
-    WebElement positiveFerricChlorideTest;
+    private WebElement positiveFerricChlorideTest;
 
     @FindBy(xpath = "//*[contains(@class, 'yes-selected')][text() = 'Dysplastic testes']")
-    WebElement dysplasticTestes;
+    private WebElement dysplasticTestes;
 
     @FindBy(id = "prActionEdit")
-    WebElement goToEditPage;
+    private WebElement goToEditPage;
 
     @FindBy(xpath = "//*[contains(@class, 'patient-info')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPagePatientInfo;
+    private WebElement goToEditPagePatientInfo;
 
     @FindBy(xpath = "//*[contains(@class, 'family-info')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPageFamilyHistory;
+    private WebElement goToEditPageFamilyHistory;
 
     @FindBy(xpath = "//*[contains(@class, 'prenatal-info')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPagePrenatalHistory;
+    private WebElement goToEditPagePrenatalHistory;
 
     @FindBy(xpath = "//*[contains(@class, 'measurement-info')]//*[contains(@class, 'fa-pencil')]")
-    WebElement goToEditPageMeasurements;
+    private WebElement goToEditPageMeasurements;
 
     @FindBy(xpath = "//*[contains(@class, 'genotype')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPageGenotypeInfo;
+    private WebElement goToEditPageGenotypeInfo;
 
     @FindBy(xpath = "//*[contains(@class, 'phenotype-info')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPageClinicalSymptoms;
+    private WebElement goToEditPageClinicalSymptoms;
 
     @FindBy(xpath = "//*[contains(@class, 'diagnosis-info')]//*[contains(@class, 'action-edit')]")
-    WebElement goToEditPageDiagnosis;
+    private WebElement goToEditPageDiagnosis;
 
     @FindBy(xpath = "//*[contains(@class, 'prenatal-info')]//*[@class = 'displayed-value'][text() = '6']")
-    WebElement APGARScore1Minute;
+    private WebElement APGARScore1Minute;
 
     @FindBy(xpath = "//*[contains(@class, 'prenatal-info')]//*[@class = 'displayed-value'][text() = '8']")
-    WebElement APGARScore5Minutes;
+    private WebElement APGARScore5Minutes;
 
     @FindBy(xpath = "//*[contains(@class, 'relatives-info')]//*[@class = 'relative_type']")
-    WebElement checkPatientRelative;
+    private WebElement checkPatientRelative;
 
     @FindBy(xpath = "//*[contains(@class, 'relatives-info')]//*[@class = 'relative_of']")
-    WebElement checkRelativeOfPatient;
+    private WebElement checkRelativeOfPatient;
 
     /* SUMMARY */
 
     /* CASE RESOLUTION */
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(1) > p > span")
-    WebElement summaryPubmedIDTitle;
+    private WebElement summaryPubmedIDTitle;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(1) > p > span")
-    WebElement summaryGeneIDTitle;
+    private WebElement summaryGeneIDTitle;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(1) > p > span")
-    WebElement summaryResolutionNotesTitle;
+    private WebElement summaryResolutionNotesTitle;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(2) > div")
-    WebElement summaryPubmedIDField;
+    private WebElement summaryPubmedIDField;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div")
-    WebElement summaryGeneIDField;
+    private WebElement summaryGeneIDField;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(2) > div")
-    WebElement summaryResolutionNotesField;
+    private WebElement summaryResolutionNotesField;
 
     @FindBy(css = ".case-resolution.chapter > div > div.fieldset.unaffected.controller > p")
-    WebElement summaryCaseResolution;
+    private WebElement summaryCaseResolution;
 
     /* PATIENT INFORMATION */
 
@@ -259,86 +259,86 @@ public class PatientRecordViewPage extends ViewPage
     // identifier is not tested since it must be unique every time. The work around is to delete it every time
 
     @FindBy(css = ".patient-info.chapter > div:nth-child(3) > p > span.displayed-value")
-    WebElement summaryPatientNameField;
+    private WebElement summaryPatientNameField;
 
     @FindBy(xpath = "//div[contains(@class, 'patient-info')]//p[./span[text() = 'Date of birth:']]/span[contains(@class, 'displayed-value')]")
-    WebElement summaryDateOfBirthField;
+    private WebElement summaryDateOfBirthField;
 
     @FindBy(xpath = "//div[contains(@class, 'patient-info')]//p[./span[text() = 'Date of death:']]/span[contains(@class, 'displayed-value')]")
-    WebElement summaryDateOfDeathField;
+    private WebElement summaryDateOfDeathField;
 
     @FindBy(css = ".patient-info.chapter > p:nth-child(6) > span.displayed-value")
-    WebElement summarySexField;
+    private WebElement summarySexField;
 
     @FindBy(css = ".patient-info.chapter > div.fieldset.indication_for_referral > div")
-    WebElement summaryIndicationForReferralField;
+    private WebElement summaryIndicationForReferralField;
 
     /* FAMILY HISTORY */
 
     @FindBy(css = "#extradata-list-PhenoTips\\2e RelativeClass > tbody > tr:nth-child(2) > td.relative_type")
-    WebElement fieldRelativeDescription;
+    private WebElement fieldRelativeDescription;
 
     @FindBy(css = "#extradata-list-PhenoTips\\2e RelativeClass > tbody > tr:nth-child(2) > td.relative_of")
-    WebElement fieldRelativeOfPatientWithIdentifier;
+    private WebElement fieldRelativeOfPatientWithIdentifier;
 
     @FindBy(css = ".family-info.chapter > div.fieldset.ethnicity > div.half-width.maternal_ethnicity > div > ol > li")
-    WebElement fieldMaternalEthnicity;
+    private WebElement fieldMaternalEthnicity;
 
     @FindBy(css = ".family-info.chapter > div.fieldset.ethnicity > div.half-width.paternal_ethnicity > div > ol > li")
-    WebElement fieldPaternalEthnicity;
+    private WebElement fieldPaternalEthnicity;
 
     @FindBy(css = ".family-info.chapter > div.fieldset.family_history > div")
-    WebElement fieldHealthConditions;
+    private WebElement fieldHealthConditions;
 
     @FindBy(css = ".global_mode_of_inheritance > div")
-    WebElement fieldGlobalInheritence;
+    private WebElement fieldGlobalInheritence;
 
     @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[1]")
-    WebElement fieldFirstGlobalInheritence;
+    private WebElement fieldFirstGlobalInheritence;
 
     @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[2]")
-    WebElement fieldSecondGlobalInheritence;
+    private WebElement fieldSecondGlobalInheritence;
 
     @FindBy(css = "//*[@id=\"xwikicontent\"]/div[3]/div[4]/div/text()[3]")
-    WebElement fieldThirdGlobalInheritence;
+    private WebElement fieldThirdGlobalInheritence;
 
     /* PRENATAL AND PERINATAL HISTORY */
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
-    WebElement fieldGestationAtDelivery;
+    private WebElement fieldGestationAtDelivery;
 
     @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
-    WebElement fieldConceptionAfterFertility;
+    private WebElement fieldConceptionAfterFertility;
 
     @FindBy(css = ".ivf > div > label")
-    WebElement fieldIVF;
+    private WebElement fieldIVF;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(1) > span.displayed-value")
-    WebElement fieldPrenatalFirstField;
+    private WebElement fieldPrenatalFirstField;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
-    WebElement fieldPrenatalSecondField;
+    private WebElement fieldPrenatalSecondField;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(3) > span.displayed-value")
-    WebElement fieldPrenatalThirdField;
+    private WebElement fieldPrenatalThirdField;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(1)")
-    WebElement fieldFirstAssistedReproduction;
+    private WebElement fieldFirstAssistedReproduction;
 
     @FindBy(css = ".prenatal-info.chapter > div.fieldset.ivf > div > label")
-    WebElement fieldSecondAssistedReproduction;
+    private WebElement fieldSecondAssistedReproduction;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(2)")
-    WebElement fieldAPGARScoreOneMinute;
+    private WebElement fieldAPGARScoreOneMinute;
 
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(6) > span:nth-child(5)")
-    WebElement fieldAPGARScoreFiveMinutes;
+    private WebElement fieldAPGARScoreFiveMinutes;
 
     @FindBy(css = ".prenatal-info.chapter > div.fieldset.prenatal_development > div")
-    WebElement fieldPrenatalNotes;
+    private WebElement fieldPrenatalNotes;
 
     @FindBy(css = ".prenatal_phenotype-main.predefined-entries > div")
-    WebElement fieldPrematureBirth;
+    private WebElement fieldPrematureBirth;
 
     public String getPrenatalAndPerinatalHistorySummary(String option)
     {

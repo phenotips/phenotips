@@ -218,6 +218,10 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
      */
     protected SolrDocumentList search(SolrParams params, Map<String, String> queryOptions)
     {
+        // Enabling debugging in Lucene queries
+        // params.add("debugQuery", USE_HGNC_DATABASE_IDENTIFIER);
+        // To see the particular request debug info
+        // params.add("explainOther", "<field name>:<field query value to check>");
         try {
             SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
             this.logger.debug("Searching [{}] with query [{}]", getName(), enhancedParams);

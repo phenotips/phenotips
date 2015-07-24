@@ -17,8 +17,8 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.data.OntologyProperty;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.VocabularyProperty;
 
 import org.xwiki.component.annotation.Component;
 
@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 @Component(roles = { PatientDataController.class })
 @Named("prenatalPhenotype")
 @Singleton
-public class PrenatalPhenotypeController extends AbstractComplexController<List<OntologyProperty>>
+public class PrenatalPhenotypeController extends AbstractComplexController<List<VocabularyProperty>>
 {
     private static final String PRENATAL_PHENOTYPE = "prenatal_phenotype";
 

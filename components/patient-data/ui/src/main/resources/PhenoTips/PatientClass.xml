@@ -47,6 +47,20 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <affectedRelatives>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>affectedRelatives</name>
+      <number>51</number>
+      <prettyName>Other living affected relatives</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </affectedRelatives>
     <apgar1>
       <cache>0</cache>
       <customDisplay/>
@@ -89,34 +103,6 @@
       <values>unknown|0|1|2|3|4|5|6|7|8|9|10</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </apgar5>
-    <assistedReproduction_fertilityMeds>
-      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>assistedReproduction_fertilityMeds</name>
-      <number>38</number>
-      <prettyName>Conception after fertility medication</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </assistedReproduction_fertilityMeds>
-    <assistedReproduction_surrogacy>
-      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>assistedReproduction_surrogacy</name>
-      <number>39</number>
-      <prettyName>Gestational surrogacy</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </assistedReproduction_surrogacy>
     <assistedReproduction_donoregg>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
@@ -145,6 +131,34 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </assistedReproduction_donorsperm>
+    <assistedReproduction_fertilityMeds>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_fertilityMeds</name>
+      <number>38</number>
+      <prettyName>Conception after fertility medication</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_fertilityMeds>
+    <assistedReproduction_surrogacy>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_surrogacy</name>
+      <number>39</number>
+      <prettyName>Gestational surrogacy</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_surrogacy>
     <consanguinity>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
@@ -707,6 +721,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </health_card>
+    <icsi>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>icsi</name>
+      <number>49</number>
+      <prettyName>Intra-cytoplasmic sperm injection</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </icsi>
     <identifier>
       <customDisplay/>
       <disabled>0</disabled>
@@ -749,20 +777,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </ivf>
-    <icsi>
-      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>icsi</name>
-      <number>49</number>
-      <prettyName>Intra-cytoplasmic sperm injection</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </icsi>
     <last_name>
       <customDisplay/>
       <disabled>0</disabled>
@@ -840,6 +854,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </miscarriages>
+    <multipleGestation>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>multipleGestation</name>
+      <number>52</number>
+      <prettyName>Multiple gestation</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </multipleGestation>
     <negative_phenotype>
       <cache>0</cache>
       <classname/>

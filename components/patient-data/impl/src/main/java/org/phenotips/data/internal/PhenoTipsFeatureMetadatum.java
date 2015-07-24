@@ -18,7 +18,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.FeatureMetadatum;
-import org.phenotips.data.OntologyProperty;
+import org.phenotips.data.VocabularyProperty;
 
 import java.util.Locale;
 
@@ -33,7 +33,7 @@ import net.sf.json.JSONObject;
  * @version $Id$
  * @since 1.0M8
  */
-public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsOntologyProperty implements FeatureMetadatum
+public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsVocabularyProperty implements FeatureMetadatum
 {
     /** @see #getType() */
     private Type type;
@@ -64,7 +64,7 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsOntologyProperty
     }
 
     @Override
-    public int compareTo(OntologyProperty o)
+    public int compareTo(VocabularyProperty o)
     {
         if (o == null) {
             // Nulls at the end

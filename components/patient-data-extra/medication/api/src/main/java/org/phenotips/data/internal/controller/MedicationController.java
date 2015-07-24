@@ -50,7 +50,7 @@ import net.sf.json.JSONObject;
  * Handles the patient's medication records.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 @Component(roles = { PatientDataController.class })
 @Named("medication")
@@ -127,6 +127,9 @@ public class MedicationController implements PatientDataController<Medication>
             doc.removeXObjects(Medication.CLASS_REFERENCE);
             XWikiContext context = this.xcontext.get();
             for (Medication m : data) {
+                if (m == null) {
+                    continue;
+                }
                 BaseObject o = doc.newXObject(Medication.CLASS_REFERENCE, context);
                 o.setStringValue(Medication.NAME, m.getName());
                 o.setStringValue(Medication.GENERIC_NAME, m.getGenericName());
@@ -143,8 +146,8 @@ public class MedicationController implements PatientDataController<Medication>
             }
 
             context.getWiki().saveDocument(doc, "Updated medication data from JSON", true, context);
-        } catch (Exception e) {
-            this.logger.error("Failed to save medication data: [{}]", e.getMessage());
+        } catch (Exception ex) {
+            this.logger.error("Failed to save medication data: [{}]", ex.getMessage());
         }
     }
 
@@ -169,6 +172,9 @@ public class MedicationController implements PatientDataController<Medication>
         JSONArray result = new JSONArray();
         while (it.hasNext()) {
             Medication datum = it.next();
+            if (datum == null) {
+                continue;
+            }
             result.add(datum.toJSON());
         }
         if (!result.isEmpty()) {
@@ -179,11 +185,14 @@ public class MedicationController implements PatientDataController<Medication>
     @Override
     public PatientData<Medication> readJSON(JSONObject json)
     {
-        List<Medication> result = new LinkedList<>();
-        JSONArray data = json.getJSONArray(DATA_NAME);
+        if (json == null || json.isEmpty()) {
+            return null;
+        }
+        JSONArray data = json.optJSONArray(DATA_NAME);
         if (data == null || data.isEmpty()) {
             return null;
         }
+        List<Medication> result = new LinkedList<>();
         for (int i = 0; i < data.size(); ++i) {
             JSONObject datum = data.getJSONObject(i);
             result.add(new Medication(datum));

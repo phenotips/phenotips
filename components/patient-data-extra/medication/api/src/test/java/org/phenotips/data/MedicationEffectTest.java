@@ -24,7 +24,7 @@ import org.junit.Test;
  * Tests for the {@link MedicationEffect} enum.
  *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2M5
  */
 public class MedicationEffectTest
 {
