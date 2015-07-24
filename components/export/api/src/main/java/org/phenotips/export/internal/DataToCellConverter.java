@@ -1190,20 +1190,21 @@ public class DataToCellConverter
         Integer x = 0;
         if (present.contains(ALLERGIES)) {
             PatientData<Object> allergiesData = patient.getData(ALLERGIES_DATA);
+            int y = 0;
             if (allergiesData != null) {
                 Boolean nkda = (Boolean) allergiesData.get(NKDA);
                 if (nkda != null && nkda.booleanValue()) {
-                    DataCell cell = new DataCell(NKDA, x, 0);
+                    DataCell cell = new DataCell(NKDA, x, y);
                     bodySection.addCell(cell);
-                } else {
-                    @SuppressWarnings("unchecked")
-                    List<String> allergiesList = (List<String>) allergiesData.get(ALLERGIES);
-                    int y = 0;
-                    for (String allergy : allergiesList) {
-                        DataCell cell = new DataCell(allergy, x, y);
-                        bodySection.addCell(cell);
-                        y++;
-                    }
+                    y++;
+                }
+
+                @SuppressWarnings("unchecked")
+                List<String> allergiesList = (List<String>) allergiesData.get(ALLERGIES);
+                for (String allergy : allergiesList) {
+                    DataCell cell = new DataCell(allergy, x, y);
+                    bodySection.addCell(cell);
+                    y++;
                 }
             }
             x++;

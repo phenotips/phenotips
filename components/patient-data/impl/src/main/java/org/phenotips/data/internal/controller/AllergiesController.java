@@ -27,7 +27,6 @@ import org.xwiki.component.annotation.Component;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,15 +144,16 @@ public class AllergiesController extends AbstractComplexController<Object>
         List<String> allergies = (List<String>) allergiesData.get(ALLERGIES);
         Boolean nkda = (Boolean) allergiesData.get(NKDA);
 
+        JSONArray allergiesJsonArray = new JSONArray();
         if (nkda != null && nkda.booleanValue()) {
-            json.put(ALLERGIES, NKDA);
-            return;
+            allergiesJsonArray.add(NKDA);
         }
 
         if (allergies != null && allergies.size() > 0) {
-            JSONArray allergiesArray = new JSONArray();
-            allergiesArray.addAll(allergies);
-            json.put(ALLERGIES, allergiesArray);
+            allergiesJsonArray.addAll(allergies);
+        }
+        if (!allergiesJsonArray.isEmpty()) {
+            json.put(ALLERGIES, allergiesJsonArray);
         }
     }
 
@@ -162,31 +162,22 @@ public class AllergiesController extends AbstractComplexController<Object>
     {
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> allergiesList = new LinkedList<>();
-        Boolean nkda = Boolean.FALSE;
+        boolean nkda = false;
 
         if (json.has(ALLERGIES)) {
             Object allergiesValue = json.get(ALLERGIES);
 
             if (allergiesValue instanceof JSONArray) {
-                // Allergies list found
                 JSONArray allergiesJsonArray = (JSONArray) allergiesValue;
-
-                @SuppressWarnings("unchecked")
-                Iterator<String> iterator = allergiesJsonArray.iterator();
-                while (iterator.hasNext()) {
-                    allergiesList.add(iterator.next());
-                }
-
-                nkda = Boolean.FALSE;
-            } else if (allergiesValue instanceof String) {
-                // NKDA is true
-                String allergiesString = (String) allergiesValue;
-                if (NKDA.equals(allergiesString)) {
-                    nkda = Boolean.TRUE;
+                for (Object o : allergiesJsonArray) {
+                    String allergy = (String) o;
+                    if (NKDA.equalsIgnoreCase(allergy)) {
+                        nkda = true;
+                    } else {
+                        allergiesList.add(allergy);
+                    }
                 }
             }
-
-            // otherwise there's no allergies information for patient
         }
 
         result.put(NKDA, nkda);
