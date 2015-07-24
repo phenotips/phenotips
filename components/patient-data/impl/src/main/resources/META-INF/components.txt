@@ -28,4 +28,3 @@ org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater
 org.phenotips.data.internal.PatientExtendedPhenotypeUpdater
-org.phenotips.data.internal.PatientAllergiesUpdater
