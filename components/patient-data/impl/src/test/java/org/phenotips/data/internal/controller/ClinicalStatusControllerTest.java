@@ -165,12 +165,40 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
+    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON() {
+        PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(DATA_NAME);
+
+        this.controller.writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+    }
+
+    @Test
     public void writeJSONAddsUnaffectedValueToJSON() {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
         this.controller.writeJSON(this.patient, json);
+
+        Assert.assertNotNull(json.getJSONObject(DATA_NAME));
+        Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON() {
+        PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(DATA_NAME);
+
+        this.controller.writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
