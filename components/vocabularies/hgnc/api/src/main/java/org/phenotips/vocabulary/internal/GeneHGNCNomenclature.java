@@ -55,6 +55,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.internal.csv.CSVStrategy;
@@ -232,9 +233,12 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put(COMMON_PARAMS_QF, "symbol^10 symbolPrefix^7 symbolSort^5 "
+        // List of fields and the "boosts" to associate with each of them when building DisjunctionMaxQueries from the
+        // user's query
+        params.put(DisMaxParams.QF, "symbol^10 symbolPrefix^7 symbolSort^5 "
             + "synonymExact^12 synonymPrefix^3 text^1 textSpell^2 textStub^0.5");
-        params.put(COMMON_PARAMS_PF, "symbol^50 symbolExact^100 symbolPrefix^30 symbolSort^35 "
+        // to "boost" the score of documents in cases where all of the terms in the "q" param appear in close proximity
+        params.put(DisMaxParams.PF, "symbol^50 symbolExact^100 symbolPrefix^30 symbolSort^35 "
             + "synonymExact^70 synonymPrefix^21 text^3 textSpell^5");
         return params;
     }
@@ -249,6 +253,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
         }
+        params.add("debugQuery", "true");
         return params;
     }
 
