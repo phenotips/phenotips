@@ -131,7 +131,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() {
+    public void writeJSONReturnsWhenGetDataReturnsNull()
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -141,7 +142,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() {
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull()
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -153,7 +155,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONAddsAffectedValueToJSON() {
+    public void writeJSONAddsAffectedValueToJSON()
+    {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -165,7 +168,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON() {
+    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON()
+    {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -179,7 +183,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONAddsUnaffectedValueToJSON() {
+    public void writeJSONAddsUnaffectedValueToJSON()
+    {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -191,7 +196,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON() {
+    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON()
+    {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -205,7 +211,8 @@ public class ClinicalStatusControllerTest
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void saveIsUnsupported(){
+    public void saveIsUnsupported()
+    {
         this.controller.save(this.patient);
     }
 
@@ -219,6 +226,4 @@ public class ClinicalStatusControllerTest
     {
         Assert.assertEquals(DATA_NAME, this.controller.getName());
     }
-
-
 }

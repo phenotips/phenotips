@@ -347,6 +347,4 @@ public class SexControllerTest
     {
         Assert.assertEquals(DATA_NAME, this.controller.getName());
     }
-
-
 }

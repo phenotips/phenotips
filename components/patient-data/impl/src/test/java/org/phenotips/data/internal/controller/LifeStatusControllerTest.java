@@ -376,6 +376,4 @@ public class LifeStatusControllerTest
     {
         Assert.assertEquals(DATA_NAME, this.controller.getName());
     }
-
-
 }
