@@ -114,30 +114,22 @@
 #__hasDataToDisplay('allergies', $showAllergies)
 #__hasBooleanDataToDisplay('NKDA' $showNKDA)
 #if ($showNKDA || $showAllergies)
-  (% class="controlled-group complete-hide" %)(((
-  ##
-  ## Don't show field on display mode if there are no known allergies
-  #if ($xcontext.action != 'edit')
-    #if ($showNKDA)
-      #set ($showAllergies = false)
-    #end
-  #end
-  ##
-  #if ($showAllergies)
-    (% class="controlled" %) (((
-       #__displayIfNotEmpty('allergies')
+  (% class="fieldset 'allergies' %)(((
+    (% class="displayed-value"%)(((
+      #__label('allergies' 'section group-title' '')
     )))
-  #end
-  ##
-  #if ($showNKDA)
-  (% class="controller" %)(((
-    #if ($xcontext.action == 'edit')
-      $doc.display('NKDA') #__label('NKDA' '' "$class.get('NKDA').translatedPrettyName")
-    #else
-      $class.get('NKDA').translatedPrettyName
+    (% class="displayed-value"%)(((
+      #if ($xcontext.action == 'edit')
+        $doc.display('NKDA') #__label('NKDA' '' "$class.get('NKDA').translatedPrettyName")
+      #else
+        #if ($showNKDA)
+          $class.get('NKDA').translatedPrettyName
+        #end
+      #end
+    )))
+    #if ($xcontext.action == 'edit' || ($doc.display('allergies') != ''))
+        #__display('allergies')
     #end
-  )))
-  #end
   )))
 #end
 {{/velocity}}
