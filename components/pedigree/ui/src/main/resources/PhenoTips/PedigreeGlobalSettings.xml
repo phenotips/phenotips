@@ -56,7 +56,7 @@
       <name>dateDisplayFormat</name>
       <number>5</number>
       <picker>0</picker>
-      <prettyName>Date input format</prettyName>
+      <prettyName>Date display format</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -97,7 +97,7 @@
       <displayType/>
       <name>nonStandardAdoptedOutGraphic</name>
       <number>1</number>
-      <prettyName>Brackets-out adopted-out symbol</prettyName>
+      <prettyName>Use brackets-out symbol for adopted-out nodes</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -111,7 +111,7 @@
       <displayType/>
       <name>propagateFatherLastName</name>
       <number>2</number>
-      <prettyName>Propagate father's last name</prettyName>
+      <prettyName>Propagate father's last name to descendants</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -125,7 +125,7 @@
       <displayType/>
       <name>uiGradientNodes</name>
       <number>3</number>
-      <prettyName>Apply color gradient to pedigree symbols</prettyName>
+      <prettyName>Apply color gradient to pedigree nodes</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
