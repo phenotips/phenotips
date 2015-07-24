@@ -92,7 +92,7 @@
     <nonStandardAdoptedOutGraphic>
       <disabled>0</disabled>
       <defaultValue>0</defaultValue>
-      <displayFormType>select</displayFormType>
+      <displayFormType>checkbox</displayFormType>
       <name>nonStandardAdoptedOutGraphic</name>
       <number>1</number>
       <prettyName>Brackets-out adopted-out symbol</prettyName>
@@ -102,7 +102,7 @@
     <propagateFatherLastName>
       <disabled>0</disabled>
       <defaultValue>1</defaultValue>
-      <displayFormType>select</displayFormType>
+      <displayFormType>checkbox</displayFormType>
       <name>propagateFatherLastName</name>
       <number>2</number>
       <prettyName>Propagate father's last name</prettyName>
@@ -112,7 +112,7 @@
     <uiGradientNodes>
       <disabled>0</disabled>
       <defaultValue>0</defaultValue>
-      <displayFormType>select</displayFormType>
+      <displayFormType>checkbox</displayFormType>
       <name>uiGradientNodes</name>
       <number>3</number>
       <prettyName>Apply color gradient to pedigree symbols</prettyName>
