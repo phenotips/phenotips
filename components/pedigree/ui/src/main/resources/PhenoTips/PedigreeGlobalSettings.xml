@@ -90,33 +90,45 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateInputFormat>
     <nonStandardAdoptedOutGraphic>
-      <disabled>0</disabled>
+      <customDisplay/>
       <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
+      <displayType/>
       <name>nonStandardAdoptedOutGraphic</name>
       <number>1</number>
       <prettyName>Brackets-out adopted-out symbol</prettyName>
       <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </nonStandardAdoptedOutGraphic>
     <propagateFatherLastName>
-      <disabled>0</disabled>
+      <customDisplay/>
       <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
+      <displayType/>
       <name>propagateFatherLastName</name>
       <number>2</number>
       <prettyName>Propagate father's last name</prettyName>
       <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </propagateFatherLastName>
     <uiGradientNodes>
-      <disabled>0</disabled>
+      <customDisplay/>
       <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
+      <displayType/>
       <name>uiGradientNodes</name>
       <number>3</number>
       <prettyName>Apply color gradient to pedigree symbols</prettyName>
       <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </uiGradientNodes>
   </class>
