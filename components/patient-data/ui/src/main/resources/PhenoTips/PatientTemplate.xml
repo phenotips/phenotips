@@ -656,7 +656,7 @@
       <name>allergies</name>
       <number>50</number>
       <picker>1</picker>
-      <prettyName>Allergies- environmental, food, medication</prettyName>
+      <prettyName>Allergies - environmental, food, medication</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator>, </separator>
       <separators/>
