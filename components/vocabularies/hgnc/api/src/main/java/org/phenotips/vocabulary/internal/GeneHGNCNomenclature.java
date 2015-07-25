@@ -309,7 +309,6 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
     {
         Map<String, String> headerToFiledMap = getHeaderToFieldMapping();
-        this.logger.error("test");
         CSVFileService data =
             new CSVFileService(getDefaultSourceLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY, this.logger);
         addMetaInfo(data.solrDocuments);
