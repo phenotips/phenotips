@@ -52,7 +52,7 @@
       #set ($circle = '⬤')
       #set ($listyle = 'margin: 0 .5em 0 0; font-family: FreeSerif, serif;')
     #else
-      #set ($circle = '&lt;span class="fa fa-circle fa-lg">&lt;/span>')
+      #set ($circle = '&lt;span class="fa fa-circle fa-lg"&gt;&lt;/span&gt;')
       #set ($listyle = 'margin: 0 .25em 0 0;')
     #end
 
