@@ -172,7 +172,7 @@ public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
     @Override
     protected int getSolrDocsPerBatch()
     {
-        return 15000;
+        return 500000;
     }
 
     @Override

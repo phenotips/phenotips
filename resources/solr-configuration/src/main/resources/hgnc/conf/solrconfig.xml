@@ -65,11 +65,13 @@
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
 
   <indexConfig>
-    <mergeFactor>10</mergeFactor>
+    <mergeFactor>2</mergeFactor>
     <!-- Sets the amount of RAM that may be used by Lucene indexing
          for buffering added documents and deletions before they are
          flushed to the Directory.  -->
-    <ramBufferSizeMB>64</ramBufferSizeMB>
+    <ramBufferSizeMB>128</ramBufferSizeMB>
+    <maxBufferedDocs>50000</maxBufferedDocs>
+    <useCompoundFile>true</useCompoundFile>
 
     <writeLockTimeout>1000</writeLockTimeout>
     <commitLockTimeout>10000</commitLockTimeout>
