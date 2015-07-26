@@ -18,7 +18,7 @@
 package org.phenotips.vocabulary.internal;
 
 import org.phenotips.vocabulary.VocabularyTerm;
-import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrOntologyService;
+import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrVocabulary;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
@@ -73,7 +73,7 @@ import net.sf.json.JSONSerializer;
 @Component
 @Named("hgnc")
 @Singleton
-public class GeneHGNCNomenclature extends AbstractCSVSolrOntologyService
+public class GeneHGNCNomenclature extends AbstractCSVSolrVocabulary
 {
     // Approved symbol
     private static final String ORDER_BY = "gd_app_sym_sort";

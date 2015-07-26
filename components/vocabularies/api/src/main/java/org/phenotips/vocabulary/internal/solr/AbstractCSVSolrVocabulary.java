@@ -19,6 +19,8 @@ package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.vocabulary.VocabularyTerm;
 
+import org.xwiki.stability.Unstable;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,10 +38,13 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.DisMaxParams;
 
 /**
+ * Base class for implementing vocabularies processed from CSV files.
+ *
  * @since 1.2RC1
  * @version $Id$
  */
-public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabulary
+@Unstable
+public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
 {
     protected static final String VERSION_FIELD_NAME = "version";
 
