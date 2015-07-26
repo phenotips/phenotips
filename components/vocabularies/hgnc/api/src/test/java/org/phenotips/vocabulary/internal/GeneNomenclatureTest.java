@@ -68,7 +68,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link GeneNomenclature} component.
+ * Tests for the {@link RemoteGeneNomenclature} component.
  *
  * @version $Id$
  */
@@ -76,7 +76,7 @@ public class GeneNomenclatureTest
 {
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker =
-        new MockitoComponentMockingRule<Vocabulary>(GeneNomenclature.class);
+        new MockitoComponentMockingRule<Vocabulary>(RemoteGeneNomenclature.class);
 
     private ConfigurationSource configuration;
 
@@ -108,7 +108,7 @@ public class GeneNomenclatureTest
         when(this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/"))
             .thenReturn("http://rest.genenames.org/");
         ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
-        Field em = ReflectionUtils.getField(GeneNomenclature.class, "EMPTY_MARKER");
+        Field em = ReflectionUtils.getField(RemoteGeneNomenclature.class, "EMPTY_MARKER");
         em.setAccessible(true);
         this.emptyMarker = (VocabularyTerm) em.get(null);
     }

@@ -17,23 +17,16 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrVocabulary;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
-import org.xwiki.cache.Cache;
-import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
-import org.xwiki.cache.eviction.EntryEvictionConfiguration;
-import org.xwiki.cache.eviction.LRUEvictionConfiguration;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -58,11 +52,14 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
-import org.slf4j.Logger;
+import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.internal.csv.CSVStrategy;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -71,214 +68,228 @@ import net.sf.json.JSONSerializer;
  * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.2RC1
  */
 @Component
-@Named("hgnc-remote")
+@Named("hgnc")
 @Singleton
-public class GeneNomenclature implements Vocabulary, Initializable
+public class GeneNomenclature extends AbstractCSVSolrVocabulary
 {
-    /**
-     * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
-     * requested entry.
-     */
-    private static final VocabularyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
+    // Approved symbol
+    private static final String ORDER_BY = "gd_app_sym_sort";
 
-    private static final String RESPONSE_KEY = "response";
+    private static final String OUTPUT_FORMAT = "text";
 
-    private static final String DATA_KEY = "docs";
+    private static final String SELECT_STATUS = "Approved";
 
-    private static final String LABEL_KEY = "symbol";
+    private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
 
-    private static final String WILDCARD = "*";
+    private static final String SYMBOL_FIELD_NAME = "symbol";
 
-    private static final String DEFAULT_OPERATOR = "AND";
+    private static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
 
-    private static final Map<String, String> QUERY_OPERATORS = new HashMap<>();
+    private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
+
+    private static final String ACCESSION_SYMBOL_FIELD_NAME = "hgnc_accession";
+
+    private static final String ENSEMBL_GENE_ID_FIELD_NAME = "ensembl_gene_id";
+
+    private static final String ENTREZ_ID_FIELD_NAME = "entrez_id";
+
+    private static final String REFSEQ_ACCESSION_FIELD_NAME = "refseq_accession";
+
+    private static final String REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME = "refseq_accession_external";
+
+    private static final String ENTREZ_ID_EXTERNAL_FIELD_NAME = "entrez_id_external";
+
+    private static final String ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME = "ensembl_gene_id_external";
+
+    private static final List<String> SELECTED_COLUMNS = Arrays.asList("gd_hgnc_id", "gd_app_sym",
+        "gd_app_name", "gd_prev_sym", "gd_aliases", "gd_pub_acc_ids", "gd_pub_eg_id",
+        "gd_pub_ensembl_id", "gd_pub_refseq_ids", "family.id", "family.name",
+        "md_eg_id", "md_mim_id", "md_refseq_id",
+        "md_prot_id", "md_ensembl_id");
+
+    private static final List<String> HEADERS = Arrays.asList("HGNC ID", "Approved Symbol",
+        "Approved Name", "Previous Symbols", "Synonyms", "Accession Numbers", "Entrez Gene ID",
+        "Ensembl Gene ID", "RefSeq IDs", "Gene Family ID", "Gene Family Name",
+        "Entrez Gene ID(supplied by NCBI)", "OMIM ID(supplied by OMIM)", "RefSeq(supplied by NCBI)",
+        "UniProt ID(supplied by UniProt)", "Ensembl ID(supplied by Ensembl)");
+
+    private static final List<String> FIELDS = Arrays.asList("id", SYMBOL_FIELD_NAME,
+        "name", PREV_SYMBOL_FIELD_NAME, ALIAS_SYMBOL_FIELD_NAME, ACCESSION_SYMBOL_FIELD_NAME, ENTREZ_ID_FIELD_NAME,
+        ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME, "gene_family_id", "gene_family",
+        ENTREZ_ID_EXTERNAL_FIELD_NAME, "omim_id", REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME,
+        "uniprot_id", ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME);
+
+    /** Performs HTTP requests to the remote REST service. */
+    private final CloseableHttpClient client = HttpClients.createSystem();
+
+    private String baseServiceURL;
+
+    private String infoServiceURL;
+
+    private String dataServiceURL;
 
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configuration;
 
-    private String baseServiceURL;
-
-    private String searchServiceURL;
-
-    private String infoServiceURL;
-
-    private String fetchServiceURL;
-
-    /** Performs HTTP requests to the remote REST service. */
-    private final CloseableHttpClient client = HttpClients.createSystem();
-
-    @Inject
-    private Logger logger;
-
-    /**
-     * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
-     * the same thing.
-     */
-    private Cache<VocabularyTerm> cache;
-
-    /** Cache for ontology metadata. */
-    private Cache<JSONObject> infoCache;
-
-    /** Cache factory needed for creating the term cache. */
-    @Inject
-    private CacheManager cacheFactory;
-
     @Override
     public void initialize() throws InitializationException
     {
-        try {
-            this.baseServiceURL =
-                this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
-            this.searchServiceURL = this.baseServiceURL + "search/";
-            this.infoServiceURL = this.baseServiceURL + "info";
-            this.fetchServiceURL = this.baseServiceURL + "fetch/";
-            this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-            EntryEvictionConfiguration infoConfig = new LRUEvictionConfiguration(1);
-            infoConfig.setTimeToLive(300);
-            this.infoCache = this.cacheFactory.createNewLocalCache(new CacheConfiguration(infoConfig));
-        } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
+        super.initialize();
+        Map<String, Boolean> config = new HashMap<String, Boolean>();
+        for (String column : SELECTED_COLUMNS) {
+            config.put(column, true);
         }
-        QUERY_OPERATORS.put("OR", "");
-        QUERY_OPERATORS.put(DEFAULT_OPERATOR, DEFAULT_OPERATOR + ' ');
-        QUERY_OPERATORS.put("NOT", "-");
+
+        this.baseServiceURL =
+            this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://www.genenames.org/");
+        this.infoServiceURL = "http://rest.genenames.org/info";
+        this.dataServiceURL = this.baseServiceURL + "cgi-bin/download?";
+        // assemble the columns
+        for (Map.Entry<String, Boolean> item : config.entrySet()) {
+            if (item.getValue()) {
+                this.dataServiceURL += "col=" + item.getKey() + "&";
+            }
+        }
+
+        this.dataServiceURL +=
+            "status=" + SELECT_STATUS
+                + "&order_by=" + ORDER_BY
+                + "&format=" + OUTPUT_FORMAT
+                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
+                // those come by default in every query
+                + "&status_opt=2&where=&limit=&submit=submit";
     }
 
     @Override
-    public VocabularyTerm getTerm(String id)
+    public String getDefaultSourceLocation()
     {
-        VocabularyTerm result = this.cache.get(id);
-        String safeID;
-        if (result == null) {
-            try {
-                safeID = URLEncoder.encode(id, Consts.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                safeID = id.replaceAll("\\s", "");
-                this.logger.warn("Could not find the encoding: {}", Consts.UTF_8.name());
-            }
-            HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + safeID);
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() == 1) {
-                    result = new JSONOntologyTerm(docs.getJSONObject(0), this);
-                    this.cache.set(id, result);
-                } else {
-                    this.cache.set(id, EMPTY_MARKER);
-                }
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to fetch gene definition: {}", ex.getMessage());
-            }
-        }
-        return (result == EMPTY_MARKER) ? null : result;
+        return this.dataServiceURL;
     }
 
     @Override
-    public Set<VocabularyTerm> getTerms(Collection<String> ids)
+    protected int getSolrDocsPerBatch()
     {
-        // FIXME Reimplement with a bunch of async connections fired in parallel
-        Set<VocabularyTerm> result = new LinkedHashSet<>();
-        for (String id : ids) {
-            VocabularyTerm term = getTerm(id);
-            if (term != null) {
-                result.add(term);
-            }
-        }
+        return 500000;
+    }
+
+    @Override
+    protected String getName()
+    {
+        return "hgnc";
+    }
+
+    @Override
+    public Set<String> getAliases()
+    {
+        Set<String> result = new HashSet<String>();
+        result.add(getName());
+        result.add("HGNC");
         return result;
     }
 
     @Override
-    public List<VocabularyTerm> search(Map<String, ?> fieldValues)
+    public VocabularyTerm getTerm(String symbol)
     {
-        return search(fieldValues, Collections.<String, String>emptyMap());
+        String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
+
+        String queryString = String.format("%s:%s OR %s:%s OR %s:%s",
+            SYMBOL_FIELD_NAME, escapedSymbol,
+            PREV_SYMBOL_FIELD_NAME, escapedSymbol,
+            ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
+        return requestTerm(queryString, SYMBOL_EXACT);
     }
 
-    @Override
-    public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    /**
+     * Access an individual term from the vocabulary, identified by its alternative ids: either Ensembl Gene ID or
+     * Entrez Gene ID.
+     *
+     * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
+     * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
+     */
+    public VocabularyTerm getTermByAlternativeId(String id)
     {
-        try {
-            HttpGet method =
-                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() >= 1) {
-                    List<VocabularyTerm> result = new LinkedList<>();
-                    // The remote service doesn't offer any query control, manually select the right range
-                    int start = 0;
-                    if (queryOptions.containsKey(CommonParams.START)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START)))
-                    {
-                        start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
-                    }
-                    int end = docs.size();
-                    if (queryOptions.containsKey(CommonParams.ROWS)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS)))
-                    {
-                        end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
-                    }
+        String escapedSymbol = ClientUtils.escapeQueryChars(id);
 
-                    for (int i = start; i < end; ++i) {
-                        result.add(new JSONOntologyTerm(docs.getJSONObject(i), this));
-                    }
-                    return result;
-                    // This is too slow, for the moment only return summaries
-                    // return getTerms(ids);
-                }
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to search gene names: {}", ex.getMessage());
-            }
-        } catch (UnsupportedEncodingException ex) {
-            // This will not happen, UTF-8 is always available
+        String queryString = String.format("%s:%s OR %s:%s OR %s:%s OR %s:%s",
+            ACCESSION_SYMBOL_FIELD_NAME, escapedSymbol,
+            ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
+            ENTREZ_ID_FIELD_NAME, escapedSymbol,
+            REFSEQ_ACCESSION_FIELD_NAME, escapedSymbol);
+        return requestTerm(queryString, null);
+    }
+
+    private Map<String, String> getStaticSolrParams()
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put("lowercaseOperators", "false");
+        params.put("defType", "edismax");
+        return params;
+    }
+
+    private Map<String, String> getStaticFieldSolrParams()
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put(DisMaxParams.QF, "symbol^10 symbolPrefix^7 symbolSort^5 "
+            + "synonymExact^12 synonymPrefix^3 text^1 textSpell^2 textStub^0.5");
+        params.put(DisMaxParams.PF, "symbol^50 symbolExact^100 symbolPrefix^30 symbolSort^35 "
+            + "synonymExact^70 synonymPrefix^21 text^3 textSpell^5");
+        return params;
+    }
+
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
+    {
+        String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
+
+        ModifiableSolrParams params = new ModifiableSolrParams();
+        params.add(CommonParams.Q, escapedQuery);
+        params.add(CommonParams.ROWS, rows.toString());
+        if (StringUtils.isNotBlank(sort)) {
+            params.add(CommonParams.SORT, sort);
         }
-        return Collections.emptyList();
+        return params;
     }
 
     @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
-        // ignoring sort and customFq
-        String formattedQuery = String.format("%s*", input);
-        Map<String, Object> fieldValues = new HashMap<>();
-        Map<String, String> queryMap = new HashMap<>();
-        Map<String, String> rowsMap = new HashMap<>();
-        queryMap.put(LABEL_KEY, formattedQuery);
-        queryMap.put("alias_symbol", formattedQuery);
-        queryMap.put("prev_symbol", formattedQuery);
-        fieldValues.put("status", "Approved");
-        fieldValues.put(DEFAULT_OPERATOR, queryMap);
-        rowsMap.put("rows", Integer.toString(maxResults));
+        if (StringUtils.isBlank(input)) {
+            return Collections.emptyList();
+        }
+        String query = ClientUtils.escapeQueryChars(input.trim());
+        Map<String, String> options = this.getStaticSolrParams();
+        options.putAll(this.getStaticFieldSolrParams());
 
-        return this.search(fieldValues, rowsMap);
+        List<VocabularyTerm> result = new LinkedList<>();
+        SolrParams params = produceDynamicSolrParams(query, maxResults, sort, customFilter);
+        for (SolrDocument doc : this.search(params, options)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
     }
 
     @Override
-    public long count(Map<String, ?> fieldValues)
+    public Set<VocabularyTerm> getTerms(Collection<String> symbols)
     {
-        try {
-            HttpGet method =
-                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                return docs.size();
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to count matching gene names: {}", ex.getMessage());
+        Set<VocabularyTerm> result = new LinkedHashSet<>();
+        for (String symbol : symbols) {
+            VocabularyTerm term = getTerm(symbol);
+            if (term != null) {
+                result.add(term);
             }
-        } catch (UnsupportedEncodingException ex) {
-            // This will not happen, UTF-8 is always available
         }
-        return -1;
+        if (result.isEmpty()) {
+            for (String symbol : symbols) {
+                VocabularyTerm term = getTermByAlternativeId(symbol);
+                if (term != null) {
+                    result.add(term);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -296,54 +307,83 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
-    public Set<String> getAliases()
+    protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
     {
-        Set<String> result = new HashSet<String>();
-        result.add("hgnc-remote");
-        result.add("HGNC");
-        return result;
+        Map<String, String> headerToFiledMap = getHeaderToFieldMapping();
+        CSVFileService data =
+            new CSVFileService(getDefaultSourceLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY, this.logger);
+        addMetaInfo(data.solrDocuments);
+        processDuplicates(data.solrDocuments);
+        return data.solrDocuments;
     }
 
-    @Override
-    public long size()
+    private Map<String, String> getHeaderToFieldMapping()
     {
+        Map<String, String> map = new HashMap<String, String>();
+        int count = 0;
+        for (String field : FIELDS) {
+            map.put(HEADERS.get(count), field);
+            count++;
+        }
+        return map;
+    }
+
+    private void processDuplicates(Collection<SolrInputDocument> solrdocs)
+    {
+        List<String> curated =
+            Arrays.asList(ENTREZ_ID_FIELD_NAME, ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME);
+        List<String> external =
+            Arrays.asList(ENTREZ_ID_EXTERNAL_FIELD_NAME, ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME,
+                REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME);
+        // Remove external fields, copy their values to corresponding curated field values if they are empty
+        for (SolrInputDocument solrdoc : solrdocs) {
+            int count = 0;
+            for (String field : curated) {
+                if (solrdoc.get(field) == null) {
+                    if (!REFSEQ_ACCESSION_FIELD_NAME.equals(field)
+                        && solrdoc.getFieldValue(external.get(count)) != null) {
+                        solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
+                    } else {
+                        if (solrdoc.getFieldValues(external.get(count)) != null) {
+                            solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
+                        }
+                    }
+                }
+                solrdoc.removeField(external.get(count));
+                count++;
+            }
+        }
+    }
+
+    private void addMetaInfo(Collection<SolrInputDocument> data)
+    {
+        // put version/size here
+        SolrInputDocument metaTerm = new SolrInputDocument();
         JSONObject info = getInfo();
+        metaTerm.addField(ID_FIELD_NAME, "HEADER_INFO");
+        metaTerm.addField(VERSION_FIELD_NAME, getVersion(info));
+        metaTerm.addField(SIZE_FIELD_NAME, Objects.toString(getSize(info)));
+
+        data.add(metaTerm);
+    }
+
+    private long getSize(JSONObject info)
+    {
         return info.isNullObject() ? -1 : info.getLong("numDoc");
     }
 
-    @Override
-    public int reindex(String ontologyUrl)
+    private String getVersion(JSONObject info)
     {
-        // Remote ontology, we cannot reindex, but we can clear the local cache
-        this.cache.removeAll();
-        return 0;
-    }
-
-    @Override
-    public String getDefaultSourceLocation()
-    {
-        return this.baseServiceURL;
-    }
-
-    @Override
-    public String getVersion()
-    {
-        JSONObject info = getInfo();
         return info.isNullObject() ? "" : info.getString("lastModified");
     }
 
     private JSONObject getInfo()
     {
-        JSONObject info = this.infoCache.get("");
-        if (info != null) {
-            return info;
-        }
         HttpGet method = new HttpGet(this.infoServiceURL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
             JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-            this.infoCache.set("", responseJSON);
             return responseJSON;
         } catch (IOException | JSONException ex) {
             this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
@@ -351,158 +391,4 @@ public class GeneNomenclature implements Vocabulary, Initializable
         return new JSONObject(true);
     }
 
-    /**
-     * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
-     *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
-     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
-     * @return the String representation of the equivalent Lucene query
-     */
-    private String generateQuery(Map<String, ?> fieldValues)
-    {
-        StringBuilder query = new StringBuilder();
-        for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
-            processQueryPart(query, field, true);
-        }
-        return StringUtils.removeStart(query.toString().trim(), DEFAULT_OPERATOR);
-    }
-
-    private StringBuilder processQueryPart(StringBuilder query, Map.Entry<String, ?> field, boolean includeOperator)
-    {
-        if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
-            return query;
-        }
-        if (Map.class.isInstance(field.getValue())) {
-            if (QUERY_OPERATORS.containsKey(field.getKey())) {
-                @SuppressWarnings("unchecked")
-                Map.Entry<String, Map<String, ?>> subquery = (Map.Entry<String, Map<String, ?>>) field;
-                return processSubquery(query, subquery);
-            } else {
-                this.logger.warn("Invalid subquery operator: {}", field.getKey());
-                return query;
-            }
-        }
-        query.append(' ');
-        if (includeOperator) {
-            query.append(QUERY_OPERATORS.get(DEFAULT_OPERATOR));
-        }
-
-        query.append(ClientUtils.escapeQueryChars(field.getKey()));
-        query.append(":(");
-        if (Collection.class.isInstance(field.getValue())) {
-            for (Object value : (Collection<?>) field.getValue()) {
-                String svalue = String.valueOf(value);
-                if (svalue.endsWith(WILDCARD)) {
-                    svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
-                } else {
-                    svalue = ClientUtils.escapeQueryChars(svalue);
-                }
-                query.append(svalue);
-                query.append(' ');
-            }
-        } else {
-            String svalue = String.valueOf(field.getValue());
-            if (svalue.endsWith(WILDCARD)) {
-                svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
-            } else {
-                svalue = ClientUtils.escapeQueryChars(svalue);
-            }
-            query.append(svalue);
-        }
-        query.append(')');
-        return query;
-    }
-
-    private StringBuilder processSubquery(StringBuilder query, Map.Entry<String, Map<String, ?>> subquery)
-    {
-        query.append(' ').append(QUERY_OPERATORS.get(subquery.getKey())).append('(');
-        for (Map.Entry<String, ?> field : subquery.getValue().entrySet()) {
-            processQueryPart(query, field, false);
-        }
-        query.append(')');
-        return query;
-    }
-
-    private static class JSONOntologyTerm implements VocabularyTerm
-    {
-        private JSONObject data;
-
-        private Vocabulary ontology;
-
-        public JSONOntologyTerm(JSONObject data, Vocabulary ontology)
-        {
-            this.data = data;
-            this.ontology = ontology;
-        }
-
-        @Override
-        public String getId()
-        {
-            return this.data.getString(LABEL_KEY);
-        }
-
-        @Override
-        public String getName()
-        {
-            return this.data.getString("name");
-        }
-
-        @Override
-        public String getDescription()
-        {
-            // No description for gene names
-            return "";
-        }
-
-        @Override
-        public Set<VocabularyTerm> getParents()
-        {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public Set<VocabularyTerm> getAncestors()
-        {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public Set<VocabularyTerm> getAncestorsAndSelf()
-        {
-            return Collections.<VocabularyTerm>singleton(this);
-        }
-
-        @Override
-        public long getDistanceTo(VocabularyTerm other)
-        {
-            return -1;
-        }
-
-        @Override
-        public Object get(String name)
-        {
-            return this.data.get(name);
-        }
-
-        @Override
-        public Vocabulary getVocabulary()
-        {
-            return this.ontology;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "HGNC:" + getId();
-        }
-
-        @Override
-        public JSON toJson()
-        {
-            JSONObject json = new JSONObject();
-            json.put("id", this.getId());
-            return json;
-        }
-    }
 }
