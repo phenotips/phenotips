@@ -108,13 +108,6 @@ public class CSVFileService
             CSVParser parser = new CSVParser(reader, strategy);
 
             while ((pieces = parser.getLine()) != null) {
-
-                try {
-                    pieces = parser.getLine();
-                } catch (IOException e) {
-                    throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, e);
-                }
-
                 // Ignore the whole line if begins with tab symbol
                 if (pieces.length != headers.length || "".equals(pieces[0])) {
                     continue;
