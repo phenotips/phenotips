@@ -33,6 +33,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.DisMaxParams;
 
 /**
  * @since 1.2RC1
@@ -136,7 +137,7 @@ public abstract class AbstractCSVSolrOntologyService extends AbstractSolrVocabul
         query.setQuery(queryString);
         query.setRows(1);
         if (params != null) {
-            query.set(COMMON_PARAMS_PF, params);
+            query.set(DisMaxParams.PF, params);
         }
 
         try {
