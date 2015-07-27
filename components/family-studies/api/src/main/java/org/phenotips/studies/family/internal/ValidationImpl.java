@@ -38,12 +38,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -83,12 +79,6 @@ public class ValidationImpl implements Validation
     @Inject
     @Named("view")
     private AccessLevel viewAccess;
-
-    @Inject
-    private Logger logger;
-
-    @Inject
-    private Provider<XWikiContext> provider;
 
     /**
      * Checks if the patient is already present within the family members list.
