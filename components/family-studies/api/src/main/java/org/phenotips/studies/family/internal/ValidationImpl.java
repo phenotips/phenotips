@@ -43,7 +43,6 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -240,23 +239,8 @@ public class ValidationImpl implements Validation
     @Override
     public boolean hasAccess(DocumentReference document, String permissions)
     {
-        XWikiDocument xWikiDoc = null;
-        try {
-            xWikiDoc = this.familyUtils.getDoc(document);
-        } catch (XWikiException e) {
-            this.logger.error("Error retrieving family document for family [{}]: [{}]",
-                document.getName(), e.getMessage());
-        }
-
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-
-        try {
-            return wiki.checkAccess(permissions, xWikiDoc, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error checking permissions on [{}]: [{}]",
-                xWikiDoc.getName(), e.getMessage());
-        }
-        return false;
+        Right right = Right.toRight(permissions);
+        User currentUser = this.userManager.getCurrentUser();
+        return this.authorizationService.hasAccess(currentUser, right, document);
     }
 }
