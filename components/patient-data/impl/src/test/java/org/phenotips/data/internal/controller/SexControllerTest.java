@@ -53,7 +53,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link LifeStatusController} component,
+ * Test for the {@link SexController} component,
  * implementation of the {@link org.phenotips.data.PatientDataController} interface
  */
 public class SexControllerTest
