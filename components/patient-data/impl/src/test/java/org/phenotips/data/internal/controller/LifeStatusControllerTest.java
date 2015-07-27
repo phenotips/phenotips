@@ -17,18 +17,6 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
@@ -39,12 +27,25 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import javax.inject.Provider;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.inject.Provider;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
