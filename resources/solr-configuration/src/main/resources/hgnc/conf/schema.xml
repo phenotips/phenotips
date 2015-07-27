@@ -48,10 +48,10 @@
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
       </analyzer>
     </fieldType>
-	
-	<!-- A text field that only splits on whitespace and comma for exact matching of gene identifiers/symbols -->
+
+    <!-- A text field that only splits on whitespace and comma for exact matching of gene identifiers/symbols -->
     <fieldType name="symbol_list" class="solr.TextField" positionIncrementGap="100">
-	  <analyzer type="index">
+      <analyzer type="index">
         <tokenizer class="solr.PatternTokenizerFactory" pattern=",\s*" />
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
@@ -156,19 +156,19 @@
 
   <fields>
     <field name="version" type="string" indexed="true" stored="true"/>
-	<field name="size" type="string" indexed="true" stored="true"/>
+    <field name="size" type="string" indexed="true" stored="true"/>
     <field name="id" type="string" indexed="true" stored="true" required="true"/>
-	
-	<!-- Primary searching on gene symbol -->
-	<field name="symbol" type="text_general" indexed="true" stored="true"/>
+
+    <!-- Primary searching on gene symbol -->
+    <field name="symbol" type="text_general" indexed="true" stored="true"/>
     <field name="symbolExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="symbolPrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="symbolSort" type="string" indexed="true" stored="false"/>
-	
-	<!-- Secondary searching on alternate IDs -->
+
+    <!-- Secondary searching on alternate IDs -->
     <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
-	
+
     <field name="prev_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
     <field name="alias_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
     <field name="ensembl_gene_id" type="text_general" indexed="true" stored="true"/>
@@ -189,7 +189,6 @@
     <field name="textStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
     <dynamicField name="*" type="ignored" multiValued="true"/>
-	
   </fields>
 
   <!-- Field to use to determine and enforce document uniqueness.
