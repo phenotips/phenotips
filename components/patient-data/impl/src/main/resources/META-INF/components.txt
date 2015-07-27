@@ -23,6 +23,7 @@ org.phenotips.data.internal.controller.RejectedGeneListController
 org.phenotips.data.internal.controller.ClinicalStatusController
 org.phenotips.data.internal.controller.SolvedController
 org.phenotips.data.internal.controller.LifeStatusController
+org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation
 org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater
