@@ -33,6 +33,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.internal.csv.CSVParser;
 import org.apache.solr.internal.csv.CSVStrategy;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses the CSF input with first line as a headers row into the collection of SolrInputDocuments.
@@ -45,20 +46,17 @@ public class CSVFileService
     /** Collection of SolrInputDocuments. **/
     public Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
 
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(CSVFileService.class);
 
     /**
      * Parses the CSF input with first line as a headers row into the collection of SolrInputDocuments.
      *
      * @param location the string url address from where to get the data to parse
-     * @param headerToFiledMap the map between the headers in the data input stream and the correct field names
+     * @param headerToFieldMap the map between the headers in the data input stream and the correct field names
      * @param strategy represents the strategy for a CSV, mainly the separator character
-     * @param logger logger
      */
-    public CSVFileService(String location, Map<String, String> headerToFiledMap, CSVStrategy strategy, Logger logger)
+    public CSVFileService(String location, Map<String, String> headerToFieldMap, CSVStrategy strategy)
     {
-        this.logger = logger;
-
         URL url;
         try {
             url = new URL(location);
@@ -82,7 +80,7 @@ public class CSVFileService
             }
 
             // get correct field names for velocity
-            transformHeaders(headers, headerToFiledMap);
+            transformHeaders(headers, headerToFieldMap);
             Reader reader = new InputStreamReader(url.openConnection().getInputStream());
             parseLines(reader, strategy, headers);
         } catch (NullPointerException ex) {
@@ -93,10 +91,10 @@ public class CSVFileService
 
     }
 
-    private void transformHeaders(String[] headers, Map<String, String> headerToFiledMap)
+    private void transformHeaders(String[] headers, Map<String, String> headerToFieldMap)
     {
         for (int i = 0; i < headers.length; i++) {
-            headers[i] = headerToFiledMap.get(headers[i]);
+            headers[i] = headerToFieldMap.get(headers[i]);
         }
     }
 

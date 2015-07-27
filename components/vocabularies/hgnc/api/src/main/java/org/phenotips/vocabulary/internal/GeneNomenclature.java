@@ -144,11 +144,11 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
             this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://www.genenames.org/");
         this.infoServiceURL = "http://rest.genenames.org/info";
         this.dataServiceURL = this.baseServiceURL + "cgi-bin/download?";
+
         // assemble the columns
         for (String column : SELECTED_COLUMNS) {
             this.dataServiceURL += "col=" + column + "&";
         }
-
         this.dataServiceURL +=
             "status=" + SELECT_STATUS
                 + "&order_by=" + ORDER_BY
@@ -303,9 +303,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     @Override
     protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
     {
-        Map<String, String> headerToFiledMap = getHeaderToFieldMapping();
+        Map<String, String> headerToFieldMap = getHeaderToFieldMapping();
         CSVFileService data =
-            new CSVFileService(getDefaultSourceLocation(), headerToFiledMap, CSVStrategy.TDF_STRATEGY, this.logger);
+            new CSVFileService(getDefaultSourceLocation(), headerToFieldMap, CSVStrategy.TDF_STRATEGY);
         addMetaInfo(data.solrDocuments);
         processDuplicates(data.solrDocuments);
         return data.solrDocuments;
