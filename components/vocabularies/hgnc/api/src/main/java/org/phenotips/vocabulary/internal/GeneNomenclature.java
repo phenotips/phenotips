@@ -139,20 +139,14 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     public void initialize() throws InitializationException
     {
         super.initialize();
-        Map<String, Boolean> config = new HashMap<String, Boolean>();
-        for (String column : SELECTED_COLUMNS) {
-            config.put(column, true);
-        }
 
         this.baseServiceURL =
             this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://www.genenames.org/");
         this.infoServiceURL = "http://rest.genenames.org/info";
         this.dataServiceURL = this.baseServiceURL + "cgi-bin/download?";
         // assemble the columns
-        for (Map.Entry<String, Boolean> item : config.entrySet()) {
-            if (item.getValue()) {
-                this.dataServiceURL += "col=" + item.getKey() + "&";
-            }
+        for (String column : SELECTED_COLUMNS) {
+            this.dataServiceURL += "col=" + column + "&";
         }
 
         this.dataServiceURL +=
