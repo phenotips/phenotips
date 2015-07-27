@@ -30,8 +30,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
-import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -48,15 +48,11 @@ import static org.mockito.Mockito.verify;
 public class ClinicalStatusControllerTest
 {
     @Rule
-    public MockitoComponentMockingRule<PatientDataController> mocker =
-        new MockitoComponentMockingRule<PatientDataController>(ClinicalStatusController.class);
-
-    private Logger logger;
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(ClinicalStatusController.class);
 
     private DocumentAccessBridge documentAccessBridge;
-
-    private ClinicalStatusController controller;
-
+    
     @Mock
     private Patient patient;
 
@@ -77,8 +73,6 @@ public class ClinicalStatusControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.controller = (ClinicalStatusController)this.mocker.getComponentUnderTest();
-        this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
@@ -88,87 +82,87 @@ public class ClinicalStatusControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadReturnsNullWhenGivenUnexpectedIntValue()
+    public void loadReturnsNullWhenGivenUnexpectedIntValue() throws ComponentLookupException
     {
         doReturn(7314862).when(this.data).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadReturnsAffectedString()
+    public void loadReturnsAffectedString() throws ComponentLookupException
     {
         doReturn(0).when(this.data).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(AFFECTED, result.getValue());
     }
 
     @Test
-    public void loadReturnsUnaffectedString()
+    public void loadReturnsUnaffectedString() throws ComponentLookupException
     {
         doReturn(1).when(this.data).getIntValue(UNAFFECTED);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(UNAFFECTED, result.getValue());
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull()
+    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull()
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONAddsAffectedValueToJSON()
+    public void writeJSONAddsAffectedValueToJSON() throws ComponentLookupException
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON()
+    public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON() throws ComponentLookupException
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
@@ -176,27 +170,27 @@ public class ClinicalStatusControllerTest
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONAddsUnaffectedValueToJSON()
+    public void writeJSONAddsUnaffectedValueToJSON() throws ComponentLookupException
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON()
+    public void writeJSONWithSelectedFieldsAddsUnaffectedValueToJSON() throws ComponentLookupException
     {
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
@@ -204,26 +198,27 @@ public class ClinicalStatusControllerTest
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void saveIsUnsupported()
+    public void saveIsUnsupported() throws ComponentLookupException
     {
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void readJSONIsUnsupported(){
-        this.controller.readJSON(new JSONObject());
+    public void readJSONIsUnsupported() throws ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().readJSON(new JSONObject());
     }
 
     @Test
-    public void checkGetName()
+    public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(DATA_NAME, this.controller.getName());
+        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
     }
 }

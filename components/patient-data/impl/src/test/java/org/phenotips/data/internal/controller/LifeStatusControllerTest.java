@@ -34,8 +34,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
-import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -60,14 +60,10 @@ import static org.mockito.Mockito.verify;
 public class LifeStatusControllerTest
 {
     @Rule
-    public MockitoComponentMockingRule<PatientDataController> mocker =
-            new MockitoComponentMockingRule<PatientDataController>(LifeStatusController.class);
-
-    private Logger logger;
-
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+            new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
+    
     private DocumentAccessBridge documentAccessBridge;
-
-    private LifeStatusController controller;
 
     private XWikiContext xcontext;
 
@@ -98,8 +94,6 @@ public class LifeStatusControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.controller = (LifeStatusController)this.mocker.getComponentUnderTest();
-        this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
@@ -117,56 +111,56 @@ public class LifeStatusControllerTest
     {
         doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ", (String)null);
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadChecksUnknownDateOfDeathFieldWhenDateOfDeathIsNull()
+    public void loadChecksUnknownDateOfDeathFieldWhenDateOfDeathIsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.data).getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(1).when(this.data).getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.data).getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
         Assert.assertEquals(DECEASED, result.getValue());
     }
 
     @Test
-    public void loadReturnsDeceasedWhenDateOfDeathIsDefined()
+    public void loadReturnsDeceasedWhenDateOfDeathIsDefined() throws ComponentLookupException
     {
         doReturn(new Date(0)).when(this.data).getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(0).when(this.data).getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(DECEASED, result.getValue());
     }
 
     @Test
-    public void loadReturnsAliveWhenDateOfDeathIsNullAndUnknownDateOfDeathIsNotSet()
+    public void loadReturnsAliveWhenDateOfDeathIsNullAndUnknownDateOfDeathIsNotSet() throws ComponentLookupException
     {
         doReturn(null).when(this.data).getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(0).when(this.data).getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
 
-        PatientData<String> result = this.controller.load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.data).getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
         verify(this.data).getIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME);
@@ -178,24 +172,24 @@ public class LifeStatusControllerTest
     {
         doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save life status: [{}]", (String)null);
+        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", (String)null);
     }
 
     @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save life status: [{}]",
+        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
     @Test
-    public void saveCatchesExceptionFromSaveDocument() throws XWikiException
+    public void saveCatchesExceptionFromSaveDocument() throws XWikiException, ComponentLookupException
     {
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class),
@@ -203,29 +197,30 @@ public class LifeStatusControllerTest
         doReturn(null).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.xwiki).saveDocument(any(XWikiDocument.class),
             anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.logger).error("Failed to save life status: [{}]",
+        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]",
                 exception.getMessage());
     }
 
     @Test
-    public void saveSetsDateOfDeathUnknownWhenDeceasedAndDatesNull() throws XWikiException
+    public void saveSetsDateOfDeathUnknownWhenDeceasedAndDatesNull() throws XWikiException, ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void saveSetsDateOfDeathUnknownWhenDeceasedAndDateOfDeathNull() throws XWikiException
+    public void saveSetsDateOfDeathUnknownWhenDeceasedAndDateOfDeathNull() throws XWikiException,
+        ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
@@ -234,39 +229,40 @@ public class LifeStatusControllerTest
         PatientData<Date> dates = new DictionaryPatientData<Date>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void saveClearsDateOfDeathUnknownByDefault() throws XWikiException
+    public void saveClearsDateOfDeathUnknownByDefault() throws XWikiException, ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void saveClearsDateOfDeathUnknownWhenAlive() throws XWikiException
+    public void saveClearsDateOfDeathUnknownWhenAlive() throws XWikiException, ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, ALIVE);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void saveClearsDateOfDeathUnknownWhenDeceasedAndDateOfDeathDefined() throws XWikiException
+    public void saveClearsDateOfDeathUnknownWhenDeceasedAndDateOfDeathDefined() throws XWikiException,
+        ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
@@ -275,105 +271,105 @@ public class LifeStatusControllerTest
         PatientData<Date> dates = new DictionaryPatientData<Date>("dates", datesMap);
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 0);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void saveIgnoresDatesWhenDatesIsNotKeyValueBased() throws XWikiException
+    public void saveIgnoresDatesWhenDatesIsNotKeyValueBased() throws XWikiException, ComponentLookupException
     {
         PatientData<String> lifeStatus = new SimpleValuePatientData<String>(DATA_NAME, DECEASED);
         doReturn(lifeStatus).when(this.patient).getData(DATA_NAME);
         PatientData<Date> dates = new SimpleValuePatientData<>(PATIENT_DATEOFDEATH_FIELDNAME, new Date());
         doReturn(dates).when(this.patient).getData("dates");
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setIntValue(PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME, 1);
         verify(this.xwiki).saveDocument(this.doc, "Updated life status from JSON", true, this.xcontext);
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull()
+    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertNull(json.get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull()
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNull(json.get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONAddsLifeStatus()
+    public void writeJSONAddsLifeStatus() throws ComponentLookupException
     {
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, ALIVE)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertEquals(ALIVE, json.get(DATA_NAME));
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsLifeStatus()
+    public void writeJSONWithSelectedFieldsAddsLifeStatus() throws ComponentLookupException
     {
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, DECEASED)).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DATA_NAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertEquals(DECEASED, json.get(DATA_NAME));
     }
 
     @Test
-    public void readJSONEmptyJsonReturnsNull()
+    public void readJSONEmptyJsonReturnsNull() throws ComponentLookupException
     {
-        Assert.assertNull(this.controller.readJSON(new JSONObject()));
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
     }
 
     @Test
-    public void readJSONReturnsCorrectLifeStatus()
+    public void readJSONReturnsCorrectLifeStatus() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, ALIVE);
-        PatientData<String> result = this.controller.readJSON(json);
+        PatientData<String> result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(ALIVE, result.getValue());
 
         json = new JSONObject();
         json.put(DATA_NAME, DECEASED);
-        result = this.controller.readJSON(json);
+        result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(DECEASED, result.getValue());
     }
 
     @Test
-    public void readJSONDoesNotReturnUnexpectedValue()
+    public void readJSONDoesNotReturnUnexpectedValue() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, "!!!!!");
-        Assert.assertNull(this.controller.readJSON(json));
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
     }
 
     @Test
-    public void checkGetName()
+    public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(DATA_NAME, this.controller.getName());
+        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
     }
 }
