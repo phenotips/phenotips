@@ -655,7 +655,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var cancerData = this.getNode().getCancers();
     	if (!isObjectEmpty(cancerData)) {
     		for (var cancerName in cancerData) {
-                if (cancerData.hasOwnProperty(cancerName)) {
+                if (cancerData.hasOwnProperty(cancerName) && cancerData[cancerName].affected) {
                 	var text = cancerName.toString() + " ca.";
                 	if (cancerData[cancerName].hasOwnProperty("ageAtDiagnosis") && (cancerData[cancerName].ageAtDiagnosis.length > 0)) {
                 		var age = cancerData[cancerName].ageAtDiagnosis;
