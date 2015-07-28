@@ -19,9 +19,9 @@ package org.phenotips.data.events.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.events.PatientCancelledEvent;
+import org.phenotips.data.events.PatientEditingCanceledEvent;
 
-import org.xwiki.bridge.event.ActionExecutedEvent;
+import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
@@ -40,15 +40,15 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Detects a patient record's edit session that ended with a cancel command and fires a {@link PatientCancelledEvent}.
+ * Detects a patient record's edit session that ended with a cancel command and fires a {@link PatientEditingCanceledEvent}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.2RC1
  */
 @Component
-@Named("patientCancelledEventSource")
+@Named("patientEditingCanceledEventSource")
 @Singleton
-public class PatientCancelledEventSource implements EventListener
+public class PatientEditingCanceledEventSource implements EventListener
 {
     @Inject
     private ObservationManager observationManager;
@@ -62,13 +62,13 @@ public class PatientCancelledEventSource implements EventListener
     @Override
     public String getName()
     {
-        return "patientCancelledEventSource";
+        return "patientEditingCanceledEventSource";
     }
 
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event>singletonList(new ActionExecutedEvent("cancel"));
+        return Collections.<Event>singletonList(new ActionExecutingEvent("cancel"));
     }
 
     @Override
@@ -82,6 +82,6 @@ public class PatientCancelledEventSource implements EventListener
         }
         Patient patient = this.repo.loadPatientFromDocument(doc);
         User user = this.userManager.getCurrentUser();
-        this.observationManager.notify(new PatientCancelledEvent(patient, user), source);
+        this.observationManager.notify(new PatientEditingCanceledEvent(patient, user), source);
     }
 }

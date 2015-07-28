@@ -18,7 +18,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.events.PatientCancelledEvent;
+import org.phenotips.data.events.PatientEditingCanceledEvent;
 import org.phenotips.data.events.PatientEvent;
 
 import org.xwiki.component.annotation.Component;
@@ -48,9 +48,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.doc.rcs.XWikiRCSNodeInfo;
 
 /**
- * Update the Date of birth aggregated property whenever the birth year, month and day properties are specified in the
- * request.
+ * Deletes the patient record when a {@link PatientEditingCanceledEvent} is received from a new patient record.
  *
+ * @since 1.2RC1
  * @version $Id$
  */
 @Component
@@ -75,7 +75,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientOnCancelDeleter()
     {
-        super("patient-oncancel-deleter", new PatientCancelledEvent());
+        super("patient-oncancel-deleter", new PatientEditingCanceledEvent());
     }
 
     @Override
@@ -93,12 +93,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
                     EntityType.DOCUMENT, new EntityReference(wiki.getDefaultSpace(context), EntityType.SPACE));
                 defaultReference = currentResolver.resolve(defaultReference, EntityType.DOCUMENT);
                 String url = wiki.getURL(new DocumentReference(defaultReference), "view", context);
-                if (context.getResponse().isCommitted()) {
-                    context.getResponse().setHeader("Location", url);
-                    context.getResponse().flushBuffer();
-                } else {
-                    context.getResponse().sendRedirect(url);
-                }
+                context.getResponse().sendRedirect(url);
             }
         } catch (XWikiException ex) {
             logger.error("Could not delete patient. {}", ex.getMessage());
@@ -116,7 +111,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
             List<String> versions = patient.getRevisions(new RevisionCriteria(), context);
             for (String version : versions) {
                 XWikiRCSNodeInfo info = patient.getRevisionInfo(version, context);
-                if (!StringUtils.equalsIgnoreCase(info.getComment().trim(), AUTOSAVE_COMMENT)) {
+                if (!StringUtils.equalsIgnoreCase(info.getComment().trim(), AUTOSAVE_COMMENT) && !info.isMinorEdit()) {
                     hasVersion = true;
                     versionCount += 1;
                 }

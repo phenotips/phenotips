@@ -25,23 +25,23 @@ import org.xwiki.users.User;
  * Notifies that an edit session of a patient record ended with the cancel command.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.2RC1
  */
-public class PatientCancelledEvent extends AbstractPatientEvent
+public class PatientEditingCanceledEvent extends AbstractPatientEvent
 {
     /**
      * Simple constructor passing all the required information.
      *
-     * @param patient the new patient
+     * @param patient whose record was being edited before the cancellation of the editing action
      * @param author the user performing this action
      */
-    public PatientCancelledEvent(Patient patient, User author)
+    public PatientEditingCanceledEvent(Patient patient, User author)
     {
         super("patientRecordCancelled", patient, author);
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
-    public PatientCancelledEvent()
+    public PatientEditingCanceledEvent()
     {
         this(null, null);
     }
