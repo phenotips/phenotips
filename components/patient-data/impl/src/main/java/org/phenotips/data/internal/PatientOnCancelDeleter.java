@@ -92,7 +92,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
                 EntityReference defaultReference = new EntityReference(wiki.getDefaultPage(context),
                     EntityType.DOCUMENT, new EntityReference(wiki.getDefaultSpace(context), EntityType.SPACE));
                 defaultReference = currentResolver.resolve(defaultReference, EntityType.DOCUMENT);
-                String url = wiki.getURL(new DocumentReference(defaultReference), "view", context);
+                String url = wiki.getURL(toDocumentReference(defaultReference), "view", context);
                 context.getResponse().sendRedirect(url);
             }
         } catch (XWikiException ex) {
@@ -100,6 +100,11 @@ public class PatientOnCancelDeleter extends AbstractEventListener
         } catch (IOException ex) {
             logger.error("Could not redirect user appropriately. {}", ex.getMessage());
         }
+    }
+
+    public DocumentReference toDocumentReference(EntityReference reference)
+    {
+        return new DocumentReference(reference);
     }
 
     private boolean isNew(XWikiDocument patient, XWikiContext context)
