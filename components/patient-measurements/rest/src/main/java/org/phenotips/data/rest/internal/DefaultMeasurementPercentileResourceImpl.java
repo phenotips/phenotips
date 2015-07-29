@@ -31,6 +31,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.Period;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -49,12 +51,24 @@ public class DefaultMeasurementPercentileResourceImpl extends XWikiResource impl
     private Map<String, MeasurementHandler> handlers;
 
     @Override
-    public Response getMeasurementPercentile(String measurement, float value, float ageMonths, char sex)
+    public Response getMeasurementPercentile(String measurement, float value, String age, char sex)
     {
         boolean isMale = Character.toLowerCase(sex) == 'm';
         if (!isMale && Character.toLowerCase(sex) != 'f') {
             return generateErrorResponse(Response.Status.BAD_REQUEST, "Invalid sex. Supported: M or F.");
         }
+
+        Period agePeriod;
+        try {
+            agePeriod = Period.parse("P" + age);
+        } catch (IllegalArgumentException e) {
+            return generateErrorResponse(Response.Status.BAD_REQUEST, "Cannot parse age.");
+        }
+        float ageMonths = 0;
+        ageMonths += agePeriod.getYears() * 12;
+        ageMonths += agePeriod.getMonths();
+        ageMonths += agePeriod.getWeeks() * 7 / 30.4375;
+        ageMonths += agePeriod.getDays() / 30.4375;
 
         MeasurementHandler handler;
         handler = handlers.get(measurement);
