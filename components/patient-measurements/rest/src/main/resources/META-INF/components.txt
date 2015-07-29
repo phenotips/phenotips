@@ -1,0 +1,1 @@
+org.phenotips.data.rest.internal.DefaultMeasurementPercentileResourceImpl
