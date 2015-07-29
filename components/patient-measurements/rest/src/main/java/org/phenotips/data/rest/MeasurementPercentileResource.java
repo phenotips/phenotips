@@ -36,11 +36,11 @@ public interface MeasurementPercentileResource
      *
      * @param measurement The name of the measurement
      * @param value The measurement value
-     * @param ageMonths The patient's age (months)
+     * @param age The patient's age, in ISO 8601 duration format, with no leading 'P', e.g. 2Y2M3W6D.
      * @param sex The patient's sex, M or F
      * @return percentile and standard deviation, JSON encoded
      */
     @GET
     Response getMeasurementPercentile(@QueryParam("measurement") String measurement, @QueryParam("value") float value,
-                        @QueryParam("age_months") float ageMonths, @QueryParam("sex") char sex);
+                        @QueryParam("age") String age, @QueryParam("sex") char sex);
 }
