@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,23 +14,31 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
--->
+ */
+package org.phenotips.data.rest;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-measurements</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient measurements</name>
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-    <module>rest</module>
-  </modules>
-</project>
+/**
+ * Resource for working with computed measurement values.
+ *
+ * @version $Id$
+ * @since 1.3M4
+ */
+@Path("/measurements/computed")
+public interface ComputedMeasurementResource
+{
+    /**
+     * Get a computed measurement based on a number of inputs required for the computation. The parameters are extracted
+     * manually by the implementation, since computed values vary in their numbers of parameters.
+     *
+     * @param uriInfo the request's URI info
+     * @return the computed measurement value
+     */
+    @GET
+    Response getComputedMeasurement(@Context UriInfo uriInfo);
+}
