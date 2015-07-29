@@ -125,6 +125,19 @@ xwiki.store.attachment.recyclebin.hint=file
             <version>${xwiki.version}</version>
             <scope>runtime</scope>
           </dependency>
+          <!-- Bump the version of some dependencies used by the plugin-->
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-extension-api</artifactId>
+            <version>${xwiki.version}</version>
+            <scope>runtime</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-oldcore</artifactId>
+            <version>${xwiki.version}</version>
+            <scope>runtime</scope>
+          </dependency>
           <!-- Add dependencies that have their own set of migrators, so that a new database doesn't trigger migrators. -->
           <dependency>
             <groupId>org.xwiki.platform</groupId>
@@ -155,6 +168,12 @@ xwiki.store.attachment.recyclebin.hint=file
             <groupId>${project.groupId}</groupId>
             <artifactId>patient-data-default-impl</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.xwiki.platform</groupId>
+                <artifactId>xwiki-platform-search-solr-query</artifactId>
+              </exclusion>
+            </exclusions>
           </dependency>
           <!-- WikiMacro classes are automatically generated. -->
           <dependency>

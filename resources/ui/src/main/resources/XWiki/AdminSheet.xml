@@ -35,7 +35,7 @@
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{include reference="XWiki.ConfigurableClassMacros" /}}
 
@@ -60,30 +60,29 @@
     'id' : 'configuration',
     'priority' : 100,
     'children': [
-       {'id' : 'Editing', 'advanced' : true},
-       {'id' : 'Localization', 'advanced' : true},
-       {'id' : 'Email', 'advanced' : true},
-       {'id' : 'XWiki.OfficeImporterAdmin', 'advanced' : true}
+       {'id' : 'Editing', 'advanced' : true, 'order': 100},
+       {'id' : 'Localization', 'advanced' : true, 'order': 200},
+       {'id' : 'XWiki.OfficeImporterAdmin', 'advanced' : true, 'order': 300}
     ]
   },
   {
     'id' : 'lf',
     'priority' : 200,
     'children': [
-       {'id' : 'Presentation', 'perSpace' : true},
-       {'id' : 'Elements', 'perSpace' : true, 'advanced' : true},
-       {'id' : 'Panels.PanelWizard', 'perSpace' : true, 'advanced' : true}
+       {'id' : 'Presentation', 'perSpace' : true, 'order': 100},
+       {'id' : 'Elements', 'perSpace' : true, 'advanced' : true, 'order': 200},
+       {'id' : 'Panels.PanelWizard', 'perSpace' : true, 'advanced' : true, 'order': 300}
     ]
   },
   {
     'id' : 'usersgroups',
     'priority' : 300,
     'children': [
-       {'id' : 'Users'},
-       {'id' : 'Groups'},
-       {'id' : 'Rights', 'perSpace' : true, 'advanced' : true},
-       {'id' : 'Registration', 'advanced' : true},
-       {'id' : 'UserProfile', 'advanced' : true}
+       {'id' : 'Users', 'order': 100},
+       {'id' : 'Groups', 'order': 200},
+       {'id' : 'Rights', 'perSpace' : true, 'advanced' : true, 'order': 300},
+       {'id' : 'Registration', 'advanced' : true, 'order': 400},
+       {'id' : 'UserProfile', 'advanced' : true, 'order': 500}
     ]
   },
   {
@@ -91,19 +90,20 @@
     'priority' : 400,
     'advanced' : true,
     'children': [
-       {'id' : 'Import', 'action' : 'import'},
-       {'id' : 'Export', 'action' : 'export'},
-       {'id' : 'Templates'}
+       {'id' : 'Import', 'action' : 'import', 'order': 100},
+       {'id' : 'Export', 'action' : 'export', 'order': 200},
+       {'id' : 'Templates', 'order': 300}
     ]
   },
   {
     'id' : 'extensionmanager',
     'priority' : 500,
     'children': [
-       {'id' : 'XWiki.AddExtensions'},
-       {'id' : 'XWiki.InstalledExtensions'},
-       {'id' : 'XWiki.CoreExtensions', 'advanced' : true},
-       {'id' : 'XWiki.ExtensionUpdater'}
+       {'id' : 'XWiki.AddExtensions', 'order': 100},
+       {'id' : 'XWiki.InstalledExtensions', 'order': 200},
+       {'id' : 'XWiki.CoreExtensions', 'advanced' : true, 'order': 300},
+       {'id' : 'XWiki.ExtensionUpdater', 'order': 400},
+       {'id' : 'XWiki.ExtensionHistory', 'advanced' : true, 'order': 500}
     ]
   },
   {
@@ -114,17 +114,20 @@
   }
 ])
 
-##
-## Make some adjustments in case this is a workspace
-##
-#if ($services.workspace.isWorkspace($xcontext.database))
-  #foreach ($category in $adminMenu)
-    #if ($category.id == 'configuration')
-      $category.children.add(0, {'id' : 'XWiki.ManageWorkspace', 'advanced' : true})
-    #elseif ($category.id == 'usersgroups')
-      $category.children.remove({'id' : 'Users'})
-      $category.children.remove({'id' : 'Registration'})
-      $category.children.add(0, {'id' : 'XWiki.WorkspaceUsers', 'advanced' : true})
+#**
+ * Returns whether or not the requested section exists
+ *
+ * Example of use:
+ * #if("#admin_hasSection('sectionId')" != '')
+ *   OK
+ * #end
+ *#
+#macro (admin_hasSection $sectionId)
+  #foreach($category in $adminMenu)
+    #foreach($section in $category.children)
+      #if($section.id == $sectionId)
+        OK
+      #end
     #end
   #end
 #end
@@ -176,9 +179,13 @@
   #set ($crtCategoryId = '')
 #end
 
-#if ($crtSectionId != '')
-  #set ($crtItemId = $crtSectionId)
-#elseif ($crtCategoryId != '')
+#if ("$!crtSectionId" != '')
+  #if("#admin_hasSection($crtSectionId)" != '')
+    #set ($crtItemId = $crtSectionId)
+  #else
+    #set($crtSectionId = $NULL)
+  #end
+#elseif ("$!crtCategoryId" != '')
   #set ($crtItemId = $adminMenu.get($crtCategoryId).id)
 #end
 #set ($crtSection = $NULL)
@@ -197,9 +204,9 @@
   #else
     #set ($category.iconReference = "XWiki.ConfigurableClass@DefaultAdminSectionIcon.png")
   #end
-  #set ($category.description = $services.localization.render("admin.${category.id}.description"))
+  #set ($category.description = $services.localization.render("admin.${category.id}.description").trim())
   #set ($category.cssClass = "${category.id}Icon")
-  #set ($category.name = $services.localization.render("admin.${category.id}"))
+  #set ($category.name = $services.localization.render("admin.${category.id}").trim())
   #if ("$!{crtCategoryId}" != '' &amp;&amp; $velocityCount == $mathtool.add($crtCategoryId, 1))
     #set ($crtCategory = $category)
   #end
@@ -286,7 +293,9 @@
  *#
 #macro(admin_displayCategory $sections $translationPrefix)
 (% class="admin-category" %)
-  #foreach ($section in $sections)
+  #set ($sortedSections = [])
+  #sortCollectionOfMapsByField($sections, 'order', 9999, 'asc', $sortedSections)
+  #foreach ($section in $sortedSections)
     * {{html wiki="true"}}&lt;a href="$section.url"&gt;[[image:${section.iconReference}]] **${section.name}**&lt;/a&gt;{{/html}} (% class="description" %)$!{section.description}
   #end
 #end
@@ -316,7 +325,7 @@
 #macro(admin_displayCategories $adminMenu $translationPrefix)
 (% class="admin-category" %)
   #foreach ($category in $adminMenu)
-    * {{html wiki="true"}}&lt;a href="$category.url"&gt;[[image:${category.iconReference}]] **${services.localization.render("${translationPrefix}${category.id}")}**&lt;/a&gt;{{/html}} (% class="description" %)$!{category.description}
+    * [[[[image:${category.iconReference}]] **${category.name}**&gt;&gt;path:${category.url}]] (% class="description" %)$!{category.description}
   #end
 #end
 
@@ -325,20 +334,20 @@
  *#
 #macro (admin_spaceSwitch)
 {{html clean="false"}}
-  &lt;form id="change-context" class="xformInline" action=""&gt;
+  &lt;form id="change-context" class="xformInline" action="$!doc.getURL($xcontext.action)"&gt;
     &lt;div&gt;
       &lt;input type="hidden" name="xaction" value="switchContext" /&gt;
       &lt;select id="goto-select" name="target"&gt;
         #if ($xwiki.hasAccessLevel('admin', $xcontext.user, 'XWiki.XWikiPreferences'))
           &lt;optgroup label="$services.localization.render('admin.gotoglobaladministration')"&gt;
-            &lt;option value="$xwiki.getURL('XWiki.XWikiPreferences', 'admin')" #if("$!{editor}"=="globaladmin")selected="selected"#end&gt;$services.localization.render('admin.globaladministration')&lt;/option&gt;
+            &lt;option value="$xwiki.getURL('XWiki.XWikiPreferences', 'admin', "section=$escapetool.url($crtSectionId)")" #if("$!{editor}"=="globaladmin")selected="selected"#end&gt;$services.localization.render('admin.globaladministration')&lt;/option&gt;
           &lt;/optgroup&gt;
         #end
         &lt;optgroup label="$services.localization.render('admin.gotospaceadministration')"&gt;
         #foreach($spaceitem in $xwiki.spaces)
           #set ($spacePreferencesDocument = $services.model.createDocumentReference('', $spaceitem, 'WebPreferences'))
           #if ($xwiki.hasAccessLevel('admin', $xcontext.user, $services.model.serialize($spacePreferencesDocument, 'default')))
-            &lt;option value="$xwiki.getURL($spacePreferencesDocument, 'admin', '')" #if("$!{currentSpace}" == ${spaceitem} &amp;&amp; "$!{editor}" != 'globaladmin')selected="selected"#end&gt;$escapetool.xml($spaceitem)&lt;/option&gt;
+            &lt;option value="$xwiki.getURL($spacePreferencesDocument, 'admin', "section=$escapetool.url($crtSectionId)")" #if("$!{currentSpace}" == ${spaceitem} &amp;&amp; "$!{editor}" != 'globaladmin')selected="selected"#end&gt;$escapetool.xml($spaceitem)&lt;/option&gt;
           #end
         #end
         &lt;/optgroup&gt;
@@ -359,16 +368,26 @@
   $response.sendRedirect($xwiki.getURL($doc.getFullName(), 'admin', $request.getQueryString()))##
 #else
   $xwiki.jsx.use('XWiki.AdminSheet')##
+  ## Construct the SSX parameter map:
+  ## - One parameter for the color theme
+  ## - Each custom ConfigurableClass can provide a custom icon to display in categories headings and
+  ##   thus we need to pass them to the SSX of the AdminSheet.
+  #set ($parameterMap = {})
   #if ($themeDoc)
-    $xwiki.ssx.use('XWiki.AdminSheet', {'colorTheme' : $themeDocFullName})##
-  #else
-    $xwiki.ssx.use('XWiki.AdminSheet')##
+    #set ($discard = $parameterMap.put('colorTheme', $themeDocFullName))
   #end
-  #if ($crtSectionId != '' &amp;&amp; $crtSectionId.indexOf('.') &gt; 0)
+  #foreach ($adminMenuCategory in $adminMenu)
+    #set ($customIcon = $adminMenuCategory.categoryIcon)
+    #if ("$!customIcon" != '')
+      #set ($discard = $parameterMap.put("${adminMenuCategory.id}Icon", $customIcon))
+    #end
+  #end
+  $xwiki.ssx.use('XWiki.AdminSheet', $parameterMap)##
+  #if ("$!crtSectionId" != '' &amp;&amp; $crtSectionId.indexOf('.') &gt; 0 &amp;&amp; $xwiki.exists($crtSectionId))
     #set ($sectionName = $xwiki.getDocument($crtSectionId).getDisplayTitle())
   #elseif ($crtSectionId != '' &amp;&amp; $services.localization.get("admin.${crtSectionId.toLowerCase()}"))
     #set ($sectionName = $services.localization.render("admin.${crtSectionId.toLowerCase()}"))
-  #elseif ($crtSectionId != '')
+  #elseif ("$!crtSectionId" != '')
     #set ($sectionName = $crtSectionId)
   #elseif ($crtCategoryId != '')
     #set ($sectionName = $services.localization.render("admin.${crtItemId}"))
@@ -378,8 +397,34 @@
     #set ($sectionName = $currentSpace)
   #end
 #admin_spaceSwitch()
-(% id="hierarchy" %)(((
-#if ($crtCategory){{html}}&lt;a href="${xwiki.getURL($currentDoc, $adminAction)}"&gt;$services.localization.render('admin.main.title')&lt;/a&gt;{{/html}}#{else}(% class="current" %){{translation key="admin.main.title"/}}(%%)#{end}#if ($crtCategory) (% class="separator" %)»(%%) #if ($crtSection){{html}}&lt;a href="${crtCategory.url}"&gt;${crtCategory.name}&lt;/a&gt;{{/html}}#{else}(% class="current" %)${crtCategory.name}(%%)#{end}#if ($crtSection) (% class="separator" %)»(%%) (% class="current" %)${crtSection.name}(%%)#end#end
+(% id="hierarchy" %)
+(((
+
+{{html}}
+#breadcrumb_start()
+  #if ($crtCategory)
+    #breadcrumb_line($xwiki.getURL($currentDoc, $adminAction), $services.localization.render('admin.main.title'))
+    ##&lt;li&gt;&lt;a href="${xwiki.getURL($currentDoc, $adminAction)}"&gt;$services.localization.render('admin.main.title')&lt;/a&gt;&lt;/li&gt;
+  #else
+    #breadcrumb_current_line($services.localization.render('admin.main.title'))
+    ##&lt;li class="active"&gt;$services.localization.render('admin.main.title')&lt;/li&gt;
+  #end
+  #if ($crtCategory)
+    #if ($crtSection)
+      #breadcrumb_line($crtCategory.url, $crtCategory.name)
+      ##&lt;li&gt;&lt;a href="$crtCategory.url"&gt;$crtCategory.name&lt;/a&gt;&lt;/li&gt;
+    #else
+      #breadcrumb_current_line($crtCategory.name)
+      ##&lt;li class="active"&gt;$crtCategory.name&lt;/li&gt;
+    #end
+    #if ($crtSection)
+      #breadcrumb_current_line($crtSection.name)
+      ##&lt;li class="active"&gt;$crtSection.name&lt;/li&gt;
+    #end
+  #end
+#breadcrumb_end()
+{{/html}}
+
 )))
 (% id="document-title" %)(((
   = $services.localization.render('admin.section.title', [$sectionName]) =
