@@ -35,7 +35,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -356,7 +355,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         JSONObject info = getInfo();
         metaTerm.addField(ID_FIELD_NAME, "HEADER_INFO");
         metaTerm.addField(VERSION_FIELD_NAME, getVersion(info));
-        metaTerm.addField(SIZE_FIELD_NAME, Objects.toString(getSize(info)));
 
         data.add(metaTerm);
     }

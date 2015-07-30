@@ -48,8 +48,6 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
 {
     protected static final String VERSION_FIELD_NAME = "version";
 
-    protected static final String SIZE_FIELD_NAME = "size";
-
     protected static final String ROWS_FIELD_NAME = "rows";
 
     protected static final String SYMBOL_EXACT = "symbolExact^100";
@@ -186,32 +184,4 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         }
         return null;
     }
-
-    @Override
-    public long size()
-    {
-        QueryResponse response;
-        SolrQuery query = new SolrQuery();
-        SolrDocumentList termList;
-        SolrDocument firstDoc;
-
-        query.setQuery("size:*");
-        query.set(ROWS_FIELD_NAME, "1");
-        try {
-            response = this.externalServicesAccess.getSolrConnection().query(query);
-            termList = response.getResults();
-
-            if (!termList.isEmpty()) {
-                firstDoc = termList.get(0);
-                String result = firstDoc.getFieldValue(SIZE_FIELD_NAME).toString();
-                return Long.valueOf(result).longValue();
-            }
-        } catch (SolrServerException | SolrException ex) {
-            this.logger.warn("Failed to query ontology size", ex.getMessage());
-        } catch (IOException ex) {
-            this.logger.error("IOException while getting ontology size", ex);
-        }
-        return 0;
-    }
-
 }
