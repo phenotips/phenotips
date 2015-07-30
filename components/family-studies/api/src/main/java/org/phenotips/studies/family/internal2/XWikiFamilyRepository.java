@@ -21,6 +21,8 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -30,6 +32,7 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -99,6 +102,9 @@ public class XWikiFamilyRepository implements FamilyRepository
 
     @Inject
     private static XWikiFamilyPermissions familyPermissions;
+
+    @Inject
+    private static Validation validation;
 
     @Override
     public Family createFamily()
@@ -197,6 +203,30 @@ public class XWikiFamilyRepository implements FamilyRepository
             return patientDoc.removeXObject(pointer);
         }
         return false;
+    }
+
+    @Override
+    public StatusResponse2 canPatientBeAddedToFamily(Patient patient, Family family)
+    {
+        String patientId = patient.getId();
+        Family familyForPatient = this.getFamilyForPatient(patient);
+
+        if (familyForPatient != null) {
+            if (familyForPatient.equals(family)) {
+                return StatusResponse2.CAN_BE_ADDED.setMessage(patientId);
+            } else {
+                return StatusResponse2.ALREADY_HAS_FAMILY.setMessage(patientId);
+            }
+        }
+
+        if (PedigreeUtils.hasPedigree(patient)) {
+            return StatusResponse2.PEDIGREE_NOT_EMPTY.setMessage(patientId);
+        }
+
+        if (!XWikiFamilyRepository.validation.hasAccess(family.getDocumentReference(), Right.EDIT)) {
+            return StatusResponse2.INSUFFICIENT_PERMISSIONS.setMessage(patientId);
+        }
+        return StatusResponse2.CAN_BE_ADDED.setMessage(patientId);
     }
 
     /*

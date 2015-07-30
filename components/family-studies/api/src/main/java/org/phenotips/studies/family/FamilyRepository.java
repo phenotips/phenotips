@@ -18,6 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
 
@@ -48,4 +49,14 @@ public interface FamilyRepository
      * @return new Family object
      */
     Family createFamily();
+
+    /**
+     * Checks if a patient can be added to a family. Specifically, if patient doesn't belong the another family, or
+     * already belongs to the family, and the current user has rights to add the patient to the family.
+     *
+     * @param patient to add to the family. Must not be null.
+     * @param family to add the patient to. Must not be null.
+     * @return {@link PatientCanBeAddedResponse}
+     */
+    StatusResponse2 canPatientBeAddedToFamily(Patient patient, Family family);
 }
