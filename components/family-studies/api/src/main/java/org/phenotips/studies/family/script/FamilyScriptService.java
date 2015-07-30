@@ -26,6 +26,7 @@ import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -193,6 +194,33 @@ public class FamilyScriptService implements ScriptService
                 id, ex.getMessage());
             return new JSONObject(true);
         }
+    }
+
+    /**
+     * Checks if a patient can be added to a proband's family.
+     *
+     * @param probandId id of proband to get the family from
+     * @param patientId id of patient to add to proban's family
+     * @return see return value for {@link canPatientBeAddedToFamily}
+     */
+    public JSON canPatientBeLinkedToProband(String probandId, String patientId)
+    {
+        Patient proband = this.patientRepository.getPatientById(probandId);
+        if (proband == null) {
+            return StatusResponse2.INVALID_PATIENT_ID.setMessage(probandId).asVerification();
+        }
+
+        Patient patient = this.patientRepository.getPatientById(patientId);
+        if (patient == null) {
+            return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId).asVerification();
+        }
+
+        Family family = this.familyRepository.getFamilyForPatient(proband);
+        if (family == null) {
+            return StatusResponse2.PROBAND_HAS_NO_FAMILY.setMessage(patientId, probandId).asVerification();
+        }
+
+        return this.familyRepository.canPatientBeAddedToFamily(patient, family).asVerification();
     }
 
     /**
