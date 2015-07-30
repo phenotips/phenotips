@@ -71,27 +71,43 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String VARIANTS_ENABLING_FIELD_NAME = VARIANTS_STRING;
 
-    private static final String VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME = "variants_genesymbol";
+    private static final String VARIANTS_PROTEIN_ENABLING_FIELD_NAME = "variants_protein";
+
+    private static final String VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME = "variants_transcript";
+
+    private static final String VARIANTS_DBSNP_ENABLING_FIELD_NAME = "variants_dbsnp";
+
+    private static final String VARIANTS_EFFECT_ENABLING_FIELD_NAME = "variants_effect";
 
     private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
 
-    private static final String VARIANTS_STATUS_ENABLING_FIELD_NAME = "variants_status";
-
     private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
 
-    private static final String VARIANTS_VALIDATED_ENABLING_FIELD_NAME = "variants_validated";
+    private static final String VARIANTS_EVIDENCE_ENABLING_FIELD_NAME = "variants_evidence";
 
-    private static final String VARIANT_KEY = "hgvs_id";
+    private static final String VARIANTS_SANGER_ENABLING_FIELD_NAME = "variants_sanger";
 
-    private static final String GENESYMBOL_KEY = "genesymbol";
+    private static final String VARIANTS_RESOLUTION_ENABLING_FIELD_NAME = "variants_resolution";
+
+    private static final String VARIANT_KEY = "cdna";
+
+    private static final String PROTEIN_KEY = "protein";
+
+    private static final String TRANSCRIPT_KEY = "transcript";
+
+    private static final String DBSNP_KEY = "dbsnp";
+
+    private static final String EFFECT_KEY = "effect";
 
     private static final String INTERPRETATION_KEY = "interpretation";
 
-    private static final String STATUS_KEY = "status";
-
     private static final String INHERITANCE_KEY = "inheritance";
 
-    private static final String VALIDATED_KEY = "validated";
+    private static final String EVIDENCE_KEY = "evidence";
+
+    private static final String SANGER_KEY = "sanger";
+
+    private static final String RESOLUTION_KEY = "resolution";
 
     @Inject
     private Logger logger;
@@ -111,8 +127,9 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, INTERPRETATION_KEY, STATUS_KEY, INHERITANCE_KEY,
-            VALIDATED_KEY);
+        return Arrays.asList(VARIANT_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY, INTERPRETATION_KEY,
+            INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY,
+            RESOLUTION_KEY);
     }
 
     @Override
@@ -150,7 +167,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return interpretation;
     }
 
-    private String parseStatus(String value)
+    private String parseResolution(String value)
     {
         String classification = "";
         switch (value) {
@@ -188,8 +205,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
                             case INTERPRETATION_KEY:
                                 value = parseInterpretation(field.getValue());
                                 break;
-                            case STATUS_KEY:
-                                value = parseStatus(field.getValue());
+                            case RESOLUTION_KEY:
+                                value = parseResolution(field.getValue());
                                 break;
                             default:
                                 value = field.getValue();
@@ -244,11 +261,16 @@ public class VariantListController extends AbstractComplexController<Map<String,
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
         List<String> keys =
-            Arrays.asList(GENESYMBOL_KEY, INTERPRETATION_KEY, STATUS_KEY, INHERITANCE_KEY, VALIDATED_KEY);
+            Arrays.asList(PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY, INTERPRETATION_KEY,
+                INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY,
+                RESOLUTION_KEY);
         List<String> enablingProperties =
-            Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
-                VARIANTS_STATUS_ENABLING_FIELD_NAME,
-                VARIANTS_INHERITANCE_ENABLING_FIELD_NAME, VARIANTS_VALIDATED_ENABLING_FIELD_NAME);
+            Arrays.asList(VARIANTS_PROTEIN_ENABLING_FIELD_NAME, VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME,
+                VARIANTS_DBSNP_ENABLING_FIELD_NAME,
+                VARIANTS_EFFECT_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
+                VARIANTS_INHERITANCE_ENABLING_FIELD_NAME,
+                VARIANTS_EVIDENCE_ENABLING_FIELD_NAME, VARIANTS_SANGER_ENABLING_FIELD_NAME,
+                VARIANTS_RESOLUTION_ENABLING_FIELD_NAME);
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();

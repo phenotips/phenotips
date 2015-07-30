@@ -1,2 +1,0 @@
-org.phenotips.variant.script.VariantScriptService
-org.phenotips.variant.internal.HGVSVariantManager

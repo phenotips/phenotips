@@ -71,7 +71,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
-    private static final String GENES_CLASSIFICATION_ENABLING_FIELD_NAME = "genes_classification";
+    private static final String GENES_STATUS_ENABLING_FIELD_NAME = "genes_status";
 
     private static final String GENES_EVIDENCE_ENABLING_FIELD_NAME = "genes_evidence";
 
@@ -79,7 +79,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String GENE_KEY = "gene";
 
-    private static final String CLASSIFICATION_KEY = "classification";
+    private static final String STATUS_KEY = "status";
 
     private static final String EVIDENCE_KEY = "evidence";
 
@@ -103,7 +103,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(GENE_KEY, CLASSIFICATION_KEY, EVIDENCE_KEY, COMMENTS_KEY);
+        return Arrays.asList(GENE_KEY, STATUS_KEY, EVIDENCE_KEY, COMMENTS_KEY);
     }
 
     @Override
@@ -136,8 +136,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                     if (field != null) {
                         String value = "";
                         switch (property) {
-                            case CLASSIFICATION_KEY:
-                                value = parseClassification(field.getValue());
+                            case STATUS_KEY:
+                                value = parseStatus(field.getValue());
                                 break;
                             case EVIDENCE_KEY:
                                 value = parseEvidence(field.getValue());
@@ -176,21 +176,21 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return evidence;
     }
 
-    private String parseClassification(String value)
+    private String parseStatus(String value)
     {
-        String classification = "";
+        String status = "";
         switch (value) {
             case "solved":
-                classification = "Confirmed causal";
+                status = "Confirmed causal";
                 break;
             case "rejected":
-                classification = "Excluded by testing";
+                status = "Excluded by testing";
                 break;
             default:
-                classification = "Candidate";
+                status = "Candidate";
                 break;
         }
-        return classification;
+        return status;
     }
 
     private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
@@ -232,7 +232,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             Arrays.asList(GENE_KEY, EVIDENCE_KEY, COMMENTS_KEY);
 
         List<String> enablingProperties =
-            Arrays.asList(GENES_CLASSIFICATION_ENABLING_FIELD_NAME, GENES_EVIDENCE_ENABLING_FIELD_NAME,
+            Arrays.asList(GENES_STATUS_ENABLING_FIELD_NAME, GENES_EVIDENCE_ENABLING_FIELD_NAME,
                 GENES_COMMENTS_ENABLING_FIELD_NAME);
 
         while (iterator.hasNext()) {

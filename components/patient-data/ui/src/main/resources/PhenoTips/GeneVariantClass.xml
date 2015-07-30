@@ -47,44 +47,101 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <hgvs_id>
+    <cdna>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.variantPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.cdnaPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='variant' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
-      <name>hgvs_id</name>
+      <name>cdna</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>HGVS variant description</prettyName>
+      <prettyName>cDNA</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </hgvs_id>
-        <genesymbol>
+    </cdna>
+    <protein>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' size='16' value="$!{escapetool.xml($value)}" readonly /&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.proteinPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
-$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='gene_symbol' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='protein' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
 #end
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
-      <name>genesymbol</name>
+      <name>protein</name>
       <number>2</number>
-      <picker>1</picker>
-      <prettyName>Gene Symbol</prettyName>
+      <picker>0</picker>
+      <prettyName>Protein</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </genesymbol>
+    </protein>
+        <transcript>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.transcriptPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='transcript' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>transcript</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Transcript</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </transcript>
+     <dbsnp>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.dbsnpPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='dbsnp' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>dbsnp</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>db SNP</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </dbsnp>
+     <effect>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.effectPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='effect' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>effect</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Effect</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </effect>    
     <interpretation>
       <cache>0</cache>
       <customDisplay/>
@@ -92,7 +149,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>interpretation</name>
-      <number>3</number>
+      <number>6</number>
       <picker>0</picker>
       <prettyName>Interpretation (ACMG category)</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -106,27 +163,6 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <values>pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </interpretation>
-    <status>
-      <cache>0</cache>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
-      <name>classification</name>
-      <number>4</number>
-      <picker>0</picker>
-      <prettyName>Status</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>unknown=Unknown|rejected=Rejected|solved=Confirmed causal</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </status>
     <inheritance>
       <cache>0</cache>
       <customDisplay/>
@@ -134,7 +170,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>inheritance</name>
-      <number>5</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Inheritance</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -148,16 +184,54 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <values>denovo=denovo|maternal=maternal|paternal=paternal|unknown=unknown</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </inheritance>
-    <validated>
+    <evidence>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.evidencePlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='evidence' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>evidence</name>
+      <number>8</number>
+      <picker>0</picker>
+      <prettyName>Evidence</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </evidence>   
+    <sanger>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder='$services.localization.render('PhenoTips.GeneVariantClass.sangerPlaceholder')' size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name='sanger' value="$!{escapetool.xml($value)}"/&gt;{{/html}}#end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>sanger</name>
+      <number>9</number>
+      <picker>0</picker>
+      <prettyName>Sanger validation</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </sanger> 
+    <resolution>
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
-      <name>validated</name>
-      <number>6</number>
+      <name>resolution</name>
+      <number>10</number>
       <picker>0</picker>
-      <prettyName>Validated</prettyName>
+      <prettyName>Resolution</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -166,8 +240,8 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>yes=yes|no=no</values>
+      <values>unknown=Unknown|rejected=Rejected|solved=Confirmed causal</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </validated>
+    </resolution>
   </class>
 </xwikidoc>

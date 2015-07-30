@@ -85,20 +85,20 @@ public class DataToCellConverter
     {
         String sectionName = "phenotype";
         String[] fieldIds = { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta",
-            "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
+        "phenotype_meta", "negative_phenotype", "negative_phenotype_code", "negative_phenotype_combined",
         "phenotype_by_section" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
         { { "phenotype", "positive" }, { "code", "positive" }, { "phenotype", "code", "positive" },
-            { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
-            { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
-            { "category" } };
+        { "meta_code", "phenotype", "positive" }, { "meta", "phenotype", "positive" },
+        { "negative", "phenotype" }, { "negative", "code" }, { "negative", "code", "phenotype" },
+        { "category" } };
 
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
         this.phenotypeHelper = new ConversionHelpers();
         this.phenotypeHelper
-            .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("positive"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection phenotypeHeader() throws Exception
@@ -267,14 +267,23 @@ public class DataToCellConverter
     {
         String sectionName = "variants";
         String[] fieldIds =
-        { "variants", "variants_genesymbol", "variants_interpretation", "variants_status", "variants_inheritance",
-        "variants_validated" };
+        { "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_effect",
+            "variants_interpretation", "variants_inheritance", "variants_evidence", "variants_sanger",
+        "variants_resolution" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "hgvs_id" }, { "genesymbol", "hgvs_id" }, { "interpretation", "genesymbol", "hgvs_id" },
-            { "status", "interpretation", "genesymbol", "hgvs_id" },
-            { "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" },
-            { "validated", "inheritance", "status", "interpretation", "genesymbol", "hgvs_id" } };
+        {
+        { "cdna" },
+        { "protein", "cdna" },
+        { "transcript", "protein", "cdna" },
+        { "dbsnp", "transcript", "protein", "cdna" },
+        { "effect", "dbsnp", "transcript", "protein", "cdna" },
+        { "interpretation", "effect", "dbsnp", "transcript", "protein", "cdna" },
+        { "inheritance", "interpretation", "effect", "dbsnp", "transcript", "protein", "cdna" },
+        { "evidence", "inheritance", "interpretation", "effect", "dbsnp", "transcript", "protein", "cdna" },
+        { "sanger", "evidence", "inheritance", "interpretation", "effect", "dbsnp", "transcript", "protein", "cdna" },
+        { "resolution", "sanger", "evidence", "inheritance", "interpretation", "effect", "dbsnp", "transcript",
+        "protein", "cdna" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -282,11 +291,11 @@ public class DataToCellConverter
     public void genesSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "genes";
-        String[] fieldIds = { "genes", "genes_classification", "genes_evidence", "genes_comments" };
+        String[] fieldIds = { "genes", "genes_status", "genes_evidence", "genes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "genes" }, { "classification", "genes" }, { "evidence", "classification", "genes" },
-            { "comments", "evidence", "classification", "genes" } };
+        { { "genes" }, { "status", "genes" }, { "evidence", "status", "genes" },
+        { "comments", "evidence", "status", "genes" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
         this.enabledHeaderIdsBySection.put(sectionName, present);
     }
@@ -311,8 +320,8 @@ public class DataToCellConverter
         section.addCell(cell);
         hX++;
 
-        if (present.contains("classification")) {
-            cell = new DataCell("Classification", hX, 1, StyleOption.HEADER);
+        if (present.contains("status")) {
+            cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
@@ -342,40 +351,51 @@ public class DataToCellConverter
         DataSection section = new DataSection();
 
         int hX = 0;
-        DataCell cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
-        section.addCell(cell);
+        DataCell cell = new DataCell("cDNA", hX, 1, StyleOption.HEADER);
         hX++;
 
-        cell = new DataCell("HGVS Variant Name", hX, 1, StyleOption.HEADER);
-        section.addCell(cell);
-        hX++;
-
-        if (present.contains("genesymbol")) {
-            cell = new DataCell("Gene Symbol", hX, 1, StyleOption.HEADER);
+        if (present.contains("protein")) {
+            cell = new DataCell("Protein", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
-
+        if (present.contains("transcript")) {
+            cell = new DataCell("Transcript", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+        if (present.contains("dbsnp")) {
+            cell = new DataCell("db SNP", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+        if (present.contains("effect")) {
+            cell = new DataCell("Effect", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
         if (present.contains("interpretation")) {
-            cell = new DataCell("Interpretation (ACMG category)", hX, 1, StyleOption.HEADER);
+            cell = new DataCell("Interpretation", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
-
-        if (present.contains("status")) {
-            cell = new DataCell("Status", hX, 1, StyleOption.HEADER);
-            section.addCell(cell);
-            hX++;
-        }
-
         if (present.contains("inheritance")) {
             cell = new DataCell("Inheritance", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
-
-        if (present.contains("validated")) {
-            cell = new DataCell("Validated", hX, 1, StyleOption.HEADER);
+        if (present.contains("evidence")) {
+            cell = new DataCell("Evidence", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+        if (present.contains("sanger")) {
+            cell = new DataCell("Sanger validation", hX, 1, StyleOption.HEADER);
+            section.addCell(cell);
+            hX++;
+        }
+        if (present.contains("resolution")) {
+            cell = new DataCell("Resolution", hX, 1, StyleOption.HEADER);
             section.addCell(cell);
             hX++;
         }
@@ -400,39 +420,59 @@ public class DataToCellConverter
         DataSection section = new DataSection();
         int y = 0;
 
-        if (present.contains("hgvs_id")) {
+        if (present.contains("cdna")) {
             PatientData<Map<String, String>> variants = patient.getData("variants");
             if (variants != null && variants.isIndexed()) {
                 DataCell cell = new DataCell("Variants", 0, y);
                 section.addCell(cell);
                 for (Map<String, String> variant : variants) {
                     hasVariants = true;
-                    String variantName = variant.get("hgvs_id");
+                    String variantName = variant.get("cdna");
                     cell = new DataCell(variantName, 1, y);
                     section.addCell(cell);
-                    if (present.contains("genesymbol")) {
-                        String genesymbol = variant.get("genesymbol");
+                    if (present.contains("protein")) {
+                        String genesymbol = variant.get("protein");
                         cell = new DataCell(genesymbol, 2, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("transcript")) {
+                        String genesymbol = variant.get("transcript");
+                        cell = new DataCell(genesymbol, 3, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("dbsnp")) {
+                        String genesymbol = variant.get("dbsnp");
+                        cell = new DataCell(genesymbol, 4, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("effect")) {
+                        String genesymbol = variant.get("effect");
+                        cell = new DataCell(genesymbol, 5, y);
                         section.addCell(cell);
                     }
                     if (present.contains("interpretation")) {
                         String interpretation = variant.get("interpretation");
-                        cell = new DataCell(interpretation, 3, y);
-                        section.addCell(cell);
-                    }
-                    if (present.contains("status")) {
-                        String status = variant.get("status");
-                        cell = new DataCell(status, 4, y);
+                        cell = new DataCell(interpretation, 6, y);
                         section.addCell(cell);
                     }
                     if (present.contains("inheritance")) {
                         String inheritance = variant.get("inheritance");
-                        cell = new DataCell(inheritance, 5, y);
+                        cell = new DataCell(inheritance, 7, y);
                         section.addCell(cell);
                     }
-                    if (present.contains("validated")) {
-                        String validated = variant.get("validated");
-                        cell = new DataCell(validated, 6, y);
+                    if (present.contains("evidence")) {
+                        String validated = variant.get("evidence");
+                        cell = new DataCell(validated, 8, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("sanger")) {
+                        String validated = variant.get("sanger");
+                        cell = new DataCell(validated, 9, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("resolution")) {
+                        String validated = variant.get("resolution");
+                        cell = new DataCell(validated, 10, y);
                         section.addCell(cell);
                     }
                     y++;
@@ -478,14 +518,14 @@ public class DataToCellConverter
                     String geneName = gene.get("gene");
                     cell = new DataCell(geneName, 1, y);
                     section.addCell(cell);
-                    if (present.contains("classification")) {
-                        String classification = gene.get("classification");
-                        cell = new DataCell(classification, 2, y);
+                    if (present.contains("status")) {
+                        String status = gene.get("status");
+                        cell = new DataCell(status, 2, y);
                         section.addCell(cell);
                     }
                     if (present.contains("evidence")) {
-                        String classification = gene.get("evidence");
-                        cell = new DataCell(classification, 2, y);
+                        String evidence = gene.get("evidence");
+                        cell = new DataCell(evidence, 2, y);
                         section.addCell(cell);
                     }
                     if (present.contains("comments")) {
@@ -807,19 +847,19 @@ public class DataToCellConverter
             PatientData<List<SolrVocabularyTerm>> globalControllers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> modeTermList =
                 globalControllers != null ? globalControllers.get("global_mode_of_inheritance") : null;
-            int y = 0;
-            if (modeTermList != null && !modeTermList.isEmpty()) {
-                for (SolrVocabularyTerm term : modeTermList) {
-                    String mode = term != null ? term.getName() : "";
-                    DataCell cell = new DataCell(mode, x, y);
+                int y = 0;
+                if (modeTermList != null && !modeTermList.isEmpty()) {
+                    for (SolrVocabularyTerm term : modeTermList) {
+                        String mode = term != null ? term.getName() : "";
+                        DataCell cell = new DataCell(mode, x, y);
+                        bodySection.addCell(cell);
+                        y++;
+                    }
+                } else {
+                    DataCell cell = new DataCell("", x, y);
                     bodySection.addCell(cell);
-                    y++;
                 }
-            } else {
-                DataCell cell = new DataCell("", x, y);
-                bodySection.addCell(cell);
-            }
-            x++;
+                x++;
         }
         if (present.contains("miscarriages")) {
             Integer miscarriages = familyHistory.get("miscarriages");
@@ -1023,7 +1063,7 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPhenotype";
         String[] fieldIds = { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-            "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
+        "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds = { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
         Set<String> present = addHeaders(fieldIds, headerIds, enabledFields);
@@ -1032,7 +1072,7 @@ public class DataToCellConverter
         /* Needed for ordering phenotypes */
         this.prenatalPhenotypeHelper = new ConversionHelpers();
         this.prenatalPhenotypeHelper
-            .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
+        .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection prenatalPhenotypeHeader() throws Exception
