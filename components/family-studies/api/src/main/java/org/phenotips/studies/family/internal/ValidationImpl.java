@@ -17,6 +17,7 @@
  */
 package org.phenotips.studies.family.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
@@ -27,6 +28,7 @@ import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Validation;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -79,6 +81,8 @@ public class ValidationImpl implements Validation
     @Inject
     @Named("view")
     private AccessLevel viewAccess;
+
+    private CanAllPatientsBeAddedAdapter canAllPatientsBeAddedAdapter;
 
     /**
      * Checks if the patient is already present within the family members list.
@@ -148,16 +152,19 @@ public class ValidationImpl implements Validation
     public StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers)
         throws XWikiException
     {
-        StatusResponse defaultResponse = new StatusResponse();
-        defaultResponse.statusCode = 200;
-
-        for (String member : updatedMembers) {
-            StatusResponse patientResponse = this.canAddToFamily(family, member);
-            if (patientResponse.statusCode != 200) {
-                return patientResponse;
+        // TODO This is done here to avoid cyclic reference. It should eventually be removed.
+        if (this.canAllPatientsBeAddedAdapter == null) {
+            try {
+                this.canAllPatientsBeAddedAdapter =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(
+                        CanAllPatientsBeAddedAdapter.class);
+            } catch (ComponentLookupException e) {
+                e.printStackTrace();
+                return null;
             }
         }
-        return defaultResponse;
+
+        return this.canAllPatientsBeAddedAdapter.canAddEveryMember(family, updatedMembers);
     }
 
     private boolean safeIsInFamilyCheck(XWikiDocument familyDoc, String patientId) throws XWikiException
