@@ -24,7 +24,10 @@ import org.xwiki.rest.XWikiResource;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import net.sf.json.JSONObject;
 
 /**
  * Base class for implementing a measurement REST resource.
@@ -47,6 +50,9 @@ public abstract class AbstractMeasurementRestResource extends XWikiResource
      */
     protected Response generateErrorResponse(Response.Status status, String text)
     {
-        return Response.status(status).entity(text).header("Content-Type", "text/plain").build();
+        JSONObject resp = new JSONObject();
+        resp.accumulate("error", text);
+
+        return Response.status(status).entity(resp).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
