@@ -22,6 +22,7 @@ import org.phenotips.studies.family.internal.StatusResponse;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
 import java.util.List;
@@ -129,4 +130,14 @@ public interface Validation
      * @return true is user has an access on the family with permissions
      */
     boolean hasAccess(DocumentReference document, String permissions);
+
+    /**
+     * Checks if current user has an access on a document with a right.
+     *
+     * @param document document to check access for
+     * @param right the right the current user needs to have on the document
+     * @return true is user has an access on the document with the right
+     */
+    boolean hasAccess(DocumentReference document, Right right);
+
 }

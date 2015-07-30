@@ -230,6 +230,12 @@ public class ValidationImpl implements Validation
     public boolean hasAccess(DocumentReference document, String permissions)
     {
         Right right = Right.toRight(permissions);
+        return hasAccess(document, right);
+    }
+
+    @Override
+    public boolean hasAccess(DocumentReference document, Right right)
+    {
         User currentUser = this.userManager.getCurrentUser();
         return this.authorizationService.hasAccess(currentUser, right, document);
     }
