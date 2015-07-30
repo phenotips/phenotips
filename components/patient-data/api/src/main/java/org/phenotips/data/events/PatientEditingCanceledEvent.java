@@ -37,7 +37,7 @@ public class PatientEditingCanceledEvent extends AbstractPatientEvent
      */
     public PatientEditingCanceledEvent(Patient patient, User author)
     {
-        super("patientRecordCancelled", patient, author);
+        super("patientRecordEditingCanceled", patient, author);
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
