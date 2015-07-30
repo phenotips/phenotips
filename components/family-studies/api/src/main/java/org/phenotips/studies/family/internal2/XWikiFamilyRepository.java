@@ -234,8 +234,17 @@ public class XWikiFamilyRepository implements FamilyRepository
         if (id == null) {
             return null;
         }
+
+        String useId = id;
+
+        // This handles the case that id has the form DataSpace.id (i.e. Families.FAM000001)
+        String dataSpace = Family.DATA_SPACE.getName() + ".";
+        if (id.startsWith(dataSpace)) {
+            useId = id.substring(dataSpace.length());
+        }
+
         for (Family family : families) {
-            if (id.equals(family.getId())) {
+            if (useId.equals(family.getId())) {
                 return family;
             }
         }

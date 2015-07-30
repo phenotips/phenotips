@@ -178,7 +178,9 @@ public class XWikiFamilyExport
         List<FamilySearchResult> resultsList)
     {
         StringBuilder querySb = new StringBuilder();
-        querySb.append(" from doc.object(PhenoTips.FamilyClass) as family ");
+        querySb.append("select doc.name ");
+        querySb.append(" from  Document doc, ");
+        querySb.append("       doc.object(PhenoTips.FamilyClass) as family ");
         querySb.append(" where lower(doc.name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
         querySb.append(" or lower(family.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
 
