@@ -143,7 +143,7 @@ public class XWikiFamily implements Family
                 patient.getId(), e.getMessage());
             return false;
         }
-        String patientAsString = patientReference.toString();
+        String patientAsString = patientReference.getName();
 
         // Add member to Xwiki family
         List<String> members = getMembers();
@@ -253,7 +253,7 @@ public class XWikiFamily implements Family
         if (members == null) {
             return false;
         }
-        String patientId = patient.getDocument().toString();
+        String patientId = patient.getDocument().getName();
         return members.contains(patientId);
     }
 
