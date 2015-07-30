@@ -23,7 +23,6 @@ import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
-import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 import org.phenotips.studies.family.internal2.StatusResponse2;
@@ -73,9 +72,6 @@ public class FamilyScriptService implements ScriptService
 
     @Inject
     private Processing processing;
-
-    @Inject
-    private Validation validation;
 
     @Inject
     private XWikiFamilyExport familyExport;
@@ -224,22 +220,28 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * Verifies that a patient can be added to a family.
+     * Checks if a patient can be added to a family.
      *
-     * @param thisId could be a family id or a patient id. If it is a patient id, finds the family that the patient
-     *            belongs to. This family is the one into which the `otherId` patient is added to
-     * @param otherId must be a valid patient id
-     * @return {@link JSON} with 'validLink' field set to {@link false} if everything is ok, or {@link false} if the
-     *         `otherId` patient is not linkable to `thisId` family. In case the linking is invalid, the JSON will also
-     *         contain 'errorMessage' and 'errorType'
+     * @param familyId id of family to add patient
+     * @param patientId id of patient to add to family
+     * @return {@link JSON} with 'validLink' field set to {@link true} if everything is ok, or {@link false} if the
+     *         patient cannot be added to the family. In case the linking is invalid, the JSON will also contain
+     *         'errorMessage' and 'errorType'
      */
-    public JSON verifyLinkable(String thisId, String otherId)
+    public JSON canPatientBeAddedToFamily(String familyId, String patientId)
     {
-        try {
-            return this.validation.canAddToFamily(thisId, otherId).asVerification();
-        } catch (XWikiException ex) {
-            return new JSONObject(true);
+        Family family = this.familyRepository.getFamilyById(familyId);
+        Patient patient = this.patientRepository.getPatientById(patientId);
+
+        if (family == null) {
+            return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId).asVerification();
         }
+
+        if (patient == null) {
+            return StatusResponse2.INVALID_FAMILY_ID.setMessage(familyId).asVerification();
+        }
+
+        return this.familyRepository.canPatientBeAddedToFamily(patient, family).asVerification();
     }
 
     /**
