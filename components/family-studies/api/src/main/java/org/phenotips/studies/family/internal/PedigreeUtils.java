@@ -18,14 +18,20 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.Patient;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,6 +64,18 @@ public final class PedigreeUtils
     private static final String DATA = "data";
 
     private static final String IMAGE = "image";
+
+    @Inject
+    private static FamilyUtils familyUtils;
+
+    static {
+        try {
+            PedigreeUtils.familyUtils =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyUtils.class);
+        } catch (ComponentLookupException e) {
+            e.printStackTrace();
+        }
+    }
 
     private PedigreeUtils()
     {
@@ -145,6 +163,24 @@ public final class PedigreeUtils
     /**
      * Retrieves a pedigree (both image and data).
      *
+     * @param document in which to look for a pedigree
+     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
+     *         no pedigree, or the existing pedigree.
+     */
+    public static Pedigree getPedigree(DocumentReference document)
+    {
+        XWikiDocument doc;
+        try {
+            doc = familyUtils.getDoc(document);
+        } catch (XWikiException e) {
+            return null;
+        }
+        return getPedigree(doc);
+    }
+
+    /**
+     * Retrieves a pedigree (both image and data).
+     *
      * @param doc in which to look for a pedigree
      * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
      *         no pedigree, or the existing pedigree.
@@ -167,6 +203,21 @@ public final class PedigreeUtils
         } catch (XWikiException ex) {
             return null;
         }
+    }
+
+    /**
+     * Checks if a patient has pedigree.
+     *
+     * @param patient to check
+     * @return true if user has a non empty pedigree
+     */
+    public static boolean hasPedigree(Patient patient)
+    {
+        Pedigree pedigree = PedigreeUtils.getPedigree(patient.getDocument());
+        if (pedigree == null || pedigree.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     /**
