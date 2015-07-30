@@ -19,7 +19,7 @@ package org.phenotips.data.events.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.events.PatientEditingCanceledEvent;
+import org.phenotips.data.events.PatientEditingCancelingEvent;
 
 import org.xwiki.bridge.event.ActionExecutingEvent;
 import org.xwiki.component.annotation.Component;
@@ -40,15 +40,15 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Detects a patient record's edit session that ended with a cancel command and fires a {@link PatientEditingCanceledEvent}.
+ * Detects a patient record's edit session that ended with a cancel command and fires a {@link PatientEditingCancelingEvent}.
  *
  * @version $Id$
  * @since 1.2RC1
  */
 @Component
-@Named("patientEditingCanceledEventSource")
+@Named("patientEditingCancelingEventSource")
 @Singleton
-public class PatientEditingCanceledEventSource implements EventListener
+public class PatientEditingCancelingEventSource implements EventListener
 {
     @Inject
     private ObservationManager observationManager;
@@ -62,7 +62,7 @@ public class PatientEditingCanceledEventSource implements EventListener
     @Override
     public String getName()
     {
-        return "patientEditingCanceledEventSource";
+        return "patientEditingCancelingEventSource";
     }
 
     @Override
@@ -82,6 +82,6 @@ public class PatientEditingCanceledEventSource implements EventListener
         }
         Patient patient = this.repo.loadPatientFromDocument(doc);
         User user = this.userManager.getCurrentUser();
-        this.observationManager.notify(new PatientEditingCanceledEvent(patient, user), source);
+        this.observationManager.notify(new PatientEditingCancelingEvent(patient, user), source);
     }
 }

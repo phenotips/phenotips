@@ -19,7 +19,6 @@ package org.phenotips.data.events;
 
 import org.phenotips.data.Patient;
 
-import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
@@ -32,7 +31,7 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PatientEditingCanceledEventTest
+public class PatientEditingCancelingEventTest
 {
     @Mock
     private Patient patient;
@@ -52,46 +51,46 @@ public class PatientEditingCanceledEventTest
     @Test
     public void getEventType()
     {
-        PatientEditingCanceledEvent evt = new PatientEditingCanceledEvent();
-        Assert.assertEquals("patientRecordEditingCanceled", evt.getEventType());
+        PatientEditingCancelingEvent evt = new PatientEditingCancelingEvent();
+        Assert.assertEquals("patientRecordEditingCanceling", evt.getEventType());
 
-        evt = new PatientEditingCanceledEvent(this.patient, this.user);
-        Assert.assertEquals("patientRecordEditingCanceled", evt.getEventType());
+        evt = new PatientEditingCancelingEvent(this.patient, this.user);
+        Assert.assertEquals("patientRecordEditingCanceling", evt.getEventType());
     }
 
     @Test
     public void getPatient()
     {
-        PatientEditingCanceledEvent evt = new PatientEditingCanceledEvent();
+        PatientEditingCancelingEvent evt = new PatientEditingCancelingEvent();
         Assert.assertNull(evt.getPatient());
 
-        evt = new PatientEditingCanceledEvent(this.patient, this.user);
+        evt = new PatientEditingCancelingEvent(this.patient, this.user);
         Assert.assertEquals(this.patient, evt.getPatient());
     }
 
     @Test
     public void getAuthor()
     {
-        PatientEditingCanceledEvent evt = new PatientEditingCanceledEvent();
+        PatientEditingCancelingEvent evt = new PatientEditingCancelingEvent();
         Assert.assertNull(evt.getAuthor());
 
-        evt = new PatientEditingCanceledEvent(this.patient, this.user);
+        evt = new PatientEditingCancelingEvent(this.patient, this.user);
         Assert.assertEquals(this.user, evt.getAuthor());
     }
 
     @Test
     public void matches()
     {
-        PatientEditingCanceledEvent evt1 = new PatientEditingCanceledEvent();
+        PatientEditingCancelingEvent evt1 = new PatientEditingCancelingEvent();
         Assert.assertTrue(evt1.matches(evt1));
 
-        PatientEditingCanceledEvent evt2 = new PatientEditingCanceledEvent(this.patient, this.user);
+        PatientEditingCancelingEvent evt2 = new PatientEditingCancelingEvent(this.patient, this.user);
         Assert.assertTrue(evt1.matches(evt2));
         Assert.assertFalse(evt2.matches(evt1));
 
         Patient p2 = mock(Patient.class);
         when(p2.getDocument()).thenReturn(new DocumentReference("instance", "data", "P0000002"));
-        PatientEditingCanceledEvent evt3 = new PatientEditingCanceledEvent(p2, this.user);
+        PatientEditingCancelingEvent evt3 = new PatientEditingCancelingEvent(p2, this.user);
         Assert.assertTrue(evt1.matches(evt3));
         Assert.assertFalse(evt2.matches(evt3));
     }

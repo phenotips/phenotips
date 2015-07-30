@@ -27,7 +27,7 @@ import org.xwiki.users.User;
  * @version $Id$
  * @since 1.2RC1
  */
-public class PatientEditingCanceledEvent extends AbstractPatientEvent
+public class PatientEditingCancelingEvent extends AbstractPatientEvent
 {
     /**
      * Simple constructor passing all the required information.
@@ -35,13 +35,13 @@ public class PatientEditingCanceledEvent extends AbstractPatientEvent
      * @param patient whose record was being edited before the cancellation of the editing action
      * @param author the user performing this action
      */
-    public PatientEditingCanceledEvent(Patient patient, User author)
+    public PatientEditingCancelingEvent(Patient patient, User author)
     {
-        super("patientRecordEditingCanceled", patient, author);
+        super("patientRecordEditingCanceling", patient, author);
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
-    public PatientEditingCanceledEvent()
+    public PatientEditingCancelingEvent()
     {
         this(null, null);
     }

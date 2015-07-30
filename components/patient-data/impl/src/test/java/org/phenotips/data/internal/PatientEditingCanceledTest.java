@@ -18,7 +18,6 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.events.PatientEditingCanceledEvent;
 import org.phenotips.data.events.PatientEvent;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -26,7 +25,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
-import org.xwiki.observation.EventListener;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
@@ -50,7 +48,6 @@ import com.xpn.xwiki.web.XWikiResponse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;

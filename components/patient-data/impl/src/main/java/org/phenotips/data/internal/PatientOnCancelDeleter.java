@@ -18,7 +18,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.events.PatientEditingCanceledEvent;
+import org.phenotips.data.events.PatientEditingCancelingEvent;
 import org.phenotips.data.events.PatientEvent;
 
 import org.xwiki.component.annotation.Component;
@@ -48,7 +48,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.doc.rcs.XWikiRCSNodeInfo;
 
 /**
- * Deletes the patient record when a {@link PatientEditingCanceledEvent} is received from a new patient record.
+ * Deletes the patient record when a {@link PatientEditingCancelingEvent} is received from a new patient record.
  *
  * @since 1.2RC1
  * @version $Id$
@@ -75,7 +75,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientOnCancelDeleter()
     {
-        super("patient-oncancel-deleter", new PatientEditingCanceledEvent());
+        super("patient-oncancel-deleter", new PatientEditingCancelingEvent());
     }
 
     @Override
@@ -102,7 +102,7 @@ public class PatientOnCancelDeleter extends AbstractEventListener
         }
     }
 
-    public DocumentReference toDocumentReference(EntityReference reference)
+    protected DocumentReference toDocumentReference(EntityReference reference)
     {
         return new DocumentReference(reference);
     }

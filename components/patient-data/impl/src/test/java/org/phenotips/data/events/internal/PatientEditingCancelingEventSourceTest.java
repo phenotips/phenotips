@@ -19,7 +19,7 @@ package org.phenotips.data.events.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.events.PatientEditingCanceledEvent;
+import org.phenotips.data.events.PatientEditingCancelingEvent;
 import org.phenotips.data.events.PatientEvent;
 
 import org.xwiki.bridge.event.ActionExecutedEvent;
@@ -52,11 +52,11 @@ import com.xpn.xwiki.objects.BaseObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PatientEditingCanceledEventSourceTest
+public class PatientEditingCancelingEventSourceTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(PatientEditingCanceledEventSource.class);
+        new MockitoComponentMockingRule<EventListener>(PatientEditingCancelingEventSource.class);
 
     private DocumentReference ref = new DocumentReference("instance", "data", "P0000001");
 
@@ -65,7 +65,7 @@ public class PatientEditingCanceledEventSourceTest
     @Test
     public void hasProperName() throws ComponentLookupException
     {
-        Assert.assertEquals("patientEditingCanceledEventSource", this.mocker.getComponentUnderTest().getName());
+        Assert.assertEquals("patientEditingCancelingEventSource", this.mocker.getComponentUnderTest().getName());
     }
 
     /**
@@ -112,7 +112,7 @@ public class PatientEditingCanceledEventSourceTest
         Assert.assertEquals(1, evtCapture.getAllValues().size());
         PatientEvent evt = evtCapture.getLastValue();
         Assert.assertNotNull(evt);
-        Assert.assertTrue(evt instanceof PatientEditingCanceledEvent);
+        Assert.assertTrue(evt instanceof PatientEditingCancelingEvent);
         Assert.assertSame(u, evt.getAuthor());
         Assert.assertSame(p, evt.getPatient());
         Assert.assertSame(doc, dataCapture.getLastValue());
