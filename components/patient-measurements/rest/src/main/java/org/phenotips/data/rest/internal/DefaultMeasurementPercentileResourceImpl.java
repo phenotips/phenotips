@@ -21,11 +21,7 @@ import org.phenotips.data.rest.MeasurementPercentileResource;
 import org.phenotips.measurements.MeasurementHandler;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.rest.XWikiResource;
 
-import java.util.Map;
-
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -44,12 +40,9 @@ import net.sf.json.JSONObject;
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultMeasurementPercentileResourceImpl")
 @Singleton
-public class DefaultMeasurementPercentileResourceImpl extends XWikiResource implements MeasurementPercentileResource
+public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasurementRestResource implements
+        MeasurementPercentileResource
 {
-    /** Injected map of measurement handlers. */
-    @Inject
-    private Map<String, MeasurementHandler> handlers;
-
     @Override
     public Response getMeasurementPercentile(String measurement, float value, String age, char sex)
     {
@@ -81,17 +74,5 @@ public class DefaultMeasurementPercentileResourceImpl extends XWikiResource impl
         resp.accumulate("stddev", handler.valueToStandardDeviation(isMale, ageMonths, value));
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
-    }
-
-    /**
-     * Generate a server response in case of error.
-     *
-     * @param status The HTTP status.
-     * @param text The error text to be returned to the client.
-     * @return The response object.
-     */
-    private Response generateErrorResponse(Response.Status status, String text)
-    {
-        return Response.status(status).entity(text).header("Content-Type", "text/plain").build();
     }
 }
