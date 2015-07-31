@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -48,14 +49,15 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
     {
         boolean isMale = Character.toLowerCase(sex) == 'm';
         if (!isMale && Character.toLowerCase(sex) != 'f') {
-            return generateErrorResponse(Response.Status.BAD_REQUEST, "Invalid sex. Supported: M or F.");
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                    "Invalid sex. Supported: M or F."));
         }
 
         Period agePeriod;
         try {
             agePeriod = Period.parse("P" + age);
         } catch (IllegalArgumentException e) {
-            return generateErrorResponse(Response.Status.BAD_REQUEST, "Cannot parse age.");
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST, "Cannot parse age."));
         }
         float ageMonths = 0;
         ageMonths += agePeriod.getYears() * 12;
@@ -66,7 +68,8 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         MeasurementHandler handler;
         handler = handlers.get(measurement);
         if (handler == null) {
-            return generateErrorResponse(Response.Status.NOT_FOUND, "Specified measurement type not found.");
+            throw new WebApplicationException(generateErrorResponse(Response.Status.NOT_FOUND,
+                    "Specified measurement type not found."));
         }
 
         JSONObject resp = new JSONObject();

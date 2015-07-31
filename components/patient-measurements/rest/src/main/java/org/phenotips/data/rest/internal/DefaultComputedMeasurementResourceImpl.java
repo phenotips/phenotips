@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -43,33 +44,55 @@ import net.sf.json.JSONObject;
 public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementRestResource implements
         ComputedMeasurementResource
 {
+    /** BMI short name. */
+    private static final String BMI = "bmi";
+
     @Override
     public Response getComputedMeasurement(UriInfo uriInfo)
     {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
         String measurement = params.getFirst("measurement");
         if (measurement == null) {
-            return generateErrorResponse(Response.Status.BAD_REQUEST, "Measurement not specified.");
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                    "Measurement not specified."));
         }
 
-        double value;
-        if ("bmi".equals(measurement)) {
-            String weight = params.getFirst("weight");
-            String height = params.getFirst("height");
-            if (weight == null || height == null) {
-                return generateErrorResponse(Response.Status.BAD_REQUEST,
-                        "Computation arguments were not all provided.");
-            }
+        if (BMI.equals(measurement)) {
+            double value = handleBmi(params);
 
-            value = ((BMIMeasurementHandler) handlers.get(measurement)).computeBMI(Double.parseDouble(weight),
-                    Double.parseDouble(height));
+            JSONObject resp = new JSONObject();
+            resp.accumulate("value", value);
+
+            return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
         } else {
-            return generateErrorResponse(Response.Status.NOT_FOUND, "Specified measurement type not found.");
+            throw new WebApplicationException(generateErrorResponse(Response.Status.NOT_FOUND,
+                    "Specified measurement type not found."));
+        }
+    }
+
+    /**
+     * Handle BMI computation.
+     *
+     * @param params query parameters
+     * @return computed value
+     */
+    private double handleBmi(MultivaluedMap<String, String> params)
+    {
+        String weight = params.getFirst("weight");
+        String height = params.getFirst("height");
+        if (weight == null || height == null) {
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                    "Computation arguments were not all provided."));
         }
 
-        JSONObject resp = new JSONObject();
-        resp.accumulate("value", value);
+        try {
+            double value = ((BMIMeasurementHandler) handlers.get(BMI)).computeBMI(Double.parseDouble(weight),
+                    Double.parseDouble(height));
 
-        return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
+            return value;
+        } catch (NumberFormatException e) {
+            throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                    "Cannot parse computation arguments."));
+        }
     }
 }
