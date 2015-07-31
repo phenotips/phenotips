@@ -1,0 +1,15 @@
+#centered
+{
+ position: absolute;
+ width: 60%;
+ height: 40%;
+ left: 20%;
+ top: 30%;
+ border: #000 solid 1px;
+ background: #82713F;
+}
+
+p {
+font-family: "Times New Roman", Times, serif;
+font-size: 40px;
+}
