@@ -48,13 +48,21 @@ public class DefaultComputedMeasurementResourceImpl extends AbstractMeasurementR
     {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
         String measurement = params.getFirst("measurement");
+        if (measurement == null) {
+            return generateErrorResponse(Response.Status.BAD_REQUEST, "Measurement not specified.");
+        }
 
         double value;
         if ("bmi".equals(measurement)) {
-            double weight = Double.parseDouble(params.getFirst("weight"));
-            double height = Double.parseDouble(params.getFirst("height"));
+            String weight = params.getFirst("weight");
+            String height = params.getFirst("height");
+            if (weight == null || height == null) {
+                return generateErrorResponse(Response.Status.BAD_REQUEST,
+                        "Computation arguments were not all provided.");
+            }
 
-            value = ((BMIMeasurementHandler) handlers.get(measurement)).computeBMI(weight, height);
+            value = ((BMIMeasurementHandler) handlers.get(measurement)).computeBMI(Double.parseDouble(weight),
+                    Double.parseDouble(height));
         } else {
             return generateErrorResponse(Response.Status.NOT_FOUND, "Specified measurement type not found.");
         }
