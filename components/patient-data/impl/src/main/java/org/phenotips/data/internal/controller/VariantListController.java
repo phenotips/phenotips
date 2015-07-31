@@ -71,6 +71,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String VARIANTS_ENABLING_FIELD_NAME = VARIANTS_STRING;
 
+    private static final String VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME = "variants_genesymbol";
+
     private static final String VARIANTS_PROTEIN_ENABLING_FIELD_NAME = "variants_protein";
 
     private static final String VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME = "variants_transcript";
@@ -90,6 +92,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private static final String VARIANTS_RESOLUTION_ENABLING_FIELD_NAME = "variants_resolution";
 
     private static final String VARIANT_KEY = "cdna";
+
+    private static final String GENESYMBOL_KEY = "genesymbol";
 
     private static final String PROTEIN_KEY = "protein";
 
@@ -127,7 +131,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(VARIANT_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY, INTERPRETATION_KEY,
+        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY,
+            INTERPRETATION_KEY,
             INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY,
             RESOLUTION_KEY);
     }
@@ -261,11 +266,12 @@ public class VariantListController extends AbstractComplexController<Map<String,
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
         List<String> keys =
-            Arrays.asList(PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY, INTERPRETATION_KEY,
+            Arrays.asList(GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY, INTERPRETATION_KEY,
                 INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY,
                 RESOLUTION_KEY);
         List<String> enablingProperties =
-            Arrays.asList(VARIANTS_PROTEIN_ENABLING_FIELD_NAME, VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME,
+            Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_PROTEIN_ENABLING_FIELD_NAME,
+                VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME,
                 VARIANTS_DBSNP_ENABLING_FIELD_NAME,
                 VARIANTS_EFFECT_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
                 VARIANTS_INHERITANCE_ENABLING_FIELD_NAME,
