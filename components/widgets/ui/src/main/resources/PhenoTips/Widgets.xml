@@ -2386,7 +2386,9 @@ return PhenoTips;
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
-          Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
+          if (this.container.content) {
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
+          }
         }.bind(this),
         onFailure: function (response) {
           this.setContent("Failed to retrieve data : " + respose.statusText);
