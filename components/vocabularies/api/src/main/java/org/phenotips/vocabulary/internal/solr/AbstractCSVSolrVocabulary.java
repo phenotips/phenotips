@@ -35,6 +35,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 
 /**
@@ -47,8 +48,6 @@ import org.apache.solr.common.params.DisMaxParams;
 public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
 {
     protected static final String VERSION_FIELD_NAME = "version";
-
-    protected static final String ROWS_FIELD_NAME = "rows";
 
     protected static final String SYMBOL_EXACT = "symbolExact^100";
 
@@ -172,7 +171,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         SolrDocument firstDoc;
 
         query.setQuery("version:*");
-        query.set(ROWS_FIELD_NAME, "1");
+        query.set(CommonParams.ROWS, "1");
         try {
             response = this.externalServicesAccess.getSolrConnection().query(query);
             termList = response.getResults();
