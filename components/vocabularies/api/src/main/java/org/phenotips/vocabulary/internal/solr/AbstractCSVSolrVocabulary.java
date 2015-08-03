@@ -22,11 +22,11 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.stability.Unstable;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -55,7 +55,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
     /** The number of documents to be added and committed to Solr at a time. */
     protected abstract int getSolrDocsPerBatch();
 
-    protected abstract Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection);
+    protected abstract Collection<SolrInputDocument> load(URL url);
 
     @Override
     public int reindex(String sourceUrl)
@@ -73,8 +73,12 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
      */
     protected int index(String sourceUrl)
     {
-        Map<String, Double> fieldSelection = new HashMap<String, Double>();
-        Collection<SolrInputDocument> data = transform(fieldSelection);
+        Collection<SolrInputDocument> data = null;
+        try {
+            data = load(new URL(sourceUrl));
+        } catch (MalformedURLException e) {
+            return 2;
+        }
         if (data == null) {
             return 2;
         }

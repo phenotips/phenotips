@@ -26,6 +26,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
 import java.util.Arrays;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -291,11 +292,11 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     }
 
     @Override
-    protected Collection<SolrInputDocument> transform(Map<String, Double> fieldSelection)
+    protected Collection<SolrInputDocument> load(URL url)
     {
         Map<String, String> headerToFieldMap = getHeaderToFieldMapping();
         CSVFileService data =
-            new CSVFileService(getDefaultSourceLocation(), headerToFieldMap, CSVStrategy.TDF_STRATEGY);
+            new CSVFileService(url.toString(), headerToFieldMap, CSVStrategy.TDF_STRATEGY);
         addMetaInfo(data.solrDocuments);
         processDuplicates(data.solrDocuments);
         return data.solrDocuments;
