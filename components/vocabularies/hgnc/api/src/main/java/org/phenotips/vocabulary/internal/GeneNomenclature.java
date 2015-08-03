@@ -22,7 +22,6 @@ import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrVocabulary;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
 import java.util.Arrays;
@@ -127,32 +126,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     private ConfigurationSource configuration;
 
     @Override
-    public void initialize() throws InitializationException
-    {
-        super.initialize();
-
-        this.baseServiceURL =
-            this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://www.genenames.org/");
-        this.infoServiceURL = "http://rest.genenames.org/info";
-        this.dataServiceURL = this.baseServiceURL + "cgi-bin/download?";
-
-        // assemble the columns
-        for (String column : SELECTED_COLUMNS) {
-            this.dataServiceURL += "col=" + column + "&";
-        }
-        this.dataServiceURL +=
-            "status=" + SELECT_STATUS
-                + "&order_by=" + ORDER_BY
-                + "&format=" + OUTPUT_FORMAT
-                + "&hgnc_dbtag=" + USE_HGNC_DATABASE_IDENTIFIER
-                // those come by default in every query
-                + "&status_opt=2&where=&limit=&submit=submit";
-    }
-
-    @Override
     public String getDefaultSourceLocation()
     {
-        return this.dataServiceURL;
+        return "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt";
     }
 
     @Override
