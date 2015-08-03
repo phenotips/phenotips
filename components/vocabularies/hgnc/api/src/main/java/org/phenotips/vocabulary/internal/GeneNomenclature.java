@@ -24,8 +24,11 @@ import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,9 +43,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
@@ -50,7 +53,6 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
-import org.apache.solr.internal.csv.CSVStrategy;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -65,6 +67,8 @@ import org.joda.time.format.ISODateTimeFormat;
 @Singleton
 public class GeneNomenclature extends AbstractCSVSolrVocabulary
 {
+    private static final String ID_FIELD_NAME = "id";
+
     // Approved symbol
     private static final String ORDER_BY = "gd_app_sym_sort";
 
@@ -270,50 +274,27 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     @Override
     protected Collection<SolrInputDocument> load(URL url)
     {
-        Map<String, String> headerToFieldMap = getHeaderToFieldMapping();
-        CSVFileService data =
-            new CSVFileService(url.toString(), headerToFieldMap, CSVStrategy.TDF_STRATEGY);
-        addMetaInfo(data.solrDocuments);
-        processDuplicates(data.solrDocuments);
-        return data.solrDocuments;
-    }
+        try {
+            Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
 
-    private Map<String, String> getHeaderToFieldMapping()
-    {
-        Map<String, String> map = new HashMap<String, String>();
-        int count = 0;
-        for (String field : FIELDS) {
-            map.put(HEADERS.get(count), field);
-            count++;
-        }
-        return map;
-    }
-
-    private void processDuplicates(Collection<SolrInputDocument> solrdocs)
-    {
-        List<String> curated =
-            Arrays.asList(ENTREZ_ID_FIELD_NAME, ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME);
-        List<String> external =
-            Arrays.asList(ENTREZ_ID_EXTERNAL_FIELD_NAME, ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME,
-                REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME);
-        // Remove external fields, copy their values to corresponding curated field values if they are empty
-        for (SolrInputDocument solrdoc : solrdocs) {
-            int count = 0;
-            for (String field : curated) {
-                if (solrdoc.get(field) == null) {
-                    if (!REFSEQ_ACCESSION_FIELD_NAME.equals(field)
-                        && solrdoc.getFieldValue(external.get(count)) != null) {
-                        solrdoc.setField(field, solrdoc.getFieldValue(external.get(count)));
-                    } else {
-                        if (solrdoc.getFieldValues(external.get(count)) != null) {
-                            solrdoc.setField(field, solrdoc.getFieldValues(external.get(count)));
-                        }
+            Reader in = new InputStreamReader(url.openConnection().getInputStream(), Charset.forName("UTF-8"));
+            for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
+                SolrInputDocument crtTerm = new SolrInputDocument();
+                for (Map.Entry<String, String> item : row.toMap().entrySet()) {
+                    if ("hgnc_id".equals(item.getKey())) {
+                        crtTerm.addField(ID_FIELD_NAME, item.getValue());
+                    } else if (StringUtils.isNotBlank(item.getValue())) {
+                        crtTerm.addField(item.getKey(), StringUtils.split(item.getValue(), "|"));
                     }
                 }
-                solrdoc.removeField(external.get(count));
-                count++;
+                solrDocuments.add(crtTerm);
             }
+            addMetaInfo(solrDocuments);
+            return solrDocuments;
+        } catch (IOException ex) {
+            this.logger.warn("Failed to read/parse the HGNC source: {}", ex.getMessage());
         }
+        return null;
     }
 
     private void addMetaInfo(Collection<SolrInputDocument> data)
