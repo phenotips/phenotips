@@ -25,7 +25,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,13 +40,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Consts;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -58,10 +51,8 @@ import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.internal.csv.CSVStrategy;
-
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
@@ -350,37 +341,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private void addMetaInfo(Collection<SolrInputDocument> data)
     {
-        // put version/size here
         SolrInputDocument metaTerm = new SolrInputDocument();
-        JSONObject info = getInfo();
         metaTerm.addField(ID_FIELD_NAME, "HEADER_INFO");
-        metaTerm.addField(VERSION_FIELD_NAME, getVersion(info));
-
+        metaTerm.addField(VERSION_FIELD_NAME, ISODateTimeFormat.dateTime().withZoneUTC().print(new DateTime()));
         data.add(metaTerm);
     }
-
-    private long getSize(JSONObject info)
-    {
-        return info.isNullObject() ? -1 : info.getLong("numDoc");
-    }
-
-    private String getVersion(JSONObject info)
-    {
-        return info.isNullObject() ? "" : info.getString("lastModified");
-    }
-
-    private JSONObject getInfo()
-    {
-        HttpGet method = new HttpGet(this.infoServiceURL);
-        method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-            String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-            return responseJSON;
-        } catch (IOException | JSONException ex) {
-            this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
-        }
-        return new JSONObject(true);
-    }
-
 }
