@@ -36,7 +36,6 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -75,8 +74,6 @@ public class XWikiFamilyRepository implements FamilyRepository
         new EntityReference("OwnerClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String FAMILY_REFERENCE_FIELD = "reference";
-
-    private static List<Family> families = new LinkedList<Family>();
 
     @Inject
     private static Logger logger;
@@ -120,25 +117,22 @@ public class XWikiFamilyRepository implements FamilyRepository
             return null;
         }
 
-        Family family = createFamilyAndAdd(newFamilyDocument);
-        return family;
+        return new XWikiFamily(newFamilyDocument);
     }
 
     @Override
     public Family getFamilyById(String id)
     {
-        // Look for family in cache
-        Family family = getFamilyByIdFromCache(id);
-        if (family != null) {
-            return family;
+        DocumentReference reference = XWikiFamilyRepository.referenceResolver.resolve(id, Family.DATA_SPACE);
+        XWikiContext context = XWikiFamilyRepository.provider.get();
+        try {
+            XWikiDocument familyDocument = context.getWiki().getDocument(reference, context);
+            if (familyDocument.getXObject(Family.CLASS_REFERENCE) != null) {
+                return new XWikiFamily(familyDocument);
+            }
+        } catch (XWikiException ex) {
+            XWikiFamilyRepository.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
         }
-
-        // Look for family not in cache
-        XWikiDocument familyDocument = getFamilyByIdFromXWiki(id);
-        if (familyDocument != null) {
-            return createFamilyAndAdd(familyDocument);
-        }
-
         XWikiFamilyRepository.logger.info("Requested family [{}] not found", id);
         return null;
     }
@@ -154,22 +148,27 @@ public class XWikiFamilyRepository implements FamilyRepository
     public Family getFamilyForPatient(Patient patient)
     {
         String patientId = patient.getId();
-
-        Family family = getFamilyForPatientFromCache(patient);
-        if (family != null) {
-            XWikiFamilyRepository.logger.debug("Family not found in cache for patient [{}]", patientId);
-            return family;
+        XWikiDocument patientDocument = null;
+        try {
+            patientDocument = getDocument(patient);
+        } catch (XWikiException e) {
+            XWikiFamilyRepository.logger.error("Can't find patient document for patient [{}]", patient.getId());
+            return null;
         }
 
-        XWikiDocument familyDocument = getFamilyForPatientFromXWiki(patient);
-        if (familyDocument == null) {
+        DocumentReference familyReference = getFamilyReference(patientDocument);
+        if (familyReference == null) {
             XWikiFamilyRepository.logger.debug("Family not found for patient [{}]", patientId);
             return null;
         }
 
-        XWikiFamilyRepository.logger.debug("Family found for patient [{}], but not in cache", patientId);
-        family = createFamilyAndAdd(familyDocument);
-        return family;
+        try {
+            XWikiDocument document = getDocument(familyReference);
+            return new XWikiFamily(document);
+        } catch (XWikiException e) {
+            XWikiFamilyRepository.logger.error("Can't find family document for patient [{}]", patient.getId());
+            return null;
+        }
     }
 
     /**
@@ -249,76 +248,6 @@ public class XWikiFamilyRepository implements FamilyRepository
         return familyReference;
     }
 
-    private Family getFamilyForPatientFromCache(Patient patient)
-    {
-        for (Family family : families) {
-            if (family.isMember(patient)) {
-                return family;
-            }
-        }
-        return null;
-    }
-
-    private Family getFamilyByIdFromCache(String id)
-    {
-        if (id == null) {
-            return null;
-        }
-
-        String useId = id;
-
-        // This handles the case that id has the form DataSpace.id (i.e. Families.FAM000001)
-        String dataSpace = Family.DATA_SPACE.getName() + ".";
-        if (id.startsWith(dataSpace)) {
-            useId = id.substring(dataSpace.length());
-        }
-
-        for (Family family : families) {
-            if (useId.equals(family.getId())) {
-                return family;
-            }
-        }
-        return null;
-    }
-
-    private XWikiDocument getFamilyForPatientFromXWiki(Patient patient)
-    {
-        XWikiDocument patientDocument = null;
-        try {
-            patientDocument = getDocument(patient);
-        } catch (XWikiException e) {
-            XWikiFamilyRepository.logger.error("Can't find patient document for patient [{}]", patient.getId());
-            return null;
-        }
-
-        DocumentReference familyReference = getFamilyReference(patientDocument);
-        if (familyReference == null) {
-            return null;
-        }
-
-        try {
-            return getDocument(familyReference);
-        } catch (XWikiException e) {
-            XWikiFamilyRepository.logger.error("Can't find family document for patient [{}]", patient.getId());
-            return null;
-        }
-    }
-
-    private XWikiDocument getFamilyByIdFromXWiki(String id)
-    {
-        DocumentReference reference = XWikiFamilyRepository.referenceResolver.resolve(id, Family.DATA_SPACE);
-        XWikiContext context = XWikiFamilyRepository.provider.get();
-        try {
-            XWikiDocument familyDocument = context.getWiki().getDocument(reference, context);
-            if (familyDocument.getXObject(Family.CLASS_REFERENCE) != null) {
-                return familyDocument;
-            }
-        } catch (XWikiException ex) {
-            XWikiFamilyRepository.logger.error("Failed to load document for family [{}]: {}", id, ex.getMessage(), ex);
-        }
-        return null;
-    }
-
     /*
      * Creates a new document for the family. Only handles XWiki side and no XWikiFamily is created.
      */
@@ -376,13 +305,6 @@ public class XWikiFamilyRepository implements FamilyRepository
         }
         crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
-    }
-
-    private Family createFamilyAndAdd(XWikiDocument familyDocument)
-    {
-        Family xwikiFamily = new XWikiFamily(familyDocument);
-        families.add(xwikiFamily);
-        return xwikiFamily;
     }
 
     private XWikiDocument getDocument(Patient patient) throws XWikiException
