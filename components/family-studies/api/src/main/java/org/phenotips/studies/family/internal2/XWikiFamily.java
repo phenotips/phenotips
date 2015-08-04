@@ -224,7 +224,7 @@ public class XWikiFamily implements Family
 
         // Remove patient from family's members list
         List<String> members = getMembers();
-        String patientAsString = patient.getDocument().toString();
+        String patientAsString = patient.getDocument().getName();
         if (!members.contains(patientAsString)) {
             this.logger.error("Patient has family reference but family doesn't have patient as member. "
                 + "patientId: [{}], familyId: [{}]", patientId, getId());
