@@ -11,7 +11,8 @@ import javax.inject.Singleton;
 @Component
 @Named("test")
 @Singleton
-public class AbstractSimpleControllerTestImplementation extends AbstractSimpleController{
+public class AbstractSimpleControllerTestImplementation extends AbstractSimpleController
+{
 
     protected static final String DATA_NAME = "test";
 
