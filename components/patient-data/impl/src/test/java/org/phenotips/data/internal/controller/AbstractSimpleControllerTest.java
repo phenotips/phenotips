@@ -24,7 +24,10 @@ import java.util.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * test
@@ -51,7 +54,13 @@ public class AbstractSimpleControllerTest {
     @Mock
     protected BaseObject data;
 
-    private final String DATA_NAME = "test";
+    private final String DATA_NAME = AbstractSimpleControllerTestImplementation.DATA_NAME;
+
+    private final String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
+
+    private final String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
+
+    private final String PROPERTY_3 = AbstractSimpleControllerTestImplementation.PROPERTY_3;
 
     @Before
     public void setUp() throws Exception
@@ -106,15 +115,15 @@ public class AbstractSimpleControllerTest {
         String datum1 = "datum2";
         String datum2 = "datum2";
         String datum3 = "datum3";
-        doReturn(datum1).when(this.data).getStringValue("property1");
-        doReturn(datum2).when(this.data).getStringValue("property2");
-        doReturn(datum3).when(this.data).getStringValue("property3");
+        doReturn(datum1).when(this.data).getStringValue(PROPERTY_1);
+        doReturn(datum2).when(this.data).getStringValue(PROPERTY_2);
+        doReturn(datum3).when(this.data).getStringValue(PROPERTY_3);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(datum1, result.get("property1"));
-        Assert.assertEquals(datum2, result.get("property2"));
-        Assert.assertEquals(datum3, result.get("property3"));
+        Assert.assertEquals(datum1, result.get(PROPERTY_1));
+        Assert.assertEquals(datum2, result.get(PROPERTY_2));
+        Assert.assertEquals(datum3, result.get(PROPERTY_3));
         Assert.assertEquals(3, result.size());
     }
 
@@ -122,13 +131,13 @@ public class AbstractSimpleControllerTest {
     public void loadIgnoresBlankFields() throws ComponentLookupException
     {
         String datum = "datum";
-        doReturn(" ").when(this.data).getStringValue("property1");
-        doReturn(null).when(this.data).getStringValue("property2");
-        doReturn(datum).when(this.data).getStringValue("property3");
+        doReturn(" ").when(this.data).getStringValue(PROPERTY_1);
+        doReturn(null).when(this.data).getStringValue(PROPERTY_2);
+        doReturn(datum).when(this.data).getStringValue(PROPERTY_3);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(datum, result.get("property3"));
+        Assert.assertEquals(datum, result.get(PROPERTY_3));
         Assert.assertEquals(1, result.size());
     }
 
@@ -160,9 +169,9 @@ public class AbstractSimpleControllerTest {
         doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
                 anyString(), anyBoolean(), any(XWikiContext.class));
         Map<String, String> map = new LinkedHashMap<String, String>();
-        map.put("property1", "datum1");
-        map.put("property2", "datum2");
-        map.put("property3", "datum3");
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(this.DATA_NAME);
 
@@ -190,18 +199,18 @@ public class AbstractSimpleControllerTest {
     public void saveSetsAllFields() throws XWikiException, ComponentLookupException
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
-        map.put("property1", "datum1");
-        map.put("property2", "datum2");
-        map.put("property3", "datum3");
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(this.DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.xWiki).saveDocument(this.doc, "Updated test from JSON", true, this.xcontext);
-        verify(this.data).setStringValue("property1", "datum1");
-        verify(this.data).setStringValue("property2", "datum2");
-        verify(this.data).setStringValue("property3", "datum3");
+        verify(this.data).setStringValue(PROPERTY_1, "datum1");
+        verify(this.data).setStringValue(PROPERTY_2, "datum2");
+        verify(this.data).setStringValue(PROPERTY_3, "datum3");
     }
 
     @Test
@@ -253,8 +262,130 @@ public class AbstractSimpleControllerTest {
     }
 
     @Test
-    public void readJSONEmptyJsonReturnsNull() throws ComponentLookupException
+    public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(PROPERTY_1);
+        selectedFields.add(PROPERTY_2);
+        selectedFields.add(PROPERTY_3);
+        
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(PROPERTY_1);
+        selectedFields.add(PROPERTY_3);
+
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+        Assert.assertNull(container.get(PROPERTY_2));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsAddsContainerWithAllValuesWhenSelectedFieldsNull()
+        throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, null);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+    }
+
+    @Test
+    public void readJSONReturnsNullWhenPassedEmptyJSONObject() throws ComponentLookupException
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
+    }
+
+    @Test
+    public void readJSONReturnsNullWhenDataContainerIsNotAJSONObject() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        json.put(DATA_NAME, "datum");
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+    }
+
+    @Test
+    public void readJSONReadsAllProperties() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        JSONObject container = new JSONObject();
+        container.put(PROPERTY_1, "datum1");
+        container.put(PROPERTY_2, "datum2");
+        container.put(PROPERTY_3, "datum3");
+        json.put(DATA_NAME, container);
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().readJSON(json);
+
+        Assert.assertTrue(result.isNamed());
+        Assert.assertEquals(DATA_NAME, result.getName());
+        Assert.assertEquals("datum1", result.get(PROPERTY_1));
+        Assert.assertEquals("datum2", result.get(PROPERTY_2));
+        Assert.assertEquals("datum3", result.get(PROPERTY_3));
     }
 }

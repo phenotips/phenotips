@@ -12,22 +12,29 @@ import java.util.List;
 @Singleton
 public class AbstractSimpleControllerTestImplementation extends AbstractSimpleController{
 
+    protected static final String DATA_NAME = "test";
+
+    protected static final String PROPERTY_1 = "property1";
+
+    protected static final String PROPERTY_2 = "property2";
+
+    protected static final String PROPERTY_3 = "property3";
     @Override
     protected List<String> getProperties() {
         List<String> properties = new ArrayList<>();
-        properties.add("property1");
-        properties.add("property2");
-        properties.add("property3");
+        properties.add(PROPERTY_1);
+        properties.add(PROPERTY_2);
+        properties.add(PROPERTY_3);
         return properties;
     }
 
     @Override
     protected String getJsonPropertyName() {
-        return "TEST";
+        return DATA_NAME;
     }
 
     @Override
     public String getName() {
-        return "test";
+        return DATA_NAME;
     }
 }
