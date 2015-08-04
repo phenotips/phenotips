@@ -83,6 +83,7 @@ public class XWikiFamily implements Family
                 ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyPermissions.class);
             XWikiFamily.familyExport =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyExport.class);
+
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -324,6 +325,23 @@ public class XWikiFamily implements Family
         } else {
             return familyObject.getStringValue("warning_message");
         }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof XWikiFamily)) {
+            return false;
+        }
+
+        XWikiFamily xobj = (XWikiFamily) obj;
+        return (this.getId().equals(xobj.getId()));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.getId().hashCode();
     }
 
     /**
