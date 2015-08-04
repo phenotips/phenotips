@@ -145,18 +145,19 @@ var restoreCategory = function (element) {
   var ignoredCategories = this.suggest &amp;&amp; this.suggest.options &amp;&amp;
           this.suggest.options.queryProcessor &amp;&amp; this.suggest.options.queryProcessor.restriction &amp;&amp;
           this.suggest.options.queryProcessor.restriction.term_category;
+  var categories = [];
   if (parentElement) {
     var originalName = parentElement.down('input[name="fieldName"]');
     parentElement.select('.term-category input[type=hidden]').each(function (item) {
       if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
-      selector += 'input.suggested[name^="' + (originalName &amp;&amp; originalName.value || element.name) + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
+      categories.push([originalName &amp;&amp; originalName.value || element.name, item.value]);
     });
   }
   var chapter = parentElement.up(".chapter");
   if (chapter != undefined) {
-    var matchingCategory = chapter.down(selector);
+    var matchingCategory = findFirstMatchingCategory(chapter, categories);
   } else {
-    var matchingCategory = document.documentElement.down(selector);
+    var matchingCategory = findFirstMatchingCategory(document.documentElement, categories);
   }
   if (matchingCategory) {
     var matchingList = matchingCategory.previous('ul.accepted-suggestions');
@@ -173,7 +174,23 @@ var restoreCategory = function (element) {
   } else if (!this.silent) {
     element.scrollTo();
   }
-}
+};
+
+var findFirstMatchingCategory = function(inElement, categories) {
+    for (var i=0; i &lt; categories.length; i++) {
+      var selector = '';
+      if (categories[i][0]) {
+        selector += 'input.suggested[name^="' + categories[i][0] + '"]'
+      } else {
+        selector += 'input.suggested'
+      }
+      selector += ' + input[type=hidden][name=_category][value*="' + categories[i][1] +'"]';
+      var match = inElement.down(selector);
+      if (match) {
+        return match;
+      }
+    }
+};
 
 var findPropertyField = function(name) {
   if ($('prefix'))
