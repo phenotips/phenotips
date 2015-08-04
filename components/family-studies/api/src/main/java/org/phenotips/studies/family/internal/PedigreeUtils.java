@@ -62,10 +62,6 @@ public final class PedigreeUtils
     public static final EntityReference PEDIGREE_CLASS =
         new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static final String DATA = "data";
-
-    private static final String IMAGE = "image";
-
     @Inject
     private static FamilyUtils familyUtils;
 
@@ -139,9 +135,9 @@ public final class PedigreeUtils
         BaseObject pedigreeObject = document.getXObject(PedigreeUtils.PEDIGREE_CLASS);
         if (image != null) {
             String updatedImage = SvgUpdater.setPatientStylesInSvg(image, document.getDocumentReference().getName());
-            pedigreeObject.set(IMAGE, updatedImage, context);
+            pedigreeObject.set(Pedigree.IMAGE, updatedImage, context);
         }
-        pedigreeObject.set(DATA, pedigree.toString(), context);
+        pedigreeObject.set(Pedigree.DATA, pedigree.toString(), context);
     }
 
     /**
@@ -192,8 +188,8 @@ public final class PedigreeUtils
             Pedigree pedigree = new Pedigree();
             BaseObject pedigreeObj = doc.getXObject(PEDIGREE_CLASS);
             if (pedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(DATA);
-                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(IMAGE);
+                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(Pedigree.DATA);
+                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(Pedigree.IMAGE);
                 if (StringUtils.isNotBlank(data.toText())) {
                     pedigree.setData(JSONObject.fromObject(data.toText()));
                     pedigree.setImage(image.toText());
@@ -234,12 +230,12 @@ public final class PedigreeUtils
         try {
             BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
             if (fromPedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get(DATA);
-                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get(IMAGE);
+                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get(Pedigree.DATA);
+                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get(Pedigree.IMAGE);
                 if (StringUtils.isNotBlank(data.toText())) {
                     BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-                    toPedigreeObj.set(DATA, data.toText(), context);
-                    toPedigreeObj.set(IMAGE, image.toText(), context);
+                    toPedigreeObj.set(Pedigree.DATA, data.toText(), context);
+                    toPedigreeObj.set(Pedigree.IMAGE, image.toText(), context);
                 }
             }
         } catch (XWikiException ex) {

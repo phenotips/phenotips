@@ -26,6 +26,16 @@ import net.sf.json.JSONObject;
  */
 public class Pedigree
 {
+    /**
+     * Code for data.
+     */
+    public static final String DATA = "data";
+
+    /**
+     * Code for image.
+     */
+    public static final String IMAGE = "image";
+
     private JSONObject data;
 
     private String image = "";
