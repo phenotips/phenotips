@@ -18,7 +18,6 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyUtils;
 
@@ -120,19 +119,6 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    /*
-     * id could be patient id or family id
-     */
-    public XWikiDocument getFromDataSpace(String id) throws XWikiException
-    {
-        XWikiDocument doc = getDoc(this.referenceResolver.resolve(id, Patient.DEFAULT_DATA_SPACE));
-        if (doc != null) {
-            return doc;
-        }
-        return getDoc(this.referenceResolver.resolve(id, Family.DATA_SPACE));
-    }
-
-    @Override
     public EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException
     {
         if (patientDoc == null) {
@@ -161,13 +147,6 @@ public class FamilyUtilsImpl implements FamilyUtils
             }
         }
         return null;
-    }
-
-    @Override
-    public XWikiDocument getFamily(String anchorId) throws XWikiException
-    {
-        XWikiDocument patientDoc = this.getFromDataSpace(anchorId);
-        return this.getFamilyDoc(patientDoc);
     }
 
     @Override

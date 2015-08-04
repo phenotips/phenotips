@@ -72,15 +72,6 @@ public interface FamilyUtils
     XWikiDocument getDoc(EntityReference docRef) throws XWikiException;
 
     /**
-     * Retrieves a {@link XWikiDocument} given an id.
-     *
-     * @param id cannot be null
-     * @return {@link XWikiDocument}, which could be null
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    XWikiDocument getFromDataSpace(String id) throws XWikiException;
-
-    /**
      * Returns a family document tied to the `anchorDoc`. If the `anchorDoc` is a family document, returns `anchorDoc`.
      * If it is a patient document, attempts to get the family document to which the patient belongs.
      *
@@ -90,15 +81,6 @@ public interface FamilyUtils
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
-
-    /**
-     * Gets the family document to which the `anchorId` belongs to.
-     *
-     * @param anchorId cannot be {@link null}, and should be a valid id of either a patient or a family
-     * @return {@link null} if the patient does not belong to a family, otherwise the family document
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    XWikiDocument getFamily(String anchorId) throws XWikiException;
 
     /**
      * Interfaces with the old family studies, which recorded external patient id and relationship to the `patient`.
