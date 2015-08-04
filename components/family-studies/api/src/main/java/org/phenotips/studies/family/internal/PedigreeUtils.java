@@ -283,7 +283,7 @@ public final class PedigreeUtils
     }
 
     /**
-     * Temporary method for returning a pedgiree object from a patient
+     * Temporary method for returning a pedgiree object from a patient.
      *
      * @param patientId id of the patient
      * @return pedgiree of patient with id patientId
@@ -295,7 +295,7 @@ public final class PedigreeUtils
     }
 
     /**
-     * Temporary method for returning a pedgiree object from a patient
+     * Temporary method for returning a pedgiree object from a patient.
      *
      * @param patient to get pedigree for
      * @return pedgiree of patient with id patientId
