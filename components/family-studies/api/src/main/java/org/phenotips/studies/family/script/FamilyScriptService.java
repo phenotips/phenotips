@@ -163,7 +163,6 @@ public class FamilyScriptService implements ScriptService
      * @param familyId if of family to get reports for
      * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
      */
-    // TODO: Who calls this?
     public Map<String, Map<String, String>> getReports(String familyId)
     {
         Family family = this.familyRepository.getFamilyById(familyId);
