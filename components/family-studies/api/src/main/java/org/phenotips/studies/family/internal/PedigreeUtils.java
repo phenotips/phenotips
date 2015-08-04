@@ -23,7 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.internal2.Pedigree;
 
@@ -33,8 +32,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,17 +61,12 @@ public final class PedigreeUtils
     public static final EntityReference PEDIGREE_CLASS =
         new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    @Inject
-    private static FamilyUtils familyUtils;
-
     private static FamilyRepository familyRepository;
 
     private static PatientRepository patientRepository;
 
     static {
         try {
-            PedigreeUtils.familyUtils =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyUtils.class);
             PedigreeUtils.familyRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyRepository.class);
             PedigreeUtils.patientRepository =
@@ -205,34 +197,6 @@ public final class PedigreeUtils
             }
         } catch (XWikiException ex) {
             // do nothing
-        }
-    }
-
-    /**
-     * A patient can either have their own pedigree or a family pedigree (if they belong to one).
-     *
-     * @param anchorId a valid family or patient id
-     * @param utils an instance of {@link FamilyUtils} for working with XWiki
-     * @return data portion of a pedigree, which could be the family pedigree or the patient's own pedigree
-     * @throws XWikiException can occur while getting patient document or family document
-     */
-    public static JSON getPedigree(String anchorId, FamilyUtils utils) throws XWikiException
-    {
-        Pedigree pedigree = null;
-        Family family = PedigreeUtils.familyRepository.getFamilyById(anchorId);
-        if (family != null) {
-            pedigree = family.getPedigree();
-        } else {
-            Patient patient = PedigreeUtils.patientRepository.getPatientById(anchorId);
-            if (patient != null) {
-                pedigree = PedigreeUtils.getPedigreeForPatient(patient);
-            }
-        }
-
-        if (pedigree != null && !pedigree.isEmpty()) {
-            return pedigree.getData();
-        } else {
-            return new JSONObject(true);
         }
     }
 
