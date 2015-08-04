@@ -27,7 +27,6 @@ import org.xwiki.users.User;
 
 import java.util.List;
 
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -96,9 +95,8 @@ public interface Validation
      * @param members which are to be added
      * @return 200 status code if everything is ok, or one of the code that
      *         {@link #canAddToFamily(XWikiDocument, String)} returns
-     * @throws XWikiException if {@link #canAddToFamily(XWikiDocument, String)} fails
      */
-    StatusResponse canAddEveryMember(XWikiDocument family, List<String> members) throws XWikiException;
+    StatusResponse canAddEveryMember(XWikiDocument family, List<String> members);
 
     /**
      * Checks if a user has an access on a document with permissions.

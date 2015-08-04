@@ -17,17 +17,18 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.Right;
@@ -40,7 +41,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -55,6 +55,9 @@ public class ValidationImpl implements Validation
 {
     @Inject
     private PatientRepository patientRepository;
+
+    @Inject
+    private FamilyRepository familyRepository;
 
     @Inject
     @Named("current")
@@ -77,25 +80,30 @@ public class ValidationImpl implements Validation
     @Named("view")
     private AccessLevel viewAccess;
 
-    private CanAllPatientsBeAddedAdapter canAllPatientsBeAddedAdapter;
-
     @Override
-    public StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers)
-        throws XWikiException
+    public StatusResponse canAddEveryMember(XWikiDocument xfamily, List<String> updatedMembers)
     {
-        // TODO This is done here to avoid cyclic reference. It should eventually be removed.
-        if (this.canAllPatientsBeAddedAdapter == null) {
-            try {
-                this.canAllPatientsBeAddedAdapter =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(
-                        CanAllPatientsBeAddedAdapter.class);
-            } catch (ComponentLookupException e) {
-                e.printStackTrace();
-                return null;
+        String familyId = xfamily.getDocumentReference().getName();
+        Family family = this.familyRepository.getFamilyById(familyId);
+
+        if (updatedMembers != null) {
+            for (String patientId : updatedMembers) {
+                Patient patient = this.patientRepository.getPatientById(patientId);
+                StatusResponse2 response =
+                    this.familyRepository.canPatientBeAddedToFamily(patient, family);
+                if (response != StatusResponse2.CAN_BE_ADDED) {
+                    StatusResponse individualAccess = new StatusResponse();
+                    individualAccess.errorType = response.getErrorType();
+                    individualAccess.message = response.getMessage();
+                    individualAccess.statusCode = response.getStatusCode();
+                    return individualAccess;
+                }
             }
         }
 
-        return this.canAllPatientsBeAddedAdapter.canAddEveryMember(family, updatedMembers);
+        StatusResponse response = new StatusResponse();
+        response.statusCode = 200;
+        return response;
     }
 
     @Override
