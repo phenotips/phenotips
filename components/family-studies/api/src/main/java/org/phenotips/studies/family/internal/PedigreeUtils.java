@@ -20,6 +20,9 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.internal2.Pedigree;
@@ -65,10 +68,18 @@ public final class PedigreeUtils
     @Inject
     private static FamilyUtils familyUtils;
 
+    private static FamilyRepository familyRepository;
+
+    private static PatientRepository patientRepository;
+
     static {
         try {
             PedigreeUtils.familyUtils =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyUtils.class);
+            PedigreeUtils.familyRepository =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyRepository.class);
+            PedigreeUtils.patientRepository =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -265,4 +276,29 @@ public final class PedigreeUtils
             return new JSONObject(true);
         }
     }
+
+    /**
+     * Temporary method for returning a pedgiree object from a patient
+     *
+     * @param patientId id of the patient
+     * @return pedgiree of patient with id patientId
+     */
+    public static Pedigree getPedigreeForPatient(String patientId)
+    {
+        Patient patient = PedigreeUtils.patientRepository.getPatientById(patientId);
+        return getPedigreeForPatient(patient);
+    }
+
+    /**
+     * Temporary method for returning a pedgiree object from a patient
+     *
+     * @param patient to get pedigree for
+     * @return pedgiree of patient with id patientId
+     */
+    public static Pedigree getPedigreeForPatient(Patient patient)
+    {
+        Family family = PedigreeUtils.familyRepository.getFamilyForPatient(patient);
+        return family.getPedigree();
+    }
+
 }
