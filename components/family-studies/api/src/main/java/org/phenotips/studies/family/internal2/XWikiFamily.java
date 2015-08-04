@@ -44,6 +44,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
@@ -359,4 +360,30 @@ public class XWikiFamily implements Family
         }
     }
 
+    @Override
+    public Pedigree getPedigree()
+    {
+        Pedigree pedigree = new Pedigree();
+        BaseObject pedigreeObj = this.familyDocument.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+
+        if (pedigreeObj != null) {
+            BaseStringProperty data = null;
+            BaseStringProperty image = null;
+
+            try {
+                data = (BaseStringProperty) pedigreeObj.get(Pedigree.DATA);
+                image = (BaseStringProperty) pedigreeObj.get(Pedigree.IMAGE);
+            } catch (XWikiException e) {
+                this.logger.error("Error reading data from pedigree. {}", e.getMessage());
+                return null;
+            }
+
+            if (StringUtils.isNotBlank(data.toText())) {
+                pedigree.setData(JSONObject.fromObject(data.toText()));
+                pedigree.setImage(image.toText());
+            }
+        }
+
+        return pedigree;
+    }
 }

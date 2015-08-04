@@ -19,6 +19,7 @@ package org.phenotips.studies.family;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -107,4 +108,10 @@ public interface Family
      */
     String getWarningMessage();
 
+    /**
+     * Returns the pedigree associated with the family.
+     *
+     * @return Pedigree associated with the family.
+     */
+    Pedigree getPedigree();
 }
