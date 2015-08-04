@@ -38,7 +38,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * test
+ * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON).
+ * These methods are tested using a mock implementation of {@link AbstractSimpleController} that provides
+ * simple definitions of the abstract methods getName, getProperties, and getJsonPropertyName
  */
 public class AbstractSimpleControllerTest
 {
