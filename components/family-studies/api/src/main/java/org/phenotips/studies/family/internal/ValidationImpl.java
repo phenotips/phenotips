@@ -24,14 +24,12 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
-import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Validation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -63,9 +61,6 @@ public class ValidationImpl implements Validation
     private DocumentReferenceResolver<String> referenceResolver;
 
     @Inject
-    private FamilyUtils familyUtils;
-
-    @Inject
     private PermissionsManager permissionsManager;
 
     @Inject
@@ -84,70 +79,6 @@ public class ValidationImpl implements Validation
 
     private CanAllPatientsBeAddedAdapter canAllPatientsBeAddedAdapter;
 
-    /**
-     * Checks if the patient is already present within the family members list.
-     */
-    private boolean isInFamily(XWikiDocument family, String patientId) throws XWikiException
-    {
-        return this.familyUtils.getFamilyMembers(family).contains(patientId);
-    }
-
-    @Override
-    public StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException
-    {
-        XWikiDocument family = this.familyUtils.getFamilyDoc(this.familyUtils.getFromDataSpace(familyAnchor));
-
-        return canAddToFamily(family, patientId);
-    }
-
-    @Override
-    public StatusResponse canAddToFamily(XWikiDocument familyDoc, String patientId)
-        throws XWikiException
-    {
-        StatusResponse response = new StatusResponse();
-
-        DocumentReference patientRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
-        XWikiDocument patientDoc = this.familyUtils.getDoc(patientRef);
-        if (patientDoc == null) {
-            response.statusCode = 404;
-            response.errorType = "invalidId";
-            response.message = String.format("Could not find patient %s.", patientId);
-            return response;
-        }
-
-        EntityReference patientFamilyRef = this.familyUtils.getFamilyReference(patientDoc);
-        if (patientFamilyRef != null) {
-            boolean hasOtherFamily;
-            hasOtherFamily = familyDoc == null || patientFamilyRef.compareTo(familyDoc.getDocumentReference()) != 0;
-            if (hasOtherFamily) {
-                response.statusCode = 501;
-                response.errorType = "familyConflict";
-                response.message = String.format("Patient %s already belongs to a different family, and therefore "
-                    + "cannot be added to this one.", patientId);
-                return response;
-            }
-        }
-
-        boolean isInFamily = safeIsInFamilyCheck(familyDoc, patientId);
-
-        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
-        if ((pedigree == null || pedigree.isEmpty()) || isInFamily) {
-            if (!isInFamily && familyDoc != null) {
-                return this.checkFamilyAccessWithResponse(familyDoc);
-            }
-            StatusResponse familyResponse = new StatusResponse();
-            familyResponse.statusCode = 200;
-            return familyResponse;
-        } else {
-            response.statusCode = 501;
-            response.errorType = "existingPedigree";
-            response.message =
-                String.format("patient %s already has a different pedigree, and therefore cannot be included in "
-                    + "this one.", patientId);
-            return response;
-        }
-    }
-
     @Override
     public StatusResponse canAddEveryMember(XWikiDocument family, List<String> updatedMembers)
         throws XWikiException
@@ -165,14 +96,6 @@ public class ValidationImpl implements Validation
         }
 
         return this.canAllPatientsBeAddedAdapter.canAddEveryMember(family, updatedMembers);
-    }
-
-    private boolean safeIsInFamilyCheck(XWikiDocument familyDoc, String patientId) throws XWikiException
-    {
-        if (familyDoc != null) {
-            return this.isInFamily(familyDoc, patientId);
-        }
-        return false;
     }
 
     @Override

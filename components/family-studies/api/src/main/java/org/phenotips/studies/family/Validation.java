@@ -40,28 +40,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public interface Validation
 {
     /**
-     * A wrapper around {@link #canAddToFamily(XWikiDocument, String)}.
-     *
-     * @param familyAnchor resolved to a family document using {@link FamilyUtils#getFamilyDoc(XWikiDocument)}
-     * @param patientId {@see #canAddToFamily(XWikiDocument, String)}
-     * @return {@see #canAddToFamily}
-     * @throws XWikiException one of numerous XWiki exceptions
-     */
-    StatusResponse canAddToFamily(String familyAnchor, String patientId) throws XWikiException;
-
-    /**
-     * Runs several different checks to determine if a patient is eligible to be added as a member to a family
-     * document.
-     *
-     * @param familyDoc to which the patient will be potentially added to
-     * @param patientId patient id who will potentially be added to the family
-     * @return a non-null {@link StatusResponse}
-     * @throws XWikiException one of numerous XWiki exceptions
-     */
-    StatusResponse canAddToFamily(XWikiDocument familyDoc, String patientId)
-        throws XWikiException;
-
-    /**
      * Checks if the current user has edit access to the family.
      *
      * @param familyDoc must not be null
@@ -116,8 +94,8 @@ public interface Validation
      *
      * @param family document to which the members will be added
      * @param members which are to be added
-     * @return 200 status code if everything is ok, or one of the code that {@link #canAddToFamily(XWikiDocument,
-     * String)} returns
+     * @return 200 status code if everything is ok, or one of the code that
+     *         {@link #canAddToFamily(XWikiDocument, String)} returns
      * @throws XWikiException if {@link #canAddToFamily(XWikiDocument, String)} fails
      */
     StatusResponse canAddEveryMember(XWikiDocument family, List<String> members) throws XWikiException;
