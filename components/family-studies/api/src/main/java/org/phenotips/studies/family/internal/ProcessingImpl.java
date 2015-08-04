@@ -24,6 +24,7 @@ import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -356,7 +357,7 @@ public class ProcessingImpl implements Processing
         }
         if (familyRefObj != null) {
             patientDoc.removeXObject(familyRefObj);
-            PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
+            Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
             if (pedigree != null && !pedigree.isEmpty()) {
                 /* Should not prevent saving the document */
                 try {
@@ -389,7 +390,7 @@ public class ProcessingImpl implements Processing
      *
      * @return null if the pedigree data is empty
      */
-    private JSONObject stripIdsFromPedigree(PedigreeUtils.Pedigree pedigree, String patientId)
+    private JSONObject stripIdsFromPedigree(Pedigree pedigree, String patientId)
     {
         if (pedigree != null && !pedigree.isEmpty()) {
             List<JSONObject> patientProperties =

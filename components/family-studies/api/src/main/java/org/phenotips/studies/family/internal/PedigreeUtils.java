@@ -22,6 +22,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
+import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
@@ -194,8 +195,8 @@ public final class PedigreeUtils
                 LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(DATA);
                 LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(IMAGE);
                 if (StringUtils.isNotBlank(data.toText())) {
-                    pedigree.data = JSONObject.fromObject(data.toText());
-                    pedigree.image = image.toText();
+                    pedigree.setData(JSONObject.fromObject(data.toText()));
+                    pedigree.setImage(image.toText());
                     return pedigree;
                 }
             }
@@ -261,49 +262,11 @@ public final class PedigreeUtils
             // either anchor id is invalid or it is a patient id
             docWithPedigree = utils.getFromDataSpace(anchorId);
         }
-        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
+        Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
         if (pedigree != null && !pedigree.isEmpty()) {
             return pedigree.getData();
         } else {
             return new JSONObject(true);
-        }
-    }
-
-    /** Simplifies passing around pedigree objects which consist of an SVG image and JSON data. */
-    public static class Pedigree
-    {
-        private JSONObject data;
-
-        private String image = "";
-
-        /**
-         * Checks if the `data` field is empty.
-         *
-         * @return true if data is {@link null} or if {@link JSONObject#isEmpty()} returns true
-         */
-        public boolean isEmpty()
-        {
-            return this.data == null || this.data.isEmpty();
-        }
-
-        /**
-         * Getter for `data` which holds all of a pedigree's JSON.
-         *
-         * @return could be null
-         */
-        public JSONObject getData()
-        {
-            return this.data;
-        }
-
-        /**
-         * Getter for `image` string (SVG).
-         *
-         * @return can not be null
-         */
-        public String getImage()
-        {
-            return this.image;
         }
     }
 }

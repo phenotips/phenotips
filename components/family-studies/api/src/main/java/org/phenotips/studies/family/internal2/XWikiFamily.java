@@ -206,7 +206,7 @@ public class XWikiFamily implements Family
         }
 
         // Remove patient from family's pedigree
-        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(patientDocument);
+        Pedigree pedigree = PedigreeUtils.getPedigree(patientDocument);
         if (pedigree != null && !pedigree.isEmpty()) {
             JSONObject pedigreeData = pedigree.getData();
 
