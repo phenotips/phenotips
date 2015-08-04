@@ -357,7 +357,7 @@ public class ProcessingImpl implements Processing
         }
         if (familyRefObj != null) {
             patientDoc.removeXObject(familyRefObj);
-            Pedigree pedigree = PedigreeUtils.getPedigree(patientDoc);
+            Pedigree pedigree = PedigreeUtils.getPedigreeForPatient(patient);
             if (pedigree != null && !pedigree.isEmpty()) {
                 /* Should not prevent saving the document */
                 try {

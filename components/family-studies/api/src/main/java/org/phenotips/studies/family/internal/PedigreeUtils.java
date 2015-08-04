@@ -221,7 +221,7 @@ public final class PedigreeUtils
      */
     public static boolean hasPedigree(Patient patient)
     {
-        Pedigree pedigree = PedigreeUtils.getPedigree(patient.getDocument());
+        Pedigree pedigree = PedigreeUtils.getPedigreeForPatient(patient);
         if (pedigree == null || pedigree.isEmpty()) {
             return false;
         }
@@ -264,12 +264,17 @@ public final class PedigreeUtils
      */
     public static JSON getPedigree(String anchorId, FamilyUtils utils) throws XWikiException
     {
-        XWikiDocument docWithPedigree = utils.getFamily(anchorId);
-        if (docWithPedigree == null) {
-            // either anchor id is invalid or it is a patient id
-            docWithPedigree = utils.getFromDataSpace(anchorId);
+        Pedigree pedigree = null;
+        Family family = PedigreeUtils.familyRepository.getFamilyById(anchorId);
+        if (family != null) {
+            pedigree = family.getPedigree();
+        } else {
+            Patient patient = PedigreeUtils.patientRepository.getPatientById(anchorId);
+            if (patient != null) {
+                pedigree = PedigreeUtils.getPedigreeForPatient(patient);
+            }
         }
-        Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
+
         if (pedigree != null && !pedigree.isEmpty()) {
             return pedigree.getData();
         } else {
