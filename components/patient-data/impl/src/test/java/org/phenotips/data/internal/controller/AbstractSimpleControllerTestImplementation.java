@@ -2,10 +2,11 @@ package org.phenotips.data.internal.controller;
 
 import org.xwiki.component.annotation.Component;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 
 @Component
 @Named("test")
@@ -19,8 +20,10 @@ public class AbstractSimpleControllerTestImplementation extends AbstractSimpleCo
     protected static final String PROPERTY_2 = "property2";
 
     protected static final String PROPERTY_3 = "property3";
+
     @Override
-    protected List<String> getProperties() {
+    protected List<String> getProperties()
+    {
         List<String> properties = new ArrayList<>();
         properties.add(PROPERTY_1);
         properties.add(PROPERTY_2);
@@ -29,12 +32,14 @@ public class AbstractSimpleControllerTestImplementation extends AbstractSimpleCo
     }
 
     @Override
-    protected String getJsonPropertyName() {
+    protected String getJsonPropertyName()
+    {
         return DATA_NAME;
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return DATA_NAME;
     }
 }

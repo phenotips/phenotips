@@ -1,25 +1,33 @@
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
+import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleValuePatientData;
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.phenotips.data.*;
-import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
-
-import javax.inject.Provider;
-import java.util.*;
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -32,11 +40,12 @@ import static org.mockito.Mockito.verify;
 /**
  * test
  */
-public class AbstractSimpleControllerTest {
+public class AbstractSimpleControllerTest
+{
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(AbstractSimpleControllerTestImplementation.class);
+        new MockitoComponentMockingRule<PatientDataController<String>>(AbstractSimpleControllerTestImplementation.class);
 
     protected DocumentAccessBridge documentAccessBridge;
 
@@ -92,7 +101,7 @@ public class AbstractSimpleControllerTest {
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", (String)null);
+            + " error has occurred during controller loading ", (String)null);
         Assert.assertNull(result);
     }
 
@@ -104,8 +113,8 @@ public class AbstractSimpleControllerTest {
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-                        + " error has occurred during controller loading ",
-                PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+            + " error has occurred during controller loading ",
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
@@ -159,7 +168,7 @@ public class AbstractSimpleControllerTest {
         mocker.getComponentUnderTest().save(this.patient);
 
         verify(mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME,
-                PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
     @Test
@@ -167,7 +176,7 @@ public class AbstractSimpleControllerTest {
     {
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
-                anyString(), anyBoolean(), any(XWikiContext.class));
+            anyString(), anyBoolean(), any(XWikiContext.class));
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
@@ -192,7 +201,7 @@ public class AbstractSimpleControllerTest {
 
         verify(this.data, never()).setStringValue(anyString(), anyString());
         verify(this.xWiki, never()).saveDocument(any(XWikiDocument.class),
-                anyString(), anyBoolean(), any(XWikiContext.class));
+            anyString(), anyBoolean(), any(XWikiContext.class));
     }
 
     @Test
