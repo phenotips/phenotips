@@ -29,7 +29,6 @@ import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
@@ -166,51 +165,6 @@ public final class PedigreeUtils
     {
         PedigreeUtils.storePedigree(document, pedigree, image, context);
         wiki.saveDocument(document, context);
-    }
-
-    /**
-     * Retrieves a pedigree (both image and data).
-     *
-     * @param document in which to look for a pedigree
-     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
-     *         no pedigree, or the existing pedigree.
-     */
-    public static Pedigree getPedigree(DocumentReference document)
-    {
-        XWikiDocument doc;
-        try {
-            doc = familyUtils.getDoc(document);
-        } catch (XWikiException e) {
-            return null;
-        }
-        return getPedigree(doc);
-    }
-
-    /**
-     * Retrieves a pedigree (both image and data).
-     *
-     * @param doc in which to look for a pedigree
-     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
-     *         no pedigree, or the existing pedigree.
-     */
-    public static Pedigree getPedigree(XWikiDocument doc)
-    {
-        try {
-            Pedigree pedigree = new Pedigree();
-            BaseObject pedigreeObj = doc.getXObject(PEDIGREE_CLASS);
-            if (pedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(Pedigree.DATA);
-                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(Pedigree.IMAGE);
-                if (StringUtils.isNotBlank(data.toText())) {
-                    pedigree.setData(JSONObject.fromObject(data.toText()));
-                    pedigree.setImage(image.toText());
-                    return pedigree;
-                }
-            }
-            return pedigree;
-        } catch (XWikiException ex) {
-            return null;
-        }
     }
 
     /**
