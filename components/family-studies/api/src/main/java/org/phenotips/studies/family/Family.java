@@ -35,12 +35,18 @@ import net.sf.json.JSON;
  */
 public interface Family
 {
-    /** The XClass used for storing family data. */
+    /** The class used for storing family data. */
     EntityReference CLASS_REFERENCE = new EntityReference("FamilyClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
     /** The space where family data is stored. */
     EntityReference DATA_SPACE = new EntityReference("Families", EntityType.SPACE);
+
+    /**
+     * class that holds pedigree data (image, structure, etc).
+     */
+    EntityReference PEDIGREE_CLASS =
+        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
      * @return family id
