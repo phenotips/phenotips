@@ -21,10 +21,10 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
+import org.phenotips.studies.family.internal2.Pedigree;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
@@ -39,8 +39,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWikiException;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -66,9 +64,6 @@ public class FamilyScriptService implements ScriptService
 
     @Inject
     private PatientRepository patientRepository;
-
-    @Inject
-    private FamilyUtils utils;
 
     @Inject
     private Processing processing;
@@ -182,11 +177,21 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON getPedigree(String id)
     {
-        try {
-            return PedigreeUtils.getPedigree(id, this.utils);
-        } catch (XWikiException ex) {
-            this.logger.error("Error happend while retrieving pedigree of document with id {}. {}",
-                id, ex.getMessage());
+        Pedigree pedigree = null;
+
+        Patient patient = this.patientRepository.getPatientById(id);
+        if (patient != null) {
+            pedigree = PedigreeUtils.getPedigreeForPatient(patient);
+        } else {
+            Family family = this.familyRepository.getFamilyById(id);
+            if (family != null) {
+                family.getPedigree();
+            }
+        }
+
+        if (pedigree != null && !pedigree.isEmpty()) {
+            return pedigree.getData();
+        } else {
             return new JSONObject(true);
         }
     }
