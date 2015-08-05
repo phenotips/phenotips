@@ -17,6 +17,7 @@
  */
 package org.phenotips.studies.family.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
@@ -29,6 +30,7 @@ import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.Right;
@@ -56,7 +58,9 @@ public class ValidationImpl implements Validation
     @Inject
     private PatientRepository patientRepository;
 
-    @Inject
+    // TODO
+    // Inject would cause a problem due to cyclical injection.
+    // Eventually Validation should not have FamilyRepository as a member
     private FamilyRepository familyRepository;
 
     @Inject
@@ -83,6 +87,16 @@ public class ValidationImpl implements Validation
     @Override
     public StatusResponse2 canAddEveryMember(XWikiDocument xfamily, List<String> updatedMembers)
     {
+        if (this.familyRepository == null) {
+            try {
+                this.familyRepository =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyRepository.class);
+
+            } catch (ComponentLookupException e) {
+                e.printStackTrace();
+            }
+        }
+
         String familyId = xfamily.getDocumentReference().getName();
         Family family = this.familyRepository.getFamilyById(familyId);
 
