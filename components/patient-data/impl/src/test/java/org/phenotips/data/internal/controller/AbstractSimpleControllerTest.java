@@ -98,12 +98,13 @@ public class AbstractSimpleControllerTest
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        Exception exception = new Exception();
+        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", (String)null);
+            + " error has occurred during controller loading ", exception.getMessage());
         Assert.assertNull(result);
     }
 
@@ -155,11 +156,12 @@ public class AbstractSimpleControllerTest
     @Test
     public void saveCatchesExceptionFromDocumentAccess() throws Exception
     {
-        doThrow(Exception.class).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+        Exception exception = new Exception();
+        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
         mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME, null);
+        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME, exception.getMessage());
     }
 
     @Test
@@ -189,7 +191,7 @@ public class AbstractSimpleControllerTest
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.xWiki).saveDocument(any(XWikiDocument.class),
-                anyString(), anyBoolean(), any(XWikiContext.class));
+            anyString(), anyBoolean(), any(XWikiContext.class));
         verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME, exception.getMessage());
     }
 
@@ -307,7 +309,6 @@ public class AbstractSimpleControllerTest
         selectedFields.add(PROPERTY_1);
         selectedFields.add(PROPERTY_2);
         selectedFields.add(PROPERTY_3);
-        
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -333,7 +334,6 @@ public class AbstractSimpleControllerTest
         selectedFields.add(PROPERTY_1);
         selectedFields.add(PROPERTY_3);
 
-
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.get(DATA_NAME));
@@ -355,7 +355,6 @@ public class AbstractSimpleControllerTest
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
-
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, null);
 
