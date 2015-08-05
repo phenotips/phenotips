@@ -127,6 +127,7 @@ public interface Family
      * Sets the pedigree for the family, and saves.
      *
      * @param pedigree to set
+     * @throws XWikiException if there was an error in saving.
      */
     void setPedigree(Pedigree pedigree) throws XWikiException;
 }
