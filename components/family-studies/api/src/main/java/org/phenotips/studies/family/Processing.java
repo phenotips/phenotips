@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.studies.family.internal.StatusResponse;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
@@ -56,7 +55,7 @@ public interface Processing
      *            itself.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
-     * @return {@link StatusResponse} with one of many possible statuses
+     * @return {@link StatusResponse2} with one of many possible statuses
      * @throws XWikiException one of many possible reasons for XWiki to fail
      * @throws NamingException could happen during document creation
      * @throws QueryException could happen when looking for a patient
