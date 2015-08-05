@@ -81,7 +81,7 @@ public class ValidationImpl implements Validation
     private AccessLevel viewAccess;
 
     @Override
-    public StatusResponse canAddEveryMember(XWikiDocument xfamily, List<String> updatedMembers)
+    public StatusResponse2 canAddEveryMember(XWikiDocument xfamily, List<String> updatedMembers)
     {
         String familyId = xfamily.getDocumentReference().getName();
         Family family = this.familyRepository.getFamilyById(familyId);
@@ -91,36 +91,26 @@ public class ValidationImpl implements Validation
                 Patient patient = this.patientRepository.getPatientById(patientId);
                 StatusResponse2 response =
                     this.familyRepository.canPatientBeAddedToFamily(patient, family);
-                if (response != StatusResponse2.CAN_BE_ADDED) {
-                    StatusResponse individualAccess = new StatusResponse();
-                    individualAccess.errorType = response.getErrorType();
-                    individualAccess.message = response.getMessage();
-                    individualAccess.statusCode = response.getStatusCode();
-                    return individualAccess;
+                if (response != StatusResponse2.OK) {
+                    return response;
                 }
             }
         }
 
-        StatusResponse response = new StatusResponse();
-        response.statusCode = 200;
-        return response;
+        return StatusResponse2.OK;
     }
 
     @Override
-    public StatusResponse checkFamilyAccessWithResponse(XWikiDocument familyDoc)
+    public StatusResponse2 checkFamilyAccessWithResponse(XWikiDocument familyDoc)
     {
-        StatusResponse response = new StatusResponse();
         User currentUser = this.userManager.getCurrentUser();
         if (this.authorizationService.hasAccess(currentUser, Right.EDIT,
             new DocumentReference(familyDoc.getDocumentReference())))
         {
-            response.statusCode = 200;
-            return response;
+            return StatusResponse2.OK;
         }
-        response.statusCode = 401;
-        response.errorType = "permissions";
-        response.message = "Insufficient permissions to edit the family record.";
-        return response;
+
+        return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
     }
 
     /* Should not be used when saving families. Todo why? */

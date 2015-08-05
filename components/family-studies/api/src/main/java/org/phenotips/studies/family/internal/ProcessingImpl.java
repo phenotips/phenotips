@@ -25,6 +25,7 @@ import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal2.Pedigree;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -88,7 +89,7 @@ public class ProcessingImpl implements Processing
     private JsonAdapter jsonAdapter;
 
     @Override
-    public StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
+    public StatusResponse2 processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException
     {
         LogicInterDependantVariables variables = new LogicInterDependantVariables();
@@ -105,10 +106,7 @@ public class ProcessingImpl implements Processing
 
         // fixme must check for all conditions as in verify linkable
         if (variables.anchorDoc == null) {
-            variables.response.statusCode = 404;
-            variables.response.errorType = "invalidId";
-            variables.response.message = String.format("The family/patient id %s is invalid", anchorId);
-            return variables.response;
+            return StatusResponse2.INVALID_PATIENT_ID.setMessage(anchorId);
         }
 
         variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
@@ -119,7 +117,7 @@ public class ProcessingImpl implements Processing
         variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
 
         variables = this.executePreUpdateLogic(variables);
-        if (variables.response.statusCode != 200) {
+        if (variables.response != StatusResponse2.OK) {
             return variables.response;
         }
 
@@ -131,22 +129,22 @@ public class ProcessingImpl implements Processing
         throws XWikiException
     {
         if (variables.familyDoc != null) {
-            StatusResponse individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
+            StatusResponse2 individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
                 variables.updatedMembers);
-            if (individualAccess.statusCode != 200) {
+            if (individualAccess != StatusResponse2.OK) {
                 variables.response = individualAccess;
                 return variables;
             }
 
-            StatusResponse updateFromJson = this.updatePatientsFromJson(variables.json);
-            if (updateFromJson.statusCode != 200) {
+            StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
+            if (updateFromJson != StatusResponse2.OK) {
                 variables.response = updateFromJson;
                 return variables;
             }
             // storing first, because pedigree depends on this.
-            StatusResponse storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
+            StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
                 .updatedMembers, variables.json, variables.image);
-            if (storingResponse.statusCode != 200) {
+            if (storingResponse != StatusResponse2.OK) {
                 variables.response = storingResponse;
                 return variables;
             }
@@ -160,7 +158,7 @@ public class ProcessingImpl implements Processing
             this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
         } else {
             if (!this.validation.hasPatientEditAccess(variables.anchorDoc.getDocumentReference().getName())) {
-                variables.response = StatusResponse.createInsufficientPatientPermissionsResponse(variables.anchorId);
+                variables.response = StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT;
                 return variables;
             }
             // when saving just a patient's pedigree that does not belong to a family
@@ -179,10 +177,7 @@ public class ProcessingImpl implements Processing
         throws XWikiException, NamingException, QueryException
     {
         if (variables.updatedMembers.size() < 1) {
-            // the list of members should not be empty.
-            variables.response.statusCode = 412;
-            variables.response.errorType = "invalidUpdate";
-            variables.response.message = "The family has no members. Please specify at least one patient link.";
+            variables.response = StatusResponse2.FAMILY_HAS_NO_MEMBERS;
             return variables;
         } else if (variables.familyDoc == null && variables.updatedMembers.size() > 1) {
             // in theory the anchorDoc could be a family document, but at this point it should be a patient document
@@ -191,8 +186,8 @@ public class ProcessingImpl implements Processing
             variables.isNew = true;
         } else if (variables.familyDoc != null) {
             variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
-            StatusResponse duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-            if (duplicationStatus.statusCode != 200) {
+            StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
+            if (duplicationStatus != StatusResponse2.OK) {
                 variables.response = duplicationStatus;
                 return variables;
             }
@@ -207,7 +202,7 @@ public class ProcessingImpl implements Processing
      */
     private class LogicInterDependantVariables
     {
-        protected StatusResponse response = new StatusResponse();
+        protected StatusResponse2 response;
 
         protected JSONObject json;
 
@@ -277,10 +272,9 @@ public class ProcessingImpl implements Processing
         return null;
     }
 
-    private StatusResponse updatePatientsFromJson(JSON familyContents)
+    private StatusResponse2 updatePatientsFromJson(JSON familyContents)
     {
         String idKey = "id";
-        StatusResponse response = new StatusResponse();
         try {
             JSONObject familyContentsObject = JSONObject.fromObject(familyContents);
             List<JSONObject> patientsJson = this.jsonAdapter.convert(familyContentsObject);
@@ -292,11 +286,10 @@ public class ProcessingImpl implements Processing
                 }
             }
         } catch (Exception ex) {
-            response.statusCode = 500;
-            response.errorType = "unknown";
-            response.message = "Could not update patient records";
+            return StatusResponse2.UNKNOWN_ERROR;
         }
-        return response;
+
+        return StatusResponse2.OK;
     }
 
     /**
@@ -309,7 +302,7 @@ public class ProcessingImpl implements Processing
      * @return
      * @throws XWikiException
      */
-    private StatusResponse storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
+    private StatusResponse2 storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
         JSON familyContents, String image) throws XWikiException
     {
         XWikiContext context = this.provider.get();
@@ -320,8 +313,8 @@ public class ProcessingImpl implements Processing
             XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
             PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
         }
-        StatusResponse familyResponse = this.validation.checkFamilyAccessWithResponse(family);
-        if (familyResponse.statusCode == 200) {
+        StatusResponse2 familyResponse = this.validation.checkFamilyAccessWithResponse(family);
+        if (familyResponse == StatusResponse2.OK) {
             PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
         }
         return familyResponse;
@@ -438,22 +431,17 @@ public class ProcessingImpl implements Processing
         return finalString;
     }
 
-    private static StatusResponse checkForDuplicates(List<String> updatedMembers)
+    private static StatusResponse2 checkForDuplicates(List<String> updatedMembers)
     {
-        StatusResponse response = new StatusResponse();
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
         for (String member : updatedMembers) {
             duplicationCheck.remove(member);
             if (duplicationCheck.contains(member)) {
-                response.statusCode = 400;
-                response.errorType = "duplicate";
-                response.message = String.format("There is a duplicate link for patient %s", member);
-                return response;
+                return StatusResponse2.DUPLICATE_PATIENT.setMessage(member);
             }
         }
 
-        response.statusCode = 200;
-        return response;
+        return StatusResponse2.OK;
     }
 }

@@ -72,19 +72,4 @@ public class StatusResponse
         json.put("errorType", this.errorType);
         return json;
     }
-
-    /**
-     * Convenience method for creating a pre-filled {@link StatusResponse}.
-     *
-     * @param patientId to include in the error message
-     * @return a {@link StatusResponse} with status code 401
-     */
-    public static StatusResponse createInsufficientPatientPermissionsResponse(String patientId)
-    {
-        StatusResponse response = new StatusResponse();
-        response.statusCode = 401;
-        response.errorType = "permissions";
-        response.message = String.format("Insufficient permissions to edit the patient record (%s).", patientId);
-        return response;
-    }
 }

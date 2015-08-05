@@ -18,6 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.studies.family.internal.StatusResponse;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.query.QueryException;
@@ -60,7 +61,7 @@ public interface Processing
      * @throws NamingException could happen during document creation
      * @throws QueryException could happen when looking for a patient
      */
-    StatusResponse processPatientPedigree(String anchorId, JSONObject json, String image)
+    StatusResponse2 processPatientPedigree(String anchorId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
 
     /**

@@ -19,6 +19,7 @@ package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.internal.StatusResponse;
+import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
@@ -44,7 +45,7 @@ public interface Validation
      * @param familyDoc must not be null
      * @return a {@link StatusResponse} with a status of 200 (ok) or 401 (insufficient permissions)
      */
-    StatusResponse checkFamilyAccessWithResponse(XWikiDocument familyDoc);
+    StatusResponse2 checkFamilyAccessWithResponse(XWikiDocument familyDoc);
 
     /**
      * Checks if the current user has edit access to a patient.
@@ -96,7 +97,7 @@ public interface Validation
      * @return 200 status code if everything is ok, or one of the code that
      *         {@link #canAddToFamily(XWikiDocument, String)} returns
      */
-    StatusResponse canAddEveryMember(XWikiDocument family, List<String> members);
+    StatusResponse2 canAddEveryMember(XWikiDocument family, List<String> members);
 
     /**
      * Checks if a user has an access on a document with permissions.
