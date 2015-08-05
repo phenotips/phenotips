@@ -69,15 +69,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 {
     private static final String ID_FIELD_NAME = "id";
 
-    // Approved symbol
-    private static final String ORDER_BY = "gd_app_sym_sort";
-
-    private static final String OUTPUT_FORMAT = "text";
-
-    private static final String SELECT_STATUS = "Approved";
-
-    private static final String USE_HGNC_DATABASE_IDENTIFIER = "on";
-
     private static final String SYMBOL_FIELD_NAME = "symbol";
 
     private static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
@@ -91,39 +82,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     private static final String ENTREZ_ID_FIELD_NAME = "entrez_id";
 
     private static final String REFSEQ_ACCESSION_FIELD_NAME = "refseq_accession";
-
-    private static final String REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME = "refseq_accession_external";
-
-    private static final String ENTREZ_ID_EXTERNAL_FIELD_NAME = "entrez_id_external";
-
-    private static final String ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME = "ensembl_gene_id_external";
-
-    private static final List<String> SELECTED_COLUMNS = Arrays.asList("gd_hgnc_id", "gd_app_sym",
-        "gd_app_name", "gd_prev_sym", "gd_aliases", "gd_pub_acc_ids", "gd_pub_eg_id",
-        "gd_pub_ensembl_id", "gd_pub_refseq_ids", "family.id", "family.name",
-        "md_eg_id", "md_mim_id", "md_refseq_id",
-        "md_prot_id", "md_ensembl_id");
-
-    private static final List<String> HEADERS = Arrays.asList("HGNC ID", "Approved Symbol",
-        "Approved Name", "Previous Symbols", "Synonyms", "Accession Numbers", "Entrez Gene ID",
-        "Ensembl Gene ID", "RefSeq IDs", "Gene Family ID", "Gene Family Name",
-        "Entrez Gene ID(supplied by NCBI)", "OMIM ID(supplied by OMIM)", "RefSeq(supplied by NCBI)",
-        "UniProt ID(supplied by UniProt)", "Ensembl ID(supplied by Ensembl)");
-
-    private static final List<String> FIELDS = Arrays.asList("id", SYMBOL_FIELD_NAME,
-        "name", PREV_SYMBOL_FIELD_NAME, ALIAS_SYMBOL_FIELD_NAME, ACCESSION_SYMBOL_FIELD_NAME, ENTREZ_ID_FIELD_NAME,
-        ENSEMBL_GENE_ID_FIELD_NAME, REFSEQ_ACCESSION_FIELD_NAME, "gene_family_id", "gene_family",
-        ENTREZ_ID_EXTERNAL_FIELD_NAME, "omim_id", REFSEQ_ACCESSION_EXTERNAL_FIELD_NAME,
-        "uniprot_id", ENSEMBL_GENE_ID_EXTERNAL_FIELD_NAME);
-
-    /** Performs HTTP requests to the remote REST service. */
-    private final CloseableHttpClient client = HttpClients.createSystem();
-
-    private String baseServiceURL;
-
-    private String infoServiceURL;
-
-    private String dataServiceURL;
 
     @Inject
     @Named("xwikiproperties")
