@@ -386,4 +386,21 @@ public class XWikiFamily implements Family
 
         return pedigree;
     }
+
+    @Override
+    public void setPedigree(Pedigree pedigree) throws XWikiException
+    {
+        XWikiContext context = getXContext();
+        XWiki wiki = context.getWiki();
+
+        BaseObject pedigreeObject = this.familyDocument.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+        String image = pedigree.getImage();
+        if (image != null) {
+            String updatedImage = SvgUpdater.setPatientStylesInSvg(image, getId());
+            pedigreeObject.set(Pedigree.IMAGE, updatedImage, context);
+        }
+        pedigreeObject.set(Pedigree.DATA, pedigree.toString(), context);
+
+        wiki.saveDocument(this.familyDocument, context);
+    }
 }

@@ -28,6 +28,8 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.List;
 import java.util.Map;
 
+import com.xpn.xwiki.XWikiException;
+
 import net.sf.json.JSON;
 
 /**
@@ -120,4 +122,11 @@ public interface Family
      * @return Pedigree associated with the family.
      */
     Pedigree getPedigree();
+
+    /**
+     * Sets the pedigree for the family, and saves.
+     *
+     * @param pedigree to set
+     */
+    void setPedigree(Pedigree pedigree) throws XWikiException;
 }
