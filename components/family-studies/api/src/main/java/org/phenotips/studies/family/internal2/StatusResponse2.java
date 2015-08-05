@@ -35,6 +35,9 @@ public enum StatusResponse2
         "",
         ""),
 
+    /**
+     * Duplicate patient in list.
+     */
     DUPLICATE_PATIENT(400,
         "duplicate",
         "There is a duplicate link for patient %s"),
@@ -50,16 +53,19 @@ public enum StatusResponse2
      * Patient cannot be added to a family because current user has insufficient permissions on family.
      */
     INSUFFICIENT_PERMISSIONS_ON_FAMILY(401,
-        "permissions",
+        "familyPermissions",
         "Insufficient permissions to edit the family record."),
 
-     /**
-      * Patient cannot be added to a family because current user has insufficient permissions on family.
-      */
-     INSUFFICIENT_PERMISSIONS_ON_PATIENT(401,
-         "permissions",
-         "Insufficient permissions to edit the patient record."),
+    /**
+     * Patient cannot be added to a family because current user has insufficient permissions on family.
+     */
+    INSUFFICIENT_PERMISSIONS_ON_PATIENT(401,
+        "patientPermissions",
+        "Insufficient permissions to edit the patient record."),
 
+    /**
+     * No members to add to family.
+     **/
     FAMILY_HAS_NO_MEMBERS(402,
         "invalidUpdate",
         "The family has no members. Please specify at least one patient link."),
@@ -78,6 +84,9 @@ public enum StatusResponse2
         "invalidFamilyId",
         "Could not find family %s."),
 
+    /**
+     * Unknown error.
+     */
     UNKNOWN_ERROR(500,
         "unknown",
         "Could not update patient records"),
@@ -180,6 +189,11 @@ public enum StatusResponse2
         return json;
     }
 
+    /**
+     * Checks if the response is valid.
+     *
+     * @return true is the response is valid.
+     */
     public boolean isValid()
     {
         return this.getStatusCode() == StatusResponse2.OK.getStatusCode();

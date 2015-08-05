@@ -71,7 +71,7 @@ public interface Processing
      * @throws XWikiException TODO: review if need to throw.
      */
     void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-        XWikiException;
+    XWikiException;
 
     /**
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
