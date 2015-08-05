@@ -91,7 +91,7 @@ public class ValidationImpl implements Validation
                 Patient patient = this.patientRepository.getPatientById(patientId);
                 StatusResponse2 response =
                     this.familyRepository.canPatientBeAddedToFamily(patient, family);
-                if (response != StatusResponse2.OK) {
+                if (!response.isValid()) {
                     return response;
                 }
             }

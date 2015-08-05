@@ -117,7 +117,7 @@ public class ProcessingImpl implements Processing
         variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
 
         variables = this.executePreUpdateLogic(variables);
-        if (variables.response != StatusResponse2.OK) {
+        if (!variables.response.isValid()) {
             return variables.response;
         }
 
@@ -131,20 +131,20 @@ public class ProcessingImpl implements Processing
         if (variables.familyDoc != null) {
             StatusResponse2 individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
                 variables.updatedMembers);
-            if (individualAccess != StatusResponse2.OK) {
+            if (!individualAccess.isValid()) {
                 variables.response = individualAccess;
                 return variables;
             }
 
             StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
-            if (updateFromJson != StatusResponse2.OK) {
+            if (!updateFromJson.isValid()) {
                 variables.response = updateFromJson;
                 return variables;
             }
             // storing first, because pedigree depends on this.
             StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
                 .updatedMembers, variables.json, variables.image);
-            if (storingResponse != StatusResponse2.OK) {
+            if (!storingResponse.isValid()) {
                 variables.response = storingResponse;
                 return variables;
             }
@@ -187,7 +187,7 @@ public class ProcessingImpl implements Processing
         } else if (variables.familyDoc != null) {
             variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
             StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-            if (duplicationStatus != StatusResponse2.OK) {
+            if (!duplicationStatus.isValid()) {
                 variables.response = duplicationStatus;
                 return variables;
             }
@@ -314,7 +314,7 @@ public class ProcessingImpl implements Processing
             PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
         }
         StatusResponse2 familyResponse = this.validation.checkFamilyAccessWithResponse(family);
-        if (familyResponse == StatusResponse2.OK) {
+        if (familyResponse.isValid()) {
             PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
         }
         return familyResponse;

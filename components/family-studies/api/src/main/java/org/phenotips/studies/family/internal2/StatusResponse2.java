@@ -154,9 +154,8 @@ public enum StatusResponse2
      */
     public JSON asProcessing()
     {
-        boolean isError = this.statusCode != 200;
         JSONObject json = baseErrorJson();
-        json.put("error", isError);
+        json.put("error", !this.isValid());
         return json;
     }
 
@@ -168,9 +167,8 @@ public enum StatusResponse2
      */
     public JSON asVerification()
     {
-        boolean valid = this.statusCode == 200;
         JSONObject json = baseErrorJson();
-        json.put("validLink", valid);
+        json.put("validLink", isValid());
         return json;
     }
 
@@ -180,5 +178,10 @@ public enum StatusResponse2
         json.put("errorMessage", this.message);
         json.put("errorType", this.errorType);
         return json;
+    }
+
+    public boolean isValid()
+    {
+        return this.getStatusCode() == StatusResponse2.OK.getStatusCode();
     }
 };
