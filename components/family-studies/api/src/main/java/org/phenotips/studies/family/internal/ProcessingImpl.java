@@ -132,11 +132,18 @@ public class ProcessingImpl implements Processing
     private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables)
         throws XWikiException
     {
-        StatusResponse2 individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
-            variables.updatedMembers);
-        if (!individualAccess.isValid()) {
-            variables.response = individualAccess;
-            return variables;
+        StatusResponse2 response;
+
+        // Check if every member of updatedMembers can be added to the family
+        if (variables.updatedMembers != null) {
+            for (String patientId : variables.updatedMembers) {
+                Patient patient = this.patientRepository.getPatientById(patientId);
+                response = this.familyRepository.canPatientBeAddedToFamily(patient, variables.family);
+                if (!response.isValid()) {
+                    variables.response = response;
+                    return variables;
+                }
+            }
         }
 
         StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);

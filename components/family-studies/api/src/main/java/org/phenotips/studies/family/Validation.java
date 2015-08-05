@@ -18,16 +18,11 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
-import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
-
-import java.util.List;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Used for checking if actions, such as adding a certain patient to a family are valid.
@@ -79,16 +74,6 @@ public interface Validation
      * @return true if has access; false otherwise
      */
     boolean hasPatientViewAccess(Patient patient, User user);
-
-    /**
-     * Checks if all `members` can be added to the `family`.
-     *
-     * @param family document to which the members will be added
-     * @param members which are to be added
-     * @return 200 status code if everything is ok, or one of the code that
-     *         {@link #canAddToFamily(XWikiDocument, String)} returns
-     */
-    StatusResponse2 canAddEveryMember(XWikiDocument family, List<String> members);
 
     /**
      * Checks if a user has an access on a document with permissions.

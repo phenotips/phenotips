@@ -17,33 +17,24 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
-import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Validation;
-import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Collection of checks for checking if certain actions are allowed.
@@ -57,11 +48,6 @@ public class ValidationImpl implements Validation
 {
     @Inject
     private PatientRepository patientRepository;
-
-    // TODO
-    // Inject would cause a problem due to cyclical injection.
-    // Eventually Validation should not have FamilyRepository as a member
-    private FamilyRepository familyRepository;
 
     @Inject
     @Named("current")
@@ -83,36 +69,6 @@ public class ValidationImpl implements Validation
     @Inject
     @Named("view")
     private AccessLevel viewAccess;
-
-    @Override
-    public StatusResponse2 canAddEveryMember(XWikiDocument xfamily, List<String> updatedMembers)
-    {
-        if (this.familyRepository == null) {
-            try {
-                this.familyRepository =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyRepository.class);
-
-            } catch (ComponentLookupException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String familyId = xfamily.getDocumentReference().getName();
-        Family family = this.familyRepository.getFamilyById(familyId);
-
-        if (updatedMembers != null) {
-            for (String patientId : updatedMembers) {
-                Patient patient = this.patientRepository.getPatientById(patientId);
-                StatusResponse2 response =
-                    this.familyRepository.canPatientBeAddedToFamily(patient, family);
-                if (!response.isValid()) {
-                    return response;
-                }
-            }
-        }
-
-        return StatusResponse2.OK;
-    }
 
     /* Should not be used when saving families. Todo why? */
     @Override
