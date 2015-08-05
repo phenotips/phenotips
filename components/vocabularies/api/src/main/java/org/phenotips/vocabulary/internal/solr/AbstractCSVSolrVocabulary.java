@@ -134,7 +134,7 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         return 1;
     }
 
-    protected VocabularyTerm requestTerm(String queryString, String params)
+    protected VocabularyTerm requestTerm(String queryString, String phraseFields)
     {
         QueryResponse response;
         SolrQuery query = new SolrQuery();
@@ -142,8 +142,8 @@ public abstract class AbstractCSVSolrVocabulary extends AbstractSolrVocabulary
         VocabularyTerm term;
         query.setQuery(queryString);
         query.setRows(1);
-        if (params != null) {
-            query.set(DisMaxParams.PF, params);
+        if (phraseFields != null) {
+            query.set(DisMaxParams.PF, phraseFields);
         }
 
         try {
