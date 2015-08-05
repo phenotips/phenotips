@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.QueryException;
+import org.xwiki.security.authorization.Right;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -306,20 +307,15 @@ public class ProcessingImpl implements Processing
     private StatusResponse2 storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
         JSON familyContents, String image) throws XWikiException
     {
+        if (!this.validation.hasAccess(new DocumentReference(family.getDocumentReference()), Right.EDIT))
+        {
+            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
+        }
+
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
-
-        // for (String member : updatedMembers) {
-        // Patient patient = this.patientRepository.getPatientById(member);
-        // XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
-        // PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
-        // }
-
-        StatusResponse2 familyResponse = this.validation.checkFamilyAccessWithResponse(family);
-        if (familyResponse.isValid()) {
-            PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
-        }
-        return familyResponse;
+        PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
+        return StatusResponse2.OK;
     }
 
     /**

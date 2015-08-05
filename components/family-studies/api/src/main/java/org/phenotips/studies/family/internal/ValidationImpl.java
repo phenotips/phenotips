@@ -114,19 +114,6 @@ public class ValidationImpl implements Validation
         return StatusResponse2.OK;
     }
 
-    @Override
-    public StatusResponse2 checkFamilyAccessWithResponse(XWikiDocument familyDoc)
-    {
-        User currentUser = this.userManager.getCurrentUser();
-        if (this.authorizationService.hasAccess(currentUser, Right.EDIT,
-            new DocumentReference(familyDoc.getDocumentReference())))
-        {
-            return StatusResponse2.OK;
-        }
-
-        return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
-    }
-
     /* Should not be used when saving families. Todo why? */
     @Override
     public boolean hasPatientEditAccess(String patientId)

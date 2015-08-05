@@ -39,14 +39,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public interface Validation
 {
     /**
-     * Checks if the current user has edit access to the family.
-     *
-     * @param familyDoc must not be null
-     * @return a {@link StatusResponse2} with a status of 200 (ok) or 401 (insufficient permissions)
-     */
-    StatusResponse2 checkFamilyAccessWithResponse(XWikiDocument familyDoc);
-
-    /**
      * Checks if the current user has edit access to a patient.
      *
      * @param patientId must not be null
