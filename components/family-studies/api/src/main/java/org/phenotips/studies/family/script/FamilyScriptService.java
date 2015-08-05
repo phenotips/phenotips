@@ -251,10 +251,8 @@ public class FamilyScriptService implements ScriptService
     /**
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
-     * @param patientId patientId of patient to get a family to process from. If a patient does not belong to a family,
-     *            there is no processing of the pedigree, and the pedigree is simply saved to that patient record. If
-     *            the patient does belong to a family, there is processing of the pedigree, which is then saved to all
-     *            patient records that belong to the family and the family document itself.
+     * @param patientId of patient to get a family to process from. If a patient does not belong to a family, a new
+     *            family if created for the patient.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
      * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known

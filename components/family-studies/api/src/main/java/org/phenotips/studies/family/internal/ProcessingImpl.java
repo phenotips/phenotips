@@ -103,6 +103,18 @@ public class ProcessingImpl implements Processing
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
 
+        // TODO: handle the case that family is null
+        // check edit right on patient. If no right, return error
+        // create a new family, add to patient.
+        // This code was removed from executeSaveUpdateLogic().
+        /*
+         * if (!this.validation.hasPatientEditAccess(variables.anchorDoc.getDocumentReference().getName())) {
+         * variables.response = StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT; return variables; } // when saving
+         * just a patient's pedigree that does not belong to a family XWikiContext context = this.provider.get();
+         * PedigreeUtils.storePedigreeWithSave(variables.anchorDoc, variables.json, variables.image, context,
+         * context.getWiki());
+         */
+
         // fixme must check for all conditions as in verify linkable
         if (variables.anchorDoc == null) {
             return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
@@ -127,44 +139,34 @@ public class ProcessingImpl implements Processing
     private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables)
         throws XWikiException
     {
-        if (variables.familyDoc != null) {
-            StatusResponse2 individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
-                variables.updatedMembers);
-            if (!individualAccess.isValid()) {
-                variables.response = individualAccess;
-                return variables;
-            }
-
-            StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
-            if (!updateFromJson.isValid()) {
-                variables.response = updateFromJson;
-                return variables;
-            }
-            // storing first, because pedigree depends on this.
-            StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
-                .updatedMembers, variables.json, variables.image);
-            if (!storingResponse.isValid()) {
-                variables.response = storingResponse;
-                return variables;
-            }
-
-            if (!variables.isNew) {
-                this.setUnionOfUserPermissions(variables.familyDoc, variables.updatedMembers);
-                this.removeMembersNotPresent(variables.members, variables.updatedMembers);
-            }
-            this.addNewMembers(variables.members, variables.updatedMembers, variables.familyDoc);
-            // remove and add do not take care of modifying the 'members' property
-            this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
-        } else {
-            if (!this.validation.hasPatientEditAccess(variables.anchorDoc.getDocumentReference().getName())) {
-                variables.response = StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT;
-                return variables;
-            }
-            // when saving just a patient's pedigree that does not belong to a family
-            XWikiContext context = this.provider.get();
-            PedigreeUtils.storePedigreeWithSave(variables.anchorDoc, variables.json, variables.image, context,
-                context.getWiki());
+        StatusResponse2 individualAccess = this.validation.canAddEveryMember(variables.familyDoc,
+            variables.updatedMembers);
+        if (!individualAccess.isValid()) {
+            variables.response = individualAccess;
+            return variables;
         }
+
+        StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
+        if (!updateFromJson.isValid()) {
+            variables.response = updateFromJson;
+            return variables;
+        }
+        // storing first, because pedigree depends on this.
+        StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
+            .updatedMembers, variables.json, variables.image);
+        if (!storingResponse.isValid()) {
+            variables.response = storingResponse;
+            return variables;
+        }
+
+        if (!variables.isNew) {
+            this.setUnionOfUserPermissions(variables.familyDoc, variables.updatedMembers);
+            this.removeMembersNotPresent(variables.members, variables.updatedMembers);
+        }
+        this.addNewMembers(variables.members, variables.updatedMembers, variables.familyDoc);
+        // remove and add do not take care of modifying the 'members' property
+        this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
+
         return variables;
     }
 
@@ -307,11 +309,12 @@ public class ProcessingImpl implements Processing
         XWikiContext context = this.provider.get();
         XWiki wiki = context.getWiki();
 
-        for (String member : updatedMembers) {
-            Patient patient = this.patientRepository.getPatientById(member);
-            XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
-            PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
-        }
+        // for (String member : updatedMembers) {
+        // Patient patient = this.patientRepository.getPatientById(member);
+        // XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
+        // PedigreeUtils.storePedigreeWithSave(patientDoc, familyContents, image, context, wiki);
+        // }
+
         StatusResponse2 familyResponse = this.validation.checkFamilyAccessWithResponse(family);
         if (familyResponse.isValid()) {
             PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
@@ -357,6 +360,10 @@ public class ProcessingImpl implements Processing
                         this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
                     String image = SvgUpdater.removeLinks(pedigree.getImage(), id);
                     PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
+
+                    // TODO: Where is the storePedigree() for family?
+                    // Remove storePedigree for patient.
+
                 } catch (Exception ex) {
                     this.logger.error("Could not modify patients pedigree while removing from a family. {}",
                         ex.getMessage());

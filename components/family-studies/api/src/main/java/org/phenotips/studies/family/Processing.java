@@ -48,10 +48,8 @@ public interface Processing
     /**
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
-     * @param patientId of patient to get a family to process from. If a patient does not belong to a family, there is
-     *            no processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
-     *            does belong to a family, there is processing of the pedigree, which is then saved to all patient
-     *            records that belong to the family and the family document itself.
+     * @param patientId of patient to get a family to process from. If a patient does not belong to a family, a new
+     *            family if created for the patient.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
      * @return {@link StatusResponse2} with one of many possible statuses
