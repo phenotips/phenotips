@@ -48,11 +48,10 @@ public interface Processing
     /**
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
-     * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
-     *            processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
-     *            does belong to a family, or a family id is passed in as the `anchorId`, there is processing of the
-     *            pedigree, which is then saved to all patient records that belong to the family and the family document
-     *            itself.
+     * @param patientId of patient to get a family to process from. If a patient does not belong to a family, there is
+     *            no processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
+     *            does belong to a family, there is processing of the pedigree, which is then saved to all patient
+     *            records that belong to the family and the family document itself.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
      * @return {@link StatusResponse2} with one of many possible statuses
@@ -60,7 +59,7 @@ public interface Processing
      * @throws NamingException could happen during document creation
      * @throws QueryException could happen when looking for a patient
      */
-    StatusResponse2 processPatientPedigree(String anchorId, JSONObject json, String image)
+    StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
 
     /**
@@ -71,7 +70,7 @@ public interface Processing
      * @throws XWikiException TODO: review if need to throw.
      */
     void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-    XWikiException;
+        XWikiException;
 
     /**
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.

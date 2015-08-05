@@ -251,21 +251,20 @@ public class FamilyScriptService implements ScriptService
     /**
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
-     * @param anchorId could be a family id or a patient id. If a patient does not belong to a family, there is no
-     *            processing of the pedigree, and the pedigree is simply saved to that patient record. If the patient
-     *            does belong to a family, or a family id is passed in as the `anchorId`, there is processing of the
-     *            pedigree, which is then saved to all patient records that belong to the family and the family
-     *            documents itself.
+     * @param patientId patientId of patient to get a family to process from. If a patient does not belong to a family,
+     *            there is no processing of the pedigree, and the pedigree is simply saved to that patient record. If
+     *            the patient does belong to a family, there is processing of the pedigree, which is then saved to all
+     *            patient records that belong to the family and the family document itself.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
      * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
      *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
      *         'errorType'
      */
-    public JSON processPedigree(String anchorId, String json, String image)
+    public JSON processPedigree(String patientId, String json, String image)
     {
         try {
-            return this.processing.processPatientPedigree(anchorId, JSONObject.fromObject(json), image).asProcessing();
+            return this.processing.processPatientPedigree(patientId, JSONObject.fromObject(json), image).asProcessing();
         } catch (Exception ex) {
             return new JSONObject(true);
         }

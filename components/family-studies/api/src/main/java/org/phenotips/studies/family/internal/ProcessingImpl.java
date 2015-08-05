@@ -89,23 +89,23 @@ public class ProcessingImpl implements Processing
     private JsonAdapter jsonAdapter;
 
     @Override
-    public StatusResponse2 processPatientPedigree(String anchorId, JSONObject json, String image)
+    public StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException
     {
         LogicInterDependantVariables variables = new LogicInterDependantVariables();
         variables.json = json;
         variables.image = image;
 
-        variables.anchorRef = this.referenceResolver.resolve(anchorId, Patient.DEFAULT_DATA_SPACE);
+        variables.anchorRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
         if (variables.anchorRef == null) {
-            variables.anchorRef = this.referenceResolver.resolve(anchorId, Family.DATA_SPACE);
+            variables.anchorRef = this.referenceResolver.resolve(patientId, Family.DATA_SPACE);
         }
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
 
         // fixme must check for all conditions as in verify linkable
         if (variables.anchorDoc == null) {
-            return StatusResponse2.INVALID_PATIENT_ID.setMessage(anchorId);
+            return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
         }
 
         variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
