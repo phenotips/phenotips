@@ -96,7 +96,6 @@ public class ProcessingImpl implements Processing
         variables.json = json;
         variables.image = image;
 
-        variables.anchorId = anchorId;
         variables.anchorRef = this.referenceResolver.resolve(anchorId, Patient.DEFAULT_DATA_SPACE);
         if (variables.anchorRef == null) {
             variables.anchorRef = this.referenceResolver.resolve(anchorId, Family.DATA_SPACE);
@@ -215,8 +214,6 @@ public class ProcessingImpl implements Processing
         protected XWikiDocument anchorDoc;
 
         protected DocumentReference anchorRef;
-
-        protected String anchorId;
 
         protected List<String> updatedMembers = new LinkedList<>();
 
