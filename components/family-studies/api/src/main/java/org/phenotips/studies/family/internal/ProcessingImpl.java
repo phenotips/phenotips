@@ -20,6 +20,7 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
@@ -29,7 +30,6 @@ import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.QueryException;
 import org.xwiki.security.authorization.Right;
 
@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.naming.NamingException;
@@ -74,14 +73,13 @@ public class ProcessingImpl implements Processing
     private PatientRepository patientRepository;
 
     @Inject
+    private FamilyRepository familyRepository;
+
+    @Inject
     private FamilyUtils familyUtils;
 
     @Inject
     private Provider<XWikiContext> provider;
-
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<String> referenceResolver;
 
     @Inject
     private Validation validation;
@@ -97,35 +95,29 @@ public class ProcessingImpl implements Processing
         variables.json = json;
         variables.image = image;
 
-        variables.anchorRef = this.referenceResolver.resolve(patientId, Patient.DEFAULT_DATA_SPACE);
-        if (variables.anchorRef == null) {
-            variables.anchorRef = this.referenceResolver.resolve(patientId, Family.DATA_SPACE);
-        }
-        variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
-        variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
-
-        // TODO: handle the case that family is null
-        // check edit right on patient. If no right, return error
-        // create a new family, add to patient.
-        // This code was removed from executeSaveUpdateLogic().
-        /*
-         * if (!this.validation.hasPatientEditAccess(variables.anchorDoc.getDocumentReference().getName())) {
-         * variables.response = StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT; return variables; } // when saving
-         * just a patient's pedigree that does not belong to a family XWikiContext context = this.provider.get();
-         * PedigreeUtils.storePedigreeWithSave(variables.anchorDoc, variables.json, variables.image, context,
-         * context.getWiki());
-         */
-
-        // fixme must check for all conditions as in verify linkable
-        if (variables.anchorDoc == null) {
+        // Get proband
+        variables.proband = this.patientRepository.getPatientById(patientId);
+        if (variables.proband == null) {
             return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
         }
 
+        // Get proband's family. Create a new one if doesn't exist
+        variables.family = this.familyRepository.getFamilyForPatient(variables.proband);
+        if (variables.family == null) {
+            if (!this.validation.hasPatientEditAccess(patientId)) {
+                return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
+            }
+            variables.family = this.familyRepository.createFamily();
+            variables.family.addMember(variables.proband);
+        }
+
+        variables.anchorRef = variables.proband.getDocument();
+        variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
+        variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
+
         variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
         // sometimes pedigree passes in family document name as a member
-        if (variables.familyDoc != null) {
-            variables.updatedMembers.remove(variables.familyDoc.getDocumentReference().getName());
-        }
+        variables.updatedMembers.remove(variables.family.getId());
         variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
 
         variables = this.executePreUpdateLogic(variables);
@@ -215,6 +207,10 @@ public class ProcessingImpl implements Processing
         protected XWikiDocument familyDoc;
 
         protected XWikiDocument anchorDoc;
+
+        protected Family family;
+
+        protected Patient proband;
 
         protected DocumentReference anchorRef;
 
