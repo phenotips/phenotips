@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link MetaDataController} Component,
- * only the overridden abstract methods from {@link AbstractSimpleController} are tested here
+ * only the overridden methods from {@link AbstractSimpleController} are tested here
  */
 public class MetaDataControllerTest
 {
@@ -183,7 +183,6 @@ public class MetaDataControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
         Assert.assertTrue(json.isEmpty());
     }
 
@@ -197,9 +196,9 @@ public class MetaDataControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
         Assert.assertTrue(json.isEmpty());
     }
+
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesAndConvertedJsonKeys() throws ComponentLookupException
     {

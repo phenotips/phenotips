@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.hasItem;
 
 /**
  * Test for the {@link PatientNameController} Component,
- * only the overridden abstract methods from {@link AbstractSimpleController} are tested here
+ * only the overridden methods from {@link AbstractSimpleController} are tested here
  */
 public class PatientNameControllerTest
 {
