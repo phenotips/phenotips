@@ -31,9 +31,13 @@ public enum StatusResponse2
     /**
      * Patient can be added to a family.
      */
-    CAN_BE_ADDED(200,
+    OK(200,
         "",
         ""),
+
+    DUPLICATE_PATIENT(400,
+        "duplicate",
+        "There is a duplicate link for patient %s"),
 
     /**
      * Patient cannot be added to a family because it is already associated with another family.
@@ -43,11 +47,22 @@ public enum StatusResponse2
         "Patient %s already belongs to a different family, and therefore cannot be added to this one."),
 
     /**
-     * Patient cannot be added to a family because current user has insufficient permissions.
+     * Patient cannot be added to a family because current user has insufficient permissions on family.
      */
-    INSUFFICIENT_PERMISSIONS(401,
+    INSUFFICIENT_PERMISSIONS_ON_FAMILY(401,
         "permissions",
         "Insufficient permissions to edit the family record."),
+
+     /**
+      * Patient cannot be added to a family because current user has insufficient permissions on family.
+      */
+     INSUFFICIENT_PERMISSIONS_ON_PATIENT(401,
+         "permissions",
+         "Insufficient permissions to edit the patient record."),
+
+    FAMILY_HAS_NO_MEMBERS(402,
+        "invalidUpdate",
+        "The family has no members. Please specify at least one patient link."),
 
     /**
      * Invalid patient id.
@@ -62,6 +77,10 @@ public enum StatusResponse2
     INVALID_FAMILY_ID(404,
         "invalidFamilyId",
         "Could not find family %s."),
+
+    UNKNOWN_ERROR(500,
+        "unknown",
+        "Could not update patient records"),
 
     /**
      * Patient cannot be linked to proband's family.

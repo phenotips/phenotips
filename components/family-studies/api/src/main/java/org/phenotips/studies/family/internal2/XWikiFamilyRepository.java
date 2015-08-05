@@ -212,7 +212,7 @@ public class XWikiFamilyRepository implements FamilyRepository
 
         if (familyForPatient != null) {
             if (familyForPatient.equals(family)) {
-                return StatusResponse2.CAN_BE_ADDED.setMessage(patientId);
+                return StatusResponse2.OK;
             } else {
                 return StatusResponse2.ALREADY_HAS_FAMILY.setMessage(patientId);
             }
@@ -223,9 +223,9 @@ public class XWikiFamilyRepository implements FamilyRepository
         }
 
         if (!XWikiFamilyRepository.validation.hasAccess(family.getDocumentReference(), Right.EDIT)) {
-            return StatusResponse2.INSUFFICIENT_PERMISSIONS.setMessage(patientId);
+            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
-        return StatusResponse2.CAN_BE_ADDED.setMessage(patientId);
+        return StatusResponse2.OK;
     }
 
     /*
