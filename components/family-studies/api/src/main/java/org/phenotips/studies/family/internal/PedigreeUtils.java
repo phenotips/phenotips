@@ -221,6 +221,9 @@ public final class PedigreeUtils
     public static Pedigree getPedigreeForPatient(Patient patient)
     {
         Family family = PedigreeUtils.familyRepository.getFamilyForPatient(patient);
+        if (family == null) {
+            return null;
+        }
         return family.getPedigree();
     }
 

@@ -176,6 +176,8 @@ public class ProcessingImpl implements Processing
     private LogicInterDependantVariables executePreUpdateLogic(LogicInterDependantVariables variables)
         throws XWikiException, NamingException, QueryException
     {
+        variables.response = StatusResponse2.OK;
+
         if (variables.updatedMembers.size() < 1) {
             variables.response = StatusResponse2.FAMILY_HAS_NO_MEMBERS;
             return variables;
