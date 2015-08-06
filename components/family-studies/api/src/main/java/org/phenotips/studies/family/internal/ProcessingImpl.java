@@ -36,13 +36,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.naming.NamingException;
 
-import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 
 import net.sf.json.JSON;
@@ -59,16 +55,10 @@ import net.sf.json.JSONObject;
 public class ProcessingImpl implements Processing
 {
     @Inject
-    private Logger logger;
-
-    @Inject
     private PatientRepository patientRepository;
 
     @Inject
     private FamilyRepository familyRepository;
-
-    @Inject
-    private Provider<XWikiContext> provider;
 
     @Inject
     private Validation validation;
