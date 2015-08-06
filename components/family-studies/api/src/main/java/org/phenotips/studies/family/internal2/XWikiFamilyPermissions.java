@@ -161,4 +161,16 @@ public class XWikiFamilyPermissions
         fullRights.add(groups);
         return fullRights;
     }
+
+    /**
+     * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
+     * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
+     * access on p, x has edit access of the family.
+     *
+     * @param familyDocument document of family to update permissions
+     */
+    public void updatePermissions(XWikiDocument familyDocument)
+    {
+        // TODO Auto-generated method stub
+    }
 }

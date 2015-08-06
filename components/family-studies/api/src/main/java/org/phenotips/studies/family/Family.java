@@ -130,4 +130,11 @@ public interface Family
      * @throws XWikiException if there was an error in saving.
      */
     void setPedigree(Pedigree pedigree) throws XWikiException;
+
+    /**
+     * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
+     * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
+     * access on p, x has edit access of the family.
+     */
+    void updatePermissions();
 }

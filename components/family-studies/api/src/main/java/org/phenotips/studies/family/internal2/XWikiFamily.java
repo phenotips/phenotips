@@ -169,6 +169,8 @@ public class XWikiFamily implements Family
         // Shouldn't the pedigree be merged into the family rather than copied?
         PedigreeUtils.copyPedigree(patientDocument, this.familyDocument, context);
 
+        this.updatePermissions();
+
         try {
             wiki.saveDocument(this.familyDocument, context);
             wiki.saveDocument(patientDocument, context);
@@ -225,6 +227,8 @@ public class XWikiFamily implements Family
         }
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
+
+        this.updatePermissions();
 
         try {
             wiki.saveDocument(patientDocument, context);
@@ -377,5 +381,11 @@ public class XWikiFamily implements Family
         pedigreeObject.set(Pedigree.DATA, pedigree.toString(), context);
 
         wiki.saveDocument(this.familyDocument, context);
+    }
+
+    @Override
+    public void updatePermissions()
+    {
+        XWikiFamily.familyPermissions.updatePermissions(this.familyDocument);
     }
 }
