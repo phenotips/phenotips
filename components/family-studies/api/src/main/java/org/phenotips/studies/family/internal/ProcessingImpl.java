@@ -164,7 +164,7 @@ public class ProcessingImpl implements Processing
             return variables;
         }
         // storing first, because pedigree depends on this.
-        StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.familyDoc, variables
+        StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.family, variables
             .updatedMembers, variables.json, variables.image);
         if (!storingResponse.isValid()) {
             variables.response = storingResponse;
@@ -190,7 +190,7 @@ public class ProcessingImpl implements Processing
     {
         variables.response = StatusResponse2.OK;
 
-        variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
+        variables.members = variables.family.getMembers();
         StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
         if (!duplicationStatus.isValid()) {
             variables.response = duplicationStatus;
@@ -260,17 +260,19 @@ public class ProcessingImpl implements Processing
      * @return
      * @throws XWikiException
      */
-    private StatusResponse2 storeFamilyRepresentation(XWikiDocument family, List<String> updatedMembers,
-        JSON familyContents, String image) throws XWikiException
+    private StatusResponse2 storeFamilyRepresentation(Family family, List<String> updatedMembers,
+        JSONObject familyContents, String image) throws XWikiException
     {
         if (!this.validation.hasAccess(new DocumentReference(family.getDocumentReference()), Right.EDIT))
         {
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-        PedigreeUtils.storePedigreeWithSave(family, familyContents, image, context, wiki);
+        Pedigree pedigree = new Pedigree();
+        pedigree.setData(familyContents);
+        pedigree.setImage(image);
+
+        family.setPedigree(pedigree);
         return StatusResponse2.OK;
     }
 
