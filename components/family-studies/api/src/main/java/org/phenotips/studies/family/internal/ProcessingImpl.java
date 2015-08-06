@@ -36,7 +36,6 @@ import org.xwiki.security.authorization.Right;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -377,17 +376,6 @@ public class ProcessingImpl implements Processing
                 }
             }
         }
-    }
-
-    private static String setToString(Set<String> set)
-    {
-        String finalString = "";
-        for (String item : set) {
-            if (StringUtils.isNotBlank(item)) {
-                finalString += item + ",";
-            }
-        }
-        return finalString;
     }
 
     private static StatusResponse2 checkForDuplicates(List<String> updatedMembers)
