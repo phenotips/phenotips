@@ -20,7 +20,6 @@ package org.phenotips.studies.family.internal2;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -88,9 +87,6 @@ public class XWikiFamilyPermissions
 
     @Inject
     private PatientRepository patientRepository;
-
-    @Inject
-    private FamilyUtils familyUtils;
 
     /**
      * Grants edit permission on the family to everyone who had edit permission on the patient.

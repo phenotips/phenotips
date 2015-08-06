@@ -21,7 +21,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.FamilyUtils;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
@@ -41,14 +40,10 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.naming.NamingException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -228,72 +223,6 @@ public class ProcessingImpl implements Processing
         }
 
         return StatusResponse2.OK;
-    }
-
-    @Override
-    public void removeMember(String id, XWiki wiki, XWikiContext context) throws XWikiException
-    {
-        Patient patient = this.patientRepository.getPatientById(id);
-        XWikiDocument patientDoc = null;
-        BaseObject familyRefObj = null;
-        if (patient != null) {
-            patientDoc = wiki.getDocument(patient.getDocument(), context);
-            familyRefObj = patientDoc.getXObject(FamilyUtils.FAMILY_REFERENCE);
-        }
-        if (familyRefObj != null) {
-            patientDoc.removeXObject(familyRefObj);
-            Pedigree pedigree = PedigreeUtils.getPedigreeForPatient(patient);
-            if (pedigree != null && !pedigree.isEmpty()) {
-                /* Should not prevent saving the document */
-                try {
-                    JSONObject strippedPedigree =
-                        this.stripIdsFromPedigree(pedigree, patientDoc.getDocumentReference().getName());
-                    String image = SvgUpdater.removeLinks(pedigree.getImage(), id);
-                    PedigreeUtils.storePedigree(patientDoc, strippedPedigree, image, context);
-
-                    // TODO: Where is the storePedigree() for family?
-                    // Remove storePedigree for patient.
-
-                } catch (Exception ex) {
-                    this.logger.error("Could not modify patients pedigree while removing from a family. {}",
-                        ex.getMessage());
-                }
-            }
-            wiki.saveDocument(patientDoc, context);
-        }
-    }
-
-    @Override
-    public void removeMember(String id)
-    {
-        XWikiContext context = this.provider.get();
-        try {
-            this.removeMember(id, context.getWiki(), context);
-        } catch (Exception ex) {
-            this.logger.error("Could not remove patient {} from their family. {}", id, ex.getMessage());
-        }
-    }
-
-    /**
-     * Strips out all linked ids from a pedigree.
-     *
-     * @return null if the pedigree data is empty
-     */
-    private JSONObject stripIdsFromPedigree(Pedigree pedigree, String patientId)
-    {
-        if (pedigree != null && !pedigree.isEmpty()) {
-            List<JSONObject> patientProperties =
-                PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree.getData());
-            for (JSONObject properties : patientProperties) {
-                if (properties.get(PATIENT_LINK_JSON_KEY) != null && !StringUtils
-                    .equalsIgnoreCase(properties.get(PATIENT_LINK_JSON_KEY).toString(), patientId)) {
-                    properties.remove(PATIENT_LINK_JSON_KEY);
-                }
-            }
-            return pedigree.getData();
-        } else {
-            return new JSONObject();
-        }
     }
 
     private static StatusResponse2 checkForDuplicates(List<String> updatedMembers)
