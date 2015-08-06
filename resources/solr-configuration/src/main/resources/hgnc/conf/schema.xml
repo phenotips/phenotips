@@ -35,10 +35,10 @@
       </analyzer>
     </fieldType>
 
-    <!-- A text field that only splits on whitespace and comma for exact matching of gene identifiers/symbols -->
-    <fieldType name="symbol_list" class="solr.TextField" positionIncrementGap="100">
+    <!-- A text field for exact matching of identifiers/symbols -->
+    <fieldType name="symbol" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.PatternTokenizerFactory" pattern=",\s*" />
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
       <analyzer type="query">
@@ -47,11 +47,26 @@
       </analyzer>
     </fieldType>
 
+    <!-- A text field that does prefix matching of identifiers/symbols -->
+    <fieldType name="symbol_prefix" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
     <!-- A general text field: it tokenizes with ClassicTokenizer,
-         removes stop words from case-insensitive "stopwords.txt,
-         protects keywords defined in "protwords.txt", down cases,
-         and stems words using the possessive (remove 's) and the
-         Porter English stemmer. At query time only, it also applies synonyms. -->
+         removes standard stop words,
+         protects keywords defined in "protwords.txt",
+         down cases,
+         and stems words using the possessive (remove 's)
+         and the Porter English stemmer.
+         At query time only, it also applies synonyms. -->
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ClassicTokenizerFactory"/>
@@ -71,9 +86,6 @@
         <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
     </fieldType>
-<!--    Could be tried out: -->
-<!--    <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/> -->
-<!--    <filter class="solr.EnglishMinimalStemFilterFactory"/> -->
 
     <!-- Field for exact matching of the terms in the query, without stemming
          or other disruptive text processing filters applied to it.
@@ -141,39 +153,79 @@
   </types>
 
   <fields>
-    <field name="version" type="string" indexed="true" stored="true"/>
-    <field name="size" type="string" indexed="true" stored="true"/>
-    <field name="id" type="string" indexed="true" stored="true" required="true"/>
+    <field name="version" type="string" indexed="true" stored="true" omitNorms="true"/>
+
+    <field name="id" type="string" indexed="true" stored="true" required="true" omitNorms="true"/>
 
     <!-- Primary searching on gene symbol -->
-    <field name="symbol" type="text_general" indexed="true" stored="true"/>
-    <field name="symbolExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
-    <field name="symbolPrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
-    <field name="symbolSort" type="string" indexed="true" stored="false"/>
+    <field name="symbol" type="string" indexed="true" stored="true" omitNorms="true"/>
+    <field name="symbolStub" type="symbol_prefix" indexed="true" stored="false" omitNorms="true"/>
 
-    <!-- Secondary searching on alternate IDs -->
+    <!-- The primary name of the gene -->
+    <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
+    <field name="nameExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="namePrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
+    <field name="nameSort" type="string" indexed="true" stored="false"/>
+
+    <!-- Alternate IDs -->
+    <field name="alias_symbol" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="alias_symbolStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <!-- The alternate names of the gene -->
+    <field name="alias_name" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="alias_nameSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <field name="alias_nameExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="alias_namePrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="alias_nameStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <!-- Previous IDs -->
+    <field name="prev_symbol" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="prev_symbolStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <!-- The previous names of the gene -->
+    <field name="prev_name" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="prev_nameSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
+    <field name="prev_nameExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="prev_namePrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="prev_nameStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <!-- A list of gene family identifiers -->
+    <field name="gene_family_id" type="symbol" indexed="false" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="gene_family" type="text_general" indexed="false" stored="true" multiValued="true" omitNorms="true"/>
+
+    <!-- Links to other databases/vocabularies -->
+    <field name="entrez_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="ensembl_gene_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="vega_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="ucsc_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="ena" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="refseq_accession" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="ccds_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="uniprot_ids" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="pubmed_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="omim_id" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+    <field name="orphanet" type="symbol" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
+
+    <!-- Secondary search on other identifiers associated with a term -->
+    <field name="alt_id" type="symbol" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+    <field name="alt_idStub" type="symbol_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
+
+    <!-- Secondary search on other names/labels associated with a term -->
+    <field name="synonym" type="text_general" indexed="true" stored="false" multiValued="true"/>
+    <field name="synonymSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
-
-    <field name="prev_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-    <field name="alias_symbol" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-    <field name="ensembl_gene_id" type="text_general" indexed="true" stored="true"/>
-    <field name="entrez_id" type="text_general" indexed="true" stored="true"/>
-    <field name="hgnc_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-    <field name="refseq_accession" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-    <field name="uniprot_id" type="symbol_list" indexed="true" stored="true" multiValued="true"/>
-    <field name="name" type="text_general" indexed="true" stored="true"/>
-    <field name="gene_family_id" type="text_general" indexed="true" stored="true" multiValued="true"/>
-    <field name="gene_family" type="text_general" indexed="true" stored="true"/>
-    <field name="omim_id" type="string" indexed="true" stored="true"/>
+    <field name="synonymStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
     <!-- Catchall field, containing all other searchable text fields (implemented
          via copyField further on in this schema). -->
-
     <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="textStub" type="text_prefix" indexed="true" stored="false" multiValued="true" omitNorms="true"/>
 
+    <!-- Discard all other fields -->
     <dynamicField name="*" type="ignored" multiValued="true"/>
   </fields>
 
@@ -182,16 +234,47 @@
     -->
   <uniqueKey>id</uniqueKey>
 
-  <copyField source="symbol" dest="symbolExact"/>
-  <copyField source="symbol" dest="symbolPrefix"/>
-  <copyField source="symbol" dest="symbolSort"/>
-  <copyField source="prev_symbol" dest="synonymExact"/>
-  <copyField source="prev_symbol" dest="synonymPrefix"/>
-  <copyField source="alias_symbol" dest="synonymExact"/>
-  <copyField source="alias_symbol" dest="synonymPrefix"/>
-  <copyField source="ensembl_gene_id" dest="synonymExact"/>
-  <copyField source="entrez_id" dest="synonymExact"/>
-  <copyField source="refseq_accession" dest="synonymExact"/>
+  <copyField source="symbol" dest="symbolStub"/>
+  <copyField source="name" dest="nameSpell"/>
+  <copyField source="name" dest="nameExact"/>
+  <copyField source="name" dest="namePrefix"/>
+  <copyField source="name" dest="nameStub"/>
+  <copyField source="name" dest="nameSort"/>
+  <copyField source="alias_symbol" dest="alias_symbolStub"/>
+  <copyField source="alias_name" dest="alias_nameSpell"/>
+  <copyField source="alias_name" dest="alias_nameExact"/>
+  <copyField source="alias_name" dest="alias_namePrefix"/>
+  <copyField source="alias_name" dest="alias_nameStub"/>
+  <copyField source="prev_symbol" dest="prev_symbolStub"/>
+  <copyField source="prev_name" dest="prev_nameSpell"/>
+  <copyField source="prev_name" dest="prev_nameExact"/>
+  <copyField source="prev_name" dest="prev_namePrefix"/>
+  <copyField source="prev_name" dest="prev_nameStub"/>
+
+  <copyField source="alias_name" dest="synonym"/>
+  <copyField source="alias_name" dest="synonymSpell"/>
+  <copyField source="alias_name" dest="synonymExact"/>
+  <copyField source="alias_name" dest="synonymPrefix"/>
+  <copyField source="alias_name" dest="synonymStub"/>
+  <copyField source="prev_name" dest="synonym"/>
+  <copyField source="prev_name" dest="synonymSpell"/>
+  <copyField source="prev_name" dest="synonymExact"/>
+  <copyField source="prev_name" dest="synonymPrefix"/>
+  <copyField source="prev_name" dest="synonymStub"/>
+
+  <copyField source="alias_symbol" dest="alt_id"/>
+  <copyField source="alias_symbol" dest="alt_idStub"/>
+  <copyField source="prev_symbol" dest="alt_id"/>
+  <copyField source="prev_symbol" dest="alt_idStub"/>
+  <copyField source="entrez_id" dest="alt_id"/>
+  <copyField source="entrez_id" dest="alt_idStub"/>
+  <copyField source="ensembl_gene_id" dest="alt_id"/>
+  <copyField source="ensembl_gene_id" dest="alt_idStub"/>
+  <copyField source="refseq_accession" dest="alt_id"/>
+  <copyField source="refseq_accession" dest="alt_idStub"/>
+  <copyField source="ena" dest="alt_id"/>
+  <copyField source="ena" dest="alt_idStub"/>
+
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="textSpell"/>
   <copyField source="*" dest="textStub"/>
