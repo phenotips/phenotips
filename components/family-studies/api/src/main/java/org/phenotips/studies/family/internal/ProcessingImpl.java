@@ -166,21 +166,34 @@ public class ProcessingImpl implements Processing
             }
         }
 
+        // Update patient data from pedigree's JSON
         StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
         if (!updateFromJson.isValid()) {
             variables.response = updateFromJson;
             return variables;
         }
+
         // storing first, because pedigree depends on this.
         Pedigree pedigree = new Pedigree(variables.json, variables.image);
         variables.family.setPedigree(pedigree);
 
-        if (!variables.isNew) {
-            this.removeMembersNotPresent(variables.members, variables.updatedMembers);
+        // Removed members who are no longer in the family
+        List<String> patientsToRemove = new LinkedList<>();
+        patientsToRemove.addAll(variables.members);
+        patientsToRemove.removeAll(variables.updatedMembers);
+        for (String patientId : patientsToRemove) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            variables.family.removeMember(patient);
         }
-        this.addNewMembers(variables.members, variables.updatedMembers, variables.familyDoc);
-        // remove and add do not take care of modifying the 'members' property
-        this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
+
+        // Add new members to family
+        List<String> patientsToAdd = new LinkedList<>();
+        patientsToRemove.addAll(variables.updatedMembers);
+        patientsToRemove.removeAll(variables.members);
+        for (String patientId : patientsToAdd) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            variables.family.addMember(patient);
+        }
 
         return variables;
     }
