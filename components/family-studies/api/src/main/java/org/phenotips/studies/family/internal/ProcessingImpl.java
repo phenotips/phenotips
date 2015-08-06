@@ -100,24 +100,35 @@ public class ProcessingImpl implements Processing
             return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
         }
 
-        // Get proband's family. Create a new one if doesn't exist
+        // Get proband's family
         variables.family = this.familyRepository.getFamilyForPatient(variables.proband);
+
+        // Get list of new members in pedigree/family
+        variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
+        if (variables.family != null) {
+            // sometimes pedigree passes in family document name as a member
+            variables.updatedMembers.remove(variables.family.getId());
+        }
+        variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
+
+        // Edge case - empty list of new members
+        if (variables.updatedMembers.size() < 1) {
+            return StatusResponse2.FAMILY_HAS_NO_MEMBERS;
+        }
+
+        // Edge case - proband with no family. Create a new one.
         if (variables.family == null) {
             if (!this.validation.hasPatientEditAccess(patientId)) {
                 return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
             }
             variables.family = this.familyRepository.createFamily();
             variables.family.addMember(variables.proband);
+            variables.isNew = true;
         }
 
         variables.anchorRef = variables.proband.getDocument();
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
-
-        variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
-        // sometimes pedigree passes in family document name as a member
-        variables.updatedMembers.remove(variables.family.getId());
-        variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
 
         variables = this.executePreUpdateLogic(variables);
         if (!variables.response.isValid()) {
@@ -180,22 +191,14 @@ public class ProcessingImpl implements Processing
     {
         variables.response = StatusResponse2.OK;
 
-        if (variables.updatedMembers.size() < 1) {
-            variables.response = StatusResponse2.FAMILY_HAS_NO_MEMBERS;
+        variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
+        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
+        if (!duplicationStatus.isValid()) {
+            variables.response = duplicationStatus;
             return variables;
-        } else if (variables.familyDoc == null && variables.updatedMembers.size() > 1) {
-            // in theory the anchorDoc could be a family document, but at this point it should be a patient document
-            variables.familyDoc = this.familyUtils.createFamilyDoc(variables.anchorDoc, true);
-            variables.isNew = true;
-        } else if (variables.familyDoc != null) {
-            variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
-            StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-            if (!duplicationStatus.isValid()) {
-                variables.response = duplicationStatus;
-                return variables;
-            }
-            variables.members = Collections.unmodifiableList(variables.members);
         }
+        variables.members = Collections.unmodifiableList(variables.members);
+
         return variables;
     }
 
