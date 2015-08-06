@@ -125,6 +125,12 @@ public class ProcessingImpl implements Processing
             variables.isNew = true;
         }
 
+        // Checks that current user has edit permissions on family
+        if (!this.validation.hasAccess(variables.family.getDocumentReference(), Right.EDIT))
+        {
+            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
+        }
+
         variables.anchorRef = variables.proband.getDocument();
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
@@ -166,12 +172,8 @@ public class ProcessingImpl implements Processing
             return variables;
         }
         // storing first, because pedigree depends on this.
-        StatusResponse2 storingResponse = this.storeFamilyRepresentation(variables.family, variables
-            .updatedMembers, variables.json, variables.image);
-        if (!storingResponse.isValid()) {
-            variables.response = storingResponse;
-            return variables;
-        }
+        Pedigree pedigree = new Pedigree(variables.json, variables.image);
+        variables.family.setPedigree(pedigree);
 
         if (!variables.isNew) {
             this.removeMembersNotPresent(variables.members, variables.updatedMembers);
@@ -229,32 +231,6 @@ public class ProcessingImpl implements Processing
             return StatusResponse2.UNKNOWN_ERROR;
         }
 
-        return StatusResponse2.OK;
-    }
-
-    /**
-     * Does not do access checking.
-     *
-     * @param family
-     * @param updatedMembers
-     * @param familyContents
-     * @param image
-     * @return
-     * @throws XWikiException
-     */
-    private StatusResponse2 storeFamilyRepresentation(Family family, List<String> updatedMembers,
-        JSONObject familyContents, String image) throws XWikiException
-    {
-        if (!this.validation.hasAccess(new DocumentReference(family.getDocumentReference()), Right.EDIT))
-        {
-            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
-        }
-
-        Pedigree pedigree = new Pedigree();
-        pedigree.setData(familyContents);
-        pedigree.setImage(image);
-
-        family.setPedigree(pedigree);
         return StatusResponse2.OK;
     }
 
