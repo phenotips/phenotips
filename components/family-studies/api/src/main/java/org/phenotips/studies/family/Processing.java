@@ -22,14 +22,11 @@ import org.phenotips.studies.family.internal2.StatusResponse2;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.query.QueryException;
 
-import java.util.List;
-
 import javax.naming.NamingException;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 import net.sf.json.JSONObject;
 
@@ -59,16 +56,6 @@ public interface Processing
      */
     StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException, NamingException, QueryException;
-
-    /**
-     * TODO.
-     *
-     * @param familyDocument XWiki family document object.
-     * @param patientIds List of PhenoTips patient IDs of patients in the family.
-     * @throws XWikiException TODO: review if need to throw.
-     */
-    void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds) throws
-        XWikiException;
 
     /**
      * Removes a patient from the family, modifying the both the family and patient records to reflect the change.

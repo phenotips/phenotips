@@ -34,7 +34,6 @@ import org.xwiki.query.QueryException;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -227,55 +226,6 @@ public class ProcessingImpl implements Processing
         protected List<String> members = new LinkedList<>();
 
         protected boolean isNew;
-    }
-
-    /**
-     * Does not save the family document.
-     *
-     * @param familyDocument XWiki family document object.
-     * @param patientIds List of PhenoTips patient IDs of patients in the family.
-     * @throws XWikiException TODO: review if need to throw on error.
-     */
-    @Override
-    public void setUnionOfUserPermissions(XWikiDocument familyDocument, List<String> patientIds)
-        throws XWikiException
-    {
-        XWikiContext context = this.provider.get();
-        BaseObject rightsObject = getDefaultRightsObject(familyDocument);
-        if (rightsObject == null) {
-            this.logger.error("Could not find a permission object attached to the family document {}",
-                familyDocument.getDocumentReference().getName());
-            return;
-        }
-
-        Set<String> usersUnion = new HashSet<>();
-        Set<String> groupsUnion = new HashSet<>();
-        for (String patientId : patientIds) {
-            DocumentReference patientRef = this.patientRepository.getPatientById(patientId).getDocument();
-            XWikiDocument patientDoc = this.familyUtils.getDoc(patientRef);
-            List<Set<String>> patientRights = this.familyUtils.getEntitiesWithEditAccess(patientDoc);
-            usersUnion.addAll(patientRights.get(0));
-            groupsUnion.addAll(patientRights.get(1));
-        }
-        rightsObject.set("users", setToString(usersUnion), context);
-        rightsObject.set("groups", setToString(groupsUnion), context);
-        rightsObject.set("allow", 1, context);
-    }
-
-    /**
-     * A document can have several rights objects.
-     *
-     * @return XWiki {@link BaseObject} that corresponds to the default rights
-     */
-    private BaseObject getDefaultRightsObject(XWikiDocument doc)
-    {
-        List<BaseObject> rights = doc.getXObjects(FamilyUtils.RIGHTS_CLASS);
-        for (BaseObject single : rights) {
-            if (StringUtils.equalsIgnoreCase(single.getStringValue("levels"), FamilyUtils.DEFAULT_RIGHTS)) {
-                return single;
-            }
-        }
-        return null;
     }
 
     private StatusResponse2 updatePatientsFromJson(JSON familyContents)
