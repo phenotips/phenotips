@@ -27,7 +27,6 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.Collection;
 import java.util.List;
 
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -48,35 +47,6 @@ public interface FamilyUtils
     /** XWiki class that represents objects that contain a string reference to a family document. */
     EntityReference FAMILY_REFERENCE =
         new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    /** XWiki class that contains rights to XWiki documents. */
-    EntityReference RIGHTS_CLASS =
-        new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
-
-    /** The set of rights awarded to any user that holds edit rights on any patient record that belongs to a family. */
-    String DEFAULT_RIGHTS = "view,edit";
-
-    /**
-     * A wrapper around {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}.
-     *
-     * @param docRef cannot be null
-     * @return the result of calling {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
-     * @throws XWikiException that can be thrown by
-     *             {@link com.xpn.xwiki.XWiki#getDocument(EntityReference, XWikiContext)}
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    XWikiDocument getDoc(EntityReference docRef) throws XWikiException;
-
-    /**
-     * Returns a family document tied to the `anchorDoc`. If the `anchorDoc` is a family document, returns `anchorDoc`.
-     * If it is a patient document, attempts to get the family document to which the patient belongs.
-     *
-     * @param anchorDoc a document used as a starting point for searching for a family document
-     * @return {@link null} if the `anchorDoc` is not a family document or a patient document (that belongs to a
-     *         family). Otherwise returns the family document.
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException;
 
     /**
      * Interfaces with the old family studies, which recorded external patient id and relationship to the `patient`.
@@ -113,35 +83,6 @@ public interface FamilyUtils
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
     List<String> getFamilyMembers(BaseObject familyObject) throws XWikiException;
-
-    /**
-     * Inserts a reference to a family document into a patient document. Does not save the patient document.
-     *
-     * @param patientDoc which should be linked to the family
-     * @param familyDoc family document which the patient is a member of
-     * @param context {@link XWikiContext}
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
-        throws XWikiException;
-
-    /**
-     * Overwrites the list of family members to the one passed in. Saves the family document.
-     *
-     * @param familyDoc whose members should be updated
-     * @param members the new list of family members
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException;
-
-    /**
-     * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree.
-     *
-     * @param familyDoc which might contain a warning message
-     * @return if there is a warning to display, then returns the warning message, otherwise an empty string
-     * @throws XWikiException one of many possible reasons for XWiki to fail
-     */
-    String getWarningMessage(XWikiDocument familyDoc) throws XWikiException;
 
     /**
      * Returns a url to a document (view mode).

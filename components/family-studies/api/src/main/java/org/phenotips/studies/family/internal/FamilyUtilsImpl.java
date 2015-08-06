@@ -41,7 +41,6 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -72,14 +71,6 @@ public class FamilyUtilsImpl implements FamilyUtils
     private DocumentReferenceResolver<String> referenceResolver;
 
     @Override
-    public XWikiDocument getDoc(EntityReference docRef) throws XWikiException
-    {
-        XWikiContext context = this.provider.get();
-        XWiki wiki = context.getWiki();
-        return wiki.getDocument(docRef, context);
-    }
-
-    @Override
     public EntityReference getFamilyReference(XWikiDocument patientDoc) throws XWikiException
     {
         if (patientDoc == null) {
@@ -90,21 +81,6 @@ public class FamilyUtilsImpl implements FamilyUtils
             String familyDocName = familyPointer.getStringValue(FAMILY_REFERENCE_FIELD);
             if (StringUtils.isNotBlank(familyDocName)) {
                 return this.referenceResolver.resolve(familyDocName, Family.DATA_SPACE);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public XWikiDocument getFamilyDoc(XWikiDocument anchorDoc) throws XWikiException
-    {
-        BaseObject familyObject = anchorDoc.getXObject(FamilyUtils.FAMILY_CLASS);
-        if (familyObject != null) {
-            return anchorDoc;
-        } else {
-            EntityReference reference = getFamilyReference(anchorDoc);
-            if (reference != null) {
-                return getDoc(reference);
             }
         }
         return null;
@@ -131,17 +107,6 @@ public class FamilyUtilsImpl implements FamilyUtils
     }
 
     @Override
-    public void setFamilyReference(XWikiDocument patientDoc, XWikiDocument familyDoc, XWikiContext context)
-        throws XWikiException
-    {
-        BaseObject pointer = patientDoc.getXObject(FAMILY_REFERENCE);
-        if (pointer == null) {
-            pointer = patientDoc.newXObject(FAMILY_REFERENCE, context);
-        }
-        pointer.set(FAMILY_REFERENCE_FIELD, familyDoc.getDocumentReference().getName(), context);
-    }
-
-    @Override
     public List<String> getFamilyMembers(XWikiDocument familyDoc) throws XWikiException
     {
         return this.getFamilyMembers(familyDoc.getXObject(FAMILY_CLASS));
@@ -152,26 +117,6 @@ public class FamilyUtilsImpl implements FamilyUtils
     {
         DBStringListProperty xwikiRelativesList = (DBStringListProperty) familyObject.get(FAMILY_MEMBERS_FIELD);
         return xwikiRelativesList == null ? new LinkedList<String>() : xwikiRelativesList.getList();
-    }
-
-    @Override
-    public void setFamilyMembers(XWikiDocument familyDoc, List<String> members) throws XWikiException
-    {
-        BaseObject familyObject = familyDoc.getXObject(FAMILY_CLASS);
-        XWikiContext context = this.provider.get();
-        familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
-        context.getWiki().saveDocument(familyDoc, context);
-    }
-
-    @Override
-    public String getWarningMessage(XWikiDocument familyDoc) throws XWikiException
-    {
-        BaseObject familyObject = familyDoc.getXObject(FAMILY_CLASS);
-        if (familyObject.getIntValue("warning") == 0) {
-            return "";
-        } else {
-            return familyObject.getStringValue("warning_message");
-        }
     }
 
     @Override
