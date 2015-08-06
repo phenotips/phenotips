@@ -126,6 +126,9 @@ public class ProcessingImpl implements Processing
         }
 
         variables = this.executeSaveUpdateLogic(variables);
+
+        variables.family.updatePermissions();
+
         return variables.response;
     }
 
@@ -160,7 +163,6 @@ public class ProcessingImpl implements Processing
         }
 
         if (!variables.isNew) {
-            this.setUnionOfUserPermissions(variables.familyDoc, variables.updatedMembers);
             this.removeMembersNotPresent(variables.members, variables.updatedMembers);
         }
         this.addNewMembers(variables.members, variables.updatedMembers, variables.familyDoc);
@@ -185,7 +187,6 @@ public class ProcessingImpl implements Processing
         } else if (variables.familyDoc == null && variables.updatedMembers.size() > 1) {
             // in theory the anchorDoc could be a family document, but at this point it should be a patient document
             variables.familyDoc = this.familyUtils.createFamilyDoc(variables.anchorDoc, true);
-            this.setUnionOfUserPermissions(variables.familyDoc, variables.updatedMembers);
             variables.isNew = true;
         } else if (variables.familyDoc != null) {
             variables.members = this.familyUtils.getFamilyMembers(variables.familyDoc);
