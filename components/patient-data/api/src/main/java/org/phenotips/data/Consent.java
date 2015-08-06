@@ -18,11 +18,12 @@ public interface Consent
      */
     ConsentStatus getStatus();
 
-    void setStatus();
+    void setStatus(ConsentStatus status);
 
     boolean isRequired();
 
     JSON toJson();
 
-    boolean fromJson();
+    /** Returns a new {@link Consent} instance. Should be a static method, but should also be in the interface. */
+    Consent fromJson();
 }
