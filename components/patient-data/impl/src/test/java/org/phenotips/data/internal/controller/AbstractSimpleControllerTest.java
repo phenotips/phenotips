@@ -389,6 +389,42 @@ public class AbstractSimpleControllerTest
         Assert.assertEquals("datum3", container.get(PROPERTY_3));
     }
 
+    @Test
+    public void writeJSONDoesNotOverwriteContainer() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_1, "datum1");
+        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_3, "datum3");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(PROPERTY_1);
+        selectedFields.add(PROPERTY_3);
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+        Assert.assertNull(container.get(PROPERTY_2));
+
+        selectedFields.clear();
+        selectedFields.add(PROPERTY_2);
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+    }
+
 
     //-----------------------------------readJSON() tests-----------------------------------
 
