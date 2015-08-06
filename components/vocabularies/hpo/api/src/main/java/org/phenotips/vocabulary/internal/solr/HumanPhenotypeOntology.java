@@ -106,13 +106,12 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
 
     private Map<String, String> getStaticSolrParams()
     {
-        String trueStr = "true";
         Map<String, String> params = new HashMap<>();
-        params.put("spellcheck", trueStr);
-        params.put(SpellingParams.SPELLCHECK_COLLATE, trueStr);
+        params.put("spellcheck", Boolean.toString(true));
+        params.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
         params.put(SpellingParams.SPELLCHECK_COUNT, "100");
         params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
-        params.put("lowercaseOperators", "false");
+        params.put("lowercaseOperators", Boolean.toString(false));
         params.put("defType", "edismax");
         return params;
     }
