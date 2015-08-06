@@ -129,9 +129,11 @@ public class ProcessingImpl implements Processing
         variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
         variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
 
-        variables = this.executePreUpdateLogic(variables);
-        if (!variables.response.isValid()) {
-            return variables.response;
+        variables.members = variables.family.getMembers();
+
+        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
+        if (!duplicationStatus.isValid()) {
+            return duplicationStatus;
         }
 
         variables = this.executeSaveUpdateLogic(variables);
@@ -177,26 +179,6 @@ public class ProcessingImpl implements Processing
         this.addNewMembers(variables.members, variables.updatedMembers, variables.familyDoc);
         // remove and add do not take care of modifying the 'members' property
         this.familyUtils.setFamilyMembers(variables.familyDoc, variables.updatedMembers);
-
-        return variables;
-    }
-
-    /**
-     * Checks for several conditions, and updates some variables for later use by logic that handles saving/updating
-     * family and patient records.
-     */
-    private LogicInterDependantVariables executePreUpdateLogic(LogicInterDependantVariables variables)
-        throws XWikiException, NamingException, QueryException
-    {
-        variables.response = StatusResponse2.OK;
-
-        variables.members = variables.family.getMembers();
-        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-        if (!duplicationStatus.isValid()) {
-            variables.response = duplicationStatus;
-            return variables;
-        }
-        variables.members = Collections.unmodifiableList(variables.members);
 
         return variables;
     }
