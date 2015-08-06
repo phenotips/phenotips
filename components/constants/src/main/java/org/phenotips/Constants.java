@@ -33,4 +33,10 @@ public interface Constants
 
     /** Reference to the space where most of the PhenoTips code resides in. */
     EntityReference CODE_SPACE_REFERENCE = new EntityReference(CODE_SPACE, EntityType.SPACE);
+
+    /** The name of the space where the XWiki code resides in. */
+    String XWIKI_SPACE = "XWiki";
+
+    /** The reference to the space where most of the XWiki code resides in. */
+    EntityReference XWIKI_SPACE_REFERENCE = new EntityReference(XWIKI_SPACE, EntityType.SPACE);
 }
