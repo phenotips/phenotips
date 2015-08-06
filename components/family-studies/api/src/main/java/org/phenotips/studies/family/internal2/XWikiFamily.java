@@ -386,6 +386,6 @@ public class XWikiFamily implements Family
     @Override
     public void updatePermissions()
     {
-        XWikiFamily.familyPermissions.updatePermissions(this.familyDocument);
+        XWikiFamily.familyPermissions.updatePermissions(this, this.familyDocument);
     }
 }

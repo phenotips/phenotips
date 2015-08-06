@@ -17,6 +17,11 @@
  */
 package org.phenotips.studies.family.internal2;
 
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyUtils;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -35,8 +40,10 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -53,6 +60,9 @@ public class XWikiFamilyPermissions
     /** XWiki class that contains rights to XWiki documents. */
     private static final EntityReference RIGHTS_CLASS =
         new EntityReference("XWikiRights", EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
+
+    /** The set of rights awarded to any user that holds edit rights on any patient record that belongs to a family. */
+    private static final String DEFAULT_RIGHTS = "view,edit";
 
     private static final String RIGHTS_USERS_FIELD = "users";
 
@@ -72,6 +82,15 @@ public class XWikiFamilyPermissions
     @Inject
     private UserManager userManager;
 
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private PatientRepository patientRepository;
+
+    @Inject
+    private FamilyUtils familyUtils;
+
     /**
      * Grants edit permission on the family to everyone who had edit permission on the patient.
      *
@@ -89,7 +108,7 @@ public class XWikiFamilyPermissions
         String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
         permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
         permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
-        permissions.set(RIGHTS_LEVELS_FIELD, "view,edit", context);
+        permissions.set(RIGHTS_LEVELS_FIELD, DEFAULT_RIGHTS, context);
         permissions.set(ALLOW, 1, context);
     }
 
@@ -167,10 +186,70 @@ public class XWikiFamilyPermissions
      * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
      * access on p, x has edit access of the family.
      *
+     * @param family to update permissions
      * @param familyDocument document of family to update permissions
      */
-    public void updatePermissions(XWikiDocument familyDocument)
+    public void updatePermissions(Family family, XWikiDocument familyDocument)
     {
-        // TODO Auto-generated method stub
+        XWikiContext context = this.provider.get();
+        BaseObject rightsObject = getDefaultRightsObject(familyDocument);
+        if (rightsObject == null) {
+            this.logger.error(
+                "Could not find a permission object attached to the family document {}",
+                family.getId());
+            return;
+        }
+
+        List<String> members = family.getMembers();
+
+        Set<String> usersUnion = new HashSet<>();
+        Set<String> groupsUnion = new HashSet<>();
+
+        for (String patientId : members) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            XWikiDocument patientDoc;
+            try {
+                patientDoc = this.familyUtils.getDoc(patient.getDocument());
+            } catch (XWikiException e) {
+                this.logger.error("Can't retrieve patient document for patient {}: {}",
+                    patientId, e.getMessage());
+                continue;
+            }
+            List<Set<String>> patientRights = this.getEntitiesWithEditAccess(patientDoc);
+            usersUnion.addAll(patientRights.get(0));
+            groupsUnion.addAll(patientRights.get(1));
+        }
+        rightsObject.set(RIGHTS_USERS_FIELD, setToString(usersUnion), context);
+        rightsObject.set(RIGHTS_GROUPS_FIELD, setToString(groupsUnion), context);
+        rightsObject.set(ALLOW, 1, context);
     }
+
+    private static String setToString(Set<String> set)
+    {
+        String finalString = "";
+        for (String item : set) {
+            if (StringUtils.isNotBlank(item)) {
+                finalString += item + COMMA;
+            }
+        }
+        return finalString;
+    }
+
+    /**
+     * get the rights object for a family A document can have several rights objects.
+     *
+     * @return XWiki {@link BaseObject} that corresponds to the default rights
+     */
+    private BaseObject getDefaultRightsObject(XWikiDocument familyDoc)
+    {
+        List<BaseObject> rights = familyDoc.getXObjects(XWikiFamilyPermissions.RIGHTS_CLASS);
+        for (BaseObject right : rights) {
+            String level = right.getStringValue(RIGHTS_LEVELS_FIELD);
+            if (StringUtils.equalsIgnoreCase(level, XWikiFamilyPermissions.DEFAULT_RIGHTS)) {
+                return right;
+            }
+        }
+        return null;
+    }
+
 }
