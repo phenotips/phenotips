@@ -65,6 +65,7 @@ public class FamilyDeletingListener implements EventListener
         return Collections.<Event>singletonList(new DocumentDeletingEvent());
     }
 
+    // TODO: Test!
     @Override
     public void onEvent(Event event, Object source, Object data)
     {

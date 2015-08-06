@@ -60,6 +60,7 @@ public interface Family
      */
     DocumentReference getDocumentReference();
 
+    // TODO should return a list of Patients.
     /**
      * @return list of family members ids
      */
