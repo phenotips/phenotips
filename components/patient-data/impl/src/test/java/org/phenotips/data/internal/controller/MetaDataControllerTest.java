@@ -17,26 +17,35 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import net.sf.json.JSONObject;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.junit.Before;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.phenotips.data.*;
+import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleValuePatientData;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import com.xpn.xwiki.doc.XWikiDocument;
+import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;

@@ -17,23 +17,12 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -46,14 +35,33 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link VersionsController} Component,
@@ -66,7 +74,7 @@ public class VersionsControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(VersionsController.class);
+        new MockitoComponentMockingRule<PatientDataController<String>>(VersionsController.class);
 
     private DocumentAccessBridge documentAccessBridge;
 
@@ -160,7 +168,7 @@ public class VersionsControllerTest
         Exception exception = new Exception();
         doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ", exception.getMessage());

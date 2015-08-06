@@ -17,10 +17,6 @@
  */
 package org.phenotips.data.internal.controller;
 
-import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
@@ -36,8 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import net.sf.json.JSONObject;
+
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.doReturn;
@@ -51,7 +52,7 @@ public class SolvedControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(SolvedController.class);
+        new MockitoComponentMockingRule<PatientDataController<String>>(SolvedController.class);
 
     @Mock
     private Patient patient;

@@ -50,7 +50,7 @@ public class TextNotesControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("notes",
-                ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
