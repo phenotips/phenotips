@@ -29,7 +29,6 @@ import org.phenotips.studies.family.internal2.Pedigree;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.QueryException;
 import org.xwiki.security.authorization.Right;
 
@@ -72,9 +71,6 @@ public class ProcessingImpl implements Processing
 
     @Inject
     private FamilyRepository familyRepository;
-
-    @Inject
-    private FamilyUtils familyUtils;
 
     @Inject
     private Provider<XWikiContext> provider;
@@ -122,7 +118,6 @@ public class ProcessingImpl implements Processing
             }
             variables.family = this.familyRepository.createFamily();
             variables.family.addMember(variables.proband);
-            variables.isNew = true;
         }
 
         // Checks that current user has edit permissions on family
@@ -130,10 +125,6 @@ public class ProcessingImpl implements Processing
         {
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
-
-        variables.anchorRef = variables.proband.getDocument();
-        variables.anchorDoc = this.familyUtils.getDoc(variables.anchorRef);
-        variables.familyDoc = this.familyUtils.getFamilyDoc(variables.anchorDoc);
 
         variables.members = variables.family.getMembers();
 
@@ -210,21 +201,13 @@ public class ProcessingImpl implements Processing
 
         protected String image;
 
-        protected XWikiDocument familyDoc;
-
-        protected XWikiDocument anchorDoc;
-
         protected Family family;
 
         protected Patient proband;
 
-        protected DocumentReference anchorRef;
-
         protected List<String> updatedMembers = new LinkedList<>();
 
         protected List<String> members = new LinkedList<>();
-
-        protected boolean isNew;
     }
 
     private StatusResponse2 updatePatientsFromJson(JSON familyContents)
@@ -245,24 +228,6 @@ public class ProcessingImpl implements Processing
         }
 
         return StatusResponse2.OK;
-    }
-
-    /**
-     * Removes records from the family that are no longer in the updated family structure.
-     */
-    private void removeMembersNotPresent(List<String> currentMembers, List<String> updatedMembers)
-        throws XWikiException
-    {
-        List<String> toRemove = new LinkedList<>();
-        toRemove.addAll(currentMembers);
-        toRemove.removeAll(updatedMembers);
-        if (!toRemove.isEmpty()) {
-            XWikiContext context = this.provider.get();
-            XWiki wiki = context.getWiki();
-            for (String oldMemberId : toRemove) {
-                this.removeMember(oldMemberId, wiki, context);
-            }
-        }
     }
 
     @Override
@@ -328,26 +293,6 @@ public class ProcessingImpl implements Processing
             return pedigree.getData();
         } else {
             return new JSONObject();
-        }
-    }
-
-    private void addNewMembers(List<String> currentMembers, List<String> updatedMembers, XWikiDocument familyDoc)
-        throws XWikiException
-    {
-        List<String> newMembers = new LinkedList<>();
-        newMembers.addAll(updatedMembers);
-        newMembers.removeAll(currentMembers);
-        if (!newMembers.isEmpty()) {
-            XWikiContext context = this.provider.get();
-            XWiki wiki = context.getWiki();
-            for (String newMember : newMembers) {
-                Patient patient = this.patientRepository.getPatientById(newMember);
-                if (patient != null) {
-                    XWikiDocument patientDoc = wiki.getDocument(patient.getDocument(), context);
-                    this.familyUtils.setFamilyReference(patientDoc, familyDoc, context);
-                    wiki.saveDocument(patientDoc, context);
-                }
-            }
         }
     }
 
