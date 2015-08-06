@@ -59,7 +59,7 @@ public class Pedigree
     }
 
     /**
-     * Create a new pedigree with data and image
+     * Create a new pedigree with data and image.
      *
      * @param data pedigree data
      * @param image SVG 'image'
