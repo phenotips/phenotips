@@ -112,6 +112,8 @@ public class AbstractSimpleControllerTest
         Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
     }
 
+    //-----------------------------------load() tests-----------------------------------
+
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
     {
@@ -169,6 +171,8 @@ public class AbstractSimpleControllerTest
         Assert.assertEquals(datum, result.get(PROPERTY_3));
         Assert.assertEquals(1, result.size());
     }
+
+    //-----------------------------------save() tests-----------------------------------
 
     @Test
     public void saveCatchesExceptionFromDocumentAccess() throws Exception
@@ -242,6 +246,8 @@ public class AbstractSimpleControllerTest
         verify(this.data).setStringValue(PROPERTY_2, "datum2");
         verify(this.data).setStringValue(PROPERTY_3, "datum3");
     }
+
+    //-----------------------------------writeJSON() tests-----------------------------------
 
     @Test
     public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
@@ -382,6 +388,9 @@ public class AbstractSimpleControllerTest
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
         Assert.assertEquals("datum3", container.get(PROPERTY_3));
     }
+
+
+    //-----------------------------------readJSON() tests-----------------------------------
 
     @Test
     public void readJSONReturnsNullWhenPassedEmptyJSONObject() throws ComponentLookupException
