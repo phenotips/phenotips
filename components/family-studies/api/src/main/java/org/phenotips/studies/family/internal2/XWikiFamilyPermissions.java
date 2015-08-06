@@ -42,6 +42,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -192,6 +193,8 @@ public class XWikiFamilyPermissions
     public void updatePermissions(Family family, XWikiDocument familyDocument)
     {
         XWikiContext context = this.provider.get();
+        XWiki wiki = context.getWiki();
+
         BaseObject rightsObject = getDefaultRightsObject(familyDocument);
         if (rightsObject == null) {
             this.logger.error(
@@ -209,7 +212,7 @@ public class XWikiFamilyPermissions
             Patient patient = this.patientRepository.getPatientById(patientId);
             XWikiDocument patientDoc;
             try {
-                patientDoc = this.familyUtils.getDoc(patient.getDocument());
+                patientDoc = wiki.getDocument(patient.getDocument(), context);
             } catch (XWikiException e) {
                 this.logger.error("Can't retrieve patient document for patient {}: {}",
                     patientId, e.getMessage());
