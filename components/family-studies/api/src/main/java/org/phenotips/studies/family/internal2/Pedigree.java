@@ -58,16 +58,17 @@ public class Pedigree
 
     }
 
-    // /**
-    // * Create a new pedigree with data and image
-    // * @param data
-    // * @param image
-    // */
-    // public Pedigree(JSONObject data, String image)
-    // {
-    // this.data = data;
-    // this.image = image;
-    // }
+    /**
+     * Create a new pedigree with data and image
+     *
+     * @param data pedigree data
+     * @param image SVG 'image'
+     */
+    public Pedigree(JSONObject data, String image)
+    {
+        this.data = data;
+        this.image = image;
+    }
 
     /**
      * Checks if the `data` field is empty.
