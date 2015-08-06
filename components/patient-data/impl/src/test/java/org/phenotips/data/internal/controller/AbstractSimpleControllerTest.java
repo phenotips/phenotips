@@ -66,9 +66,9 @@ public class AbstractSimpleControllerTest
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(AbstractSimpleControllerTestImplementation.class);
 
-    protected DocumentAccessBridge documentAccessBridge;
+    private DocumentAccessBridge documentAccessBridge;
 
-    protected XWikiContext xcontext;
+    private XWikiContext xcontext;
 
     @Mock
     protected XWiki xWiki;
