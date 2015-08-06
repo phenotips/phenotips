@@ -32,7 +32,6 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -222,9 +221,6 @@ public class XWikiFamilyRepository implements FamilyRepository
             return StatusResponse2.PEDIGREE_NOT_EMPTY.setMessage(patientId);
         }
 
-        if (!XWikiFamilyRepository.validation.hasAccess(family.getDocumentReference(), Right.EDIT)) {
-            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
-        }
         return StatusResponse2.OK;
     }
 
