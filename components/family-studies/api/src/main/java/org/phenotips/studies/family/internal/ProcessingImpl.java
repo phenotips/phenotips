@@ -71,8 +71,7 @@ public class ProcessingImpl implements Processing
         throws XWikiException, NamingException, QueryException
     {
         LogicInterDependantVariables variables = new LogicInterDependantVariables();
-        variables.json = json;
-        variables.image = image;
+        Pedigree pedigree = new Pedigree(json, image);
 
         // Get proband
         variables.proband = this.patientRepository.getPatientById(patientId);
@@ -84,7 +83,7 @@ public class ProcessingImpl implements Processing
         variables.family = this.familyRepository.getFamilyForPatient(variables.proband);
 
         // Get list of new members in pedigree/family
-        variables.updatedMembers = PedigreeUtils.extractIdsFromPedigree(json);
+        variables.updatedMembers = pedigree.extractIds();
         if (variables.family != null) {
             // sometimes pedigree passes in family document name as a member
             variables.updatedMembers.remove(variables.family.getId());
@@ -111,24 +110,23 @@ public class ProcessingImpl implements Processing
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
-        variables.members = variables.family.getMembers();
-
-        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-        if (!duplicationStatus.isValid()) {
-            return duplicationStatus;
-        }
-
-        variables = this.executeSaveUpdateLogic(variables);
+        variables = this.executeSaveUpdateLogic(variables, pedigree);
 
         variables.family.updatePermissions();
 
         return variables.response;
     }
 
-    private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables)
-        throws XWikiException
+    private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables,
+        Pedigree pedigree) throws XWikiException
     {
         StatusResponse2 response;
+
+        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
+        if (!duplicationStatus.isValid()) {
+            variables.response = duplicationStatus;
+            return variables;
+        }
 
         // Check if every member of updatedMembers can be added to the family
         if (variables.updatedMembers != null) {
@@ -143,19 +141,20 @@ public class ProcessingImpl implements Processing
         }
 
         // Update patient data from pedigree's JSON
-        StatusResponse2 updateFromJson = this.updatePatientsFromJson(variables.json);
+        StatusResponse2 updateFromJson = this.updatePatientsFromJson(pedigree.getData());
         if (!updateFromJson.isValid()) {
             variables.response = updateFromJson;
             return variables;
         }
 
+        List<String> members = variables.family.getMembers();
+
         // storing first, because pedigree depends on this.
-        Pedigree pedigree = new Pedigree(variables.json, variables.image);
         variables.family.setPedigree(pedigree);
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
-        patientsToRemove.addAll(variables.members);
+        patientsToRemove.addAll(members);
         patientsToRemove.removeAll(variables.updatedMembers);
         for (String patientId : patientsToRemove) {
             Patient patient = this.patientRepository.getPatientById(patientId);
@@ -165,7 +164,7 @@ public class ProcessingImpl implements Processing
         // Add new members to family
         List<String> patientsToAdd = new LinkedList<>();
         patientsToRemove.addAll(variables.updatedMembers);
-        patientsToRemove.removeAll(variables.members);
+        patientsToRemove.removeAll(members);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.getPatientById(patientId);
             variables.family.addMember(patient);
@@ -182,17 +181,11 @@ public class ProcessingImpl implements Processing
     {
         protected StatusResponse2 response;
 
-        protected JSONObject json;
-
-        protected String image;
-
         protected Family family;
 
         protected Patient proband;
 
         protected List<String> updatedMembers = new LinkedList<>();
-
-        protected List<String> members = new LinkedList<>();
     }
 
     private StatusResponse2 updatePatientsFromJson(JSON familyContents)
