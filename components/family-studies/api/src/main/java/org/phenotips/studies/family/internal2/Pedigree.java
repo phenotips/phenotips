@@ -147,7 +147,7 @@ public class Pedigree
             }
         }
     }
-    
+
     /**
      * Extracts and returns all PhenoTips patient ids.
      *

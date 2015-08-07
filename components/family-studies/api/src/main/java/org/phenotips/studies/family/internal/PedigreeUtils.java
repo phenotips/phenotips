@@ -23,7 +23,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.component.manager.ComponentLookupException;
