@@ -85,15 +85,6 @@ public class ProcessingImpl implements Processing
             newMembers.remove(family.getId());
         }
 
-        // Edge case - empty list of new members
-        if (newMembers.size() < 1) {
-            return StatusResponse2.FAMILY_HAS_NO_MEMBERS;
-        }
-
-        if (ProcessingImpl.containsDuplicates(newMembers)) {
-            return StatusResponse2.DUPLICATE_PATIENT;
-        }
-
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
             if (!this.validation.hasPatientEditAccess(patientId)) {
@@ -103,37 +94,48 @@ public class ProcessingImpl implements Processing
             family.addMember(proband);
         }
 
+        StatusResponse2 response = checkValidity(family, newMembers);
+        if (!response.isValid()) {
+            return response;
+        }
+
+        return this.processPatientPedigree(family, pedigree, newMembers);
+    }
+
+    private StatusResponse2 checkValidity(Family family, List<String> newMembers) {
+
         // Checks that current user has edit permissions on family
         if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
         {
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
-        StatusResponse2 response = this.executeSaveUpdateLogic(family, pedigree, newMembers);
-        if (!response.isValid()) {
-            return response;
+        // Edge case - empty list of new members
+        if (newMembers.size() < 1) {
+            return StatusResponse2.FAMILY_HAS_NO_MEMBERS;
         }
 
-        family.updatePermissions();
-
-        return StatusResponse2.OK;
-    }
-
-    private StatusResponse2 executeSaveUpdateLogic(Family family,
-        Pedigree pedigree, List<String> newMembers) throws XWikiException
-    {
-        StatusResponse2 response;
+        if (ProcessingImpl.containsDuplicates(newMembers)) {
+            return StatusResponse2.DUPLICATE_PATIENT;
+        }
 
         // Check if every member of updatedMembers can be added to the family
         if (newMembers != null) {
             for (String patientId : newMembers) {
                 Patient patient = this.patientRepository.getPatientById(patientId);
-                response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+                StatusResponse2 response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
                 if (!response.isValid()) {
                     return response;
                 }
             }
         }
+
+        return StatusResponse2.OK;
+    }
+
+    private StatusResponse2 processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
+        throws XWikiException {
+        StatusResponse2 response;
 
         // Update patient data from pedigree's JSON
         response = this.updatePatientsFromJson(pedigree.getData());
@@ -141,10 +143,10 @@ public class ProcessingImpl implements Processing
             return response;
         }
 
-        List<String> members = family.getMembers();
-
         // storing first, because pedigree depends on this.
         family.setPedigree(pedigree);
+
+        List<String> members = family.getMembers();
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
@@ -163,6 +165,8 @@ public class ProcessingImpl implements Processing
             Patient patient = this.patientRepository.getPatientById(patientId);
             family.addMember(patient);
         }
+
+        family.updatePermissions();
 
         return StatusResponse2.OK;
     }
