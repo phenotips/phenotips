@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.studies.family.internal2.StatusResponse2;
+import org.phenotips.studies.family.internal.StatusResponse;
 
 import org.xwiki.component.annotation.Role;
 
@@ -41,9 +41,9 @@ public interface Processing
      *            family if created for the patient.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
-     * @return {@link StatusResponse2} with one of many possible statuses
+     * @return {@link StatusResponse} with one of many possible statuses
      * @throws XWikiException one of many possible reasons for XWiki to fail
      */
-    StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
+    StatusResponse processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException;
 }

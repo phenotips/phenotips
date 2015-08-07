@@ -18,7 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
-import org.phenotips.studies.family.internal2.StatusResponse2;
+import org.phenotips.studies.family.internal.StatusResponse;
 
 import org.xwiki.component.annotation.Role;
 
@@ -58,5 +58,5 @@ public interface FamilyRepository
      * @param family to add the patient to. Must not be null.
      * @return {@link PatientCanBeAddedResponse}
      */
-    StatusResponse2 canPatientBeAddedToFamily(Patient patient, Family family);
+    StatusResponse canPatientBeAddedToFamily(Patient patient, Family family);
 }

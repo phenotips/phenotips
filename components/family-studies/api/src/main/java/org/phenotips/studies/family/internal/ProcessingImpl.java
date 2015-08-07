@@ -24,8 +24,6 @@ import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
-import org.phenotips.studies.family.internal2.Pedigree;
-import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.security.authorization.Right;
@@ -63,7 +61,7 @@ public class ProcessingImpl implements Processing
     private JsonAdapter jsonAdapter;
 
     @Override
-    public StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
+    public StatusResponse processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException
     {
         Pedigree pedigree = new Pedigree(json, image);
@@ -71,7 +69,7 @@ public class ProcessingImpl implements Processing
         // Get proband
         Patient proband = this.patientRepository.getPatientById(patientId);
         if (proband == null) {
-            return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
+            return StatusResponse.INVALID_PATIENT_ID.setMessage(patientId);
         }
 
         // Get proband's family
@@ -87,13 +85,13 @@ public class ProcessingImpl implements Processing
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
             if (!this.validation.hasPatientEditAccess(patientId)) {
-                return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
+                return StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
             }
             family = this.familyRepository.createFamily();
             family.addMember(proband);
         }
 
-        StatusResponse2 response = checkValidity(family, newMembers);
+        StatusResponse response = checkValidity(family, newMembers);
         if (!response.isValid()) {
             return response;
         }
@@ -101,40 +99,40 @@ public class ProcessingImpl implements Processing
         return this.processPatientPedigree(family, pedigree, newMembers);
     }
 
-    private StatusResponse2 checkValidity(Family family, List<String> newMembers) {
+    private StatusResponse checkValidity(Family family, List<String> newMembers) {
 
         // Checks that current user has edit permissions on family
         if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
         {
-            return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
+            return StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
         // Edge case - empty list of new members
         if (newMembers.size() < 1) {
-            return StatusResponse2.FAMILY_HAS_NO_MEMBERS;
+            return StatusResponse.FAMILY_HAS_NO_MEMBERS;
         }
 
         if (ProcessingImpl.containsDuplicates(newMembers)) {
-            return StatusResponse2.DUPLICATE_PATIENT;
+            return StatusResponse.DUPLICATE_PATIENT;
         }
 
         // Check if every member of updatedMembers can be added to the family
         if (newMembers != null) {
             for (String patientId : newMembers) {
                 Patient patient = this.patientRepository.getPatientById(patientId);
-                StatusResponse2 response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+                StatusResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
                 if (!response.isValid()) {
                     return response;
                 }
             }
         }
 
-        return StatusResponse2.OK;
+        return StatusResponse.OK;
     }
 
-    private StatusResponse2 processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
+    private StatusResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
         throws XWikiException {
-        StatusResponse2 response;
+        StatusResponse response;
 
         // Update patient data from pedigree's JSON
         response = this.updatePatientsFromJson(pedigree);
@@ -167,10 +165,10 @@ public class ProcessingImpl implements Processing
 
         family.updatePermissions();
 
-        return StatusResponse2.OK;
+        return StatusResponse.OK;
     }
 
-    private StatusResponse2 updatePatientsFromJson(Pedigree pedigree)
+    private StatusResponse updatePatientsFromJson(Pedigree pedigree)
     {
         String idKey = "id";
         try {
@@ -183,10 +181,10 @@ public class ProcessingImpl implements Processing
                 }
             }
         } catch (Exception ex) {
-            return StatusResponse2.UNKNOWN_ERROR;
+            return StatusResponse.UNKNOWN_ERROR;
         }
 
-        return StatusResponse2.OK;
+        return StatusResponse.OK;
     }
 
     private static boolean containsDuplicates(List<String> updatedMembers) {

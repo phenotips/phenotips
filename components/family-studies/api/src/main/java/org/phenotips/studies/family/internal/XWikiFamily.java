@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal2;
+package org.phenotips.studies.family.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.internal.SvgUpdater;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;

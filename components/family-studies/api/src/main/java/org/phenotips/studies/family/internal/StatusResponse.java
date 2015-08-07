@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal2;
+package org.phenotips.studies.family.internal;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -26,7 +26,7 @@ import net.sf.json.JSONObject;
  *
  * @version $Id$
  */
-public enum StatusResponse2
+public enum StatusResponse
 {
     /**
      * Patient can be added to a family.
@@ -106,7 +106,7 @@ public enum StatusResponse2
 
     private String message;
 
-    StatusResponse2(int statusCode, String errorType, String messageFormat)
+    StatusResponse(int statusCode, String errorType, String messageFormat)
     {
         this.statusCode = statusCode;
         this.errorType = errorType;
@@ -135,7 +135,7 @@ public enum StatusResponse2
      * @param parameters for the error message
      * @return reference to self
      */
-    public StatusResponse2 setMessage(Object... parameters)
+    public StatusResponse setMessage(Object... parameters)
     {
         this.message = String.format(this.messageFormat, parameters);
         return this;
@@ -189,6 +189,6 @@ public enum StatusResponse2
      */
     public boolean isValid()
     {
-        return this.getStatusCode() == StatusResponse2.OK.getStatusCode();
+        return this.getStatusCode() == StatusResponse.OK.getStatusCode();
     }
 };

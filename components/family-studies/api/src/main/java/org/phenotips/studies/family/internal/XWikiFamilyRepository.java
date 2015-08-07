@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal2;
+package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
@@ -199,20 +199,20 @@ public class XWikiFamilyRepository implements FamilyRepository
     }
 
     @Override
-    public StatusResponse2 canPatientBeAddedToFamily(Patient patient, Family family)
+    public StatusResponse canPatientBeAddedToFamily(Patient patient, Family family)
     {
         String patientId = patient.getId();
         Family familyForPatient = this.getFamilyForPatient(patient);
 
         if (familyForPatient != null) {
             if (familyForPatient.equals(family)) {
-                return StatusResponse2.OK;
+                return StatusResponse.OK;
             } else {
-                return StatusResponse2.ALREADY_HAS_FAMILY.setMessage(patientId);
+                return StatusResponse.ALREADY_HAS_FAMILY.setMessage(patientId);
             }
         }
 
-        return StatusResponse2.OK;
+        return StatusResponse.OK;
     }
 
     /*
