@@ -21,7 +21,6 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -211,10 +210,6 @@ public class XWikiFamilyRepository implements FamilyRepository
             } else {
                 return StatusResponse2.ALREADY_HAS_FAMILY.setMessage(patientId);
             }
-        }
-
-        if (PedigreeUtils.hasPedigree(patient)) {
-            return StatusResponse2.PEDIGREE_NOT_EMPTY.setMessage(patientId);
         }
 
         return StatusResponse2.OK;

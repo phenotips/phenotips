@@ -96,14 +96,7 @@ public enum StatusResponse2
      */
     PROBAND_HAS_NO_FAMILY(501,
         "NoFamilyForProband",
-        "Patient %s cannot be linked to proband's family, because proband %s has not family."),
-
-    /**
-     * Patient cannot be added to family because its pedigree is not empty.
-     */
-    PEDIGREE_NOT_EMPTY(501,
-        "existingPedigree",
-        "patient %s already has a different pedigree, and therefore cannot be included in this one.");
+        "Patient %s cannot be linked to proband's family, because proband %s has not family.");
 
     private int statusCode;
 
