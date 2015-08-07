@@ -31,7 +31,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.query.QueryException;
 import org.xwiki.security.authorization.Right;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,16 +82,19 @@ public class ProcessingImpl implements Processing
         variables.family = this.familyRepository.getFamilyForPatient(variables.proband);
 
         // Get list of new members in pedigree/family
-        variables.updatedMembers = pedigree.extractIds();
+        List<String> newMembers = pedigree.extractIds();
         if (variables.family != null) {
             // sometimes pedigree passes in family document name as a member
-            variables.updatedMembers.remove(variables.family.getId());
+            newMembers.remove(variables.family.getId());
         }
-        variables.updatedMembers = Collections.unmodifiableList(variables.updatedMembers);
 
         // Edge case - empty list of new members
-        if (variables.updatedMembers.size() < 1) {
+        if (newMembers.size() < 1) {
             return StatusResponse2.FAMILY_HAS_NO_MEMBERS;
+        }
+
+        if (ProcessingImpl.containsDuplicates(newMembers)) {
+            return StatusResponse2.DUPLICATE_PATIENT;
         }
 
         // Edge case - proband with no family. Create a new one.
@@ -110,7 +112,7 @@ public class ProcessingImpl implements Processing
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
-        variables = this.executeSaveUpdateLogic(variables, pedigree);
+        variables = this.executeSaveUpdateLogic(variables, pedigree, newMembers);
 
         variables.family.updatePermissions();
 
@@ -118,19 +120,14 @@ public class ProcessingImpl implements Processing
     }
 
     private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables,
-        Pedigree pedigree) throws XWikiException
+        Pedigree pedigree, List<String> newMembers) throws XWikiException
     {
         StatusResponse2 response;
 
-        StatusResponse2 duplicationStatus = ProcessingImpl.checkForDuplicates(variables.updatedMembers);
-        if (!duplicationStatus.isValid()) {
-            variables.response = duplicationStatus;
-            return variables;
-        }
 
         // Check if every member of updatedMembers can be added to the family
-        if (variables.updatedMembers != null) {
-            for (String patientId : variables.updatedMembers) {
+        if (newMembers != null) {
+            for (String patientId : newMembers) {
                 Patient patient = this.patientRepository.getPatientById(patientId);
                 response = this.familyRepository.canPatientBeAddedToFamily(patient, variables.family);
                 if (!response.isValid()) {
@@ -155,7 +152,7 @@ public class ProcessingImpl implements Processing
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
         patientsToRemove.addAll(members);
-        patientsToRemove.removeAll(variables.updatedMembers);
+        patientsToRemove.removeAll(newMembers);
         for (String patientId : patientsToRemove) {
             Patient patient = this.patientRepository.getPatientById(patientId);
             variables.family.removeMember(patient);
@@ -163,7 +160,7 @@ public class ProcessingImpl implements Processing
 
         // Add new members to family
         List<String> patientsToAdd = new LinkedList<>();
-        patientsToRemove.addAll(variables.updatedMembers);
+        patientsToRemove.addAll(newMembers);
         patientsToRemove.removeAll(members);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.getPatientById(patientId);
@@ -184,8 +181,6 @@ public class ProcessingImpl implements Processing
         protected Family family;
 
         protected Patient proband;
-
-        protected List<String> updatedMembers = new LinkedList<>();
     }
 
     private StatusResponse2 updatePatientsFromJson(JSON familyContents)
@@ -208,17 +203,17 @@ public class ProcessingImpl implements Processing
         return StatusResponse2.OK;
     }
 
-    private static StatusResponse2 checkForDuplicates(List<String> updatedMembers)
-    {
+    private static boolean containsDuplicates(List<String> updatedMembers) {
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
         for (String member : updatedMembers) {
             duplicationCheck.remove(member);
             if (duplicationCheck.contains(member)) {
-                return StatusResponse2.DUPLICATE_PATIENT.setMessage(member);
+                return true;
             }
         }
 
-        return StatusResponse2.OK;
+        return false;
     }
+
 }
