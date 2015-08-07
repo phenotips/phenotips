@@ -25,7 +25,7 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -77,7 +77,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             }
             Map<String, T> result = new LinkedHashMap<String, T>();
             for (String propertyName : getProperties()) {
-                BaseProperty<EntityReference> field = (BaseProperty<EntityReference>) data.getField(propertyName);
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) data.getField(propertyName);
                 if (field != null) {
                     Object propertyValue = field.getValue();
                     /* If the controller only works with codes, store the Ontology Instances rather than Strings */
