@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,8 +40,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import net.sf.json.JSONObject;
 
-
-import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.doReturn;
 
 /**
@@ -96,10 +95,10 @@ public class SolvedControllerTest
         List<String> result = ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getProperties();
 
         Assert.assertEquals(4, result.size());
-        Assert.assertThat(result, hasItem(STATUS_KEY));
-        Assert.assertThat(result, hasItem("solved__pubmed_id"));
-        Assert.assertThat(result, hasItem("solved__gene_id"));
-        Assert.assertThat(result, hasItem("solved__notes"));
+        Assert.assertThat(result, Matchers.hasItem(STATUS_KEY));
+        Assert.assertThat(result, Matchers.hasItem("solved__pubmed_id"));
+        Assert.assertThat(result, Matchers.hasItem("solved__gene_id"));
+        Assert.assertThat(result, Matchers.hasItem("solved__notes"));
     }
 
     //--------------------save() is Overridden from AbstractSimpleController--------------------

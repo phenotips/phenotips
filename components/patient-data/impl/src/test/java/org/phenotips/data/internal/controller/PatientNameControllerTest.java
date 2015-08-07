@@ -23,11 +23,10 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.hamcrest.Matchers.hasItem;
 
 /**
  * Test for the {@link PatientNameController} Component,
@@ -59,7 +58,7 @@ public class PatientNameControllerTest
         List<String> result = ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getProperties();
 
         Assert.assertEquals(2, result.size());
-        Assert.assertThat(result, hasItem("first_name"));
-        Assert.assertThat(result, hasItem("last_name"));
+        Assert.assertThat(result, Matchers.hasItem("first_name"));
+        Assert.assertThat(result, Matchers.hasItem("last_name"));
     }
 }
