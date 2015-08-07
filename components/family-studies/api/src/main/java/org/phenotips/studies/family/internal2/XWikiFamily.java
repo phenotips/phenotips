@@ -21,7 +21,6 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.SvgUpdater;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 
@@ -351,7 +350,7 @@ public class XWikiFamily implements Family
     public Pedigree getPedigree()
     {
         Pedigree pedigree = new Pedigree();
-        BaseObject pedigreeObj = this.familyDocument.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+        BaseObject pedigreeObj = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
 
         if (pedigreeObj != null) {
             BaseStringProperty data = null;
@@ -380,7 +379,7 @@ public class XWikiFamily implements Family
         XWikiContext context = getXContext();
         XWiki wiki = context.getWiki();
 
-        BaseObject pedigreeObject = this.familyDocument.getXObject(PedigreeUtils.PEDIGREE_CLASS);
+        BaseObject pedigreeObject = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
         String image = pedigree.getImage();
         if (image != null) {
             String updatedImage = SvgUpdater.setPatientStylesInSvg(image, getId());

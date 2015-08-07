@@ -17,11 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.Constants;
-
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,12 +32,6 @@ import net.sf.json.JSONObject;
  */
 public final class PedigreeUtils
 {
-    /**
-     * XWiki class that holds pedigree data (image, structure, etc).
-     */
-    public static final EntityReference PEDIGREE_CLASS =
-        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private PedigreeUtils()
     {
     }
