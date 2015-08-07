@@ -25,6 +25,7 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -65,6 +66,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     private Logger logger;
 
     @Override
+    @SuppressWarnings("unchecked")
     public PatientData<T> load(Patient patient)
     {
         try {
@@ -75,13 +77,12 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             }
             Map<String, T> result = new LinkedHashMap<String, T>();
             for (String propertyName : getProperties()) {
-                BaseProperty field = (BaseProperty) data.getField(propertyName);
+                BaseProperty<EntityReference> field = (BaseProperty<EntityReference>) data.getField(propertyName);
                 if (field != null) {
                     Object propertyValue = field.getValue();
                     /* If the controller only works with codes, store the Ontology Instances rather than Strings */
                     if (getCodeFields().contains(propertyName) && isCodeFieldsOnly()) {
                         List<VocabularyProperty> propertyValuesList = new LinkedList<>();
-                        @SuppressWarnings("unchecked")
                         List<String> terms = (List<String>) propertyValue;
                         for (String termId : terms) {
                             propertyValuesList.add(new QuickOntologyProperty(termId));
@@ -153,6 +154,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
      * @param value the value which possibly needs to be formatted
      * @return the formatted object or the original value
      */
+    @SuppressWarnings("unchecked")
     private Object format(String key, Object value)
     {
         if (value == null) {
