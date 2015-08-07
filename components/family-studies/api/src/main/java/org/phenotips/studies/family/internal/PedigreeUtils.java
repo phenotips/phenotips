@@ -18,21 +18,12 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.studies.family.internal2.Pedigree;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.LargeStringProperty;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -77,32 +68,6 @@ public final class PedigreeUtils
             extractedObjects.add(properties);
         }
         return extractedObjects;
-    }
-
-    /**
-     * Overwrites a pedigree in one document given an existing pedigree in another document. Will not throw an exception
-     * if fails. Does not save any documents.
-     *
-     * @param from in which to look for an existing pedigree
-     * @param to into which document to copy the pedigree found in the `from` document
-     * @param context needed for overwriting pedigree fields in the `to` document
-     */
-    public static void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
-    {
-        try {
-            BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-            if (fromPedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get(Pedigree.DATA);
-                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get(Pedigree.IMAGE);
-                if (StringUtils.isNotBlank(data.toText())) {
-                    BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-                    toPedigreeObj.set(Pedigree.DATA, data.toText(), context);
-                    toPedigreeObj.set(Pedigree.IMAGE, image.toText(), context);
-                }
-            }
-        } catch (XWikiException ex) {
-            // do nothing
-        }
     }
 
 }

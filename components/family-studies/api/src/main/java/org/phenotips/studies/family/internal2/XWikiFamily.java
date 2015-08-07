@@ -178,10 +178,6 @@ public class XWikiFamily implements Family
             return false;
         }
 
-        // TODO: are we handling pedigree right?
-        // Shouldn't the pedigree be merged into the family rather than copied?
-        PedigreeUtils.copyPedigree(patientDocument, this.familyDocument, context);
-
         this.updatePermissions();
 
         try {
