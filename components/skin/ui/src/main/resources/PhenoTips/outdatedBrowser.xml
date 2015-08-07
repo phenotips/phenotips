@@ -24,6 +24,7 @@
   <translation>0</translation>
   <creator>XWiki.Admin</creator>
   <creationDate>1438054658000</creationDate>
+  <parent>PhenoTips.Skin</parent>
   <author>XWiki.Admin</author>
   <contentAuthor>XWiki.Admin</contentAuthor>
   <date>1438379660000</date>
