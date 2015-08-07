@@ -146,7 +146,7 @@ public class ProcessingImpl implements Processing
         // storing first, because pedigree depends on this.
         family.setPedigree(pedigree);
 
-        List<String> members = family.getMembers();
+        List<String> members = family.getMembersIds();
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();

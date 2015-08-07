@@ -18,7 +18,6 @@
 package org.phenotips.studies.family.internal2;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
@@ -84,9 +83,6 @@ public class XWikiFamilyPermissions
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private PatientRepository patientRepository;
 
     /**
      * Grants edit permission on the family to everyone who had edit permission on the patient.
@@ -199,19 +195,18 @@ public class XWikiFamilyPermissions
             return;
         }
 
-        List<String> members = family.getMembers();
+        List<Patient> members = family.getMembers();
 
         Set<String> usersUnion = new HashSet<>();
         Set<String> groupsUnion = new HashSet<>();
 
-        for (String patientId : members) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
+        for (Patient patient : members) {
             XWikiDocument patientDoc;
             try {
                 patientDoc = wiki.getDocument(patient.getDocument(), context);
             } catch (XWikiException e) {
                 this.logger.error("Can't retrieve patient document for patient {}: {}",
-                    patientId, e.getMessage());
+                    patient.getId(), e.getMessage());
                 continue;
             }
             List<Set<String>> patientRights = this.getEntitiesWithEditAccess(patientDoc);

@@ -18,7 +18,6 @@
 package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -50,9 +49,6 @@ public class FamilyDeletingListener implements EventListener
     @Inject
     private FamilyRepository familyRepository;
 
-    @Inject
-    private PatientRepository patientRepository;
-
     @Override
     public String getName()
     {
@@ -76,9 +72,8 @@ public class FamilyDeletingListener implements EventListener
         }
 
         Family family = this.familyRepository.getFamilyById(familyId);
-        List<String> members = family.getMembers();
-        for (String patientId : members) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
+        List<Patient> members = family.getMembers();
+        for (Patient patient : members) {
             family.removeMember(patient);
         }
     }

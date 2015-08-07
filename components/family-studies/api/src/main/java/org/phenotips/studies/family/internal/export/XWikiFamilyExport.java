@@ -133,9 +133,7 @@ public class XWikiFamilyExport
         familyJSON.put("warning", family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
-        for (String memberId : family.getMembers()) {
-            Patient patient = this.patientRepository.getPatientById(memberId);
-
+        for (Patient patient : family.getMembers()) {
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.add(patientJSON);
         }

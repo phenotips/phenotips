@@ -21,7 +21,6 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 
 import org.xwiki.component.annotation.Component;
@@ -98,9 +97,6 @@ public class XWikiFamilyRepository implements FamilyRepository
 
     @Inject
     private static XWikiFamilyPermissions familyPermissions;
-
-    @Inject
-    private static Validation validation;
 
     @Override
     public Family createFamily()

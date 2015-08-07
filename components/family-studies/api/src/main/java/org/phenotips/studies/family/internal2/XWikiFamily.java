@@ -29,6 +29,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,7 +110,7 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    public List<String> getMembers()
+    public List<String> getMembersIds()
     {
         BaseObject familyObject = this.familyDocument.getXObject(CLASS_REFERENCE);
         if (familyObject == null) {
@@ -123,9 +125,20 @@ public class XWikiFamily implements Family
             return null;
         }
         if (xwikiRelativesList == null) {
-            return new LinkedList<String>();
+            return Collections.emptyList();
         }
-        return xwikiRelativesList.getList();
+        return Collections.unmodifiableList(xwikiRelativesList.getList());
+    }
+
+    @Override
+    public List<Patient> getMembers() {
+        List<String> memberIds = this.getMembersIds();
+        List<Patient> members = new ArrayList<>(memberIds.size());
+        for (String memberId : memberIds) {
+            Patient patient = XWikiFamily.patientRepository.getPatientById(memberId);
+            members.add(patient);
+        }
+        return Collections.unmodifiableList(members);
     }
 
     @Override
@@ -145,7 +158,7 @@ public class XWikiFamily implements Family
         String patientAsString = patientReference.getName();
 
         // Add member to Xwiki family
-        List<String> members = getMembers();
+        List<String> members = getMembersIds();
         if (!members.contains(patientAsString)) {
             members.add(patientAsString);
         } else {
@@ -217,7 +230,7 @@ public class XWikiFamily implements Family
         }
 
         // Remove patient from family's members list
-        List<String> members = getMembers();
+        List<String> members = getMembersIds();
         String patientAsString = patient.getDocument().getName();
         if (!members.contains(patientAsString)) {
             this.logger.error("Patient has family reference but family doesn't have patient as member. "
@@ -245,7 +258,7 @@ public class XWikiFamily implements Family
     @Override
     public boolean isMember(Patient patient)
     {
-        List<String> members = getMembers();
+        List<String> members = getMembersIds();
         if (members == null) {
             return false;
         }
@@ -264,8 +277,7 @@ public class XWikiFamily implements Family
     {
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
-        for (String member : getMembers()) {
-            Patient patient = XWikiFamily.patientRepository.getPatientById(member);
+        for (Patient patient : getMembers()) {
             allFamilyLinks.put(patient.getId(), XWikiFamily.familyExport.getMedicalReports(patient));
         }
         return allFamilyLinks;
