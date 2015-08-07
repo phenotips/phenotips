@@ -38,7 +38,6 @@ import javax.inject.Singleton;
 
 import com.xpn.xwiki.XWikiException;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 /**
@@ -138,7 +137,7 @@ public class ProcessingImpl implements Processing
         StatusResponse2 response;
 
         // Update patient data from pedigree's JSON
-        response = this.updatePatientsFromJson(pedigree.getData());
+        response = this.updatePatientsFromJson(pedigree);
         if (!response.isValid()) {
             return response;
         }
@@ -171,12 +170,11 @@ public class ProcessingImpl implements Processing
         return StatusResponse2.OK;
     }
 
-    private StatusResponse2 updatePatientsFromJson(JSON familyContents)
+    private StatusResponse2 updatePatientsFromJson(Pedigree pedigree)
     {
         String idKey = "id";
         try {
-            JSONObject familyContentsObject = JSONObject.fromObject(familyContents);
-            List<JSONObject> patientsJson = this.jsonAdapter.convert(familyContentsObject);
+            List<JSONObject> patientsJson = this.jsonAdapter.convert(pedigree);
 
             for (JSONObject singlePatient : patientsJson) {
                 if (singlePatient.containsKey(idKey)) {

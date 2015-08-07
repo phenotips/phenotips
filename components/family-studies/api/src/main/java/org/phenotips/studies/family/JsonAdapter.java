@@ -17,7 +17,10 @@
  */
 package org.phenotips.studies.family;
 
+import org.phenotips.studies.family.internal2.Pedigree;
+
 import org.xwiki.component.annotation.Role;
+
 
 import java.util.List;
 
@@ -37,8 +40,8 @@ public interface JsonAdapter
      * by the internal PhenoTips patient data model. This is a static method, but cannot be declared as such, given the
      * necessity of injections.
      *
-     * @param toConvert cannot be null
+     * @param pedigree cannot be null
      * @return list of JSON objects, each containing patient data of a single patient
      */
-    List<JSONObject> convert(JSONObject toConvert);
+    List<JSONObject> convert(Pedigree pedigree);
 }

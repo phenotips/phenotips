@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.internal2;
 
-import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.SvgUpdater;
 
 import java.util.LinkedList;
@@ -25,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -138,8 +138,7 @@ public class Pedigree
      */
     private void stripIdsFromPedigree(String patientId)
     {
-        List<JSONObject> patientProperties =
-            PedigreeUtils.extractPatientJSONPropertiesFromPedigree(this.data);
+        List<JSONObject> patientProperties = this.extractPatientJSONProperties();
         for (JSONObject properties : patientProperties) {
             Object patientLink = properties.get(Pedigree.PATIENT_LINK_JSON_KEY);
             if (patientLink != null && !StringUtils.equalsIgnoreCase(patientLink.toString(), patientId)) {
@@ -156,7 +155,7 @@ public class Pedigree
     public List<String> extractIds()
     {
         List<String> extractedIds = new LinkedList<>();
-        for (JSONObject properties : PedigreeUtils.extractPatientJSONPropertiesFromPedigree(data)) {
+        for (JSONObject properties : this.extractPatientJSONProperties()) {
             Object id = properties.get(Pedigree.PATIENT_LINK_JSON_KEY);
             if (id != null && StringUtils.isNotBlank(id.toString())) {
                 extractedIds.add(id.toString());
@@ -164,4 +163,27 @@ public class Pedigree
         }
         return extractedIds;
     }
+
+    /**
+     * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
+     * patients.
+     *
+     * @return non-null and non-empty patient properties in JSON objects.
+     */
+    public List<JSONObject> extractPatientJSONProperties()
+    {
+        List<JSONObject> extractedObjects = new LinkedList<>();
+        JSONArray gg = (JSONArray) data.get("GG");
+        // letting it throw a null exception on purpose
+        for (Object nodeObj : gg) {
+            JSONObject node = (JSONObject) nodeObj;
+            JSONObject properties = (JSONObject) node.get("prop");
+            if (properties == null || properties.isEmpty()) {
+                continue;
+            }
+            extractedObjects.add(properties);
+        }
+        return extractedObjects;
+    }
+
 }
