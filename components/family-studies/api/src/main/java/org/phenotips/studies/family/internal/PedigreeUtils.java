@@ -18,14 +18,8 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
-import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.internal2.Pedigree;
 
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
@@ -58,21 +52,6 @@ public final class PedigreeUtils
     public static final EntityReference PEDIGREE_CLASS =
         new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private static FamilyRepository familyRepository;
-
-    private static PatientRepository patientRepository;
-
-    static {
-        try {
-            PedigreeUtils.familyRepository =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(FamilyRepository.class);
-            PedigreeUtils.patientRepository =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-        } catch (ComponentLookupException e) {
-            e.printStackTrace();
-        }
-    }
-
     private PedigreeUtils()
     {
     }
@@ -101,21 +80,6 @@ public final class PedigreeUtils
     }
 
     /**
-     * Checks if a patient has pedigree.
-     *
-     * @param patient to check
-     * @return true if user has a non empty pedigree
-     */
-    public static boolean hasPedigree(Patient patient)
-    {
-        Pedigree pedigree = PedigreeUtils.getPedigreeForPatient(patient);
-        if (pedigree == null || pedigree.isEmpty()) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Overwrites a pedigree in one document given an existing pedigree in another document. Will not throw an exception
      * if fails. Does not save any documents.
      *
@@ -139,33 +103,6 @@ public final class PedigreeUtils
         } catch (XWikiException ex) {
             // do nothing
         }
-    }
-
-    /**
-     * Temporary method for returning a pedgiree object from a patient.
-     *
-     * @param patientId id of the patient
-     * @return pedgiree of patient with id patientId
-     */
-    public static Pedigree getPedigreeForPatient(String patientId)
-    {
-        Patient patient = PedigreeUtils.patientRepository.getPatientById(patientId);
-        return getPedigreeForPatient(patient);
-    }
-
-    /**
-     * Temporary method for returning a pedgiree object from a patient.
-     *
-     * @param patient to get pedigree for
-     * @return pedgiree of patient with id patientId
-     */
-    public static Pedigree getPedigreeForPatient(Patient patient)
-    {
-        Family family = PedigreeUtils.familyRepository.getFamilyForPatient(patient);
-        if (family == null) {
-            return null;
-        }
-        return family.getPedigree();
     }
 
 }

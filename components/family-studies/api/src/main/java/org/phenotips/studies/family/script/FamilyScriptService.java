@@ -22,7 +22,6 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Processing;
-import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 import org.phenotips.studies.family.internal2.Pedigree;
 import org.phenotips.studies.family.internal2.StatusResponse2;
@@ -178,7 +177,6 @@ public class FamilyScriptService implements ScriptService
     public JSON getPedigree(String id)
     {
         Family family = null;
-        
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
             family = this.familyRepository.getFamilyForPatient(patient);
