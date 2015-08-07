@@ -81,24 +81,6 @@ public final class PedigreeUtils
     }
 
     /**
-     * Given a pedigree, will extract and return all PhenoTips patient ids.
-     *
-     * @param pedigree data section of a pedigree
-     * @return all PhenoTips ids from pedigree nodes that have internal ids
-     */
-    public static List<String> extractIdsFromPedigree(JSONObject pedigree)
-    {
-        List<String> extractedIds = new LinkedList<>();
-        for (JSONObject properties : PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree)) {
-            Object id = properties.get(Processing.PATIENT_LINK_JSON_KEY);
-            if (id != null && StringUtils.isNotBlank(id.toString())) {
-                extractedIds.add(id.toString());
-            }
-        }
-        return extractedIds;
-    }
-
-    /**
      * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
      * patients.
      *

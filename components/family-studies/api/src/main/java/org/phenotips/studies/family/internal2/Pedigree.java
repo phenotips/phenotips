@@ -20,6 +20,7 @@ package org.phenotips.studies.family.internal2;
 import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.SvgUpdater;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -145,5 +146,22 @@ public class Pedigree
                 properties.remove(Pedigree.PATIENT_LINK_JSON_KEY);
             }
         }
+    }
+    
+    /**
+     * Extracts and returns all PhenoTips patient ids.
+     *
+     * @return all PhenoTips ids from pedigree nodes that have internal ids
+     */
+    public List<String> extractIds()
+    {
+        List<String> extractedIds = new LinkedList<>();
+        for (JSONObject properties : PedigreeUtils.extractPatientJSONPropertiesFromPedigree(data)) {
+            Object id = properties.get(Pedigree.PATIENT_LINK_JSON_KEY);
+            if (id != null && StringUtils.isNotBlank(id.toString())) {
+                extractedIds.add(id.toString());
+            }
+        }
+        return extractedIds;
     }
 }
