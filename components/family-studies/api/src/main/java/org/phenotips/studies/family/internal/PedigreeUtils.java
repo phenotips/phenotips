@@ -34,14 +34,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.LargeStringProperty;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -100,44 +98,6 @@ public final class PedigreeUtils
             extractedObjects.add(properties);
         }
         return extractedObjects;
-    }
-
-    /**
-     * Does not do permission checks. Modifies pedigree's image style. Stores the modified image, and data (as is) into
-     * the `document`.
-     *
-     * @param document destination for storing the pedigree
-     * @param pedigree data section of a pedigree
-     * @param image could be null. If it is, no changes will be made to the image.
-     * @param context needed for XWiki calls
-     * @throws XWikiException one of many possible XWiki exceptions
-     */
-    public static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context)
-        throws XWikiException
-    {
-        BaseObject pedigreeObject = document.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-        if (image != null) {
-            String updatedImage = SvgUpdater.setPatientStylesInSvg(image, document.getDocumentReference().getName());
-            pedigreeObject.set(Pedigree.IMAGE, updatedImage, context);
-        }
-        pedigreeObject.set(Pedigree.DATA, pedigree.toString(), context);
-    }
-
-    /**
-     * Wrapper around {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)} which saves the XWiki document.
-     *
-     * @param document {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param pedigree {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param image {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param context {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param wiki Used for saving the `document`
-     * @throws XWikiException one of many possible XWikiExceptions
-     */
-    public static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
-        XWiki wiki) throws XWikiException
-    {
-        PedigreeUtils.storePedigree(document, pedigree, image, context);
-        wiki.saveDocument(document, context);
     }
 
     /**
