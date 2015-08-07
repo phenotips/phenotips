@@ -67,23 +67,22 @@ public class ProcessingImpl implements Processing
     public StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException
     {
-        LogicInterDependantVariables variables = new LogicInterDependantVariables();
         Pedigree pedigree = new Pedigree(json, image);
 
         // Get proband
-        variables.proband = this.patientRepository.getPatientById(patientId);
-        if (variables.proband == null) {
+        Patient proband = this.patientRepository.getPatientById(patientId);
+        if (proband == null) {
             return StatusResponse2.INVALID_PATIENT_ID.setMessage(patientId);
         }
 
         // Get proband's family
-        variables.family = this.familyRepository.getFamilyForPatient(variables.proband);
+        Family family = this.familyRepository.getFamilyForPatient(proband);
 
         // Get list of new members in pedigree/family
         List<String> newMembers = pedigree.extractIds();
-        if (variables.family != null) {
+        if (family != null) {
             // sometimes pedigree passes in family document name as a member
-            newMembers.remove(variables.family.getId());
+            newMembers.remove(family.getId());
         }
 
         // Edge case - empty list of new members
@@ -96,56 +95,56 @@ public class ProcessingImpl implements Processing
         }
 
         // Edge case - proband with no family. Create a new one.
-        if (variables.family == null) {
+        if (family == null) {
             if (!this.validation.hasPatientEditAccess(patientId)) {
                 return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
             }
-            variables.family = this.familyRepository.createFamily();
-            variables.family.addMember(variables.proband);
+            family = this.familyRepository.createFamily();
+            family.addMember(proband);
         }
 
         // Checks that current user has edit permissions on family
-        if (!this.validation.hasAccess(variables.family.getDocumentReference(), Right.EDIT))
+        if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
         {
             return StatusResponse2.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
         }
 
-        variables = this.executeSaveUpdateLogic(variables, pedigree, newMembers);
+        StatusResponse2 response = this.executeSaveUpdateLogic(family, pedigree, newMembers);
+        if (!response.isValid()) {
+            return response;
+        }
 
-        variables.family.updatePermissions();
+        family.updatePermissions();
 
-        return variables.response;
+        return StatusResponse2.OK;
     }
 
-    private LogicInterDependantVariables executeSaveUpdateLogic(LogicInterDependantVariables variables,
+    private StatusResponse2 executeSaveUpdateLogic(Family family,
         Pedigree pedigree, List<String> newMembers) throws XWikiException
     {
         StatusResponse2 response;
-
 
         // Check if every member of updatedMembers can be added to the family
         if (newMembers != null) {
             for (String patientId : newMembers) {
                 Patient patient = this.patientRepository.getPatientById(patientId);
-                response = this.familyRepository.canPatientBeAddedToFamily(patient, variables.family);
+                response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
                 if (!response.isValid()) {
-                    variables.response = response;
-                    return variables;
+                    return response;
                 }
             }
         }
 
         // Update patient data from pedigree's JSON
-        StatusResponse2 updateFromJson = this.updatePatientsFromJson(pedigree.getData());
-        if (!updateFromJson.isValid()) {
-            variables.response = updateFromJson;
-            return variables;
+        response = this.updatePatientsFromJson(pedigree.getData());
+        if (!response.isValid()) {
+            return response;
         }
 
-        List<String> members = variables.family.getMembers();
+        List<String> members = family.getMembers();
 
         // storing first, because pedigree depends on this.
-        variables.family.setPedigree(pedigree);
+        family.setPedigree(pedigree);
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
@@ -153,7 +152,7 @@ public class ProcessingImpl implements Processing
         patientsToRemove.removeAll(newMembers);
         for (String patientId : patientsToRemove) {
             Patient patient = this.patientRepository.getPatientById(patientId);
-            variables.family.removeMember(patient);
+            family.removeMember(patient);
         }
 
         // Add new members to family
@@ -162,23 +161,10 @@ public class ProcessingImpl implements Processing
         patientsToRemove.removeAll(members);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.getPatientById(patientId);
-            variables.family.addMember(patient);
+            family.addMember(patient);
         }
 
-        return variables;
-    }
-
-    /**
-     * Used to pass around variables for logic heavy functions inside
-     * {@link #processPatientPedigree(String, JSONObject, String)}.
-     */
-    private class LogicInterDependantVariables
-    {
-        protected StatusResponse2 response;
-
-        protected Family family;
-
-        protected Patient proband;
+        return StatusResponse2.OK;
     }
 
     private StatusResponse2 updatePatientsFromJson(JSON familyContents)
