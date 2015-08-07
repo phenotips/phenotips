@@ -20,9 +20,6 @@ package org.phenotips.studies.family;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.query.QueryException;
-
-import javax.naming.NamingException;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -46,9 +43,7 @@ public interface Processing
      * @param image svg part of the pedigree JSON
      * @return {@link StatusResponse2} with one of many possible statuses
      * @throws XWikiException one of many possible reasons for XWiki to fail
-     * @throws NamingException could happen during document creation
-     * @throws QueryException could happen when looking for a patient
      */
     StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
-        throws XWikiException, NamingException, QueryException;
+        throws XWikiException;
 }

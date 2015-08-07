@@ -28,7 +28,6 @@ import org.phenotips.studies.family.internal2.Pedigree;
 import org.phenotips.studies.family.internal2.StatusResponse2;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.query.QueryException;
 import org.xwiki.security.authorization.Right;
 
 import java.util.LinkedList;
@@ -36,7 +35,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.naming.NamingException;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -67,7 +65,7 @@ public class ProcessingImpl implements Processing
 
     @Override
     public StatusResponse2 processPatientPedigree(String patientId, JSONObject json, String image)
-        throws XWikiException, NamingException, QueryException
+        throws XWikiException
     {
         LogicInterDependantVariables variables = new LogicInterDependantVariables();
         Pedigree pedigree = new Pedigree(json, image);
