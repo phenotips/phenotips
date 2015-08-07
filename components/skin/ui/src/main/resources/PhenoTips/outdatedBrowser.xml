@@ -17,8 +17,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 <xwikidoc version="1.1">
-  <web>other</web>
-  <name>outdatedBrowser</name>
+  <web>PhenoTips</web>
+  <name>OutdatedBrowser</name>
   <language/>
   <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
@@ -35,9 +35,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content></content>
+  <content/>
   <object>
-    <name>other.outdatedBrowser</name>
+    <name>PhenoTips.OutdatedBrowser</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>3dcd19c0-23ea-47cc-b1fa-7e96f2a077dd</guid>
@@ -189,7 +189,7 @@ group.appendChild(div3);&#xd;
     </property>
   </object>
   <object>
-    <name>other.outdatedBrowser</name>
+    <name>PhenoTips.OutdatedBrowser</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>90b1c295-6b61-42b3-9bdb-0bfcedae4d2f</guid>
@@ -303,7 +303,7 @@ p {&#xd;
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name></name>
+      <name/>
     </property>
     <property>
       <parse/>
