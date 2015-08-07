@@ -177,23 +177,22 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON getPedigree(String id)
     {
-        Pedigree pedigree = null;
-
+        Family family = null;
+        
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
-            pedigree = PedigreeUtils.getPedigreeForPatient(patient);
+            family = this.familyRepository.getFamilyForPatient(patient);
         } else {
-            Family family = this.familyRepository.getFamilyById(id);
-            if (family != null) {
-                family.getPedigree();
-            }
+            family  = this.familyRepository.getFamilyById(id);
         }
 
-        if (pedigree != null && !pedigree.isEmpty()) {
-            return pedigree.getData();
-        } else {
-            return new JSONObject(true);
+        if (family != null) {
+            Pedigree pedigree = family.getPedigree();
+            if (pedigree != null && !pedigree.isEmpty()) {
+                return pedigree.getData();
+            }
         }
+        return new JSONObject(true);
     }
 
     /**
