@@ -175,7 +175,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return params;
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort)
     {
         String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
 
@@ -199,7 +199,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         options.putAll(this.getStaticFieldSolrParams());
 
         List<VocabularyTerm> result = new LinkedList<>();
-        SolrParams params = produceDynamicSolrParams(query, maxResults, sort, customFilter);
+        SolrParams params = produceDynamicSolrParams(query, maxResults, sort);
         for (SolrDocument doc : this.search(params, options)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
