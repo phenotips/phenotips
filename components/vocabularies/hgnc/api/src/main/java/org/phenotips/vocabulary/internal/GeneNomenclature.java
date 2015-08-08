@@ -75,13 +75,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
-    private static final String ACCESSION_SYMBOL_FIELD_NAME = "hgnc_accession";
-
-    private static final String ENSEMBL_GENE_ID_FIELD_NAME = "ensembl_gene_id";
-
-    private static final String ENTREZ_ID_FIELD_NAME = "entrez_id";
-
-    private static final String REFSEQ_ACCESSION_FIELD_NAME = "refseq_accession";
+    private static final String SYNONYM_FIELD_NAME = "synonym";
 
     @Inject
     @Named("xwikiproperties")
@@ -119,11 +113,27 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     {
         String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
 
-        String queryString = String.format("%s:%s OR %s:%s OR %s:%s",
-            SYMBOL_FIELD_NAME, escapedSymbol,
-            PREV_SYMBOL_FIELD_NAME, escapedSymbol,
-            ALIAS_SYMBOL_FIELD_NAME, escapedSymbol);
-        return requestTerm(queryString, SYMBOL_EXACT);
+        VocabularyTerm result = getTermById(escapedSymbol);
+        if (result != null) {
+            return result;
+        }
+        result = getTermByAlternativeId(escapedSymbol);
+        if (result != null) {
+            return result;
+        }
+        result = getTermByMappedId(escapedSymbol);
+        return result;
+    }
+
+    private VocabularyTerm getTermById(String id)
+    {
+        return requestTerm(ID_FIELD_NAME + ':' + id, null);
+    }
+
+    private VocabularyTerm getTermByAlternativeId(String id)
+    {
+        return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
+            ALIAS_SYMBOL_FIELD_NAME), null);
     }
 
     /**
@@ -133,16 +143,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
      * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
      * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
      */
-    public VocabularyTerm getTermByAlternativeId(String id)
+    private VocabularyTerm getTermByMappedId(String id)
     {
-        String escapedSymbol = ClientUtils.escapeQueryChars(id);
-
-        String queryString = String.format("%s:%s OR %s:%s OR %s:%s OR %s:%s",
-            ACCESSION_SYMBOL_FIELD_NAME, escapedSymbol,
-            ENSEMBL_GENE_ID_FIELD_NAME, escapedSymbol,
-            ENTREZ_ID_FIELD_NAME, escapedSymbol,
-            REFSEQ_ACCESSION_FIELD_NAME, escapedSymbol);
-        return requestTerm(queryString, null);
+        return requestTerm(SYNONYM_FIELD_NAME + ':' + id, null);
     }
 
     private Map<String, String> getStaticSolrParams()
