@@ -53,6 +53,7 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.params.SpellingParams;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -151,7 +152,11 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     private Map<String, String> getStaticSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put("lowercaseOperators", "false");
+        params.put("spellcheck", Boolean.toString(true));
+        params.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
+        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        params.put("lowercaseOperators", Boolean.toString(false));
         params.put("defType", "edismax");
         return params;
     }
