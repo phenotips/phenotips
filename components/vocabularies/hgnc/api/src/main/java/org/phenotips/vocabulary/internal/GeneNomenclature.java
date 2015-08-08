@@ -164,10 +164,14 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put(DisMaxParams.QF, "symbol^10 symbolPrefix^7 symbolSort^5 "
-            + "synonymExact^12 synonymPrefix^3 text^1 textSpell^2 textStub^0.5");
-        params.put(DisMaxParams.PF, "symbol^50 symbolExact^100 symbolPrefix^30 symbolSort^35 "
-            + "synonymExact^70 synonymPrefix^21 text^3 textSpell^5");
+        params.put(DisMaxParams.QF, "symbol^50 symbolStub^25 "
+            + "alt_id^20 alt_idStub^10 "
+            + "name^10 nameSpell^18 nameStub^5 "
+            + "synonym^6 synonymSpell^10 synonymStub^3 "
+            + "text^1 textSpell^2 textStub^0.5");
+        params.put(DisMaxParams.PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
+            + "text^3 textSpell^5");
         return params;
     }
 
