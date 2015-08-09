@@ -175,7 +175,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return params;
     }
 
-    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort)
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
     {
         String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
 
@@ -185,6 +185,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         if (StringUtils.isNotBlank(sort)) {
             params.add(CommonParams.SORT, sort);
         }
+        params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFilter, "status:Approved"));
         return params;
     }
 
@@ -199,7 +200,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         options.putAll(this.getStaticFieldSolrParams());
 
         List<VocabularyTerm> result = new LinkedList<>();
-        SolrParams params = produceDynamicSolrParams(query, maxResults, sort);
+        SolrParams params = produceDynamicSolrParams(query, maxResults, sort, customFilter);
         for (SolrDocument doc : this.search(params, options)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
