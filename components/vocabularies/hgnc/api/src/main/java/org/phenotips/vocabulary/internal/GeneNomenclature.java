@@ -78,6 +78,57 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private static final String SYNONYM_FIELD_NAME = "synonym";
 
+    private static final Map<String, String> COMMON_SEARCH_OPTIONS;
+
+    private static final Map<String, String> DISMAX_SEARCH_OPTIONS;
+
+    private static final Map<String, String> IDENTIFIER_SEARCH_OPTIONS;
+
+    private static final Map<String, String> TEXT_SEARCH_OPTIONS;
+
+    private static final Map<String, String> SPELLCHECKED_TEXT_SEARCH_OPTIONS;
+
+    static {
+        Map<String, String> options = new HashMap<>();
+        options.put("lowercaseOperators", Boolean.toString(false));
+        options.put("defType", "edismax");
+        COMMON_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        String spellcheck = "spellcheck";
+
+        options = new HashMap<>();
+        options.put(DisMaxParams.QF, "symbol^100 symbolStub^75 "
+            + "alt_id^60 alt_idStub^40 "
+            + "name^10 nameSpell^18 nameStub^5 "
+            + "synonym^6 synonymSpell^10 synonymStub^3 "
+            + "text^1 textSpell^2 textStub^0.5");
+        options.put(DisMaxParams.PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
+            + "text^3 textSpell^5");
+        DISMAX_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(false));
+        options.put(DisMaxParams.QF, "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10");
+        IDENTIFIER_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(false));
+        options.putAll(DISMAX_SEARCH_OPTIONS);
+        TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(true));
+        options.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        options.put(SpellingParams.SPELLCHECK_COUNT, "100");
+        options.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        options.putAll(DISMAX_SEARCH_OPTIONS);
+        SPELLCHECKED_TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+    }
+
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configuration;
@@ -149,32 +200,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return requestTerm(SYNONYM_FIELD_NAME + ':' + id, null);
     }
 
-    private Map<String, String> getStaticSolrParams()
-    {
-        Map<String, String> params = new HashMap<>();
-        params.put("spellcheck", Boolean.toString(true));
-        params.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
-        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
-        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
-        params.put("lowercaseOperators", Boolean.toString(false));
-        params.put("defType", "edismax");
-        return params;
-    }
-
-    private Map<String, String> getStaticFieldSolrParams()
-    {
-        Map<String, String> params = new HashMap<>();
-        params.put(DisMaxParams.QF, "symbol^50 symbolStub^25 "
-            + "alt_id^20 alt_idStub^10 "
-            + "name^10 nameSpell^18 nameStub^5 "
-            + "synonym^6 synonymSpell^10 synonymStub^3 "
-            + "text^1 textSpell^2 textStub^0.5");
-        params.put(DisMaxParams.PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
-            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
-            + "text^3 textSpell^5");
-        return params;
-    }
-
     private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
     {
         String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
@@ -195,13 +220,41 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         if (StringUtils.isBlank(input)) {
             return Collections.emptyList();
         }
-        String query = ClientUtils.escapeQueryChars(input.trim());
-        Map<String, String> options = this.getStaticSolrParams();
-        options.putAll(this.getStaticFieldSolrParams());
+        List<VocabularyTerm> result = searchIdentifiers(input, maxResults, sort, customFilter);
+        if (result == null || result.isEmpty()) {
+            result = searchText(input, maxResults, sort, customFilter);
+        }
+        if (result == null || result.isEmpty()) {
+            result = searchTextSpellchecked(input, maxResults, sort, customFilter);
+        }
+        return result;
+    }
 
+    private List<VocabularyTerm> searchIdentifiers(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();
-        SolrParams params = produceDynamicSolrParams(query, maxResults, sort, customFilter);
-        for (SolrDocument doc : this.search(params, options)) {
+        for (SolrDocument doc : this.search(params, IDENTIFIER_SEARCH_OPTIONS)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
+    private List<VocabularyTerm> searchText(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(params, TEXT_SEARCH_OPTIONS)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
+    private List<VocabularyTerm> searchTextSpellchecked(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(params, SPELLCHECKED_TEXT_SEARCH_OPTIONS)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
