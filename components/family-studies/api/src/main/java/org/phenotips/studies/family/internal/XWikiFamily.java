@@ -125,7 +125,7 @@ public class XWikiFamily implements Family
         if (xwikiRelativesList == null) {
             return Collections.emptyList();
         }
-        return Collections.unmodifiableList(xwikiRelativesList.getList());
+        return xwikiRelativesList.getList();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class XWikiFamily implements Family
             Patient patient = XWikiFamily.patientRepository.getPatientById(memberId);
             members.add(patient);
         }
-        return Collections.unmodifiableList(members);
+        return members;
     }
 
     @Override
