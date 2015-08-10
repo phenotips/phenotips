@@ -72,7 +72,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-public class GeneNomenclatureTest
+public class RemoteGeneNomenclatureTest
 {
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker =
