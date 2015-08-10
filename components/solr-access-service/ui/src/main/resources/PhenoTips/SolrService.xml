@@ -51,7 +51,7 @@ $response.setContentType('application/json')
    "returnedrows" : "$results.size()",
    "rows" : [
 #foreach ($result in $results)
-  $result.toJson()
+  $result.toJSON()
   #if($foreach.hasNext()),#end
 #end
   ]## docs array

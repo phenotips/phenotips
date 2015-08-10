@@ -498,7 +498,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
         }
 
         @Override
-        public JSON toJson()
+        public JSON toJSON()
         {
             JSONObject json = new JSONObject();
             json.put("id", this.getId());
