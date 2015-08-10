@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 
+import net.sf.json.JSON;
+
 /**
  */
 @Component
@@ -68,7 +70,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         List<Consent> consents = consentManager.loadConsentsFromPatient(patient);
-        JSON json =
+        JSON json = consentManager.toJson(consents);
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 

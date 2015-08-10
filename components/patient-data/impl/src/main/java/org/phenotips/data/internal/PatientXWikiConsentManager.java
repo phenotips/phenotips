@@ -77,11 +77,11 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     @Named("current")
     private DocumentReferenceResolver<EntityReference> referenceResolver;
 
-    private final EntityReference consentReference =
-        referenceResolver.resolve(new EntityReference("", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE));
+    private EntityReference consentReference =
+        new EntityReference("PatientConsentClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    private final EntityReference configurationPageReference = referenceResolver.resolve(
-        new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE));
+    private EntityReference configurationPageReference =
+        new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
 
     /**
      * All the consents present in the system. Example usage includes checking if all possible consents present in the
@@ -91,6 +91,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
 
     @Override public void initialize() throws InitializationException
     {
+        this.consentReference = referenceResolver.resolve(this.consentReference);
+        this.configurationPageReference = referenceResolver.resolve(this.configurationPageReference);
         this.refreshSystemConsents();
     }
 

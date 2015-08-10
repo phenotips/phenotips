@@ -31,14 +31,14 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.2M5
  */
-@Path("/patients/{patient_id}")
+@Path("/patients/consents/{patient_id}")
 public interface PatientConsentResource
 {
     @GET
     Response getConsents(@PathParam("patient_id") String patientId);
 
     @PUT
-    @Path("{id}")
+    @Path("/update/{id}")
     @Consumes(MediaType.TEXT_PLAIN)
     Response updateConsent(String status, @PathParam("patient_id") String patientId, @PathParam("id") String id);
 }
