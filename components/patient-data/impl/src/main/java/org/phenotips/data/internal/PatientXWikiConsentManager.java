@@ -46,6 +46,7 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -60,6 +61,7 @@ import net.sf.json.JSONArray;
 @Singleton
 public class PatientXWikiConsentManager implements ConsentManager, Initializable
 {
+    private final static String AGREED_TO = "agreed_to";
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -179,7 +181,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         List<String> ids = new LinkedList<>();
         BaseObject idsHolder = doc.getXObject(consentIdsHolderReference);
         if (idsHolder != null) {
-            ids = idsHolder.getListValue("agreed_to");
+            ids = idsHolder.getListValue(AGREED_TO);
         }
         return ids;
     }
@@ -198,9 +200,39 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return null;
     }
 
-    @Override public boolean updatePatient(String patientId, List<Consent> consents)
+    @Override public boolean setPatientConsents(String patientId, List<Consent> consents)
     {
+        try {
+            Patient patient = this.repository.getPatientById(patientId);
+            DocumentModelBridge patientDocBridge = this.bridge.getDocument(patient.getDocument());
+            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
+            BaseObject holder = getConsentHolder(patientDoc);
+            holder.set(AGREED_TO, this.convertToIds(consents), provider.get());
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Could not update consents in patient record {}. {}", patientId, ex.getMessage());
+        }
         return false;
+    }
+
+    /** Either gets the existing consents holder object, or creates a new one. */
+    private BaseObject getConsentHolder(XWikiDocument doc) throws XWikiException
+    {
+        BaseObject holder = doc.getXObject(this.consentIdsHolderReference);
+        if (holder == null) {
+            holder = doc.newXObject(this.consentIdsHolderReference, provider.get());
+        }
+        return holder;
+    }
+
+    private List<String> convertToIds(List<Consent> consents)
+    {
+        List<String> ids = new LinkedList<>();
+        for(Consent consent : consents)
+        {
+            ids.add(consent.getID());
+        }
+        return ids;
     }
 
     private boolean intToBool(int value)
