@@ -20,6 +20,7 @@ package org.phenotips.data.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
+import org.phenotips.data.ConsentStatus;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 
@@ -39,10 +40,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -77,8 +80,14 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     @Named("current")
     private DocumentReferenceResolver<EntityReference> referenceResolver;
 
+    @Inject
+    private Provider<XWikiContext> provider;
+
     private EntityReference consentReference =
-        new EntityReference("PatientConsentClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("PatientConsentConfiguration", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private EntityReference consentIdsHolderReference =
+        new EntityReference("PatientConsent", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private EntityReference configurationPageReference =
         new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
@@ -92,6 +101,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     @Override public void initialize() throws InitializationException
     {
         this.consentReference = referenceResolver.resolve(this.consentReference);
+        this.consentIdsHolderReference = referenceResolver.resolve(this.consentIdsHolderReference);
         this.configurationPageReference = referenceResolver.resolve(this.configurationPageReference);
         this.refreshSystemConsents();
     }
@@ -104,7 +114,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             XWikiDocument configDoc = (XWikiDocument) configDocBridge;
             List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
             for (BaseObject consentObject : consentObjects) {
-                consents.add(this.fromXWikiConsentConfiguration(consentObject));
+                consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
             }
         } catch (Exception ex) {
             /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
@@ -113,15 +123,17 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return consents;
     }
 
+    // fixme. must be run on every save of XWikiPreferences. There is no UI yet, however if there is to be one, that
+    // must be a implemented.
     private void refreshSystemConsents()
     {
         this.systemConsents = loadConsentsFromSystem();
     }
 
-    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent)
+    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
     {
         String id = xwikiConsent.getStringValue("id");
-        String description = xwikiConsent.displayView("description", provider.get());
+        String description = configDoc.display("description", "view", xwikiConsent, provider.get());
         Integer level = xwikiConsent.getIntValue("level");
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
         return new DefaultConsent(id, description, level, required);
@@ -134,7 +146,42 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
 
     @Override public List<Consent> loadConsentsFromPatient(Patient patient)
     {
-        return new LinkedList<>();
+        List<Consent> patientConsents = new LinkedList<>();
+        /* List of consent ids a patient has agreed to, read from the database */
+        List<String> xwikiPatientConsents = new LinkedList<>();
+
+        try {
+            DocumentModelBridge patientDocBridge = bridge.getDocument(patient.getDocument());
+            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
+            xwikiPatientConsents = readConsentIdsFromPatientDoc(patientDoc);
+        } catch (Exception ex) {
+            this.logger.error(
+                "Could not load patient document {} or read consents. {}", patient.getId(), ex.getMessage());
+        }
+
+        /* Using system consents to determine what consents a patient has agreed to, but not reusing the system consents
+         cache, since those should not have a status. */
+        for (Consent systemConsent : this.systemConsents) {
+            Consent copy = DefaultConsent.copy(systemConsent);
+            if (xwikiPatientConsents.contains(systemConsent.getID())) {
+                copy.setStatus(ConsentStatus.YES);
+            } else {
+                copy.setStatus(ConsentStatus.NO);
+            }
+            patientConsents.add(copy);
+        }
+
+        return patientConsents;
+    }
+
+    private List<String> readConsentIdsFromPatientDoc(XWikiDocument doc)
+    {
+        List<String> ids = new LinkedList<>();
+        BaseObject idsHolder = doc.getXObject(consentIdsHolderReference);
+        if (idsHolder != null) {
+            ids = idsHolder.getListValue("agreed_to");
+        }
+        return ids;
     }
 
     @Override public JSON toJson(List<Consent> consents)
