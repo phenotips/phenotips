@@ -48,7 +48,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Base class for handling data in different types of objects (String, List, etc) and preserving the object type. Has
- * custom functions for dealing with conversion to booleans, and ontology codes to human readable labels.
+ * custom functions for dealing with conversion to booleans, and vocabulary codes to human readable labels.
  *
  * @param <T> the type of data being managed by this component, usually {@code String}, but other types are possible,
  *            even more complex types
@@ -81,12 +81,12 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     (BaseProperty<ObjectPropertyReference>) data.getField(propertyName);
                 if (field != null) {
                     Object propertyValue = field.getValue();
-                    /* If the controller only works with codes, store the Ontology Instances rather than Strings */
+                    /* If the controller only works with codes, store the Vocabulary Instances rather than Strings */
                     if (getCodeFields().contains(propertyName) && isCodeFieldsOnly()) {
                         List<VocabularyProperty> propertyValuesList = new LinkedList<>();
                         List<String> terms = (List<String>) propertyValue;
                         for (String termId : terms) {
-                            propertyValuesList.add(new QuickOntologyProperty(termId));
+                            propertyValuesList.add(new QuickVocabularyProperty(termId));
                         }
                         propertyValue = propertyValuesList;
                     }
@@ -138,8 +138,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     protected abstract List<String> getCodeFields();
 
     /**
-     * In case all fields are code fields, then the controller can store data in memory as Ontology objects rather than
-     * strings.
+     * In case all fields are code fields, then the controller can store data in memory as vocabulary objects rather
+     * than strings.
      *
      * @return true if all fields contain HPO codes
      */
@@ -185,11 +185,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     {
         JSONArray labeledList = new JSONArray();
         for (T code : codes) {
-            QuickOntologyProperty term;
-            if (code instanceof QuickOntologyProperty) {
-                term = (QuickOntologyProperty) code;
+            QuickVocabularyProperty term;
+            if (code instanceof QuickVocabularyProperty) {
+                term = (QuickVocabularyProperty) code;
             } else {
-                term = new QuickOntologyProperty(code.toString());
+                term = new QuickVocabularyProperty(code.toString());
             }
             labeledList.add(term.toJSON());
         }
@@ -219,17 +219,17 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     protected abstract String getJsonPropertyName();
 
     /**
-     * There exists no class currently that would be able to covert an ontology code into a human readable format given
+     * There exists no class currently that would be able to covert a vocabulary code into a human readable format given
      * only a code string. Considering that there is a need for such functionality, there are 3 options: copy the code
      * that performs the function needed into the controller, create a class extending
      * {@link org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty} in a separate file, or create such class
      * here. Given the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty} is abstract
      * only by having a protected constructor, which fully satisfies the needed functionality, it makes the most sense
-     * to put {@link QuickOntologyProperty} here.
+     * to put {@link QuickVocabularyProperty} here.
      */
-    protected static final class QuickOntologyProperty extends AbstractPhenoTipsVocabularyProperty
+    protected static final class QuickVocabularyProperty extends AbstractPhenoTipsVocabularyProperty
     {
-        public QuickOntologyProperty(String id)
+        public QuickVocabularyProperty(String id)
         {
             super(id);
         }
