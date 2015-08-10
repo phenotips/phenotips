@@ -20,6 +20,8 @@ public interface Consent
 
     void setStatus(ConsentStatus status);
 
+    int getLevel();
+
     boolean isRequired();
 
     JSON toJson();

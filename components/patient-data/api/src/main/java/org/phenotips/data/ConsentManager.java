@@ -22,5 +22,5 @@ public interface ConsentManager
 
     List<Consent> fromJson(JSON json);
 
-    boolean storeToPatient(String patientId, List<Consent> consents);
+    boolean updatePatient(String patientId, List<Consent> consents);
 }

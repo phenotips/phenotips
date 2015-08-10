@@ -104,7 +104,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             XWikiDocument configDoc = (XWikiDocument) configDocBridge;
             List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
             for (BaseObject consentObject : consentObjects) {
-                consents.add(this.fromXWikiConsentObject(consentObject));
+                consents.add(this.fromXWikiConsentConfiguration(consentObject));
             }
         } catch (Exception ex) {
             /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
@@ -118,12 +118,13 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         this.systemConsents = loadConsentsFromSystem();
     }
 
-    private Consent fromXWikiConsentObject(BaseObject xwikiConsent)
+    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent)
     {
         String id = xwikiConsent.getStringValue("id");
-        String description = xwikiConsent.getStringValue("description");
+        String description = xwikiConsent.displayView("description", provider.get());
+        Integer level = xwikiConsent.getIntValue("level");
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
-        return new DefaultConsent(id, description, required);
+        return new DefaultConsent(id, description, level, required);
     }
 
     @Override public List<Consent> loadConsentsFromPatient(String patientId)
@@ -150,7 +151,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return null;
     }
 
-    @Override public boolean storeToPatient(String patientId, List<Consent> consents)
+    @Override public boolean updatePatient(String patientId, List<Consent> consents)
     {
         return false;
     }
