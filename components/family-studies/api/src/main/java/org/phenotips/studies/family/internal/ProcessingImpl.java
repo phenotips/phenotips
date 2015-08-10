@@ -158,8 +158,8 @@ public class ProcessingImpl implements Processing
 
         // Add new members to family
         List<String> patientsToAdd = new LinkedList<>();
-        patientsToRemove.addAll(newMembers);
-        patientsToRemove.removeAll(members);
+        patientsToAdd.addAll(newMembers);
+        patientsToAdd.removeAll(members);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.getPatientById(patientId);
             family.addMember(patient);
