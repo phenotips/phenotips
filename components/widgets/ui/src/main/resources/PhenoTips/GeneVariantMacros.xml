@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>GeneVariantMacros</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1438730976000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1439237364000</date>
+  <contentUpdateDate>1439230895000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="PhenoTips.TabelarDataMacros" /}}
+
+{{velocity output=false}}
+## =====================================================================
+##
+## Genes and variants entered in the patient report
+##
+##
+#macro (__variant_editTool $variantIndex)
+  {{html clean="false"}}&lt;a class="action edit variant-edit button secondary" href="#" id="PhenoTips.GeneVariantClass_${variantIndex}_edit" title="$services.localization.render('phenotips.geneVariantMacros.edit.hint')"&gt;$services.localization.render('phenotips.geneVariantMacros.edit')&lt;/a&gt;{{/html}}##
+#end
+#macro (__variant_editDoneTool $variantIndex)
+  {{html clean="false"}}&lt;a class="action edit button secondary variant-edit-done" style="display: none;"  href="#" id="PhenoTips.GeneVariantClass_${variantIndex}_editDone"  title="$services.localization.render('phenotips.geneVariantMacros.editDone.hint')"&gt;$services.localization.render('phenotips.geneVariantMacros.editDone')&lt;/a&gt;{{/html}}##
+#end
+#macro (__variant_hideTableTool $geneNumber)
+  {{html clean="false"}}&lt;a class="action edit button secondary variant-hide-show" style="float: right;"  href="#" id="PhenoTips.GeneVariantClass_${geneNumber}_hide"  title="$services.localization.render('phenotips.geneVariantMacros.hide.hint')"&gt;Hide variants&lt;/a&gt;{{/html}}##
+#end
+##
+##
+##
+#macro (__variant_row $variantObj $count $variantIndex $options)
+|(% class="pseudoindent" %) |(% class="variant" %) $count #foreach($propName in $options.defaultProperties) |(% class="variant variant-default-input variant-$variantIndex" %) $doc.display($propName, $options.mode, $variantObj) #end |(% class="variant moreinfo" %)(((#if ($options.mode == 'edit')(% class="variant-moreinfo-button-row" %)((((% class="buttonwrapper variant-moreinfo-button" %) #__variant_editTool($variantIndex))))#end
+#foreach ($prop in $variantObj.xWikiClass.properties)
+
+#set ($isDefault = $options.defaultProperties.contains($prop.getName()))
+#if ($prop.getName() != 'genesymbol')|(% class="variant-moreinfo" %) **${prop.translatedPrettyName}** |#if($isDefault)(% class="default-$variantIndex" %)#{end} (% class="variant-property-value ${prop.getName()}-$variantIndex #if ($options.mode == 'edit' &amp;&amp; !$isDefault)variant-label-$variantIndex #end"%)$doc.display($prop.getName(), 'view', $variantObj )(%%) #if ($options.mode == 'edit' &amp;&amp; !$isDefault)(% class="variant-edit-done variant-input-$variantIndex" %)$doc.display($prop.getName(), $options.mode, $variantObj )#end#end##
+#end
+))) #if ($options.mode == 'edit')(% class="buttonwrapper variant-moreinfo-button" %)#__variant_editDoneTool($variantIndex)#end|(% class="variant" %)#__extradata_deleteTool($variantObj.xWikiClass.name '')\\
+#end
+##
+##
+##
+#macro(__variant_head $count $geneNumber $geneName $options)##
+|(%class="pseudoindent"%) |=(% colSpan="6" class="variant variant-title" %) $services.localization.render('phenotips.geneVariantMacros.variantTable.title', [$geneName, $count]) (% class="buttonwrapper" %)#__variant_hideTableTool($geneNumber)|(% class="pseudoindent" %) \\
+(%class="variant-hide-heading-$geneNumber"%)|(%class="pseudoindent"%) |=(% class="variant" %)(%%)#foreach($propName in $options.defaultProperties) |=(% class="variant col-label" %) $propName #end |=(% class="variant" %)$services.localization.render('phenotips.geneVariantMacros.variantTable.moreInfo') |=(% class="variant" %)
+#end
+##
+##
+##
+#macro(__variant_foot $options)##
+|(%class="pseudoindent"%) |(% colSpan="6" class="variant-footer" %) #__extradata_addTool('PhenoTips.GeneVariantClass' '' $options)\\
+#end
+##
+##
+##
+#macro(__variant_table $variantObjects $geneNumber $geneName $options)##
+#if ($variantObjects.size() &gt; 0)##
+#__variant_head($variantObjects.size(), $geneNumber, $geneName, $options)
+#foreach ($o in $variantObjects)
+#set ($variantIndex = $foreach.index + $geneNumber)
+#set ($variantCount = $foreach.count)
+(%class="variant-hide-heading-$geneNumber"%)#__variant_row($o "${geneNumber}.${variantCount}" $variantIndex $options)
+#end
+#end
+#__variant_foot($options)
+#end
+##
+##
+##
+#macro (__gene_row $geneObj $geneNumber $variantClass $options)
+#set($variantObjects = $doc.getObjects($variantClass.name, "genesymbol", $geneObj.getProperty('gene').value))
+|$geneNumber #foreach($prop in $geneObj.xWikiClass.properties) |(% class="gene col-label" #if ($foreach.index == 0) colspan="2" #end %) $doc.display($prop.name, $options.mode, $geneObj) #end|(% class="gene" %)#__extradata_deleteTool($geneObj.xWikiClass.name '')
+
+#set ($discard = $options.put(propertyValue, $geneObj.getProperty('gene').value))##
+#__variant_table($variantObjects $geneNumber $geneObj.getProperty('gene').value $options)
+#end
+##
+##
+##
+#macro (__gene_table $options)
+#set($geneClass = $xwiki.getDocument('PhenoTips.GeneClass').xWikiClass)
+#set($variantClass = $xwiki.getDocument('PhenoTips.GeneVariantClass').xWikiClass)
+(% id="gene-table" class="gene-table extradata-list" %)
+|= #foreach($prop in $geneClass.properties) |=(% class="gene"  #if ($foreach.index == 0) colspan="2" #end %) $prop.translatedPrettyName #end |=(% class="gene" %)
+#set($geneObjects = $doc.getObjects($geneClass.name))
+#foreach ($o in $geneObjects)
+#set ($geneNumber = $foreach.count)
+#__gene_row($o $geneNumber $variantClass $options)
+#end
+|(% colSpan="8" class="gene" %) #__extradata_addTool('PhenoTips.GeneClass' '' {'newEntryLabel' : $services.localization.render('phenotips.geneVariantMacros.geneTable.newEntry')})
+#end
+{{/velocity}}</content>
+</xwikidoc>

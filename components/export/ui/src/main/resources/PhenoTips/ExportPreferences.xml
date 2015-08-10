@@ -139,10 +139,12 @@
        "variants_protein" : "$services.localization.render('phenotips.exportPreferences.field.variantsProtein')", 
        "variants_transcript" : "$services.localization.render('phenotips.exportPreferences.field.variantsTranscript')",
        "variants_dbsnp" : "$services.localization.render('phenotips.exportPreferences.field.variantsDbsnp')", 
+       "variants_zygosity" : "$services.localization.render('phenotips.exportPreferences.field.variantsZygosity')", 
        "variants_effect" : "$services.localization.render('phenotips.exportPreferences.field.variantsEffect')", 
        "variants_interpretation" : "$services.localization.render('phenotips.exportPreferences.field.variantsInterpretation')",
        "variants_inheritance" : "$services.localization.render('phenotips.exportPreferences.field.variantsInheritance')",
        "variants_evidence" : "$services.localization.render('phenotips.exportPreferences.field.variantsEvidence')", 
+       "variants_segregation" : "$services.localization.render('phenotips.exportPreferences.field.variantsSegregation')",
        "variants_sanger" : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')", 
        "variants_resolution" : "$services.localization.render('phenotips.exportPreferences.field.variantsResolution')"
   })

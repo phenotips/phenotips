@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822205000</date>
-  <contentUpdateDate>1401822205000</contentUpdateDate>
+  <date>1439237480000</date>
+  <contentUpdateDate>1438813038000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -50,7 +50,12 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.newEntry')"&gt;$services.localization.render('phenotips.tableMacros.newEntry')&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
+#if ("$!options.newEntryLabel" != '')
+#set ($label = $options.newEntryLabel)
+#else
+#set ($label = $services.localization.render('phenotips.tableMacros.newEntry'))
+#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$label"&gt;$label&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
 #end
 
 #macro (__extradata_displayTable $dataClassName $options)
@@ -123,7 +128,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -168,10 +173,10 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -338,11 +343,11 @@ document.observe('xwiki:dom:loaded', function() {
   </object>
   <object>
     <name>PhenoTips.TabelarDataMacros</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>ae82f359-cbf6-4b2d-a634-e0ca99f22ae8</guid>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>1965a716-33b9-4896-bb9e-983bd30bb46d</guid>
     <class>
-      <name>XWiki.StyleSheetExtension</name>
+      <name>XWiki.JavaScriptExtension</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -360,7 +365,7 @@ document.observe('xwiki:dom:loaded', function() {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -405,10 +410,201 @@ document.observe('xwiki:dom:loaded', function() {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var EditVariantData = (function (EditVariantData) {
+  var tools = EditVariantData.tools = EditVariantData.tools || {};
+  tools.Editor = Class.create({
+    initialize : function () {
+      $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+      $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+      var defaultInputs = [];
+      $$('.variant-default-input').each( function(item, index) {
+      defaultInputs[index] = item.firstDescendant(); 
+      });
+      defaultInputs.invoke('observe', 'change', this.changeDefaultData.bindAsEventListener(this));
+      $$('.variant-hide-show').invoke('observe', 'click', this.hideVariantTable.bindAsEventListener(this));
+    },
+    editData : function (event) {
+      event.stop();
+      var id = event.element().id;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
+      event.element().style.display = 'none'; 
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_editDone').style.display = 'inline';
+      var labels = $$('.variant-label-'+variantIndex);
+      $$('.variant-input-'+variantIndex).each ( function(item, index) {
+        item.style.display = 'inline';
+        labels[index].style.display = 'none';
+      });
+    },
+    editDoneData : function (event) {
+      event.stop();
+      var id = event.element().id;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
+      event.element().style.display = 'none'; 
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_edit').style.display = 'inline';
+      var inputs = $$('.variant-input-'+variantIndex);
+      var labels = $$('.variant-label-'+variantIndex);
+      for (var i=0;i&lt;inputs.length;i++) {
+        inputs[i].style.display = 'none';
+        labels[i].style.display = 'inline';
+        if (labels[i].className.indexOf('segregation') &gt; -1 || labels[i].className.indexOf('sanger') &gt; -1 || labels[i].className.indexOf('inheritance') &gt; -1) {
+          labels[i].innerHTML = inputs[i].firstChild[inputs[i].firstChild.selectedIndex].text;
+        } else if (labels[i].className.indexOf('evidence') &gt; -1) {
+          labels[i].innerHTML = "";
+          inputs[i].childElements().each(function(item) {
+            if (item.tagName == "LABEL" &amp;&amp; item.firstDescendant().checked)
+              labels[i].innerHTML +=item.innerText+'; ';
+            });
+        } else {
+          labels[i].firstChild.innerHTML = inputs[i].firstChild.value;  
+        }
+      }
+    },
+    changeDefaultData : function (event) {
+      event.stop();
+      var className = event.element().parentElement.className;
+      var variantIndex = className.substring(className.lastIndexOf('-')+1,className.length);
+      var id = event.element().id;
+      var fieldName = id.substring(id.lastIndexOf('_')+1,id.length);
+      if (event.element().id.indexOf('cdna') &gt; -1) {
+        $$('.'+fieldName+'-'+variantIndex)[0].firstChild.innerHTML = event.element().value;
+      } else {
+        $$('.'+fieldName+'-'+variantIndex)[0].innerHTML = event.element()[event.element().selectedIndex].text;
+      }
+    },
+    hideVariantTable : function (event) {
+      event.stop();
+      var id = event.element().id;
+      var geneIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
+      if  (event.element().innerHTML == "Hide variants") {
+        event.element().innerHTML = "Show variants";
+        $$('.variant-hide-heading-'+geneIndex).each(function(item) {
+          item.style.display = 'none';
+        });
+      } else {
+        event.element().innerHTML = "Hide variants";
+        $$('.variant-hide-heading-'+geneIndex).each(function(item) {
+          item.style.display = 'table-row';
+        });
+      }
+    },
+  });
+  return EditVariantData;
+}(EditVariantData || {}));
+
+document.observe('xwiki:dom:loaded', function() {
+  new EditVariantData.tools.Editor();
+})</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.TabelarDataMacros</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>ae82f359-cbf6-4b2d-a634-e0ca99f22ae8</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -526,6 +722,9 @@ table.withLabel tr:first-child th {
 .variant-info .extradata-list td.chr {
   text-align: center;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>

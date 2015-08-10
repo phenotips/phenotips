@@ -79,6 +79,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String VARIANTS_DBSNP_ENABLING_FIELD_NAME = "variants_dbsnp";
 
+    private static final String VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME = "variants_zygosity";
+
     private static final String VARIANTS_EFFECT_ENABLING_FIELD_NAME = "variants_effect";
 
     private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
@@ -86,6 +88,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
 
     private static final String VARIANTS_EVIDENCE_ENABLING_FIELD_NAME = "variants_evidence";
+
+    private static final String VARIANTS_SEGREGATION_ENABLING_FIELD_NAME = "variants_segregation";
 
     private static final String VARIANTS_SANGER_ENABLING_FIELD_NAME = "variants_sanger";
 
@@ -101,6 +105,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String DBSNP_KEY = "dbsnp";
 
+    private static final String ZYGOSITY_KEY = "zygosity";
+
     private static final String EFFECT_KEY = "effect";
 
     private static final String INTERPRETATION_KEY = "interpretation";
@@ -108,6 +114,8 @@ public class VariantListController extends AbstractComplexController<Map<String,
     private static final String INHERITANCE_KEY = "inheritance";
 
     private static final String EVIDENCE_KEY = "evidence";
+
+    private static final String SEGREGATION_KEY = "segregation";
 
     private static final String SANGER_KEY = "sanger";
 
@@ -131,10 +139,9 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, EFFECT_KEY,
-            INTERPRETATION_KEY,
-            INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY,
-            RESOLUTION_KEY);
+        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, ZYGOSITY_KEY,
+            EFFECT_KEY,
+            INTERPRETATION_KEY, INHERITANCE_KEY, EVIDENCE_KEY, SEGREGATION_KEY, SANGER_KEY, RESOLUTION_KEY);
     }
 
     @Override
@@ -172,6 +179,43 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return interpretation;
     }
 
+    private String parseSegregation(String value)
+    {
+        String classification = "";
+        switch (value) {
+            case "complete":
+                classification = "Completel";
+                break;
+            case "in_progress":
+                classification = "In progress";
+                break;
+            default:
+                classification = "Not done";
+                break;
+        }
+        return classification;
+    }
+
+    private String parseEvidence(String value)
+    {
+        String classification = "";
+        switch (value) {
+            case "rare":
+                classification = "Rare (MAF<0.01)";
+                break;
+            case "predicted":
+                classification = "Predicted damaging by in silico models";
+                break;
+            case "reported":
+                classification = "Reported in other individuals";
+                break;
+            default:
+                classification = "Segregates with phenotype within family";
+                break;
+        }
+        return classification;
+    }
+
     private String parseResolution(String value)
     {
         String classification = "";
@@ -189,6 +233,94 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return classification;
     }
 
+    private String parseInheritance(String value)
+    {
+        String classification = "";
+        switch (value) {
+            case "denovo":
+                classification = "de novo";
+                break;
+            case "denovo_s_mosaicism":
+                classification = "de novo somatic mosaicism";
+                break;
+            default:
+                classification = value;
+                break;
+        }
+        return classification;
+    }
+
+    private String parseEffect(String value)
+    {
+        String classification = "";
+        switch (value) {
+            case "insertion_in_frame":
+                classification = "insertion - in frame";
+                break;
+            case "insertion_frameshift":
+                classification = "insertion - frameshift";
+                break;
+            case "deletion_in_frame":
+                classification = "deletion - in frame";
+                break;
+            case "deletion_frameshift":
+                classification = "deletion - frameshift";
+                break;
+            case "indel_in_frame":
+                classification = "indel - in frame";
+                break;
+            case "indel_frameshift":
+                classification = "indel - frameshift";
+                break;
+            case "repeat_expansion":
+                classification = "repeat expansion";
+                break;
+            default:
+                classification = value;
+                break;
+        }
+        return classification;
+    }
+
+    private Map<String, String> parseFields(BaseObject variantObject)
+    {
+        Map<String, String> singleVariant = new LinkedHashMap<String, String>();
+        for (String property : getProperties()) {
+            BaseStringProperty field = (BaseStringProperty) variantObject.getField(property);
+            if (field != null) {
+                String value = "";
+                switch (property) {
+                    case INTERPRETATION_KEY:
+                        value = parseInterpretation(field.getValue());
+                        break;
+                    case RESOLUTION_KEY:
+                        value = parseResolution(field.getValue());
+                        break;
+                    case SEGREGATION_KEY:
+                        value = parseSegregation(field.getValue());
+                        break;
+                    case SANGER_KEY:
+                        value = parseSegregation(field.getValue());
+                        break;
+                    case EVIDENCE_KEY:
+                        value = parseEvidence(field.getValue());
+                        break;
+                    case EFFECT_KEY:
+                        value = parseEffect(field.getValue());
+                        break;
+                    case INHERITANCE_KEY:
+                        value = parseInheritance(field.getValue());
+                        break;
+                    default:
+                        value = field.getValue();
+                        break;
+                }
+                singleVariant.put(property, value);
+            }
+        }
+        return singleVariant;
+    }
+
     @Override
     public PatientData<Map<String, String>> load(Patient patient)
     {
@@ -201,25 +333,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
             List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
             for (BaseObject variantObject : variantXWikiObjects) {
-                Map<String, String> singleVariant = new LinkedHashMap<String, String>();
-                for (String property : getProperties()) {
-                    BaseStringProperty field = (BaseStringProperty) variantObject.getField(property);
-                    if (field != null) {
-                        String value = "";
-                        switch (property) {
-                            case INTERPRETATION_KEY:
-                                value = parseInterpretation(field.getValue());
-                                break;
-                            case RESOLUTION_KEY:
-                                value = parseResolution(field.getValue());
-                                break;
-                            default:
-                                value = field.getValue();
-                                break;
-                        }
-                        singleVariant.put(property, value);
-                    }
-                }
+                Map<String, String> singleVariant = parseFields(variantObject);
                 allVariants.add(singleVariant);
             }
             return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
@@ -272,10 +386,11 @@ public class VariantListController extends AbstractComplexController<Map<String,
         List<String> enablingProperties =
             Arrays.asList(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME, VARIANTS_PROTEIN_ENABLING_FIELD_NAME,
                 VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME,
-                VARIANTS_DBSNP_ENABLING_FIELD_NAME,
+                VARIANTS_DBSNP_ENABLING_FIELD_NAME, VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME,
                 VARIANTS_EFFECT_ENABLING_FIELD_NAME, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME,
                 VARIANTS_INHERITANCE_ENABLING_FIELD_NAME,
-                VARIANTS_EVIDENCE_ENABLING_FIELD_NAME, VARIANTS_SANGER_ENABLING_FIELD_NAME,
+                VARIANTS_EVIDENCE_ENABLING_FIELD_NAME, VARIANTS_SEGREGATION_ENABLING_FIELD_NAME,
+                VARIANTS_SANGER_ENABLING_FIELD_NAME,
                 VARIANTS_RESOLUTION_ENABLING_FIELD_NAME);
 
         while (iterator.hasNext()) {

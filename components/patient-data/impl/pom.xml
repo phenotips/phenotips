@@ -125,7 +125,7 @@
   </dependencies>
 
   <properties>
-    <coverage.instructionRatio>0.14</coverage.instructionRatio>
+    <coverage.instructionRatio>0.13</coverage.instructionRatio>
   </properties>
 
   <build>
