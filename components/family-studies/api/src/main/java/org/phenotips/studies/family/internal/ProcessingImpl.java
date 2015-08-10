@@ -99,7 +99,8 @@ public class ProcessingImpl implements Processing
         return this.processPatientPedigree(family, pedigree, newMembers);
     }
 
-    private StatusResponse checkValidity(Family family, List<String> newMembers) {
+    private StatusResponse checkValidity(Family family, List<String> newMembers)
+    {
 
         // Checks that current user has edit permissions on family
         if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
@@ -131,7 +132,8 @@ public class ProcessingImpl implements Processing
     }
 
     private StatusResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
-        throws XWikiException {
+        throws XWikiException
+    {
         StatusResponse response;
 
         // Update patient data from pedigree's JSON
@@ -187,7 +189,8 @@ public class ProcessingImpl implements Processing
         return StatusResponse.OK;
     }
 
-    private static boolean containsDuplicates(List<String> updatedMembers) {
+    private static boolean containsDuplicates(List<String> updatedMembers)
+    {
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
         for (String member : updatedMembers) {

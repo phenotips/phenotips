@@ -129,7 +129,8 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    public List<Patient> getMembers() {
+    public List<Patient> getMembers()
+    {
         List<String> memberIds = this.getMembersIds();
         List<Patient> members = new ArrayList<>(memberIds.size());
         for (String memberId : memberIds) {
