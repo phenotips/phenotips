@@ -171,7 +171,7 @@ public class Pedigree
     public List<JSONObject> extractPatientJSONProperties()
     {
         List<JSONObject> extractedObjects = new LinkedList<>();
-        JSONArray gg = (JSONArray) data.get("GG");
+        JSONArray gg = (JSONArray) this.data.get("GG");
         // letting it throw a null exception on purpose
         for (Object nodeObj : gg) {
             JSONObject node = (JSONObject) nodeObj;

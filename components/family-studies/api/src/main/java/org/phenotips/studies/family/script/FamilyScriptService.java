@@ -181,7 +181,7 @@ public class FamilyScriptService implements ScriptService
         if (patient != null) {
             family = this.familyRepository.getFamilyForPatient(patient);
         } else {
-            family  = this.familyRepository.getFamilyById(id);
+            family = this.familyRepository.getFamilyById(id);
         }
 
         if (family != null) {

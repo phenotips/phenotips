@@ -142,7 +142,6 @@ public class ProcessingImpl implements Processing
             return response;
         }
 
-        // storing first, because pedigree depends on this.
         family.setPedigree(pedigree);
 
         List<String> members = family.getMembersIds();
