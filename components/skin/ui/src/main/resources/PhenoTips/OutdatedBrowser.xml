@@ -295,7 +295,6 @@
     <property>
       <code>#container&#xd;
         {&#xd;
-        display: block;&#xd;
         position: absolute;&#xd;
         top: 100px;&#xd;
         margin-left: 5%;&#xd;
