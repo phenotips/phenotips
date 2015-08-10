@@ -380,12 +380,8 @@ public class XWikiFamily implements Family
         XWiki wiki = context.getWiki();
 
         BaseObject pedigreeObject = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
-        String image = pedigree.getImage();
-        if (image != null) {
-            String updatedImage = SvgUpdater.setPatientStylesInSvg(image, getId());
-            pedigreeObject.set(Pedigree.IMAGE, updatedImage, context);
-        }
-        pedigreeObject.set(Pedigree.DATA, pedigree.toString(), context);
+        pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(), context);
+        pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 
         wiki.saveDocument(this.familyDocument, context);
     }

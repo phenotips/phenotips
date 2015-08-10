@@ -17,6 +17,8 @@
  */
 package org.phenotips.studies.family.internal;
 
+import org.phenotips.data.Patient;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -182,6 +184,18 @@ public class Pedigree
             extractedObjects.add(properties);
         }
         return extractedObjects;
+    }
+
+    /**
+     * Highlight proband in pedigree's image.
+     *
+     * @param proband of the family
+     */
+    public void highlightProband(Patient proband)
+    {
+        if (this.image != null) {
+            this.image = SvgUpdater.setPatientStylesInSvg(this.image, proband.getId());
+        }
     }
 
 }

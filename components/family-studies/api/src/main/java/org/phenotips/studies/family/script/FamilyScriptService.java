@@ -186,10 +186,17 @@ public class FamilyScriptService implements ScriptService
 
         if (family != null) {
             Pedigree pedigree = family.getPedigree();
+
             if (pedigree != null && !pedigree.isEmpty()) {
+
+                if (patient != null) {
+                    pedigree.highlightProband(patient);
+                }
+
                 return pedigree.getData();
             }
         }
+
         return new JSONObject(true);
     }
 
