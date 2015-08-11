@@ -38,4 +38,10 @@ public class HeadCircumferenceMeasurementHandler extends AbstractMeasurementHand
     {
         return "hc";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }

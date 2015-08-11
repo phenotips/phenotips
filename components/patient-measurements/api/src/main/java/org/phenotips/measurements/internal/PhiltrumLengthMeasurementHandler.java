@@ -38,4 +38,10 @@ public class PhiltrumLengthMeasurementHandler extends AbstractMeasurementHandler
     {
         return "philtrum";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }

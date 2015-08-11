@@ -38,4 +38,10 @@ public class OuterCanthalDistanceMeasurementHandler extends AbstractMeasurementH
     {
         return "ocd";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }
