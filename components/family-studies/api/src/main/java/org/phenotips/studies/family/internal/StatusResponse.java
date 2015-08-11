@@ -17,9 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-
 /**
  * Passed around to preserve important error information. Holds onto a status (modelled after HTTP statuses), a message,
  * and an error type.
@@ -40,14 +37,14 @@ public enum StatusResponse
      */
     DUPLICATE_PATIENT(400,
         "duplicate",
-        "There is a duplicate link for patient %s"),
+        "Patient list contains duplicates"),
 
     /**
      * Patient cannot be added to a family because it is already associated with another family.
      */
     ALREADY_HAS_FAMILY(501,
         "familyConflict",
-        "Patient %s already belongs to a different family, and therefore cannot be added to this one."),
+        "Patient %1$s already belongs to a family %2$s, and therefore cannot be added to this one."),
 
     /**
      * Patient cannot be added to a family because current user has insufficient permissions on family.
@@ -75,14 +72,14 @@ public enum StatusResponse
      */
     INVALID_PATIENT_ID(404,
         "invalidPatientId",
-        "Could not find patient %s."),
+        "Could not find patient %1$s."),
 
     /**
      * Invalid family id.
      */
     INVALID_FAMILY_ID(404,
         "invalidFamilyId",
-        "Could not find family %s."),
+        "Could not find family %2$s."),
 
     /**
      * Unknown error.
@@ -96,15 +93,13 @@ public enum StatusResponse
      */
     PROBAND_HAS_NO_FAMILY(501,
         "NoFamilyForProband",
-        "Patient %s cannot be linked to proband's family, because proband %s has not family.");
+        "Patient %1$s cannot be linked to proband's family, because proband %3$s has not family.");
 
     private int statusCode;
 
     private String errorType;
 
     private String messageFormat;
-
-    private String message;
 
     StatusResponse(int statusCode, String errorType, String messageFormat)
     {
@@ -130,56 +125,11 @@ public enum StatusResponse
     }
 
     /**
-     * Sets the parameter for the error message.
-     *
-     * @param parameters for the error message
-     * @return reference to self
+     * @return format of message
      */
-    public StatusResponse setMessage(Object... parameters)
+    public String getMessageFormat()
     {
-        this.message = String.format(this.messageFormat, parameters);
-        return this;
-    }
-
-    /**
-     * @return error message
-     */
-    public String getMessage()
-    {
-        return this.message;
-    }
-
-    /**
-     * Formats itself as a response to a processing request.
-     *
-     * @return JSON with an 'error' field which is true/false; true if an error has occured
-     */
-    public JSON asProcessing()
-    {
-        JSONObject json = baseErrorJson();
-        json.put("error", !this.isValid());
-        return json;
-    }
-
-    /**
-     * Formats itself as a response to a validation request.
-     *
-     * @return JSON with a 'validLink' field which is true if no errors have occurred and the validation process was
-     *         successful
-     */
-    public JSON asVerification()
-    {
-        JSONObject json = baseErrorJson();
-        json.put("validLink", isValid());
-        return json;
-    }
-
-    private JSONObject baseErrorJson()
-    {
-        JSONObject json = new JSONObject();
-        json.put("errorMessage", this.message);
-        json.put("errorType", this.errorType);
-        return json;
+        return this.messageFormat;
     }
 
     /**

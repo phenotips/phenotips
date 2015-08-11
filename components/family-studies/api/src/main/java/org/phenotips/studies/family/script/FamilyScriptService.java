@@ -22,6 +22,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Processing;
+import org.phenotips.studies.family.internal.JSONResponse;
 import org.phenotips.studies.family.internal.Pedigree;
 import org.phenotips.studies.family.internal.StatusResponse;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
@@ -189,22 +190,32 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON canPatientBeLinkedToProband(String probandId, String patientId)
     {
+        JSONResponse response = new JSONResponse();
+
         Patient proband = this.patientRepository.getPatientById(probandId);
         if (proband == null) {
-            return StatusResponse.INVALID_PATIENT_ID.setMessage(probandId).asVerification();
+            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
+            response.setMessage(probandId);
+            return response.asVerification();
         }
 
         Patient patient = this.patientRepository.getPatientById(patientId);
         if (patient == null) {
-            return StatusResponse.INVALID_PATIENT_ID.setMessage(patientId).asVerification();
+            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
+            response.setMessage(patientId);
+            return response.asVerification();
         }
 
         Family family = this.familyRepository.getFamilyForPatient(proband);
         if (family == null) {
-            return StatusResponse.PROBAND_HAS_NO_FAMILY.setMessage(patientId, probandId).asVerification();
+            response.setStatusResponse(StatusResponse.PROBAND_HAS_NO_FAMILY);
+            response.setMessage(patientId, probandId);
+            response.asVerification();
         }
 
-        return this.familyRepository.canPatientBeAddedToFamily(patient, family).asVerification();
+        response.setStatusResponse(this.familyRepository.canPatientBeAddedToFamily(patient, family));
+        response.setMessage(patientId, family.getId());
+        return response.asVerification();
     }
 
     /**
@@ -218,18 +229,24 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON canPatientBeAddedToFamily(String familyId, String patientId)
     {
+        JSONResponse response = new JSONResponse();
         Family family = this.familyRepository.getFamilyById(familyId);
         Patient patient = this.patientRepository.getPatientById(patientId);
 
         if (family == null) {
-            return StatusResponse.INVALID_PATIENT_ID.setMessage(patientId).asVerification();
+            return response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID).
+                setMessage(patientId).
+                asVerification();
         }
 
         if (patient == null) {
-            return StatusResponse.INVALID_FAMILY_ID.setMessage(familyId).asVerification();
+            return response.setStatusResponse(StatusResponse.INVALID_FAMILY_ID).
+                setMessage(familyId).
+                asVerification();
         }
 
-        return this.familyRepository.canPatientBeAddedToFamily(patient, family).asVerification();
+        response.setStatusResponse(this.familyRepository.canPatientBeAddedToFamily(patient, family));
+        return response.asVerification();
     }
 
     /**

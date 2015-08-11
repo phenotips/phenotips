@@ -61,7 +61,7 @@ public class ProcessingImpl implements Processing
     private JsonAdapter jsonAdapter;
 
     @Override
-    public StatusResponse processPatientPedigree(String patientId, JSONObject json, String image)
+    public JSONResponse processPatientPedigree(String patientId, JSONObject json, String image)
         throws XWikiException
     {
         Pedigree pedigree = new Pedigree(json, image);
@@ -69,7 +69,7 @@ public class ProcessingImpl implements Processing
         // Get proband
         Patient proband = this.patientRepository.getPatientById(patientId);
         if (proband == null) {
-            return StatusResponse.INVALID_PATIENT_ID.setMessage(patientId);
+            return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(patientId);
         }
 
         // Get proband's family
@@ -85,13 +85,13 @@ public class ProcessingImpl implements Processing
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
             if (!this.validation.hasPatientEditAccess(patientId)) {
-                return StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT.setMessage(patientId);
+                return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(patientId);
             }
             family = this.familyRepository.createFamily();
             family.addMember(proband);
         }
 
-        StatusResponse response = checkValidity(family, newMembers);
+        JSONResponse response = checkValidity(family, newMembers);
         if (!response.isValid()) {
             return response;
         }
@@ -99,22 +99,23 @@ public class ProcessingImpl implements Processing
         return this.processPatientPedigree(family, pedigree, newMembers);
     }
 
-    private StatusResponse checkValidity(Family family, List<String> newMembers)
+    private JSONResponse checkValidity(Family family, List<String> newMembers)
     {
+        JSONResponse jsonResponse = new JSONResponse();
 
         // Checks that current user has edit permissions on family
         if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
         {
-            return StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY;
+            return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
         }
 
         // Edge case - empty list of new members
         if (newMembers.size() < 1) {
-            return StatusResponse.FAMILY_HAS_NO_MEMBERS;
+            return jsonResponse.setStatusResponse(StatusResponse.FAMILY_HAS_NO_MEMBERS);
         }
 
         if (ProcessingImpl.containsDuplicates(newMembers)) {
-            return StatusResponse.DUPLICATE_PATIENT;
+            return jsonResponse.setStatusResponse(StatusResponse.DUPLICATE_PATIENT);
         }
 
         // Check if every member of updatedMembers can be added to the family
@@ -123,15 +124,18 @@ public class ProcessingImpl implements Processing
                 Patient patient = this.patientRepository.getPatientById(patientId);
                 StatusResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
                 if (!response.isValid()) {
-                    return response;
+                    jsonResponse.setStatusResponse(response);
+                    jsonResponse.setMessage(patientId, family.getId());
+                    return jsonResponse;
                 }
             }
         }
 
-        return StatusResponse.OK;
+        jsonResponse.setStatusResponse(StatusResponse.OK);
+        return jsonResponse;
     }
 
-    private StatusResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
+    private JSONResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
         throws XWikiException
     {
         StatusResponse response;
@@ -139,7 +143,7 @@ public class ProcessingImpl implements Processing
         // Update patient data from pedigree's JSON
         response = this.updatePatientsFromJson(pedigree);
         if (!response.isValid()) {
-            return response;
+            return new JSONResponse(response);
         }
 
         family.setPedigree(pedigree);
@@ -166,7 +170,7 @@ public class ProcessingImpl implements Processing
 
         family.updatePermissions();
 
-        return StatusResponse.OK;
+        return new JSONResponse(StatusResponse.OK);
     }
 
     private StatusResponse updatePatientsFromJson(Pedigree pedigree)

@@ -201,14 +201,13 @@ public class XWikiFamilyRepository implements FamilyRepository
     @Override
     public StatusResponse canPatientBeAddedToFamily(Patient patient, Family family)
     {
-        String patientId = patient.getId();
         Family familyForPatient = this.getFamilyForPatient(patient);
 
         if (familyForPatient != null) {
             if (familyForPatient.equals(family)) {
                 return StatusResponse.OK;
             } else {
-                return StatusResponse.ALREADY_HAS_FAMILY.setMessage(patientId);
+                return StatusResponse.ALREADY_HAS_FAMILY;
             }
         }
 
