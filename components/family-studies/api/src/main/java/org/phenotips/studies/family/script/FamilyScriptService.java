@@ -143,8 +143,7 @@ public class FamilyScriptService implements ScriptService
         }
 
         if (family == null) {
-            // id is not a family id, nor a patient's id
-            this.logger.error("getFamilyInfo, id:[{}]. Id does not identify a family or a patient", id);
+            this.logger.debug("Can't get family info for [{}].", id);
             return new JSONObject(true);
         }
 
