@@ -49,18 +49,21 @@ $!response.setContentType('application/json')##
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
-  #set ($pedigree = $services.families.getPedigree($request.id))
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
-  #set ($pedigree = $services.families.getPedigree($patient.getDocumentReference().getName()))
 #end
+#set ($pedigree = $services.families.getPedigree($patient.getId()))
 #if (!$patient &amp;&amp; !$pedigree)
   $response.setStatus(404)
   {"error" : "Identifier not found."}
   #break
 #end
-#if ("$!{request.data}" == 'pedigree' &amp;&amp; $pedigree)
-  $pedigree
+#if ("$!{request.data}" == 'pedigree')
+  #if ($pedigree)
+    $pedigree.getData()
+  #else
+    $pedigree
+  #end
 #else
   #if ($patient)
     $jsontool.serialize($patient.toJSON())

@@ -173,7 +173,7 @@ public class FamilyScriptService implements ScriptService
      * @param id must be a valid family id or a patient id
      * @return JSON of the data portion of a family or patient pedigree
      */
-    public JSON getPedigree(String id)
+    public Pedigree getPedigree(String id)
     {
         Family family = null;
         Patient patient = this.patientRepository.getPatientById(id);
@@ -192,11 +192,11 @@ public class FamilyScriptService implements ScriptService
                     pedigree.highlightProband(patient);
                 }
 
-                return pedigree.getData();
+                return pedigree;
             }
         }
 
-        return new JSONObject(true);
+        return null;
     }
 
     /**
