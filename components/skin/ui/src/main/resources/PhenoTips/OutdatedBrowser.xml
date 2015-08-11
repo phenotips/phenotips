@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
+
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>OutdatedBrowser</name>
@@ -116,76 +118,75 @@
       <cache>default</cache>
     </property>
     <property>
-      <code>var browser = navigator.userAgent.toLowerCase();&#xd;
-        if (browser.indexOf("msie") != -1 &amp;&amp; parseInt(browser.split("msie")[1]) &lt;= 8)&#xd;
-        {&#xd;
-        // remove html on page&#xd;
-        document.body.innerHTML = "";&#xd;
-        &#xd;
-        &#xd;
-        // make the banner&#xd;
-        var logo = document.createElement("img");&#xd;
-        logo.src = "https://ccm.sickkids.ca/wp-content/uploads/2015/02/phenotips-logo-300x56.png";&#xd;
-        logo.height = "50";&#xd;
-        logo.id = "logo";&#xd;
-        var group = document.createElement("div");&#xd;
-        group.id = "container";&#xd;
-        &#xd;
-        &#xd;
-        group.appendChild(logo);&#xd;
-        &#xd;
-        // add text&#xd;
-        var text = document.createTextNode("It appears you are using Internet Explorer version 8 or below.\n"&#xd;
-        + "Please download a newer version or a different browser to continue using PhenoTips using the below links:");&#xd;
-        var pnode = document.createElement("p");&#xd;
-        pnode.appendChild(text);&#xd;
-        &#xd;
-        group.appendChild(pnode);&#xd;
-        &#xd;
-        document.body.appendChild(group);&#xd;
-        &#xd;
-        // add images&#xd;
-        var chromDiv = document.createElement("div");&#xd;
-        chromDiv.class = "imagecontainer";&#xd;
-        var chromeLogo = document.createElement("img");&#xd;
-        chromeLogo.id = "browserLogo";&#xd;
-        chromeLogo.src = "http://www.google.com/chrome/assets/common/images/chrome_logo_2x.png";&#xd;
-        var chromeLink = document.createElement("a");&#xd;
-        chromeLink.href = "https://www.google.com/chrome/browser/desktop/index.html";&#xd;
-        chromeLink.appendChild(chromeLogo);&#xd;
-        chromDiv.appendChild(chromeLink);&#xd;
-        &#xd;
-        var firefoxDiv = document.createElement("div");&#xd;
-        firefoxDiv.class = "imagecontainer";&#xd;
-        var firefoxLogo = document.createElement("img");&#xd;
-        firefoxLogo.id = "browserLogo";&#xd;
-        firefoxLogo.src = "https://mozorg.cdn.mozilla.net/media/img/firefox/new/header-firefox.98d0a02c957f.png";&#xd;
-        var firefoxLink = document.createElement("a");&#xd;
-        firefoxLink.href = "https://www.mozilla.org/en-us/firefox/new/";&#xd;
-        firefoxLink.appendChild(firefoxLogo);&#xd;
-        firefoxDiv.appendChild(firefoxLink);&#xd;
-        &#xd;
-        var ieDiv = document.createElement("div");&#xd;
-        ieDiv.class = "imagecontainer";&#xd;
-        var ieLogo = document.createElement("img");&#xd;
-        ieLogo.id = "browserLogo";&#xd;
-        ieLogo.src = "https://c.s-microsoft.com/en-ca/cmsimages/iebluee_0304_70x70_en_us.png?version=8cada7a1-74f4-ebb3-cce0-af842a79ada8";&#xd;
-        var ieLink = document.createElement("a");&#xd;
-        ieLink.href = "http://windows.microsoft.com/en-ca/internet-explorer/download-ie";&#xd;
-        ieLink.appendChild(ieLogo);&#xd;
-        ieDiv.appendChild(ieLink);&#xd;
-        &#xd;
-        var linkContainer = document.createElement("div");&#xd;
-        pnode.appendChild(linkContainer);&#xd;
-        var linkNode = document.createElement("div");&#xd;
-        chromDiv.id = "left";&#xd;
-        firefoxDiv.id = "middle";&#xd;
-        ieDiv.id = "right";&#xd;
-        linkNode.appendChild(chromDiv);&#xd;
-        linkNode.appendChild(firefoxDiv);&#xd;
-        linkNode.appendChild(ieDiv);&#xd;
-        linkContainer.appendChild(linkNode);&#xd;
-        }</code>
+      <code>
+        if (browser.isIE &amp;&amp; browser.versionMajor &lt; 9) {
+
+        // remove html on page
+        document.body.innerHTML = "";
+
+        // make the banner
+        var logo = document.createElement("img");
+        logo.src = "https://ccm.sickkids.ca/wp-content/uploads/2015/02/phenotips-logo-300x56.png";
+        logo.height = "50";
+        logo.id = "outdatedBrowserPhenoTipslogo";
+        var group = document.createElement("div");
+        group.id = "outdatedBrowserContainer";
+        group.appendChild(logo);
+        
+        // add text
+        var text = document.createTextNode("It appears you are using Internet Explorer version 8 or below.\n"
+        + "Please download a newer version or a different browser to continue using PhenoTips using the below links:");
+        var pnode = document.createElement("p");
+        pnode.id = "outdatedBrowserText";
+        pnode.appendChild(text);
+        
+        group.appendChild(pnode);
+        
+        document.body.appendChild(group);
+        
+        // add images
+        var chromeDiv = document.createElement("div");
+        chromeDiv.class = "imagecontainer";
+        var chromeLogo = document.createElement("img");
+        chromeLogo.id = "outdatedBrowserLogoLinks";
+        chromeLogo.src = "http://www.google.com/chrome/assets/common/images/chrome_logo_2x.png";
+        var chromeLink = document.createElement("a");
+        chromeLink.href = "https://www.google.com/chrome/browser/desktop/index.html";
+        chromeLink.appendChild(chromeLogo);
+        chromeDiv.appendChild(chromeLink);
+        
+        var firefoxDiv = document.createElement("div");
+        firefoxDiv.class = "imagecontainer";
+        var firefoxLogo = document.createElement("img");
+        firefoxLogo.id = "outdatedBrowserLogoLinks";
+        firefoxLogo.src = "https://mozorg.cdn.mozilla.net/media/img/firefox/new/header-firefox.98d0a02c957f.png";
+        var firefoxLink = document.createElement("a");
+        firefoxLink.href = "https://www.mozilla.org/en-us/firefox/new/";
+        firefoxLink.appendChild(firefoxLogo);
+        firefoxDiv.appendChild(firefoxLink);
+        
+        var ieDiv = document.createElement("div");
+        ieDiv.class = "imagecontainer";
+        var ieLogo = document.createElement("img");
+        ieLogo.id = "outdatedBrowserLogoLinks";
+        ieLogo.src = "https://c.s-microsoft.com/en-ca/cmsimages/iebluee_0304_70x70_en_us.png?version=8cada7a1-74f4-ebb3-cce0-af842a79ada8";
+        var ieLink = document.createElement("a");
+        ieLink.href = "http://windows.microsoft.com/en-ca/internet-explorer/download-ie";
+        ieLink.appendChild(ieLogo);
+        ieDiv.appendChild(ieLink);
+        
+        var linkContainer = document.createElement("div");
+        pnode.appendChild(linkContainer);
+        var linkNode = document.createElement("div");
+        chromeDiv.id = "outdateBrowserAlign";
+        firefoxDiv.id = "outdateBrowserAlign";
+        ieDiv.id = "outdateBrowserAlign";
+        linkNode.appendChild(chromeDiv);
+        linkNode.appendChild(firefoxDiv);
+        linkNode.appendChild(ieDiv);
+        linkContainer.appendChild(linkNode);
+        }
+      </code>
     </property>
     <property>
       <name>IE Sniff</name>
@@ -293,43 +294,45 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>#container&#xd;
-        {&#xd;
-        position: absolute;&#xd;
-        top: 100px;&#xd;
-        margin-left: 5%;&#xd;
-        margin-right: 5%;&#xd;
-        width: auto;&#xd;
-        min-width: 700px;&#xd;
-        height: 300px;&#xd;
-        border: #000 solid 2px;&#xd;
-        border-radius: 20px;&#xd;
-        background: #B3D3F2;&#xd;
-        }&#xd;
-        &#xd;
-        #logo {margin-left: 3%}&#xd;
-        &#xd;
-        #browserLogo {margin-top: 10%; vertical-align: top; height: 60px; width: auto;}&#xd;
-        &#xd;
-        #left, #middle, #right {&#xd;
-        display: inline-block;&#xd;
-        zoom: 1;&#xd;
-        vertical-align: top;&#xd;
-        width: 30%;&#xd;
-        }&#xd;
-        &#xd;
-        p {&#xd;
-        margin-left: 3%;&#xd;
-        margin-right: 3%;&#xd;
-        font-family: "Times New Roman", Times, serif;&#xd;
-        font-size: 24px;&#xd;
-        }</code>
+      <code>
+        #outdatedBrowserContainer
+        {
+        position: absolute;
+        top: 100px;
+        margin-left: 5%;
+        margin-right: 5%;
+        width: auto;
+        min-width: 700px;
+        height: 300px;
+        border: #000 solid 2px;
+        border-radius: 20px;
+        background: #B3D3F2;
+        }
+        
+        #outdatedBrowserPhenoTipslogo {margin-left: 3%}
+        
+        #outdatedBrowserLogoLinks {margin-top: 10%; vertical-align: top; height: 60px; width: auto;}
+        
+        #outdateBrowserAlign {
+        display: inline-block;
+        zoom: 1;
+        vertical-align: top;
+        width: 30%;
+        }
+        
+        #outdatedBrowserText {
+        margin-left: 3%;
+        margin-right: 3%;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 24px;
+        }
+      </code>
     </property>
     <property>
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name></name>
+      <name/>
     </property>
     <property>
       <parse/>
