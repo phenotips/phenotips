@@ -38,4 +38,10 @@ public class WeightMeasurementHandler extends AbstractMeasurementHandler
     {
         return "weight";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "kg";
+    }
 }
