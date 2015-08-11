@@ -108,10 +108,10 @@ public interface Family
     String getExternalId();
 
     /**
-     * @param actions to get URL for
+     * @param action to get URL for
      * @return URL
      */
-    String getURL(String actions);
+    String getURL(String action);
 
     /**
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
