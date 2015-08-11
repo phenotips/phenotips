@@ -1,5 +1,5 @@
 org.phenotips.studies.family.script.FamilyScriptService
-org.phenotips.studies.family.internal.ProcessingImpl
+org.phenotips.studies.family.internal.PedigreeUtils
 org.phenotips.studies.family.internal.ValidationImpl
 org.phenotips.studies.family.internal.JsonAdapterImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener

@@ -22,7 +22,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.Processing;
+import org.phenotips.studies.family.internal.PedigreeUtils;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 import org.phenotips.studies.family.response.JSONResponse;
 import org.phenotips.studies.family.response.StatusResponse;
@@ -63,7 +63,7 @@ public class FamilyScriptService implements ScriptService
     private PatientRepository patientRepository;
 
     @Inject
-    private Processing processing;
+    private PedigreeUtils pedigreeUtils;
 
     @Inject
     private XWikiFamilyExport familyExport;
@@ -262,11 +262,9 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON processPedigree(String patientId, String json, String image)
     {
-        try {
-            return this.processing.processPatientPedigree(patientId, JSONObject.fromObject(json), image).asProcessing();
-        } catch (Exception ex) {
-            return new JSONObject(true);
-        }
+        JSONResponse response =
+            this.pedigreeUtils.processPatientPedigree(patientId, JSONObject.fromObject(json), image);
+        return response.asProcessing();
     }
 
     /**

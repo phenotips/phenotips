@@ -23,7 +23,6 @@ import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.response.JSONResponse;
 import org.phenotips.studies.family.response.StatusResponse;
@@ -37,19 +36,17 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.xpn.xwiki.XWikiException;
-
 import net.sf.json.JSONObject;
 
 /**
- * Storage and retrieval.
+ * Processes pedigree from UI.
  *
  * @version $Id$
  * @since 1.2RC1
  */
-@Component
+@Component(roles = { PedigreeUtils.class })
 @Singleton
-public class ProcessingImpl implements Processing
+public class PedigreeUtils
 {
     @Inject
     private PatientRepository patientRepository;
@@ -63,16 +60,22 @@ public class ProcessingImpl implements Processing
     @Inject
     private JsonAdapter jsonAdapter;
 
-    @Override
-    public JSONResponse processPatientPedigree(String patientId, JSONObject json, String image)
-        throws XWikiException
+    /**
+     * Receives a pedigree in form of a JSONObject and an SVG image to be stored in proband's family.
+     *
+     * @param probandId id of proband. If a patient does not belong to a family, a new one is created.
+     * @param json (data) part of the pedigree JSON
+     * @param image svg part of the pedigree JSON
+     * @return {@link JSONResponse} with one of many possible statuses
+     */
+    public JSONResponse processPatientPedigree(String probandId, JSONObject json, String image)
     {
         Pedigree pedigree = new Pedigree(json, image);
 
         // Get proband
-        Patient proband = this.patientRepository.getPatientById(patientId);
+        Patient proband = this.patientRepository.getPatientById(probandId);
         if (proband == null) {
-            return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(patientId);
+            return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(probandId);
         }
 
         // Get proband's family
@@ -87,8 +90,8 @@ public class ProcessingImpl implements Processing
 
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
-            if (!this.validation.hasPatientEditAccess(patientId)) {
-                return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(patientId);
+            if (!this.validation.hasPatientEditAccess(probandId)) {
+                return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(probandId);
             }
             family = this.familyRepository.createFamily();
             family.addMember(proband);
@@ -117,7 +120,7 @@ public class ProcessingImpl implements Processing
             return jsonResponse.setStatusResponse(StatusResponse.FAMILY_HAS_NO_MEMBERS);
         }
 
-        if (ProcessingImpl.containsDuplicates(newMembers)) {
+        if (this.containsDuplicates(newMembers)) {
             return jsonResponse.setStatusResponse(StatusResponse.DUPLICATE_PATIENT);
         }
 
@@ -139,7 +142,6 @@ public class ProcessingImpl implements Processing
     }
 
     private JSONResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
-        throws XWikiException
     {
         StatusResponse response;
 
@@ -195,7 +197,7 @@ public class ProcessingImpl implements Processing
         return StatusResponse.OK;
     }
 
-    private static boolean containsDuplicates(List<String> updatedMembers)
+    private boolean containsDuplicates(List<String> updatedMembers)
     {
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
