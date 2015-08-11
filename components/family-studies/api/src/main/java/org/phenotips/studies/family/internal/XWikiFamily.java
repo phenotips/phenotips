@@ -218,10 +218,9 @@ public class XWikiFamily implements Family
         Pedigree pedigree = getPedigree();
         if (pedigree != null && !pedigree.isEmpty()) {
             pedigree.removeMember(patientId);
-            try {
-                this.setPedigree(pedigree);
-            } catch (XWikiException e) {
-                this.logger.error("Could not remove patient {} from pedigree: {}", patientId, e.getMessage());
+            if (!this.setPedigree(pedigree)) {
+                this.logger.error("Could not remove patient {} from pedigree.", patientId);
+                return false;
             }
         }
 
@@ -375,7 +374,7 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    public void setPedigree(Pedigree pedigree) throws XWikiException
+    public boolean setPedigree(Pedigree pedigree)
     {
         XWikiContext context = getXContext();
         XWiki wiki = context.getWiki();
@@ -384,7 +383,14 @@ public class XWikiFamily implements Family
         pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(), context);
         pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 
-        wiki.saveDocument(this.familyDocument, context);
+        try {
+            wiki.saveDocument(this.familyDocument, context);
+        } catch (XWikiException e) {
+            this.logger.error("Error saving pedigree: {}", e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     @Override

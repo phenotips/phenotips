@@ -27,8 +27,6 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.List;
 import java.util.Map;
 
-import com.xpn.xwiki.XWikiException;
-
 import net.sf.json.JSON;
 
 /**
@@ -131,9 +129,9 @@ public interface Family
      * Sets the pedigree for the family, and saves.
      *
      * @param pedigree to set
-     * @throws XWikiException if there was an error in saving.
+     * @return true if successful
      */
-    void setPedigree(Pedigree pedigree) throws XWikiException;
+    boolean setPedigree(Pedigree pedigree);
 
     /**
      * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
