@@ -25,6 +25,8 @@ import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
+import org.phenotips.studies.family.response.JSONResponse;
+import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.security.authorization.Right;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.studies.family.response;
 
 /**
  * Passed around to preserve important error information. Holds onto a status (modelled after HTTP statuses), a message,

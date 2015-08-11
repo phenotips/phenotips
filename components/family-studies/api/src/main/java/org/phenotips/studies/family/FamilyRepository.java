@@ -18,7 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
-import org.phenotips.studies.family.internal.StatusResponse;
+import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Role;
 

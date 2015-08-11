@@ -21,6 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;

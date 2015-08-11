@@ -23,9 +23,9 @@ import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.Processing;
-import org.phenotips.studies.family.internal.JSONResponse;
-import org.phenotips.studies.family.internal.StatusResponse;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
+import org.phenotips.studies.family.response.JSONResponse;
+import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;

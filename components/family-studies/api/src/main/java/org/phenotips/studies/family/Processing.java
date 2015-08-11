@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.studies.family.internal.JSONResponse;
+import org.phenotips.studies.family.response.JSONResponse;
 
 import org.xwiki.component.annotation.Role;
 

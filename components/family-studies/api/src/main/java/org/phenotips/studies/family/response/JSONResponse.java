@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.studies.family.response;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
