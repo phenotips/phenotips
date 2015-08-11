@@ -38,4 +38,10 @@ public class PalpebralFissureLengthMeasurementHandler extends AbstractMeasuremen
     {
         return "pfl";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }

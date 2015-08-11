@@ -38,4 +38,10 @@ public class InnerCanthalDistanceMeasurementHandler extends AbstractMeasurementH
     {
         return "icd";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }
