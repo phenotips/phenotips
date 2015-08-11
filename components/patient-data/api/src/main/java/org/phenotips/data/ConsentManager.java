@@ -17,10 +17,14 @@ public interface ConsentManager
 
     List<Consent> loadConsentsFromPatient(Patient patient);
 
+    boolean setPatientConsents(Patient patient, List<Consent> consents);
+
+    boolean grantConsent(Patient patient, String consentId);
+
+    boolean revokeConsent(Patient patient, String consentId);
+
     /** bulk import/export. */
     JSON toJson(List<Consent> consents);
 
     List<Consent> fromJson(JSON json);
-
-    boolean setPatientConsents(String patientId, List<Consent> consents);
 }

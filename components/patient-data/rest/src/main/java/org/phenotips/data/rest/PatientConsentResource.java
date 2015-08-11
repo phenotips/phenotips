@@ -38,12 +38,12 @@ public interface PatientConsentResource
     Response getConsents(@PathParam("patient_id") String patientId);
 
     @PUT
-    @Path("/grant/{id}")
+    @Path("/grant")
     @Consumes(MediaType.TEXT_PLAIN)
-    Response grantConsent(@PathParam("patient_id") String patientId, @PathParam("id") String id);
+    Response grantConsent(@PathParam("patient_id") String patientId, String id);
 
     @PUT
-    @Path("/revoke/{id}")
+    @Path("/revoke")
     @Consumes(MediaType.TEXT_PLAIN)
-    Response revokeConsent(@PathParam("patient_id") String patientId, @PathParam("id") String id);
+    Response revokeConsent(@PathParam("patient_id") String patientId, String id);
 }

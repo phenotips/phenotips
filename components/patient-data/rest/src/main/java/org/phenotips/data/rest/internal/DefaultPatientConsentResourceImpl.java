@@ -7,8 +7,6 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.PatientConsentResource;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -49,40 +47,98 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     @Inject
     private ConsentManager consentManager;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private EntityReferenceResolver<EntityReference> currentResolver;
-
     @Override
     public Response getConsents(String patientId)
     {
-        this.logger.debug("Retrieving patient record [{}] via REST", patientId);
-        Patient patient = this.repository.getPatientById(patientId);
-        if (patient == null) {
-            this.logger.debug("No such patient record: [{}]", patientId);
-            return Response.status(Response.Status.NOT_FOUND).build();
+        this.logger.debug("Retrieving consents from patient record [{}] via REST", patientId);
+        Security security = this.securityCheck(patientId);
+        if (security.isAllowed()) {
+            List<Consent> consents = consentManager.loadConsentsFromPatient(security.getPatient());
+            JSON json = consentManager.toJson(consents);
+            return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
+        } else {
+            return security.getFailResponse();
         }
-        User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
-            patient.getDocument())) {
-            this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-        List<Consent> consents = consentManager.loadConsentsFromPatient(patient);
-        JSON json = consentManager.toJson(consents);
-        return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @Override
     public Response grantConsent(String patientId, String id)
     {
-        return null;
+        Security security = this.securityCheck(patientId);
+        if (security.isAllowed()) {
+            boolean status = this.consentManager.grantConsent(security.getPatient(), id);
+            if (status) {
+                return Response.ok().build();
+            } else {
+                return Response.serverError().build();
+            }
+        } else {
+            return security.getFailResponse();
+        }
     }
 
     @Override
     public Response revokeConsent(String patientId, String id)
     {
-        return null;
+        Security security = this.securityCheck(patientId);
+        if (security.isAllowed()) {
+            boolean status = this.consentManager.revokeConsent(security.getPatient(), id);
+            if (status) {
+                return Response.ok().build();
+            } else {
+                return Response.serverError().build();
+            }
+        } else {
+            return security.getFailResponse();
+        }
+    }
+
+    private Security securityCheck(String patientId)
+    {
+        Patient patient = this.repository.getPatientById(patientId);
+        if (patient == null) {
+            this.logger.debug("No such patient record: [{}]", patientId);
+            Response response = Response.status(Response.Status.NOT_FOUND).build();
+            return new Security(patient, response, false);
+        }
+        User currentUser = this.users.getCurrentUser();
+        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
+            patient.getDocument())) {
+            this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
+            Response response = Response.status(Response.Status.FORBIDDEN).build();
+            return new Security(patient, response, false);
+        }
+        return new Security(patient, null, true);
+    }
+
+    private class Security
+    {
+        private Patient patient;
+
+        private Response response;
+
+        private boolean isAllowed;
+
+        Security(Patient patient, Response failResponse, boolean isAllowed)
+        {
+            this.patient = patient;
+            this.response = failResponse;
+            this.isAllowed = isAllowed;
+        }
+
+        public Patient getPatient()
+        {
+            return this.patient;
+        }
+
+        public Response getFailResponse()
+        {
+            return this.response;
+        }
+
+        public boolean isAllowed()
+        {
+            return this.isAllowed;
+        }
     }
 }

@@ -42,6 +42,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -61,6 +62,7 @@ import net.sf.json.JSONArray;
 public class PatientXWikiConsentManager implements ConsentManager, Initializable
 {
     private final static String GRANTED = "granted";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -104,7 +106,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         List<Consent> consents = new LinkedList<>();
         try {
-            DocumentModelBridge configDocBridge = bridge.getDocument(new DocumentReference(configurationPageReference));
+            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
+            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
             XWikiDocument configDoc = (XWikiDocument) configDocBridge;
             List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
             for (BaseObject consentObject : consentObjects) {
@@ -178,6 +181,29 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return ids;
     }
 
+    @Override public boolean setPatientConsents(Patient patient, List<Consent> consents)
+    {
+        try {
+            SaveablePatientConsentHolder holder = this.getPatientConsentHolder(patient);
+            holder.setConsents(this.convertToIds(consents));
+            holder.save();
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Could not update consents in patient record {}. {}", patient, ex.getMessage());
+        }
+        return false;
+    }
+
+    @Override public boolean grantConsent(Patient patient, String consentId)
+    {
+        return this.manageConsent(patient, consentId, true);
+    }
+
+    @Override public boolean revokeConsent(Patient patient, String consentId)
+    {
+        return this.manageConsent(patient, consentId, false);
+    }
+
     @Override public JSON toJson(List<Consent> consents)
     {
         JSONArray json = new JSONArray();
@@ -192,23 +218,58 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return null;
     }
 
-    @Override public boolean setPatientConsents(String patientId, List<Consent> consents)
+    /**
+     *
+     * @param patient
+     * @param grant if true will grant the consent, otherwise will revoke
+     * @return if operation was successful
+     */
+    private boolean manageConsent(Patient patient, String consentId, boolean grant)
     {
+        if (!this.isValidId(consentId)) {
+            this.logger.warn("Invalid consent id ({}) was supplied", consentId);
+            return false;
+        }
         try {
-            Patient patient = this.repository.getPatientById(patientId);
-            DocumentModelBridge patientDocBridge = this.bridge.getDocument(patient.getDocument());
-            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
-            BaseObject holder = getConsentHolder(patientDoc);
-            holder.set(GRANTED, this.convertToIds(consents), contextProvider.get());
+            SaveablePatientConsentHolder consentHolder = this.getPatientConsentHolder(patient);
+            List<String> currentConsents = consentHolder.getConsents();
+            if (grant) {
+                if (!currentConsents.contains(consentId)) {
+                    currentConsents.add(consentId);
+                }
+            } else {
+                currentConsents.remove(consentId);
+            }
+            consentHolder.setConsents(currentConsents);
+            consentHolder.save();
             return true;
         } catch (Exception ex) {
-            this.logger.error("Could not update consents in patient record {}. {}", patientId, ex.getMessage());
+            this.logger
+                .error("Could not update consent {} in patient record {}. {}", consentId, patient, ex.getMessage());
+            return false;
+        }
+    }
+
+    private SaveablePatientConsentHolder getPatientConsentHolder(Patient patient) throws Exception
+    {
+        DocumentModelBridge patientDocBridge = this.bridge.getDocument(patient.getDocument());
+        XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
+        return new SaveablePatientConsentHolder(getXWikiConsentHolder(patientDoc), patientDoc,
+            this.contextProvider.get());
+    }
+
+    private boolean isValidId(String consentId)
+    {
+        for (Consent consent : this.systemConsents) {
+            if (StringUtils.equals(consentId, consent.getID())) {
+                return true;
+            }
         }
         return false;
     }
 
     /** Either gets the existing consents holder object, or creates a new one. */
-    private BaseObject getConsentHolder(XWikiDocument doc) throws XWikiException
+    private BaseObject getXWikiConsentHolder(XWikiDocument doc) throws XWikiException
     {
         BaseObject holder = doc.getXObject(this.consentIdsHolderReference);
         if (holder == null) {
@@ -220,8 +281,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private List<String> convertToIds(List<Consent> consents)
     {
         List<String> ids = new LinkedList<>();
-        for(Consent consent : consents)
-        {
+        for (Consent consent : consents) {
             ids.add(consent.getID());
         }
         return ids;
@@ -230,5 +290,40 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private boolean intToBool(int value)
     {
         return value == 1;
+    }
+
+    /**
+     * Keeps the XWiki patient document and the XWiki consents holder object in memory, allowing to change consents
+     * granted and save the document, without reloading either the document or the consent {@link BaseObject}.
+     */
+    private class SaveablePatientConsentHolder
+    {
+        private BaseObject consentHolder;
+
+        private XWikiDocument patientDoc;
+
+        private XWikiContext context;
+
+        SaveablePatientConsentHolder(BaseObject consentHolder, XWikiDocument patientDoc, XWikiContext context)
+        {
+            this.consentHolder = consentHolder;
+            this.patientDoc = patientDoc;
+            this.context = context;
+        }
+
+        public List<String> getConsents() throws XWikiException
+        {
+            return this.consentHolder.getListValue(GRANTED);
+        }
+
+        public void setConsents(List<String> consents)
+        {
+            this.consentHolder.set(GRANTED, consents, context);
+        }
+
+        public void save() throws XWikiException
+        {
+            this.context.getWiki().saveDocument(this.patientDoc, "Changed patient consents", true, context);
+        }
     }
 }
