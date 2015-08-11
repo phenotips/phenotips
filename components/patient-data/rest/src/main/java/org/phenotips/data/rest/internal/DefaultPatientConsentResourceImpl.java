@@ -75,7 +75,13 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     }
 
     @Override
-    public Response updateConsent(String status, String patientId, String id)
+    public Response grantConsent(String patientId, String id)
+    {
+        return null;
+    }
+
+    @Override
+    public Response revokeConsent(String patientId, String id)
     {
         return null;
     }

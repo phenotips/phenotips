@@ -3,8 +3,6 @@ package org.phenotips.data.internal;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentStatus;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -72,7 +70,7 @@ public class DefaultConsent implements Consent
 
     @Override public Consent fromJson()
     {
-        throw new NotImplementedException("Will be implemented soon");
+        throw new UnsupportedOperationException();
     }
 
     public static Consent copy(Consent from)

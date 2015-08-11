@@ -29,7 +29,6 @@ import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -61,14 +60,10 @@ import net.sf.json.JSONArray;
 @Singleton
 public class PatientXWikiConsentManager implements ConsentManager, Initializable
 {
-    private final static String AGREED_TO = "agreed_to";
+    private final static String GRANTED = "granted";
     /** Logging helper object. */
     @Inject
     private Logger logger;
-
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
 
     /** Provides access to the XWiki data. */
     @Inject
@@ -83,7 +78,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private DocumentReferenceResolver<EntityReference> referenceResolver;
 
     @Inject
-    private Provider<XWikiContext> provider;
+    private Provider<XWikiContext> contextProvider;
 
     private EntityReference consentReference =
         new EntityReference("PatientConsentConfiguration", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -102,9 +97,6 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
 
     @Override public void initialize() throws InitializationException
     {
-        this.consentReference = referenceResolver.resolve(this.consentReference);
-        this.consentIdsHolderReference = referenceResolver.resolve(this.consentIdsHolderReference);
-        this.configurationPageReference = referenceResolver.resolve(this.configurationPageReference);
         this.refreshSystemConsents();
     }
 
@@ -135,7 +127,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
     {
         String id = xwikiConsent.getStringValue("id");
-        String description = configDoc.display("description", "view", xwikiConsent, provider.get());
+        String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
         Integer level = xwikiConsent.getIntValue("level");
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
         return new DefaultConsent(id, description, level, required);
@@ -181,7 +173,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         List<String> ids = new LinkedList<>();
         BaseObject idsHolder = doc.getXObject(consentIdsHolderReference);
         if (idsHolder != null) {
-            ids = idsHolder.getListValue(AGREED_TO);
+            ids = idsHolder.getListValue(GRANTED);
         }
         return ids;
     }
@@ -207,7 +199,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             DocumentModelBridge patientDocBridge = this.bridge.getDocument(patient.getDocument());
             XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
             BaseObject holder = getConsentHolder(patientDoc);
-            holder.set(AGREED_TO, this.convertToIds(consents), provider.get());
+            holder.set(GRANTED, this.convertToIds(consents), contextProvider.get());
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not update consents in patient record {}. {}", patientId, ex.getMessage());
@@ -220,7 +212,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         BaseObject holder = doc.getXObject(this.consentIdsHolderReference);
         if (holder == null) {
-            holder = doc.newXObject(this.consentIdsHolderReference, provider.get());
+            holder = doc.newXObject(this.consentIdsHolderReference, contextProvider.get());
         }
         return holder;
     }
