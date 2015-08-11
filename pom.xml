@@ -562,6 +562,8 @@
               <differenceType>7012</differenceType>
               <method>org.phenotips.configuration.RecordConfiguration getConfiguration(java.lang.String)</method>
               <justification>New API methods needed for making the configuration more extensible.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/vocabulary/Vocabulary</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getSupportedCategories()</method>
@@ -572,6 +574,16 @@
               <differenceType>7012</differenceType>
               <method>java.util.List search(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)</method>
               <justification>Adding support for vocabulary categories</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getName()</method>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getUnit()</method>
             </difference>
           </ignored>
           <excludes>
