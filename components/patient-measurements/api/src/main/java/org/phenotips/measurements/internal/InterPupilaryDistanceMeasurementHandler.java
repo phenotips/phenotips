@@ -38,4 +38,10 @@ public class InterPupilaryDistanceMeasurementHandler extends AbstractMeasurement
     {
         return "ipd";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }

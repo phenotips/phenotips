@@ -113,6 +113,14 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      */
     public abstract String getName();
 
+    /**
+     * Get the unit, for display purposes only, of this specific kind of measurement.
+     *
+     * @return the abbreviated unit, e.g. cm, kg
+     *         for unitless measurements, null
+     */
+    public abstract String getUnit();
+
     @Override
     public int valueToPercentile(boolean male, float ageInMonths, double value)
     {

@@ -40,6 +40,12 @@ public class EarLengthMeasurementHandler extends AbstractMeasurementHandler
     }
 
     @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
+
+    @Override
     public boolean isDoubleSided()
     {
         return true;
