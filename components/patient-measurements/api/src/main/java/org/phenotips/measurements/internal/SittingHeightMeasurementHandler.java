@@ -38,4 +38,10 @@ public class SittingHeightMeasurementHandler extends AbstractMeasurementHandler
     {
         return "sitting";
     }
+
+    @Override
+    public String getUnit()
+    {
+        return "cm";
+    }
 }
