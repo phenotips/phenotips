@@ -17,8 +17,6 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.studies.family.internal.Pedigree;
-
 import org.xwiki.component.annotation.Role;
 
 import java.util.List;

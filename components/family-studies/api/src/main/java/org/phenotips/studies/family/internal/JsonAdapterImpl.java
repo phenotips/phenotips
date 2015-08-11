@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.studies.family.JsonAdapter;
+import org.phenotips.studies.family.Pedigree;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 

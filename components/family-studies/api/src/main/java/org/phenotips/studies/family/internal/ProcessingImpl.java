@@ -22,6 +22,7 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.JsonAdapter;
+import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.Processing;
 import org.phenotips.studies.family.Validation;
 

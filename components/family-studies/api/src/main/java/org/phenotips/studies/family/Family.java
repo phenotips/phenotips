@@ -19,7 +19,6 @@ package org.phenotips.studies.family;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
-import org.phenotips.studies.family.internal.Pedigree;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;

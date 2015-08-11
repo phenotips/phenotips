@@ -21,6 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;

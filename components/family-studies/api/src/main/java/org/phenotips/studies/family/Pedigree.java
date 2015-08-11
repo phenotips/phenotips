@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
+import org.phenotips.studies.family.internal.SvgUpdater;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +29,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Pedigree DTO.
+ * Holds data and image (SVG string) for pedigree.
  *
  * @version $Id$
  */
