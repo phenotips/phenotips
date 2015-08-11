@@ -66,6 +66,11 @@ public class PermissionsChangeListener extends AbstractEventListener
         String familyId = xwikiDoc.getDocumentReference().getName();
         Family family = this.familyRepository.getFamilyById(familyId);
 
+        // TODO what should be done if it's a patientId?
+        if (family == null) {
+            return;
+        }
+
         if (event instanceof PatientDeletedEvent) {
             String patientId = (String) data;
             Patient p = this.patientRepository.getPatientById(patientId);
