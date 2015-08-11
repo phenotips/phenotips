@@ -30,9 +30,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -148,22 +145,6 @@ public class FamilyScriptService implements ScriptService
         }
 
         return family.getInformationAsJSON();
-    }
-
-    /**
-     * Family page should aggregate medical reports of all its members.
-     *
-     * @param familyId if of family to get reports for
-     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
-     */
-    public Map<String, Map<String, String>> getReports(String familyId)
-    {
-        Family family = this.familyRepository.getFamilyById(familyId);
-        if (family == null) {
-            this.logger.error("Could not retrieve family with id [{}]", familyId);
-            return new HashMap<>();
-        }
-        return family.getMedicalReports();
     }
 
     /**
