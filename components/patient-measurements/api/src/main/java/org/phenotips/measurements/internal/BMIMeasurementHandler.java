@@ -39,6 +39,12 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
         return "bmi";
     }
 
+    @Override
+    public String getUnit()
+    {
+        return "kg/m^2";
+    }
+
     /**
      * Compute the BMI (Body-Mass Index) for the given weigh and height. The formula is {@code weight / (height^2)}
      * multiplied by 10000 (to convert centimeters into meters).
