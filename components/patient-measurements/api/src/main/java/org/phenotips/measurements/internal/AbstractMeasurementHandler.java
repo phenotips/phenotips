@@ -106,12 +106,12 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /** The list of chart settings configured for this measurement. */
     private List<MeasurementsChartConfiguration> chartConfigurations;
 
-    /**
-     * Get the name of this specific kind of measurements.
-     *
-     * @return a simple name, all lowercase keyword
-     */
-    public abstract String getName();
+    @Override
+    public String getUnit()
+    {
+        // The vast majority of measurements are in centimeters
+        return "cm";
+    }
 
     @Override
     public int valueToPercentile(boolean male, float ageInMonths, double value)

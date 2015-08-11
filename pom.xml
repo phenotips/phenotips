@@ -664,6 +664,16 @@
               <method>java.lang.String getServerProtocolVersion()</method>
               <justification>Improved handling of older push server protocol versions.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getName()</method>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getUnit()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

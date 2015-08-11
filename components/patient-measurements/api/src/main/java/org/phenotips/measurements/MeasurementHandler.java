@@ -35,6 +35,22 @@ import java.util.List;
 public interface MeasurementHandler
 {
     /**
+     * Get the name of this specific kind of measurements.
+     *
+     * @return a simple name, all lowercase keyword
+     * @since 1.3M4
+     */
+    String getName();
+
+    /**
+     * Get the unit, for display purposes only, of this specific kind of measurement.
+     *
+     * @return the abbreviated unit, e.g. {@code cm}, {@code kg}
+     * @since 1.3M4
+     */
+    String getUnit();
+
+    /**
      * Get the percentile for the given measured value and age.
      *
      * @param male {@code true} for boys, {@code false} for girls
