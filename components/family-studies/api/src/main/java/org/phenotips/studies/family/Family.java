@@ -92,7 +92,7 @@ public interface Family
      *
      * @return JSON with info about the family, each member and the current user's permissions.
      */
-    JSON getInformationAsJSON();
+    JSON toJSON();
 
     /**
      * Retrieves medical reports for all family members.

@@ -145,7 +145,7 @@ public class FamilyScriptService implements ScriptService
             return new JSONObject(true);
         }
 
-        return family.getInformationAsJSON();
+        return family.toJSON();
     }
 
     /**

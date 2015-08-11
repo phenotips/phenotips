@@ -126,7 +126,7 @@ public class XWikiFamilyExport
      * @param family family
      * @return JSON object with family information
      */
-    public JSON getInformationAsJSON(Family family)
+    public JSON toJSON(Family family)
     {
         JSONObject familyJSON = new JSONObject();
         familyJSON.put("familyPage", family.getId());

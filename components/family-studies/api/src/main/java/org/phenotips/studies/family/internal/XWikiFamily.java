@@ -263,9 +263,9 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    public JSON getInformationAsJSON()
+    public JSON toJSON()
     {
-        return XWikiFamily.familyExport.getInformationAsJSON(this);
+        return XWikiFamily.familyExport.toJSON(this);
     }
 
     @Override
