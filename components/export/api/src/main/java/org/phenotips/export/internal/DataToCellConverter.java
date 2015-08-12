@@ -56,11 +56,7 @@ import com.xpn.xwiki.web.Utils;
  */
 public class DataToCellConverter
 {
-    private static final String NKDA = "NKDA";
-
     private static final String ALLERGIES = "allergies";
-
-    private static final String ALLERGIES_DATA = "allergiesData";
 
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
 
@@ -1187,20 +1183,14 @@ public class DataToCellConverter
         Integer x = 0;
 
         if (present.contains(ALLERGIES)) {
-            PatientData<Object> allergiesData = patient.getData(ALLERGIES_DATA);
+            PatientData<String> allergiesData = patient.getData(ALLERGIES);
             int y = 0;
-            if (allergiesData != null) {
-                Boolean nkda = (Boolean) allergiesData.get(NKDA);
-                if (nkda != null && nkda.booleanValue()) {
-                    DataCell cell = new DataCell(NKDA, x, y);
-                    bodySection.addCell(cell);
-                    y++;
-                }
-
-                @SuppressWarnings("unchecked")
-                List<String> allergiesList = (List<String>) allergiesData.get(ALLERGIES);
-                for (String allergy : allergiesList) {
+            if (allergiesData != null && allergiesData.isIndexed()) {
+                for (String allergy : allergiesData) {
                     DataCell cell = new DataCell(allergy, x, y);
+                    if ("NKDA".equals(allergy)) {
+                        cell.addStyle(StyleOption.YES);
+                    }
                     bodySection.addCell(cell);
                     y++;
                 }

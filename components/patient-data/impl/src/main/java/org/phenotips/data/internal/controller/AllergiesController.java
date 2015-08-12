@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -25,22 +25,21 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.IntegerProperty;
-import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -53,17 +52,18 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("allergies")
 @Singleton
-public class AllergiesController implements PatientDataController<Object>
+public class AllergiesController implements PatientDataController<String>
 {
-    private static final String DATA_NAME = "allergiesData";
-
-    private static final String ALLERGIES = "allergies";
+    private static final String DATA_NAME = "allergies";
 
     private static final String NKDA = "NKDA";
 
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    @Inject
+    private Provider<XWikiContext> xcontext;
 
     /** Provides access to the underlying data storage. */
     @Inject
@@ -76,7 +76,7 @@ public class AllergiesController implements PatientDataController<Object>
     }
 
     @Override
-    public PatientData<Object> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -85,20 +85,21 @@ public class AllergiesController implements PatientDataController<Object>
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
 
-            Map<String, Object> result = new LinkedHashMap<String, Object>();
+            @SuppressWarnings("unchecked")
+            List<String> allergies = data.getListValue(DATA_NAME);
+            int nkda = data.getIntValue(NKDA);
 
-            // allergies
-            ListProperty allergiesListProperty = (ListProperty) data.get(ALLERGIES);
-            List<String> allergiesList = allergiesListProperty.getList();
-            result.put(ALLERGIES, allergiesList);
+            List<String> result = new ArrayList<>(CollectionUtils.size(allergies) + 1);
 
-            // NKDA
-            IntegerProperty nkdaProperty = (IntegerProperty) data.get(NKDA);
-            Integer nkdaInteger = (Integer) nkdaProperty.getValue();
-            boolean nkda = nkdaInteger == 1;
-            result.put(NKDA, nkda);
+            if (nkda == 1) {
+                result.add(NKDA);
+            }
 
-            return new DictionaryPatientData<>(getName(), result);
+            if (!CollectionUtils.isEmpty(allergies)) {
+                result.addAll(allergies);
+            }
+
+            return new IndexedPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error(
                 "Could not find requested document or some unforeseen error has occurred during controller loading.",
@@ -122,57 +123,38 @@ public class AllergiesController implements PatientDataController<Object>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(ALLERGIES)) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
             return;
         }
 
-        PatientData<Object> allergiesData = patient.getData(DATA_NAME);
-        if (allergiesData == null) {
+        PatientData<String> allergiesData = patient.getData(DATA_NAME);
+        if (allergiesData == null || !allergiesData.isIndexed() || allergiesData.size() == 0) {
             return;
         }
-
-        @SuppressWarnings("unchecked")
-        List<String> allergies = (List<String>) allergiesData.get(ALLERGIES);
-        Boolean nkda = (Boolean) allergiesData.get(NKDA);
 
         JSONArray allergiesJsonArray = new JSONArray();
-        if (nkda != null && nkda.booleanValue()) {
-            allergiesJsonArray.add(NKDA);
+        for (String allergy : allergiesData) {
+            allergiesJsonArray.add(allergy);
         }
-
-        if (allergies != null && allergies.size() > 0) {
-            allergiesJsonArray.addAll(allergies);
-        }
-        if (!allergiesJsonArray.isEmpty()) {
-            json.put(ALLERGIES, allergiesJsonArray);
-        }
+        json.put(DATA_NAME, allergiesJsonArray);
     }
 
     @Override
-    public PatientData<Object> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
-        Map<String, Object> result = new LinkedHashMap<>();
-        List<String> allergiesList = new LinkedList<>();
-        boolean nkda = false;
+        List<String> result = new ArrayList<>();
 
-        if (json.has(ALLERGIES)) {
-            Object allergiesValue = json.get(ALLERGIES);
+        if (json.has(DATA_NAME)) {
+            Object allergiesValue = json.get(DATA_NAME);
 
             if (allergiesValue instanceof JSONArray) {
                 JSONArray allergiesJsonArray = (JSONArray) allergiesValue;
-                for (Object o : allergiesJsonArray) {
-                    String allergy = (String) o;
-                    if (NKDA.equalsIgnoreCase(allergy)) {
-                        nkda = true;
-                    } else {
-                        allergiesList.add(allergy);
-                    }
+                for (Object allergy : allergiesJsonArray) {
+                    result.add(String.valueOf(allergy));
                 }
             }
         }
 
-        result.put(NKDA, nkda);
-        result.put(ALLERGIES, allergiesList);
-        return new DictionaryPatientData<>(DATA_NAME, result);
+        return new IndexedPatientData<>(DATA_NAME, result);
     }
 }
