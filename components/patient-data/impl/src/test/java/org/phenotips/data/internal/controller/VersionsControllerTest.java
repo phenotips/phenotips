@@ -26,6 +26,7 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.distribution.internal.DistributionManager;
@@ -41,18 +42,15 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
@@ -67,8 +65,6 @@ import static org.mockito.Mockito.when;
  * Test for the {@link VersionsController} Component,
  * only the overridden methods from {@link AbstractSimpleController} are tested here
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ ComponentManagerRegistry.class })
 public class VersionsControllerTest
 {
 
@@ -89,6 +85,9 @@ public class VersionsControllerTest
 
     @Mock
     private BaseObject secondOntologyVersion;
+
+    @Mock
+    private Provider<ComponentManager> cmProvider;
 
     @Mock
     private ComponentManager contextComponentManager;
@@ -121,9 +120,8 @@ public class VersionsControllerTest
         List<BaseObject> ontologyVersionList = Arrays.asList(firstOntologyVersion, secondOntologyVersion);
         doReturn(ontologyVersionList).when(this.doc).getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
 
-        PowerMockito.mockStatic(ComponentManagerRegistry.class);
-        PowerMockito.when(ComponentManagerRegistry.getContextComponentManager())
-            .thenReturn(this.contextComponentManager);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.cmProvider);
+        doReturn(this.contextComponentManager).when(this.cmProvider).get();
         doReturn(this.distributionManager).when(this.contextComponentManager).getInstance(DistributionManager.class);
         CoreExtension coreExtension = Mockito.mock(CoreExtension.class);
         doReturn(coreExtension).when(this.distributionManager).getDistributionExtension();
