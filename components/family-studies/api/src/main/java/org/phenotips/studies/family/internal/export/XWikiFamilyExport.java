@@ -167,7 +167,7 @@ public class XWikiFamilyExport
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
         permissionJSON.put("hasEdit", this.validation.hasAccess(patient.getDocument(), Right.EDIT));
-        permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
+        permissionJSON.put("hasView", this.validation.hasAccess(patient.getDocument(), Right.VIEW));
         patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
@@ -312,7 +312,7 @@ public class XWikiFamilyExport
     {
         PatientData<String> links = patient.getData("medicalreports");
         Map<String, String> mapOfLinks = new HashMap<>();
-        if (this.validation.hasPatientViewAccess(patient)) {
+        if (this.validation.hasAccess(patient.getDocument(), Right.VIEW)) {
             if (links != null) {
                 Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
                 while (iterator.hasNext()) {

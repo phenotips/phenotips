@@ -17,10 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Validation;
 
@@ -50,41 +46,10 @@ public class ValidationImpl implements Validation
     private DocumentReferenceResolver<String> referenceResolver;
 
     @Inject
-    private PermissionsManager permissionsManager;
-
-    @Inject
     private UserManager userManager;
 
     @Inject
     private AuthorizationService authorizationService;
-
-    @Inject
-    @Named("edit")
-    private AccessLevel editAccess;
-
-    @Inject
-    @Named("view")
-    private AccessLevel viewAccess;
-
-    @Override
-    public boolean hasPatientViewAccess(Patient patient)
-    {
-        User currentUser = this.userManager.getCurrentUser();
-        return hasPatientAccess(patient, this.viewAccess, currentUser);
-    }
-
-    @Override
-    public boolean hasPatientViewAccess(Patient patient, User user)
-    {
-        return hasPatientAccess(patient, this.viewAccess, user);
-    }
-
-    private boolean hasPatientAccess(Patient patient, AccessLevel accessLevel, User user)
-    {
-        PatientAccess patientAccess = this.permissionsManager.getPatientAccess(patient);
-        AccessLevel patientAccessLevel = patientAccess.getAccessLevel(user.getProfileDocument());
-        return patientAccessLevel.compareTo(accessLevel) >= 0;
-    }
 
     @Override
     public boolean hasAccess(DocumentReference document, String permissions)

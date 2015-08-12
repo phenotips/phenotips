@@ -17,12 +17,9 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.data.Patient;
-
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
-import org.xwiki.users.User;
 
 /**
  * Used for checking if actions, such as adding a certain patient to a family are valid.
@@ -33,23 +30,6 @@ import org.xwiki.users.User;
 @Role
 public interface Validation
 {
-    /**
-     * Checks if current user has at least view access to a patient.
-     *
-     * @param patient must not be null
-     * @return true if has access; false otherwise
-     */
-    boolean hasPatientViewAccess(Patient patient);
-
-    /**
-     * Checks if the user has at least view access to a patient.
-     *
-     * @param patient must not be null
-     * @param user which will access the patient
-     * @return true if has access; false otherwise
-     */
-    boolean hasPatientViewAccess(Patient patient, User user);
-
     /**
      * Checks if a user has an access on a document with permissions.
      *
