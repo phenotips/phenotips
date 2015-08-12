@@ -21,9 +21,9 @@ import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.Validation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
@@ -95,7 +95,7 @@ public class XWikiFamilyExport
     private PatientRepository patientRepository;
 
     @Inject
-    private Validation validation;
+    private AuthorizationService authorizationService;
 
     @Inject
     private RecordConfigurationManager configuration;
@@ -166,8 +166,8 @@ public class XWikiFamilyExport
 
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit", this.validation.hasAccess(patient.getDocument(), Right.EDIT));
-        permissionJSON.put("hasView", this.validation.hasAccess(patient.getDocument(), Right.VIEW));
+        permissionJSON.put("hasEdit", this.authorizationService.hasAccess(Right.EDIT, patient.getDocument()));
+        permissionJSON.put("hasView", this.authorizationService.hasAccess(Right.VIEW, patient.getDocument()));
         patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
@@ -192,7 +192,8 @@ public class XWikiFamilyExport
                 continue;
             }
 
-            if (!this.validation.hasAccess(family.getDocumentReference(), requiredPermissions)) {
+            Right right = Right.toRight(requiredPermissions);
+            if (!this.authorizationService.hasAccess(right, family.getDocumentReference())) {
                 continue;
             }
 
@@ -226,7 +227,8 @@ public class XWikiFamilyExport
                 continue;
             }
 
-            if (!this.validation.hasAccess(patient.getDocument(), requiredPermissions)) {
+            Right right = Right.toRight(requiredPermissions);
+            if (!this.authorizationService.hasAccess(right, patient.getDocument())) {
                 continue;
             }
 
@@ -312,7 +314,8 @@ public class XWikiFamilyExport
     {
         PatientData<String> links = patient.getData("medicalreports");
         Map<String, String> mapOfLinks = new HashMap<>();
-        if (this.validation.hasAccess(patient.getDocument(), Right.VIEW)) {
+
+        if (this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
             if (links != null) {
                 Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
                 while (iterator.hasNext()) {

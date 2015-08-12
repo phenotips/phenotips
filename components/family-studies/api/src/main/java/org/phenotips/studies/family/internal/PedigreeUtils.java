@@ -19,11 +19,11 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.Validation;
 import org.phenotips.studies.family.response.JSONResponse;
 import org.phenotips.studies.family.response.StatusResponse;
 
@@ -55,7 +55,7 @@ public class PedigreeUtils
     private FamilyRepository familyRepository;
 
     @Inject
-    private Validation validation;
+    private AuthorizationService authorizationService;
 
     @Inject
     private JsonAdapter jsonAdapter;
@@ -90,7 +90,7 @@ public class PedigreeUtils
 
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
-            if (!this.validation.hasAccess(proband.getDocument(), Right.EDIT)) {
+            if (!this.authorizationService.hasAccess(Right.EDIT, proband.getDocument())) {
                 return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(probandId);
             }
             family = this.familyRepository.createFamily();
@@ -110,7 +110,7 @@ public class PedigreeUtils
         JSONResponse jsonResponse = new JSONResponse();
 
         // Checks that current user has edit permissions on family
-        if (!this.validation.hasAccess(family.getDocumentReference(), Right.EDIT))
+        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference()))
         {
             return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
         }
