@@ -29,6 +29,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
@@ -165,7 +166,7 @@ public class XWikiFamilyExport
 
         // add permissions information
         JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit", this.validation.hasPatientEditAccess(patient));
+        permissionJSON.put("hasEdit", this.validation.hasAccess(patient.getDocument(), Right.EDIT));
         permissionJSON.put("hasView", this.validation.hasPatientViewAccess(patient));
         patientJSON.put(PERMISSIONS, permissionJSON);
 

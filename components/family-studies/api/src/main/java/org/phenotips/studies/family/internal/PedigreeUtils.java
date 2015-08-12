@@ -90,7 +90,7 @@ public class PedigreeUtils
 
         // Edge case - proband with no family. Create a new one.
         if (family == null) {
-            if (!this.validation.hasPatientEditAccess(probandId)) {
+            if (!this.validation.hasAccess(proband.getDocument(), Right.EDIT)) {
                 return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(probandId);
             }
             family = this.familyRepository.createFamily();

@@ -18,7 +18,6 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
@@ -47,9 +46,6 @@ import javax.inject.Singleton;
 public class ValidationImpl implements Validation
 {
     @Inject
-    private PatientRepository patientRepository;
-
-    @Inject
     @Named("current")
     private DocumentReferenceResolver<String> referenceResolver;
 
@@ -69,27 +65,6 @@ public class ValidationImpl implements Validation
     @Inject
     @Named("view")
     private AccessLevel viewAccess;
-
-    /* Should not be used when saving families. Todo why? */
-    @Override
-    public boolean hasPatientEditAccess(String patientId)
-    {
-        User currentUser = this.userManager.getCurrentUser();
-        return hasPatientAccess(this.patientRepository.getPatientById(patientId), this.editAccess, currentUser);
-    }
-
-    @Override
-    public boolean hasPatientEditAccess(Patient patient)
-    {
-        User currentUser = this.userManager.getCurrentUser();
-        return hasPatientAccess(patient, this.editAccess, currentUser);
-    }
-
-    @Override
-    public boolean hasPatientEditAccess(Patient patient, User user)
-    {
-        return hasPatientAccess(patient, this.editAccess, user);
-    }
 
     @Override
     public boolean hasPatientViewAccess(Patient patient)

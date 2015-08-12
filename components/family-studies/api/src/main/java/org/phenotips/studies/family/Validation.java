@@ -34,31 +34,6 @@ import org.xwiki.users.User;
 public interface Validation
 {
     /**
-     * Checks if the current user has edit access to a patient.
-     *
-     * @param patientId must not be null
-     * @return true if has access; false otherwise
-     */
-    boolean hasPatientEditAccess(String patientId);
-
-    /**
-     * Checks if the current user has edit access to a patient.
-     *
-     * @param patient must not be null
-     * @return true if has access; false otherwise
-     */
-    boolean hasPatientEditAccess(Patient patient);
-
-    /**
-     * Checks if the current user has edit access to a patient.
-     *
-     * @param patient must not be null
-     * @param user which will access the patient
-     * @return true if has access; false otherwise
-     */
-    boolean hasPatientEditAccess(Patient patient, User user);
-
-    /**
      * Checks if current user has at least view access to a patient.
      *
      * @param patient must not be null
