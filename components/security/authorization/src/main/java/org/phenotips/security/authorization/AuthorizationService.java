@@ -44,4 +44,13 @@ public interface AuthorizationService
      * @return {@code true} if access is granted, {@code false} if access is denied
      */
     boolean hasAccess(User user, Right access, DocumentReference document);
+
+    /**
+     * Checks if current user has the requested access level on the target document.
+     *
+     * @param access the requested access level
+     * @param document the target document
+     * @return {@code true} if access is granted, {@code false} if access is denied
+     */
+    boolean hasAccess(Right access, DocumentReference document);
 }
