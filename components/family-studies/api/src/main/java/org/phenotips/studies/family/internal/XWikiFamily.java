@@ -349,7 +349,7 @@ public class XWikiFamily implements Family
     @Override
     public Pedigree getPedigree()
     {
-        Pedigree pedigree = new Pedigree();
+        Pedigree pedigree = new DefaultPedigree();
         BaseObject pedigreeObj = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
 
         if (pedigreeObj != null) {

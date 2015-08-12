@@ -70,7 +70,7 @@ public class PedigreeUtils
      */
     public JSONResponse processPatientPedigree(String probandId, JSONObject json, String image)
     {
-        Pedigree pedigree = new Pedigree(json, image);
+        Pedigree pedigree = new DefaultPedigree(json, image);
 
         // Get proband
         Patient proband = this.patientRepository.getPatientById(probandId);
