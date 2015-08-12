@@ -111,6 +111,13 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+#set ($origObj = $obj)
+#set ($obj = $doc.getObject('PhenoTips.AllergiesDataClass', true))
+#set ($origObjClass = $doc.getActiveClass())
+#set ($discard = $doc.use($obj))
+#set ($origClass = $class)
+#set ($class = $xwiki.getClass('PhenoTips.AllergiesDataClass'))
+##
 #__hasDataToDisplay('allergies', $showAllergies)
 #__hasBooleanDataToDisplay('NKDA' $showNKDA)
 #if ($showNKDA || $showAllergies)
@@ -128,10 +135,14 @@
       #end
     )))
     #if ($xcontext.action == 'edit' || ($doc.display('allergies') != ''))
-        #__display('allergies')
+      #__display('allergies')
     #end
   )))
 #end
+##
+#set ($class = $origClass)
+#set ($discard = $doc.use($origObjClass))
+#set ($obj = $origObj)
 {{/velocity}}
 </content>
     </property>
@@ -146,7 +157,7 @@
 enabled=true
 order=2
 required=
-fields=allergies,NKDA
+fields=
 privacy_level=1</parameters>
     </property>
     <property>

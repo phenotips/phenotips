@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.Constants;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
@@ -24,6 +25,8 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +61,9 @@ public class AllergiesController implements PatientDataController<String>
 
     private static final String NKDA = "NKDA";
 
+    private static final EntityReference CLASS_REFERENCE =
+        new EntityReference("AllergiesDataClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -80,9 +86,9 @@ public class AllergiesController implements PatientDataController<String>
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            BaseObject data = doc.getXObject(CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                return null;
             }
 
             @SuppressWarnings("unchecked")
@@ -128,17 +134,15 @@ public class AllergiesController implements PatientDataController<String>
             }
 
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject xobject = doc.getXObject(Patient.CLASS_REFERENCE, true, this.xcontext.get());
+            BaseObject xobject = doc.getXObject(CLASS_REFERENCE, true, this.xcontext.get());
             xobject.setIntValue(NKDA, nkda ? 1 : 0);
             xobject.setDBStringListValue(DATA_NAME, allergies);
 
             this.xcontext.get().getWiki().saveDocument(doc, "Updated allergies from JSON", true, this.xcontext.get());
         } catch (Exception ex) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading.",
+            this.logger.error("Could not access requested document or some unforeseen error has occurred during save.",
                 ex);
         }
-
     }
 
     @Override
