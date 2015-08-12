@@ -22,11 +22,10 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +53,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("allergies")
 @Singleton
-public class AllergiesController extends AbstractComplexController<Object>
+public class AllergiesController implements PatientDataController<Object>
 {
     private static final String DATA_NAME = "allergiesData";
 
@@ -66,34 +65,14 @@ public class AllergiesController extends AbstractComplexController<Object>
     @Inject
     private Logger logger;
 
+    /** Provides access to the underlying data storage. */
+    @Inject
+    private DocumentAccessBridge documentAccessBridge;
+
     @Override
     public String getName()
     {
         return DATA_NAME;
-    }
-
-    @Override
-    protected String getJsonPropertyName()
-    {
-        return getName();
-    }
-
-    @Override
-    protected List<String> getProperties()
-    {
-        return Arrays.asList(ALLERGIES, NKDA);
-    }
-
-    @Override
-    protected List<String> getBooleanFields()
-    {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<String> getCodeFields()
-    {
-        return Collections.emptyList();
     }
 
     @Override
@@ -126,6 +105,18 @@ public class AllergiesController extends AbstractComplexController<Object>
                 e);
         }
         return null;
+    }
+
+    @Override
+    public void save(Patient patient)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void writeJSON(Patient patient, JSONObject json)
+    {
+        writeJSON(patient, json, null);
     }
 
     @Override
