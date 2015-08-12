@@ -264,7 +264,7 @@ public class DataToCellConverter
         String[] fieldIds = { "genes", "genes_comments", "rejectedGenes", "rejectedGenes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
+            { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -637,8 +637,7 @@ public class DataToCellConverter
         if (present.contains("maternal_ethnicity") || present.contains("paternal_ethnicity")) {
             bottomY = 2;
             if (fieldToHeaderMap.containsKey("maternal_ethnicity")
-                && fieldToHeaderMap.containsKey("paternal_ethnicity"))
-            {
+                && fieldToHeaderMap.containsKey("paternal_ethnicity")) {
                 ethnicityOffset = 2;
             } else {
                 ethnicityOffset = 1;
