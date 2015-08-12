@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,6 +55,17 @@ public class DefaultAuthorizationService implements AuthorizationService
     /** Provides the list of all the available authorization modules, which perform the actual rights checking. */
     @Inject
     private Provider<List<AuthorizationModule>> modules;
+
+    /** Returns handles to users **/
+    @Inject
+    private UserManager userManager;
+
+    @Override
+    public boolean hasAccess(Right access, DocumentReference document)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+        return this.hasAccess(currentUser, access, document);
+    }
 
     @Override
     public boolean hasAccess(User user, Right access, DocumentReference document)
