@@ -1031,13 +1031,11 @@ public class DataToCellConverter
             }
             y++;
         }
-        /* Creating empites */
+        /* Creating empties */
         if (sortedFeatures.size() == 0) {
-            Integer emptyX = 0;
-            for (String header : present) {
-                DataCell cell = new DataCell("", emptyX, 0);
+            for (int i = 0; i < present.size(); ++i) {
+                DataCell cell = new DataCell("", i, 0);
                 section.addCell(cell);
-                emptyX++;
             }
         }
         // section.finalizeToMatrix();
@@ -1186,8 +1184,8 @@ public class DataToCellConverter
             return null;
         }
         DataSection bodySection = new DataSection();
-
         Integer x = 0;
+
         if (present.contains(ALLERGIES)) {
             PatientData<Object> allergiesData = patient.getData(ALLERGIES_DATA);
             int y = 0;
@@ -1209,6 +1207,7 @@ public class DataToCellConverter
             }
             x++;
         }
+
         if (present.contains("global_age_of_onset")) {
             PatientData<List<SolrVocabularyTerm>> qualifiers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
@@ -1285,7 +1284,6 @@ public class DataToCellConverter
 
         return bodySection;
     }
-
 
     public DataSection isSolvedHeader(Set<String> enabledFields) throws Exception
     {
