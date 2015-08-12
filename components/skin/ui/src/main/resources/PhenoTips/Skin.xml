@@ -534,6 +534,9 @@ h1:target, h2:target, h3:target {
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name>PhenoTips skin</name>
     </property>
     <property>
