@@ -88,7 +88,10 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 #if ($xcontext.action == 'edit')
   ## Disable the Preview button
   #set($previewenabled = false)
-  {{html clean="false" wiki="false"}}&lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;{{/html}}
+  {{html clean="false" wiki="false"}}
+    &lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;
+    &lt;input type='hidden' name="objectPolicy" value='updateOrCreate'/&gt;
+  {{/html}}
 
 #end
 ##
