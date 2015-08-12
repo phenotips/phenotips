@@ -421,89 +421,109 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>var EditVariantData = (function (EditVariantData) {
-  var tools = EditVariantData.tools = EditVariantData.tools || {};
-  tools.Editor = Class.create({
-    initialize : function () {
-      $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
-      $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
-      var defaultInputs = [];
-      $$('.variant-default-input').each( function(item, index) {
-      defaultInputs[index] = item.firstDescendant(); 
-      });
-      defaultInputs.invoke('observe', 'change', this.changeDefaultData.bindAsEventListener(this));
-      $$('.variant-hide-show').invoke('observe', 'click', this.hideVariantTable.bindAsEventListener(this));
-    },
-    editData : function (event) {
-      event.stop();
-      var id = event.element().id;
-      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
-      event.element().style.display = 'none'; 
-      $('PhenoTips.GeneVariantClass_'+variantIndex+'_editDone').style.display = 'inline';
-      var labels = $$('.variant-label-'+variantIndex);
-      $$('.variant-input-'+variantIndex).each ( function(item, index) {
-        item.style.display = 'inline';
-        labels[index].style.display = 'none';
-      });
-    },
-    editDoneData : function (event) {
-      event.stop();
-      var id = event.element().id;
-      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
-      event.element().style.display = 'none'; 
-      $('PhenoTips.GeneVariantClass_'+variantIndex+'_edit').style.display = 'inline';
-      var inputs = $$('.variant-input-'+variantIndex);
-      var labels = $$('.variant-label-'+variantIndex);
-      for (var i=0;i&lt;inputs.length;i++) {
-        inputs[i].style.display = 'none';
-        labels[i].style.display = 'inline';
-        if (labels[i].className.indexOf('segregation') &gt; -1 || labels[i].className.indexOf('sanger') &gt; -1 || labels[i].className.indexOf('inheritance') &gt; -1) {
-          labels[i].innerHTML = inputs[i].firstChild[inputs[i].firstChild.selectedIndex].text;
-        } else if (labels[i].className.indexOf('evidence') &gt; -1) {
-          labels[i].innerHTML = "";
-          inputs[i].childElements().each(function(item) {
-            if (item.tagName == "LABEL" &amp;&amp; item.firstDescendant().checked)
-              labels[i].innerHTML +=item.innerText+'; ';
-            });
-        } else {
-          labels[i].firstChild.innerHTML = inputs[i].firstChild.value;  
-        }
-      }
-    },
-    changeDefaultData : function (event) {
-      event.stop();
-      var className = event.element().parentElement.className;
-      var variantIndex = className.substring(className.lastIndexOf('-')+1,className.length);
-      var id = event.element().id;
-      var fieldName = id.substring(id.lastIndexOf('_')+1,id.length);
-      if (event.element().id.indexOf('cdna') &gt; -1) {
-        $$('.'+fieldName+'-'+variantIndex)[0].firstChild.innerHTML = event.element().value;
-      } else {
-        $$('.'+fieldName+'-'+variantIndex)[0].innerHTML = event.element()[event.element().selectedIndex].text;
-      }
-    },
-    hideVariantTable : function (event) {
-      event.stop();
-      var id = event.element().id;
-      var geneIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
-      if  (event.element().innerHTML == "Hide variants") {
-        event.element().innerHTML = "Show variants";
-        $$('.variant-hide-heading-'+geneIndex).each(function(item) {
-          item.style.display = 'none';
-        });
-      } else {
-        event.element().innerHTML = "Hide variants";
-        $$('.variant-hide-heading-'+geneIndex).each(function(item) {
-          item.style.display = 'table-row';
-        });
-      }
-    },
-  });
-  return EditVariantData;
-}(EditVariantData || {}));
-
-document.observe('xwiki:dom:loaded', function() {
-  new EditVariantData.tools.Editor();
+      <code>var EditVariantData = (function (EditVariantData) {&#xd;
+  var tools = EditVariantData.tools = EditVariantData.tools || {};&#xd;
+  tools.Editor = Class.create({&#xd;
+    initialize : function () {&#xd;
+      $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));&#xd;
+      $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));&#xd;
+      var defaultInputs = [];&#xd;
+      $$('.variant-default-input').each( function(item, index) {&#xd;
+      defaultInputs[index] = item.firstDescendant(); &#xd;
+      });&#xd;
+      defaultInputs.invoke('observe', 'change', this.changeDefaultData.bindAsEventListener(this));&#xd;
+      $$('.variant-hide-show').invoke('observe', 'click', this.hideVariantTable.bindAsEventListener(this));&#xd;
+    },&#xd;
+    editData : function (event) {&#xd;
+      event.stop();&#xd;
+      var id = event.element().id;&#xd;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
+      event.element().style.display = 'none'; &#xd;
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_editDone').style.display = 'inline';&#xd;
+      var labels = $$('.variant-label-'+variantIndex);&#xd;
+      $$('.variant-input-'+variantIndex).each ( function(item, index) {&#xd;
+        item.style.display = 'inline';&#xd;
+        labels[index].style.display = 'none';&#xd;
+      });&#xd;
+      //display all labels in "More Info"&#xd;
+      $$('.variant-property-name-'+ variantIndex).each ( function(item) {&#xd;
+        item.style.display = 'inline';&#xd;
+      });&#xd;
+    },&#xd;
+    editDoneData : function (event) {&#xd;
+      event.stop();&#xd;
+      var id = event.element().id;&#xd;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
+      event.element().style.display = 'none'; &#xd;
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_edit').style.display = 'inline';&#xd;
+      var inputs = $$('.variant-input-'+variantIndex);&#xd;
+      var labels = $$('.variant-label-'+variantIndex);&#xd;
+      for (var i=0;i&lt;inputs.length;i++) {&#xd;
+        inputs[i].style.display = 'none';&#xd;
+        //labels[i].style.display = 'inline';&#xd;
+        if (labels[i].className.indexOf('segregation') > -1 || labels[i].className.indexOf('sanger') > -1 || labels[i].className.indexOf('inheritance') > -1 || labels[i].className.indexOf('zygosity') > -1 || labels[i].className.indexOf('effect') > -1) {&#xd;
+          labels[i].innerHTML = inputs[i].firstChild[inputs[i].firstChild.selectedIndex].text;&#xd;
+        } else if (labels[i].className.indexOf('evidence') > -1) {&#xd;
+          labels[i].innerHTML = "";&#xd;
+          inputs[i].childElements().each(function(item) {&#xd;
+            if (item.tagName == "LABEL" &amp;&amp; item.firstDescendant().checked)&#xd;
+              labels[i].innerHTML +=item.innerText+'; ';&#xd;
+            });&#xd;
+        } else {&#xd;
+          labels[i].innerHTML = inputs[i].firstChild.value;  &#xd;
+        }&#xd;
+        //hide row in "More Info" if empty value&#xd;
+        if (labels[i].innerHTML == '') {&#xd;
+          labels[i].style.display = 'none';&#xd;
+          labels[i].parentElement.previousSibling.style.display = 'none';&#xd;
+        } else {&#xd;
+          labels[i].style.display = 'inline';&#xd;
+          labels[i].parentElement.previousSibling.style.display = 'inline';&#xd;
+        }&#xd;
+      }&#xd;
+    },&#xd;
+    changeDefaultData : function (event) {&#xd;
+      event.stop();&#xd;
+      var className = event.element().parentElement.className;&#xd;
+      var variantIndex = className.substring(className.lastIndexOf('-')+1,className.length);&#xd;
+      var id = event.element().name;&#xd;
+      var fieldName = id.substring(id.lastIndexOf('_')+1,id.length);&#xd;
+      if (id.indexOf('cdna') > -1) {&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].innerHTML = event.element().value;&#xd;
+      } else {&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].innerHTML = event.element()[event.element().selectedIndex].text;&#xd;
+      }&#xd;
+      //hide/show row in "More Info" if empty/non-empty value&#xd;
+      if (event.element().value == "" || event.element().value == "NA") {&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].style.display = 'none';&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.style.display = 'none';&#xd;
+      } else {&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].style.display = 'inline';&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.style.display = 'inline';&#xd;
+      }&#xd;
+    },&#xd;
+    hideVariantTable : function (event) {&#xd;
+      event.stop();&#xd;
+      var id = event.element().id;&#xd;
+      var geneIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
+      if  (event.element().innerHTML == "Hide variants") {&#xd;
+        event.element().innerHTML = "Show variants";&#xd;
+        $$('.variant-hide-heading-'+geneIndex).each(function(item) {&#xd;
+          item.style.display = 'none';&#xd;
+        });&#xd;
+      } else {&#xd;
+        event.element().innerHTML = "Hide variants";&#xd;
+        $$('.variant-hide-heading-'+geneIndex).each(function(item) {&#xd;
+          item.style.display = 'table-row';&#xd;
+        });&#xd;
+      }&#xd;
+    },&#xd;
+  });&#xd;
+  return EditVariantData;&#xd;
+}(EditVariantData || {}));&#xd;
+&#xd;
+document.observe('xwiki:dom:loaded', function() {&#xd;
+  new EditVariantData.tools.Editor();&#xd;
 })</code>
     </property>
     <property>

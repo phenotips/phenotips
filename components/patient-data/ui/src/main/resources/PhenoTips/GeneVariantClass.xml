@@ -48,7 +48,13 @@
     <nameField/>
     <validationScript/>
     <cdna>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>cdna</name>
       <number>1</number>
@@ -74,7 +80,13 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </genesymbol>
     <protein>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>protein</name>
       <number>3</number>
@@ -87,7 +99,13 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </protein>
     <transcript>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>transcript</name>
       <number>4</number>
@@ -100,7 +118,13 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </transcript>
     <dbsnp>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit')
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+#else
+$!{value}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>dbsnp</name>
       <number>5</number>
@@ -130,7 +154,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>heterozygous=heterozygous|homozygous=homozygous|hemizygous=hemizygous</values>
+      <values>NA= |heterozygous=heterozygous|homozygous=homozygous|hemizygous=hemizygous</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </zygosity>
     <effect>
@@ -151,7 +175,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>missense=missense|nonsense=nonsense|insertion_in_frame=insertion - in frame|insertion_frameshift=insertion - frameshift|deletion_in_frame=deletion - in frame|deletion_frameshift=deletion - frameshift|indel_in_frame=indel - in frame|indel_frameshift=indel - frameshift|duplication=duplication|repeat_expansion=repeat expansion|synonymous=synonymous|other=other</values>
+      <values>NA= |missense=missense|nonsense=nonsense|insertion_in_frame=insertion - in frame|insertion_frameshift=insertion - frameshift|deletion_in_frame=deletion - in frame|deletion_frameshift=deletion - frameshift|indel_in_frame=indel - in frame|indel_frameshift=indel - frameshift|duplication=duplication|repeat_expansion=repeat expansion|synonymous=synonymous|other=other</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </effect>    
     <interpretation>
@@ -172,7 +196,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign</values>
+      <values>NA= |pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </interpretation>
     <inheritance>
@@ -193,7 +217,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>denovo=de novo|germline=germline|denovo_s_mosaicism=de novo somatic mosaicism|maternal=maternal|paternal=paternal|unknown=unknown</values>
+      <values>NA= |denovo=de novo|germline=germline|denovo_s_mosaicism=de novo somatic mosaicism|maternal=maternal|paternal=paternal|unknown=unknown</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </inheritance>
     <evidence>
@@ -235,7 +259,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>complete=Complete|in_progress=In progress|not_done=Not done</values>
+      <values>NA= |complete=Complete|in_progress=In progress|not_done=Not done</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </segregation>  
     <sanger>
@@ -256,7 +280,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>complete=Complete|in_progress=In progress|not_done=Not done</values>
+      <values>NA= |complete=Complete|in_progress=In progress|not_done=Not done</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </sanger> 
     <resolution>
@@ -277,7 +301,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>unknown=Unknown|rejected=Rejected|solved=Confirmed causal</values>
+      <values>NA= |unknown=Unknown|rejected=Rejected|solved=Confirmed causal</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </resolution>
   </class>

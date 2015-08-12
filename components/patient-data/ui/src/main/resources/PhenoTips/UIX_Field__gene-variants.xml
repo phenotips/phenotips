@@ -290,7 +290,9 @@ display: none;&#xd;
 
 {{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__gene-variants')##
-#__gene_table({'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'resolution'], 'newEntryLabel' : $services.localization.render('phenotips.geneVariantMacros.variantTable.newEntry')})
+$xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
+$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
+#__gene_table({'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'resolution'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp'], 'newEntryLabel' : $services.localization.render('phenotips.geneVariantMacros.variantTable.newEntry')})
 {{/velocity}}</content>
     </property>
     <property>
