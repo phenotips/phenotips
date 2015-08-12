@@ -56,6 +56,12 @@ import com.xpn.xwiki.web.Utils;
  */
 public class DataToCellConverter
 {
+    private static final String NKDA = "NKDA";
+
+    private static final String ALLERGIES = "allergies";
+
+    private static final String ALLERGIES_DATA = "allergiesData";
+
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
 
     private ConversionHelpers phenotypeHelper;
@@ -1142,6 +1148,7 @@ public class DataToCellConverter
 
         // Must be linked to keep order; in other sections as well
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put(ALLERGIES, "Allergies");
         fieldToHeaderMap.put("global_age_of_onset", "Age of onset");
         fieldToHeaderMap.put("medical_history", "Notes");
 
@@ -1181,6 +1188,27 @@ public class DataToCellConverter
         DataSection bodySection = new DataSection();
 
         Integer x = 0;
+        if (present.contains(ALLERGIES)) {
+            PatientData<Object> allergiesData = patient.getData(ALLERGIES_DATA);
+            int y = 0;
+            if (allergiesData != null) {
+                Boolean nkda = (Boolean) allergiesData.get(NKDA);
+                if (nkda != null && nkda.booleanValue()) {
+                    DataCell cell = new DataCell(NKDA, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+
+                @SuppressWarnings("unchecked")
+                List<String> allergiesList = (List<String>) allergiesData.get(ALLERGIES);
+                for (String allergy : allergiesList) {
+                    DataCell cell = new DataCell(allergy, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            }
+            x++;
+        }
         if (present.contains("global_age_of_onset")) {
             PatientData<List<SolrVocabularyTerm>> qualifiers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;

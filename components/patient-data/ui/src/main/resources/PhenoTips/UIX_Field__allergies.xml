@@ -20,29 +20,29 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__reports_history</name>
+  <name>UIX_Field__allergies</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822210000</creationDate>
+  <creationDate>1401822218000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822210000</date>
-  <contentUpdateDate>1401822210000</contentUpdateDate>
+  <date>1401822218000</date>
+  <contentUpdateDate>1401822218000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXField.reportsHistory')</title>
+  <title>$services.localization.render('phenotips.UIXField.allergies')</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__reports_history</name>
+    <name>PhenoTips.UIX_Field__allergies</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>401953a2-a320-4308-83af-ad5fc852b142</guid>
+    <guid>56dfe404-8880-4941-8fb5-b7e6da0f744c</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -111,26 +111,43 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__hasDataToDisplay('reports_history' $showReportsHistory)
-#if ($xcontext.action != 'export' &amp;&amp; $showReportsHistory)
-  === $services.localization.render('phenotips.UIXField.reportsHistory.sheetTitle') ===
-  $doc.display('reports_history')
+#__hasDataToDisplay('allergies', $showAllergies)
+#__hasBooleanDataToDisplay('NKDA' $showNKDA)
+#if ($showNKDA || $showAllergies)
+  (% class="fieldset 'allergies' %)(((
+    (% class="displayed-value"%)(((
+      #__label('allergies' 'section group-title' '')
+    )))
+    (% class="displayed-value"%)(((
+      #if ($xcontext.action == 'edit')
+        $doc.display('NKDA') #__label('NKDA' '' "$class.get('NKDA').translatedPrettyName")
+      #else
+        #if ($showNKDA)
+          $class.get('NKDA').translatedPrettyName
+        #end
+      #end
+    )))
+    #if ($xcontext.action == 'edit' || ($doc.display('allergies') != ''))
+        #__display('allergies')
+    #end
+  )))
 #end
-{{/velocity}}</content>
+{{/velocity}}
+</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.medical-history</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.reports_history</name>
+      <name>org.phenotips.patientSheet.field.allergies</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.reportsHistory')
+      <parameters>title=$services.localization.render('phenotips.UIXField.allergies')
 enabled=true
+order=2
 required=
-order=4
-fields=reports_history
-privacy_level=4</parameters>
+fields=allergies,NKDA
+privacy_level=1</parameters>
     </property>
     <property>
       <scope>wiki</scope>

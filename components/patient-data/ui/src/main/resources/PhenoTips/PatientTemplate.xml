@@ -633,6 +633,54 @@
         <valueField/>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </global_age_of_onset>
+    <allergies>
+      <cache>0</cache>
+      <customDisplay>{{velocity filter="indent"}}{{html wiki=true clean=false}}
+#if ($xcontext.action == 'edit' || $xcontext.action == 'inline')
+#set ($suggest_script = $xwiki.getURL('PhenoTips.AllergySearch', 'get', 'outputSyntax=plain'))
+{{html wiki=false clean=false}}&lt;input name="xwiki-free-multiselect-suggest-script" type="hidden" value="$!escapetool.xml($suggest_script)"/&gt;{{/html}}
+#end
+#macro (_fms__displayValue $v $counter) #if($xcontext.action == 'edit' || $xcontext.action == 'inline') {{html wiki=false clean=false}}&lt;input class="xwiki-free-multiselect-value" type="text" size="30" name="${prefix}${name}" id="${prefix}${name}_${counter}" value="$!escapetool.xml($v)"/&gt;{{/html}} #else $escapetool.xml($v) #end#end
+(% class="xwiki-free-multiselect"%)
+#foreach ($v in $value)
+1. #_fms__displayValue($v ${foreach.count})
+
+#end
+#if ((!$value || $value.size() == 0) &amp;&amp; ($xcontext.action == 'edit' || $xcontext.action == 'inline'))
+1. #_fms__displayValue('' 1)
+#end
+{{/html}}{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>1</multiSelect>
+      <name>allergies</name>
+      <number>50</number>
+      <picker>1</picker>
+      <prettyName>Allergies - environmental, food, medication</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator>, </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </allergies>
+    <NKDA>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>NKDA</name>
+        <number>51</number>
+        <prettyName>NKDA</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </NKDA>
       <global_mode_of_inheritance>
         <cache>0</cache>
         <classname/>
