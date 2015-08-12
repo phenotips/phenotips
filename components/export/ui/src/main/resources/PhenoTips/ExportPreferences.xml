@@ -116,7 +116,7 @@
   #set($exportButtonID = "push-multiple-patients")
 #else
   #set($ignored = {
-    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype', 'NKDA'],
+    'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype', 'extended_phenotype', 'extended_prenatal_phenotype', 'extended_negative_prenatal_phenotype'],
     'types'  : []
   })
   #if (${request.export_id} == 'phenotips_json_export')
@@ -131,6 +131,7 @@
        'creationDate' : "$services.localization.render('phenotips.exportPreferences.field.creationDate')",
        'author' : "$services.localization.render('phenotips.exportPreferences.field.author')",
        'date' : "$services.localization.render('phenotips.exportPreferences.field.date')",
+       'allergies' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')",
        'genes': "$services.localization.render('phenotips.exportPreferences.field.genes')",
        'genes_comments': "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
        'rejectedGenes': "$services.localization.render('phenotips.exportPreferences.field.rejectedGenes')",
