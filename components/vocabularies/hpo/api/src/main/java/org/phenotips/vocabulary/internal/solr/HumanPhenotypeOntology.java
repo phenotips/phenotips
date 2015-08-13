@@ -87,18 +87,19 @@ public class HumanPhenotypeOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    public List<VocabularyTerm> search(String query, int rows, String sort, String customFq)
+    public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
-        if (StringUtils.isBlank(query)) {
+        if (StringUtils.isBlank(input)) {
             return Collections.emptyList();
         }
-        boolean isId = this.isId(query);
+        boolean isId = this.isId(input);
         Map<String, String> options = this.getStaticSolrParams();
         if (!isId) {
             options.putAll(this.getStaticFieldSolrParams());
         }
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(produceDynamicSolrParams(query, rows, sort, customFq, isId), options)) {
+        for (SolrDocument doc : this.search(produceDynamicSolrParams(input, maxResults, sort, customFilter, isId),
+            options)) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
         return result;
