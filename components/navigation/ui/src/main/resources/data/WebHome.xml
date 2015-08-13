@@ -282,6 +282,112 @@ $!value
   <object>
     <name>data.WebHome</name>
     <number>0</number>
+    <className>PhenoTips.MeasurementsConfigurationClass</className>
+    <guid>ca45b47e-780e-447b-8f8e-a13af16c1070</guid>
+    <class>
+      <name>PhenoTips.MeasurementsConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <default>
+        <cache>0</cache>
+        <customDisplay>{{velocity}}
+          #foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
+          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}">&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /> ${measurement.name}&lt;/label>{{/html}}
+          #end
+          {{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>default</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>default</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </default>
+      <enabled>
+        <cache>0</cache>
+        <customDisplay>{{velocity}}
+          #foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
+          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}">&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /> ${measurement.name}&lt;/label>{{/html}}
+          #end
+          {{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enabled</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>enabled</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enabled>
+      <ordering>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>ordering</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>ordering</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </ordering>
+    </class>
+    <property>
+      <default>
+        <value>sitting</value>
+        <value>ear</value>
+        <value>pfl</value>
+      </default>
+    </property>
+    <property>
+      <enabled>
+        <value>weight</value>
+        <value>height</value>
+        <value>bmi</value>
+        <value>hc</value>
+        <value>hand</value>
+      </enabled>
+    </property>
+    <property>
+      <ordering></ordering>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
     <className>PhenoTips.PedigreeClass</className>
     <guid>d47bf21d-9bfd-4cf3-8b4e-3ed955ba546a</guid>
     <class>

@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>UIX_Field__measurements_new</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1438375530000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1439479086000</date>
+  <contentUpdateDate>1439317670000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$services.localization.render('phenotips.UIXField.measurements')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.UIX_Field__measurements_new</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>11c4302e-a7b2-4b18-9079-54d1b143663b</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#charts {
+  border: 1px solid black;
+  padding: 15px;
+  padding-left: 260px;
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+}
+#charts .sets {
+  width: 120px;
+  position: absolute; top: 0; left: 0;
+}
+#charts .sets &gt; div {
+  cursor: pointer;
+  padding: 10px;
+}
+#charts .sets &gt; div.selected::after {
+  content: ' &gt;';
+}
+#charts .chart-thumbs {
+  width: 140px;
+  position: absolute; top: 0; left: 100px;
+  overflow-y: scroll; overflow-x: hidden;
+  height: 100%;
+}
+#charts .chart-thumbs img {
+  width: 100px;
+  display: block;
+  margin: 0 auto;
+}
+#charts .chart-thumbs &gt; div {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+#charts .chart-thumbs &gt; div &gt; span {
+  text-align: center;
+  display: block;
+  padding-top: 5px;
+}
+#charts img.main {
+  max-width: 100%;
+  max-height: 100%;
+}
+#container {
+  position: relative;
+  padding-left: 450px;
+  min-height: 200px;
+  height: 100%;
+}
+.measurement {
+  padding: 0.2em 0;
+  clear: both;
+  overflow: auto;
+}
+.measurement &gt; * {
+  float: left;
+}
+.measurement .delete {
+  width: 15px;
+  cursor: pointer;
+  font-size: 80%;
+  font-weight: bold;
+}
+.measurement-row {
+  clear: both;
+}
+.measurement-row &gt; * {
+  display: block;
+  float: left;
+  min-height: 1px;
+}
+.measurement-row span.side-label {
+  width: 15px;
+  font-size: 80%;
+  font-weight: bold;
+}
+.measurement-row input {
+  width: auto;
+}
+.measurement-row span.unit {
+  width: 60px;
+}
+.measurement-row span.pctl {
+  width: 100px;
+  font-size: 80%;
+}
+.measurement-row label {
+  width: 180px;
+}
+.pctl.sd-0 { color: green; }
+.pctl.sd-1 { color: orange; }
+.pctl.sd-2 { color: red; }
+.measurement-set.proto {
+  display: none;
+}
+.measurement-set {
+  border: 1px solid #aaa;
+  padding: 10px;
+  float: left;
+  clear: both;
+  overflow: auto;
+  margin: 5px;
+  position: relative;
+}
+.measurement-set &gt; .delete {
+  width: 15px;
+  font-size: 80%;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 10px; right: 10px;
+}
+.new-measurement-select {
+  width: 190px;
+}
+div.birthdate {
+  float: left;
+}
+.computed-values {
+  margin-top: 20px;
+}
+.computed-values .measurement-row input {
+  border: 1px solid white;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__measurements_new</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>39f118e7-081e-439d-a505-c9a130723790</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+$xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
+#macro (measurement $name $unit $isDoubleSided)
+(% class="measurement"%)(((
+  #if ($isDoubleSided)
+    #measurementRow($name $unit 'l')
+    #measurementRow('' $unit 'r')
+  #else
+    #measurementRow($name $unit '')
+  #end
+)))
+#end
+#macro (measurementRow $name $unit $side)
+(% class="measurement-row"%)(((
+  {{html clean="false" wiki="false"}}
+  &lt;label&gt;#if ("$!name" != "")$services.localization.render("phenotips.UIXField.measurements.types.${name}")#end&lt;/label&gt;
+  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
+  &lt;input type="text" size="5"&gt;
+  &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
+  &lt;span class="pctl"&gt;&lt;/span&gt;
+  {{/html}}
+)))
+#end
+##
+#set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())
+#set ($itemDoc = $xwiki.getDocument($objs.get(0)))
+#set ($obj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
+#if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
+  (% id="measurements"%)(((
+    #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
+    #foreach ($handler in $handlers)
+      #if ($obj.getProperty('enabled').value.contains($handler.getName()))
+        #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided())
+      #end
+    #end
+  )))
+  (% class="clear"%)((()))
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.measurement-info</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.field.charts</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.UIXField.growthCharts')
+enabled=true
+required=
+order=4
+fields=
+privacy_level=3</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>
