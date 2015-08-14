@@ -18,7 +18,7 @@
 package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
-import org.phenotips.studies.family.response.StatusResponse;
+import org.phenotips.studies.family.response.JSONResponse;
 
 import org.xwiki.component.annotation.Role;
 
@@ -56,7 +56,7 @@ public interface FamilyRepository
      *
      * @param patient to add to the family. Must not be null.
      * @param family to add the patient to. Must not be null.
-     * @return {@link PatientCanBeAddedResponse}
+     * @return {@link JSONResponse}
      */
-    StatusResponse canPatientBeAddedToFamily(Patient patient, Family family);
+    JSONResponse canPatientBeAddedToFamily(Patient patient, Family family);
 }

@@ -213,8 +213,7 @@ public class FamilyScriptService implements ScriptService
             response.asVerification();
         }
 
-        response.setStatusResponse(this.familyRepository.canPatientBeAddedToFamily(patient, family));
-        response.setMessage(patientId, family.getId());
+        response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
         return response.asVerification();
     }
 
@@ -245,7 +244,7 @@ public class FamilyScriptService implements ScriptService
                 asVerification();
         }
 
-        response.setStatusResponse(this.familyRepository.canPatientBeAddedToFamily(patient, family));
+        response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
         return response.asVerification();
     }
 

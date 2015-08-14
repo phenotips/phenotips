@@ -21,6 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.response.JSONResponse;
 import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
@@ -200,19 +201,19 @@ public class XWikiFamilyRepository implements FamilyRepository
     }
 
     @Override
-    public StatusResponse canPatientBeAddedToFamily(Patient patient, Family family)
+    public JSONResponse canPatientBeAddedToFamily(Patient patient, Family family)
     {
+        JSONResponse response = new JSONResponse(StatusResponse.OK);
         Family familyForPatient = this.getFamilyForPatient(patient);
 
         if (familyForPatient != null) {
-            if (familyForPatient.equals(family)) {
-                return StatusResponse.OK;
-            } else {
-                return StatusResponse.ALREADY_HAS_FAMILY;
+            if (!familyForPatient.equals(family)) {
+                response.setStatusResponse(StatusResponse.ALREADY_HAS_FAMILY);
+                response.setMessage(patient.getId(), familyForPatient.getId());
             }
         }
 
-        return StatusResponse.OK;
+        return response;
     }
 
     /*

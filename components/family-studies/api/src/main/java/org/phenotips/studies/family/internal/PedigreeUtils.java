@@ -128,10 +128,8 @@ public class PedigreeUtils
         if (newMembers != null) {
             for (String patientId : newMembers) {
                 Patient patient = this.patientRepository.getPatientById(patientId);
-                StatusResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+                JSONResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
                 if (!response.isValid()) {
-                    jsonResponse.setStatusResponse(response);
-                    jsonResponse.setMessage(patientId, family.getId());
                     return jsonResponse;
                 }
             }
