@@ -39,6 +39,7 @@
   <hidden>true</hidden>
   <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
+  #set ($results = [])
   #if ("$!{request.q}" != '')
     #set ($rows = 10)
     #if ("$!{request.rows}" != '')
