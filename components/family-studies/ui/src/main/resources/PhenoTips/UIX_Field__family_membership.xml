@@ -635,7 +635,7 @@ if (newFamilyTrigger) {
     <property>
       <content>{{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
-#set ($family = $services.families.getPatientsFamily($doc.getDocument().getName()))
+#set ($family = $services.families.getFamilyForPatient($doc.getDocument().getName()))
 #set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
 #if ($xcontext.action != 'view' || $hasFamily)
 ##

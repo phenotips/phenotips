@@ -104,13 +104,12 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * Returns a reference to a patient's family, or null if doesn't exist. TODO - change call to pass patientId and not
-     * XWikiDocument ($doc.getDocument() -> $doc.getDocument().getName()). Also change name to getFamilyForPatientId
+     * Returns a reference to a patient's family, or null if doesn't exist.
      *
      * @param patientId id of the patient
      * @return DocumentReference to the family, or null if doesn't exist
      */
-    public DocumentReference getPatientsFamily(String patientId)
+    public DocumentReference getFamilyForPatient(String patientId)
     {
         Patient patient = this.patientRepository.getPatientById(patientId);
         Family family = this.familyRepository.getFamilyForPatient(patient);
