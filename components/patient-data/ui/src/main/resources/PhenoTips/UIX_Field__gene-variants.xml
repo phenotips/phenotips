@@ -20,29 +20,287 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__gene-variants</name>
+  <name>UIX_Field__genes</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
+  <creator>XWiki.Admin</creator>
   <creationDate>1401822202000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
-  <author>xwiki:XWiki.Admin</author>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1432759116000</date>
-  <contentUpdateDate>1432756414000</contentUpdateDate>
-  <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXField.gene-variants')</title>
-  <comment/>
+  <author>XWiki.Admin</author>
+  <contentAuthor>XWiki.Admin</contentAuthor>
+  <date>1439595045000</date>
+  <contentUpdateDate>1439323606000</contentUpdateDate>
+  <version>2.1</version>
+  <title>$services.localization.render('phenotips.UIXField.genes')</title>
+  <comment>Deleted object</comment>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__gene-variants</name>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0c3e868a-743c-4714-ba1a-a04cbf6b0dd1</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {&#xd;
+&#xd;
+  var fetchGeneDetails = function(geneRefs, geneNames) {&#xd;
+    if (!geneNames) {&#xd;
+      geneNames = geneRefs.pluck('value');&#xd;
+    }&#xd;
+    var i = 0; &#xd;
+    geneRefs.each(function (element) {&#xd;
+      if (element.value != "") {&#xd;
+        element._name = geneNames[i];&#xd;
+        var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});&#xd;
+        var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);&#xd;
+        if (element.next() &amp;&amp; element.next().className.indexOf('xHelpButton gene-info') > -1)&#xd;
+          element.next().remove();&#xd;
+        element.insert({after: infoTool});&#xd;
+        ++i;&#xd;
+     }&#xd;
+    });&#xd;
+  }&#xd;
+&#xd;
+  fetchGeneDetails($$('input.gene-name'));&#xd;
+&#xd;
+  $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {&#xd;
+    fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
+  });&#xd;
+&#xd;
+  $$('input.gene-name').invoke('observe', 'change', function (event) {&#xd;
+    if (event.element().value == "" &amp;&amp; event.element().next() &amp;&amp; event.element().next().className.indexOf('xHelpButton gene-info') > -1)&#xd;
+      event.element().next().remove();&#xd;
+  });&#xd;
+&#xd;
+  document.observe("xwiki:dom:updated", function(event) {&#xd;
+    if (event.memo &amp;&amp; event.memo.elements) {&#xd;
+      event.memo.elements.each(function (elt) {&#xd;
+        fetchGeneDetails(elt.select('input.gene-name'));&#xd;
+        elt.select('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {&#xd;
+          fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
+        });&#xd;
+      });&#xd;
+    }&#xd;
+  })&#xd;
+})</code>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ddc20308-5638-42ba-9680-19944cc57e54</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe("xwiki:dom:loaded", function(event) {&#xd;
+  var geneSuggestOptions = {&#xd;
+            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",&#xd;
+            varname: "q",&#xd;
+            noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",&#xd;
+            json: true,&#xd;
+            resultsParameter : "docs",&#xd;
+            resultId : 'symbol',&#xd;
+            resultValue : 'symbol',&#xd;
+            resultAltName : "alias_symbol",&#xd;
+            enableHierarchy: false,&#xd;
+            tooltip : 'gene-info',&#xd;
+            resultInfo : {},&#xd;
+            fadeOnClear : false,&#xd;
+            timeout : 30000,&#xd;
+            parentContainer : null&#xd;
+  };&#xd;
+&#xd;
+  // -----------------------------------------------------------------&#xd;
+  // Create and attach the suggests&#xd;
+  // -----------------------------------------------------------------&#xd;
+  var attachPickers = function() {&#xd;
+    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {&#xd;
+      $$('input.suggest-gene').each(function(item) {&#xd;
+        if (!item.hasClassName('initialized')) {&#xd;
+          item._suggest = new PhenoTips.widgets.Suggest(item, geneSuggestOptions);&#xd;
+          item.addClassName('initialized');&#xd;
+        }&#xd;
+      });&#xd;
+    }&#xd;
+  };&#xd;
+  attachPickers();&#xd;
+  document.observe("xwiki:dom:updated", attachPickers);&#xd;
+});</code>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.UIX_Field__genes</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
-    <guid>7adc34c5-dcb3-4287-add8-3d38312047ce</guid>
+    <guid>31ef03c0-7319-491e-8ee4-ac2863448012</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -134,183 +392,25 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.gene-table td, .gene-table th {&#xd;
-  vertical-align: top;&#xd;
-    border-left: 0 none;&#xd;
-  border-right: 0 none;&#xd;
-  border-bottom: 0 none;&#xd;
+      <code>.extradata-list td.counter {&#xd;
+  width: 3em;&#xd;
 }&#xd;
-.gene-table td table {&#xd;
-  margin: 0 !important;&#xd;
-}&#xd;
-.gene-table th {&#xd;
-  border-bottom: 0 none;&#xd;
-  border-top: 0 none;&#xd;
-}&#xd;
-.gene-table td table td{&#xd;
-  border: 0 none !important;&#xd;
-}&#xd;
-.gene-table td.pseudoindent {&#xd;
-  border: 0 none !important;&#xd;
-}&#xd;
-.gene-table td.variant, .gene-table th.variant {&#xd;
-  font-size: 87%;&#xd;
-  background: #def;&#xd;
-}&#xd;
-.gene-table, .gene-table tr, .gene-table th {&#xd;
-  position: relative;&#xd;
-}&#xd;
-.gene-table .variant-title:before {&#xd;
-  position: absolute;&#xd;
-  top: -15px;&#xd;
-  left: 0;&#xd;
-  content: "";&#xd;
-  display: block;&#xd;
-  border: 10px solid transparent;&#xd;
-  border-bottom: 15px solid #def;&#xd;
-  border-top: 0 none;&#xd;
-}&#xd;
-.gene-table td.variant.editing {&#xd;
-  background: #FFD;&#xd;
-}&#xd;
-.gene-table td.variant.moreinfo {&#xd;
-  position: relative;&#xd;
-}&#xd;
-.gene-table td.variant.moreinfo input[type="button"]{&#xd;
-  float: right;&#xd;
-}&#xd;
-.gene-table td.variant-moreinfo {&#xd;
+.extradata-list td.gene {&#xd;
+  width: 50%;&#xd;
   text-align: left;&#xd;
-}&#xd;
-.variant-moreinfo-button {&#xd;
-  float: right;&#xd;
-}&#xd;
-.variant-property-value {&#xd;
-  text-align: left;&#xd;
-}&#xd;
-.variant-moreinfo-button-row {&#xd;
-  height: 30px;&#xd;
-}&#xd;
-.variant-edit-done {&#xd;
-display: none;&#xd;
-}&#xd;
-.variant-info .extradata-list td {&#xd;
-  text-align: left;&#xd;
-}&#xd;
-.variant-info .extradata-list td.chr {&#xd;
-  text-align: center;&#xd;
 }</code>
     </property>
     <property>
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name>style-doubletable</name>
+      <name></name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.UIX_Field__gene-variants</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>37600d90-5a22-479d-ac6e-100fe18c8696</guid>
-    <class>
-      <name>XWiki.UIExtensionClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <content>
-        <disabled>0</disabled>
-        <name>content</name>
-        <number>3</number>
-        <prettyName>Extension Content</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </content>
-      <extensionPointId>
-        <disabled>0</disabled>
-        <name>extensionPointId</name>
-        <number>1</number>
-        <prettyName>Extension Point ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </extensionPointId>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>2</number>
-        <prettyName>Extension ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parameters>
-        <disabled>0</disabled>
-        <name>parameters</name>
-        <number>4</number>
-        <prettyName>Extension Parameters</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </parameters>
-      <scope>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>scope</name>
-        <number>5</number>
-        <prettyName>Extension Scope</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>wiki=Current Wiki|user=Current User|global=Global</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
-    </class>
-    <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
-{{include reference="PhenoTips.TabelarDataMacros" /}}
-{{include reference="PhenoTips.GeneVariantMacros" /}}
-
-{{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__gene-variants')##
-$xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
-$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
-#__gene_table({'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'resolution'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp'], 'newEntryLabel' : $services.localization.render('phenotips.geneVariantMacros.variantTable.newEntry')})
-{{/velocity}}</content>
-    </property>
-    <property>
-      <extensionPointId>org.phenotips.patientSheet.section.genotype</extensionPointId>
-    </property>
-    <property>
-      <name>org.phenotips.patientSheet.field.gene-variants</name>
-    </property>
-    <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')
-enabled=true
-required=
-order=2
-fields=
-privacy_level=1</parameters>
-    </property>
-    <property>
-      <scope>wiki</scope>
+      <use>onDemand</use>
     </property>
   </object>
 </xwikidoc>

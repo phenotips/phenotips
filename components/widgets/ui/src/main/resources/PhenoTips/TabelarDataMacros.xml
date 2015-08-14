@@ -24,14 +24,14 @@
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
+  <creator>XWiki.Admin</creator>
   <creationDate>1401822205000</creationDate>
   <parent>PhenoTips.WebHome</parent>
-  <author>xwiki:XWiki.Admin</author>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1439237480000</date>
-  <contentUpdateDate>1438813038000</contentUpdateDate>
-  <version>1.1</version>
+  <author>XWiki.Admin</author>
+  <contentAuthor>XWiki.Admin</contentAuthor>
+  <date>1439594914000</date>
+  <contentUpdateDate>1439593191000</contentUpdateDate>
+  <version>5.1</version>
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
@@ -46,7 +46,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')">✖&lt;/a>{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
@@ -55,7 +55,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 #else
 #set ($label = $services.localization.render('phenotips.tableMacros.newEntry'))
 #end
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$label"&gt;$label&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper">&lt;label class="create-button-label">+&lt;/label>&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$label">$label&lt;/a>&lt;/span>{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
 #end
 
 #macro (__extradata_displayTable $dataClassName $options)
@@ -84,7 +84,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       #end
       #if ($options.mode == 'export')#set ($disableLabels = true)#end
       #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $options.mode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" >${prop.translatedPrettyName}&lt;/label>{{/html}}#end $doc.display($prop.getName(), $options.mode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p>|&lt;/p>(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
@@ -96,10 +96,10 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 
 #macro (__extradata_displayLastEntry $dataClassName $options)
   #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
+  #if ($objects.size() > 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end">#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label >${prop.translatedPrettyName}:&lt;/label>{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td>#end#if ($options.mode == 'edit')&lt;td class="actions">#__extradata_deleteTool($targetObj '')&lt;/td>#end{{/html}}
   #end
 #end
 {{/velocity}}
@@ -184,155 +184,157 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       <cache>long</cache>
     </property>
     <property>
-      <code>var ExtraData = (function (ExtraData) {
-  var tools = ExtraData.tools = ExtraData.tools || {};
-  tools.Editor = Class.create({
-    initialize : function () {
-      $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
-      $$('.extradata-list a.reject').invoke('observe', 'click', this.ajaxRejectData.bindAsEventListener(this));
-      $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
-      $$('.list-actions a.add').invoke('observe', 'extradata:reject-add', this.ajaxAddData.bindAsEventListener(this));
-    },
-    ajaxDeleteData : function (event) {
-      event.stop();
-      var deleteTrigger = event.element();
-      if (deleteTrigger.disabled) {
-         return;
-      }
-      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
-        onCreate : function() {
-          deleteTrigger.disabled = true
-        },
-        onSuccess : function() {
-          var dataRow = deleteTrigger.up('tr:not(.head-group)');
-          var dataTable = deleteTrigger.up('table.extradata-list');
-          if (dataRow) {
-            dataRow.remove();
-            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});
-          }
-          if (dataTable) {
-            var i = 1;
-            dataTable.select('th.row-count').each(function(item) {
-              item.update((i++));
-            });
-            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});
-          }
-        },
-        onComplete : function() {
-          deleteTrigger.disabled = false;
-        }
-      },
-      {
-         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
-      });
-    },
-    ajaxAddData : function (event) {
-      event.stop();
-      var addTrigger = event.element();
-      if (addTrigger.disabled) {
-         return;
-      }
-      var classname = '';
-      try {
-        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
-      } catch (err) {
-         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
-         return;
-      }
-      var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
-      if (!dataTable) {
-        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');
-      }
-      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';
-      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';
-      var addedDisplaySheet = addTrigger.href.replace(/.*&amp;xredirect=.*addedDisplaySheet=([^&amp;]*).*/, '$1') || '';
-      var rejectToClass = Element.readAttribute(dataTable, 'data-reject-to-class') || '';
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : '' + '&amp;rejectToClass=' + rejectToClass))).replace(/#.*/m, '');
-      new Ajax.Request(url, {
-        onCreate : function() {
-          addTrigger.disabled = true
-          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
-        },
-        onSuccess : function (response) {
-          addTrigger._x_notif.hide();
-          var newRow = new Element('tr', {'class' : 'new'});
-          dataTable.down('tbody').insert(newRow);
-          if (dataTable.hasClassName('withCounter')) {
-            var idx = dataTable.select('.row-count').size() + 1;
-            newRow.insert(new Element('th', {'class' : 'row-count'}).update(idx));
-          }
-          newRow.insert(response.responseText);
-          newRow.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
-          newRow.down('a.reject') &amp;&amp; newRow.down('a.reject').observe('click', this.ajaxRejectData.bindAsEventListener(this));
-          Event.fire(dataTable, 'extradata:added', {'element' : newRow});
-          Event.fire(document, 'xwiki:dom:updated', {'elements' : [newRow]});
-        }.bind(this),
-        onFailure : function(response) {
-          var failureReason = response.statusText;
-          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-            failureReason = 'Server not responding';
-          }
-          if (addTrigger._x_notif) {
-            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
-          } else {
-            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
-          }
-        },
-        on1223 : function(response) {
-          response.request.options.onSuccess(response);
-        },
-        on0 : function(response) {
-          response.request.options.onFailure(response);
-        },
-        onComplete : function() {
-          addTrigger.disabled = false
-        }
-      });
-    },
-    ajaxRejectData : function (event) {
-      event.stop();
-      var rejectTrigger = event.findElement('.reject');
-      if (rejectTrigger.disabled) {
-         return;
-      }
-      var transferToClass = rejectTrigger.getAttribute("data-bind");
-      new XWiki.widgets.ConfirmedAjaxRequest(rejectTrigger.href, {
-        onCreate : function() {
-          rejectTrigger.disabled = true
-        },
-        onSuccess : function() {
-          var dataRow = rejectTrigger.up('tr:not(.head-group)');
-          var dataTable = rejectTrigger.up('table.extradata-list');
-          if (dataRow) {
-            dataRow.remove();
-            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});
-          }
-          if (dataTable) {
-            var i = 1;
-            dataTable.select('th.row-count').each(function(item) {
-              item.update((i++));
-            });
-            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});
-          }
-        },
-        onComplete : function() {
-          rejectTrigger.disabled = false;
-        }
-      },
-      {
-         confirmationText : "$services.localization.render('phenotips.tableMacros.rejectConfirmation')"
-      });    
-    },
-  });
-  return ExtraData;
-}(ExtraData || {}));
-
-document.observe('xwiki:dom:loaded', function() {
-  new ExtraData.tools.Editor();
+      <code>var ExtraData = (function (ExtraData) {&#xd;
+  var tools = ExtraData.tools = ExtraData.tools || {};&#xd;
+  tools.Editor = Class.create({&#xd;
+    initialize : function () {&#xd;
+      $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));&#xd;
+      $$('.extradata-list a.reject').invoke('observe', 'click', this.ajaxRejectData.bindAsEventListener(this));&#xd;
+      $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));&#xd;
+      $$('.list-actions a.add').invoke('observe', 'extradata:reject-add', this.ajaxAddData.bindAsEventListener(this));&#xd;
+    },&#xd;
+    ajaxDeleteData : function (event) {&#xd;
+      event.stop();&#xd;
+      var deleteTrigger = event.element();&#xd;
+      if (deleteTrigger.disabled) {&#xd;
+         return;&#xd;
+      }&#xd;
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {&#xd;
+        onCreate : function() {&#xd;
+          deleteTrigger.disabled = true&#xd;
+        },&#xd;
+        onSuccess : function() {&#xd;
+          var dataRow = deleteTrigger.up('tr:not(.head-group)');&#xd;
+          var dataTable = deleteTrigger.up('table.extradata-list');&#xd;
+          if (dataRow) {&#xd;
+            if (dataRow.next().hasClassName('variant-footer'))&#xd;
+              dataRow.next().remove();&#xd;
+            dataRow.remove();&#xd;
+            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});&#xd;
+          }&#xd;
+          if (dataTable) {&#xd;
+            var i = 1;&#xd;
+            dataTable.select('th.row-count').each(function(item) {&#xd;
+              item.update((i++));&#xd;
+            });&#xd;
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});&#xd;
+          }&#xd;
+        },&#xd;
+        onComplete : function() {&#xd;
+          deleteTrigger.disabled = false;&#xd;
+        }&#xd;
+      },&#xd;
+      {&#xd;
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"&#xd;
+      });&#xd;
+    },&#xd;
+    ajaxAddData : function (event) {&#xd;
+      event.stop();&#xd;
+      var addTrigger = event.element();&#xd;
+      if (addTrigger.disabled) {&#xd;
+         return;&#xd;
+      }&#xd;
+      var classname = '';&#xd;
+      try {&#xd;
+        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];&#xd;
+      } catch (err) {&#xd;
+         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');&#xd;
+         return;&#xd;
+      }&#xd;
+      var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');&#xd;
+      if (!dataTable) {&#xd;
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');&#xd;
+      }&#xd;
+      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]*).*/, '$1') || '';&#xd;
+      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]*).*/, '$1') || '';&#xd;
+      var addedDisplaySheet = addTrigger.href.replace(/.*&amp;xredirect=.*addedDisplaySheet=([^&amp;]*).*/, '$1') || '';&#xd;
+      var rejectToClass = Element.readAttribute(dataTable, 'data-reject-to-class') || '';&#xd;
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue + (addedDisplaySheet ? '&amp;sheet=' + addedDisplaySheet : '' + '&amp;rejectToClass=' + rejectToClass))).replace(/#.*/m, '');&#xd;
+      new Ajax.Request(url, {&#xd;
+        onCreate : function() {&#xd;
+          addTrigger.disabled = true&#xd;
+          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');&#xd;
+        },&#xd;
+        onSuccess : function (response) {&#xd;
+          addTrigger._x_notif.hide();&#xd;
+          var newRow = new Element('tr', {'class' : 'new'});&#xd;
+          dataTable.down('tbody').insert(newRow);&#xd;
+          if (dataTable.hasClassName('withCounter')) {&#xd;
+            var idx = dataTable.select('.row-count').size() + 1;&#xd;
+            newRow.insert(new Element('th', {'class' : 'row-count'}).update(idx));&#xd;
+          }&#xd;
+          newRow.insert(response.responseText);&#xd;
+          newRow.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));&#xd;
+          newRow.down('a.reject') &amp;&amp; newRow.down('a.reject').observe('click', this.ajaxRejectData.bindAsEventListener(this));&#xd;
+          Event.fire(dataTable, 'extradata:added', {'element' : newRow});&#xd;
+          Event.fire(document, 'xwiki:dom:updated', {'elements' : [newRow]});&#xd;
+        }.bind(this),&#xd;
+        onFailure : function(response) {&#xd;
+          var failureReason = response.statusText;&#xd;
+          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {&#xd;
+            failureReason = 'Server not responding';&#xd;
+          }&#xd;
+          if (addTrigger._x_notif) {&#xd;
+            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));&#xd;
+          } else {&#xd;
+            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");&#xd;
+          }&#xd;
+        },&#xd;
+        on1223 : function(response) {&#xd;
+          response.request.options.onSuccess(response);&#xd;
+        },&#xd;
+        on0 : function(response) {&#xd;
+          response.request.options.onFailure(response);&#xd;
+        },&#xd;
+        onComplete : function() {&#xd;
+          addTrigger.disabled = false&#xd;
+        }&#xd;
+      });&#xd;
+    },&#xd;
+    ajaxRejectData : function (event) {&#xd;
+      event.stop();&#xd;
+      var rejectTrigger = event.findElement('.reject');&#xd;
+      if (rejectTrigger.disabled) {&#xd;
+         return;&#xd;
+      }&#xd;
+      var transferToClass = rejectTrigger.getAttribute("data-bind");&#xd;
+      new XWiki.widgets.ConfirmedAjaxRequest(rejectTrigger.href, {&#xd;
+        onCreate : function() {&#xd;
+          rejectTrigger.disabled = true&#xd;
+        },&#xd;
+        onSuccess : function() {&#xd;
+          var dataRow = rejectTrigger.up('tr:not(.head-group)');&#xd;
+          var dataTable = rejectTrigger.up('table.extradata-list');&#xd;
+          if (dataRow) {&#xd;
+            dataRow.remove();&#xd;
+            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});&#xd;
+          }&#xd;
+          if (dataTable) {&#xd;
+            var i = 1;&#xd;
+            dataTable.select('th.row-count').each(function(item) {&#xd;
+              item.update((i++));&#xd;
+            });&#xd;
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});&#xd;
+          }&#xd;
+        },&#xd;
+        onComplete : function() {&#xd;
+          rejectTrigger.disabled = false;&#xd;
+        }&#xd;
+      },&#xd;
+      {&#xd;
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rejectConfirmation')"&#xd;
+      });    &#xd;
+    },&#xd;
+  });&#xd;
+  return ExtraData;&#xd;
+}(ExtraData || {}));&#xd;
+&#xd;
+document.observe('xwiki:dom:loaded', function() {&#xd;
+  new ExtraData.tools.Editor();&#xd;
 })</code>
     </property>
     <property>
-      <name/>
+      <name></name>
     </property>
     <property>
       <parse>1</parse>
@@ -425,47 +427,108 @@ document.observe('xwiki:dom:loaded', function() {
   var tools = EditVariantData.tools = EditVariantData.tools || {};&#xd;
   tools.Editor = Class.create({&#xd;
     initialize : function () {&#xd;
+      this.createEditButtons();&#xd;
+      this.createEditDoneButtons();&#xd;
+      this.createHideShowButtons();&#xd;
+      $('gene-table').observe('generow:deleted', this.handleGeneRowDeleted);&#xd;
       $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));&#xd;
       $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));&#xd;
       var defaultInputs = [];&#xd;
       $$('.variant-default-input').each( function(item, index) {&#xd;
-      defaultInputs[index] = item.firstDescendant(); &#xd;
+      if (item.firstDescendant() != null) &#xd;
+        defaultInputs[index] = item.firstDescendant(); &#xd;
       });&#xd;
       defaultInputs.invoke('observe', 'change', this.changeDefaultData.bindAsEventListener(this));&#xd;
-      $$('.variant-hide-show').invoke('observe', 'click', this.hideVariantTable.bindAsEventListener(this));&#xd;
+      this.lockGeneInput();&#xd;
+    },&#xd;
+    createHideShowButtons : function () {&#xd;
+      //creating hide/Show variant section buttons&#xd;
+      $$('.variant.variant-title').each(function(item){&#xd;
+        var geneIndex = item.className.substring(item.className.lastIndexOf('-')+1);&#xd;
+        var showIcon = new Element('span', {'class' : 'fa fa-plus-square-o fa-lg'});&#xd;
+        //var showIcon = '&amp;lt;span class="fa fa-plus-square-o fa-lg"&amp;gt;&amp;lt;/span&amp;gt;&amp;amp;nbsp;';&#xd;
+        var variantShow = new Element('button', {'class' : 'tool button secondary  v-collapsed', 'type' : 'button'}).insert(showIcon).insert(" $services.localization.render('phenotips.geneVariantMacros.expand')");&#xd;
+        var hideIcon = new Element('span', {'class' : 'fa fa-minus-square-o fa-lg'});&#xd;
+        //var hideIcon = '&amp;lt;span class="fa fa-minus-square-o fa-lg"&amp;gt;&amp;lt;/span&amp;gt;&amp;amp;nbsp;';&#xd;
+        var variantHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).insert(hideIcon).insert(" $services.localization.render('phenotips.geneVariantMacros.collapse')");&#xd;
+        var variantShowWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantShow);&#xd;
+        var variantHideWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantHide);&#xd;
+        var variantExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(variantShowWrapper).insert(variantHideWrapper);&#xd;
+        item.insert({bottom: variantExpandTools});&#xd;
+        [variantShow, variantHide].invoke('observe', 'click', function (event) {&#xd;
+          variantShow.toggleClassName('v-collapsed');&#xd;
+          variantHide.toggleClassName('v-collapsed');&#xd;
+          $$('.variant-hide-heading-' + geneIndex).each(function(item) {&#xd;
+              item.toggleClassName('v-collapsed');&#xd;
+            });&#xd;
+        });&#xd;
+      });&#xd;
+    },&#xd;
+    createEditDoneButtons : function () {&#xd;
+      $$('.variant-moreinfo-editdonebutton-row').each(function(row) {&#xd;
+        var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);&#xd;
+        var editVariantLink = new Element('a', {'class' : 'action-edit button secondary variant-edit-done fa fa-check v-collapsed', 'href' : '#', 'title' : "$services.localization.render('phenotips.geneVariantMacros.editDone.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_editDone'});    &#xd;
+        editVariantLink.innerHtml = "$services.localization.render('phenotips.geneVariantMacros.editDone')";&#xd;
+        var editVarientWrapper = new Element('span', {'class' : 'buttonwrapper variant-moreinfo-button'}).insert(editVariantLink);&#xd;
+        row.insert(editVarientWrapper);&#xd;
+      });&#xd;
+    },&#xd;
+    createEditButtons : function () {&#xd;
+      $$('.variant-moreinfo-editbutton-row').each(function(row) {&#xd;
+        var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);&#xd;
+        var editVariantLink = new Element('a', {'class' : 'action-edit  button secondary variant-edit fa fa-pencil', 'href' : '#', 'title' : "$services.localization.render('phenotips.geneVariantMacros.edit.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_edit'});    &#xd;
+        editVariantLink.innerHtml = "$services.localization.render('phenotips.geneVariantMacros.edit')";&#xd;
+        var editVarientWrapper = new Element('span', {'class' : 'buttonwrapper variant-moreinfo-button'}).insert(editVariantLink);&#xd;
+        row.insert({top : editVarientWrapper});&#xd;
+      });&#xd;
+    },&#xd;
+    lockGeneInput : function () {&#xd;
+      //lock genesymbol inputs if there are variants&#xd;
+      $$('.suggested.suggest-gene.gene-name').each( function(item) {&#xd;
+        var className = item.up().className;&#xd;
+        var geneNumber = className.substring(className.lastIndexOf('-')+1);&#xd;
+        //generate label&#xd;
+        var geneLabel = new Element('p', {'class' : ' gene col-label gene-' + geneNumber + ' gene-input-label'});&#xd;
+        geneLabel.update(item.value);&#xd;
+        item.insert({before: geneLabel});&#xd;
+        if ($$('.variant-hide-heading-' + geneNumber).length > 0) {&#xd;
+          item.toggleClassName('v-collapsed', true);&#xd;
+        } else {&#xd;
+          geneLabel.toggleClassName('v-collapsed', true);&#xd;
+        }&#xd;
+      });&#xd;
     },&#xd;
     editData : function (event) {&#xd;
       event.stop();&#xd;
       var id = event.element().id;&#xd;
       var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
-      event.element().style.display = 'none'; &#xd;
-      $('PhenoTips.GeneVariantClass_'+variantIndex+'_editDone').style.display = 'inline';&#xd;
+      event.element().toggleClassName('v-collapsed'); &#xd;
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_editDone').toggleClassName('v-collapsed');&#xd;
       var labels = $$('.variant-label-'+variantIndex);&#xd;
       $$('.variant-input-'+variantIndex).each ( function(item, index) {&#xd;
-        item.style.display = 'inline';&#xd;
-        labels[index].style.display = 'none';&#xd;
+        item.toggleClassName('v-collapsed');&#xd;
+        labels[index].toggleClassName('v-collapsed');&#xd;
       });&#xd;
       //display all labels in "More Info"&#xd;
       $$('.variant-property-name-'+ variantIndex).each ( function(item) {&#xd;
-        item.style.display = 'inline';&#xd;
+        item.toggleClassName('v-collapsed', false);&#xd;
       });&#xd;
     },&#xd;
     editDoneData : function (event) {&#xd;
       event.stop();&#xd;
       var id = event.element().id;&#xd;
       var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
-      event.element().style.display = 'none'; &#xd;
-      $('PhenoTips.GeneVariantClass_'+variantIndex+'_edit').style.display = 'inline';&#xd;
+      event.element().toggleClassName('v-collapsed'); &#xd;
+      $('PhenoTips.GeneVariantClass_'+variantIndex+'_edit').toggleClassName('v-collapsed');&#xd;
       var inputs = $$('.variant-input-'+variantIndex);&#xd;
       var labels = $$('.variant-label-'+variantIndex);&#xd;
       for (var i=0;i&lt;inputs.length;i++) {&#xd;
-        inputs[i].style.display = 'none';&#xd;
-        //labels[i].style.display = 'inline';&#xd;
+        inputs[i].toggleClassName('v-collapsed');&#xd;
         if (labels[i].className.indexOf('segregation') > -1 || labels[i].className.indexOf('sanger') > -1 || labels[i].className.indexOf('inheritance') > -1 || labels[i].className.indexOf('zygosity') > -1 || labels[i].className.indexOf('effect') > -1) {&#xd;
           labels[i].innerHTML = inputs[i].firstChild[inputs[i].firstChild.selectedIndex].text;&#xd;
         } else if (labels[i].className.indexOf('evidence') > -1) {&#xd;
           labels[i].innerHTML = "";&#xd;
-          inputs[i].childElements().each(function(item) {&#xd;
+          inputs[i].childElements().each( function(item) {&#xd;
             if (item.tagName == "LABEL" &amp;&amp; item.firstDescendant().checked)&#xd;
               labels[i].innerHTML +=item.innerText+'; ';&#xd;
             });&#xd;
@@ -474,20 +537,20 @@ document.observe('xwiki:dom:loaded', function() {
         }&#xd;
         //hide row in "More Info" if empty value&#xd;
         if (labels[i].innerHTML == '') {&#xd;
-          labels[i].style.display = 'none';&#xd;
-          labels[i].parentElement.previousSibling.style.display = 'none';&#xd;
+          labels[i].toggleClassName('v-collapsed', true);&#xd;
+          labels[i].parentElement.previousSibling.toggleClassName('v-collapsed', true);&#xd;
         } else {&#xd;
-          labels[i].style.display = 'inline';&#xd;
-          labels[i].parentElement.previousSibling.style.display = 'inline';&#xd;
+          labels[i].toggleClassName('v-collapsed', false);&#xd;
+          labels[i].parentElement.previousSibling.toggleClassName('v-collapsed', false);&#xd;
         }&#xd;
       }&#xd;
     },&#xd;
     changeDefaultData : function (event) {&#xd;
       event.stop();&#xd;
       var className = event.element().parentElement.className;&#xd;
-      var variantIndex = className.substring(className.lastIndexOf('-')+1,className.length);&#xd;
+      var variantIndex = className.substring(className.lastIndexOf('-')+1);&#xd;
       var id = event.element().name;&#xd;
-      var fieldName = id.substring(id.lastIndexOf('_')+1,id.length);&#xd;
+      var fieldName = id.substring(id.lastIndexOf('_')+1);&#xd;
       if (id.indexOf('cdna') > -1) {&#xd;
         $$('.'+fieldName+'-'+variantIndex)[0].innerHTML = event.element().value;&#xd;
       } else {&#xd;
@@ -495,29 +558,16 @@ document.observe('xwiki:dom:loaded', function() {
       }&#xd;
       //hide/show row in "More Info" if empty/non-empty value&#xd;
       if (event.element().value == "" || event.element().value == "NA") {&#xd;
-        $$('.'+fieldName+'-'+variantIndex)[0].style.display = 'none';&#xd;
-        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.style.display = 'none';&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].toggleClassName('v-collapsed', true);&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.toggleClassName('v-collapsed', true);&#xd;
       } else {&#xd;
-        $$('.'+fieldName+'-'+variantIndex)[0].style.display = 'inline';&#xd;
-        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.style.display = 'inline';&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].toggleClassName('v-collapsed', false);&#xd;
+        $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.toggleClassName('v-collapsed', false);&#xd;
       }&#xd;
     },&#xd;
-    hideVariantTable : function (event) {&#xd;
-      event.stop();&#xd;
-      var id = event.element().id;&#xd;
-      var geneIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));&#xd;
-      if  (event.element().innerHTML == "Hide variants") {&#xd;
-        event.element().innerHTML = "Show variants";&#xd;
-        $$('.variant-hide-heading-'+geneIndex).each(function(item) {&#xd;
-          item.style.display = 'none';&#xd;
-        });&#xd;
-      } else {&#xd;
-        event.element().innerHTML = "Hide variants";&#xd;
-        $$('.variant-hide-heading-'+geneIndex).each(function(item) {&#xd;
-          item.style.display = 'table-row';&#xd;
-        });&#xd;
-      }&#xd;
-    },&#xd;
+    handleGeneRowDeleted : function () {&#xd;
+      //update all variants numbering&#xd;
+    }&#xd;
   });&#xd;
   return EditVariantData;&#xd;
 }(EditVariantData || {}));&#xd;
@@ -527,10 +577,245 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
 })</code>
     </property>
     <property>
-      <name/>
+      <name></name>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.TabelarDataMacros</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>bd385f16-a9b7-4b89-82c3-977e6f2f179b</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var ExtraGeneVariantData = (function (ExtraGeneVariantData) {&#xd;
+  var tools = ExtraGeneVariantData.tools = ExtraGeneVariantData.tools || {};&#xd;
+  tools.Editor = Class.create({&#xd;
+    initialize : function () {&#xd;
+      $$('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));&#xd;
+      $$('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));&#xd;
+      $$('.add-variant-button a.add-variant').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));&#xd;
+    },&#xd;
+    ajaxDeleteGeneData : function (event) {&#xd;
+      event.stop();&#xd;
+      var deleteTrigger = event.element();&#xd;
+      var className = deleteTrigger.up().className;&#xd;
+      var geneNumber = parseInt(className.substring(className.indexOf('-')+1));&#xd;
+      var geneSymbol = $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene"]')[0].value;&#xd;
+      deleteTrigger.href.concat();&#xd;
+      Event.fire( $('.gene-table'), 'generow:deleted', {'element' : dataRow});&#xd;
+    },&#xd;
+    ajaxDeleteVariantData : function (event) {&#xd;
+      event.stop();&#xd;
+      var deleteTrigger = event.element();&#xd;
+      if (deleteTrigger.disabled) {&#xd;
+         return;&#xd;
+      }&#xd;
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {&#xd;
+        onCreate : function() {&#xd;
+          deleteTrigger.disabled = true&#xd;
+        },&#xd;
+        onSuccess : function() {&#xd;
+          var dataRow = deleteTrigger.up('tr:not(.head-group)');&#xd;
+          if (dataRow) {&#xd;
+            var className = dataRow.previous().className;&#xd;
+            var geneNumber = parseInt(className.substring(className.indexOf('-')+1));&#xd;
+            var geneIndex = geneNumber - 1;&#xd;
+            //we are deleting the only variant in the gene: remove variant table header, &#xd;
+            //  unlock the genesymbol input field&#xd;
+            if (dataRow.previous().hasClassName('variant-title-row') &amp;&amp; dataRow.next().hasClassName('variant-footer')) {&#xd;
+              dataRow.previous().remove();&#xd;
+              $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene"]')[0].toggleClassName('v-collapsed', false);&#xd;
+              $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene-input-label"]')[0].toggleClassName('v-collapsed', true);&#xd;
+            //we are removing variant from the middle of the table&#xd;
+            } else if (!dataRow.next().hasClassName('variant-footer')){&#xd;
+              var i = 1;&#xd;
+              $$('.variant-hide-heading-'+geneNumber+' .variant-row-count').each(function(item) {&#xd;
+                item.update(geneNumber + (i++));&#xd;
+              });&#xd;
+            }&#xd;
+            dataRow.remove();&#xd;
+          }&#xd;
+        },&#xd;
+        onComplete : function() {&#xd;
+          deleteTrigger.disabled = false;&#xd;
+        }&#xd;
+      },&#xd;
+      {&#xd;
+         confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"&#xd;
+      });&#xd;
+    },&#xd;
+    ajaxAddVariantData : function (event) {&#xd;
+      event.stop();&#xd;
+      var addTrigger = event.element();&#xd;
+      if (addTrigger.disabled) &#xd;
+         return;&#xd;
+      var classname = '';&#xd;
+      try {&#xd;
+        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];&#xd;
+      } catch (err) {&#xd;
+         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');&#xd;
+         return;&#xd;
+      }&#xd;
+      &#xd;
+      var className = addTrigger.up('td.variant').className;&#xd;
+      var geneNumber = className.substring(className.lastIndexOf('-')+1);&#xd;
+      var geneSymbol = $$('.gene.col-label.gene-' + geneNumber)[0].firstChild.value;&#xd;
+      &#xd;
+      //prevent creating variant for an empty gene symbol&#xd;
+      if (geneSymbol == '')&#xd;
+        return;&#xd;
+        &#xd;
+      //lock the genesymbol input field&#xd;
+      $$('.gene.col-label.gene-' + geneNumber)[0].toggleClassName('v-collapsed', true);&#xd;
+      $$('.gene.col-label.gene-' + geneNumber + '.gene-input-label')[0].toggleClassName('v-collapsed', false);&#xd;
+      &#xd;
+      //get genesymbol if nothing in the add variant button href &#xd;
+      var linkGeneSymbol = /genesymbol=([^&amp;]+)/.exec(addTrigger.href)[1];&#xd;
+      if (linkGeneSymbol == '')&#xd;
+        linkGeneSymbol = geneSymbol;&#xd;
+      &#xd;
+      var variantFooter = addTrigger.up('tr.variant-footer');&#xd;
+      if (!variantFooter) {&#xd;
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');&#xd;
+      }&#xd;
+      &#xd;
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;' + classname + '_genesymbol=' + linkGeneSymbol )).replace(/#.*/m, '');&#xd;
+      new Ajax.Request(url, {&#xd;
+        onCreate : function() {&#xd;
+          addTrigger.disabled = true&#xd;
+          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');&#xd;
+        },&#xd;
+        onSuccess : function (response) {&#xd;
+          addTrigger._x_notif.hide();&#xd;
+          var newRow = new Element('tr', {'class' : 'new'});&#xd;
+          variantFooter.insert({before : newRow});&#xd;
+          &#xd;
+          var idx = null;//???.select('.???').size() + 1;&#xd;
+          newRow.insert(new Element('th', {'class' : 'row-count'}).update(idx));&#xd;
+          &#xd;
+          newRow.insert(response.responseText);&#xd;
+          newRow.down('a.delete').observe('click', this.ajaxDeleteVariantData.bindAsEventListener(this));&#xd;
+          &#xd;
+          //???bind all other stuff???&#xd;
+          &#xd;
+          //????Event.fire(dataTable, 'extradata:added', {'element' : newRow});&#xd;
+          Event.fire(document, 'xwiki:dom:updated', {'elements' : [newRow]});&#xd;
+        }.bind(this),&#xd;
+        onFailure : function(response) {&#xd;
+          var failureReason = response.statusText;&#xd;
+          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {&#xd;
+            failureReason = 'Server not responding';&#xd;
+          }&#xd;
+          if (addTrigger._x_notif) {&#xd;
+            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));&#xd;
+          } else {&#xd;
+            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");&#xd;
+          }&#xd;
+        },&#xd;
+        on1223 : function(response) {&#xd;
+          response.request.options.onSuccess(response);&#xd;
+        },&#xd;
+        on0 : function(response) {&#xd;
+          response.request.options.onFailure(response);&#xd;
+        },&#xd;
+        onComplete : function() {&#xd;
+          addTrigger.disabled = false&#xd;
+        }&#xd;
+      });&#xd;
+    },&#xd;
+    &#xd;
+  });&#xd;
+  return ExtraGeneVariantData;&#xd;
+}(ExtraGeneVariantData || {}));&#xd;
+&#xd;
+document.observe('xwiki:dom:loaded', function() {&#xd;
+  new ExtraGeneVariantData.tools.Editor();&#xd;
+})</code>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse>1</parse>
     </property>
     <property>
       <use>currentPage</use>
@@ -632,122 +917,125 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
       <cache>long</cache>
     </property>
     <property>
-      <code>#template('colorThemeInit.vm')
-table.extradata-list {
-    width: 100%;
-    vertical-align: top;
-}
-.extradata-list td, .extradata-list th {
-    border: 1px solid $theme.backgroundSecondaryColor;
-    border-left: 1px solid $theme.pageContentBackgroundColor;
-    border-right: 1px solid $theme.pageContentBackgroundColor;
-}
-.extradata-list th.col-label {
-    text-align: center;
-    font-weight: normal;
-    font-variant: small-caps;
-}
-.extradata th.col-label, .viewbody td {
-    text-align: center;
-}
-.viewbody td.comments, .editbody th.comments {
-    border-right: 0 none;
-}
-.extradata-list th.row-count {
-    background: transparent;
-}
-.extradata-list th.row-count,
-.extradata-list td.start,
-.extradata-list td.end {
-    text-align: left;
-}
-.extradata-list td.start,
-.extradata-list td.end,
-.extradata-list td.band {
-    min-width: 6em;
-}
-.extradata-list th.comments {
-    min-width: 20em;
-}
-.extradata-list .xwiki-form-listclass {
-    display: block;
-    white-space: nowrap;
-}
-.extradata-list th.actions {
-  width: 24px;
-}
-.extradata-list th.actions .buttonwrapper {
-    display: block;
-    height: 2.3em;
-    position: relative;
-    margin: 0;
-}
-.extradata-list th.actions a.delete {
-  background-image: url("$xwiki.getSkinFile('icons/silk/cross.png')");
-}
-.extradata-list th.actions .add-data-button {
-    position: absolute;
-    right: 0;
-}
-.list-actions {
-  position: relative;
-  width: 50%;
-}
-.list-actions .buttonwrapper {
-  text-align: left;
-  margin: 0 !important;
-}
-table.withLabel td, table.withLabel th {
-  border: 0 none;
-}
-table.withLabel tr:first-child th {
-  display: none;
-}
-
-.extradata-list .file {
-  width: 160px;
-  max-width: 160px;
-}
-.extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {
-  display: none;
-}
-.extradata-list .file .attachment-list .attachment-item.selected {
-  display: block;
-  width: 100%;
-}
-.extradata-list .file .attachment-list .attachment-item.image {
-  width: 150px !important;
-}
-.extradata-list .file .attachment-list .attachment-item.selected label {
-  padding: 3px 0 3px 20px;
-}
-.extradata-list .file .attachment-list .attachment-item.image label {
-  padding: 0 !important;
-}
-.extradata-list .file .attachment-list .attachment-item .attachment-preview {
-    width: 140px;
-}
-.extradata-list .file p img {
-  max-width: 480px !important;
-  max-height: 480px !important;
-}
-.extradata-list .file .attachment-list .attachment-item .view {
-  background-color: $theme.pageContentBackgroundColor;
-  bottom: 0;
-  padding: 5px;
-}
-.variant-info .extradata-list td {
-  text-align: left;
-}
-.variant-info .extradata-list td.chr {
-  text-align: center;
+      <code>#template('colorThemeInit.vm')&#xd;
+table.extradata-list {&#xd;
+    width: 100%;&#xd;
+    vertical-align: top;&#xd;
+}&#xd;
+.extradata-list td, .extradata-list th {&#xd;
+    border: 1px solid $theme.backgroundSecondaryColor;&#xd;
+    border-left: 1px solid $theme.pageContentBackgroundColor;&#xd;
+    border-right: 1px solid $theme.pageContentBackgroundColor;&#xd;
+}&#xd;
+.extradata-list th.col-label {&#xd;
+    text-align: center;&#xd;
+    font-weight: normal;&#xd;
+    font-variant: small-caps;&#xd;
+}&#xd;
+.extradata th.col-label, .viewbody td {&#xd;
+    text-align: center;&#xd;
+}&#xd;
+.viewbody td.comments, .editbody th.comments {&#xd;
+    border-right: 0 none;&#xd;
+}&#xd;
+.extradata-list th.row-count {&#xd;
+    background: transparent;&#xd;
+}&#xd;
+.extradata-list th.row-count,&#xd;
+.extradata-list td.start,&#xd;
+.extradata-list td.end {&#xd;
+    text-align: left;&#xd;
+}&#xd;
+.extradata-list td.start,&#xd;
+.extradata-list td.end,&#xd;
+.extradata-list td.band {&#xd;
+    min-width: 6em;&#xd;
+}&#xd;
+.extradata-list th.comments {&#xd;
+    min-width: 20em;&#xd;
+}&#xd;
+.extradata-list .xwiki-form-listclass {&#xd;
+    display: block;&#xd;
+    white-space: nowrap;&#xd;
+}&#xd;
+.extradata-list th.actions {&#xd;
+  width: 24px;&#xd;
+}&#xd;
+.extradata-list th.actions .buttonwrapper {&#xd;
+    display: block;&#xd;
+    height: 2.3em;&#xd;
+    position: relative;&#xd;
+    margin: 0;&#xd;
+}&#xd;
+.extradata-list th.actions a.delete {&#xd;
+  background-image: url("$xwiki.getSkinFile('icons/silk/cross.png')");&#xd;
+}&#xd;
+.extradata-list th.actions .add-data-button {&#xd;
+    position: absolute;&#xd;
+    right: 0;&#xd;
+}&#xd;
+.list-actions {&#xd;
+  position: relative;&#xd;
+  width: 50%;&#xd;
+}&#xd;
+.list-actions .buttonwrapper {&#xd;
+  text-align: left;&#xd;
+  margin: 0 !important;&#xd;
+}&#xd;
+table.withLabel td, table.withLabel th {&#xd;
+  border: 0 none;&#xd;
+}&#xd;
+table.withLabel tr:first-child th {&#xd;
+  display: none;&#xd;
+}&#xd;
+&#xd;
+.extradata-list .file {&#xd;
+  width: 160px;&#xd;
+  max-width: 160px;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {&#xd;
+  display: none;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item.selected {&#xd;
+  display: block;&#xd;
+  width: 100%;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item.image {&#xd;
+  width: 150px !important;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item.selected label {&#xd;
+  padding: 3px 0 3px 20px;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item.image label {&#xd;
+  padding: 0 !important;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item .attachment-preview {&#xd;
+    width: 140px;&#xd;
+}&#xd;
+.extradata-list .file p img {&#xd;
+  max-width: 480px !important;&#xd;
+  max-height: 480px !important;&#xd;
+}&#xd;
+.extradata-list .file .attachment-list .attachment-item .view {&#xd;
+  background-color: $theme.pageContentBackgroundColor;&#xd;
+  bottom: 0;&#xd;
+  padding: 5px;&#xd;
+}&#xd;
+.variant-info .extradata-list td {&#xd;
+  text-align: left;&#xd;
+}&#xd;
+.variant-info .extradata-list td.chr {&#xd;
+  text-align: center;&#xd;
+}&#xd;
+.v-collapsed {&#xd;
+  display: none !important;&#xd;
 }</code>
     </property>
     <property>
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name/>
+      <name></name>
     </property>
     <property>
       <parse>1</parse>
