@@ -63,21 +63,18 @@ public class PermissionsChangeListener extends AbstractEventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument xwikiDoc = (XWikiDocument) source;
-        String familyId = xwikiDoc.getDocumentReference().getName();
-        Family family = this.familyRepository.getFamilyById(familyId);
+        String patientId = xwikiDoc.getDocumentReference().getName();
+        Patient patient = this.patientRepository.getPatientById(patientId);
+        Family family = this.familyRepository.getFamilyForPatient(patient);
 
-        // TODO what should be done if it's a patientId?
         if (family == null) {
             return;
         }
 
         if (event instanceof PatientDeletedEvent) {
-            String patientId = (String) data;
-            Patient p = this.patientRepository.getPatientById(patientId);
-
-            family.removeMember(p);
-
-            // TODO delete family if no members left
+            family.removeMember(patient);
+            
+            // TODO delete family if no members left?
         } else {
             // if member was deleted (true branch of if), this is done in removing member.
             family.updatePermissions();
