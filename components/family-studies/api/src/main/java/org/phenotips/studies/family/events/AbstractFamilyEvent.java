@@ -62,9 +62,10 @@ public abstract class AbstractFamilyEvent implements FamilyEvent
             if (!StringUtils.equals(otherFamilyEvent.getEventType(), this.eventType)) {
                 return false;
             }
-            return this.family == null || this.family.getDocumentReference() == null
-                || (otherFamilyEvent.getFamily() != null && this.family.getDocumentReference().equals(
-                    otherFamilyEvent.getFamily().getDocumentReference()));
+            if (this.family == null) {
+                return false;
+            }
+            return this.family.equals(otherFamilyEvent.getFamily());
         }
         return false;
     }
