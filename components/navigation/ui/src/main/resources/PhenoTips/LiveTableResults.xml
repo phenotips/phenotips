@@ -412,7 +412,7 @@
   #end
   ##
   ## Filter values
-  #if("$!filterValue" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
+  #if("$!stringtool.join($filterValueList, '')" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
     #set($discard = $tablelist.add($tableAlias))
     #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
