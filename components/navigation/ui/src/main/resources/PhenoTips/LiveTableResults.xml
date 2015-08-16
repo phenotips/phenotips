@@ -375,7 +375,12 @@
  #set ($colname = $stringtool.substringBefore($colname, '/'))
  #if ($processedColumns.add($colname))
   #set ($filterValue = "$!{request.get($colname)}")
-  #set ($filterValueList = $request.getParameterValues($colname))
+  #set ($filterValueList = [])
+  #foreach ($i in $request.getParameterValues($colname))
+    #if ("$!i" != '')
+      #set ($discard = $filterValueList.add($i))
+    #end
+  #end
   #set ($filterValueLowLimit = "$!{request.get(""${colname}/after"")}")
   #set ($filterValueHighLimit = "$!{request.get(""${colname}/before"")}")
   #set($tableAlias = $colname)
@@ -488,7 +493,7 @@
           #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
             #set ($joinOperator = 'AND')
           #end
-          #foreach ($filterValue in $request.getParameterValues($colname))
+          #foreach ($filterValue in $filterValueList)
             #if ($foreach.isFirst())
               #set ($fromSql = "${fromSql}, DBStringListProperty ${safe_tableAlias}")
               #set ($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
@@ -516,7 +521,7 @@
         #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
           #set ($joinOperator = 'AND')
         #end
-        #foreach ($filterValue in $request.getParameterValues($colname))
+        #foreach ($filterValue in $filterValueList)
           #if ($foreach.isFirst())
             #set ($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
             #set ($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
