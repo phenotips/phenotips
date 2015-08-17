@@ -73,7 +73,7 @@ public class PermissionsChangeListener extends AbstractEventListener
 
         if (event instanceof PatientDeletedEvent) {
             family.removeMember(patient);
-            
+
             // TODO delete family if no members left?
         } else {
             // if member was deleted (true branch of if), this is done in removing member.
