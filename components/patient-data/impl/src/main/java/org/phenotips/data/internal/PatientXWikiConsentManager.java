@@ -131,9 +131,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         String id = xwikiConsent.getStringValue("id");
         String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
-        Integer level = xwikiConsent.getIntValue("level");
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
-        return new DefaultConsent(id, description, level, required);
+        return new DefaultConsent(id, description, required);
     }
 
     @Override public List<Consent> loadConsentsFromPatient(String patientId)

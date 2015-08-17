@@ -15,16 +15,14 @@ public class DefaultConsent implements Consent
 {
     private String id;
     private String description;
-    private int level;
     private boolean required;
 
     private ConsentStatus status = ConsentStatus.NOT_SET;
 
-    DefaultConsent(String id, String description, int level, boolean required)
+    DefaultConsent(String id, String description, boolean required)
     {
         this.id = id;
         this.description = description;
-        this.level = level;
         this.required = required;
     }
 
@@ -53,11 +51,6 @@ public class DefaultConsent implements Consent
         return this.required;
     }
 
-    @Override public int getLevel()
-    {
-        return level;
-    }
-
     @Override public JSON toJson()
     {
         JSONObject json = new JSONObject();
@@ -75,7 +68,7 @@ public class DefaultConsent implements Consent
 
     public static Consent copy(Consent from)
     {
-        Consent copy = new DefaultConsent(from.getID(), from.getDescription(), from.getLevel(), from.isRequired());
+        Consent copy = new DefaultConsent(from.getID(), from.getDescription(), from.isRequired());
         copy.setStatus(from.getStatus());
         return copy;
     }
