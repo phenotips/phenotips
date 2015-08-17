@@ -635,7 +635,7 @@ if (newFamilyTrigger) {
     <property>
       <content>{{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
-#set ($family = $services.families.getFamilyForPatient($doc.getDocument().getName()))
+#set ($family = $services.families.getFamilyForPatient($doc.getDocumentReference().getName()))
 #set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
 #if ($xcontext.action != 'view' || $hasFamily)
 ##
@@ -656,7 +656,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
     &lt;div class="new-family-wrapper #if($hasFamily)hidden#end"&gt;##
         &lt;div class="buttonwrapper"&gt;##
             &lt;a id="new-family" class="button family-trigger"
-               href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=${escapetool.url($doc.getName())}")"&gt;
+               href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=${escapetool.url($doc.getDocumentReference().getName())}")"&gt;
               $services.localization.render('phenotips.UIXField.family_membership.create')
             &lt;/a&gt;##
         &lt;/div&gt;##
@@ -677,7 +677,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
       &lt;/a&gt;##
     &lt;/div&gt;
     &lt;input id="manageFamilyMemberUrl" type="hidden" value="$xwiki.getURL('PhenoTips.AddRemovePatientToFamily', 'get',
-      "outputSyntax=plain&amp;patientId=${escapetool.url($doc.getName())}&amp;familyId=")"&gt;
+      "outputSyntax=plain&amp;patientId=${escapetool.url($doc.getDocumentReference().getName())}&amp;familyId=")"&gt;
   #end
 {{/html}}##
 )))##
