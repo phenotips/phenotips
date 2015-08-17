@@ -91,9 +91,10 @@
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </age_of_onset>
     <comments>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>---</editor>
+      <editor>PureText</editor>
       <name>comments</name>
       <number>9</number>
       <picker>0</picker>

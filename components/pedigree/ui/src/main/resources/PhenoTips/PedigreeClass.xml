@@ -50,6 +50,7 @@
     <nameField/>
     <validationScript/>
     <data>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>PureText</editor>
@@ -65,9 +66,10 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </data>
     <description>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>---</editor>
+      <editor>PureText</editor>
       <name>description</name>
       <number>3</number>
       <picker>0</picker>
@@ -80,6 +82,7 @@
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </description>
     <image>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>PureText</editor>

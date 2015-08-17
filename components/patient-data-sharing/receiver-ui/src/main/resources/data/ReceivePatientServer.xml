@@ -78,9 +78,10 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </ip>
     <description>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>---</editor>
+      <editor>PureText</editor>
       <name>description</name>
       <number>4</number>
       <picker>0</picker>

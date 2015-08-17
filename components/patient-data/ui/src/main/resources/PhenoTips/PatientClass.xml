@@ -260,6 +260,7 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </date_of_death_entered>
     <diagnosis_notes>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
@@ -456,6 +457,7 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </external_id>
     <family_history>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
@@ -681,6 +683,7 @@
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </identifier>
     <indication_for_referral>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>PureText</editor>
@@ -758,6 +761,7 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </maternal_ethnicity>
     <medical_history>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
@@ -951,6 +955,7 @@
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </phenotype>
     <prenatal_development>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
@@ -1073,6 +1078,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </solved__gene_id>
     <solved__notes>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>PureText</editor>
