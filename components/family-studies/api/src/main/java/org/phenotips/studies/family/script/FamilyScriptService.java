@@ -19,6 +19,7 @@ package org.phenotips.studies.family.script;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Pedigree;
@@ -30,6 +31,7 @@ import org.phenotips.studies.family.response.StatusResponse;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.security.authorization.Right;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,6 +70,9 @@ public class FamilyScriptService implements ScriptService
     @Inject
     private XWikiFamilyExport familyExport;
 
+    @Inject
+    private AuthorizationService authorizationService;
+
     /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
@@ -84,9 +89,18 @@ public class FamilyScriptService implements ScriptService
 
         Family xwikiFamily = this.familyRepository.getFamilyForPatient(patient);
         if (xwikiFamily == null) {
+            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+                return null;
+            }
+
             this.logger.debug("No family for patient [{}]. Creating new.", patientId);
             xwikiFamily = this.familyRepository.createFamily();
             xwikiFamily.addMember(patient);
+        } else {
+            if (!this.authorizationService.hasAccess(Right.VIEW, xwikiFamily.getDocumentReference())
+                || !this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+                return null;
+            }
         }
 
         return xwikiFamily.getDocumentReference();
@@ -116,6 +130,10 @@ public class FamilyScriptService implements ScriptService
         if (family == null) {
             return null;
         }
+        if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())
+            || !this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+            return null;
+        }
         return family.getDocumentReference();
     }
 
@@ -132,6 +150,9 @@ public class FamilyScriptService implements ScriptService
 
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
+            if (!this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+                return null;
+            }
             // id belonged to a patient. Get patient's family
             family = this.familyRepository.getFamilyForPatient(patient);
         } else {
@@ -142,6 +163,9 @@ public class FamilyScriptService implements ScriptService
         if (family == null) {
             this.logger.debug("Can't get family info for [{}].", id);
             return new JSONObject(true);
+        }
+        if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())) {
+            return null;
         }
 
         return family.toJSON();
@@ -159,12 +183,18 @@ public class FamilyScriptService implements ScriptService
         Family family = null;
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
+            if (!this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+                return null;
+            }
             family = this.familyRepository.getFamilyForPatient(patient);
         } else {
             family = this.familyRepository.getFamilyById(id);
         }
 
         if (family != null) {
+            if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())) {
+                return null;
+            }
             Pedigree pedigree = family.getPedigree();
 
             if (pedigree != null && !pedigree.isEmpty()) {
@@ -189,7 +219,7 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON canPatientBeLinkedToProband(String probandId, String patientId)
     {
-        JSONResponse response = new JSONResponse();
+        JSONResponse response = new JSONResponse(StatusResponse.OK);
 
         Patient proband = this.patientRepository.getPatientById(probandId);
         if (proband == null) {
@@ -198,22 +228,14 @@ public class FamilyScriptService implements ScriptService
             return response.asVerification();
         }
 
-        Patient patient = this.patientRepository.getPatientById(patientId);
-        if (patient == null) {
-            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
-            response.setMessage(patientId);
-            return response.asVerification();
-        }
-
         Family family = this.familyRepository.getFamilyForPatient(proband);
         if (family == null) {
             response.setStatusResponse(StatusResponse.PROBAND_HAS_NO_FAMILY);
             response.setMessage(patientId, probandId);
-            response.asVerification();
+            return response.asVerification();
         }
 
-        response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
-        return response.asVerification();
+        return this.canPatientBeAddedToFamily(family.getId(), patientId);
     }
 
     /**
@@ -227,23 +249,33 @@ public class FamilyScriptService implements ScriptService
      */
     public JSON canPatientBeAddedToFamily(String familyId, String patientId)
     {
-        JSONResponse response = new JSONResponse();
+        JSONResponse response = new JSONResponse(StatusResponse.OK);
         Family family = this.familyRepository.getFamilyById(familyId);
         Patient patient = this.patientRepository.getPatientById(patientId);
 
         if (family == null) {
-            return response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID).
-                setMessage(patientId).
-                asVerification();
+            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
         }
 
-        if (patient == null) {
-            return response.setStatusResponse(StatusResponse.INVALID_FAMILY_ID).
-                setMessage(familyId).
-                asVerification();
+        if (response.isValid() && patient == null) {
+            response.setStatusResponse(StatusResponse.INVALID_FAMILY_ID);
         }
 
-        response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+        if (response.isValid()
+            && !this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
+            response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
+        }
+
+        if (response.isValid()
+            && !this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+            response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
+        }
+
+        if (response.isValid()) {
+            response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+        }
+
+        response.setMessage(patientId, familyId);
         return response.asVerification();
     }
 
@@ -278,10 +310,16 @@ public class FamilyScriptService implements ScriptService
             this.logger.error(COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE, patientId);
             return false;
         }
+        if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+            return false;
+        }
 
         Family family = this.familyRepository.getFamilyForPatient(patient);
         if (family == null) {
             this.logger.error("Could not retrieve family for patient [{}]. Cannot remove patient.", patientId);
+            return false;
+        }
+        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
             return false;
         }
 
@@ -303,6 +341,7 @@ public class FamilyScriptService implements ScriptService
             this.logger.error(COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE, patientId);
             return false;
         }
+
         Family patientsfamily = this.familyRepository.getFamilyForPatient(patient);
         if (patientsfamily != null) {
             this.logger.info("Patient [{}] is already associated with family [{}].", patientId, patientsfamily.getId());
@@ -314,6 +353,12 @@ public class FamilyScriptService implements ScriptService
             this.logger.error("Could not retrieve family [{}]", familyId);
             return false;
         }
+
+        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())
+            || !this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+            return false;
+        }
+
         family.addMember(patient);
         return true;
     }
