@@ -131,8 +131,17 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         String id = xwikiConsent.getStringValue("id");
         String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
+        /* removing divs */
+        description = cleanDescription(description);
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
         return new DefaultConsent(id, description, required);
+    }
+
+    private static String cleanDescription(String toClean)
+    {
+        String noDiv = toClean.replace("<div>", "").replace("</div>", "");
+        String noHtml = noDiv.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        return noHtml;
     }
 
     @Override public List<Consent> loadConsentsFromPatient(String patientId)
@@ -277,7 +286,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return holder;
     }
 
-    private List<String> convertToIds(List<Consent> consents)
+    private static List<String> convertToIds(List<Consent> consents)
     {
         List<String> ids = new LinkedList<>();
         for (Consent consent : consents) {
