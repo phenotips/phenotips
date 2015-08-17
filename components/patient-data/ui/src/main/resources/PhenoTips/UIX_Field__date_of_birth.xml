@@ -131,7 +131,7 @@ required=
 order=5
 fields=date_of_birth
 contains_PII=true
-privacy_level=1</parameters>
+required_consents=real</parameters>
     </property>
     <property>
       <scope>wiki</scope>

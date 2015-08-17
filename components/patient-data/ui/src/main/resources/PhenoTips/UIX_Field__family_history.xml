@@ -126,7 +126,7 @@ enabled=true
 required=
 order=6
 fields=family_history
-privacy_level=3</parameters>
+required_consents=share_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

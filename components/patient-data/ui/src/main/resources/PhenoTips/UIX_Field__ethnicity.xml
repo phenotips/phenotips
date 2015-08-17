@@ -134,7 +134,7 @@ enabled=true
 required=
 order=4
 fields=maternal_ethnicity,paternal_ethnicity
-privacy_level=3</parameters>
+required_consents=share_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

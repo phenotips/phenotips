@@ -143,7 +143,7 @@ enabled=true
 required=
 order=4
 fields=
-privacy_level=1</parameters>
+required_consents=real</parameters>
     </property>
     <property>
       <scope>wiki</scope>
