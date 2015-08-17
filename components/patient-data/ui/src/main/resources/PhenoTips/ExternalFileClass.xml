@@ -48,9 +48,10 @@
     <nameField/>
     <validationScript/>
     <comments>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>---</editor>
+      <editor>PureText</editor>
       <name>comments</name>
       <number>2</number>
       <picker>0</picker>

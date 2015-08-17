@@ -48,6 +48,7 @@
     <nameField/>
     <validationScript/>
     <description>
+      <contenttype>PureText</contenttype>
       <disabled>0</disabled>
       <name>description</name>
       <number>1</number>
