@@ -110,7 +110,7 @@
     <property>
       <content>{{velocity}}
 #if ($xcontext.action == 'edit')
-  {{warning}}$services.localization.render('phenotips.UIXField.requiredMeasurements.warning'){{/warning}}
+  {{info}}$services.localization.render('phenotips.UIXField.requiredMeasurements.warning'){{/info}}
 #end
 {{/velocity}}</content>
     </property>
