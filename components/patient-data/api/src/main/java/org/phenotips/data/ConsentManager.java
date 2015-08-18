@@ -13,6 +13,8 @@ import net.sf.json.JSON;
 @Role
 public interface ConsentManager
 {
+    List<Consent> getSystemConsents();
+
     List<Consent> loadConsentsFromPatient(String patientId);
 
     List<Consent> loadConsentsFromPatient(Patient patient);

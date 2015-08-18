@@ -588,38 +588,40 @@
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.jsx.use('PhenoTips.PatientConsent')
-$xwiki.ssx.use('PhenoTips.PatientConsent')
-(% id='consents-block' class='$xcontext.action' %)(((
-  {{html clean='false' wiki='false'}}&lt;div class='patient-id hidden'&gt;${doc.getName()}&lt;/div&gt;{{/html}}
-  (% class='view-title hidden' %)(((
-    ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
-  )))
-  (% class='view-title-none hidden' %)(((
-    {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
-  )))
-  (% class='error hidden' %)(((
-    {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
-  )))
-  {{html wiki='false' clean='false'}}
-  &lt;li class='consent-form-bullet hidden'&gt;
-    #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
-    #set ($formUrl = $consentDoc.getAttachmentURL('PhenomeCentral_Consent.pdf'))
-    $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"])
-  &lt;/li&gt;
-  {{/html}}
-  (% class='list-block' %)(((
-    
-  )))
+#if ($services.consentauthorizer.consentsGloballyEnabled())
+  $xwiki.jsx.use('PhenoTips.PatientConsent')
+  $xwiki.ssx.use('PhenoTips.PatientConsent')
+  (% id='consents-block' class='$xcontext.action' %)(((
+    {{html clean='false' wiki='false'}}&lt;div class='patient-id hidden'&gt;${doc.getName()}&lt;/div&gt;{{/html}}
+    (% class='view-title hidden' %)(((
+      ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
+    )))
+    (% class='view-title-none hidden' %)(((
+      {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
+    )))
+    (% class='error hidden' %)(((
+      {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
+    )))
+    {{html wiki='false' clean='false'}}
+    &lt;li class='consent-form-bullet hidden'&gt;
+      #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
+      #set ($formUrl = $consentDoc.getAttachmentURL('PhenomeCentral_Consent.pdf'))
+      $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"])
+    &lt;/li&gt;
+    {{/html}}
+    (% class='list-block' %)(((
 
-  #if ($xcontext.action == 'edit')
-  {{html clean='false' wiki='false'}}##
-  &lt;span class="buttonwrapper" id="patient-consent-continue"&gt;##
-      &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_continue_btn')&lt;/a&gt;##
-      &lt;/span&gt;##
-  {{/html}}##
-  #end
-)))
+    )))
+
+    #if ($xcontext.action == 'edit')
+    {{html clean='false' wiki='false'}}##
+    &lt;span class="buttonwrapper" id="patient-consent-continue"&gt;##
+        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_continue_btn')&lt;/a&gt;##
+        &lt;/span&gt;##
+    {{/html}}##
+    #end
+  )))
+#end
 {{/velocity}}</content>
     </property>
     <property>

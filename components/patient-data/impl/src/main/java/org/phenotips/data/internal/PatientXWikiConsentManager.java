@@ -102,46 +102,9 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         this.refreshSystemConsents();
     }
 
-    private List<Consent> loadConsentsFromSystem()
+    @Override public List<Consent> getSystemConsents()
     {
-        List<Consent> consents = new LinkedList<>();
-        try {
-            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
-            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
-            XWikiDocument configDoc = (XWikiDocument) configDocBridge;
-            List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
-            for (BaseObject consentObject : consentObjects) {
-                consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
-            }
-        } catch (Exception ex) {
-            /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
-            logger.error("Could not load the configurations for patient consents. {}", ex.getMessage());
-        }
-        return consents;
-    }
-
-    // fixme. must be run on every save of XWikiPreferences. There is no UI yet, however if there is to be one, that
-    // must be a implemented.
-    private void refreshSystemConsents()
-    {
-        this.systemConsents = loadConsentsFromSystem();
-    }
-
-    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
-    {
-        String id = xwikiConsent.getStringValue("id");
-        String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
-        /* removing divs */
-        description = cleanDescription(description);
-        boolean required = intToBool(xwikiConsent.getIntValue("required"));
-        return new DefaultConsent(id, description, required);
-    }
-
-    private static String cleanDescription(String toClean)
-    {
-        String noDiv = toClean.replace("<div>", "").replace("</div>", "");
-        String noHtml = noDiv.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
-        return noHtml;
+        return systemConsents;
     }
 
     @Override public List<Consent> loadConsentsFromPatient(String patientId)
@@ -226,6 +189,48 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return null;
     }
 
+    private List<Consent> loadConsentsFromSystem()
+    {
+        List<Consent> consents = new LinkedList<>();
+        try {
+            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
+            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
+            XWikiDocument configDoc = (XWikiDocument) configDocBridge;
+            List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
+            for (BaseObject consentObject : consentObjects) {
+                consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
+            }
+        } catch (Exception ex) {
+            /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
+            logger.error("Could not load the configurations for patient consents. {}", ex.getMessage());
+        }
+        return consents;
+    }
+
+    // fixme. must be run on every save of XWikiPreferences. There is no UI yet, however if there is to be one, that
+    // must be a implemented.
+    private void refreshSystemConsents()
+    {
+        this.systemConsents = loadConsentsFromSystem();
+    }
+
+    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
+    {
+        String id = xwikiConsent.getStringValue("id");
+        String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
+        /* removing divs */
+        description = cleanDescription(description);
+        boolean required = intToBool(xwikiConsent.getIntValue("required"));
+        return new DefaultConsent(id, description, required);
+    }
+
+    private static String cleanDescription(String toClean)
+    {
+        String noDiv = toClean.replace("<div>", "").replace("</div>", "");
+        String noHtml = noDiv.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        return noHtml;
+    }
+
     /**
      *
      * @param patient
@@ -266,16 +271,6 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             this.contextProvider.get());
     }
 
-    private boolean isValidId(String consentId)
-    {
-        for (Consent consent : this.systemConsents) {
-            if (StringUtils.equals(consentId, consent.getID())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** Either gets the existing consents holder object, or creates a new one. */
     private BaseObject getXWikiConsentHolder(XWikiDocument doc) throws XWikiException
     {
@@ -284,6 +279,17 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             holder = doc.newXObject(this.consentIdsHolderReference, contextProvider.get());
         }
         return holder;
+    }
+
+    /** Checks if passed in consent id is actually configured (in the system). */
+    private boolean isValidId(String consentId)
+    {
+        for (Consent consent : this.systemConsents) {
+            if (StringUtils.equals(consentId, consent.getID())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<String> convertToIds(List<Consent> consents)
