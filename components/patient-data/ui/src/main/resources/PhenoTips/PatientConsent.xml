@@ -265,18 +265,27 @@
     <property>
       <code>require(['jquery', 'xwiki-events-bridge'], function ($)
 {
+  var cache = {
+    consentsBlock: null
+  };
   $(document).ready(function ()
   {
     var consentsBlock = $('#consents-block');
+    cache.consentsBlock = consentsBlock;
     var action = consentsBlock.attr("class");
     var patientId = consentsBlock.children('.patient-id').html();
     var baseUrl = "/rest/patients/" + patientId + "/consents/";
+
     $.get(baseUrl, function (consents)
     {
       displayConsents(consentsBlock, action)(consents);
-      attachManagingListeners(consentsBlock, baseUrl);
+      insertInfo(consentsBlock, action);
+      attachManagingListeners(baseUrl);
     })
       .fail(displayError(consentsBlock))
+      .always(function() {
+        consentsBlock.show();
+      })
   });
 
   function displayConsents(consentsBlock, action)
@@ -300,12 +309,12 @@
     }
   }
 
-  function attachManagingListeners(consentsBlock, baseUrl)
+  function attachManagingListeners(baseUrl)
   {
     var listBlock = $(".list-block");
     listBlock.on("change", "li input", function(event) {
       var checkbox = $(event.target);
-      var rest = interactWithManagingRest(checkbox.attr("id"), baseUrl);
+      var rest = interactWithManagingRest(checkbox.attr("data-bind"), baseUrl);
       if (checkbox.is(":checked")) {
         rest("grant");
       } else {
@@ -317,7 +326,8 @@
   function interactWithManagingRest(consentId, baseUrl) {
     return function (action) {
       var url = baseUrl + action;
-      $.ajax(url, {data: consentId, dataType: "text", method: "PUT", contentType: "text/plain;charset=UTF-8"});
+      $.ajax(url, {data: consentId, dataType: "text", method: "PUT", contentType: "text/plain;charset=UTF-8"})
+        .fail(displayError(cache.consentsBlock));
     }
   }
 
@@ -327,7 +337,7 @@
     })
   }
 
-  /* Display functions */
+  /* Display util functions */
 
   function displayConsentDescription(consent)
   {
@@ -336,7 +346,9 @@
 
   function dispalyGrantableConsent(consent)
   {
-    var checkbox = $("&lt;input type='checkbox'&gt;").attr("id", consent.id);
+    var checkbox = $("&lt;input type='checkbox'&gt;")
+      .attr("id", consent.id + "-consent-checkbox")
+      .attr("data-bind", consent.id);
     if (consent.status == "yes") {
       checkbox.attr("checked", "checked");
     }
@@ -361,7 +373,139 @@
       errorBlock.removeClass("hidden");
     }
   }
+
+  /* Display hacks */
+  function insertInfo(consentsBlock, action)
+  {
+    if (action == "edit") {
+      var listBlock = consentsBlock.children(".list-block");
+      var info = consentsBlock.children(".consent-form-bullet");
+      var realBullet = listBlock.find("#real-consent-checkbox");
+      if (realBullet.length &gt; 0) {
+        realBullet.parent().after(info);
+        info.removeClass("hidden");
+      }
+    }
+  }
 });</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientConsent</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>74237dd7-2e8c-4cef-91de-4f6146bec23d</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#consents-block ul
+{
+  list-style-type: none;
+}
+#consents-block ul li
+{
+  margin-bottom: 0.5em;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
@@ -445,20 +589,25 @@
     <property>
       <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.PatientConsent')
+$xwiki.ssx.use('PhenoTips.PatientConsent')
 (% id='consents-block' class='$xcontext.action' %)(((
   {{html clean='false' wiki='false'}}&lt;div class='patient-id hidden'&gt;${doc.getName()}&lt;/div&gt;{{/html}}
-  ###
-  ## Translate!
-  ###
   (% class='view-title hidden' %)(((
-    ==== The following consents have been granted ====
+    ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
   )))
   (% class='view-title-none hidden' %)(((
-    {{warning}}No consents have been granted. Parts of the patient form might not be editable.{{/warning}}
+    {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
   )))
   (% class='error hidden' %)(((
-    {{error}}An error has occured. The list of consents, which the patient must grant, could not be displayed. Potentially, you will not be able to edit parts of the patient form. {{/error}}
+    {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
   )))
+  {{html wiki='false' clean='false'}}
+  &lt;li class='consent-form-bullet hidden'&gt;
+    #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
+    #set ($formUrl = $consentDoc.getAttachmentURL('PhenomeCentral_Consent.pdf'))
+    $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"])
+  &lt;/li&gt;
+  {{/html}}
   (% class='list-block' %)(((
     
   )))
@@ -466,7 +615,7 @@ $xwiki.jsx.use('PhenoTips.PatientConsent')
   #if ($xcontext.action == 'edit')
   {{html clean='false' wiki='false'}}##
   &lt;span class="buttonwrapper" id="patient-consent-continue"&gt;##
-      &lt;a class="button" href="#"&gt;Continue&lt;/a&gt;##
+      &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_continue_btn')&lt;/a&gt;##
       &lt;/span&gt;##
   {{/html}}##
   #end
@@ -480,7 +629,7 @@ $xwiki.jsx.use('PhenoTips.PatientConsent')
       <name>org.phenotips.patientSheet.consent</name>
     </property>
     <property>
-      <parameters>disabled=true</parameters>
+      <parameters/>
     </property>
     <property>
       <scope>wiki</scope>
