@@ -24,16 +24,16 @@
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
+  <creator>XWiki.Admin</creator>
   <creationDate>1401822202000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
-  <author>xwiki:XWiki.Admin</author>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822202000</date>
-  <contentUpdateDate>1401822202000</contentUpdateDate>
-  <version>1.1</version>
+  <author>XWiki.Admin</author>
+  <contentAuthor>XWiki.superadmin</contentAuthor>
+  <date>1439856150000</date>
+  <contentUpdateDate>1439846105000</contentUpdateDate>
+  <version>2.1</version>
   <title>$services.localization.render('phenotips.UIXField.genes')</title>
-  <comment/>
+  <comment>core.importer.saveDocumentComment</comment>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
@@ -62,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -107,10 +107,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -118,44 +118,56 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
-
-  var fetchGeneDetails = function(geneRefs, geneNames) {
-    if (!geneNames) {
-      geneNames = geneRefs.pluck('value');
-    }
-    var i = 0;
-    geneRefs.each(function (element) {
-      element._name = geneNames[i];
-      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
-      var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
-      if (element.next() &amp;&amp; element.next().className.indexOf('xHelpButton gene-info') > -1)
-        element.next().remove();
-      element.insert({after: infoTool});
-      ++i;
-    });
-  }
-
-  fetchGeneDetails($$('input.gene-name'));
-
-  $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
-    fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);
-  });
-
-  document.observe("xwiki:dom:updated", function(event) {
-    if (event.memo &amp;&amp; event.memo.elements) {
-      event.memo.elements.each(function (elt) {
-        fetchGeneDetails(elt.select('input.gene-name'));
-        elt.select('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
-          fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);
-        });
-      });
-    }
-  })
+      <code>document.observe('xwiki:dom:loaded', function() {&#xd;
+&#xd;
+  var fetchGeneDetails = function(geneRefs, geneNames) {&#xd;
+    if (!geneNames) {&#xd;
+      geneNames = geneRefs.pluck('value');&#xd;
+    }&#xd;
+    var i = 0; &#xd;
+    geneRefs.each(function (element) {&#xd;
+      if (element.value != "") {&#xd;
+        element._name = geneNames[i];&#xd;
+        var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});&#xd;
+        var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);&#xd;
+        if (element.next() &amp;&amp; element.next().className.indexOf('xHelpButton gene-info') > -1)&#xd;
+          element.next().remove();&#xd;
+        element.insert({after: infoTool});&#xd;
+        ++i;&#xd;
+     }&#xd;
+    });&#xd;
+  }&#xd;
+&#xd;
+  fetchGeneDetails($$('input.gene-name'));&#xd;
+&#xd;
+  $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {&#xd;
+    fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
+  });&#xd;
+&#xd;
+  $$('input.gene-name').invoke('observe', 'change', function (event) {&#xd;
+    if (event.element().value == "" &amp;&amp; event.element().next() &amp;&amp; event.element().next().className.indexOf('xHelpButton gene-info') > -1)&#xd;
+      event.element().next().remove();&#xd;
+    if (event.element().value != "") {&#xd;
+      event.element().up('tr').next().toggleClassName('v-collapsed', false);&#xd;
+    } else {&#xd;
+      event.element().up('tr').next().toggleClassName('v-collapsed', true);&#xd;
+    }&#xd;
+  });&#xd;
+&#xd;
+  document.observe("xwiki:dom:updated", function(event) {&#xd;
+    if (event.memo &amp;&amp; event.memo.elements) {&#xd;
+      event.memo.elements.each(function (elt) {&#xd;
+        fetchGeneDetails(elt.select('input.gene-name'));&#xd;
+        elt.select('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {&#xd;
+          fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
+        });&#xd;
+      });&#xd;
+    }&#xd;
+  })&#xd;
 })</code>
     </property>
     <property>
-      <name/>
+      <name></name>
     </property>
     <property>
       <parse>0</parse>
@@ -188,7 +200,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -233,10 +245,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -244,43 +256,43 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:loaded", function(event) {
-  var geneSuggestOptions = {
-            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",
-            varname: "q",
-            noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",
-            json: true,
-            resultsParameter : "docs",
-            resultId : 'symbol',
-            resultValue : 'symbol',
-            resultAltName : "alias_symbol",
-            enableHierarchy: false,
-            tooltip : 'gene-info',
-            resultInfo : {},
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
-  };
-
-  // -----------------------------------------------------------------
-  // Create and attach the suggests
-  // -----------------------------------------------------------------
-  var attachPickers = function() {
-    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
-      $$('input.suggest-gene').each(function(item) {
-        if (!item.hasClassName('initialized')) {
-          item._suggest = new PhenoTips.widgets.Suggest(item, geneSuggestOptions);
-          item.addClassName('initialized');
-        }
-      });
-    }
-  };
-  attachPickers();
-  document.observe("xwiki:dom:updated", attachPickers);
+      <code>document.observe("xwiki:dom:loaded", function(event) {&#xd;
+  var geneSuggestOptions = {&#xd;
+            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",&#xd;
+            varname: "q",&#xd;
+            noresults: "$services.localization.render('phenotips.UIXField.genes.noMatches')",&#xd;
+            json: true,&#xd;
+            resultsParameter : "docs",&#xd;
+            resultId : 'symbol',&#xd;
+            resultValue : 'symbol',&#xd;
+            resultAltName : "alias_symbol",&#xd;
+            enableHierarchy: false,&#xd;
+            tooltip : 'gene-info',&#xd;
+            resultInfo : {},&#xd;
+            fadeOnClear : false,&#xd;
+            timeout : 30000,&#xd;
+            parentContainer : null&#xd;
+  };&#xd;
+&#xd;
+  // -----------------------------------------------------------------&#xd;
+  // Create and attach the suggests&#xd;
+  // -----------------------------------------------------------------&#xd;
+  var attachPickers = function() {&#xd;
+    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {&#xd;
+      $$('input.suggest-gene').each(function(item) {&#xd;
+        if (!item.hasClassName('initialized')) {&#xd;
+          item._suggest = new PhenoTips.widgets.Suggest(item, geneSuggestOptions);&#xd;
+          item.addClassName('initialized');&#xd;
+        }&#xd;
+      });&#xd;
+    }&#xd;
+  };&#xd;
+  attachPickers();&#xd;
+  document.observe("xwiki:dom:updated", attachPickers);&#xd;
 });</code>
     </property>
     <property>
-      <name/>
+      <name></name>
     </property>
     <property>
       <parse>1</parse>
@@ -313,7 +325,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -329,6 +341,22 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -358,10 +386,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -369,16 +397,19 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.extradata-list td.counter {
-  width: 3em;
-}
-.extradata-list td.gene {
-  width: 50%;
-  text-align: left;
+      <code>.extradata-list td.counter {&#xd;
+  width: 3em;&#xd;
+}&#xd;
+.extradata-list td.gene {&#xd;
+  width: 50%;&#xd;
+  text-align: left;&#xd;
 }</code>
     </property>
     <property>
-      <name/>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name></name>
     </property>
     <property>
       <parse>0</parse>

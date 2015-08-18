@@ -28,12 +28,12 @@
   <creationDate>1401822205000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>XWiki.Admin</author>
-  <contentAuthor>XWiki.Admin</contentAuthor>
-  <date>1439594914000</date>
-  <contentUpdateDate>1439593191000</contentUpdateDate>
-  <version>5.1</version>
+  <contentAuthor>XWiki.superadmin</contentAuthor>
+  <date>1439856152000</date>
+  <contentUpdateDate>1439846110000</contentUpdateDate>
+  <version>3.1</version>
   <title/>
-  <comment/>
+  <comment>core.importer.saveDocumentComment</comment>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
@@ -189,9 +189,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   tools.Editor = Class.create({&#xd;
     initialize : function () {&#xd;
       $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));&#xd;
-      $$('.extradata-list a.reject').invoke('observe', 'click', this.ajaxRejectData.bindAsEventListener(this));&#xd;
       $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));&#xd;
-      $$('.list-actions a.add').invoke('observe', 'extradata:reject-add', this.ajaxAddData.bindAsEventListener(this));&#xd;
     },&#xd;
     ajaxDeleteData : function (event) {&#xd;
       event.stop();&#xd;
@@ -290,41 +288,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
           addTrigger.disabled = false&#xd;
         }&#xd;
       });&#xd;
-    },&#xd;
-    ajaxRejectData : function (event) {&#xd;
-      event.stop();&#xd;
-      var rejectTrigger = event.findElement('.reject');&#xd;
-      if (rejectTrigger.disabled) {&#xd;
-         return;&#xd;
-      }&#xd;
-      var transferToClass = rejectTrigger.getAttribute("data-bind");&#xd;
-      new XWiki.widgets.ConfirmedAjaxRequest(rejectTrigger.href, {&#xd;
-        onCreate : function() {&#xd;
-          rejectTrigger.disabled = true&#xd;
-        },&#xd;
-        onSuccess : function() {&#xd;
-          var dataRow = rejectTrigger.up('tr:not(.head-group)');&#xd;
-          var dataTable = rejectTrigger.up('table.extradata-list');&#xd;
-          if (dataRow) {&#xd;
-            dataRow.remove();&#xd;
-            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});&#xd;
-          }&#xd;
-          if (dataTable) {&#xd;
-            var i = 1;&#xd;
-            dataTable.select('th.row-count').each(function(item) {&#xd;
-              item.update((i++));&#xd;
-            });&#xd;
-            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});&#xd;
-          }&#xd;
-        },&#xd;
-        onComplete : function() {&#xd;
-          rejectTrigger.disabled = false;&#xd;
-        }&#xd;
-      },&#xd;
-      {&#xd;
-         confirmationText : "$services.localization.render('phenotips.tableMacros.rejectConfirmation')"&#xd;
-      });    &#xd;
-    },&#xd;
+    }&#xd;
   });&#xd;
   return ExtraData;&#xd;
 }(ExtraData || {}));&#xd;
@@ -430,7 +394,6 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
       this.createEditButtons();&#xd;
       this.createEditDoneButtons();&#xd;
       this.createHideShowButtons();&#xd;
-      $('gene-table').observe('generow:deleted', this.handleGeneRowDeleted);&#xd;
       $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));&#xd;
       $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));&#xd;
       var defaultInputs = [];&#xd;
@@ -447,10 +410,10 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
         var geneIndex = item.className.substring(item.className.lastIndexOf('-')+1);&#xd;
         var showIcon = new Element('span', {'class' : 'fa fa-plus-square-o fa-lg'});&#xd;
         //var showIcon = '&amp;lt;span class="fa fa-plus-square-o fa-lg"&amp;gt;&amp;lt;/span&amp;gt;&amp;amp;nbsp;';&#xd;
-        var variantShow = new Element('button', {'class' : 'tool button secondary  v-collapsed', 'type' : 'button'}).insert(showIcon).insert(" $services.localization.render('phenotips.geneVariantMacros.expand')");&#xd;
+        var variantShow = new Element('button', {'class' : 'tool button secondary  v-collapsed', 'type' : 'button'}).insert(showIcon).insert(" $services.localization.render('PhenoTips.GeneVariantClass.expand')");&#xd;
         var hideIcon = new Element('span', {'class' : 'fa fa-minus-square-o fa-lg'});&#xd;
         //var hideIcon = '&amp;lt;span class="fa fa-minus-square-o fa-lg"&amp;gt;&amp;lt;/span&amp;gt;&amp;amp;nbsp;';&#xd;
-        var variantHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).insert(hideIcon).insert(" $services.localization.render('phenotips.geneVariantMacros.collapse')");&#xd;
+        var variantHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).insert(hideIcon).insert(" $services.localization.render('PhenoTips.GeneVariantClass.collapse')");&#xd;
         var variantShowWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantShow);&#xd;
         var variantHideWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantHide);&#xd;
         var variantExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(variantShowWrapper).insert(variantHideWrapper);&#xd;
@@ -467,8 +430,8 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
     createEditDoneButtons : function () {&#xd;
       $$('.variant-moreinfo-editdonebutton-row').each(function(row) {&#xd;
         var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);&#xd;
-        var editVariantLink = new Element('a', {'class' : 'action-edit button secondary variant-edit-done fa fa-check v-collapsed', 'href' : '#', 'title' : "$services.localization.render('phenotips.geneVariantMacros.editDone.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_editDone'});    &#xd;
-        editVariantLink.innerHtml = "$services.localization.render('phenotips.geneVariantMacros.editDone')";&#xd;
+        var editVariantLink = new Element('a', {'class' : 'action-edit button secondary variant-edit-done fa fa-check v-collapsed', 'href' : '#', 'title' : "$services.localization.render('PhenoTips.GeneVariantClass.editDone.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_editDone'});    &#xd;
+        editVariantLink.innerHtml = "$services.localization.render('PhenoTips.GeneVariantClass.editDone')";&#xd;
         var editVarientWrapper = new Element('span', {'class' : 'buttonwrapper variant-moreinfo-button'}).insert(editVariantLink);&#xd;
         row.insert(editVarientWrapper);&#xd;
       });&#xd;
@@ -476,8 +439,8 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
     createEditButtons : function () {&#xd;
       $$('.variant-moreinfo-editbutton-row').each(function(row) {&#xd;
         var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);&#xd;
-        var editVariantLink = new Element('a', {'class' : 'action-edit  button secondary variant-edit fa fa-pencil', 'href' : '#', 'title' : "$services.localization.render('phenotips.geneVariantMacros.edit.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_edit'});    &#xd;
-        editVariantLink.innerHtml = "$services.localization.render('phenotips.geneVariantMacros.edit')";&#xd;
+        var editVariantLink = new Element('a', {'class' : 'action-edit  button secondary variant-edit fa fa-pencil', 'href' : '#', 'title' : "$services.localization.render('PhenoTips.GeneVariantClass.edit.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_edit'});    &#xd;
+        editVariantLink.innerHtml = "$services.localization.render('PhenoTips.GeneVariantClass.edit')";&#xd;
         var editVarientWrapper = new Element('span', {'class' : 'buttonwrapper variant-moreinfo-button'}).insert(editVariantLink);&#xd;
         row.insert({top : editVarientWrapper});&#xd;
       });&#xd;
@@ -564,9 +527,6 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
         $$('.'+fieldName+'-'+variantIndex)[0].toggleClassName('v-collapsed', false);&#xd;
         $$('.'+fieldName+'-'+variantIndex)[0].parentElement.previousSibling.toggleClassName('v-collapsed', false);&#xd;
       }&#xd;
-    },&#xd;
-    handleGeneRowDeleted : function () {&#xd;
-      //update all variants numbering&#xd;
     }&#xd;
   });&#xd;
   return EditVariantData;&#xd;
@@ -678,10 +638,45 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
       event.stop();&#xd;
       var deleteTrigger = event.element();&#xd;
       var className = deleteTrigger.up().className;&#xd;
-      var geneNumber = parseInt(className.substring(className.indexOf('-')+1));&#xd;
-      var geneSymbol = $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene"]')[0].value;&#xd;
-      deleteTrigger.href.concat();&#xd;
-      Event.fire( $('.gene-table'), 'generow:deleted', {'element' : dataRow});&#xd;
+      var geneNumber = parseInt(className.substring(className.lastIndexOf('-')+1));&#xd;
+      var geneIndex = geneNumber - 1;&#xd;
+      var geneSymbol = $$('[name=\"PhenoTips.GeneClass_' + geneIndex + '_gene\"]')[0].value;&#xd;
+      if (geneSymbol != '') {&#xd;
+       // Event.fire( $('.gene-table'), 'generow:deleted', {'element' : geneSymbol});&#xd;
+        //deleteTrigger.href.concat(geneSymbol);&#xd;
+        new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href+geneSymbol, {&#xd;
+          onCreate : function() {&#xd;
+            deleteTrigger.disabled = true&#xd;
+          },&#xd;
+          onSuccess : function() {&#xd;
+            var dataRow = deleteTrigger.up('tr:not(.head-group)');&#xd;
+            var dataTable = deleteTrigger.up('table.extradata-list');&#xd;
+            if (dataRow) {&#xd;
+              //if (dataRow.next().hasClassName('variant-footer'))&#xd;
+               // dataRow.next().remove();&#xd;
+             // dataRow.remove();&#xd;
+              //Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});&#xd;
+              $$('.variant-gene-'+geneNumber).each(function(item) {&#xd;
+                item.remove();&#xd;
+              });&#xd;
+              dataRow.remove();&#xd;
+            }&#xd;
+            if (dataTable) {&#xd;
+             // var i = 1;&#xd;
+             // dataTable.select('th.row-count').each(function(item) {&#xd;
+              //  item.update((i++));&#xd;
+             // });&#xd;
+              //Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});&#xd;
+            }&#xd;
+          },&#xd;
+          onComplete : function() {&#xd;
+            deleteTrigger.disabled = false;&#xd;
+          }&#xd;
+        },&#xd;
+        {&#xd;
+           confirmationText : "$services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"&#xd;
+        });&#xd;
+      }&#xd;
     },&#xd;
     ajaxDeleteVariantData : function (event) {&#xd;
       event.stop();&#xd;
@@ -703,8 +698,8 @@ document.observe('xwiki:dom:loaded', function() {&#xd;
             //  unlock the genesymbol input field&#xd;
             if (dataRow.previous().hasClassName('variant-title-row') &amp;&amp; dataRow.next().hasClassName('variant-footer')) {&#xd;
               dataRow.previous().remove();&#xd;
-              $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene"]')[0].toggleClassName('v-collapsed', false);&#xd;
-              $$('[name="PhenoTips.GeneClass_" + geneIndex + "_gene-input-label"]')[0].toggleClassName('v-collapsed', true);&#xd;
+              $$('[name=\"PhenoTips.GeneClass_' + geneIndex + '_gene\"]')[0].toggleClassName('v-collapsed', false);&#xd;
+              $$('[name=\"PhenoTips.GeneClass_' + geneIndex + '_gene-input-label\"]')[0].toggleClassName('v-collapsed', true);&#xd;
             //we are removing variant from the middle of the table&#xd;
             } else if (!dataRow.next().hasClassName('variant-footer')){&#xd;
               var i = 1;&#xd;

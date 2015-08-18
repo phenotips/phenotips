@@ -177,7 +177,7 @@ $!{value}
       <validationRegExp/>
       <values>NA= |missense=missense|nonsense=nonsense|insertion_in_frame=insertion - in frame|insertion_frameshift=insertion - frameshift|deletion_in_frame=deletion - in frame|deletion_frameshift=deletion - frameshift|indel_in_frame=indel - in frame|indel_frameshift=indel - frameshift|duplication=duplication|repeat_expansion=repeat expansion|synonymous=synonymous|other=other</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </effect>    
+    </effect>
     <interpretation>
       <cache>0</cache>
       <customDisplay/>
@@ -240,7 +240,7 @@ $!{value}
       <validationRegExp/>
       <values>rare=Rare (MAF&lt;0.01)|predicted=Predicted damaging by in silico models|reported=Reported in other individuals|segregates=Segregates with phenotype within family</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </evidence>  
+    </evidence>
     <segregation>
       <cache>0</cache>
       <customDisplay/>
@@ -261,7 +261,7 @@ $!{value}
       <validationRegExp/>
       <values>NA= |complete=Complete|in_progress=In progress|not_done=Not done</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </segregation>  
+    </segregation>
     <sanger>
       <cache>0</cache>
       <customDisplay/>
@@ -282,7 +282,7 @@ $!{value}
       <validationRegExp/>
       <values>NA= |complete=Complete|in_progress=In progress|not_done=Not done</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </sanger> 
+    </sanger>
     <resolution>
       <cache>0</cache>
       <customDisplay/>
