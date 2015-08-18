@@ -297,7 +297,7 @@ $!value
         <cache>0</cache>
         <customDisplay>{{velocity}}
           #foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
-          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}">&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /> ${measurement.name}&lt;/label>{{/html}}
+          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}"&gt;&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /&gt; ${measurement.name}&lt;/label&gt;{{/html}}
           #end
           {{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -322,7 +322,7 @@ $!value
         <cache>0</cache>
         <customDisplay>{{velocity}}
           #foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
-          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}">&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /> ${measurement.name}&lt;/label>{{/html}}
+          {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}"&gt;&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /&gt; ${measurement.name}&lt;/label&gt;{{/html}}
           #end
           {{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -382,7 +382,7 @@ $!value
       </enabled>
     </property>
     <property>
-      <ordering></ordering>
+      <ordering/>
     </property>
   </object>
   <object>
