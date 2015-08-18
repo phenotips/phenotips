@@ -48,15 +48,10 @@ $!response.setContentType('application/json')##
   {{html wiki="false" clean="false"}}
 #end
 #if ("$!request.id" != '')
-  #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($pedigree = $services.families.getPedigree($request.id))
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
-#end
-#set ($pedigree = $services.families.getPedigree($patient.getId()))
-#if (!$patient &amp;&amp; !$pedigree)
-  $response.setStatus(404)
-  {"error" : "Identifier not found."}
-  #break
+  #set ($pedigree = $services.families.getPedigree($patient.getId()))
 #end
 #if ("$!{request.data}" == 'pedigree')
   #if ($pedigree)

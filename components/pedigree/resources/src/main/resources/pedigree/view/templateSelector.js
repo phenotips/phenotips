@@ -15,7 +15,7 @@ var TemplateSelector = Class.create( {
         var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
         this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector, verticalPosition: "top"});
         isStartupTemplateSelector && this.dialog.show();
-        new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
+        new Ajax.Request(new XWiki.Document('WebHome','data').getRestURL('objects/PhenoTips.PedigreeClass/'), {
             method: 'GET',
             onSuccess: this._onTemplateListAvailable.bind(this)
         });
