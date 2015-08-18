@@ -25,7 +25,7 @@
 
   <groupId>org.phenotips</groupId>
   <artifactId>phenotips-parent</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1.2</version>
   <packaging>pom</packaging>
 
   <prerequisites>
@@ -49,7 +49,7 @@
     <connection>scm:git:git://github.com/phenotips/phenotips.git</connection>
     <developerConnection>scm:git:git@github.com:phenotips/phenotips.git</developerConnection>
     <url>https://github.com/phenotips/phenotips.git/tree/master/</url>
-    <tag>stable-1.1.x</tag>
+    <tag>phenotips-1.1.2</tag>
   </scm>
 
   <organization>
