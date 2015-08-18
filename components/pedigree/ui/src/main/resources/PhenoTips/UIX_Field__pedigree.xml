@@ -242,7 +242,7 @@
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
-#set ($pedigreeObj = $services.families.getPedigree($doc.getName()))
+#set ($pedigreeObj = $services.families.getPedigree($doc.getDocumentReference().getName()))
 #if ($pedigreeObj)
   #set ($data = $!pedigreeObj.getData())
   #set ($image = $pedigreeObj.getImage())
