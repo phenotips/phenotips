@@ -58,7 +58,12 @@
     #if ("$!{name}" == '')
       #set ($name = $val)
     #end
-    (%%)((($name)))
+    #if ($term.id.indexOf(':') &gt;= 0)
+      #set ($termId = $stringtool.substringAfter($term.id, ':'))
+    #else
+      #set ($termId = $term.id)
+    #end
+    (%%)((([[~[$term.id]&gt;&gt;http://www.omim.org/entry/${termId}]] $name)))
   #end
 #end
 {{/velocity}}</content>
