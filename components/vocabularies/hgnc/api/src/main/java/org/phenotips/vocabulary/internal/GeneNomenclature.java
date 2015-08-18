@@ -184,8 +184,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private VocabularyTerm getTermByAlternativeId(String id)
     {
-        return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
-            ALIAS_SYMBOL_FIELD_NAME), null);
+        return requestTerm(
+            String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
+                ALIAS_SYMBOL_FIELD_NAME), null);
     }
 
     /**
@@ -250,15 +251,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return result;
     }
 
-    /**
-     * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
-     *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
-     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
-     * @return the String representation of the equivalent Lucene query
-     */
-    private String generateQuery(Map<String, ?> fieldValues)
+    private List<VocabularyTerm> searchTextSpellchecked(String input, int maxResults, String sort, String customFilter)
     {
         SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
         List<VocabularyTerm> result = new LinkedList<>();

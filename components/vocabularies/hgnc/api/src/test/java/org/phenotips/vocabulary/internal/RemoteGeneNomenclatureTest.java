@@ -76,7 +76,7 @@ public class RemoteGeneNomenclatureTest
 {
     @Rule
     public MockitoComponentMockingRule<Vocabulary> mocker =
-    new MockitoComponentMockingRule<Vocabulary>(GeneNomenclature.class);
+    new MockitoComponentMockingRule<Vocabulary>(RemoteGeneNomenclature.class);
 
     private ConfigurationSource configuration;
 
