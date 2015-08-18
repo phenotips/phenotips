@@ -28,7 +28,7 @@
   <creationDate>1438355127000</creationDate>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-    <parent>XWiki.XWikiClasses</parent>
+  <parent>XWiki.XWikiClasses</parent>
   <date>1439239868000</date>
   <contentUpdateDate>1439239868000</contentUpdateDate>
   <version>1.1</version>
