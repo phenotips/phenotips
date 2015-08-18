@@ -230,8 +230,13 @@ public class FamilyScriptService implements ScriptService
 
         Family family = this.familyRepository.getFamilyForPatient(proband);
         if (family == null) {
-            response.setStatusResponse(StatusResponse.PROBAND_HAS_NO_FAMILY);
-            response.setMessage(patientId, probandId);
+            // This is ok, if a family can be created for the patient
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+                response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
+                response.setMessage(patientId);
+            }
+
             return response.asVerification();
         }
 
