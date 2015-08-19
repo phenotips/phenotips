@@ -89,7 +89,7 @@
 #if ($variantObjects.size() > 0)##&#xd;
 (%class="variant-gene-$geneObjNumber variant-title-row"%)#__variant_head($variantObjects.size() $geneObjNumber $genesymbol $variantClassName $options)&#xd;
 #foreach ($o in $variantObjects)&#xd;
-#set ($variantIndex = $foreach.index + $geneObjNumber)&#xd;
+#set ($variantIndex = $o.number)&#xd;
 #set ($variantCount = $foreach.count)&#xd;
 (%class="variant-gene-$geneObjNumber variant-hide-heading-$geneObjNumber"%)#__variant_row($o "${geneNumber}.${variantCount}" $variantIndex $options)&#xd;
 #end&#xd;
@@ -129,7 +129,7 @@
 #end&#xd;
 {{/velocity}}&#xd;
 &#xd;
-{{velocity}}&#xd;
+{{velocity output=false}}&#xd;
 ## =====================================================================&#xd;
 ##&#xd;
 ## Delete gene script service with bulk variants delete&#xd;
