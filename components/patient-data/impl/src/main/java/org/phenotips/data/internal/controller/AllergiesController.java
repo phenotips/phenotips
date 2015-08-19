@@ -107,9 +107,8 @@ public class AllergiesController implements PatientDataController<String>
 
             return new IndexedPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading.",
-                e);
+            this.logger.error("Could not find requested document or some unforeseen"
+                    + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
