@@ -63,46 +63,90 @@ public class PedigreeUtils
     /**
      * Receives a pedigree in form of a JSONObject and an SVG image to be stored in proband's family.
      *
-     * @param probandId id of proband. If a patient does not belong to a family, a new one is created.
+     * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
+     *            for. If it's a proband id, the family assocaited with the patient is used. If not family is
+     *            associated, a new one is created.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
      * @return {@link JSONResponse} with one of many possible statuses
      */
-    public JSONResponse processPatientPedigree(String probandId, JSONObject json, String image)
+    public JSONResponse processPedigree(String documentId, JSONObject json, String image)
     {
         Pedigree pedigree = new DefaultPedigree(json, image);
 
-        // Get proband
-        Patient proband = this.patientRepository.getPatientById(probandId);
-        if (proband == null) {
-            return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(probandId);
-        }
-
-        // Get proband's family
-        Family family = this.familyRepository.getFamilyForPatient(proband);
-
-        // Get list of new members in pedigree/family
-        List<String> newMembers = pedigree.extractIds();
+        // checking if documentId is family's id
+        Family family = this.familyRepository.getFamilyById(documentId);
         if (family != null) {
-            // sometimes pedigree passes in family document name as a member
-            newMembers.remove(family.getId());
+            return processPedigree(family, pedigree);
         }
 
-        // Edge case - proband with no family. Create a new one.
-        if (family == null) {
-            if (!this.authorizationService.hasAccess(Right.EDIT, proband.getDocument())) {
-                return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(probandId);
+        // checking if documentId is patient's id
+        Patient proband = this.patientRepository.getPatientById(documentId);
+        if (proband != null) {
+            family = this.familyRepository.getFamilyForPatient(proband);
+            if (family == null) {
+                if (!this.authorizationService.hasAccess(Right.EDIT, proband.getDocument())) {
+                    return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(documentId);
+                }
+                family = this.familyRepository.createFamily();
+                family.addMember(proband);
             }
-            family = this.familyRepository.createFamily();
-            family.addMember(proband);
+            return processPedigree(family, pedigree);
         }
 
-        JSONResponse response = checkValidity(family, newMembers);
+        // documentId is not family's or patient's.
+        return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(documentId);
+    }
+
+    /*
+     * @param family not null
+     * @param pedigree not null
+     * @return
+     */
+    private JSONResponse processPedigree(Family family, Pedigree pedigree)
+    {
+        StatusResponse response;
+
+        // sometimes pedigree passes in family document name as a member
+        List<String> newMembers = pedigree.extractIds();
+        newMembers.remove(family.getId());
+
+        JSONResponse validityResponse = checkValidity(family, newMembers);
+        if (!validityResponse.isValid()) {
+            return validityResponse;
+        }
+
+        // Update patient data from pedigree's JSON
+        response = this.updatePatientsFromJson(pedigree);
         if (!response.isValid()) {
-            return response;
+            return new JSONResponse(response);
         }
 
-        return this.processPatientPedigree(family, pedigree, newMembers);
+        family.setPedigree(pedigree);
+
+        List<String> members = family.getMembersIds();
+
+        // Removed members who are no longer in the family
+        List<String> patientsToRemove = new LinkedList<>();
+        patientsToRemove.addAll(members);
+        patientsToRemove.removeAll(newMembers);
+        for (String patientId : patientsToRemove) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            family.removeMember(patient);
+        }
+
+        // Add new members to family
+        List<String> patientsToAdd = new LinkedList<>();
+        patientsToAdd.addAll(newMembers);
+        patientsToAdd.removeAll(members);
+        for (String patientId : patientsToAdd) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            family.addMember(patient);
+        }
+
+        family.updatePermissions();
+
+        return new JSONResponse(StatusResponse.OK);
     }
 
     private JSONResponse checkValidity(Family family, List<String> newMembers)
@@ -137,43 +181,6 @@ public class PedigreeUtils
 
         jsonResponse.setStatusResponse(StatusResponse.OK);
         return jsonResponse;
-    }
-
-    private JSONResponse processPatientPedigree(Family family, Pedigree pedigree, List<String> newMembers)
-    {
-        StatusResponse response;
-
-        // Update patient data from pedigree's JSON
-        response = this.updatePatientsFromJson(pedigree);
-        if (!response.isValid()) {
-            return new JSONResponse(response);
-        }
-
-        family.setPedigree(pedigree);
-
-        List<String> members = family.getMembersIds();
-
-        // Removed members who are no longer in the family
-        List<String> patientsToRemove = new LinkedList<>();
-        patientsToRemove.addAll(members);
-        patientsToRemove.removeAll(newMembers);
-        for (String patientId : patientsToRemove) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
-            family.removeMember(patient);
-        }
-
-        // Add new members to family
-        List<String> patientsToAdd = new LinkedList<>();
-        patientsToAdd.addAll(newMembers);
-        patientsToAdd.removeAll(members);
-        for (String patientId : patientsToAdd) {
-            Patient patient = this.patientRepository.getPatientById(patientId);
-            family.addMember(patient);
-        }
-
-        family.updatePermissions();
-
-        return new JSONResponse(StatusResponse.OK);
     }
 
     private StatusResponse updatePatientsFromJson(Pedigree pedigree)

@@ -287,18 +287,19 @@ public class FamilyScriptService implements ScriptService
     /**
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
-     * @param patientId of patient to get a family to process from. If a patient does not belong to a family, a new
-     *            family if created for the patient.
+     * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
+     *            for. If it's a proband id, the family assocaited with the patient is used. If not family is
+     *            associated, a new one is created.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
      * @return {@link JSON} with 'error' field set to {@link false} if everything is ok, or {@link false} if a known
      *         error has occurred. In case the linking is invalid, the JSON will also contain 'errorMessage' and
      *         'errorType'
      */
-    public JSON processPedigree(String patientId, String json, String image)
+    public JSON processPedigree(String documentId, String json, String image)
     {
         JSONResponse response =
-            this.pedigreeUtils.processPatientPedigree(patientId, JSONObject.fromObject(json), image);
+            this.pedigreeUtils.processPedigree(documentId, JSONObject.fromObject(json), image);
         return response.asProcessing();
     }
 
