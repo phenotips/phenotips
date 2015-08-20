@@ -95,8 +95,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             }
             return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
-            this.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading");
+            this.logger.error("Could not find requested document or some unforeseen"
+                    + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
