@@ -44,7 +44,11 @@
     #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
-      #set ($limit = 20)
+      #set ($limit = 6)
+    #end
+    #set($page = $mathtool.toInteger("$!{request.page}"))
+    #if (!$page || $page &lt; 0)
+      #set ($page = 1)
     #end
     #set ($data = $collectionstool.set)
     #foreach($i in $request.getParameterValues('symptom'))
@@ -55,29 +59,46 @@
       #set ($discard = $ndata.add($i))
     #end
     #if ("$!{request.format}" == 'html')
-#set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $limit))
-#if ($results.size() &gt; 0)
-{{html clean="false"  wiki="false"}}##
-&lt;ul&gt;
-#foreach($item in $results)
-  #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
-  &lt;li class="phenotype"&gt;
-    &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
-    &lt;span class="title"&gt;${item.name}&lt;/span&gt;
-    &lt;span class="hidden term-category"&gt;
-    #foreach ($c in $services.vocabularies.resolveTerm($item.id).get('term_category'))
-      &lt;input type="hidden" value="$c"&gt;
-    #end
-    &lt;/span&gt;
-  &lt;/li&gt;
-  #end
-#end## foreach item
-&lt;/ul&gt;
-{{/html}}
-   #set ($hasOutput = true)
-#else
-   #set ($hasOutput = false)
-#end## results.size() &gt; 0
+      #set ($resultsToFetch = $limit * $page)
+      #set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $resultsToFetch))
+      #if ($results.size() &gt; 0)
+        ##paginate results
+        #set ($from = ($page - 1) * $limit)
+        #set ($to = $resultsToFetch)
+        #if ($to &gt;= $results.size())
+          #set ($to = $results.size())
+        #end
+        #set ($results = $results.subList($from, $to))
+        {{html clean="false"  wiki="false"}}##
+        ##Add previous arrow if neccessary
+        #if ($page &gt; 1)
+          #set ($previousPage = $page - 1)
+          &lt;span class="fa fa-chevron-left navigation"&gt;&lt;input type="hidden" value="$previousPage"/&gt;&lt;/span&gt;
+        #end
+        &lt;ul&gt;
+        #foreach ($item in $results)
+          #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
+            &lt;li class="phenotype"&gt;
+              &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
+              &lt;span class="title"&gt;${item.name}&lt;/span&gt;
+              &lt;span class="hidden term-category"&gt;
+              #foreach ($c in $services.vocabularies.resolveTerm($item.id).get('term_category'))
+                &lt;input type="hidden" value="$c"&gt;
+              #end
+              &lt;/span&gt;
+            &lt;/li&gt;
+          #end
+        #end## foreach item
+        &lt;/ul&gt;
+        #if ($limit == $results.size())
+          #set ($nextPage = $page + 1)
+          &lt;span class="fa fa-chevron-right navigation"&gt;&lt;input type="hidden" value="$nextPage"/&gt;&lt;/span&gt;
+        #end
+        {{/html}}
+        #set ($hasOutput = true)
+      #else
+        #set ($hasOutput = false)
+      #end## results.size() &gt; 0
     #end## html format
   #else
     #set ($hasOutput = false)
