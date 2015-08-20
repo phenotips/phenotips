@@ -61,6 +61,9 @@ import net.sf.json.JSONObject;
 @Singleton
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
+
+    protected static final String ERROR_MESSAGE_NO_GENE_CLASS = "The patient does not have a Gene Class";
+
     /** The XClass used for storing gene data. */
     private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -117,7 +120,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
-                return null;
+                throw new NullPointerException(ERROR_MESSAGE_NO_GENE_CLASS);
             }
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
