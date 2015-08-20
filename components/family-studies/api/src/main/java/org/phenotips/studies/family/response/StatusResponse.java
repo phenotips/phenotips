@@ -17,6 +17,19 @@
  */
 package org.phenotips.studies.family.response;
 
+import org.phenotips.components.ComponentManagerRegistry;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.localization.LocalizationContext;
+import org.xwiki.localization.LocalizationManager;
+import org.xwiki.localization.Translation;
+import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.renderer.BlockRenderer;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
+
+import java.util.Locale;
+
 /**
  * Passed around to preserve important error information. Holds onto a status (modelled after HTTP statuses), a message,
  * and an error type.
@@ -25,87 +38,80 @@ package org.phenotips.studies.family.response;
  */
 public enum StatusResponse
 {
+
     /**
      * Patient can be added to a family.
      */
-    OK(200,
-        "",
-        ""),
+    OK(200, ""),
 
     /**
      * Duplicate patient in list.
      */
-    DUPLICATE_PATIENT(400,
-        "duplicate",
-        "Patient list contains duplicates"),
+    DUPLICATE_PATIENT(400, "duplicate"),
 
     /**
      * Patient cannot be added to a family because it is already associated with another family.
      */
-    ALREADY_HAS_FAMILY(501,
-        "familyConflict",
-        "Patient %1$s already belongs to a family %2$s, and therefore cannot be added to this one."),
+    ALREADY_HAS_FAMILY(501, "familyConflict"),
 
     /**
      * Patient cannot be added to a family because current user has insufficient permissions on family.
      */
-    INSUFFICIENT_PERMISSIONS_ON_FAMILY(401,
-        "familyPermissions",
-        "Insufficient permissions to edit the family record."),
+    INSUFFICIENT_PERMISSIONS_ON_FAMILY(401, "familyPermissions"),
 
     /**
      * Patient cannot be added to a family because current user has insufficient permissions on family.
      */
-    INSUFFICIENT_PERMISSIONS_ON_PATIENT(401,
-        "patientPermissions",
-        "Insufficient permissions to edit the patient record."),
+    INSUFFICIENT_PERMISSIONS_ON_PATIENT(401, "patientPermissions"),
 
     /**
      * No members to add to family.
      **/
-    FAMILY_HAS_NO_MEMBERS(402,
-        "invalidUpdate",
-        "The family has no members. Please specify at least one patient link."),
+    FAMILY_HAS_NO_MEMBERS(402, "invalidUpdate"),
 
     /**
      * Invalid patient id.
      */
-    INVALID_PATIENT_ID(404,
-        "invalidPatientId",
-        "Could not find patient %1$s."),
+    INVALID_PATIENT_ID(404, "invalidPatientId"),
 
     /**
      * Invalid family id.
      */
-    INVALID_FAMILY_ID(404,
-        "invalidFamilyId",
-        "Could not find family %2$s."),
+    INVALID_FAMILY_ID(404, "invalidFamilyId"),
 
     /**
      * Unknown error.
      */
-    UNKNOWN_ERROR(500,
-        "unknown",
-        "Could not update patient records"),
+    UNKNOWN_ERROR(500, "unknown");
 
-    /**
-     * Patient cannot be linked to proband's family.
-     */
-    PROBAND_HAS_NO_FAMILY(501,
-        "NoFamilyForProband",
-        "Patient %1$s cannot be linked to proband's family, because proband %3$s has not family.");
+    private static LocalizationManager localizationManager;
+
+    private static LocalizationContext localizationContext;
+
+    /** Renders content blocks into plain strings. */
+    private static BlockRenderer renderer;
 
     private int statusCode;
 
     private String errorType;
 
-    private String messageFormat;
+    static {
+        try {
+            StatusResponse.localizationManager =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationManager.class);
+            StatusResponse.localizationContext =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationContext.class);
+            StatusResponse.renderer =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(BlockRenderer.class, "plain/1.0");
+        } catch (ComponentLookupException e) {
+            e.printStackTrace();
+        }
+    }
 
-    StatusResponse(int statusCode, String errorType, String messageFormat)
+    StatusResponse(int statusCode, String errorType)
     {
         this.statusCode = statusCode;
         this.errorType = errorType;
-        this.messageFormat = messageFormat;
     }
 
     /**
@@ -129,7 +135,8 @@ public enum StatusResponse
      */
     public String getMessageFormat()
     {
-        return this.messageFormat;
+        String messageKey = this.getClass().getSimpleName() + "." + this.toString();
+        return StatusResponse.translate(messageKey);
     }
 
     /**
@@ -141,4 +148,21 @@ public enum StatusResponse
     {
         return this.getStatusCode() == StatusResponse.OK.getStatusCode();
     }
+
+    private static String translate(String key)
+    {
+        Locale currentLocale = StatusResponse.localizationContext.getCurrentLocale();
+        Translation translation = StatusResponse.localizationManager.getTranslation(key, currentLocale);
+        if (translation == null) {
+            return "";
+        }
+        Block block = translation.render(StatusResponse.localizationContext.getCurrentLocale());
+
+        // Render the block
+        WikiPrinter wikiPrinter = new DefaultWikiPrinter();
+        StatusResponse.renderer.render(block, wikiPrinter);
+
+        return wikiPrinter.toString();
+    }
+
 };
