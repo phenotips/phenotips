@@ -37,7 +37,7 @@ public class PrenatalPerinatalHistoryControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(PrenatalPerinatalHistoryController.class);
+        new MockitoComponentMockingRule<PatientDataController<String>>(PrenatalPerinatalHistoryController.class);
 
     private static final String IVF = "ivf";
 
@@ -63,14 +63,14 @@ public class PrenatalPerinatalHistoryControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("prenatal_perinatal_history",
-                ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
     public void checkGetProperties() throws ComponentLookupException
     {
         List<String> result =
-                ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getProperties();
+            ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getProperties();
 
         Assert.assertEquals(8, result.size());
         Assert.assertThat(result, Matchers.hasItem("gestation"));
@@ -87,7 +87,7 @@ public class PrenatalPerinatalHistoryControllerTest
     public void checkGetBooleanFields() throws ComponentLookupException
     {
         List<String> result =
-                ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getBooleanFields();
+            ((AbstractComplexController<String>) this.mocker.getComponentUnderTest()).getBooleanFields();
 
         Assert.assertEquals(7, result.size());
         Assert.assertThat(result, Matchers.hasItem(MULTIPLE_GESTATION));

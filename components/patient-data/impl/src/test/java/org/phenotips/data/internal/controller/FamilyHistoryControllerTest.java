@@ -37,7 +37,7 @@ public class FamilyHistoryControllerTest
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<Integer>>(FamilyHistoryController.class);
+        new MockitoComponentMockingRule<PatientDataController<Integer>>(FamilyHistoryController.class);
 
     private static final String CONSANGUINITY = "consanguinity";
 
@@ -55,14 +55,14 @@ public class FamilyHistoryControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals("family_history",
-                ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
     }
 
     @Test
     public void checkGetProperties() throws ComponentLookupException
     {
         List<String> result =
-                ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getProperties();
+            ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getProperties();
 
         Assert.assertEquals(3, result.size());
         Assert.assertThat(result, Matchers.hasItem(CONSANGUINITY));
@@ -74,7 +74,7 @@ public class FamilyHistoryControllerTest
     public void checkGetBooleanFields() throws ComponentLookupException
     {
         List<String> result =
-                ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getBooleanFields();
+            ((AbstractComplexController<Integer>) this.mocker.getComponentUnderTest()).getBooleanFields();
 
         Assert.assertEquals(3, result.size());
         Assert.assertThat(result, Matchers.hasItem(CONSANGUINITY));
