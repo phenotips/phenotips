@@ -184,8 +184,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private VocabularyTerm getTermByAlternativeId(String id)
     {
-        return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
-            ALIAS_SYMBOL_FIELD_NAME), null);
+        return requestTerm(
+            String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
+                ALIAS_SYMBOL_FIELD_NAME), null);
     }
 
     /**

@@ -4818,10 +4818,11 @@ form .extradata-list tr:hover td {
     <property>
       <code>#template('colorThemeInit.vm')
 .LV_validation_message {
-  position: static !important;
+  position: absolute;
+  display: block;
 }
 .LV_valid {
-  display: none;
+  color : green;
 }
 input.LV_invalid_field {
   background-color: $theme.highlightColor;

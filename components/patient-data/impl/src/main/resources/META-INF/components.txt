@@ -19,7 +19,7 @@ org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.MetaDataController
 org.phenotips.data.internal.controller.EthnicityController
 org.phenotips.data.internal.controller.GeneListController
-org.phenotips.data.internal.controller.RejectedGeneListController
+org.phenotips.data.internal.controller.VariantListController
 org.phenotips.data.internal.controller.ClinicalStatusController
 org.phenotips.data.internal.controller.SolvedController
 org.phenotips.data.internal.controller.AllergiesController
