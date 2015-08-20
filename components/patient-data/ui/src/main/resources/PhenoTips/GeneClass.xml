@@ -81,7 +81,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>biological_relevance=Implicated in relevant biological process|significant_variant=Contains variant of functional significance|known_association=Verified association with relevant phenotype/disease</values>
+      <values>NA= |biological_relevance=Implicated in relevant biological process|significant_variant=Contains variant of functional significance|known_association=Verified association with relevant phenotype/disease</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </evidence>
     <status>
@@ -102,7 +102,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>candidate=Candidate|rejected=Excluded by testing|solved=Confirmed causal</values>
+      <values>NA= |candidate=Candidate|rejected=Excluded by testing|solved=Confirmed causal</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </status>
     <gene>

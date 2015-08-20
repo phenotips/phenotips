@@ -152,29 +152,14 @@
      el.previous().innerHTML = value ? value : el.value;&#xd;
   }&#xd;
 &#xd;
-  var duplicationCheck = function(el, value) {&#xd;
-    var genesymbols = [];&#xd;
-    $$('.gene.col-label.gene-input-label').each( function (item) {&#xd;
-      if (item.innerText != el.value &amp;&amp; item.innerText != el._name)&#xd;
-        genesymbols.push(item.innerText);&#xd;
-    });&#xd;
-    if (value &amp;&amp; genesymbols.indexOf(value) > -1) {&#xd;
-      new XWiki.widgets.Notification('Duplicated gene symbol', 'error');&#xd;
-    } else if (genesymbols.indexOf(el.value) > -1) {&#xd;
-      new XWiki.widgets.Notification('Duplicated gene symbol', 'error');&#xd;
-    }&#xd;
-  }&#xd;
-&#xd;
   fetchGeneDetails($$('input.gene-name'));&#xd;
 &#xd;
   $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {&#xd;
     fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
-    duplicationCheck(event.element(), event.memo.value);&#xd;
   });&#xd;
 &#xd;
   $$('input.gene-name').invoke('observe', 'change', function (event) {&#xd;
     updateInfoIcon(event.element(), null);&#xd;
-    duplicationCheck(event.element(), null);&#xd;
   });&#xd;
 &#xd;
   document.observe("xwiki:dom:updated", function(event) {&#xd;
@@ -185,11 +170,9 @@
         inputGene.invoke('observe', "ms:suggest:selected", function (event) {&#xd;
           fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);&#xd;
           updateInfoIcon(event.element(), event.memo.value);&#xd;
-          duplicationCheck(event.element(), event.memo.value);&#xd;
         });&#xd;
         inputGene.invoke('observe', 'change', function (event) {&#xd;
           updateInfoIcon(event.element(), null);&#xd;
-          duplicationCheck(event.element(), null);&#xd;
         });&#xd;
       });&#xd;
     }&#xd;
@@ -326,123 +309,6 @@
     </property>
     <property>
       <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.UIX_Field__genes</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>31ef03c0-7319-491e-8ee4-ac2863448012</guid>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>.extradata-list td.counter {&#xd;
-  width: 3em;&#xd;
-}&#xd;
-.extradata-list td.gene {&#xd;
-  width: 50%;&#xd;
-  text-align: left;&#xd;
-}</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
-    </property>
-    <property>
-      <name></name>
-    </property>
-    <property>
-      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

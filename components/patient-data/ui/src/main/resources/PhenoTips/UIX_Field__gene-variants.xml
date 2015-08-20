@@ -41,182 +41,6 @@
   <object>
     <name>PhenoTips.UIX_Field__gene-variants</name>
     <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>7adc34c5-dcb3-4287-add8-3d38312047ce</guid>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>.gene-table td, .gene-table th {&#xd;
-  vertical-align: top;&#xd;
-    border-left: 0 none;&#xd;
-  border-right: 0 none;&#xd;
-  border-bottom: 0 none;&#xd;
-}&#xd;
-.gene-table td table {&#xd;
-  margin: 0 !important;&#xd;
-}&#xd;
-.gene-table th {&#xd;
-  border-bottom: 0 none;&#xd;
-  border-top: 0 none;&#xd;
-}&#xd;
-.gene-table td table td{&#xd;
-  border: 0 none !important;&#xd;
-}&#xd;
-.gene-table td.pseudoindent {&#xd;
-  border: 0 none !important;&#xd;
-}&#xd;
-.gene-table td.variant, .gene-table th.variant {&#xd;
-  font-size: 87%;&#xd;
-  background: #def;&#xd;
-}&#xd;
-.gene-table, .gene-table tr, .gene-table th {&#xd;
-  position: relative;&#xd;
-}&#xd;
-.gene-table .variant-title:before {&#xd;
-  position: absolute;&#xd;
-  top: -15px;&#xd;
-  left: 0;&#xd;
-  content: "";&#xd;
-  display: block;&#xd;
-  border: 10px solid transparent;&#xd;
-  border-bottom: 15px solid #def;&#xd;
-  border-top: 0 none;&#xd;
-}&#xd;
-.gene-table td.variant.editing {&#xd;
-  background: #FFD;&#xd;
-}&#xd;
-.gene-table td.variant.moreinfo {&#xd;
-  position: relative;&#xd;
-}&#xd;
-.gene-table td.variant.moreinfo input[type="button"]{&#xd;
-  float: right;&#xd;
-}&#xd;
-.gene-table td.variant-moreinfo {&#xd;
-  text-align: left;&#xd;
-}&#xd;
-.variant-moreinfo-button {&#xd;
-  float: right;&#xd;
-}&#xd;
-.variant-property-value {&#xd;
-  text-align: left;&#xd;
-}&#xd;
-.variant-moreinfo-button-row {&#xd;
-  height: 30px;&#xd;
-}&#xd;
-.variant-edit-done {&#xd;
-display: none;&#xd;
-}&#xd;
-.variant-info .extradata-list td {&#xd;
-  text-align: left;&#xd;
-}&#xd;
-.variant-info .extradata-list td.chr {&#xd;
-  text-align: center;&#xd;
-}</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
-    </property>
-    <property>
-      <name>style-doubletable</name>
-    </property>
-    <property>
-      <parse/>
-    </property>
-    <property>
-      <use>currentPage</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.UIX_Field__gene-variants</name>
-    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>37600d90-5a22-479d-ac6e-100fe18c8696</guid>
     <class>
@@ -276,7 +100,7 @@ display: none;&#xd;
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -284,17 +108,18 @@ display: none;&#xd;
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
-{{include reference="PhenoTips.TabelarDataMacros" /}}
-{{include reference="PhenoTips.GeneVariantMacros" /}}
-
-{{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__gene-variants')##
-$xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
-$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
-#set ($geneClassName = 'PhenoTips.GeneClass')
-#set ($variantClassName = 'PhenoTips.GeneVariantClass')
-#__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'resolution'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp']})
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}&#xd;
+&#xd;
+{{include reference="PhenoTips.TabelarDataMacros" /}}&#xd;
+&#xd;
+{{include reference="PhenoTips.GeneVariantMacros" /}}&#xd;
+&#xd;
+{{velocity}}&#xd;
+$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##&#xd;
+#set ($geneClassName = 'PhenoTips.GeneClass')&#xd;
+#set ($variantClassName = 'PhenoTips.GeneVariantClass')&#xd;
+=== $services.localization.render('phenotips.UIXField.genes.sheetTitle')===&#xd;
+#__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'resolution'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp']})&#xd;
 {{/velocity}}</content>
     </property>
     <property>
@@ -304,11 +129,11 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
       <name>org.phenotips.patientSheet.field.gene-variants</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')
-enabled=true
-required=
-order=2
-fields=
+      <parameters>title=$services.localization.render('phenotips.UIXField.gene-variants')&#xd;
+enabled=true&#xd;
+required=&#xd;
+order=2&#xd;
+fields=&#xd;
 privacy_level=1</parameters>
     </property>
     <property>
