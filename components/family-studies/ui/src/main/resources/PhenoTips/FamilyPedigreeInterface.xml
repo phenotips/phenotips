@@ -63,7 +63,7 @@ $response.setContentType('application/json')##
   #end
 #elseif ("$!request.action" == "checklink")
   #if ("$!request.link_to_id" != '')
-    $services.families.canPatientBeLinkedToProband($anchorId, $request.link_to_id)
+    $services.families.canPatientBeLinked($anchorId, $request.link_to_id)
   #else
     LINK_TO_ID was not specified for action CHECKLINK
   #end

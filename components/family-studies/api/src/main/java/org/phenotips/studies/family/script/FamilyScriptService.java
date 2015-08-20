@@ -211,77 +211,55 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
-     * Checks if a patient can be added to a proband's family.
+     * Checks if a patient can be linked to a family. The id of the patient to link is patientItLinkId. The family is
+     * given by documentId: If document is a family id, it is read directly by its id. If it's a patient id, the family
+     * is the one associated with the patient.
      *
-     * @param probandId id of proband to get the family from
-     * @param patientId id of patient to add to proban's family
-     * @return see return value for {@link canPatientBeAddedToFamily}
+     * @param documentId id of a document used to get a handle of a family. Either a family id, or a patient
+     * @param patientToLinkId id of a patient to link to family
+     * @return JSON see {@link JSONResponse}
      */
-    public JSON canPatientBeLinkedToProband(String probandId, String patientId)
+    public JSON canPatientBeLinked(String documentId, String patientToLinkId)
     {
         JSONResponse response = new JSONResponse(StatusResponse.OK);
 
-        Patient proband = this.patientRepository.getPatientById(probandId);
-        if (proband == null) {
-            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
-            response.setMessage(probandId);
+        Patient patientToLink = this.patientRepository.getPatientById(patientToLinkId);
+        // Checking user has edit permissions on the patient to link to the family
+        if (!this.authorizationService.hasAccess(Right.EDIT, patientToLink.getDocument())) {
+            response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
+            response.setMessage(patientToLinkId);
             return response.asVerification();
         }
 
-        Family family = this.familyRepository.getFamilyForPatient(proband);
-        if (family == null) {
-            // This is ok, if a family can be created for the patient
-            Patient patient = this.patientRepository.getPatientById(patientId);
-            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
-                response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
-                response.setMessage(patientId);
+        // When documentId is a family's id
+        Family family = this.familyRepository.getFamilyById(documentId);
+        if (family != null) {
+            if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
+                response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
+                return response.asVerification();
             }
 
+            return this.familyRepository.canPatientBeAddedToFamily(patientToLink, family).asVerification();
+        }
+
+        // When documentId is patient's id
+        Patient patient = this.patientRepository.getPatientById(documentId);
+        if (patient == null) {
+            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
+            response.setMessage(documentId);
             return response.asVerification();
         }
 
-        return this.canPatientBeAddedToFamily(family.getId(), patientId);
-    }
-
-    /**
-     * Checks if a patient can be added to a family.
-     *
-     * @param familyId id of family to add patient
-     * @param patientId id of patient to add to family
-     * @return {@link JSON} with 'validLink' field set to {@link true} if everything is ok, or {@link false} if the
-     *         patient cannot be added to the family. In case the linking is invalid, the JSON will also contain
-     *         'errorMessage' and 'errorType'
-     */
-    public JSON canPatientBeAddedToFamily(String familyId, String patientId)
-    {
-        JSONResponse response = new JSONResponse(StatusResponse.OK);
-        Family family = this.familyRepository.getFamilyById(familyId);
-        Patient patient = this.patientRepository.getPatientById(patientId);
-
+        family = this.familyRepository.getFamilyForPatient(patient);
         if (family == null) {
-            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
+            // If there's no family associated with patient, it is still possible to link patientToLink
+            // if user has permissions to create a family for patient whose id is documentId
+            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+                response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
+                response.setMessage(patient.getId());
+            }
         }
-
-        if (response.isValid() && patient == null) {
-            response.setStatusResponse(StatusResponse.INVALID_FAMILY_ID);
-        }
-
-        if (response.isValid()
-            && !this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
-            response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
-        }
-
-        if (response.isValid()
-            && !this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
-            response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
-        }
-
-        if (response.isValid()) {
-            response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
-        }
-
-        response.setMessage(patientId, familyId);
-        return response.asVerification();
+        return this.familyRepository.canPatientBeAddedToFamily(patientToLink, family).asVerification();
     }
 
     /**
