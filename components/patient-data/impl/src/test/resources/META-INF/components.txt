@@ -1,0 +1,1 @@
+org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation
