@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -44,7 +45,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.doc.XWikiDocument;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
@@ -53,8 +56,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link MetaDataController} Component,
- * only the overridden methods from {@link AbstractSimpleController} are tested here
+ * Test for the {@link MetaDataController} Component, only the overridden methods from {@link AbstractSimpleController}
+ * are tested here
  */
 public class MetaDataControllerTest
 {
@@ -123,7 +126,7 @@ public class MetaDataControllerTest
         this.authorReference = new DocumentReference("wiki", "phenotips", "author");
         doReturn(this.authorReference).when(this.doc).getAuthorReference();
         this.date = new Date(10);
-        doReturn(date).when(this.doc).getDate();
+        doReturn(this.date).when(this.doc).getDate();
         this.creationDate = new Date(0);
         doReturn(this.creationDate).when(this.doc).getCreationDate();
 
@@ -231,9 +234,9 @@ public class MetaDataControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(REFERRER, this.creatorReference.getName());
-        map.put(CREATION_DATE, formatter.print(new DateTime(this.creationDate)));
+        map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
-        map.put(DATE, formatter.print(new DateTime(this.date)));
+        map.put(DATE, this.formatter.print(new DateTime(this.date)));
         PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -259,9 +262,9 @@ public class MetaDataControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(REFERRER, this.creatorReference.getName());
-        map.put(CREATION_DATE, formatter.print(new DateTime(this.creationDate)));
+        map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
-        map.put(DATE, formatter.print(new DateTime(this.date)));
+        map.put(DATE, this.formatter.print(new DateTime(this.date)));
         PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -280,14 +283,14 @@ public class MetaDataControllerTest
 
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesWhenSelectedFieldsNull()
-       throws ComponentLookupException
+        throws ComponentLookupException
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
         map.put(REFERRER, this.creatorReference.getName());
-        map.put(CREATION_DATE, formatter.print(new DateTime(this.creationDate)));
+        map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
-        map.put(DATE, formatter.print(new DateTime(this.date)));
+        map.put(DATE, this.formatter.print(new DateTime(this.date)));
         PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();

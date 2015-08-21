@@ -17,26 +17,15 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.slf4j.Logger;
+
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
@@ -50,26 +39,40 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONObject;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for the {@link DatesController} Component,
- * implementation of the {@link org.phenotips.data.PatientDataController} interface
+ * Tests for the {@link DatesController} Component, implementation of the
+ * {@link org.phenotips.data.PatientDataController} interface
  */
 public class DatesControllerTest
 {
-
     @Rule
-    public MockitoComponentMockingRule<PatientDataController> mocker =
-        new MockitoComponentMockingRule<PatientDataController>(DatesController.class);
+    public MockitoComponentMockingRule<PatientDataController<Date>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<Date>>(DatesController.class);
 
     private Logger logger;
 
@@ -78,8 +81,6 @@ public class DatesControllerTest
     private RecordConfigurationManager configurationManager;
 
     private Execution execution;
-
-    private DatesController controller;
 
     @Mock
     private RecordConfiguration configuration;
@@ -97,6 +98,9 @@ public class DatesControllerTest
     private BaseObject data;
 
     @Mock
+    private PatientData<Date> dateData;
+
+    @Mock
     private XWikiDocument doc;
 
     @Mock
@@ -111,7 +115,6 @@ public class DatesControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.controller = (DatesController)this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         this.configurationManager = this.mocker.getInstance(RecordConfigurationManager.class);
@@ -132,11 +135,11 @@ public class DatesControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<Date> result = this.controller.load(this.patient);
+        PatientData<Date> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ",
@@ -144,19 +147,18 @@ public class DatesControllerTest
         Assert.assertNull(result);
     }
 
-
     @Test
-    public void loadDoesNotReturnNullDates()
+    public void loadDoesNotReturnNullDates() throws ComponentLookupException
     {
         doReturn(null).when(this.data).getDateValue(anyString());
 
-        PatientData<Date> result = this.controller.load(this.patient);
+        PatientData<Date> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(0, result.size());
     }
 
     @Test
-    public void loadReturnsExpectedDates()
+    public void loadReturnsExpectedDates() throws ComponentLookupException
     {
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
@@ -165,7 +167,7 @@ public class DatesControllerTest
         doReturn(deathDate).when(this.data).getDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME);
         doReturn(examDate).when(this.data).getDateValue(DatesController.PATIENT_EXAMDATE_FIELDNAME);
 
-        PatientData<Date> result = this.controller.load(this.patient);
+        PatientData<Date> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertSame(birthDate, result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
         Assert.assertSame(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
@@ -173,69 +175,67 @@ public class DatesControllerTest
     }
 
     @Test
-    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void saveCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.logger).error("Failed to save dates: [{}]",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
     @Test
-    public void saveCatchesExceptionWhenGetDateDataReturnsNull()
+    public void saveCatchesExceptionWhenGetDateDataReturnsNull() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save dates: [{}]", (String)null);
+        verify(this.logger).error("Failed to save dates: [{}]", (String) null);
     }
 
     @Test
-    public void saveDoesNotContinueIfDateDataIsNotNamed()
+    public void saveDoesNotContinueIfDateDataIsNotNamed() throws ComponentLookupException
     {
-        PatientData dateData = mock(PatientData.class);
-        doReturn(dateData).when(this.patient).getData(DATA_NAME);
-        doReturn(false).when(dateData).isNamed();
+        doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
+        doReturn(false).when(this.dateData).isNamed();
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data, never()).setDateValue(anyString(), any(Date.class));
     }
 
     @Test
-    public void saveDoesNotAddNullDates()
+    public void saveDoesNotAddNullDates() throws ComponentLookupException
     {
-        PatientData dateData = mock(PatientData.class);
-        doReturn(dateData).when(this.patient).getData(DATA_NAME);
-        doReturn(true).when(dateData).isNamed();
-        doReturn(null).when(dateData).get(anyString());
+        doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
+        doReturn(true).when(this.dateData).isNamed();
+        doReturn(null).when(this.dateData).get(anyString());
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data, never()).setDateValue(anyString(), any(Date.class));
     }
 
     @Test
-    public void saveCatchesXWikiException() throws XWikiException
+    public void saveCatchesXWikiException() throws XWikiException, ComponentLookupException
     {
-        PatientData dateData = mock(PatientData.class);
-        doReturn(dateData).when(this.patient).getData(DATA_NAME);
-        doReturn(true).when(dateData).isNamed();
-        doReturn(null).when(dateData).get(anyString());
+        doReturn(this.dateData).when(this.patient).getData(DATA_NAME);
+        doReturn(true).when(this.dateData).isNamed();
+        doReturn(null).when(this.dateData).get(anyString());
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xWiki).saveDocument(any(XWikiDocument.class),
             anyString(), any(Boolean.class), any(XWikiContext.class));
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.logger).error("Failed to save dates: [{}]", exception.getMessage());
     }
 
     @Test
-    public void saveAddsAllDates() throws XWikiException {
+    public void saveAddsAllDates() throws XWikiException, ComponentLookupException
+    {
         Map<String, Date> datesMap = new LinkedHashMap<String, Date>();
         Date birthDate = new Date(0);
         Date deathDate = new Date(999999999);
@@ -246,7 +246,7 @@ public class DatesControllerTest
         PatientData<Date> datesData = new DictionaryPatientData<>(DATA_NAME, datesMap);
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
 
-        this.controller.save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.data).setDateValue(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME, birthDate);
         verify(this.data).setDateValue(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, deathDate);
@@ -256,24 +256,26 @@ public class DatesControllerTest
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() {
+    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() {
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
     }
 
     @Test
-    public void writeJSONAddsAllDates()
+    public void writeJSONAddsAllDates() throws ComponentLookupException
     {
         Map<String, Date> datesMap = new LinkedHashMap<String, Date>();
         Date birthDate = new Date(0);
@@ -286,7 +288,7 @@ public class DatesControllerTest
         doReturn(datesData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertEquals(this.dateFormat.format(birthDate),
             json.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
@@ -297,7 +299,7 @@ public class DatesControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsAllSelectedDates()
+    public void writeJSONWithSelectedFieldsAddsAllSelectedDates() throws ComponentLookupException
     {
         Map<String, Date> datesMap = new LinkedHashMap<String, Date>();
         Date birthDate = new Date(0);
@@ -313,7 +315,7 @@ public class DatesControllerTest
         selectedFields.add(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME);
         selectedFields.add(DatesController.PATIENT_EXAMDATE_FIELDNAME);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertEquals(this.dateFormat.format(birthDate),
             json.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
@@ -323,14 +325,14 @@ public class DatesControllerTest
     }
 
     @Test
-    public void readJSONReturnsNullWhenJSONIsEmpty()
+    public void readJSONReturnsNullWhenJSONIsEmpty() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
-        Assert.assertNull(this.controller.readJSON(json));
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
     }
 
     @Test
-    public void readJSONCatchesParseException()
+    public void readJSONCatchesParseException() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
         Date deathDate = new Date(999999999);
@@ -339,7 +341,7 @@ public class DatesControllerTest
         json.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, this.dateFormat.format(deathDate));
         json.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, this.dateFormat.format(examDate));
 
-        PatientData result = this.controller.readJSON(json);
+        PatientData<Date> result = this.mocker.getComponentUnderTest().readJSON(json);
 
         Assert.assertNull(result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
         Assert.assertEquals(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
@@ -347,7 +349,7 @@ public class DatesControllerTest
     }
 
     @Test
-    public void readJSONReturnsAllDates()
+    public void readJSONReturnsAllDates() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
         Date birthDate = new Date(0);
@@ -357,7 +359,7 @@ public class DatesControllerTest
         json.put(DatesController.PATIENT_DATEOFDEATH_FIELDNAME, this.dateFormat.format(deathDate));
         json.put(DatesController.PATIENT_EXAMDATE_FIELDNAME, this.dateFormat.format(examDate));
 
-        PatientData result = this.controller.readJSON(json);
+        PatientData<Date> result = this.mocker.getComponentUnderTest().readJSON(json);
 
         Assert.assertEquals(birthDate, result.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
         Assert.assertEquals(deathDate, result.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
@@ -365,10 +367,8 @@ public class DatesControllerTest
     }
 
     @Test
-    public void checkGetName()
+    public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(DATA_NAME, this.controller.getName());
+        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
     }
-
-
 }

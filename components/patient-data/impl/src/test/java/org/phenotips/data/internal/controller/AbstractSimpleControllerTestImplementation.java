@@ -21,16 +21,15 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
 
 @Component
 @Named("test")
 @Singleton
 public class AbstractSimpleControllerTestImplementation extends AbstractSimpleController
 {
-
     protected static final String DATA_NAME = "test";
 
     protected static final String PROPERTY_1 = "property1";

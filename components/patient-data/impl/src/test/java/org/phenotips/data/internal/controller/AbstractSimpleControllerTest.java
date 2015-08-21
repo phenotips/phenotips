@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
 import javax.inject.Provider;
 
 import org.junit.Assert;
@@ -39,11 +41,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
@@ -53,18 +57,22 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.DATA_NAME;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_1;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_2;
+import static org.phenotips.data.internal.controller.AbstractSimpleControllerTestImplementation.PROPERTY_3;
 
 /**
- * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON).
- * These methods are tested using a mock implementation of {@link AbstractSimpleController} that provides
- * simple definitions of the abstract methods getName, getProperties, and getJsonPropertyName
+ * Test for the {@link AbstractSimpleController} defined methods (load, save, writeJSON, readJSON). These methods are
+ * tested using a mock implementation of {@link AbstractSimpleController} that provides simple definitions of the
+ * abstract methods getName, getProperties, and getJsonPropertyName
  */
 public class AbstractSimpleControllerTest
 {
-
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<String>>(AbstractSimpleControllerTestImplementation.class);
+        new MockitoComponentMockingRule<PatientDataController<String>>(
+            AbstractSimpleControllerTestImplementation.class);
 
     private DocumentAccessBridge documentAccessBridge;
 
@@ -81,14 +89,6 @@ public class AbstractSimpleControllerTest
 
     @Mock
     protected BaseObject data;
-
-    private final String DATA_NAME = AbstractSimpleControllerTestImplementation.DATA_NAME;
-
-    private final String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
-
-    private final String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
-
-    private final String PROPERTY_3 = AbstractSimpleControllerTestImplementation.PROPERTY_3;
 
     @Before
     public void setUp() throws Exception
@@ -180,9 +180,9 @@ public class AbstractSimpleControllerTest
         Exception exception = new Exception();
         doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
 
-        mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME, exception.getMessage());
+        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME, exception.getMessage());
     }
 
     @Test
@@ -190,9 +190,9 @@ public class AbstractSimpleControllerTest
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        mocker.getComponentUnderTest().save(this.patient);
+        this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME,
+        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME,
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
@@ -206,21 +206,21 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
-        doReturn(patientData).when(this.patient).getData(this.DATA_NAME);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.xWiki).saveDocument(any(XWikiDocument.class),
             anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", this.DATA_NAME, exception.getMessage());
+        verify(this.mocker.getMockedLogger()).error("Failed to save {}: [{}]", DATA_NAME, exception.getMessage());
     }
 
     @Test
     public void saveReturnsWithoutSavingWhenDataIsNotKeyValueBased() throws ComponentLookupException, XWikiException
     {
-        PatientData<String> patientData = new SimpleValuePatientData<String>(this.DATA_NAME, "datum");
-        doReturn(patientData).when(this.patient).getData(this.DATA_NAME);
+        PatientData<String> patientData = new SimpleValuePatientData<String>(DATA_NAME, "datum");
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
@@ -236,8 +236,8 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
-        doReturn(patientData).when(this.patient).getData(this.DATA_NAME);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
@@ -304,7 +304,7 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -325,7 +325,7 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -350,7 +350,7 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -375,7 +375,7 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -396,7 +396,7 @@ public class AbstractSimpleControllerTest
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
         map.put(PROPERTY_3, "datum3");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<String>(DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

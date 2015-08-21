@@ -23,6 +23,7 @@ import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -42,6 +43,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Provider;
 
 import org.junit.Assert;
@@ -51,8 +53,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
@@ -62,8 +66,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for the {@link VersionsController} Component,
- * only the overridden methods from {@link AbstractSimpleController} are tested here
+ * Test for the {@link VersionsController} Component, only the overridden methods from {@link AbstractSimpleController}
+ * are tested here
  */
 public class VersionsControllerTest
 {
@@ -117,7 +121,7 @@ public class VersionsControllerTest
         doReturn("1.0").when(this.firstOntologyVersion).getStringValue("version");
         doReturn("second").when(this.secondOntologyVersion).getStringValue("name");
         doReturn("2.0").when(this.secondOntologyVersion).getStringValue("version");
-        List<BaseObject> ontologyVersionList = Arrays.asList(firstOntologyVersion, secondOntologyVersion);
+        List<BaseObject> ontologyVersionList = Arrays.asList(this.firstOntologyVersion, this.secondOntologyVersion);
         doReturn(ontologyVersionList).when(this.doc).getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
 
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.cmProvider);
@@ -233,8 +237,8 @@ public class VersionsControllerTest
         Assert.assertEquals("1.0", container.get("first_version"));
         Assert.assertEquals("2.0", container.get("second_version"));
 
-        //if selectedFieldNames is not Null, version information will be added iff selectedFieldNames
-        //contains the enablingFieldName
+        // if selectedFieldNames is not Null, version information will be added iff selectedFieldNames
+        // contains the enablingFieldName
         json.clear();
         selectedFieldNames.clear();
         selectedFieldNames.add("other_field_name");

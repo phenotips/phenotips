@@ -18,6 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -29,8 +30,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Test for the {@link PatientNameController} Component,
- * only the overridden methods from {@link AbstractSimpleController} are tested here
+ * Test for the {@link PatientNameController} Component, only the overridden methods from
+ * {@link AbstractSimpleController} are tested here
  */
 public class PatientNameControllerTest
 {

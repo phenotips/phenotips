@@ -17,21 +17,13 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.slf4j.Logger;
+
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -41,19 +33,32 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONObject;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for the {@link APGARController} Component,
- * implementation of the {@link org.phenotips.data.PatientDataController} interface
+ * Tests for the {@link APGARController} Component, implementation of the
+ * {@link org.phenotips.data.PatientDataController} interface
  */
 public class APGARControllerTest
 {
     @Rule
-    public MockitoComponentMockingRule<PatientDataController> mocker =
-            new MockitoComponentMockingRule<PatientDataController>(APGARController.class);
+    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
 
     private static final String DATA_NAME = "apgar";
 
@@ -64,8 +69,6 @@ public class APGARControllerTest
     private Logger logger;
 
     private DocumentAccessBridge documentAccessBridge;
-
-    private APGARController controller;
 
     @Mock
     private Patient patient;
@@ -81,7 +84,6 @@ public class APGARControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.controller = (APGARController)this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
@@ -92,45 +94,45 @@ public class APGARControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass()
+    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<Integer> result = this.controller.load(this.patient);
+        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
-                        + " error has occurred during controller loading ",
-                PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+            + " error has occurred during controller loading ",
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadDoesNotReturnNullIntegers()
+    public void loadDoesNotReturnNullIntegers() throws ComponentLookupException
     {
         doReturn(null).when(this.data).getStringValue(anyString());
 
-        PatientData<Integer> result = this.controller.load(this.patient);
+        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(0, result.size());
     }
 
     @Test
-    public void loadDoesNotReturnNonIntegerStrings()
+    public void loadDoesNotReturnNonIntegerStrings() throws ComponentLookupException
     {
         doReturn("STRING").when(this.data).getStringValue(anyString());
 
-        PatientData<Integer> result = this.controller.load(this.patient);
+        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(0, result.size());
     }
 
     @Test
-    public void loadReturnsExpectedIntegers()
+    public void loadReturnsExpectedIntegers() throws ComponentLookupException
     {
         doReturn("1").when(this.data).getStringValue(APGAR_1);
         doReturn("2").when(this.data).getStringValue(APGAR_5);
 
-        PatientData<Integer> result = this.controller.load(this.patient);
+        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(Integer.valueOf(1), result.get(APGAR_1));
         Assert.assertEquals(Integer.valueOf(2), result.get(APGAR_5));
@@ -138,42 +140,46 @@ public class APGARControllerTest
     }
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() {
+    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() {
+    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
         selectedFields.add(APGAR_1);
         selectedFields.add(APGAR_5);
-        
-        this.controller.writeJSON(this.patient, json, selectedFields);
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONReturnsWhenDataIsEmpty() {
+    public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
+    {
         Map<String, Integer> map = new LinkedHashMap<>();
         PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenDataIsEmpty() {
+    public void writeJSONWithSelectedFieldsReturnsWhenDataIsEmpty() throws ComponentLookupException
+    {
         Map<String, Integer> map = new LinkedHashMap<>();
         PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
@@ -182,13 +188,14 @@ public class APGARControllerTest
         selectedFields.add(APGAR_1);
         selectedFields.add(APGAR_5);
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
-    public void writeJSONAddsAllDataEntriesToJSON() {
+    public void writeJSONAddsAllDataEntriesToJSON() throws ComponentLookupException
+    {
         Map<String, Integer> map = new LinkedHashMap<>();
         map.put(APGAR_1, 1);
         map.put(APGAR_5, 2);
@@ -196,7 +203,7 @@ public class APGARControllerTest
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
-        this.controller.writeJSON(this.patient, json);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
@@ -204,7 +211,8 @@ public class APGARControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsAllDataEntriesWhenAPGARSelected() {
+    public void writeJSONWithSelectedFieldsAddsAllDataEntriesWhenAPGARSelected() throws ComponentLookupException
+    {
         Map<String, Integer> map = new LinkedHashMap<>();
         map.put(APGAR_1, 1);
         map.put(APGAR_5, 2);
@@ -217,7 +225,7 @@ public class APGARControllerTest
         selectedFields.add("apgar");
         selectedFields.add("identifiers");
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
@@ -225,7 +233,8 @@ public class APGARControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenAPGARNotSelected() {
+    public void writeJSONWithSelectedFieldsReturnsWhenAPGARNotSelected() throws ComponentLookupException
+    {
         Map<String, Integer> map = new LinkedHashMap<>();
         map.put(APGAR_1, 1);
         map.put(APGAR_5, 2);
@@ -236,24 +245,26 @@ public class APGARControllerTest
         selectedFields.add("dates");
         selectedFields.add("ethnicity");
 
-        this.controller.writeJSON(this.patient, json, selectedFields);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void saveIsUnsupported(){
-        this.controller.save(this.patient);
+    public void saveIsUnsupported() throws ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().save(this.patient);
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void readJSONIsUnsupported(){
-        this.controller.readJSON(new JSONObject());
+    public void readJSONIsUnsupported() throws ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().readJSON(new JSONObject());
     }
 
     @Test
-    public void checkGetName()
+    public void checkGetName() throws ComponentLookupException
     {
-        Assert.assertEquals(DATA_NAME, this.controller.getName());
+        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
     }
 }

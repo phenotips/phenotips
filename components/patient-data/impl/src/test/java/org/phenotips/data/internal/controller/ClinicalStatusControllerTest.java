@@ -21,6 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -35,19 +36,27 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link ClinicalStatusController} component,
- * implementation of the {@link org.phenotips.data.PatientDataController} interface
+ * Test for the {@link ClinicalStatusController} component, implementation of the
+ * {@link org.phenotips.data.PatientDataController} interface
  */
 public class ClinicalStatusControllerTest
 {
+    private static final String AFFECTED = "affected";
+
+    private static final String UNAFFECTED = "unaffected";
+
+    private static final String DATA_NAME = "clinicalStatus";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(ClinicalStatusController.class);
@@ -62,12 +71,6 @@ public class ClinicalStatusControllerTest
 
     @Mock
     private BaseObject data;
-
-    private final String AFFECTED = "affected";
-
-    private final String UNAFFECTED = "unaffected";
-
-    private final String DATA_NAME = "clinicalStatus";
 
     @Before
     public void setUp() throws Exception
@@ -165,7 +168,8 @@ public class ClinicalStatusControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAffectedValueToJSON() throws ComponentLookupException
     {
-        PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
+        PatientData<String> data =
+            new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

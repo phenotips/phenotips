@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -38,17 +39,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.doReturn;
 
 /**
- * Test for the {@link SolvedController} Component,
- * only the overridden methods from {@link AbstractSimpleController} are tested here
+ * Test for the {@link SolvedController} Component, only the overridden methods from {@link AbstractSimpleController}
+ * are tested here
  */
 public class SolvedControllerTest
 {
-
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(SolvedController.class);
@@ -67,8 +68,6 @@ public class SolvedControllerTest
     private static final String STATUS_SOLVED = SOLVED_STRING;
 
     private static final String STATUS_UNSOLVED = "unsolved";
-
-    private static final String STATUS_UNKNOWN = "";
 
     @Before
     public void setUp()

@@ -21,6 +21,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
@@ -38,11 +39,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
@@ -53,15 +56,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link SexController} component,
- * implementation of the {@link org.phenotips.data.PatientDataController} interface
+ * Test for the {@link SexController} component, implementation of the {@link org.phenotips.data.PatientDataController}
+ * interface
  */
 public class SexControllerTest
 {
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
-    
+        new MockitoComponentMockingRule<PatientDataController<String>>(SexController.class);
+
     private DocumentAccessBridge documentAccessBridge;
 
     private Execution execution;
@@ -121,7 +124,7 @@ public class SexControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to load patient gender: [{}]", (String)null);
+        verify(this.mocker.getMockedLogger()).error("Failed to load patient gender: [{}]", (String) null);
         Assert.assertNull(result);
     }
 
@@ -176,7 +179,7 @@ public class SexControllerTest
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]", (String)null);
+        verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]", (String) null);
     }
 
     @Test
@@ -187,7 +190,7 @@ public class SexControllerTest
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]",
-                PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
+            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
     @Test
@@ -195,15 +198,15 @@ public class SexControllerTest
     {
         XWikiException exception = new XWikiException();
         doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class),
-                anyString(), anyBoolean(), any(XWikiContext.class));
+            anyString(), anyBoolean(), any(XWikiContext.class));
         doReturn(new SimpleValuePatientData<String>(DATA_NAME, SEX_MALE)).when(this.patient).getData(DATA_NAME);
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
         verify(this.xwiki).saveDocument(any(XWikiDocument.class),
-                anyString(), anyBoolean(), any(XWikiContext.class));
+            anyString(), anyBoolean(), any(XWikiContext.class));
         verify(this.mocker.getMockedLogger()).error("Failed to save patient gender: [{}]",
-                exception.getMessage());
+            exception.getMessage());
     }
 
     @Test
@@ -332,8 +335,8 @@ public class SexControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().readJSON(json);
 
-        //Change this line to: Assert.assertEquals(SEX_UNKNOWN, result.getValue())
-        //if PhenoTips Implementation Changes to Support Unknown Gender
+        // Change this line to: Assert.assertEquals(SEX_UNKNOWN, result.getValue())
+        // if PhenoTips Implementation Changes to Support Unknown Gender
         Assert.assertEquals("", result.getValue());
     }
 

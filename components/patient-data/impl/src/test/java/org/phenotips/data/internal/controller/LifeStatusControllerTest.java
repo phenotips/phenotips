@@ -22,6 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -29,9 +30,10 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+
 import javax.inject.Provider;
 
 import org.junit.Assert;
@@ -40,11 +42,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
@@ -55,15 +59,25 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test for the {@link LifeStatusController} component,
- * implementation of the {@link org.phenotips.data.PatientDataController} interface
+ * Test for the {@link LifeStatusController} component, implementation of the
+ * {@link org.phenotips.data.PatientDataController} interface
  */
 public class LifeStatusControllerTest
 {
+    private static final String DATA_NAME = "life_status";
+
+    private static final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
+
+    private static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
+
+    private static final String ALIVE = "alive";
+
+    private static final String DECEASED = "deceased";
+
     @Rule
     public MockitoComponentMockingRule<PatientDataController<String>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
-    
+        new MockitoComponentMockingRule<PatientDataController<String>>(LifeStatusController.class);
+
     private DocumentAccessBridge documentAccessBridge;
 
     private XWikiContext xcontext;
@@ -79,16 +93,6 @@ public class LifeStatusControllerTest
 
     @Mock
     private BaseObject data;
-
-    private final String DATA_NAME = "life_status";
-
-    private final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
-
-    private final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
-
-    private final String ALIVE = "alive";
-
-    private final String DECEASED = "deceased";
 
     @Before
     public void setUp() throws Exception
@@ -115,7 +119,7 @@ public class LifeStatusControllerTest
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ", (String)null);
+            + " error has occurred during controller loading ", (String) null);
         Assert.assertNull(result);
     }
 
@@ -175,7 +179,7 @@ public class LifeStatusControllerTest
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", (String)null);
+        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", (String) null);
     }
 
     @Test
@@ -193,17 +197,15 @@ public class LifeStatusControllerTest
     public void saveCatchesExceptionFromSaveDocument() throws XWikiException, ComponentLookupException
     {
         XWikiException exception = new XWikiException();
-        doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
+        doThrow(exception).when(this.xwiki).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(),
+            any(XWikiContext.class));
         doReturn(null).when(this.patient).getData(DATA_NAME);
         doReturn(null).when(this.patient).getData("dates");
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.xwiki).saveDocument(any(XWikiDocument.class),
-            anyString(), anyBoolean(), any(XWikiContext.class));
-        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]",
-                exception.getMessage());
+        verify(this.xwiki).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(), any(XWikiContext.class));
+        verify(this.mocker.getMockedLogger()).error("Failed to save life status: [{}]", exception.getMessage());
     }
 
     @Test
