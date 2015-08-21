@@ -5000,6 +5000,7 @@ document.observe("xwiki:dom:loaded", function() {
       });
       element.observe('blur', function(event) {
         element.value = _this.format(element.value);
+        Element.fire(element, 'duration:format');
         element.title = _this.getValue(element.value);
       });
     },
