@@ -39,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -66,8 +65,6 @@ public class APGARControllerTest
 
     private static final String APGAR_5 = "apgar5";
 
-    private Logger logger;
-
     private DocumentAccessBridge documentAccessBridge;
 
     @Mock
@@ -84,7 +81,6 @@ public class APGARControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
@@ -100,7 +96,7 @@ public class APGARControllerTest
 
         PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);

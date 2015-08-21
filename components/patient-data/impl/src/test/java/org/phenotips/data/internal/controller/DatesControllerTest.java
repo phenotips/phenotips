@@ -45,7 +45,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -73,8 +72,6 @@ public class DatesControllerTest
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Date>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Date>>(DatesController.class);
-
-    private Logger logger;
 
     private DocumentAccessBridge documentAccessBridge;
 
@@ -115,7 +112,6 @@ public class DatesControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.logger = this.mocker.getMockedLogger();
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         this.configurationManager = this.mocker.getInstance(RecordConfigurationManager.class);
         this.execution = this.mocker.getInstance(Execution.class);
@@ -141,7 +137,7 @@ public class DatesControllerTest
 
         PatientData<Date> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.logger).error("Could not find requested document or some unforeseen"
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
             + " error has occurred during controller loading ",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
@@ -181,7 +177,7 @@ public class DatesControllerTest
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save dates: [{}]",
+        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]",
             PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
     }
 
@@ -192,7 +188,7 @@ public class DatesControllerTest
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save dates: [{}]", (String) null);
+        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]", (String) null);
     }
 
     @Test
@@ -230,7 +226,7 @@ public class DatesControllerTest
 
         this.mocker.getComponentUnderTest().save(this.patient);
 
-        verify(this.logger).error("Failed to save dates: [{}]", exception.getMessage());
+        verify(this.mocker.getMockedLogger()).error("Failed to save dates: [{}]", exception.getMessage());
     }
 
     @Test
