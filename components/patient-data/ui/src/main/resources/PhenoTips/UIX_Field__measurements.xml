@@ -41,181 +41,6 @@
   <object>
     <name>PhenoTips.UIX_Field__measurements</name>
     <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>36c952bf-a312-4afe-a755-27bec8a8f185</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>forbid</cache>
-    </property>
-    <property>
-      <code>(function() {
-  var addMeasurementSet = function() {
-    var clone = $$('.measurement-set.proto')[0].clone(true);
-    clone.removeClassName('proto');
-
-    clone.select('.measurement-row').each(function(measurementRow) {
-      var measurementClassId = $('measurements').retrieve('measurementClassId');
-
-      measurementRow.select('input').each(function(input) {
-        input.name = input.name.replace('[id]', measurementClassId);
-        input.disabled = false;
-      });
-
-      $('measurements').store('measurementClassId', measurementClassId + 1);
-    });
-
-    /*clone.select('.date')[0].observe('input', dateChangeHandler);
-    clone.select('.measurement-row input').each(function(el) {
-      el.observe('input', measurementInputHandler)
-    });
-    clone.select('&gt; .delete')[0].observe('click', function() {
-      this.up().remove();
-    });
-    clone.select('div.more')[0].hide();
-    clone.select('button.toggle-more')[0].observe('click', function() {
-      this.up().select('div.more')[0].toggle();
-      var button = this.up().select('button.toggle-more')[0];
-      if (this.up().select('div.more')[0].visible()) {
-        button.innerHTML = '- Show less';
-      } else {
-        button.innerHTML = '+ Show more';
-      }
-    });*/
-    
-    $('measurements').insert(clone);
-    return clone;
-  };
-
-  var handleAddMeasurementSet = function() {
-    $('btn_add-measurement-set').observe('click', function(e) {
-      addMeasurementSet();
-
-      e.preventDefault(); 
-      return false;
-    });
-  };
-
-  /*
-  var measurementInputHandler = function() {
-    var pctl = this.up().select('.pctl')[0];
-    pctl.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
-
-    if (this.value.length) {
-      // TODO: Fetch the percentile from the API endpoint
-      var className = "";
-      var pctlText = "";
-
-      pctl.addClassName(className);
-      pctl.innerText = pctlText;
-    } else {
-      pctl.innerText = '';
-    }
-  };
-  
-
-  var dateChangeHandler = function() {
-    if (!this.value || !$('bday').value) return;
-
-    var bday = moment($('bday').value);
-    var measureDate = moment(this.value);
-    var ageYears = measureDate.diff(bday, 'years');
-    this.up().select('input.years')[0].value = ageYears;
-    this.up().select('input.months')[0].value = measureDate.diff(bday, 'months') - ageYears*12;
-  };
-  */
-
-  var init = function() {
-    $('measurements').store('measurementClassId', 0);
-    handleAddMeasurementSet();
-    addMeasurementSet();
-  };
-
-  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
-})();</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse/>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.UIX_Field__measurements</name>
-    <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>11c4302e-a7b2-4b18-9079-54d1b143663b</guid>
     <class>
@@ -420,7 +245,7 @@
   float: right;
 }
 .measurement-set input {
-	width: auto;
+  width: auto;
 }
 .measurement-set &gt; .delete {
   width: 15px;
@@ -534,8 +359,8 @@ div.birthdate {
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+$xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
-$xwiki.jsx.use('PhenoTips.UIX_Field__measurements')##
 #macro (measurement $name $unit $isDoubleSided)
 (% class="measurement"%)(((
   #if ($isDoubleSided)
@@ -567,14 +392,14 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__measurements')##
 #set ($obj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   (% id="measurements"%)(((
-  	(% class="measurement-set proto"%)(((
+    (% class="measurement-set proto"%)(((
       {{html clean="false" wiki="false"}}
-      &lt;label for="date"&gt;Date:&lt;/label&gt; &lt;input class="date" type="text"&gt;
+      &lt;label for="date"&gt;Date:&lt;/label&gt; &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt=""&gt;
       {{/html}}
       (% class="age"%)(((
-      	{{html clean="false" wiki="false"}}
-      	&lt;label for=""&gt;Age:&lt;/label&gt; &lt;input type="text" size="2" class="years"&gt;y &lt;input type="text" size="2" class="months"&gt;m
-      	{{/html}}
+        {{html clean="false" wiki="false"}}
+        &lt;label for=""&gt;Age:&lt;/label&gt; &lt;input class="pt-duration measurement-age" type="text" placeholder="e.g. 1y5m2w"&gt;
+        {{/html}}
       )))
       (% class="measurements"%)(((
         #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
