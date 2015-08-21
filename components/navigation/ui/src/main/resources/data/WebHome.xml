@@ -37,7 +37,32 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{dashboard style="panels" /}}</content>
+  <content>{{velocity}}
+##Create the dashboard area
+#set ($numColumns = 2)
+$xwiki.ssfx.use('uicomponents/dashboard/dashboard.css', true)##
+$xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true, 'columns' : $numColumns})##
+(% id="dashboard" class="panels container-columns"%)(((
+  #foreach ($column in [1..$numColumns])
+  (% class="column #if($column == 1)first-column#elseif($column==$numColumns)last-column#end" %)(((
+    #foreach ($e in $services.uix.getExtensions('org.phenotips.homepage.dashboard', {'sortByParameter' : 'priority'}))
+      #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
+      #set ($extensionParameters = $e.getParameters())
+        #if ($extensionParameters.get("column") == "$column")
+          ##Gadget Template
+          {{html wiki=true clean=false}}
+          &lt;div class="gadget"&gt;
+            &lt;div class="gadget-title"&gt;&lt;span&gt;$extensionParameters.get("title")&lt;/span&gt;&lt;/div&gt;
+            &lt;div class="gadget-content"&gt;$extentionContent&lt;/div&gt;
+          &lt;/div&gt;
+          {{/html}}
+
+        #end
+      #end
+    )))
+  #end
+)))##end of dashboard
+{{/velocity}}</content>
   <object>
     <name>data.WebHome</name>
     <number>0</number>
