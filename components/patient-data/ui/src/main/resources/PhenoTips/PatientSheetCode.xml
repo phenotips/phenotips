@@ -3439,6 +3439,244 @@ document.observe('xwiki:dom:loaded', function()
   </object>
   <object>
     <name>PhenoTips.PatientSheetCode</name>
+    <number>16</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>28e65875-6f30-4abe-9831-74f3d57a8fd3</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start PhenoTips augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.Measurements = Class.create({
+    initialize: function(el) {
+      this.el = el;
+      this.measurementClassId = 0;
+
+      this._handleAddMeasurementSet();
+      this._addMeasurementSet();
+
+      return this;
+    },
+    _handleAddMeasurementSet: function() {
+      var that = this;
+      $('btn_add-measurement-set').observe('click', function(e) {
+        that._addMeasurementSet();
+
+        e.preventDefault();
+        return false;
+      });
+    },
+    _addMeasurementSet: function() {
+      var clone = this.el.select('.measurement-set.proto')[0].clone(true);
+      clone.removeClassName('proto');
+      this.el.insert(clone);
+      new PhenoTips.widgets.MeasurementSet(clone, this);
+      Event.fire(document, 'xwiki:dom:updated', {'elements' : [clone]});
+    },
+  });
+
+  widgets.MeasurementSet = Class.create({
+    initialize: function(el, parent) {
+      this.el = el;
+      this.parent = parent;
+
+      // DOM node shortcuts
+      this._dateEl = this.el.select('input.measurement-date')[0];
+      this._ageEl = this.el.select('input.measurement-age')[0];
+      this._globalDobEl = $(document.documentElement).down('input[name$=date_of_birth]');
+
+      // Init handlers
+      this._setAgeUsingDateAndDob = this._setAgeUsingDateAndDob.bind(this);
+      this._updateHiddenFields = this._updateHiddenFields.bind(this);
+
+      // Init datepicker
+      if (!this._dateEl.hasClassName('initialized')) {
+        new XWiki.widgets.DateTimePicker(this._dateEl, this._dateEl.title);
+      }
+
+      // Init hidden inputs
+      var _this = this;
+      this.el.select('.measurement-row').each(function(measurementRow) {
+        measurementRow.select('input').each(function(input) {
+          input.name = input.name.replace('[id]', _this.parent.measurementClassId);
+          input.disabled = false;
+        });
+
+        _this.parent.measurementClassId++;
+      });
+
+      // Attach handlers
+      this._dateEl.observe('xwiki:date:changed', function(e) {
+        _this._updateHiddenFields('date', e.target.alt);
+        _this._ageEl.readOnly = e.target.alt.length &gt; 0;
+
+        _this._setAgeUsingDateAndDob();
+      });
+      ['input', 'keypress'].each(function(ev) {
+        _this._ageEl.observe(ev, function(e) {
+          _this._dateEl.readOnly = e.target.value.trim().length &gt; 0;
+        });
+      });
+      ['duration:format', 'blur'].each(function(ev) {
+        _this._ageEl.observe('duration:format', function(e) {
+          _this._updateHiddenFields('age', e.target.value);
+        });
+      });
+
+      this._globalDobEl.observe('xwiki:date:changed', function() {
+        if (_this.el.select('.measurement-date')[0].alt.length) {
+          _this._setAgeUsingDateAndDob();
+        }
+      });
+      /*clone.select('.measurement-row input').each(function(el) {
+        el.observe('input', measurementInputHandler)
+      });
+      clone.select('&gt; .delete')[0].observe('click', function() {
+        this.up().remove();
+      });
+      clone.select('div.more')[0].hide();
+      clone.select('button.toggle-more')[0].observe('click', function() {
+        this.up().select('div.more')[0].toggle();
+        var button = this.up().select('button.toggle-more')[0];
+        if (this.up().select('div.more')[0].visible()) {
+          button.innerHTML = '- Show less';
+        } else {
+          button.innerHTML = '+ Show more';
+        }
+      });*/
+
+      return this;
+    },
+
+    _updateHiddenFields: function(fieldName, value) {
+      this.el.select('input[name$=_'+fieldName+']').each(function(input) {
+        input.value = value;
+      });
+    },
+
+    _setAgeUsingDateAndDob: function() {
+      var dateEl = this.el.select('.measurement-date')[0];
+      if (dateEl.alt.length) {
+        if (!this._globalDobEl.alt.length) return;
+
+        var bday = Date.parseISO_8601(this._globalDobEl.alt || '');
+        bday.setTimezoneOffset((new Date()).getTimezoneOffset() * -10/3);
+        var age = new TimePeriod(bday, new Date(dateEl.alt));
+        var dateDisplayParts = {
+          y: age.years,
+          m: age.months,
+          w: Math.floor(age.days/7),
+          d: age.days % 7,
+        };
+        var ageStr = "";
+        Object.keys(dateDisplayParts).each(function(k) {
+          if (dateDisplayParts[k] &gt; 0) ageStr += dateDisplayParts[k] + k;
+        })
+        this._ageEl.value = ageStr;
+        this._updateHiddenFields('age', ageStr);
+      } else {
+        this._ageEl.value = '';
+        this._updateHiddenFields('age', '');
+      }
+    },
+  });
+
+  var init = function(event) {
+    new PhenoTips.widgets.Measurements($('measurements'));
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+ }(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Measurements section</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientSheetCode</name>
     <number>0</number>
     <className>XWiki.PDFClass</className>
     <guid>8013b262-b466-4c84-be89-c48455787e47</guid>
@@ -4900,6 +5138,11 @@ input.LV_invalid_field {
 }
 input[type="checkbox"] + .LV_validation_message {
   float: right;
+}
+.pt-duration.error {
+  background-color: $theme.highlightColor;
+  border: 1px solid $theme.notificationErrorColor;
+  color: $theme.textColor !important;
 }</code>
     </property>
     <property>
