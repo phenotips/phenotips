@@ -52,7 +52,7 @@ $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true,
           ##Gadget Template
           {{html wiki=true clean=false}}
           &lt;div class="gadget"&gt;
-            &lt;div class="gadget-title"&gt;&lt;span&gt;$extensionParameters.get("title")&lt;/span&gt;&lt;/div&gt;
+            &lt;div class="gadget-title"&gt;&lt;span&gt;$!{extensionParameters.get("title")}&lt;/span&gt;&lt;/div&gt;
             &lt;div class="gadget-content"&gt;$extentionContent&lt;/div&gt;
           &lt;/div&gt;
           {{/html}}
