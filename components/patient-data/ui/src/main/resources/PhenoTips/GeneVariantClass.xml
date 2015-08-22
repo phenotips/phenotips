@@ -50,7 +50,7 @@
     <cdna>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}
 #end
@@ -59,7 +59,7 @@ $!{value}
       <name>cdna</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>c. DNA</prettyName>
+      <prettyName>c.DNA</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -68,7 +68,7 @@ $!{value}
     </cdna>
     <genesymbol>
       <customDisplay/>
-      <disabled>1</disabled>
+      <disabled>0</disabled>
       <name>genesymbol</name>
       <number>2</number>
       <picker>1</picker>
@@ -82,7 +82,7 @@ $!{value}
     <protein>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}
 #end
@@ -101,7 +101,7 @@ $!{value}
     <transcript>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}
 #end
@@ -120,7 +120,7 @@ $!{value}
     <dbsnp>
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit')
-{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("Phenotips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
+{{html clean=false}}&lt;input type='text' name='${prefix}${name}' placeholder="$services.localization.render("PhenoTips.GeneVariantClass.${name}Placeholder")" size='16' value="$!{escapetool.xml($value)}"/&gt;{{/html}}
 #else
 $!{value}
 #end
@@ -129,7 +129,7 @@ $!{value}
       <name>dbsnp</name>
       <number>5</number>
       <picker>0</picker>
-      <prettyName>db SNP</prettyName>
+      <prettyName>dbSNP</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>

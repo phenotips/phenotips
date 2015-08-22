@@ -333,8 +333,10 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
             List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
             for (BaseObject variantObject : variantXWikiObjects) {
-                Map<String, String> singleVariant = parseFields(variantObject);
-                allVariants.add(singleVariant);
+                if (variantObject != null) {
+                    Map<String, String> singleVariant = parseFields(variantObject);
+                    allVariants.add(singleVariant);
+                }
             }
             return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
         } catch (Exception e) {
