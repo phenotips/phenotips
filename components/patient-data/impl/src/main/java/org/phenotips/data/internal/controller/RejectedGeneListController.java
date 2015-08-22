@@ -117,6 +117,7 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+                this.logger.debug("No regected genes information found, returning");
                 return null;
             }
 
