@@ -40,7 +40,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Updates whatever needs to change when node id changes (e.g. id label) 
+     * Updates whatever needs to change when node id changes (e.g. id label)
      *
      * @method onSetID
      */
@@ -172,7 +172,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                                 );
             //console.log("Rel: " + id + ", Y: " + this.getY() + ", Attach/FinalY: " +finalYTo + ", yTOP: " + yTop + ", lastbend: " + lastBend + ", finalPos: " + stringifyObject(finalPosition));
 
-            var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right            
+            var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right
             var xFrom    = this.getX();                  // always the X of the end of the previous segment of the curve
             var yFrom    = this.getY();                  // always the Y of the end of the previous segment of the curve
             var xTo      = xFrom;
@@ -235,7 +235,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 prevX    = position.x;
 
                 //------------------
-                // note: assume that we always draw bottom to top, as relationship nodes are always at or below partner level                
+                // note: assume that we always draw bottom to top, as relationship nodes are always at or below partner level
 
                 if (smoothCorners && ( (!wasAngle && !angled) || (i >= path.length - 2 && path.length > 1)) ) {
                     //console.log("corner from " + xFrom + "," + yFrom + ", newVert: " + newVertical );
@@ -299,7 +299,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
         }
 
-        this._partnerConnections = editor.getPaper().setFinish().toBack(); 
+        this._partnerConnections = editor.getPaper().setFinish().toBack();
         if (this.getNode().getGraphics()) {
             this.getHoverBox().regenerateHandles();
             this.getHoverBox().regenerateButtons();
@@ -315,7 +315,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     updateChildhubConnection: function() {
         this._childhubConnection && this._childhubConnection.remove();
 
-        var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;        
+        var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;
 
         var positionedGraph = editor.getGraph();
 
@@ -373,7 +373,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     var twinlineY   = childlineY+PedigreeEditor.attributes.twinMonozygothicLineShiftY;
                     var xIntercept1 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionL, positionY);
                     var xIntercept2 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionR, positionY);
-                    editor.getView().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines); 
+                    editor.getView().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines);
                 }
             }
             else if (twinGroupId == null) {
@@ -406,7 +406,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
             // draw regular child line - for all nodes which are not monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
-            if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
+            if (!currentIsMonozygothic || childX == positionL || childX == positionR ) {
                 editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, lineAttr);
             }
             else {

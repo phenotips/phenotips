@@ -24,11 +24,11 @@ var DisorgerLegend = Class.create( Legend, {
      *
      * @method getDisorder
      * @return {Object}
-     */    
+     */
     getDisorder: function(disorderID) {
         if (!this._disorderCache.hasOwnProperty(disorderID)) {
             var whenNameIsLoaded = function() { this._updateDisorderName(disorderID); }
-            this._disorderCache[disorderID] = new Disorder(disorderID, null, whenNameIsLoaded.bind(this));            
+            this._disorderCache[disorderID] = new Disorder(disorderID, null, whenNameIsLoaded.bind(this));
         }
         return this._disorderCache[disorderID];
     },
@@ -68,12 +68,12 @@ var DisorgerLegend = Class.create( Legend, {
      * @method _updateDisorderName
      * @param {Number} disorderID The identifier of the disorder to update
      * @private
-     */    
+     */
     _updateDisorderName: function(disorderID) {
         //console.log("updating disorder display for " + disorderID + ", name = " + this.getDisorder(disorderID).getName());
         var name = this._legendBox.down('li#' + this._getPrefix() + '-' + disorderID + ' .disorder-name');
         name.update(this.getDisorder(disorderID).getName());
-    },   
+    },
 
     /**
      * Generate the element that will display information about the given disorder in the legend
@@ -127,7 +127,7 @@ var DisorgerLegend = Class.create( Legend, {
         }
 
         var usedColors = Object.values(this._objectColors),
-            // [red/yellow]           prefColors = ["#FEE090", '#f8ebb7', '#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'];        
+            // [red/yellow]           prefColors = ["#FEE090", '#f8ebb7', '#eac080', '#bf6632', '#9a4500', '#a47841', '#c95555', '#ae6c57'];
             // [original yellow/blue] prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
             // [green]                prefColors = ['#81a270', '#c4e8c4', '#56a270', '#b3b16f', '#4a775a', '#65caa3'];
         prefColors = ['#E0F8F8', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];

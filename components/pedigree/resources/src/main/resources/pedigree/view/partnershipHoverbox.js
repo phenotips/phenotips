@@ -15,7 +15,7 @@
 var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
-        var radius = PedigreeEditor.attributes.radius;        
+        var radius = PedigreeEditor.attributes.radius;
         $super(partnership, -radius*0.65, -radius*0.8, radius*1.3, radius*2.3, junctionX, junctionY, nodeShapes);
         this._isMenuToggled = false;
     },
@@ -28,20 +28,20 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      */
     generateHandles: function($super) {
         if (this._currentHandles !== null) return;
-        $super();        
+        $super();
 
         if (this.getNode().getChildlessStatus() == 'infertile') return;
-        
+
         var x = this.getNodeX();
-        var y = this.getNodeY();     
+        var y = this.getNodeY();
         var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
 
-        editor.getPaper().setStart();        
-        //static part (going right below the node)            
+        editor.getPaper().setStart();
+        //static part (going right below the node)
         var path = [["M", x, y],["L", x, y+PedigreeEditor.attributes.partnershipHandleBreakY]];
-        editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());            
+        editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());
         this.generateHandle('child', x, y+PedigreeEditor.attributes.partnershipHandleBreakY, x, y+PedigreeEditor.attributes.partnershipHandleLength);
-                
+
         this._currentHandles.push( editor.getPaper().setFinish() );
     },
 
@@ -54,9 +54,9 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         if (this._currentButtons !== null) return;
         $super();
         this.generateDeleteBtn();
-        this.generateMenuBtn();        
+        this.generateMenuBtn();
     },
-    
+
     /**
      * Creates a node-shaped show-menu button
      *
@@ -67,7 +67,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         var me = this;
         var action = function() {
             me.toggleMenu(!me.isMenuToggled());
-        };        
+        };
         var junctionShapedButton = this.getNode().getGraphics().getJunctionShape().clone();
         junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOffPartner);
         junctionShapedButton.click(action);
@@ -76,9 +76,9 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         junctionShapedButton.attr("cursor", "pointer");
         this._currentButtons.push(junctionShapedButton);
         this.disable();
-        this.getFrontElements().push(junctionShapedButton);        
-        this.enable();           
-    },     
+        this.getFrontElements().push(junctionShapedButton);
+        this.enable();
+    },
 
     /**
      * Returns true if the menu is toggled for this partnership node
@@ -89,7 +89,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     isMenuToggled: function() {
         return this._isMenuToggled;
     },
-    
+
     /**
      * Shows/hides the menu for this partnership node
      *
@@ -107,7 +107,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             editor.getPartnershipMenu().show(this.getNode(), position.x, position.y);
         }
     },
-    
+
     /**
      * Hides the hoverbox with a fade out animation
      *
@@ -118,7 +118,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         if(!this.isMenuToggled()){
             $super();
         }
-    },    
+    },
 
     /**
      * Displays the hoverbox with a fade in animation
@@ -141,7 +141,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      */
     handleAction : function(handleType, isDrag, curHoveredId) {
         if(isDrag && curHoveredId != null) {
-            if(handleType == "child") { 
+            if(handleType == "child") {
                 var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
                 document.fire("pedigree:person:drag:newparent", event);
             }

@@ -59,7 +59,7 @@ var OkCancelDialogue = Class.create( {
         this._configButton(2, button3title, on3Function, bottomRight);
         this._promptBody.update(message);
         this.dialog.show();
-        this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show() 
+        this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
     },
 
     /**
@@ -80,9 +80,9 @@ var OkCancelDialogue = Class.create( {
             this._onButtonActions[buttonID] = actionFunction;
         }
         if (bottomRightButton) {
-            this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"}); 
+            this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"});
         } else {
-            this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"}); 
+            this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"});
         }
     }
 });

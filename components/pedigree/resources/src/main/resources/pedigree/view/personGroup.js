@@ -19,7 +19,7 @@ var PersonGroup = Class.create(Person, {
         this._type       = "PersonGroup";
         $super(x, y, id, properties);
         // already done as the last step in super():
-        // this.assignProperties(properties);  
+        // this.assignProperties(properties);
     },
 
     /**
@@ -33,7 +33,7 @@ var PersonGroup = Class.create(Person, {
     _generateGraphics: function(x, y) {
         return new PersonGroupVisuals(this, x, y);
     },
-    
+
     /**
      * Always returns False - needed for compatibility with personHowerBox which uses this
      *
@@ -41,8 +41,8 @@ var PersonGroup = Class.create(Person, {
      */
     isProband: function() {
         return false;
-    },    
-    
+    },
+
     /**
      * Changes the number of people who are in this PersonGroup
      *
@@ -77,7 +77,7 @@ var PersonGroup = Class.create(Person, {
 
     /**
      * Returns an object containing all the properties of this node
-     * except id, x, y & type 
+     * except id, x, y & type
      *
      * @method getProperties
      * @return {Object} in the form

@@ -627,8 +627,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         this.drawLabels();
     },
-    
-    
+
+
     /**
      * Returns this Person's cancer age of onset labels
      *
@@ -638,8 +638,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     getCancerAgeOfOnsetLabels: function() {
         return this._cancerAgeOfOnsetLabels;
     },
-    
-    
+
+
     /**
      * Updates the cancer age of onset labels for this Person
      *
@@ -680,7 +680,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     this._cancerAgeOfOnsetLabels[cancerName].addGap   = true;
                 }
             }
-            
+
         } else {
             this._cancerAgeOfOnsetLabels = {};
         }

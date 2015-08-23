@@ -13,7 +13,7 @@ var Disorder = Class.create( {
         if (name == null && !isInt(disorderID)) {
             name = disorderID;
         }
-        
+
         this._disorderID = disorderID;
         this._name       = name ? name : "loading...";
 

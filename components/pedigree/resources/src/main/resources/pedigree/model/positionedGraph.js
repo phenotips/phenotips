@@ -174,7 +174,7 @@ PositionedGraph.prototype = {
         }
 
         var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
-        
+
         if (suggestedRanks) {
             for (var i = 0; i < suggestedRanks.length; i++) {
                 var nodesAtRank = suggestedRanks[i];
@@ -263,7 +263,7 @@ PositionedGraph.prototype = {
         //    resuting component may have other minimum in/out multi-rnak edges
 
         console.log("Re-ranking ranks before: " + stringifyObject(ranks));
-        
+
         while(true) {
             var nodeColor        = [];   // for each node which component it belongs to
             var component        = [];   // for each component list of vertices in the component
@@ -280,17 +280,17 @@ PositionedGraph.prototype = {
                     // This node will be the first node of the next component, which
                     // includes all nodes reachable using non-multi-rank edges (any direction).
                     // All nodes in the component will be colored as "maxComponentColor"
-                    
+
                     var thisComponent = [];
-                    
+
                     var potentialLongEdges = {};
-                    
+
                     var queue = new Queue();
                     queue.push( v );
 
                     while ( queue.size() > 0 ) {
                         var nextV = queue.pop();
-                        
+
                         //console.log("processing: " + nextV);
                         if (nodeColor[nextV] != null) continue;
 
@@ -315,18 +315,18 @@ PositionedGraph.prototype = {
                             }
                         }
                     }
-                    
-                    component[currentComponentColor]      = thisComponent;                
+
+                    component[currentComponentColor]      = thisComponent;
                     minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
-                
+
                     // go over all long edges originating from nodes in the component,
-                    // and find the shortest long edge which goes out of component                    
+                    // and find the shortest long edge which goes out of component
                     for (var vv in potentialLongEdges) {
-                        if (potentialLongEdges.hasOwnProperty(vv)) {                                
+                        if (potentialLongEdges.hasOwnProperty(vv)) {
                                 if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
-                                
+
                                 var nextEdge = potentialLongEdges[vv];
-                                
+
                                 if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
                                     (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
                                      nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
@@ -334,7 +334,7 @@ PositionedGraph.prototype = {
                                 }
                             }
                     }
-                    
+
                     currentComponentColor++;
                 }
             }
@@ -2929,7 +2929,7 @@ PositionedGraph.prototype = {
                 }
                 if (this.GG.properties[person].hasOwnProperty("externalID")) {
                     numLabelLines++;
-                }                
+                }
                 if (numLabelLines > maxNumLinesInComments) {
                     maxNumLinesInComments = numLabelLines;
                 }

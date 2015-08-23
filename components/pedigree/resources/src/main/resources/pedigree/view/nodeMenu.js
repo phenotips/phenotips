@@ -17,7 +17,7 @@
     }, ...
  ]
  }
- 
+
  Note: when an item is specified as "inactive" it is completely removed from the menu; when it
        is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
  */
@@ -467,7 +467,7 @@ NodeMenu = Class.create({
             var _generateRadioButton = function(v) {
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
                 if (v.hasOwnProperty("columnshiftPX")) {
-                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"}); 
+                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"});
                 }
                 var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
                 radioLabel.insert({'top': radioButton});
@@ -1103,7 +1103,7 @@ NodeMenu = Class.create({
                 }
 
                 if (value.hasOwnProperty(cancerName)) {
-                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) { 
+                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) {
                         var optionStatus = statusSelect.down('option[value="affected"]');
                     } else {
                         var optionStatus = statusSelect.down('option[value="unaffected"]');

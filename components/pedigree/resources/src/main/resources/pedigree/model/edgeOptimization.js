@@ -517,7 +517,7 @@ VerticalPosIntOptimizer.prototype = {
                 currentState = bestState.slice(0);
                 currentScore = this.localOptimization(currentState, bestScore, componentID, true);  // restart from a slightly optimized last best point
                 bestStep     = step;
-                console.log("[asearch] reset to: " + stringifyObject(currentState) + ", score: " + currentScore + " (@ step = " + (maxSteps - step + 1) + ")");                
+                console.log("[asearch] reset to: " + stringifyObject(currentState) + ", score: " + currentScore + " (@ step = " + (maxSteps - step + 1) + ")");
             }
 
             var neighbourState = this.computeNeighbour( currentState, componentID, step );

@@ -32,7 +32,7 @@ var AbstractNode = Class.create( {
 
     /**
      * Sets the ID of this node
-     * (when nodes get removed all ids above the removed id shift by one down) 
+     * (when nodes get removed all ids above the removed id shift by one down)
      *
      * @method setID
      */
@@ -86,7 +86,7 @@ var AbstractNode = Class.create( {
     getY: function() {
         return this.getGraphics().getY();
     },
-  
+
     /**
      * Changes the position of the node to (x,y)
      *
@@ -223,7 +223,7 @@ var ChildlessBehavior = {
      */
     setChildlessReason: function(reason) {
         if(this.getChildlessStatus() == null)
-            reson = "";        
+            reson = "";
         this._childlessReason = reason;
         this.getGraphics().updateChildlessStatusLabel();
     }

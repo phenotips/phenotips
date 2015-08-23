@@ -40,12 +40,12 @@ var AbstractNodeVisuals = Class.create({
     getX: function() {
         return this._absoluteX;
     },
-    
+
     /**
-     * Updates whatever needs to change when node id changes (e.g. id label) 
+     * Updates whatever needs to change when node id changes (e.g. id label)
      *
      * @method onSetID
-     */    
+     */
     onSetID: function(id) {
     },
 
@@ -58,13 +58,13 @@ var AbstractNodeVisuals = Class.create({
     getY: function() {
         return this._absoluteY;
     },
-      
+
     /**
      * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
      *
      * @method getY
      * @return {Number} The y coordinate
-     */    
+     */
     getBottomY: function() {
         return this._absoluteY;
     },
@@ -81,10 +81,10 @@ var AbstractNodeVisuals = Class.create({
     setPos: function(x, y, animate, callback) {
         //console.log("Node " + this.getNode().getID() + ", xy: " + x + "/" + y);
         this._absoluteX = x;
-        this._absoluteY = y; 
+        this._absoluteY = y;
         callback && callback();
     },
-    
+
     /**
      * Expands the node graphics a bit
      *
@@ -92,7 +92,7 @@ var AbstractNodeVisuals = Class.create({
      */
     grow: function() {
         this._isGrown = true;
-    },    
+    },
 
     /**
      * Shrinks node graphics to the original size
@@ -107,8 +107,8 @@ var AbstractNodeVisuals = Class.create({
      * Returns current growth status of the node (true if grown, false if not)
      *
      * @method isGrown
-     */    
-    isGrown: function() { 
+     */
+    isGrown: function() {
         return this._isGrown;
     },
 
@@ -116,7 +116,7 @@ var AbstractNodeVisuals = Class.create({
      * Returns true if this node's graphic representation covers coordinates (x,y)
      *
      * @method containsXY
-     */    
+     */
     containsXY: function(x,y) {
         return false;
     },
@@ -205,7 +205,7 @@ var ChildlessBehaviorVisuals = {
     getChildlessStatusLabel: function() {
         return this._childlessStatusLabel;
     },
-    
+
     /**
      * Updates the childless status icon for this Node based on the childless/infertility status.
      *
@@ -214,13 +214,13 @@ var ChildlessBehaviorVisuals = {
     updateChildlessShapes: function() {
         var status = this.getNode().getChildlessStatus();
         this._childlessShape && this._childlessShape.remove();
-        
+
         if(status) {
             var x    = this.getX();
             var y    = this.getY();
             var r    = PedigreeEditor.attributes.infertileMarkerWidth;
             var lowY = this.getBottomY() + PedigreeEditor.attributes.infertileMarkerHeight;
-            
+
             var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
             if(status == 'infertile')
                 childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
@@ -243,7 +243,7 @@ var ChildlessBehaviorVisuals = {
     updateChildlessStatusLabel: function() {
         this._childlessStatusLabel && this._childlessStatusLabel.remove();
         this._childlessStatusLabel = null;
-        
+
         var text = "";
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
 

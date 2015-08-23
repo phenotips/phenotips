@@ -18,7 +18,7 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
        },
 
     /**
-    * Creates the handles used in this hoverbox - overriden to generate no handles 
+    * Creates the handles used in this hoverbox - overriden to generate no handles
     *
     * @method generateHandles
     * @return {Raphael.st} A set of handles
