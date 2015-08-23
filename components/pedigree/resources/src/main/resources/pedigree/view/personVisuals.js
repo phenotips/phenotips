@@ -19,6 +19,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._ageLabel = null;
         this._externalIDLabel = null;
         this._commentsLabel = null;
+        this._cancerAgeOfOnsetLables = {};
         this._childlessStatusLabel = null;
         this._disorderShapes = null;
         this._deadShape = null;
@@ -607,7 +608,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     },
 
     /**
-     * Updates the stillbirth label for this Person
+     * Updates the comments label for this Person
      *
      * @method updateCommentsLabel
      */
@@ -623,6 +624,65 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this._commentsLabel.addGap   = true;
         } else {
             this._commentsLabel = null;
+        }
+        this.drawLabels();
+    },
+    
+    
+    /**
+     * Returns this Person's cancer age of onset labels
+     *
+     * @method getCommentsLabel
+     * @return {Raphael.el}
+     */
+    getCancerAgeOfOnsetLables: function() {
+        return this._cancerAgeOfOnsetLables;
+    },
+    
+    
+    /**
+     * Updates the cancer age of onset labels for this Person
+     *
+     * @method updateCommentsLabel
+     */
+    updateCancerAgeOfOnsetLables: function() {
+    	var cancerLabels = this.getCancerAgeOfOnsetLables();
+        if (!isObjectEmpty(cancerLabels)) {
+	        for (var cancerName in cancerLabels) {
+	        	cancerLabels[cancerName].remove();
+    		}
+    	}
+        var cancerData = this.getNode().getCancers();
+    	if (!isObjectEmpty(cancerData)) {
+    		for (var cancerName in cancerData) {
+                if (cancerData.hasOwnProperty(cancerName) && cancerData[cancerName].affected) {
+                	var text = cancerName.toString() + " ca.";
+                	if (cancerData[cancerName].hasOwnProperty("ageAtDiagnosis") && (cancerData[cancerName].ageAtDiagnosis.length > 0)) {
+                		var age = cancerData[cancerName].ageAtDiagnosis;
+                		if (isNaN(parseInt(age))){
+                			if (age == "before_1") {
+                				text += " dx <1";
+                			} else if (age == "before_10") {
+                				text += " dx <10";
+                			} else {
+                				text += (age.indexOf('before_') > -1) ? " dx " + (parseInt(age.substring(7))-10) + "\'s": " dx >100";
+                			}
+                		} else {
+                			text += " dx " + cancerData[cancerName].ageAtDiagnosis;
+                		}
+                	} else {
+                		text += " dx ?";
+                	}
+                	this.getCancerAgeOfOnsetLables()[cancerName] && this.getCancerAgeOfOnsetLables()[cancerName].remove();
+                	this._cancerAgeOfOnsetLables[cancerName] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.cancerAgeOfOnsetLables);
+                	this._cancerAgeOfOnsetLables[cancerName].node.setAttribute("class", "field-no-user-select");
+                    this._cancerAgeOfOnsetLables[cancerName].alignTop = true;
+                    this._cancerAgeOfOnsetLables[cancerName].addGap   = true;
+                }
+            }
+    		
+    	} else {
+            this._cancerAgeOfOnsetLables = {};
         }
         this.drawLabels();
     },
@@ -712,6 +772,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getAgeLabel() && labels.push(this.getAgeLabel());
         this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
         this.getCommentsLabel() && labels.push(this.getCommentsLabel());
+        var cancerLabels = this.getCancerAgeOfOnsetLables();
+        if (!isObjectEmpty(cancerLabels)) {
+	        for (var cancerName in cancerLabels) {
+	        	labels.push(cancerLabels[cancerName]);
+	        }
+        }
         return labels;
     },
 
