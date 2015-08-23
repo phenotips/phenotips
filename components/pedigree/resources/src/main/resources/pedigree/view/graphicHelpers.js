@@ -221,10 +221,10 @@ function getCaretPosition(elem) {
     if (elem.selectionEnd) {
         return elem.selectionEnd;
     } else if (elem.createTextRange) {
-		var r = document.selection.createRange();
-		r.moveStart('character', -elem.value.length);
-		return r.text.length;
-	} else return null;
+        var r = document.selection.createRange();
+        r.moveStart('character', -elem.value.length);
+        return r.text.length;
+    } else return null;
 }
 
 function setCaretPosition(ctrl, pos)

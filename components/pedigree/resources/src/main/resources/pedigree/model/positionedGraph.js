@@ -97,7 +97,7 @@ PositionedGraph.prototype = {
 
         timer.printSinceLast("=== Ordering runtime: ");
 
-		// 2.1)
+        // 2.1)
         // once ordering is known need to re-rank relationship nodes to be on the same level as the
         // lower ranked parent. Attempt to place next to one of the parents; having ordering info
         // helps to pick the parent in case parents are on the same level and not next to each other
@@ -1870,12 +1870,12 @@ PositionedGraph.prototype = {
 
                 //console.log("==> [1] Handling: " + i);
 
-    		    var parents = this.GG.getInEdges(i);
+                var parents = this.GG.getInEdges(i);
 
                 // note: each "relationship" node is guaranteed to have exactly two "parent" nodes (validate() checks that)
 
-	            if (this.ranks[parent[0]] != this.ranks[parent[1]])
-	                throw "Assertion failed: edges betwen neighbouring ranks only";
+                if (this.ranks[parent[0]] != this.ranks[parent[1]])
+                    throw "Assertion failed: edges betwen neighbouring ranks only";
 
                 var order1 = this.order.vOrder[parents[0]];
                 var order2 = this.order.vOrder[parents[1]];
@@ -2163,24 +2163,24 @@ PositionedGraph.prototype = {
 
                 if (this.GG.getInEdges(v).length != 0) continue;  // skip nodes with parents
 
-    		    var relationships = this.GG.getOutEdges(v);
-    		    if (relationships.length != 1) continue;          // only when one and only one relationship
+                var relationships = this.GG.getOutEdges(v);
+                if (relationships.length != 1) continue;          // only when one and only one relationship
 
-    		    var rel = relationships[0];
-    		    if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
+                var rel = relationships[0];
+                if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
 
-    		    var orderV   = this.order.vOrder[v];
-    		    var orderRel = this.order.vOrder[rel];
+                var orderV   = this.order.vOrder[v];
+                var orderRel = this.order.vOrder[rel];
 
-    		    if (Math.abs(orderRel - orderV) != 1) {
-    		        // not next to each other
-    		        if (orderRel > orderV) {
+                if (Math.abs(orderRel - orderV) != 1) {
+                    // not next to each other
+                    if (orderRel > orderV) {
                         this.order.move(r, orderV, (orderRel - orderV - 1));
-    		        } else {
+                    } else {
                         this.order.move(r, orderV, (orderRel - orderV + 1));
-    		        }
-    		    }
-    		}
+                    }
+                }
+            }
         }
 
         // 2) TODO: come up with heuristics which can be applied at this point

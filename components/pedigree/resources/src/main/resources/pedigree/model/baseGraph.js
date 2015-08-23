@@ -538,13 +538,13 @@ BaseGraph.prototype = {
         return this.getOutEdges(v).concat(this.getInEdges(v));
     },
 
-	isRelationship: function(v) {
-	    return (this.type[v] == TYPE.RELATIONSHIP);
-	},
+    isRelationship: function(v) {
+        return (this.type[v] == TYPE.RELATIONSHIP);
+    },
 
-	isChildhub: function(v) {
-	    return (this.type[v] == TYPE.CHILDHUB);
-	},
+    isChildhub: function(v) {
+        return (this.type[v] == TYPE.CHILDHUB);
+    },
 
     isPerson: function(v) {
         return (this.type[v] == TYPE.PERSON);
@@ -623,16 +623,16 @@ BaseGraph.prototype = {
         }
     },
 
-	getRelationshipChildhub: function(v) {
-	    if (!this.isRelationship(v))
-	        throw "Assertion failed: applying getRelationshipChildhub() to a non-relationship node";
+    getRelationshipChildhub: function(v) {
+        if (!this.isRelationship(v))
+            throw "Assertion failed: applying getRelationshipChildhub() to a non-relationship node";
 
-	    return this.v[v][0];
-	},
+        return this.v[v][0];
+    },
 
     getAllRelationships: function(v) {
-	    if (!this.isPerson(v))
-	        throw "Assertion failed: attempting to get relationships of a non-person";
+        if (!this.isPerson(v))
+            throw "Assertion failed: attempting to get relationships of a non-person";
 
         var relationships = this.v[v];
 
@@ -643,11 +643,11 @@ BaseGraph.prototype = {
             result.push(relationship);
         }
         return result;
-	},
+    },
 
-	getAllPartners: function(v) {
-	    if (!this.isPerson(v))
-	        throw "Assertion failed: attempting to get partners of a non-person";
+    getAllPartners: function(v) {
+        if (!this.isPerson(v))
+            throw "Assertion failed: attempting to get partners of a non-person";
 
         var relationships = this.getAllRelationships(v);
 
@@ -660,26 +660,26 @@ BaseGraph.prototype = {
                 result.push(partners[1]);
         }
         return result;
-	},
+    },
 
-	getParents: function(v) {
-	    if (!this.isPerson(v) && !this.isRelationship(v))
-	        throw "Assertion failed: attempting to get parents of a non-person and non-relationship";
+    getParents: function(v) {
+        if (!this.isPerson(v) && !this.isRelationship(v))
+            throw "Assertion failed: attempting to get parents of a non-person and non-relationship";
 
-	    // skips through relationship and child nodes and returns an array of two real parents. If none found returns []
+        // skips through relationship and child nodes and returns an array of two real parents. If none found returns []
 
-	    var parentRelationship = this.isPerson(v) ? this.getProducingRelationship(v) : v;
+        var parentRelationship = this.isPerson(v) ? this.getProducingRelationship(v) : v;
 
-	    if (parentRelationship == null)  // no parents
-	        return [];
+        if (parentRelationship == null)  // no parents
+            return [];
 
-	    var inEdges = this.getInEdges(parentRelationship);
+        var inEdges = this.getInEdges(parentRelationship);
 
-	    if (inEdges.length != 2)
-	        throw "Assertion failed: exactly two parents";
+        if (inEdges.length != 2)
+            throw "Assertion failed: exactly two parents";
 
-	    return [this.upTheChainUntilNonVirtual(inEdges[0]), this.upTheChainUntilNonVirtual(inEdges[1])];
-	},
+        return [this.upTheChainUntilNonVirtual(inEdges[0]), this.upTheChainUntilNonVirtual(inEdges[1])];
+    },
 
     getPathToParents: function(v)
     {
@@ -699,29 +699,29 @@ BaseGraph.prototype = {
         return result;
     },
 
-	getProducingRelationship: function(v) {
-	    if (!this.isPerson(v))
-	        throw "Assertion failed: attempting to get producing relationship of a non-person";
+    getProducingRelationship: function(v) {
+        if (!this.isPerson(v))
+            throw "Assertion failed: attempting to get producing relationship of a non-person";
 
-	    // find the relationship which produces this node (or null if not present)
-	    if (this.inedges[v].length == 0) return null;
-	    var chHub = this.inedges[v][0];
+        // find the relationship which produces this node (or null if not present)
+        if (this.inedges[v].length == 0) return null;
+        var chHub = this.inedges[v][0];
 
-	    if (this.inedges[chHub].length == 0) return null;
-	    return this.inedges[chHub][0];
-	},
+        if (this.inedges[chHub].length == 0) return null;
+        return this.inedges[chHub][0];
+    },
 
-	upTheChainUntilNonVirtual: function(v) {
-	    if (!this.isVirtual(v)) return v;
+    upTheChainUntilNonVirtual: function(v) {
+        if (!this.isVirtual(v)) return v;
 
-	    return this.upTheChainUntilNonVirtual( this.inedges[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
-	},
+        return this.upTheChainUntilNonVirtual( this.inedges[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
+    },
 
-	downTheChainUntilNonVirtual: function(v) {
-	    if (!this.isVirtual(v)) return v;
+    downTheChainUntilNonVirtual: function(v) {
+        if (!this.isVirtual(v)) return v;
 
-	    return this.downTheChainUntilNonVirtual( this.v[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
-	},
+        return this.downTheChainUntilNonVirtual( this.v[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
+    },
 
     getUpPathEndingInNonVirtual: function(v)
     {

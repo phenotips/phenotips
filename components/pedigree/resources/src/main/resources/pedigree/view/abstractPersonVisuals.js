@@ -13,7 +13,7 @@
 var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
-    	$super(node, x, y);
+        $super(node, x, y);
 
         this._radius = PedigreeEditor.attributes.radius;
         this._width  = PedigreeEditor.attributes.radius * 4;

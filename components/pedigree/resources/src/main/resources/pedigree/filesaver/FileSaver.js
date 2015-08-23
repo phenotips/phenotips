@@ -225,9 +225,9 @@ var saveAs = saveAs
       };
       return saveAs;
   }(
-	   typeof self !== "undefined" && self
-	|| typeof window !== "undefined" && window
-	|| this.content
+       typeof self !== "undefined" && self
+    || typeof window !== "undefined" && window
+    || this.content
 ));
 // `self` is undefined in Firefox for Android content script context
 // while `this` is nsIContentFrameMessageManager

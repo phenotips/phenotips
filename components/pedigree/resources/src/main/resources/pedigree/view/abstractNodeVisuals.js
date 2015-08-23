@@ -12,7 +12,7 @@
 var AbstractNodeVisuals = Class.create({
 
     initialize: function(node, x, y) {
-    	//console.log("abstract node visuals");
+        //console.log("abstract node visuals");
         this._node = node;
         this._absoluteX = x;
         this._absoluteY = y;
@@ -66,7 +66,7 @@ var AbstractNodeVisuals = Class.create({
      * @return {Number} The y coordinate
      */    
     getBottomY: function() {
-    	return this._absoluteY;
+        return this._absoluteY;
     },
 
     /**
@@ -216,14 +216,14 @@ var ChildlessBehaviorVisuals = {
         this._childlessShape && this._childlessShape.remove();
         
         if(status) {
-	        var x    = this.getX();
-	        var y    = this.getY();
-	        var r    = PedigreeEditor.attributes.infertileMarkerWidth;
-	        var lowY = this.getBottomY() + PedigreeEditor.attributes.infertileMarkerHeight;
-	        
-	        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
-	        if(status == 'infertile')
-	            childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
+            var x    = this.getX();
+            var y    = this.getY();
+            var r    = PedigreeEditor.attributes.infertileMarkerWidth;
+            var lowY = this.getBottomY() + PedigreeEditor.attributes.infertileMarkerHeight;
+            
+            var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
+            if(status == 'infertile')
+                childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
 
             this._childlessShape = editor.getPaper().path(childlessPath);
             if (status == 'childless' && this.getChildlessShapeAttr) {
