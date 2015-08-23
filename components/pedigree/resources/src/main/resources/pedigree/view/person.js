@@ -847,7 +847,7 @@ var Person = Class.create(AbstractPerson, {
             }
         }
         this.getGraphics().updateDisorderShapes();
-        this.getGraphics().updateCancerAgeOfOnsetLables();
+        this.getGraphics().updateCancerAgeOfOnsetLabels();
     },
 
     /**
