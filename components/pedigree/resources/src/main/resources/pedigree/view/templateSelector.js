@@ -106,6 +106,13 @@ var TemplateSelector = Class.create( {
         var availableHeight = document.viewport.getHeight() - 80;
         this.mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
         this.dialog.show();
+        var availableHeight = document.viewport.getHeight() - 80;
+        var myHeight = this.mainDiv.getHeight();
+        if (myHeight > availableHeight) {
+            this.mainDiv.setStyle({'height': availableHeight + 'px', 'overflow-y': 'scroll'});
+        } else {
+            this.mainDiv.setStyle({'height': 'auto', 'overflow-y': 'auto'});
+        }
     },
 
     /**
