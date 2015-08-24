@@ -18,8 +18,8 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -340,7 +340,8 @@ public class FormFieldTest
         }
 
         @Override
-        public JSON toJSON() {
+        public JSON toJSON()
+        {
             JSONObject json = new JSONObject();
             json.put("id", this.getId());
             return json;

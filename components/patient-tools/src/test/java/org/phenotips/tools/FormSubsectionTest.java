@@ -16,39 +16,47 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 package org.phenotips.tools;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
+
 import static org.mockito.Mockito.mock;
 
-public class FormSubsectionTest {
-
+public class FormSubsectionTest
+{
     private FormField testFormField;
+
     private String[] fieldnames;
+
     String title = "title";
+
     String type = "type";
 
     @Before
-    public void setUp(){
-        testFormField = mock(FormField.class);
-        fieldnames = new String[]{ "phenotype", "negative_phenotype" };
+    public void setUp()
+    {
+        this.testFormField = mock(FormField.class);
+        this.fieldnames = new String[] { "phenotype", "negative_phenotype" };
     }
 
     @Test
-    public void testSubsectionDisplayTitleAndType(){
-        FormSubsection testSubsection = new FormSubsection(title, type);
-        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, fieldnames));
-        testSubsection.addElement(testFormField);
-        Assert.assertEquals("<label class='section'>" + title + "</label><div class='subsection "
-            + type + "'>null</div>", testSubsection.display(DisplayMode.Edit, fieldnames));
+    public void testSubsectionDisplayTitleAndType()
+    {
+        FormSubsection testSubsection = new FormSubsection(this.title, this.type);
+        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, this.fieldnames));
+        testSubsection.addElement(this.testFormField);
+        Assert.assertEquals("<label class='section'>" + this.title + "</label><div class='subsection "
+            + this.type + "'>null</div>", testSubsection.display(DisplayMode.Edit, this.fieldnames));
     }
 
     @Test
-    public void subsectionDisplayTitleOnly(){
-        FormSubsection testSubsection = new FormSubsection(title);
-        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, fieldnames));
-        testSubsection.addElement(testFormField);
-        Assert.assertEquals("<label class='section'>" + title + "</label><div class='subsection '>null</div>",
-            testSubsection.display(DisplayMode.Edit, fieldnames));
+    public void subsectionDisplayTitleOnly()
+    {
+        FormSubsection testSubsection = new FormSubsection(this.title);
+        Assert.assertEquals("", testSubsection.display(DisplayMode.Edit, this.fieldnames));
+        testSubsection.addElement(this.testFormField);
+        Assert.assertEquals("<label class='section'>" + this.title + "</label><div class='subsection '>null</div>",
+            testSubsection.display(DisplayMode.Edit, this.fieldnames));
     }
 }

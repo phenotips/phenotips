@@ -17,51 +17,58 @@
  */
 package org.phenotips.tools;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class FormGroupTest {
+public class FormGroupTest
+{
+    private FormGroup testGroup;
 
-     private FormGroup testGroup;
-     private String[] fieldnames;
+    private String[] fieldnames;
 
-     @Before
-     public void setUp(){
-         testGroup = new FormGroup("Test Group");
-         fieldnames = new String[] { "phenotype", "negative_phenotype" };
-     }
+    @Before
+    public void setUp()
+    {
+        this.testGroup = new FormGroup("Test Group");
+        this.fieldnames = new String[] { "phenotype", "negative_phenotype" };
+    }
 
     @Test
-    public void checkElementsAreAdded(){
-        Assert.assertFalse(testGroup.addElement(null));
+    public void checkElementsAreAdded()
+    {
+        Assert.assertFalse(this.testGroup.addElement(null));
         FormField testField = mock(FormField.class);
-        Assert.assertTrue(testGroup.addElement(testField));
-        Assert.assertTrue(testGroup.elements.contains(testField));
+        Assert.assertTrue(this.testGroup.addElement(testField));
+        Assert.assertTrue(this.testGroup.elements.contains(testField));
     }
 
     @Test
-    public void checkEmptyFormGroupDisplay(){
-        Assert.assertEquals("", testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }));
-        Assert.assertEquals("", testGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }));
+    public void checkEmptyFormGroupDisplay()
+    {
+        Assert.assertEquals("",
+            this.testGroup.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" }));
+        Assert.assertEquals("",
+            this.testGroup.display(DisplayMode.View, new String[] { "phenotype", "negative_phenotype" }));
     }
 
     @Test
-    public void checkBehaviorOnEditAndViewMode() {
+    public void checkBehaviorOnEditAndViewMode()
+    {
         FormField testField1 = mock(FormField.class);
         FormField testField2 = mock(FormField.class);
-        testGroup.addElement(testField1);
-        testGroup.addElement(testField2);
+        this.testGroup.addElement(testField1);
+        this.testGroup.addElement(testField2);
 
-        testGroup.display(DisplayMode.Edit, fieldnames);
-        verify(testField1).display(DisplayMode.Edit, fieldnames);
-        verify(testField2).display(DisplayMode.Edit,  fieldnames);
+        this.testGroup.display(DisplayMode.Edit, this.fieldnames);
+        verify(testField1).display(DisplayMode.Edit, this.fieldnames);
+        verify(testField2).display(DisplayMode.Edit, this.fieldnames);
 
-        testGroup.display(DisplayMode.View, fieldnames);
-        verify(testField1).display(DisplayMode.View, fieldnames);
-        verify(testField2).display(DisplayMode.View, fieldnames);
+        this.testGroup.display(DisplayMode.View, this.fieldnames);
+        verify(testField1).display(DisplayMode.View, this.fieldnames);
+        verify(testField2).display(DisplayMode.View, this.fieldnames);
     }
-
 }
