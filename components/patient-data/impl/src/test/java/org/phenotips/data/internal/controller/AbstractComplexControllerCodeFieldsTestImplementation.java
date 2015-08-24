@@ -17,8 +17,10 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.VocabularyProperty;
 import org.xwiki.component.annotation.Component;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,38 +30,41 @@ import javax.inject.Singleton;
 
 /**
  * Implementation of {@link AbstractComplexController} used for testing.
+ * Specifically, this Implementation overrides the isCodeFieldsOnly() method to return true
+ * in order to test the functionality of {@link AbstractComplexController} when all fields can be
+ * converted to vocabulary objects
  */
 @Component
-@Named("complexTest")
+@Named("codeFieldsTest")
 @Singleton
-public class AbstractComplexControllerTestImplementation extends AbstractComplexController<String> {
+public class AbstractComplexControllerCodeFieldsTestImplementation
+    extends AbstractComplexController<List<VocabularyProperty>>
+{
 
-    protected static String DATA_NAME = "test";
+    protected static String DATA_NAME = "codeFieldsTest";
 
-    protected static String PROPERTY_1 = "property1";
+    protected static String PROPERTY_1 = AbstractSimpleControllerTestImplementation.PROPERTY_1;
 
-    protected static String PROPERTY_2 = "property2";
-
-    protected static String PROPERTY_3 = "property3";
-
-    protected static String PROPERTY_4 = "property4";
+    protected static String PROPERTY_2 = AbstractSimpleControllerTestImplementation.PROPERTY_2;
 
     @Override
     protected List<String> getBooleanFields()
-    {
-        return Arrays.asList(PROPERTY_3, PROPERTY_4);
-    }
-
-    @Override
-    protected List<String> getCodeFields()
     {
         return Collections.emptyList();
     }
 
     @Override
+    protected List<String> getCodeFields()
+    {
+        ParameterizedType p = (ParameterizedType) this.getClass().getGenericSuperclass();
+        System.out.println(p.getActualTypeArguments()[0]);
+        return getProperties();
+    }
+
+    @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(PROPERTY_1, PROPERTY_2, PROPERTY_3);
+        return Arrays.asList(PROPERTY_1, PROPERTY_2);
     }
 
     @Override
@@ -72,5 +77,11 @@ public class AbstractComplexControllerTestImplementation extends AbstractComplex
     public String getName()
     {
         return DATA_NAME;
+    }
+
+    @Override
+    protected boolean isCodeFieldsOnly()
+    {
+        return true;
     }
 }

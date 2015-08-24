@@ -18,11 +18,7 @@
 package org.phenotips.data.internal.controller;
 
 import com.xpn.xwiki.objects.BaseProperty;
-import org.phenotips.data.DictionaryPatientData;
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
-import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleValuePatientData;
+import org.phenotips.data.*;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -32,8 +28,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,19 +37,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -69,7 +60,14 @@ public class AbstractComplexControllerTest
         new MockitoComponentMockingRule<PatientDataController<String>>(
         AbstractComplexControllerTestImplementation.class);
 
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<List<VocabularyProperty>>> codeFieldImplMocker =
+        new MockitoComponentMockingRule<PatientDataController<List<VocabularyProperty>>>(
+        AbstractComplexControllerCodeFieldsTestImplementation.class);
+
     private DocumentAccessBridge documentAccessBridge;
+
+    private DocumentReference patientDocument;
 
     @Mock
     private Patient patient;
@@ -89,6 +87,9 @@ public class AbstractComplexControllerTest
     @Mock
     private BaseProperty<ObjectPropertyReference> baseProperty3;
 
+    @Mock
+    private BaseProperty<ObjectPropertyReference> baseProperty4;
+
     private final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
 
     private final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
@@ -96,6 +97,8 @@ public class AbstractComplexControllerTest
     private final String PROPERTY_2 = AbstractComplexControllerTestImplementation.PROPERTY_2;
 
     private final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
+
+    private final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
 
 
     @Before
@@ -105,7 +108,7 @@ public class AbstractComplexControllerTest
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
-        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
+        this.patientDocument = new DocumentReference("wiki", "patient", "00000001");
         doReturn(patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
         doReturn(this.data).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
@@ -113,12 +116,28 @@ public class AbstractComplexControllerTest
         doReturn(baseProperty1).when(this.data).getField(PROPERTY_1);
         doReturn(baseProperty2).when(this.data).getField(PROPERTY_2);
         doReturn(baseProperty3).when(this.data).getField(PROPERTY_3);
+        doReturn(baseProperty4).when(this.data).getField(PROPERTY_4);
     }
 
     @Test
     public void checkGetName() throws ComponentLookupException
     {
         Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+    }
+
+    @Test
+    public void verifyDefaultTestImplementationIsNotCodeFieldsOnly() throws ComponentLookupException
+    {
+        AbstractComplexController controller = (AbstractComplexController) this.mocker.getComponentUnderTest();
+        Assert.assertFalse(controller.isCodeFieldsOnly());
+    }
+
+
+    @Test
+    public void verifyCodeFieldsOnlyImplementationIsCodeFieldsOnly() throws ComponentLookupException
+    {
+        AbstractComplexController controller = (AbstractComplexController) this.codeFieldImplMocker.getComponentUnderTest();
+        Assert.assertTrue(controller.isCodeFieldsOnly());
     }
 
     //-----------------------------------load() tests-----------------------------------
@@ -132,7 +151,7 @@ public class AbstractComplexControllerTest
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen error has " +
-            "occurred during controller loading");
+            "occurred during controller loading ", exception.getMessage());
         Assert.assertNull(result);
     }
 
@@ -144,14 +163,14 @@ public class AbstractComplexControllerTest
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading");
+            + " error has occurred during controller loading ", PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 
     @Test
     public void loadReturnsAllData() throws ComponentLookupException
     {
-        String datum1 = "datum2";
+        String datum1 = "datum1";
         String datum2 = "datum2";
         String datum3 = "datum3";
         doReturn(datum1).when(this.baseProperty1).getValue();
@@ -164,6 +183,25 @@ public class AbstractComplexControllerTest
         Assert.assertEquals(datum2, result.get(PROPERTY_2));
         Assert.assertEquals(datum3, result.get(PROPERTY_3));
         Assert.assertEquals(3, result.size());
+    }
+
+    @Test
+    public void loadConvertsCodeFieldsWhenControllerIsOnlyCodeFields() throws Exception
+    {
+        this.documentAccessBridge = this.codeFieldImplMocker.getInstance(DocumentAccessBridge.class);
+        doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
+        List<String> list1 = new LinkedList<>();
+        list1.add("HP:00000015");
+        doReturn(list1).when(this.baseProperty1).getValue();
+        doReturn(list1).when(this.baseProperty2).getValue();
+
+        PatientData<List<VocabularyProperty>> result =
+            this.codeFieldImplMocker.getComponentUnderTest().load(this.patient);
+
+        List<VocabularyProperty> propertyOneList = result.get(PROPERTY_1);
+        List<VocabularyProperty> propertyTwoList = result.get(PROPERTY_2);
+        Assert.assertNotNull(propertyOneList);
+        Assert.assertNotNull(propertyTwoList);
     }
 
     //-----------------------------------save() tests-----------------------------------
@@ -230,7 +268,6 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -242,7 +279,6 @@ public class AbstractComplexControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
     }
 
     @Test
@@ -251,14 +287,12 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(PROPERTY_1);
         selectedFields.add(PROPERTY_2);
-        selectedFields.add(PROPERTY_3);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -267,7 +301,47 @@ public class AbstractComplexControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
+    }
+
+    @Test
+    public void writeJSONConvertsBooleanValues() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_3, "1");
+        map.put(PROPERTY_4, "0");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals(true, container.get(PROPERTY_3));
+        Assert.assertEquals(false, container.get(PROPERTY_4));
+    }
+
+    @Test
+    public void writeJSONWithSelectedFieldsConvertsBooleanValues() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PROPERTY_3, "1");
+        map.put(PROPERTY_4, "0");
+        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(PROPERTY_3);
+        selectedFields.add(PROPERTY_4);
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNotNull(json.get(DATA_NAME));
+        Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(DATA_NAME);
+        Assert.assertEquals(true, container.get(PROPERTY_3));
+        Assert.assertEquals(false, container.get(PROPERTY_4));
     }
 
     @Test
@@ -276,13 +350,11 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(PROPERTY_1);
-        selectedFields.add(PROPERTY_3);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -290,7 +362,6 @@ public class AbstractComplexControllerTest
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
         Assert.assertNull(container.get(PROPERTY_2));
     }
 
@@ -301,7 +372,6 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -313,7 +383,6 @@ public class AbstractComplexControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
     }
 
     @Test
@@ -322,13 +391,11 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        map.put(PROPERTY_3, "datum3");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(PROPERTY_1);
-        selectedFields.add(PROPERTY_3);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -336,7 +403,6 @@ public class AbstractComplexControllerTest
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
         Assert.assertNull(container.get(PROPERTY_2));
 
         selectedFields.clear();
@@ -349,7 +415,6 @@ public class AbstractComplexControllerTest
         container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
-        Assert.assertEquals("datum3", container.get(PROPERTY_3));
     }
 
 
