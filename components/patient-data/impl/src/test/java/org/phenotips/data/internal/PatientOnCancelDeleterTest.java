@@ -58,7 +58,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PatientEditingCanceledTest
+public class PatientOnCancelDeleterTest
 {
     @Rule
     public final MockitoComponentMockingRule<PatientOnCancelDeleter> mocker =
@@ -182,7 +182,9 @@ public class PatientEditingCanceledTest
         when(info2.isMinorEdit()).thenReturn(false);
         when(info3.isMinorEdit()).thenReturn(false);
 
-        EntityReference reference = mock(EntityReference.class);
+        EntityReference reference = new EntityReference("defaultpage",
+            EntityType.DOCUMENT, new EntityReference("defaultspace", EntityType.SPACE,
+            new EntityReference("defaultwiki", EntityType.WIKI)));
         DocumentReference docReference = mock(DocumentReference.class);
         XWikiResponse response = mock(XWikiResponse.class);
         EntityReferenceResolver<EntityReference> referenceResolver =
@@ -190,7 +192,6 @@ public class PatientEditingCanceledTest
         when(wiki.getDefaultPage(context)).thenReturn("test");
         when(wiki.getDefaultSpace(context)).thenReturn("test");
         when(referenceResolver.resolve(any(EntityReference.class), any(EntityType.class))).thenReturn(reference);
-        doReturn(docReference).when(deleterSpy).toDocumentReference(any(EntityReference.class));
         when(wiki.getURL(docReference, "view", context)).thenReturn("");
         when(context.getResponse()).thenReturn(response);
         doNothing().when(response).sendRedirect(anyString());
@@ -212,7 +213,9 @@ public class PatientEditingCanceledTest
         when(info1.getComment()).thenReturn("");
         when(info1.isMinorEdit()).thenReturn(false);
 
-        EntityReference reference = mock(EntityReference.class);
+        EntityReference reference = new EntityReference("defaultpage",
+            EntityType.DOCUMENT, new EntityReference("defaultspace", EntityType.SPACE,
+            new EntityReference("defaultwiki", EntityType.WIKI)));
         DocumentReference docReference = mock(DocumentReference.class);
         XWikiResponse response = mock(XWikiResponse.class);
         EntityReferenceResolver<EntityReference> referenceResolver =
@@ -220,7 +223,6 @@ public class PatientEditingCanceledTest
         when(wiki.getDefaultPage(context)).thenReturn("test");
         when(wiki.getDefaultSpace(context)).thenReturn("test");
         when(referenceResolver.resolve(any(EntityReference.class), any(EntityType.class))).thenReturn(reference);
-        doReturn(docReference).when(deleterSpy).toDocumentReference(any(EntityReference.class));
         when(wiki.getURL(docReference, "view", context)).thenReturn("");
         when(context.getResponse()).thenReturn(response);
         doNothing().when(response).sendRedirect(anyString());
@@ -242,7 +244,9 @@ public class PatientEditingCanceledTest
         when(info1.getComment()).thenReturn("");
         when(info1.isMinorEdit()).thenReturn(false);
 
-        EntityReference reference = mock(EntityReference.class);
+        EntityReference reference = new EntityReference("defaultpage",
+            EntityType.DOCUMENT, new EntityReference("defaultspace", EntityType.SPACE,
+            new EntityReference("defaultwiki", EntityType.WIKI)));
         DocumentReference docReference = mock(DocumentReference.class);
         XWikiResponse response = mock(XWikiResponse.class);
         EntityReferenceResolver<EntityReference> referenceResolver =
@@ -250,7 +254,6 @@ public class PatientEditingCanceledTest
         when(wiki.getDefaultPage(context)).thenReturn("test");
         when(wiki.getDefaultSpace(context)).thenReturn("test");
         when(referenceResolver.resolve(any(EntityReference.class), any(EntityType.class))).thenReturn(reference);
-        doReturn(docReference).when(deleterSpy).toDocumentReference(any(EntityReference.class));
         when(wiki.getURL(docReference, "view", context)).thenReturn("");
         when(context.getResponse()).thenReturn(response);
         doThrow(IOException.class).when(response).sendRedirect(anyString());
