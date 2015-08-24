@@ -95,11 +95,10 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <!-- Anton. 13.02.2014. My guess is that everyone just keeps decreasing the value,
-    when they get a build failure. So for now, I did too. But shouldn't this be fixed? -->
-    <coverage.instructionRatio>0.15</coverage.instructionRatio>
+    <coverage.instructionRatio>0.37</coverage.instructionRatio>
   </properties>
 
   <build>

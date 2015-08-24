@@ -17,6 +17,7 @@
  */
 package org.phenotips.tools;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -117,5 +118,31 @@ public class FormSectionTest
                 + "custom-entries'><div class=\"custom-display-data\">null</div></div></div>";
         Assert.assertEquals(expectedCustomElementDisplay,
             this.testFormSection.display(DisplayMode.View, this.fieldNames));
+    }
+
+    @Test
+    public void getTitleReturnsSpecifiedTitle()
+    {
+        FormSection testSection = new FormSection(null, this.propertyName, null);
+        Assert.assertNull(testSection.getTitle());
+
+        testSection = new FormSection("", this.propertyName, null);
+        Assert.assertEquals("", testSection.getTitle());
+
+        testSection = new FormSection(this.title, this.propertyName, null);
+        Assert.assertEquals(this.title, testSection.getTitle());
+    }
+
+    @Test
+    public void getCategoriesReturnsSpecifiedCategories()
+    {
+        FormSection testSection = new FormSection(this.title, this.propertyName, null);
+        Assert.assertTrue(testSection.getCategories().isEmpty());
+
+        testSection = new FormSection(this.title, this.propertyName, Collections.<String>emptySet());
+        Assert.assertTrue(testSection.getCategories().isEmpty());
+
+        testSection = new FormSection(this.title, this.propertyName, Collections.singleton("category"));
+        Assert.assertEquals(Collections.singletonList("category"), testSection.getCategories());
     }
 }

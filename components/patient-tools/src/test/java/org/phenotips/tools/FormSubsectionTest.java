@@ -59,4 +59,17 @@ public class FormSubsectionTest
         Assert.assertEquals("<label class='section'>" + this.title + "</label><div class='subsection '>null</div>",
             testSubsection.display(DisplayMode.Edit, this.fieldnames));
     }
+
+    @Test
+    public void getTitleReturnsSpecifiedTitle()
+    {
+        FormSubsection testSubsection = new FormSubsection(null);
+        Assert.assertNull(testSubsection.getTitle());
+
+        testSubsection = new FormSubsection("");
+        Assert.assertEquals("", testSubsection.getTitle());
+
+        testSubsection = new FormSubsection(this.title);
+        Assert.assertEquals(this.title, testSubsection.getTitle());
+    }
 }
