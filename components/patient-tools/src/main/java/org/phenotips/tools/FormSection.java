@@ -38,7 +38,9 @@ public class FormSection extends FormGroup
         super(title);
         this.propertyName = propertyName;
         this.categories = new LinkedList<String>();
-        this.categories.addAll(categories);
+        if (categories != null) {
+            this.categories.addAll(categories);
+        }
     }
 
     public String getPropertyName()

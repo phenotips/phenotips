@@ -21,13 +21,25 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.params.SpellingParams;
 
 /**
  * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.
@@ -63,6 +75,21 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     }
 
     @Override
+    public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
+    {
+        if (StringUtils.isBlank(input)) {
+            return Collections.emptyList();
+        }
+        Map<String, String> options = this.getStaticSolrParams();
+        options.putAll(this.getStaticFieldSolrParams());
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(produceDynamicSolrParams(input, maxResults, sort, customFilter), options)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
@@ -77,5 +104,48 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     {
         // FIX ME. For now returns just an empty string.
         return "";
+    }
+
+    private Map<String, String> getStaticSolrParams()
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put("spellcheck", Boolean.toString(true));
+        params.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        params.put(SpellingParams.SPELLCHECK_COUNT, "100");
+        params.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        params.put("lowercaseOperators", Boolean.toString(false));
+        params.put("defType", "edismax");
+        return params;
+    }
+
+    private Map<String, String> getStaticFieldSolrParams()
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put(DisMaxParams.PF, "name^40 nameSpell^100 keywords^6 text^3 textSpell^5");
+        params.put(DisMaxParams.QF, "name^20 nameSpell^50 keywords^2 text^1 textSpell^2");
+        return params;
+    }
+
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFq)
+    {
+        String query = originalQuery.trim();
+        ModifiableSolrParams params = new ModifiableSolrParams();
+        String escapedQuery = ClientUtils.escapeQueryChars(query);
+        params.add(CommonParams.FQ,
+            StringUtils.defaultIfBlank(customFq, "-(nameSort:\\** nameSort:\\+* nameSort:\\^*)"));
+        params.add(CommonParams.Q, escapedQuery);
+        params.add(SpellingParams.SPELLCHECK_Q, query);
+        String lastWord = StringUtils.substringAfterLast(escapedQuery, " ");
+        if (StringUtils.isBlank(lastWord)) {
+            lastWord = escapedQuery;
+        }
+        lastWord += "*";
+        params.add(DisMaxParams.BQ,
+            String.format("nameSpell:%1$s^20 keywords:%1$s^2 text:%1$s^1 textSpell:%1$s^2", lastWord));
+        params.add(CommonParams.ROWS, rows.toString());
+        if (StringUtils.isNotBlank(sort)) {
+            params.add(CommonParams.SORT, sort);
+        }
+        return params;
     }
 }

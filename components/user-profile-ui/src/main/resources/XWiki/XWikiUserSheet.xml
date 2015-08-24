@@ -47,17 +47,17 @@
 ## Setting categories
 #########################
 #set($categories = [])
-#set($discard = $categories.add({'id':'profile', 'sheet':'XWiki.XWikiUserProfileSheet'}))
+#set($discard = $categories.add({'id':'profile', 'sheet':'XWiki.XWikiUserProfileSheet', 'glyphicon': 'user'}))
 #set($isMyProfile = ($services.model.resolveDocument($xcontext.user) == $doc.documentReference))
 #if($isMyProfile || $hasAdmin)
-  #set($discard = $categories.add({'id':'preferences', 'sheet':'XWiki.XWikiUserPreferencesSheet'}))
+  #set($discard = $categories.add({'id':'preferences', 'sheet':'XWiki.XWikiUserPreferencesSheet', 'glyphicon': 'wrench'}))
 #end
 #########################
 ## Current category
 #########################
 #set($currentCategory = "$!request.category")
 #if($currentCategory == "")
-  #set($currentCategory = $categories.get(0).get('id'))
+  #set($currentCategory = $categories[0].get('id'))
 #end
 #########################
 ## Creating vertical menu
@@ -214,7 +214,7 @@
         <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -235,7 +235,7 @@ Object.extend(XWiki, {
       this.tabsContainer.select('.category-tab').each(function (tabElement) {
         tabElement.observe('click', function(event) {
           Event.stop(event);
-          this.switchTab(tabElement.id);
+          this.switchTab(tabElement.id, true);
         }.bindAsEventListener(this));
       }.bind(this));
       this.tabsContainer.select('.category-tab.current').each(function (activeTab) {
@@ -243,9 +243,20 @@ Object.extend(XWiki, {
         document.fire('xwiki:profile:switchedCategory', {'category' : activeTab.id});
       }.bind(this));
       this.handleCancelAction();
+
+      // History navigation through our pushed states.
+      window.addEventListener('popstate', function(event) {
+        if (event.state &amp;&amp; event.state.category) {
+          this.switchTab('vertical-menu-' + event.state.category);
+        }
+      }.bindAsEventListener(this));
+      // Store the initial history state so we can go back.
+      history.replaceState({
+        category: window.location.search.toQueryParams().category || 'profile'
+      }, document.title, document.location.href);
     },
 
-    switchTab : function(tab) {
+    switchTab : function(tab, pushHistory) {
       var tabName = tab.substring(14); // 14 = len('vertical-menu-')
       $("user-page-content").select("div.user-page-pane").each(function(pane){
         pane.addClassName('hidden');
@@ -256,6 +267,9 @@ Object.extend(XWiki, {
       });
       $(tab).addClassName('current');
       this.updateCategoryFields(tab);
+      if (pushHistory) {
+        this.updateURL(tabName);
+      }
       document.fire('xwiki:profile:switchedCategory', {'category' : tab});
     },
 
@@ -265,6 +279,17 @@ Object.extend(XWiki, {
       this.updateField('xredirect', XWiki.currentDocument.getURL('view', 'category=' + category));
       this.updateField('xcontinue', XWiki.currentDocument.getURL('edit', 'editor=inline&amp;category=' + category));
       this.updateField('category', category);
+    },
+
+    updateURL : function (category) {
+      if (history.pushState) {
+        var params = window.location.search.toQueryParams();
+        params.category = category;
+        newQueryString = Object.toQueryString(params);
+
+        var newURL = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + newQueryString;
+        window.history.pushState({category : category}, '', newURL);
+      }
     },
 
     updateField : function (fieldName, value) {
@@ -380,7 +405,7 @@ return XWiki;
         <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -394,6 +419,10 @@ return XWiki;
 #user-menu-col{
   float: left;
   width: 13em;
+}
+
+#avatar p {
+  text-align: center;
 }
 
 #avatar img {
@@ -434,9 +463,9 @@ return XWiki;
   content: url("$xwiki.getSkinFile('icons/silk/chart_organisation.png')");
 }
 
-.profile-menu .group.user-menu-title{
-  background-position: left center;
-  #css3_backgroundLinearGradient($menuIcon, {
+.skin-colibri .profile-menu .group.user-menu-title{
+  #set ($menuIcon = "url(${escapetool.S}$xwiki.getSkinFile('icons/silk/user.png')${escapetool.S})")
+  #css3_backgroundIconAndLinearGradient($menuIcon, {
     'to': 'bottom',
     'colors': [
       {'color':$theme.menuContentGradientColor,    'position': '0%'},
@@ -457,11 +486,6 @@ return XWiki;
 #user-page-content{
   margin-left: 14em;
 }
-
-#user-page-content h1{
-  margin: 0 0 20px 0;
-}
-
 
 .column h1 {
   font-weight:bold;
@@ -541,24 +565,6 @@ div.editProfileCategory a {
   font-weight: bold;
 }
 
-span.wikiWatchlistType, span.spaceWatchlistType, span.pageWatchlistType {
-  width: 16px;
-  height: 16px;
-  display: block;
-}
-
-span.wikiWatchlistType {
-  background: url("$xwiki.getSkinFile('icons/silk/world.png')") no-repeat;
-}
-
-span.spaceWatchlistType {
-  background: url("$xwiki.getSkinFile('icons/silk/folder.png')") no-repeat;
-}
-
-span.pageWatchlistType {
-  background: url("$xwiki.getSkinFile('icons/silk/page_white_text.png')") no-repeat;
-}
-
 span#avatarUpload {
   display:block;
   width:$tabswidth;
@@ -635,7 +641,8 @@ span#avatarUpload {
 ## --------------------------------------
 ## Dashboard
 /* prevent the clearfloats between buttons &amp; dashboard gadgets from clearing the tabs as well, only the buttons float */
-.dashboard .clearfloats {
+.dashboard .clearfloats, 
+.dashboard .clearfloats:after, .dashboard .clearfloats:before {
   clear: right;
 }</code>
     </property>

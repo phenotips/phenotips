@@ -78,7 +78,7 @@ public final class R54595PhenoTips1151DataMigration extends AbstractHibernateDat
     private EntityReferenceSerializer<String> serializer;
 
     @Inject
-    private VocabularyManager ontologies;
+    private VocabularyManager vocabularies;
 
     @Override
     public String getDescription()
@@ -196,7 +196,7 @@ public final class R54595PhenoTips1151DataMigration extends AbstractHibernateDat
                     if (extendedValues != null) {
                         extendedValues.remove(translation.getKey());
                         VocabularyTerm newTerm =
-                            R54595PhenoTips1151DataMigration.this.ontologies.resolveTerm(translation.getValue());
+                            R54595PhenoTips1151DataMigration.this.vocabularies.resolveTerm(translation.getValue());
                         for (VocabularyTerm ancestor : newTerm.getAncestorsAndSelf()) {
                             if (!extendedValues.contains(ancestor.getId())) {
                                 extendedValues.add(ancestor.getId());

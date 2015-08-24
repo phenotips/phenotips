@@ -231,7 +231,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     }
 
     @Override
-    public JSON toJson()
+    public JSON toJSON()
     {
         JSONObject json = new JSONObject();
 

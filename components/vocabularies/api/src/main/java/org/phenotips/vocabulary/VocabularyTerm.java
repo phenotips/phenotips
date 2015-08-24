@@ -134,5 +134,5 @@ public interface VocabularyTerm
      * </pre>
      * @since 1.1-rc1
      */
-    JSON toJson();
+    JSON toJSON();
 }

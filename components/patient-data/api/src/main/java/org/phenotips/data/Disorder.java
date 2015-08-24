@@ -26,13 +26,13 @@ import org.xwiki.stability.Unstable;
  * @since 1.0M8
  */
 @Unstable
-public interface Disorder extends OntologyProperty
+public interface Disorder extends VocabularyProperty
 {
     /**
      * Returns the PhenoTips value of the disorder.
      *
      * @return the value
-     * @todo move to OntologyProperty and/or implement a OntologyProperty-to-PhenotipsPropertyName mapping service
+     * @todo move to VocabularyProperty and/or implement a VocabularyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
 }

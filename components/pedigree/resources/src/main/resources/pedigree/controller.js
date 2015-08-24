@@ -272,12 +272,13 @@ var Controller = Class.create({
                             continue;
                     } catch (err) {
                         // fine, one of the objects is in some other format, maybe date picker has changed
-                        // and this code wa snot updated
+                        // and this code was not updated
                     }
                 }
-
                 if (Object.prototype.toString.call(oldValue) === '[object Array]') {
                     oldValue = oldValue.slice(0);
+                } else if (typeof(oldValue) == 'object') {
+                    oldValue = cloneObject(oldValue);
                 }
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;

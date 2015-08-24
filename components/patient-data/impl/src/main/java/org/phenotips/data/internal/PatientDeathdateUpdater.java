@@ -17,28 +17,21 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangingEvent;
 
 import org.xwiki.component.annotation.Component;
-
-import org.xwiki.container.Container;
-import org.xwiki.container.Request;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Removes the date of death object iff "unknown date of death" checkbox is checked.
+ * Removes the date of death object iff "unknown date of death" is selected.
  *
  * @version $Id$
  */
@@ -47,10 +40,6 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class PatientDeathdateUpdater extends AbstractEventListener
 {
-    /** Needed for getting access to the request. */
-    @Inject
-    private Container container;
-
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientDeathdateUpdater()
     {
@@ -64,32 +53,12 @@ public class PatientDeathdateUpdater extends AbstractEventListener
 
         BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
+            // No patient, nothing to do
             return;
         }
-        boolean unknownDeathDate = getParameter("date_of_death_unknown", patientRecordObj.getNumber());
-        if (unknownDeathDate)
-        {
+        if (patientRecordObj.getIntValue("date_of_death_unknown") == 1) {
             patientRecordObj.setDateValue("date_of_death", null);
-            patientRecordObj.setDateValue("date_of_death_entered", null);
+            patientRecordObj.setStringValue("date_of_death_entered", null);
         }
-    }
-
-    /**
-     * Read a property from the request.
-     *
-     * @param propertyName the name of the property as it would appear in the class, for example
-     *            {@code age_of_onset_years}
-     * @param objectNumber the object's number
-     * @return the value sent in the request, or false if not set
-     */
-    private boolean getParameter(String propertyName, int objectNumber)
-    {
-        String parameterName = Constants.CODE_SPACE + ".PatientClass_" + objectNumber + "_" + propertyName;
-        Request request = this.container.getRequest();
-        if (request == null) {
-            return false;
-        }
-        String value = (String) request.getProperty(parameterName);
-        return StringUtils.isNumeric(value) && (Integer.valueOf(value) == 1);
     }
 }

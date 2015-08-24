@@ -71,7 +71,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
     private Map<Integer, ByteString> omimMap;
 
     @Inject
-    private VocabularyManager ontology;
+    private VocabularyManager vocabulary;
 
     @Inject
     private Environment env;
@@ -93,12 +93,12 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
         this.boqa.setPrecalculateJaccard(false);
 
         String annotationPath = null;
-        String ontologyPath = null;
+        String vocabularyPath = null;
         try {
             annotationPath =
                 stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz"), "annotation")
                     .getPath();
-            ontologyPath =
+            vocabularyPath =
                 stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz"), "ontology").getPath();
         } catch (IOException e) {
             throw new InitializationException(e.getMessage());
@@ -106,7 +106,7 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
 
         // Load datafiles
         try {
-            utils.loadDataFiles(ontologyPath, annotationPath);
+            utils.loadDataFiles(vocabularyPath, annotationPath);
         } catch (InterruptedException e) {
             throw new InitializationException(e.getMessage());
         } catch (IOException e) {
@@ -175,21 +175,21 @@ public class DefaultDiagnosisService implements DiagnosisService, Initializable
             }
 
             String termId = String.valueOf(this.omimMap.get(id));
-            String ontologyId = StringUtils.substringBefore(termId, ":");
+            String vocabularyId = StringUtils.substringBefore(termId, ":");
 
             // ignore non-OMIM diseases (BOQA has ORPHANIET and DECIPHER as well)
-            if (!"OMIM".equals(ontologyId)) {
+            if (!"OMIM".equals(vocabularyId)) {
                 continue;
             }
 
             // Strip 'O' in "OMIM"
             termId = termId.substring(1);
 
-            VocabularyTerm term = this.ontology.resolveTerm(termId);
+            VocabularyTerm term = this.vocabulary.resolveTerm(termId);
 
             if (term == null) {
                 this.logger.warn(String.format(
-                    "Unable to resolve OMIM term '%s' due to outdated OMIM ontology.", termId));
+                    "Unable to resolve OMIM term '%s' due to outdated OMIM vocabulary.", termId));
                 continue;
             }
 

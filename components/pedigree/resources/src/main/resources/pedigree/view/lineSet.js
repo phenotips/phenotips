@@ -26,7 +26,7 @@ var LineSet = Class.create({
                 var newOwnerID = changedIdsSet.hasOwnProperty(oldOwnerID) ? changedIdsSet[oldOwnerID] : oldOwnerID;
                 newLineCrossings[newOwnerID] = newCrosses;
             }
-        this._lineCrossings = newLineCrossings; 
+        this._lineCrossings = newLineCrossings;
 
         for (var i = 0; i < this._lines.length; i++) {
             var oldID = this._lines[i].owner;
@@ -53,7 +53,7 @@ var LineSet = Class.create({
             if (line.owner == owner) continue;
 
             var crossingPoint = this._getLineCrossing(thisLine, line);
-            if (crossingPoint) { 
+            if (crossingPoint) {
                 this._lineCrossings[line.owner][owner] = true;  // that line affects this one
                 bendPoints.push(crossingPoint);
             }

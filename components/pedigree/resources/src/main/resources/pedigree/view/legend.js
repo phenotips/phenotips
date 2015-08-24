@@ -4,7 +4,7 @@
  * @class Legend
  * @constructor
  */
-           
+
 var Legend = Class.create( {
 
     initialize: function(title, allowDrop) {
@@ -365,5 +365,5 @@ var Legend = Class.create( {
         return a & a;
       }, 0);
     }
-    
+
 });

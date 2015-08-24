@@ -38,13 +38,9 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ("$!{request.url}" != '' &amp;&amp; "$!{request.ontology}" != '')
-  #set($result = "")
-  #if("$!{request.ontology}" == 'hpo' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-    #set($result = $services.vocabularies.hpo.reindex("$!{request.url}"))
-  #elseif ("$!{request.ontology}" == 'chebi' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-    #set($result = $services.vocabularies.chebi.reindex("$!{request.url}"))
-  #end
+#if ("$!{request.url}" != '' &amp;&amp; "$!{request.ontology}" != '' &amp;&amp; $request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
+  #set($result = '')
+  #set($result = $services.vocabularies.get($request.ontology).reindex("$!{request.url}"))
 
   #if ("$!{request.ajax}" == '1')
     #if ($result == 0)
@@ -67,11 +63,12 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 == $services.localization.render('phenotips.indexOntology.heading') ==
 (% class="half" %)(((
 {{html wiki=false clean=false}}
+#foreach ($ontology in ['hpo', 'chebi', 'hgnc'])
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
-&lt;label for="ontology-hpo-url"&gt;$services.localization.render('phenotips.IndexOntology.hpo')&lt;/label&gt;
-#set ($version = $services.vocabularies.hpo.Version)
+&lt;label for="ontology-${ontology}-url"&gt;$services.localization.render("phenotips.IndexOntology.${ontology}")&lt;/label&gt;
+#set ($version = $services.vocabularies.get($ontology).Version)
 #if (!$version)
   &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
 #else
@@ -79,35 +76,15 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 #end
 &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-hpo-url" value="$services.vocabularies.hpo.DefaultSourceLocation"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-${ontology}-url" value="$services.vocabularies.get($ontology).DefaultSourceLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
-&lt;input type="hidden" name="ontology" value="hpo"/&gt;
+&lt;input type="hidden" name="ontology" value="${ontology}"/&gt;
 &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="$services.localization.render('phenotips.IndexOntology.startReindex')"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
-
-&lt;form class="xform solr-admin" action='' method="post"&gt;
-&lt;dl&gt;
-&lt;dt&gt;
-&lt;label for="ontology-chebi-url"&gt;$services.localization.render('phenotips.IndexOntology.chebi')&lt;/label&gt;
-#set ($version = $services.vocabularies.chebi.Version)
-#if (!$version)
-  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.noVersion')&lt;/span&gt;
-#else
-  &lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.version',[$version])&lt;/span&gt;
 #end
-&lt;span class="xHint"&gt;$services.localization.render('phenotips.IndexOntology.URLhint')&lt;/span&gt;
-&lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-chebi-url" value="$services.vocabularies.chebi.DefaultSourceLocation"/&gt;&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;div&gt;
-&lt;input type="hidden" name="ontology" value="chebi"/&gt;
-&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="$services.localization.render('phenotips.IndexOntology.startReindex')"/&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;/form&gt;
 {{/html}}
 
 {{warning}}$services.localization.render('phenotips.IndexOntology.longWaitWarning'){{/warning}}
@@ -359,7 +336,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -404,10 +381,10 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>

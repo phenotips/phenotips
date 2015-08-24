@@ -18,8 +18,8 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -66,12 +66,12 @@ public class FormFieldTest
             field.set(null, cmp);
             ComponentManager cm = mock(ComponentManager.class);
             when(cmp.get()).thenReturn(cm);
-            VocabularyManager om = mock(VocabularyManager.class);
-            when(cm.getInstance(VocabularyManager.class)).thenReturn(om);
+            VocabularyManager vm = mock(VocabularyManager.class);
+            when(cm.getInstance(VocabularyManager.class)).thenReturn(vm);
             VocabularyTerm parent = new MockOntologyTerm("HP:0000708", "Behavioural/Psychiatric Abnormality", "", null);
             VocabularyTerm ocd =
                 new MockOntologyTerm("HP:0000722", "OCD", "Obsessive-Compulsive Disorder", Arrays.asList("OC"), parent);
-            when(om.resolveTerm("HP:0000722")).thenReturn(ocd);
+            when(vm.resolveTerm("HP:0000722")).thenReturn(ocd);
         } finally {
             field.setAccessible(isAccessible);
         }
@@ -340,7 +340,8 @@ public class FormFieldTest
         }
 
         @Override
-        public JSON toJson() {
+        public JSON toJSON()
+        {
             JSONObject json = new JSONObject();
             json.put("id", this.getId());
             return json;

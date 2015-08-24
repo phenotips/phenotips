@@ -27,7 +27,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
                 y = cy + r * Math.sin(-alpha * rad);
             return [x,y];
         };
-   
+
     if (gen === 'F') {
         if(endAngle-startAngle == 360)
         {
@@ -125,49 +125,49 @@ function generateOrb (canvas, x, y, r, gender) {
         return canvas.set(
                 canvas.ellipse(x, y, r, r),
                 canvas.ellipse(x, y, r - r / 5, r - r / 20).attr({stroke: "none", fill: "r(.5,.1)#ccc-#ccc", opacity: 0})
-            );        
-    }        
-    
+            );
+    }
+
     if (gender == "M") {
         var rr = r - 1;
-        return canvas.set(                                
+        return canvas.set(
                 canvas.rect(x-rr, y-rr, rr*2, rr*2, 0),
                 canvas.rect(x-rr, y-rr, rr*2, rr*2, 1).attr({stroke: "none", fill: "330-#ccc-#ccc", opacity: 0})
             );
     }
-    
+
     if (gender == "U") {
         var rr = (r-1) * 0.9;
-        return canvas.set(                                
+        return canvas.set(
                 canvas.rect(x-rr, y-rr, rr*2, rr*2, 0).attr({transform: "r45"}),
                 canvas.rect(x-rr, y-rr, rr*2, rr*2, 1).attr({stroke: "none", fill: "330-#ccc-#ccc", opacity: 0}).attr({transform: "r45"})
-            );        
-    }   
+            );
+    }
 }
 
 /**
  * Draws a quarter-circle-like curve connecting xFrom,Yfrom and xTo,yTo
  * with the given attributes and bend (upwars or downwards)
- * 
+ *
  * Iff "doubleCurve" is true, cones the curve and shifts one curve by (shiftx1, shifty1) and the other by (shiftx2, shifty2)
  */
 function drawCornerCurve (xFrom, yFrom, xTo, yTo, bendDown, attr, doubleCurve, shiftx1, shifty1, shiftx2, shifty2 ) {
     var xDistance = xTo - xFrom;
     var yDistance = yFrom - yTo;
-    
+
     var dist1x = xDistance/2;
     var dist2x = xDistance/10;
     var dist1y = yDistance/2;
     var dist2y = yDistance/10;
-        
+
     var curve;
-    
+
     if (bendDown) {
         var raphaelPath =  "M " + (xFrom)          + " " + (yFrom) +
                           " C " + (xFrom + dist1x) + " " + (yFrom + dist2y) +
                             " " + (xTo   + dist2x) + " " + (yTo   + dist1y) +
                             " " + (xTo)            + " " + (yTo);
-        curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();                            
+        curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
     } else {
         var raphaelPath =   "M " + (xFrom)          + " " + (yFrom) +
                            " C " + (xFrom - dist2x) + " " + (yFrom - dist1y) +
@@ -175,40 +175,40 @@ function drawCornerCurve (xFrom, yFrom, xTo, yTo, bendDown, attr, doubleCurve, s
                              " " + (xTo)            + " " + (yTo);
         curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
     }
-    
+
     if (doubleCurve) {
         var curve2 = curve.clone().toBack();
         curve .transform("t " + shiftx1  + "," + shifty1 + "...");
-        curve2.transform("t " + shiftx2 + "," + shifty2 + "..."); 
+        curve2.transform("t " + shiftx2 + "," + shifty2 + "...");
     }
 }
 
 function drawLevelChangeCurve (xFrom, yFrom, xTo, yTo, attr, doubleCurve, shiftx1, shifty1, shiftx2, shifty2 )
 {
-    var xDistance = xTo - xFrom;   
+    var xDistance = xTo - xFrom;
     var dist1x    = xDistance/2;
-    
-    var raphaelPath = " M " + (xFrom)           + " " + yFrom;                    
+
+    var raphaelPath = " M " + (xFrom)           + " " + yFrom;
     raphaelPath    += " C " + (xFrom + dist1x)  + " " + (yFrom) +
                         " " + (xTo   - dist1x)  + " " + (yTo) +
                         " " + (xTo)             + " " + (yTo);
-    
+
     curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
     if (doubleCurve) {
         var curve2 = curve.clone().toBack();
         curve .transform("t " + shiftx1  + "," + shifty1 + "...");
-        curve2.transform("t " + shiftx2 + "," + shifty2 + "..."); 
-    }    
+        curve2.transform("t " + shiftx2 + "," + shifty2 + "...");
+    }
 }
 
 /**
  * Computes the intersection point between a horizontal line @ y == crossY and a line from x1,y1 to x2,y2
  */
 function findXInterceptGivenLineAndY(crossY, x1, y1, x2, y2) {
-    // y = ax + b   
+    // y = ax + b
     if (x1 == x2) return x1;
     var a = (y1 - y2)/(x1 - x2);
-    var b = y1 - a*x1;    
+    var b = y1 - a*x1;
     var interceptX = (crossY - b)/a;
     return interceptX;
 }
@@ -221,10 +221,10 @@ function getCaretPosition(elem) {
     if (elem.selectionEnd) {
         return elem.selectionEnd;
     } else if (elem.createTextRange) {
-		var r = document.selection.createRange();
-		r.moveStart('character', -elem.value.length);
-		return r.text.length;
-	} else return null;
+        var r = document.selection.createRange();
+        r.moveStart('character', -elem.value.length);
+        return r.text.length;
+    } else return null;
 }
 
 function setCaretPosition(ctrl, pos)

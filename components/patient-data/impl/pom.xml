@@ -27,6 +27,11 @@
   </parent>
   <artifactId>patient-data-default-impl</artifactId>
   <name>PhenoTips - Patient data - Default implementation for the Java APIs</name>
+
+  <properties>
+    <coverage.instructionRatio>0.42</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -118,10 +123,6 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
   </dependencies>
-
-  <properties>
-    <coverage.instructionRatio>0.15</coverage.instructionRatio>
-  </properties>
 
   <build>
     <plugins>

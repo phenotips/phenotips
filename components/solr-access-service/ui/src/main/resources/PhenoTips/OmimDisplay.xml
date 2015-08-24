@@ -42,7 +42,7 @@
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
-    #set($entryName = "$!{services.omim.get($val).name}")
+    #set($entryName = "$!{services.vocabularies.omim.getTerm($val).name}")
     &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
       &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
@@ -53,11 +53,17 @@
   {{/html}}
 #elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
-    #set ($name = $!services.omim.get($val).name)
+    #set ($term = $!services.vocabularies.omim.getTerm($val))
+    #set ($name = $term.name)
     #if ("$!{name}" == '')
       #set ($name = $val)
     #end
-    (%%)((($name)))
+    #if ($term.id.indexOf(':') &gt;= 0)
+      #set ($termId = $stringtool.substringAfter($term.id, ':'))
+    #else
+      #set ($termId = $term.id)
+    #end
+    (%%)((([[~[$term.id]&gt;&gt;http://www.omim.org/entry/${termId}]] $name)))
   #end
 #end
 {{/velocity}}</content>

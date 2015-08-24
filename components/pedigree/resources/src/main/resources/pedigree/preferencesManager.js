@@ -6,10 +6,11 @@ var PreferencesManager = Class.create( {
     load: function(callWhenReady) {
         var numConfigs = $xwiki.getDocument('XWiki.XWikiPreferences').getObjectNumbers('PhenoTips.PedigreeGlobalSettings');
         if (numConfigs > 0) {
-            this.preferences.global.dateDisplayFormat = "$xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('dateDisplayFormat').value";
-            this.preferences.global.dateEditFormat    = "$xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('dateInputFormat').value";        
-            this.preferences.global.nonStandardAdoptedOutGraphic = ($xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('nonStandardAdoptedOutGraphic').value == 1);
-            this.preferences.global.propagateFatherLastName      = ($xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('propagateFatherLastName').value == 1);
+            this.preferences.global.dateDisplayFormat = "$!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('dateDisplayFormat').value}";
+            this.preferences.global.dateEditFormat    = "$!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('dateInputFormat').value}";
+            this.preferences.global.nonStandardAdoptedOutGraphic = ("$!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('nonStandardAdoptedOutGraphic').value}" == "1");
+            this.preferences.global.propagateFatherLastName      = ("$!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('propagateFatherLastName').value}" == "1");
+            this.preferences.global.useGradientOnNodes           = ("$!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings').getProperty('uiGradientNodes').value}" == "1");
         }
 
         /* The current way of loading properties is sub-optimal, in the future may have to introduce

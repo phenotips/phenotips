@@ -15,7 +15,7 @@
 var AbstractPerson = Class.create(AbstractNode, {
 
     initialize: function($super, x, y, gender, id) {
-    	//console.log("abstract person");
+        //console.log("abstract person");
         this._gender = this.parseGender(gender);
         this._adoptedStatus = "";
         !this._type && (this._type = "AbstractPerson");

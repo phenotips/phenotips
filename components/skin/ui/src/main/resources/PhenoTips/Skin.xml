@@ -66,24 +66,6 @@
     <filesize>546</filesize>
   </attachment>
   <attachment>
-    <filename>contentview.vm</filename>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1364245595000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>IyMjCiMjIyBEaXNwbGF5IGRvY3VtZW50IGNvbnRlbnRzIGluICJ2aWV3IiBtb2RlLgojIyMKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBDb21wdXRlIHRoZSBjb250ZW50IHRvIGRpc3BsYXkgCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgSG9ub3IgdGhlIHN5bnRheCBpZiBpdCdzIHBhc3NlZCBpbiB0aGUgcmVxdWVzdC4KI3NldCgkb3V0cHV0U3ludGF4ID0gJHh3aWtpLmdldEF2YWlsYWJsZVJlbmRlcmVyU3ludGF4KCRyZXF1ZXN0Lm91dHB1dFN5bnRheCwgJHJlcXVlc3Qub3V0cHV0U3ludGF4VmVyc2lvbikpCiNpZiAoJG91dHB1dFN5bnRheCkKICAjIyBJZiB0aGUgcGFzc2VkIHN5bnRheCBpcyBub3QgYW4gSFRNTC1jb21wYXRpYmxlIHN5bnRheCB3ZSBuZWVkIHRvIEhUTUwtZXNjYXBlIGl0IHNvIHRoYXQgaXQgY2FuIGJlIAogICMjIGRpc3BsYXllZCBmaW5lIGluIEhUTUwgKHNpbmNlIGF0IHRoZSBwb2ludCB0aGlzIHZtIGZpbGUgaXMgY2FsbGVkIHdlJ3JlIGFscmVhZHkgaW5zaWRlIGFuIEhUTUwgcGFnZSB3aXRoCiAgIyMgcGFuZWxzIG9uIHRoZSBzaWRlLCBoZWFkZXIsIGV0YykuCiAgI3NldCgkc3ludGF4VHlwZSA9ICRvdXRwdXRTeW50YXgudHlwZS50b0lkU3RyaW5nKCkpCiAgI2lmICgoJHN5bnRheFR5cGUgPT0gInhodG1sIikgfHwgKCRzeW50YXhUeXBlID09ICJodG1sIikpCiAgICAjc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gJHRkb2MuZ2V0UmVuZGVyZWRDb250ZW50KCRvdXRwdXRTeW50YXgpKQogICNlbHNlCiAgICAjIyBNYWtlIHN1cmUgdG8gcHJpbnQgY29ycmVjdGx5IHRoZSByZXN1bHQgd2hlbiBpdCdzIG5vdCBIVE1MCiAgICAjc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gIjxwcmU+JGVzY2FwZXRvb2wuaHRtbCgkdGRvYy5nZXRSZW5kZXJlZENvbnRlbnQoJG91dHB1dFN5bnRheCkpPC9wcmU+IikKICAjZW5kCiNlbHNlCiAgI3NldCAoJHJlbmRlcmVkQ29udGVudCA9ICR0ZG9jLmdldFJlbmRlcmVkQ29udGVudCgpKQojZW5kCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgQ29tcHV0ZSB0aXRsZSB0byBkaXNwbGF5IGFuZCBtb2RpZnkgcmVuZGVyZWQgY29udGVudCBhY2NvcmRpbmdseS4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojdGVtcGxhdGUoInRpdGxldmFycy52bSIpCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgVGl0bGUgem9uZQojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCjxkaXYgaWQ9ImRvY3VtZW50LWhlYWQiPgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHRpdGxlCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPGRpdiBpZD0iZG9jdW1lbnQtdGl0bGUiPjxoMT4kdGl0bGVUb0Rpc3BsYXk8L2gxPjwvZGl2PgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEb2N1bWVudCBhdXRob3IocykKIyMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KJCF4d2lraS5nZXREb2N1bWVudCgnUGhlbm9UaXBzLkRvY3VtZW50TWV0YScpLmdldFJlbmRlcmVkQ29udGVudCgpCjwvZGl2PiMjZG9jdW1lbnQtaGVhZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEcm9wIHBlcm1pc3Npb25zIGFzIHRoZXkgYXJlIG5vIGxvbmdlciBuZWVkZWQuIFRoaXMgYWxsb3dzIHVzIG5vdCB0byBoYXZlCiMjIHRvIHJldmlldyB0aGUgY29kZSBiZWxvdyBmb3Igc2VjdXJpdHkgaG9sZXMgc2luY2Ugbm90aGluZyBiYWQgY2FuIGhhcHBlbi4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KJHhjb250ZXh0LmRyb3BQZXJtaXNzaW9ucygpCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgRGlzcGxheSB0aGUgc2hvcnRjdXRzCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KI2lmKCRkaXNwbGF5U2hvcnRjdXRzKQogICN0ZW1wbGF0ZSgic2hvcnRjdXRzLnZtIikKI2VuZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHJlbmRlcmVkIGNvbnRlbnQKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo8ZGl2IGlkPSJ4d2lraWNvbnRlbnQiPgokcmVuZGVyZWRDb250ZW50CjwvZGl2PgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEaXNwbGF5IHRoZSBmb290bm90ZXMgaWYgdGhlIGRvY3VtZW50IGlzIGluIDEuMCBzeW50YXggYW5kIGlmIHRoZXJlIGFyZSBhbnkgZGVmaW5lZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojc2V0KCRmb290bm90ZXMgPSAiI3B1dEZvb3Rub3RlcygpIikKJHh3aWtpLnJlbmRlclRleHQoJGZvb3Rub3RlcywgJGRvYykK</content>
-    <filesize>2751</filesize>
-  </attachment>
-  <attachment>
-    <filename>editinline.vm</filename>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1378847911000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>IyMgSW5zZXJ0IEpTIGFuZCBDU1MgbmVlZGVkIGZvciB0aGUgZnVsbHNjcmVlbiBlZGl0IGZlYXR1cmUKJHh3aWtpLmpzZngudXNlKCd1aWNvbXBvbmVudHMvd2lkZ2V0cy9mdWxsU2NyZWVuLmpzJywgeydmb3JjZVNraW5BY3Rpb24nOiB0cnVlLCAnbGFuZ3VhZ2UnOiAke3hjb250ZXh0Lmxhbmd1YWdlfX0pIyMKJHh3aWtpLnNzZngudXNlKCd1aWNvbXBvbmVudHMvd2lkZ2V0cy9mdWxsU2NyZWVuLmNzcycsIHRydWUpIyMKI3NldCgkZm9ybW5hbWUgPSAiaW5saW5lIikKI3NldCgkc2F2ZWFjdGlvbiA9ICJzYXZlIikKI3NldCgkcHJldmlld2VuYWJsZWQgPSBmYWxzZSkKIyMgRGV0ZXJtaW5lIGlmIGVkaXRpbmcgc2hvdWxkIGJlIGFsbG93ZWQKI3NldCgkZm9yY2UgPSAkIXJlcXVlc3QuZ2V0KCJmb3JjZSIpKQojc2V0KCRhbGxvd0RvY0VkaXQgPSAhKCgkZG9jLmdldExvY2tlZCgpPT10cnVlKSYmKCEkZm9yY2UpKSApCiMjCjxkaXYgY2xhc3M9Im1haW4gbGF5b3V0c3Vic2VjdGlvbiI+CiNmb3JlYWNoICgkdWl4IGluICRzZXJ2aWNlcy51aXguZ2V0RXh0ZW5zaW9ucygnb3JnLnh3aWtpLnBsYXRmb3JtLm1haW4udG9wJykpCiAgJHNlcnZpY2VzLnJlbmRlcmluZy5yZW5kZXIoJHVpeC5leGVjdXRlKCksICd4aHRtbC8xLjAnKQojZW5kCjxkaXYgaWQ9Im1haW5Db250ZW50QXJlYSI+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgU3RhcnQgRk9STSBhdCBzdGFydCBvZiBjb250ZW50IGFyZWEgSUYgZWRpdGluZyBpcyBhbGxvd2VkLgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiNpZiAoJGFsbG93RG9jRWRpdCkKIDxmb3JtIGlkPSJpbmxpbmUiIG1ldGhvZD0icG9zdCIgYWN0aW9uPSIkZG9jLmdldFVSTCgicHJldmlldyIpIiBjbGFzcz0id2l0aExvY2siPgojZW5kCiNmb3JlYWNoICgkdWl4IGluICRzZXJ2aWNlcy51aXguZ2V0RXh0ZW5zaW9ucygnb3JnLnh3aWtpLnBsYXRmb3JtLmNvbnRlbnQudG9wJykpCiAgJHNlcnZpY2VzLnJlbmRlcmluZy5yZW5kZXIoJHVpeC5leGVjdXRlKCksICd4aHRtbC8xLjAnKQojZW5kCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgQ29tcHV0ZSB0aXRsZSB0byBkaXNwbGF5IGFuZCBtb2RpZnkgcmVuZGVyZWQgY29udGVudCBhY2NvcmRpbmdseS4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gJGNkb2MuZ2V0UmVuZGVyZWRDb250ZW50KCkpCiN0ZW1wbGF0ZSgidGl0bGV2YXJzLnZtIikKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBUaXRsZSB6b25lCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPGRpdiBpZD0iZG9jdW1lbnQtaGVhZCI+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgRGlzcGxheSB0aGUgdGl0bGUKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo8ZGl2IGlkPSJkb2N1bWVudC10aXRsZSI+PGgxPiR0aXRsZVRvRGlzcGxheTwvaDE+PC9kaXY+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERvY3VtZW50IGF1dGhvcihzKQojIy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQokIXh3aWtpLmdldERvY3VtZW50KCdQaGVub1RpcHMuRG9jdW1lbnRNZXRhJykuZ2V0UmVuZGVyZWRDb250ZW50KCkKPC9kaXY+IyNkb2N1bWVudC1oZWFkCiMjCiMjCiMjIElmIHRoZSBkb2N1bWVudCBjYW5ub3QgYmUgZWRpdGVkLCBkaXNwbGF5IGFuIGluZm9ybWF0aW9uIGFuZCBhIGZvcmNpbmcgbGluazoKIyMKI2lmICghJGFsbG93RG9jRWRpdCkKICA8ZGl2IGNsYXNzPSJsYXlvdXRzZWN0aW9uIj4KICAkcmVzcG9uc2Uuc2V0U3RhdHVzKDQyMykKICAjc2V0KCRuZXdxdWVyeXN0cmluZyA9ICIkIXtyZXF1ZXN0LmdldFF1ZXJ5U3RyaW5nKCkucmVwbGFjZUFsbCgnJicsICcmYW1wOycpLnJlcGxhY2VBbGwoJyZhbXA7YW1wOycsICcmYW1wOycpfSZhbXA7Zm9yY2U9MSIpCiAgI3NldCgkZm9yY2VFZGl0VVJMID0gJGRvYy5nZXRVUkwoJHhjb250ZXh0LmFjdGlvbiwgJHtuZXdxdWVyeXN0cmluZ30pKQogICN4d2lraW1lc3NhZ2Vib3hzdGFydCgkc2VydmljZXMubG9jYWxpemF0aW9uLnJlbmRlcignbm90aWNlJykgIiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdkb2Nsb2NrZWRieScpICR4d2lraS5nZXRVc2VyTmFtZSgkZG9jLmdldExvY2tpbmdVc2VyKCkpIikKICAgIDxhIGhyZWY9IiRmb3JjZUVkaXRVUkwiPiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdmb3JjZWxvY2snKTwvYT4KICAjeHdpa2ltZXNzYWdlYm94ZW5kKCkKICA8L2Rpdj4KI2Vsc2UKIyMKIyMgT3RoZXJ3aXNlLCBjYW4gZWRpdCAtIGNvbnRpbnVlIHRoZSBmb3JtLgojIwo8ZGl2Pgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ4Y29udGludWUiIHZhbHVlPSIkZG9jLmdldFVSTCgkZG9jLmdldERlZmF1bHRFZGl0TW9kZSgpLCAnZWRpdG9yPWlubGluZScpIi8+CiMjIENTUkYgcHJldmVudGlvbgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJmb3JtX3Rva2VuIiB2YWx1ZT0iJCF7c2VydmljZXMuY3NyZi5nZXRUb2tlbigpfSIgLz4KIyMgVGhpcyBpbnB1dCBpcyB1c2VkIGJ5IHRoZSBmdWxsIHNjcmVlbiB3aWRnZXQ6IGl0IHN0b3JlcyB0aGUgc2VsZWN0b3Igb2YgdGhlIG1heGltaXplZCBlbGVtZW50LCBzbyB0aGF0IHRoZSBmdWxsIHNjcmVlbiBjYW4gYmUgcmVzdG9yZWQgd2hlbiBjb21pbmcgYmFjayBmcm9tIHByZXZpZXcuCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9IngtbWF4aW1pemVkIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHtyZXF1ZXN0LmdldCgneC1tYXhpbWl6ZWQnKX0pfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0ieHJlZGlyZWN0IiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHJlcXVlc3QuZ2V0KCd4cmVkaXJlY3QnKSl9IiAvPgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ4bm90aWZpY2F0aW9uIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHJlcXVlc3QuZ2V0KCd4bm90aWZpY2F0aW9uJykpfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGVtcGxhdGUiIHZhbHVlPSIkIXtlc2NhcGV0b29sLnhtbCgkcmVxdWVzdC50ZW1wbGF0ZSl9IiAvPgojIyBXZSBuZWVkIHRvIHN1Ym1pdCB0aGUgbGFuZ3VhZ2Ugb2YgdGhlIHRyYW5zbGF0ZWQgZG9jdW1lbnQgYmVjYXVzZSB0aGUgaW5saW5lIGVkaXQgbW9kZSBpcyBub3QgbGltaXRlZCB0byBlZGl0aW5nIG9ubHkKIyMgdGhlIG9iamVjdHMsIHdoaWNoIGFyZSBzaGFyZWQgYnkgYWxsIHRyYW5zbGF0aW9ucy4gV2UgY2FuIGFsc28gZWRpdCB0aGUgY29udGVudCBvciB0aGUgdGl0bGUgb2YgdGhlIGRvY3VtZW50IHdoaWNoIGFyZQojIyBzcGVjaWZpYyB0byBlYWNoIHRyYW5zbGF0aW9uIGFuZCBzbyB3ZSBuZWVkIHRvIHNwZWNpZnkgd2hpY2ggdHJhbnNsYXRpb24gaXMgYmVpbmcgZWRpdGVkLgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJsYW5ndWFnZSIgdmFsdWU9IiQhe2VzY2FwZXRvb2wueG1sKCR0ZG9jLnJlYWxMYW5ndWFnZSl9IiAvPgojaWYoIiQhcmVxdWVzdC5wYXJlbnQiICE9ICcnKQogIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InBhcmVudCIgdmFsdWU9IiRlc2NhcGV0b29sLnhtbCgkIXJlcXVlc3QucGFyZW50KSIgLz4KI2VuZAojaWYoIiQhcmVxdWVzdC50aXRsZSIgIT0gJycpCiAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGl0bGUiIHZhbHVlPSIkZXNjYXBldG9vbC54bWwoJCFyZXF1ZXN0LnRpdGxlKSIgLz4KI2VuZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHJlbmRlcmVkIGNvbnRlbnQKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQokcmVuZGVyZWRDb250ZW50CiNzZXQoJGVkaXRhY3Rpb25zID0gImJvdHRvbSIpCjxkaXYgY2xhc3M9ImJvdHRvbWJ1dHRvbnMiPiN0ZW1wbGF0ZSgiZWRpdGFjdGlvbnMudm0iKTwvZGl2Pgo8L2Rpdj4gIyMgZm9ybQo8L2Zvcm0+CiN0ZW1wbGF0ZSgidGV4dGFyZWFfd3lzaXd5Zy52bSIpCiNlbmQgIyMgY2FuIGVkaXQKPC9kaXY+ICMjIG1haW5Db250ZW50QXJlYQo8L2Rpdj4gIyMgbWFpbgo=</content>
-    <filesize>4385</filesize>
-  </attachment>
-  <attachment>
     <filename>eye.png</filename>
     <author>xwiki:XWiki.Admin</author>
     <date>1353452800000</date>
@@ -100,15 +82,6 @@
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAVCAYAAABPPm7SAAAAsklEQVQ4y2NgwA5YgdgUiP2B2B3I02cgAdgD8S8g/o+GfwOxFSHNCVg0ouMEXJpFidAMwl+BmBGbAXOINACEu7EZcIkEAz6jawY56QsJBvwAYl50A/6TgEGxJEmpARLo3iDVABFkzetINACEO5AN2EOGAS3IBiwkw4B0ZAO8yDDADj0QTxCp8S8QHwNiLmypkRgDHuDLjduIMGAzLs2gxGRBhAHe+FygR4QBbvgM0Ke7AQD+P9Vh46YDYAAAAABJRU5ErkJggg==</content>
     <filesize>235</filesize>
-  </attachment>
-  <attachment>
-    <filename>layoutExtraVars.vm</filename>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1378848245000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>IyogCiAqIFZvbHVudGFyeSBsZWZ0IGVtcHR5LgogKiBUaGlzIHRlbXBsYXRlIGlzIGludGVuZGVkIHRvIGJlIHVzZWQgYnkgY3VzdG9tIHNraW4gdGhhdCB3YW50IHRvIG92ZXJyaWRlIHZhbHVlcyBmcm9tIGxheW91dHZhcnMudm0gc2FmZWx5LgogKiAgCiAqIFNvbWUgZXhhbXBsZSBvZiB2YXJpYWJsZXMgdGhhdCBjYW4gYmUgb3ZlcnJpZGRlbiBoZXJlIDoKICogI3NldCgkZGlzcGxheUNvbnRlbnRNZW51ID0gZmFsc2UpCiAqICNzZXQoJGRpc3BsYXlNYWluTWVudSA9IGZhbHNlKQogKiAjc2V0KCRkaXNwbGF5RG9jRXh0cmEgPSBmYWxzZSkKICogI3NldCgkZGlzcGxheVNob3J0Y3V0cyA9IGZhbHNlKQogKiMKI3NldCAoJGRpc3BsYXlEb2NFeHRyYSA9IGZhbHNlKQojc2V0ICgkZGlzcGxheU1haW5NZW51ID0gZmFsc2UpCiNzZXQgKCRkaXNwbGF5U2hvcnRjdXRzID0gZmFsc2Up</content>
-    <filesize>444</filesize>
   </attachment>
   <attachment>
     <filename>logo.png</filename>
@@ -131,10 +104,10 @@
   <object>
     <name>PhenoTips.Skin</name>
     <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>5a947c54-713e-41c7-8f8a-465610b7555f</guid>
     <class>
-      <name>XWiki.StyleSheetExtension</name>
+      <name>XWiki.JavaScriptExtension</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -152,7 +125,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -197,10 +170,120 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>if (browser.isIE &amp;&amp; browser.versionMajor &lt; 9) {
+  new XWiki.widgets.ModalPopup("${services.localization.render('phenotips.skin.incompatibleBrowserWarning')}", {}, {"title": "${services.localization.render('phenotips.skin.incompatibleBrowserWarning.title')}"}).showDialog();
+}</code>
+    </property>
+    <property>
+      <name>Incompatibe browser warning</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -388,7 +471,7 @@ thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter in
   padding: .3em !important;
 }
 
-input[type=text], textarea {
+input[type=text], input[type=password], textarea {
   border-color: $theme.borderColor;
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0,0,0,.4) inset !important;
@@ -398,7 +481,7 @@ textarea {
   box-sizing: border-box;
   width: 100%;
 }
-input[type=text]:focus, textarea:focus {
+input[type=text]:focus, input[type=password]:focus, textarea:focus {
   border-color: $theme.linkColor;
 }
 
@@ -451,7 +534,10 @@ h1:target, h2:target, h3:target {
 }</code>
     </property>
     <property>
-      <name/>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>PhenoTips skin</name>
     </property>
     <property>
       <parse>1</parse>
@@ -541,6 +627,303 @@ h1:target, h2:target, h3:target {
     </property>
     <property>
       <users>XWiki.XWikiGuest</users>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>0</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>3dd9c822-d343-4311-bf37-b4c31dbcad1d</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>###
+### Display document contents in "view" mode.
+###
+## -------------------------------
+## Compute the content to display
+## -------------------------------
+## Honor the syntax if it's passed in the request.
+#try()
+  #set($outputSyntax = $xwiki.getAvailableRendererSyntax($request.outputSyntax, $request.outputSyntaxVersion))
+  #if ($outputSyntax)
+    ## If the passed syntax is not an HTML-compatible syntax we need to HTML-escape it so that it can be
+    ## displayed fine in HTML (since at the point this vm file is called we're already inside an HTML page with
+    ## panels on the side, header, etc).
+    #set($syntaxType = $outputSyntax.type.toIdString())
+    #if (($syntaxType == "xhtml") || ($syntaxType == "html"))
+      #set ($renderedContent = $tdoc.getRenderedContent($outputSyntax))
+    #else
+      ## Make sure to print correctly the result when it's not HTML
+      #set ($renderedContent = "&lt;pre&gt;$escapetool.html($tdoc.getRenderedContent($outputSyntax))&lt;/pre&gt;")
+    #end
+  #else
+    #set ($renderedContent = $tdoc.getRenderedContent())
+  #end
+#end
+## ----------------------------------------------------------------------------
+## Display UI Extensions before the title element
+## ----------------------------------------------------------------------------
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.template.title.before'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+## ----------------------------------------------------------------------------
+## Compute title to display and modify rendered content accordingly.
+## ----------------------------------------------------------------------------
+#template("titlevars.vm")
+## ----------------------------
+## Title zone
+## ----------------------------
+&lt;div id="document-head"&gt;
+## ----------------------------
+## Display the title
+## ----------------------------
+&lt;div id="document-title"&gt;&lt;h1&gt;$titleToDisplay&lt;/h1&gt;&lt;/div&gt;
+## --------------------------------------------------------------------------
+## Document author(s)
+##---------------------------------------------------------------------------
+$!xwiki.getDocument('PhenoTips.DocumentMeta').getRenderedContent()
+&lt;/div&gt;##document-head
+## --------------------------------------------------------------------------
+## Drop permissions as they are no longer needed. This allows us not to have
+## to review the code below for security holes since nothing bad can happen.
+## --------------------------------------------------------------------------
+$xcontext.dropPermissions()
+## ----------------------------
+## Display the shortcuts
+## ----------------------------
+#if($displayShortcuts)
+  #template("shortcuts.vm")
+#end
+## ----------------------------
+## Display the rendered content
+## ----------------------------
+&lt;div id="xwikicontent"&gt;
+  #if ("$!exception" != '')
+    #displayUnhandledException($exception)
+  #else
+    $renderedContent
+  #end
+&lt;/div&gt;</content>
+    </property>
+    <property>
+      <path>contentview.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>1</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>5aa6a0ba-dc6b-45c3-96c9-3cf299f37b4f</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>#*
+ * Voluntary left empty.
+ * This template is intended to be used by custom skin that want to override values from layoutvars.vm safely.
+ *
+ * Some example of variables that can be overridden here :
+ * #set($displayContentMenu = false)
+ * #set($displayMainMenu = false)
+ * #set($displayDocExtra = false)
+ * #set($displayShortcuts = false)
+ *#
+#set ($displayDocExtra = false)
+#set ($displayMainMenu = false)
+#set ($displayShortcuts = false)</content>
+    </property>
+    <property>
+      <path>layoutExtraVars.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>2</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>0f72a67a-3b44-411a-a245-9fadab6240bd</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>## Insert JS and CSS needed for the fullscreen edit feature
+$xwiki.jsfx.use('uicomponents/widgets/fullScreen.js', {'forceSkinAction': true, 'language': ${xcontext.language}})##
+$xwiki.ssfx.use('uicomponents/widgets/fullScreen.css', true)##
+#set($formname = "inline")
+#set($saveaction = "save")
+#set($previewenabled = false)
+## Determine if editing should be allowed
+#set($force = $!request.get("force"))
+#set($allowDocEdit = !(($doc.getLocked()==true)&amp;&amp;(!$force)) )
+##
+&lt;div class="main layoutsubsection"&gt;
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+&lt;div id="mainContentArea"&gt;
+## ----------------------------------------------------------------------------
+## Start FORM at start of content area IF editing is allowed.
+## ----------------------------------------------------------------------------
+#if ($allowDocEdit)
+ &lt;form id="inline" method="post" action="$doc.getURL("preview")" class="withLock"&gt;
+#end
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+## ----------------------------------------------------------------------------
+## Compute title to display and modify rendered content accordingly.
+## ----------------------------------------------------------------------------
+#set ($renderedContent = $cdoc.getRenderedContent())
+#template("titlevars.vm")
+## ----------------------------
+## Title zone
+## ----------------------------
+&lt;div id="document-head"&gt;
+## ----------------------------
+## Display the title
+## ----------------------------
+&lt;div id="document-title"&gt;&lt;h1&gt;$titleToDisplay&lt;/h1&gt;&lt;/div&gt;
+## --------------------------------------------------------------------------
+## Document author(s)
+##---------------------------------------------------------------------------
+$!xwiki.getDocument('PhenoTips.DocumentMeta').getRenderedContent()
+&lt;/div&gt;##document-head
+##
+##
+## If the document cannot be edited, display an information and a forcing link:
+##
+#if (!$allowDocEdit)
+  &lt;div class="layoutsection"&gt;
+  $response.setStatus(423)
+  #set($newquerystring = "$!{request.getQueryString().replaceAll('&amp;', '&amp;amp;').replaceAll('&amp;amp;amp;', '&amp;amp;')}&amp;amp;force=1")
+  #set($forceEditURL = $doc.getURL($xcontext.action, ${newquerystring}))
+  #xwikimessageboxstart($services.localization.render('notice') "$services.localization.render('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
+    &lt;a href="$forceEditURL"&gt;$services.localization.render('forcelock')&lt;/a&gt;
+  #xwikimessageboxend()
+  &lt;/div&gt;
+#else
+##
+## Otherwise, can edit - continue the form.
+##
+&lt;div&gt;
+&lt;input type="hidden" name="xcontinue" value="$doc.getURL($doc.getDefaultEditMode(), 'editor=inline')"/&gt;
+## CSRF prevention
+&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+## This input is used by the full screen widget: it stores the selector of the maximized element, so that the full screen can be restored when coming back from preview.
+&lt;input type="hidden" name="x-maximized" value="$!{escapetool.xml(${request.get('x-maximized')})}" /&gt;
+&lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($request.get('xredirect'))}" /&gt;
+&lt;input type="hidden" name="xnotification" value="$!{escapetool.xml($request.get('xnotification'))}" /&gt;
+&lt;input type="hidden" name="template" value="$!{escapetool.xml($request.template)}" /&gt;
+## We need to submit the language of the translated document because the inline edit mode is not limited to editing only
+## the objects, which are shared by all translations. We can also edit the content or the title of the document which are
+## specific to each translation and so we need to specify which translation is being edited.
+&lt;input type="hidden" name="language" value="$!{escapetool.xml($tdoc.realLanguage)}" /&gt;
+#if("$!request.parent" != '')
+  &lt;input type="hidden" name="parent" value="$escapetool.xml($!request.parent)" /&gt;
+#end
+#if("$!request.title" != '')
+  &lt;input type="hidden" name="title" value="$escapetool.xml($!request.title)" /&gt;
+#end
+#if("$!request.xhidden" != '')
+  &lt;input type="hidden" name="xhidden" value="$escapetool.xml($!request.xhidden)" /&gt;
+#end
+## ----------------------------
+## Display the rendered content
+## ----------------------------
+$renderedContent
+#set($editactions = "bottom")
+&lt;div class="bottombuttons"&gt;#template("editactions.vm")&lt;/div&gt;
+&lt;/div&gt; ## form
+&lt;/form&gt;
+#template("textarea_wysiwyg.vm")
+#end ## can edit
+&lt;/div&gt; ## mainContentArea
+&lt;/div&gt; ## main</content>
+    </property>
+    <property>
+      <path>editinline.vm</path>
     </property>
   </object>
   <object>
@@ -641,6 +1024,22 @@ h1:target, h2:target, h3:target {
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
+      <outputSyntax>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>outputSyntax</name>
+        <number>10</number>
+        <prettyName>Output Syntax</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>html/5.0=HTML 5|xhtml/1.0=XHTML 1.0</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </outputSyntax>
       <style.css>
         <customDisplay/>
         <disabled>0</disabled>
@@ -902,6 +1301,9 @@ h1:target, h2:target, h3:target {
     </property>
     <property>
       <name/>
+    </property>
+    <property>
+      <outputSyntax>html/5.0</outputSyntax>
     </property>
     <property>
       <style.css/>

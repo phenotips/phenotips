@@ -64,8 +64,6 @@ public class SexController implements PatientDataController<String>
 
     private static final String SEX_UNKNOWN = "U";
 
-    private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
-
     /** Logging helper object. */
     @Inject
     private Logger logger;

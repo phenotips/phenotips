@@ -53,7 +53,6 @@
       </activation>
       <modules>
         <module>rpm</module>
-        <module>rpm-rh6</module>
       </modules>
     </profile>
   </profiles>

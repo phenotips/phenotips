@@ -25,9 +25,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -58,10 +55,7 @@ public class DefaultAuthorizationService implements AuthorizationService
     @Override
     public boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        List<AuthorizationModule> services = new LinkedList<>();
-        services.addAll(this.modules.get());
-        Collections.sort(services, AuthorizationModuleComparator.INSTANCE);
-        for (AuthorizationModule service : services) {
+        for (AuthorizationModule service : this.modules.get()) {
             try {
                 Boolean decision = service.hasAccess(user, access, document);
                 if (decision != null) {
@@ -75,26 +69,5 @@ public class DefaultAuthorizationService implements AuthorizationService
         }
 
         return false;
-    }
-
-    /**
-     * Sorts the available authorization modules in descending order of their priority, then alphabetically if two or
-     * more modules have the same priority.
-     */
-    private static final class AuthorizationModuleComparator implements Comparator<AuthorizationModule>
-    {
-        /** Singleton instance. */
-        private static final AuthorizationModuleComparator INSTANCE = new AuthorizationModuleComparator();
-
-        @Override
-        public int compare(AuthorizationModule o1, AuthorizationModule o2)
-        {
-            int result = o2.getPriority() - o1.getPriority();
-            // If the happen to have the same priority, to avoid randomness, order them alphabetically by their name
-            if (result == 0) {
-                result = o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-            }
-            return result;
-        }
     }
 }

@@ -2397,7 +2397,9 @@ return PhenoTips;
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
-          Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
+          if (this.container.content) {
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
+          }
         }.bind(this),
         onFailure: function (response) {
           this.setContent("Failed to retrieve data : " + respose.statusText);
@@ -4011,9 +4013,13 @@ document.observe("xwiki:dom:loaded", function() {
           for (var l in labels) {
             if (json[l] &amp;&amp; json[l].length &gt; 0) {
               advancedInfo.insert(elt('dt', '', labels[l]));
-              json[l].each(function (item) {
-                advancedInfo.insert(elt('dd', '', item.label || item));
-              })
+              if (Object.prototype.toString.call(json[l]) === '[object Array]') {
+                json[l].each(function (item) {
+                  advancedInfo.insert(elt('dd', '', item.label || item));
+                })
+              } else {
+                 advancedInfo.insert(elt('dd', '', json[l]));
+              }
             }
           }
           if (advancedInfo.firstDescendant()) {

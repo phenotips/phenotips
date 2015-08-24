@@ -62,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -107,10 +107,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -215,7 +215,7 @@ document.observe('xwiki:dom:loaded', function() {
   // ------------------------------------------------------------------------
   ['keypress', 'keyup', 'keydown'].each(function (eventName) {
      $$('.editbody form#inline').invoke('observe', eventName, function (event) {
-        if (event.keyCode == Event.KEY_RETURN &amp;&amp; !event.findElement('textarea')) {
+        if (event.keyCode == Event.KEY_RETURN &amp;&amp; !(event.findElement('textarea') || event.findElement('.xwiki-free-multiselect-value'))) {
            event.stop();
         }
      });
@@ -271,7 +271,7 @@ document.observe('xwiki:dom:loaded', function() {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -316,10 +316,10 @@ document.observe('xwiki:dom:loaded', function() {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -482,7 +482,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -527,10 +527,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -566,16 +566,7 @@ document.observe('xwiki:dom:loaded', function()
             parentContainer : null
         },
         "omim" : {
-            script: new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&amp;",
-            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
-                           'name' : {'wordBoost': 20, 'phraseBoost': 40},
-                           'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
-                           'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
-                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
-                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
-                         }, {
-                           '-nameSort': ['\\**', '\\+*', '\\^*']
-                         }),
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&amp;",
             varname: "q",
             noresults: "No matching terms",
             json: true,
@@ -1397,7 +1388,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -1442,10 +1433,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -2237,7 +2228,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -2282,10 +2273,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -2361,7 +2352,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -2406,10 +2397,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -2490,11 +2481,12 @@ document.observe('xwiki:dom:loaded', function()
   }
 
   var requestCreated = function(service, request) {
-    service.target.up().addClassName('loading');
+    service.target.addClassName('loading');
+    service.target.select('li').each(function(element){element.update(' ')});
   }
   var responseReceived = function(service, request) {
     if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
-      service.target.up().removeClassName('loading');
+      service.target.removeClassName('loading');
     } else {
       request.request.container = {};
     }
@@ -2510,7 +2502,7 @@ document.observe('xwiki:dom:loaded', function()
           var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML || item.down('.title') &amp;&amp; item.down('.title').innerHTML;
           var categoryElt = item.down('.term-category');
           if (id &amp;&amp; name) {
-           if (service.suggestFor.hasClassName('generateYesNo')) {
+            if (service.suggestFor.hasClassName('generateYesNo')) {
               // generate yn pickers
               var positiveName = service.suggestFor.name.replace(/__suggested$/, '');
               var negativeName = positiveName.replace(/(_\d+)_/, "$1_negative_");
@@ -2545,7 +2537,7 @@ document.observe('xwiki:dom:loaded', function()
 
             // enableHighlightChecked(ynpicker.down('.yes input'));
             // enableHighlightChecked(ynpicker.down('.no input'));
-           } else {
+            } else {
             // generate simple checkboxes
             var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select', id : 'result__' + id});
             var existingValue = $(service.suggestFor.id + '_' + id);
@@ -2570,14 +2562,21 @@ document.observe('xwiki:dom:loaded', function()
                  }
                }
             });
-           } // generate simple checkboxes, not yn pickers
-           // -----------------------------------------------------
-           // Insert info boxes where available
-           if (typeof(service.tooltip) != 'undefined') {
+            } // generate simple checkboxes, not yn pickers
+            // -----------------------------------------------------
+            // Insert info boxes where available
+            if (typeof(service.tooltip) != 'undefined') {
              item.insert(new Element('span', {'class' : 'xHelpButton fa fa-info-circle ' + service.tooltip, 'title' : id}));
-           }
-          }
-        });
+            }
+            // -----------------------------------------------------
+            // Enable navigation by pages for trait suggestions
+            service.target.select(".navigation").each(function(navButton){
+              navButton.observe("click", function(event) {
+                doSearch('diffDiagnosis', navButton.select("input")[0].value, 0);
+              });
+            });
+          } //End of ID and Name conditional
+        }); //End of loop over all li
     }
     if (service.target.__hiddenParent) {
       if (service.target.down('li')) {
@@ -2590,7 +2589,7 @@ document.observe('xwiki:dom:loaded', function()
     Event.fire (document, 'xwiki:dom:updated', {'elements' : [service.target]});
   };
 
-  var doSearch = function(service) {
+  var doSearch = function(service, page, searchDelay) {
     var data = services[service];
     if (!data || !data.target || !data.script) {return;}
     if (data.__pendingRequest !== undefined) {
@@ -2615,9 +2614,16 @@ document.observe('xwiki:dom:loaded', function()
         list.push(obj.key);
       }
     }
+
+    if (page !==  undefined) {
+      parameters['page'] = page;
+    }
+
     data.source.each(function(source) {
        queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
     });
+
+    searchDelay = (searchDelay === undefined) ? 0.8 : searchDelay;
 
     data.__pendingRequest = function() {
       data.__pendingRequest = undefined;
@@ -2627,7 +2633,7 @@ document.observe('xwiki:dom:loaded', function()
         onSuccess : responseReceived.bind(this, data),
         onComplete : updateDone.bind(this, data)
       });
-    }.bind(this).delay(0.5);
+    }.bind(this).delay(searchDelay);
   }
 
   document.observe('phenotype:selected', function(event) {
@@ -2734,7 +2740,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -2779,10 +2785,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -2848,7 +2854,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -2893,10 +2899,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -2987,7 +2993,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -3032,10 +3038,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -3085,7 +3091,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -3130,10 +3136,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -3185,7 +3191,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -3230,10 +3236,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -3349,7 +3355,7 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -3394,10 +3400,10 @@ document.observe('xwiki:dom:loaded', function()
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -3615,7 +3621,7 @@ hr {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -3631,6 +3637,22 @@ hr {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -3660,10 +3682,10 @@ hr {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -3741,6 +3763,7 @@ hr {
   margin: 0 .5em;
 }
 #document-head #document-authors .document-author {
+  color: inherit;
   font-weight: bold;
 }
 .before-patient-data {
@@ -4081,7 +4104,7 @@ h1, h2, h3, h4 {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -4097,6 +4120,22 @@ h1, h2, h3, h4 {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -4126,10 +4165,10 @@ h1, h2, h3, h4 {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -4298,7 +4337,7 @@ form .extradata-list tr:hover td {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -4314,6 +4353,22 @@ form .extradata-list tr:hover td {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -4343,10 +4398,10 @@ form .extradata-list tr:hover td {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -4438,7 +4493,40 @@ form .extradata-list tr:hover td {
   -webkit-column-gap: 1em;
   column-count: 2;
   column-gap: 1em;
+}
+
+#diffDiagnosis-search-results {
+  display: table; 
+  width: 100%;
+}
+
+#diffDiagnosis-search-results &gt; * {
+  display: table-cell;
+  vertical-align: middle;
+}
+.collapsed #diffDiagnosis-search-results &gt; * {
+  display: none;
+}
+
+#diffDiagnosis-search-results &gt; ul {
+  padding-bottom: 0.3em;
+  padding-left: 1em;
+  width: 90%;
+}
+
+#diffDiagnosis-search-results &gt; span {
+  text-align: center;
+}
+
+#diffDiagnosis-search-results &gt; .navigation:hover {
+  background-color: rgba(0,0,0,0.1);
+  color: $theme.linkColor;
+  cursor: pointer;
+  transition: all 0.2s linear;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>Instant search style</name>
@@ -4474,7 +4562,7 @@ form .extradata-list tr:hover td {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -4490,6 +4578,22 @@ form .extradata-list tr:hover td {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -4519,10 +4623,10 @@ form .extradata-list tr:hover td {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -4688,7 +4792,7 @@ form .extradata-list tr:hover td {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -4704,6 +4808,22 @@ form .extradata-list tr:hover td {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -4733,10 +4853,10 @@ form .extradata-list tr:hover td {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>

@@ -39,19 +39,24 @@
   <hidden>true</hidden>
   <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
+  #set ($results = [])
   #if ("$!{request.q}" != '')
+    #set ($vocabulary = "$!{request.vocabulary}")
+    #if ($vocabulary == '')
+      #set ($vocabulary = 'hpo')
+    #end
     #set ($rows = 10)
     #if ("$!{request.rows}" != '')
       #set ($rows = $numbertool.toNumber($!{request.rows}))
     #end
-    #set ($results = $services.vocabularies.hpo.search($!{request.q}, $rows, "$!{request.sort}", "$!{request.fq}"))
+    #set ($results = $services.vocabularies.get($vocabulary).search($!{request.q}, $rows, "$!{request.sort}", "$!{request.fq}"))
   #end
 $response.setContentType('application/json')
 {
    "returnedrows" : "$results.size()",
    "rows" : [
 #foreach ($result in $results)
-  $result.toJson()
+  $result.toJSON()
   #if($foreach.hasNext()),#end
 #end
   ]## docs array

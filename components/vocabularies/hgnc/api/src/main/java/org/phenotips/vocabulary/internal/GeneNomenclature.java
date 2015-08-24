@@ -17,23 +17,18 @@
  */
 package org.phenotips.vocabulary.internal;
 
-import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
+import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrVocabulary;
+import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
-import org.xwiki.cache.Cache;
-import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
-import org.xwiki.cache.eviction.EntryEvictionConfiguration;
-import org.xwiki.cache.eviction.LRUEvictionConfiguration;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,237 +43,242 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Consts;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
-import org.slf4j.Logger;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.params.SpellingParams;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.2RC1
  */
 @Component
 @Named("hgnc")
 @Singleton
-public class GeneNomenclature implements Vocabulary, Initializable
+public class GeneNomenclature extends AbstractCSVSolrVocabulary
 {
-    /**
-     * Object used to mark in the cache that a term doesn't exist, since null means that the cache doesn't contain the
-     * requested entry.
-     */
-    private static final VocabularyTerm EMPTY_MARKER = new JSONOntologyTerm(null, null);
+    private static final String ID_FIELD_NAME = "id";
 
-    private static final String RESPONSE_KEY = "response";
+    private static final String SYMBOL_FIELD_NAME = "symbol";
 
-    private static final String DATA_KEY = "docs";
+    private static final String PREV_SYMBOL_FIELD_NAME = "prev_symbol";
 
-    private static final String LABEL_KEY = "symbol";
+    private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
-    private static final String WILDCARD = "*";
+    private static final String SYNONYM_FIELD_NAME = "synonym";
 
-    private static final String DEFAULT_OPERATOR = "AND";
+    private static final Map<String, String> COMMON_SEARCH_OPTIONS;
 
-    private static final Map<String, String> QUERY_OPERATORS = new HashMap<>();
+    private static final Map<String, String> DISMAX_SEARCH_OPTIONS;
+
+    private static final Map<String, String> IDENTIFIER_SEARCH_OPTIONS;
+
+    private static final Map<String, String> TEXT_SEARCH_OPTIONS;
+
+    private static final Map<String, String> SPELLCHECKED_TEXT_SEARCH_OPTIONS;
+
+    static {
+        Map<String, String> options = new HashMap<>();
+        options.put("lowercaseOperators", Boolean.toString(false));
+        options.put("defType", "edismax");
+        COMMON_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        String spellcheck = "spellcheck";
+
+        options = new HashMap<>();
+        options.put(DisMaxParams.QF, "symbol^100 symbolStub^75 "
+            + "alt_id^60 alt_idStub^40 "
+            + "name^10 nameSpell^18 nameStub^5 "
+            + "synonym^6 synonymSpell^10 synonymStub^3 "
+            + "text^1 textSpell^2 textStub^0.5");
+        options.put(DisMaxParams.PF, "name^20 nameSpell^36 nameExact^100 namePrefix^30 "
+            + "synonym^15 synonymSpell^25 synonymExact^70 synonymPrefix^20 "
+            + "text^3 textSpell^5");
+        DISMAX_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(false));
+        options.put(DisMaxParams.QF, "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10");
+        IDENTIFIER_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(false));
+        options.putAll(DISMAX_SEARCH_OPTIONS);
+        TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+
+        options = new HashMap<>();
+        options.putAll(COMMON_SEARCH_OPTIONS);
+        options.put(spellcheck, Boolean.toString(true));
+        options.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        options.put(SpellingParams.SPELLCHECK_COUNT, "100");
+        options.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
+        options.putAll(DISMAX_SEARCH_OPTIONS);
+        SPELLCHECKED_TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
+    }
 
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configuration;
 
-    private String baseServiceURL;
-
-    private String searchServiceURL;
-
-    private String infoServiceURL;
-
-    private String fetchServiceURL;
-
-    /** Performs HTTP requests to the remote REST service. */
-    private final CloseableHttpClient client = HttpClients.createSystem();
-
-    @Inject
-    private Logger logger;
-
-    /**
-     * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
-     * the same thing.
-     */
-    private Cache<VocabularyTerm> cache;
-
-    /** Cache for ontology metadata. */
-    private Cache<JSONObject> infoCache;
-
-    /** Cache factory needed for creating the term cache. */
-    @Inject
-    private CacheManager cacheFactory;
-
     @Override
-    public void initialize() throws InitializationException
+    public String getDefaultSourceLocation()
     {
-        try {
-            this.baseServiceURL =
-                this.configuration.getProperty("phenotips.ontologies.hgnc.serviceURL", "http://rest.genenames.org/");
-            this.searchServiceURL = this.baseServiceURL + "search/";
-            this.infoServiceURL = this.baseServiceURL + "info";
-            this.fetchServiceURL = this.baseServiceURL + "fetch/";
-            this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-            EntryEvictionConfiguration infoConfig = new LRUEvictionConfiguration(1);
-            infoConfig.setTimeToLive(300);
-            this.infoCache = this.cacheFactory.createNewLocalCache(new CacheConfiguration(infoConfig));
-        } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
-        }
-        QUERY_OPERATORS.put("OR", "");
-        QUERY_OPERATORS.put(DEFAULT_OPERATOR, DEFAULT_OPERATOR + ' ');
-        QUERY_OPERATORS.put("NOT", "-");
+        return "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt";
     }
 
     @Override
-    public VocabularyTerm getTerm(String id)
+    protected int getSolrDocsPerBatch()
     {
-        VocabularyTerm result = this.cache.get(id);
-        String safeID;
-        if (result == null) {
-            try {
-                safeID = URLEncoder.encode(id, Consts.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                safeID = id.replaceAll("\\s", "");
-                this.logger.warn("Could not find the encoding: {}", Consts.UTF_8.name());
-            }
-            HttpGet method = new HttpGet(this.fetchServiceURL + "symbol/" + safeID);
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() == 1) {
-                    result = new JSONOntologyTerm(docs.getJSONObject(0), this);
-                    this.cache.set(id, result);
-                } else {
-                    this.cache.set(id, EMPTY_MARKER);
-                }
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to fetch gene definition: {}", ex.getMessage());
-            }
-        }
-        return (result == EMPTY_MARKER) ? null : result;
+        return 500000;
     }
 
     @Override
-    public Set<VocabularyTerm> getTerms(Collection<String> ids)
+    protected String getName()
     {
-        // FIXME Reimplement with a bunch of async connections fired in parallel
-        Set<VocabularyTerm> result = new LinkedHashSet<>();
-        for (String id : ids) {
-            VocabularyTerm term = getTerm(id);
-            if (term != null) {
-                result.add(term);
-            }
-        }
+        return "hgnc";
+    }
+
+    @Override
+    public Set<String> getAliases()
+    {
+        Set<String> result = new HashSet<String>();
+        result.add(getName());
+        result.add("HGNC");
         return result;
     }
 
     @Override
-    public List<VocabularyTerm> search(Map<String, ?> fieldValues)
+    public VocabularyTerm getTerm(String symbol)
     {
-        return search(fieldValues, Collections.<String, String>emptyMap());
+        String escapedSymbol = ClientUtils.escapeQueryChars(symbol);
+
+        VocabularyTerm result = getTermById(escapedSymbol);
+        if (result != null) {
+            return result;
+        }
+        result = getTermByAlternativeId(escapedSymbol);
+        if (result != null) {
+            return result;
+        }
+        result = getTermByMappedId(escapedSymbol);
+        return result;
     }
 
-    @Override
-    public List<VocabularyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    private VocabularyTerm getTermById(String id)
     {
-        try {
-            HttpGet method =
-                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() >= 1) {
-                    List<VocabularyTerm> result = new LinkedList<>();
-                    // The remote service doesn't offer any query control, manually select the right range
-                    int start = 0;
-                    if (queryOptions.containsKey(CommonParams.START)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START)))
-                    {
-                        start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
-                    }
-                    int end = docs.size();
-                    if (queryOptions.containsKey(CommonParams.ROWS)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS)))
-                    {
-                        end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
-                    }
+        return requestTerm(ID_FIELD_NAME + ':' + id, null);
+    }
 
-                    for (int i = start; i < end; ++i) {
-                        result.add(new JSONOntologyTerm(docs.getJSONObject(i), this));
-                    }
-                    return result;
-                    // This is too slow, for the moment only return summaries
-                    // return getTerms(ids);
-                }
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to search gene names: {}", ex.getMessage());
-            }
-        } catch (UnsupportedEncodingException ex) {
-            // This will not happen, UTF-8 is always available
+    private VocabularyTerm getTermByAlternativeId(String id)
+    {
+        return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
+            ALIAS_SYMBOL_FIELD_NAME), null);
+    }
+
+    /**
+     * Access an individual term from the vocabulary, identified by its alternative ids: either Ensembl Gene ID or
+     * Entrez Gene ID.
+     *
+     * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
+     * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
+     */
+    private VocabularyTerm getTermByMappedId(String id)
+    {
+        return requestTerm(SYNONYM_FIELD_NAME + ':' + id, null);
+    }
+
+    private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
+    {
+        String escapedQuery = ClientUtils.escapeQueryChars(originalQuery.trim());
+
+        ModifiableSolrParams params = new ModifiableSolrParams();
+        params.add(CommonParams.Q, escapedQuery);
+        params.add(CommonParams.ROWS, rows.toString());
+        if (StringUtils.isNotBlank(sort)) {
+            params.add(CommonParams.SORT, sort);
         }
-        return Collections.emptyList();
+        params.add(CommonParams.FQ, StringUtils.defaultIfBlank(customFilter, "status:Approved"));
+        return params;
     }
 
     @Override
     public List<VocabularyTerm> search(String input, int maxResults, String sort, String customFilter)
     {
-        // ignoring sort and customFq
-        String formattedQuery = String.format("%s*", input);
-        Map<String, Object> fieldValues = new HashMap<>();
-        Map<String, String> queryMap = new HashMap<>();
-        Map<String, String> rowsMap = new HashMap<>();
-        queryMap.put(LABEL_KEY, formattedQuery);
-        queryMap.put("alias_symbol", formattedQuery);
-        queryMap.put("prev_symbol", formattedQuery);
-        fieldValues.put("status", "Approved");
-        fieldValues.put(DEFAULT_OPERATOR, queryMap);
-        rowsMap.put("rows", Integer.toString(maxResults));
+        if (StringUtils.isBlank(input)) {
+            return Collections.emptyList();
+        }
+        List<VocabularyTerm> result = searchIdentifiers(input, maxResults, sort, customFilter);
+        if (result == null || result.isEmpty()) {
+            result = searchText(input, maxResults, sort, customFilter);
+        }
+        if (result == null || result.isEmpty()) {
+            result = searchTextSpellchecked(input, maxResults, sort, customFilter);
+        }
+        return result;
+    }
 
-        return this.search(fieldValues, rowsMap);
+    private List<VocabularyTerm> searchIdentifiers(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(params, IDENTIFIER_SEARCH_OPTIONS)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
+    private List<VocabularyTerm> searchText(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(params, TEXT_SEARCH_OPTIONS)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
+    }
+
+    private List<VocabularyTerm> searchTextSpellchecked(String input, int maxResults, String sort, String customFilter)
+    {
+        SolrParams params = produceDynamicSolrParams(input, maxResults, sort, customFilter);
+        List<VocabularyTerm> result = new LinkedList<>();
+        for (SolrDocument doc : this.search(params, SPELLCHECKED_TEXT_SEARCH_OPTIONS)) {
+            result.add(new SolrVocabularyTerm(doc, this));
+        }
+        return result;
     }
 
     @Override
-    public long count(Map<String, ?> fieldValues)
+    public Set<VocabularyTerm> getTerms(Collection<String> symbols)
     {
-        try {
-            HttpGet method =
-                new HttpGet(this.searchServiceURL + URLEncoder.encode(generateQuery(fieldValues), Consts.UTF_8.name()));
-            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-                JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                return docs.size();
-            } catch (IOException | JSONException ex) {
-                this.logger.warn("Failed to count matching gene names: {}", ex.getMessage());
+        Set<VocabularyTerm> result = new LinkedHashSet<>();
+        for (String symbol : symbols) {
+            VocabularyTerm term = getTerm(symbol);
+            if (term != null) {
+                result.add(term);
             }
-        } catch (UnsupportedEncodingException ex) {
-            // This will not happen, UTF-8 is always available
         }
-        return -1;
+        if (result.isEmpty()) {
+            for (String symbol : symbols) {
+                VocabularyTerm term = getTermByAlternativeId(symbol);
+                if (term != null) {
+                    result.add(term);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -296,213 +296,36 @@ public class GeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
-    public Set<String> getAliases()
+    protected Collection<SolrInputDocument> load(URL url)
     {
-        Set<String> result = new HashSet<String>();
-        result.add("hgnc");
-        result.add("HGNC");
-        return result;
-    }
+        try {
+            Collection<SolrInputDocument> solrDocuments = new HashSet<SolrInputDocument>();
 
-    @Override
-    public long size()
-    {
-        JSONObject info = getInfo();
-        return info.isNullObject() ? -1 : info.getLong("numDoc");
-    }
-
-    @Override
-    public int reindex(String ontologyUrl)
-    {
-        // Remote ontology, we cannot reindex, but we can clear the local cache
-        this.cache.removeAll();
-        return 0;
-    }
-
-    @Override
-    public String getDefaultSourceLocation()
-    {
-        return this.baseServiceURL;
-    }
-
-    @Override
-    public String getVersion()
-    {
-        JSONObject info = getInfo();
-        return info.isNullObject() ? "" : info.getString("lastModified");
-    }
-
-    private JSONObject getInfo()
-    {
-        JSONObject info = this.infoCache.get("");
-        if (info != null) {
-            return info;
-        }
-        HttpGet method = new HttpGet(this.infoServiceURL);
-        method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-            String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
-            this.infoCache.set("", responseJSON);
-            return responseJSON;
-        } catch (IOException | JSONException ex) {
-            this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
-        }
-        return new JSONObject(true);
-    }
-
-    /**
-     * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
-     *
-     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
-     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
-     *            single value, or a collection of values that can (OR) be matched by the term;
-     * @return the String representation of the equivalent Lucene query
-     */
-    private String generateQuery(Map<String, ?> fieldValues)
-    {
-        StringBuilder query = new StringBuilder();
-        for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
-            processQueryPart(query, field, true);
-        }
-        return StringUtils.removeStart(query.toString().trim(), DEFAULT_OPERATOR);
-    }
-
-    private StringBuilder processQueryPart(StringBuilder query, Map.Entry<String, ?> field, boolean includeOperator)
-    {
-        if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
-            return query;
-        }
-        if (Map.class.isInstance(field.getValue())) {
-            if (QUERY_OPERATORS.containsKey(field.getKey())) {
-                @SuppressWarnings("unchecked")
-                Map.Entry<String, Map<String, ?>> subquery = (Map.Entry<String, Map<String, ?>>) field;
-                return processSubquery(query, subquery);
-            } else {
-                this.logger.warn("Invalid subquery operator: {}", field.getKey());
-                return query;
-            }
-        }
-        query.append(' ');
-        if (includeOperator) {
-            query.append(QUERY_OPERATORS.get(DEFAULT_OPERATOR));
-        }
-
-        query.append(ClientUtils.escapeQueryChars(field.getKey()));
-        query.append(":(");
-        if (Collection.class.isInstance(field.getValue())) {
-            for (Object value : (Collection<?>) field.getValue()) {
-                String svalue = String.valueOf(value);
-                if (svalue.endsWith(WILDCARD)) {
-                    svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
-                } else {
-                    svalue = ClientUtils.escapeQueryChars(svalue);
+            Reader in = new InputStreamReader(url.openConnection().getInputStream(), Charset.forName("UTF-8"));
+            for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
+                SolrInputDocument crtTerm = new SolrInputDocument();
+                for (Map.Entry<String, String> item : row.toMap().entrySet()) {
+                    if ("hgnc_id".equals(item.getKey())) {
+                        crtTerm.addField(ID_FIELD_NAME, item.getValue());
+                    } else if (StringUtils.isNotBlank(item.getValue())) {
+                        crtTerm.addField(item.getKey(), StringUtils.split(item.getValue(), "|"));
+                    }
                 }
-                query.append(svalue);
-                query.append(' ');
+                solrDocuments.add(crtTerm);
             }
-        } else {
-            String svalue = String.valueOf(field.getValue());
-            if (svalue.endsWith(WILDCARD)) {
-                svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
-            } else {
-                svalue = ClientUtils.escapeQueryChars(svalue);
-            }
-            query.append(svalue);
+            addMetaInfo(solrDocuments);
+            return solrDocuments;
+        } catch (IOException ex) {
+            this.logger.warn("Failed to read/parse the HGNC source: {}", ex.getMessage());
         }
-        query.append(')');
-        return query;
+        return null;
     }
 
-    private StringBuilder processSubquery(StringBuilder query, Map.Entry<String, Map<String, ?>> subquery)
+    private void addMetaInfo(Collection<SolrInputDocument> data)
     {
-        query.append(' ').append(QUERY_OPERATORS.get(subquery.getKey())).append('(');
-        for (Map.Entry<String, ?> field : subquery.getValue().entrySet()) {
-            processQueryPart(query, field, false);
-        }
-        query.append(')');
-        return query;
-    }
-
-    private static class JSONOntologyTerm implements VocabularyTerm
-    {
-        private JSONObject data;
-
-        private Vocabulary ontology;
-
-        public JSONOntologyTerm(JSONObject data, Vocabulary ontology)
-        {
-            this.data = data;
-            this.ontology = ontology;
-        }
-
-        @Override
-        public String getId()
-        {
-            return this.data.getString(LABEL_KEY);
-        }
-
-        @Override
-        public String getName()
-        {
-            return this.data.getString("name");
-        }
-
-        @Override
-        public String getDescription()
-        {
-            // No description for gene names
-            return "";
-        }
-
-        @Override
-        public Set<VocabularyTerm> getParents()
-        {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public Set<VocabularyTerm> getAncestors()
-        {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public Set<VocabularyTerm> getAncestorsAndSelf()
-        {
-            return Collections.<VocabularyTerm>singleton(this);
-        }
-
-        @Override
-        public long getDistanceTo(VocabularyTerm other)
-        {
-            return -1;
-        }
-
-        @Override
-        public Object get(String name)
-        {
-            return this.data.get(name);
-        }
-
-        @Override
-        public Vocabulary getVocabulary()
-        {
-            return this.ontology;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "HGNC:" + getId();
-        }
-
-        @Override
-        public JSON toJson()
-        {
-            JSONObject json = new JSONObject();
-            json.put("id", this.getId());
-            return json;
-        }
+        SolrInputDocument metaTerm = new SolrInputDocument();
+        metaTerm.addField(ID_FIELD_NAME, "HEADER_INFO");
+        metaTerm.addField(VERSION_FIELD_NAME, ISODateTimeFormat.dateTime().withZoneUTC().print(new DateTime()));
+        data.add(metaTerm);
     }
 }

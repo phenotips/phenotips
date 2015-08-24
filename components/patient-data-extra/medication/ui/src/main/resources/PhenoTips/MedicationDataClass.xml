@@ -147,6 +147,7 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </name>
     <notes>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>PureText</editor>

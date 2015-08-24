@@ -54,9 +54,9 @@
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>dateDisplayFormat</name>
-      <number>4</number>
+      <number>5</number>
       <picker>0</picker>
-      <prettyName>Date input format</prettyName>
+      <prettyName>Date display format</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators> ,|</separators>
@@ -75,7 +75,7 @@
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
       <name>dateInputFormat</name>
-      <number>3</number>
+      <number>4</number>
       <picker>0</picker>
       <prettyName>Date input format</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -90,24 +90,46 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateInputFormat>
     <nonStandardAdoptedOutGraphic>
-      <disabled>0</disabled>
+      <customDisplay/>
       <defaultValue>0</defaultValue>
-      <displayFormType>select</displayFormType>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
       <name>nonStandardAdoptedOutGraphic</name>
       <number>1</number>
-      <prettyName>Brackets-out adopted-out symbol</prettyName>
+      <prettyName>Use brackets-out symbol for adopted-out nodes</prettyName>
       <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </nonStandardAdoptedOutGraphic>
     <propagateFatherLastName>
-      <disabled>0</disabled>
+      <customDisplay/>
       <defaultValue>1</defaultValue>
-      <displayFormType>select</displayFormType>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
       <name>propagateFatherLastName</name>
       <number>2</number>
-      <prettyName>Propagate father's last name</prettyName>
+      <prettyName>Propagate father's last name to descendants</prettyName>
       <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </propagateFatherLastName>
+    <uiGradientNodes>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>uiGradientNodes</name>
+      <number>3</number>
+      <prettyName>Apply color gradient to pedigree nodes</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </uiGradientNodes>
   </class>
 </xwikidoc>

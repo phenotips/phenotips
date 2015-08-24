@@ -52,7 +52,7 @@
      #end
      {{html clean="false" wiki="false"}}&lt;label class="$!{cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
      #if ($services.localization.get("$!{class.name}_${propName}_hint"))
-       #* Empty comment needed for the whitespace trimmer to leave an empty space before the icon *# {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_${propName}_hint").replace('"', '~~~"')"/}}##
+       #* Empty comment needed for the whitespace trimmer to leave an empty space before the icon *# {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("$!{class.name}_${propName}_hint").replace('"', '~~~"')"/}}##
      #end
    #end
 #end

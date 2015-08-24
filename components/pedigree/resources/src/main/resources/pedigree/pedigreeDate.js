@@ -1,6 +1,6 @@
 /**
  * Class for storing either exact or fuzzy dates.
- * 
+ *
  * Assert:
  *   if day is set   => all of {decade, year, month, day} are set
  *   if month is set => all of {decade, year, month} are set
@@ -120,7 +120,7 @@ var PedigreeDate = Class.create({
 
     // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
     toGEDCOMString: function() {
-        if (this.year === null && this.decade !== null) { 
+        if (this.year === null && this.decade !== null) {
             // getYear(true) returns first year of decade as integer
             return "ABT " + this.getYear(true).toString();
         }
@@ -156,7 +156,7 @@ var PedigreeDate = Class.create({
 
     // Returns best possible estimation of this date as a javascript Date object.
     //
-    // Aproximate dates (e.g. decades, or dates without a day or month) are set as 
+    // Aproximate dates (e.g. decades, or dates without a day or month) are set as
     // oldest possible date satisfying the date set (e.g. first year of decade, first month of the year, etc.)
     toJSDate: function() {
         var year  = this.getYear(true);       // true: failsafe, get first year of decade if only decade is set
@@ -191,7 +191,7 @@ var PedigreeDate = Class.create({
         return dateStr;
      },
 
-    // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime()) 
+    // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime())
     getTime: function() {
         return this.toJSDate().getTime();
     },

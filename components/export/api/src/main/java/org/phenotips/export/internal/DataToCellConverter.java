@@ -56,6 +56,8 @@ import com.xpn.xwiki.web.Utils;
  */
 public class DataToCellConverter
 {
+    private static final String ALLERGIES = "allergies";
+
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
 
     private ConversionHelpers phenotypeHelper;
@@ -262,7 +264,7 @@ public class DataToCellConverter
         String[] fieldIds = { "genes", "genes_comments", "rejectedGenes", "rejectedGenes_comments" };
         // FIXME These will not work properly in different configurations
         String[][] headerIds =
-        { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
+            { { "candidate" }, { "comments", "candidate" }, { "rejected" }, { "rejected_comments", "rejected" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -635,8 +637,7 @@ public class DataToCellConverter
         if (present.contains("maternal_ethnicity") || present.contains("paternal_ethnicity")) {
             bottomY = 2;
             if (fieldToHeaderMap.containsKey("maternal_ethnicity")
-                && fieldToHeaderMap.containsKey("paternal_ethnicity"))
-            {
+                && fieldToHeaderMap.containsKey("paternal_ethnicity")) {
                 ethnicityOffset = 2;
             } else {
                 ethnicityOffset = 1;
@@ -1025,13 +1026,11 @@ public class DataToCellConverter
             }
             y++;
         }
-        /* Creating empites */
+        /* Creating empties */
         if (sortedFeatures.size() == 0) {
-            Integer emptyX = 0;
-            for (String header : present) {
-                DataCell cell = new DataCell("", emptyX, 0);
+            for (int i = 0; i < present.size(); ++i) {
+                DataCell cell = new DataCell("", i, 0);
                 section.addCell(cell);
-                emptyX++;
             }
         }
         // section.finalizeToMatrix();
@@ -1142,6 +1141,7 @@ public class DataToCellConverter
 
         // Must be linked to keep order; in other sections as well
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put(ALLERGIES, "Allergies");
         fieldToHeaderMap.put("global_age_of_onset", "Age of onset");
         fieldToHeaderMap.put("medical_history", "Notes");
 
@@ -1179,8 +1179,24 @@ public class DataToCellConverter
             return null;
         }
         DataSection bodySection = new DataSection();
-
         Integer x = 0;
+
+        if (present.contains(ALLERGIES)) {
+            PatientData<String> allergiesData = patient.getData(ALLERGIES);
+            int y = 0;
+            if (allergiesData != null && allergiesData.isIndexed()) {
+                for (String allergy : allergiesData) {
+                    DataCell cell = new DataCell(allergy, x, y);
+                    if ("NKDA".equals(allergy)) {
+                        cell.addStyle(StyleOption.YES);
+                    }
+                    bodySection.addCell(cell);
+                    y++;
+                }
+            }
+            x++;
+        }
+
         if (present.contains("global_age_of_onset")) {
             PatientData<List<SolrVocabularyTerm>> qualifiers = patient.getData("global-qualifiers");
             List<SolrVocabularyTerm> ageOfOnsetList = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
@@ -1257,7 +1273,6 @@ public class DataToCellConverter
 
         return bodySection;
     }
-
 
     public DataSection isSolvedHeader(Set<String> enabledFields) throws Exception
     {

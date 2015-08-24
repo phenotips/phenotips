@@ -43,42 +43,50 @@
 #set ($mainConfigurationClassname = 'PhenoTips.PedigreeGlobalSettings')
 #set ($existingConfigs = $preferencesDoc.getObjects($mainConfigurationClassname))
 
+#set ($targetObj = $doc.getObject($mainConfigurationClassname))
+#if (!$targetObj)
+  #set ($targetObj = $doc.newObject($mainConfigurationClassname))
+  $doc.save('Added receive patient configuration', true)##
+#end
+
 $xwiki.ssx.use($displayDocumentName)##
 {{/velocity}}
 
+==Pedigree configuration==
+
 {{velocity}}
 {{html clean="false"}}
-&lt;h2&gt;Pedigree configuration&lt;/h2&gt;
-&lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
-&lt;div class="hidden"&gt;
+&lt;form action="${preferencesDoc.getURL('save')}" method="post" class="xform"&gt;
+  &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${mainConfigurationClassname}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="${doc.getURL($xcontext.action, $request.queryString)}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
-  Use brackets-out symbol for adopted-out nodes: ##
-{{/html}}##
-    #set ($targetObj = $doc.getObject($mainConfigurationClassname))
-    #if (!$targetObj)
-        #set ($targetObj = $doc.newObject($mainConfigurationClassname))
-        $doc.save('Added receive patient configuration', true)
-    #end
-    $doc.display("nonStandardAdoptedOutGraphic", "edit", $targetObj)
-{{html clean="false"}}
-  Propagate father's last name to descendants: ##
-{{/html}}##
-    $doc.display("propagateFatherLastName", "edit", $targetObj)
-{{html clean="false"}}
-  &lt;br&gt;&lt;br&gt;
-  Date input format: ##
-{{/html}}##
-    $doc.display("dateInputFormat", "edit", $targetObj)
-{{html clean="false"}}
-  Date display format: ##
-{{/html}}##
-    $doc.display("dateDisplayFormat", "edit", $targetObj)
-{{html clean="false"}}
-&lt;br&gt;&lt;br&gt;
-&lt;div class="buttons"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Graphics&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_nonStandardAdoptedOutGraphic"&gt;${doc.display("nonStandardAdoptedOutGraphic", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('nonStandardAdoptedOutGraphic').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_uiGradientNodes"&gt;${doc.display("uiGradientNodes", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('uiGradientNodes').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+    &lt;/dl&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Behavior&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_propagateFatherLastName"&gt;${doc.display("propagateFatherLastName", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('propagateFatherLastName').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+    &lt;/dl&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Date format&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_dateInputFormat"&gt;${targetObj.getxWikiClass().get('dateInputFormat').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dd&gt;${doc.display("dateInputFormat", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_dateDisplayFormat"&gt;${targetObj.getxWikiClass().get('dateDisplayFormat').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dd&gt;${doc.display("dateDisplayFormat", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/fieldset&gt;
+  &lt;div class="buttons"&gt;
     &lt;input class="button" type="submit" value="Save" /&gt;
   &lt;/div&gt;
 &lt;/form&gt;
@@ -328,7 +336,7 @@ $xwiki.ssx.use($displayDocumentName)##
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -344,6 +352,22 @@ $xwiki.ssx.use($displayDocumentName)##
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -373,10 +397,10 @@ $xwiki.ssx.use($displayDocumentName)##
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>

@@ -40,6 +40,8 @@ public final class SolrQueryUtils
     /** Regular expression that checks if the last term in a query is a word stub. */
     private static final Pattern WORD_STUB = Pattern.compile("(\\w++):(\\w++)\\*$", Pattern.CASE_INSENSITIVE);
 
+    private static final String SPELLCHECK = "spellcheck";
+
     /** Private default constructor, so that this utility class can't be instantiated. */
     private SolrQueryUtils()
     {
@@ -104,8 +106,10 @@ public final class SolrQueryUtils
                 newParams.set(item.getKey(), String.valueOf(item.getValue()));
             }
         }
-        newParams.set("spellcheck", Boolean.toString(true));
-        newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        if (newParams.get(SPELLCHECK) == null) {
+            newParams.set(SPELLCHECK, Boolean.toString(true));
+            newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        }
         return newParams;
     }
 

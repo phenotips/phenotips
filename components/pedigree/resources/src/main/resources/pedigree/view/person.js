@@ -21,7 +21,7 @@ var Person = Class.create(AbstractPerson, {
         this._isProband = (id == 0);
         !this._type && (this._type = "Person");
         this._setDefault();
-        var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
+        var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U";
         $super(x, y, gender, id);
 
         // need to assign after super() and explicitly pass gender to super()
@@ -236,7 +236,7 @@ var Person = Class.create(AbstractPerson, {
      * @method setMonozygotic
      */
     setMonozygotic: function(monozygotic) {
-        if (monozygotic == this._monozygotic) return; 
+        if (monozygotic == this._monozygotic) return;
         this._monozygotic = monozygotic;
     },
 
@@ -256,7 +256,7 @@ var Person = Class.create(AbstractPerson, {
      * @method setEvaluated
      */
     setEvaluated: function(evaluationStatus) {
-        if (evaluationStatus == this._evaluated) return; 
+        if (evaluationStatus == this._evaluated) return;
         this._evaluated = evaluationStatus;
         this.getGraphics().updateEvaluationLabel();
     },
@@ -298,7 +298,7 @@ var Person = Class.create(AbstractPerson, {
      * (a twin group is all the twins from a given pregnancy)
      *
      * @method setTwinGroup
-     */    
+     */
     setTwinGroup: function(groupId) {
         this._twinGroup = groupId;
     },
@@ -500,7 +500,7 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method setCarrier
      * @param status One of {'', 'carrier', 'affected', 'presymptomatic', 'uncertain'}
-     */    
+     */
     setCarrierStatus: function(status) {
         var numDisorders = this.getDisorders().length;
 
@@ -576,7 +576,7 @@ var Person = Class.create(AbstractPerson, {
      * @return {Array} List of disorder IDs.
      */
     getDisorders: function() {
-        //console.log("Get disorders: " + stringifyObject(this._disorders)); 
+        //console.log("Get disorders: " + stringifyObject(this._disorders));
         return this._disorders;
     },
 
@@ -620,7 +620,7 @@ var Person = Class.create(AbstractPerson, {
      * Removes disorder from the list of this node's disorders and updates the Legend.
      *
      * @method removeDisorder
-     * @param {Number} disorderID id of the disorder to be removed 
+     * @param {Number} disorderID id of the disorder to be removed
      */
     removeDisorder: function(disorderID) {
         if(this.hasDisorder(disorderID)) {
@@ -647,7 +647,7 @@ var Person = Class.create(AbstractPerson, {
         }
         for(var i = 0; i < disorders.length; i++) {
             this.addDisorder( disorders[i] );
-        }        
+        }
         this.getGraphics().updateDisorderShapes();
         this.setCarrierStatus(); // update carrier status
     },
@@ -847,6 +847,7 @@ var Person = Class.create(AbstractPerson, {
             }
         }
         this.getGraphics().updateDisorderShapes();
+        this.getGraphics().updateCancerAgeOfOnsetLabels();
     },
 
     /**
@@ -1009,7 +1010,7 @@ var Person = Class.create(AbstractPerson, {
 
     /**
      * Returns an object containing all the properties of this node
-     * except id, x, y & type 
+     * except id, x, y & type
      *
      * @method getProperties
      * @return {Object} in the form

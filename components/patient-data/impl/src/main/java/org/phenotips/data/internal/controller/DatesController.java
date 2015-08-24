@@ -24,6 +24,7 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
@@ -62,6 +63,10 @@ import net.sf.json.JSONObject;
 @Singleton
 public class DatesController implements PatientDataController<Date>
 {
+    protected static final String PATIENT_DATEOFDEATH_FIELDNAME = "date_of_death";
+    protected static final String PATIENT_DATEOFBIRTH_FIELDNAME = "date_of_birth";
+    protected static final String PATIENT_EXAMDATE_FIELDNAME    = "exam_date";
+
     private static final String DATA_NAME = "dates";
 
     /** Logging helper object. */
@@ -86,7 +91,7 @@ public class DatesController implements PatientDataController<Date>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             Map<String, Date> result = new LinkedHashMap<String, Date>();
             for (String propertyName : getProperties()) {
@@ -144,7 +149,7 @@ public class DatesController implements PatientDataController<Date>
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
 
         PatientData<Date> datesData = patient.getData(DATA_NAME);
-        if (datesData == null) {
+        if (datesData == null || !datesData.isNamed()) {
             return;
         }
 
@@ -191,6 +196,6 @@ public class DatesController implements PatientDataController<Date>
 
     protected List<String> getProperties()
     {
-        return Arrays.asList("date_of_birth", "date_of_death", "exam_date");
+        return Arrays.asList(PATIENT_DATEOFBIRTH_FIELDNAME, PATIENT_DATEOFDEATH_FIELDNAME, PATIENT_EXAMDATE_FIELDNAME);
     }
 }

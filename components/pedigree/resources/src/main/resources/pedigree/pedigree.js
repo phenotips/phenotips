@@ -51,6 +51,13 @@ var PedigreeEditor = Class.create({
         this._probandData = new ProbandDataLoader();
 
         this._preferencesManager.load( function() {
+                // set up constants which depend on preferences
+                if (editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")) {
+                    copyProperties(PedigreeEditor.styles.gradient, PedigreeEditor.attributes);
+                } else {
+                    copyProperties(PedigreeEditor.styles.blackAndWhite, PedigreeEditor.attributes);
+                }
+
                 // load proband data and load the graph after proband data is available
                 this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
@@ -816,6 +823,23 @@ var PedigreeEditor = Class.create({
 
 var editor;
 
+PedigreeEditor.styles = {
+    "blackAndWhite": {
+        nodeShapeFemale: {fill: "#ffffff", stroke: "#222222"},
+        nodeShapeMale:   {fill: "#ffffff", stroke: "#111111"},
+        nodeShapeOther:  {fill: "#ffffff", stroke: "#222222"},
+        nodeShapeDiag:   {fill: "#ffffff", stroke: "#222222"},
+        nodeShapeAborted:{fill: "#ffffff", stroke: "#222222"}
+    },
+    "gradient": {
+        nodeShapeFemale: {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
+        nodeShapeMale:   {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#696969"},
+        nodeShapeOther:  {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+        nodeShapeDiag:   {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+        nodeShapeAborted:{fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"}
+    }
+};
+
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
     radius: 40,
@@ -844,11 +868,11 @@ PedigreeEditor.attributes = {
     uncertainShape:      {'font-size': '45px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
     uncertainSmallShape: {'font-size': '30px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
     evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
-    nodeShapeFemale: {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
-    nodeShapeMale:   {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#696969"},
-    nodeShapeOther:  {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-    nodeShapeDiag:   {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-    nodeShapeAborted:{fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
+    nodeShapeFemale: PedigreeEditor.styles.gradient.nodeShapeFemale,
+    nodeShapeMale:   PedigreeEditor.styles.gradient.nodeShapeMale,
+    nodeShapeOther:  PedigreeEditor.styles.gradient.nodeShapeOther,
+    nodeShapeDiag:   PedigreeEditor.styles.gradient.nodeShapeDiag,
+    nodeShapeAborted:PedigreeEditor.styles.gradient.nodeShapeAborted,
     nodeShapeMenuOn:         {fill: "#000", stroke: "none", "fill-opacity": 0.1},
     nodeShapeMenuOff:        {fill: "#000", stroke: "none", "fill-opacity": 0},
     nodeShapeMenuOnPartner:  {fill: "#000", stroke: "none", "fill-opacity": 0.1},
@@ -867,6 +891,7 @@ PedigreeEditor.attributes = {
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},
     commentLabel: {'font-size': 19, 'font-family': 'Arial' },
+    cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },
     externalIDLabels: {'font-size': 18, 'font-family': 'Arial' },
     disorderShapes: {},
     partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740

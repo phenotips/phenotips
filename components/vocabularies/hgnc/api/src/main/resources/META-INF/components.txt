@@ -1,1 +1,2 @@
 org.phenotips.vocabulary.internal.GeneNomenclature
+org.phenotips.vocabulary.internal.RemoteGeneNomenclature

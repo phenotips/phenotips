@@ -54,7 +54,7 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListener
 {
     @Inject
-    private VocabularyManager ontologyManager;
+    private VocabularyManager vocabularyManager;
 
     @Inject
     private Execution execution;
@@ -94,7 +94,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
                 List<String> terms = currentTermList.getList();
                 Set<String> correctSet = new LinkedHashSet<String>();
                 for (String term : terms) {
-                    VocabularyTerm properTerm = this.ontologyManager.resolveTerm(term);
+                    VocabularyTerm properTerm = this.vocabularyManager.resolveTerm(term);
                     if (properTerm != null) {
                         correctSet.add(properTerm.getId());
                     } else {

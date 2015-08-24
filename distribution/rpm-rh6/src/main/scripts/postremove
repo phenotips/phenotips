@@ -1,6 +1,0 @@
-#!/bin/sh
-
-if [ "$1" = "0" ]
-then
-  rm -rf /var/lib/phenotips/
-fi

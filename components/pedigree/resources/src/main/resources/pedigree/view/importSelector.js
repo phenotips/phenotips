@@ -8,19 +8,19 @@ var ImportSelector = Class.create( {
 
     initialize: function() {
         if (editor.isReadOnlyMode()) return;
-        
+
         var _this = this;
-        
+
         var mainDiv = new Element('div', {'class': 'import-selector'});
-                        
+
         var promptImport = new Element('div', {'class': 'import-section'}).update("Import data:");
         this.importValue = new Element("textarea", {"id": "import", "value": "", "class": "import-textarea"});
         mainDiv.insert(promptImport).insert(this.importValue);
-        
+
         if (!!window.FileReader && !!window.FileList) {
             // only show the upload link if browser supports FileReader/DOM File API
-            // Of the browsers suported by pedigree editor, IE9 and Safari 4 & 5 do not support file API 
-            var uploadFileSelector = new Element('input', {"type" : "file", "id": 'pedigreeInputFile', "style": 'display:none'});        
+            // Of the browsers suported by pedigree editor, IE9 and Safari 4 & 5 do not support file API
+            var uploadFileSelector = new Element('input', {"type" : "file", "id": 'pedigreeInputFile', "style": 'display:none'});
             uploadFileSelector.observe('change', function(event) {
                 _this.handleFileUpload(this.files);
                 try {
@@ -28,7 +28,7 @@ var ImportSelector = Class.create( {
                 } catch (err) {
                     // some older browsers do not allow setting value of a file input element and may generate a security error
                 }
-            })        
+            })
             var uploadButton = new Element('input', {type: 'button', 'value': 'Select a local file to be imported', 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'});
             uploadButton.observe('click', function(event) {
                 var fileElem = document.getElementById("pedigreeInputFile");
@@ -36,7 +36,7 @@ var ImportSelector = Class.create( {
             })
             mainDiv.insert(uploadFileSelector).insert(uploadButton);
         }
-        
+
         var _addTypeOption = function (checked, labelText, value) {
             var optionWrapper = new Element('tr');
             var input = new Element('input', {"type" : "radio", "value": value, "name": "select-type"});
@@ -47,10 +47,10 @@ var ImportSelector = Class.create( {
             var label = new Element('label', {'class': 'import-type-label'}).insert(input).insert(labelText);
             optionWrapper.insert(label.wrap('td'));
             return optionWrapper;
-          };          
+          };
         var typeListElement = new Element('table');
         //TODO: typeListElement.insert(_addTypeOption(true,  "Autodetect", "auto"));
-        typeListElement.insert(_addTypeOption(true,  "PED or LINKAGE (pre- or post- makeped)", "ped"));        
+        typeListElement.insert(_addTypeOption(true,  "PED or LINKAGE (pre- or post- makeped)", "ped"));
         typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));
         typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
         typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
@@ -63,7 +63,7 @@ var ImportSelector = Class.create( {
 
         var _addConfigOption = function (checked, labelText, value) {
             var optionWrapper = new Element('tr');
-            var input = new Element('input', {"type" : "radio", "value": value, "name": "select-options" });            
+            var input = new Element('input', {"type" : "radio", "value": value, "name": "select-options" });
             if (checked) {
               input.checked = true;
             }
@@ -71,7 +71,7 @@ var ImportSelector = Class.create( {
             optionWrapper.insert(label.wrap('td'));
             return optionWrapper;
           };
-        var configListElement = new Element('table', {id : 'import-type'});        
+        var configListElement = new Element('table', {id : 'import-type'});
         configListElement.insert(_addConfigOption(true,  "Treat non-standard phenotype values as new disorders", "accept"));
         configListElement.insert(_addConfigOption(false, "Treat non-standard phenotype values as \"no information\"", "dontaccept"));
 
@@ -84,7 +84,7 @@ var ImportSelector = Class.create( {
         configListElement.insert(markLabel2);
 
         var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
-        var dataSection3 = new Element('div', {'class': 'import-block'});        
+        var dataSection3 = new Element('div', {'class': 'import-block'});
         dataSection3.insert(promptConfig).insert(configListElement);
         mainDiv.insert(dataSection3);
 
@@ -113,24 +113,24 @@ var ImportSelector = Class.create( {
      */
     handleFileUpload: function(files) {
         for (var i = 0, numFiles = files.length; i < numFiles; i++) {
-            var nextFile = files[i]; 
+            var nextFile = files[i];
             console.log("loading file: " + nextFile.name + ", size: " + nextFile.size);
-            
+
             var _this = this;
             var fr = new FileReader();
             fr.onload = function(e) {
-                _this.importValue.value = e.target.result;  // e.target.result should contain the text 
+                _this.importValue.value = e.target.result;  // e.target.result should contain the text
             };
-            fr.readAsText(nextFile);            
+            fr.readAsText(nextFile);
         }
     },
-    
+
     /*
      * Disables unapplicable options on input type selection
      */
     disableEnableOptions: function() {
         var importType = $$('input:checked[type=radio][name="select-type"]')[0].value;
-        //console.log("Import type: " + importType);        
+        //console.log("Import type: " + importType);
         var pedOnlyOptions = $$('input[type=radio][name="select-options"]');
         for (var i = 0; i < pedOnlyOptions.length; i++) {
             if (importType != "ped") {
@@ -145,7 +145,7 @@ var ImportSelector = Class.create( {
         } else {
             pedAndGedcomOption.disabled = false;
         }
-        
+
         var saveExternalID = $$('input[type=checkbox][name="mark-external"]')[0];
         if (importType == "simpleJSON") {
             saveExternalID.disabled = true;
@@ -153,7 +153,7 @@ var ImportSelector = Class.create( {
             saveExternalID.disabled = false;
         }
     },
-    
+
     /**
      * Loads the template once it has been selected
      *
@@ -161,29 +161,29 @@ var ImportSelector = Class.create( {
      * @param pictureBox
      * @private
      */
-    _onImportStarted: function() {   
+    _onImportStarted: function() {
         var importValue = this.importValue.value;
         console.log("Importing:\n" + importValue);
-        
+
         this.hide();
-        
+
         if (!importValue || importValue == "") {
             alert("Nothing to import!");
             return;
         }
-        
+
         var importType = $$('input:checked[type=radio][name="select-type"]')[0].value;
         console.log("Import type: " + importType);
-        
+
         var importMark = $$('input[type=checkbox][name="mark-evaluated"]')[0].checked;
-        
+
         var externalIdMark = $$('input[type=checkbox][name="mark-external"]')[0].checked;
-        
+
         var optionSelected = $$('input:checked[type=radio][name="select-options"]')[0].value;
         var acceptUnknownPhenotypes = (optionSelected == "accept");
-        
+
         var importOptions = { "markEvaluated": importMark, "externalIdMark": externalIdMark, "acceptUnknownPhenotypes": acceptUnknownPhenotypes };
-        
+
         editor.getSaveLoadEngine().createGraphFromImportData(importValue, importType, importOptions,
                                                              false /* add to undo stack */, true /*center around 0*/);
     },
