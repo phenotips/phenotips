@@ -17,25 +17,23 @@
  */
 package org.phenotips.data.internal;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.Event;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.phenotips.Constants;
-import org.phenotips.data.Patient;
-import org.phenotips.data.events.PatientChangingEvent;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.container.Container;
-import org.xwiki.container.Request;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
-
-import java.util.Date;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
@@ -55,8 +53,6 @@ public class PatientDeathdateUpdaterTest
     public MockitoComponentMockingRule<EventListener> mocker =
         new MockitoComponentMockingRule<EventListener>(PatientDeathdateUpdater.class);
 
-    private Container container;
-
     @Mock
     private Object data;
 
@@ -69,15 +65,13 @@ public class PatientDeathdateUpdaterTest
     @Mock
     private BaseObject patientRecordObj;
 
-    @Mock
-    private Request request;
+    private final String eventListenerName = "patient-deathdate-updater";
 
-    private final int patientNumber = 1;
+    private final String dateOfDeathUnknown = "date_of_death_unknown";
 
-    private final String propertyName = "date_of_death_unknown";
+    private final String dateOfDeath = "date_of_death";
 
-    private final String parameterName =
-        Constants.CODE_SPACE + ".PatientClass_" + this.patientNumber + "_" + propertyName;
+    private final String dateOfDeathEntered = "date_of_death_entered";
 
     @Before
     public void setUp() throws ComponentLookupException
@@ -85,17 +79,13 @@ public class PatientDeathdateUpdaterTest
         MockitoAnnotations.initMocks(this);
 
         doReturn(this.patientRecordObj).when(this.source).getXObject(Patient.CLASS_REFERENCE);
-        doReturn(this.patientNumber).when(this.patientRecordObj).getNumber();
-
-        this.container = this.mocker.getInstance(Container.class);
-        doReturn(this.request).when(this.container).getRequest();
     }
 
     @Test
     public void checkConstruction() throws ComponentLookupException
     {
         PatientDeathdateUpdater testInstance = (PatientDeathdateUpdater)this.mocker.getComponentUnderTest();
-        Assert.assertEquals("patient-deathdate-updater", testInstance.getName());
+        Assert.assertEquals(eventListenerName, testInstance.getName());
         Assert.assertThat(testInstance.getEvents(), hasItem(isA(PatientChangingEvent.class)));
     }
 
@@ -107,29 +97,9 @@ public class PatientDeathdateUpdaterTest
     }
 
     @Test
-    public void dateValuesAreNotSetWhenContainerReturnsNullRequest() throws ComponentLookupException
-    {
-        doReturn(null).when(this.container).getRequest();
-
-        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
-
-        verify(this.patientRecordObj, never()).setDateValue(anyString(), any(Date.class));
-    }
-
-    @Test
-    public void dateValuesAreNotSetWhenRequestReturnsNonNumericString() throws ComponentLookupException
-    {
-        doReturn("STRING").when(this.request).getProperty(this.parameterName);
-
-        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
-
-        verify(this.patientRecordObj, never()).setDateValue(anyString(), any(Date.class));
-    }
-
-    @Test
     public void dateValuesAreNotSetWhenRequestReturnsZero() throws ComponentLookupException
     {
-        doReturn("0").when(this.request).getProperty(this.parameterName);
+        doReturn(0).when(this.patientRecordObj).getIntValue(this.dateOfDeathUnknown);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
@@ -139,11 +109,11 @@ public class PatientDeathdateUpdaterTest
     @Test
     public void dateValuesAreSetWhenRequestReturnsOne() throws ComponentLookupException
     {
-        doReturn("1").when(this.request).getProperty(this.parameterName);
+        doReturn(1).when(this.patientRecordObj).getIntValue(this.dateOfDeathUnknown);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
-        verify(this.patientRecordObj).setDateValue("date_of_death", null);
-        verify(this.patientRecordObj).setDateValue("date_of_death_entered", null);
+        verify(this.patientRecordObj).setDateValue(dateOfDeath, null);
+        verify(this.patientRecordObj).setStringValue(dateOfDeathEntered, null);
     }
 }
