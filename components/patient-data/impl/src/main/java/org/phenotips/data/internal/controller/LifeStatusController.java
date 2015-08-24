@@ -36,6 +36,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -60,6 +61,8 @@ public class LifeStatusController implements PatientDataController<String>
     private static final String PATIENT_UNKNOWN_DATEOFDEATH_FIELDNAME = "date_of_death_unknown";
 
     private static final String PATIENT_DATEOFDEATH_FIELDNAME = DatesController.PATIENT_DATEOFDEATH_FIELDNAME;
+
+    private static final String PATIENT_DATEOFDEATH_ENTERED_FIELDNAME = "date_of_death_entered";
 
     private static final String ALIVE = "alive";
 
@@ -91,7 +94,8 @@ public class LifeStatusController implements PatientDataController<String>
 
             String lifeStatus = ALIVE;
             Date date = data.getDateValue(PATIENT_DATEOFDEATH_FIELDNAME);
-            if (date != null) {
+            String dodEntered = data.getStringValue(PATIENT_DATEOFDEATH_ENTERED_FIELDNAME);
+            if (date != null || (StringUtils.isNotBlank(dodEntered) && !"{}".equals(dodEntered))) {
                 lifeStatus = DECEASED;
             } else {
                 // check if "unknown death date" checkbox is checked
