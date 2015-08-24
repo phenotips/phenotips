@@ -59,16 +59,19 @@
       #set ($discard = $ndata.add($i))
     #end
     #if ("$!{request.format}" == 'html')
-      #set ($resultsToFetch = $limit * $page)
+      #set ($resultsToFetch = $limit * $page + 1) ##fetch 1 extra result to determine whether to display a next page token
       #set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $resultsToFetch))
       #if ($results.size() &gt; 0)
         ##paginate results
         #set ($from = ($page - 1) * $limit)
-        #set ($to = $resultsToFetch)
+        #if ($from &gt;= $results.size())
+          #set ($from = $results.size() - 1)
+        #end
+        #set ($to = $page * $limit)
         #if ($to &gt;= $results.size())
           #set ($to = $results.size())
         #end
-        #set ($results = $results.subList($from, $to))
+        #set ($pagedResults = $results.subList($from, $to))
         {{html clean="false"  wiki="false"}}##
         ##Add previous arrow if neccessary
         #if ($page &gt; 1)
@@ -76,7 +79,7 @@
           &lt;span class="fa fa-chevron-left navigation"&gt;&lt;input type="hidden" value="$previousPage"/&gt;&lt;/span&gt;
         #end
         &lt;ul&gt;
-        #foreach ($item in $results)
+        #foreach ($item in $pagedResults)
           #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
             &lt;li class="phenotype"&gt;
               &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
@@ -90,7 +93,8 @@
           #end
         #end## foreach item
         &lt;/ul&gt;
-        #if ($limit == $results.size())
+        ##Only display a next arrow if enough results were returned
+        #if ($resultsToFetch == $results.size())
           #set ($nextPage = $page + 1)
           &lt;span class="fa fa-chevron-right navigation"&gt;&lt;input type="hidden" value="$nextPage"/&gt;&lt;/span&gt;
         #end
