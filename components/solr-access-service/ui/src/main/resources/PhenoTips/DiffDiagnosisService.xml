@@ -59,7 +59,8 @@
       #set ($discard = $ndata.add($i))
     #end
     #if ("$!{request.format}" == 'html')
-      #set ($resultsToFetch = $limit * $page + 1) ##fetch 1 extra result to determine whether to display a next page token
+      ## Fetch 1 extra result to determine whether to display a next page token
+      #set ($resultsToFetch = $limit * $page + 1)
       #set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $resultsToFetch))
       #if ($results.size() &gt; 0)
         ##paginate results
