@@ -134,7 +134,7 @@ public class R50291PhenoTips481DataMigration extends AbstractHibernateDataMigrat
             }
             relative.set(TARGET_RELATIVE_NAME, oldTarget.getValue(), context);
 
-            doc.setComment("Migrated onset to age_of_onset");
+            doc.setComment("Migrate existing relative values to the new RelativeClass objects.");
             doc.setMinorEdit(true);
             try {
                 // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,

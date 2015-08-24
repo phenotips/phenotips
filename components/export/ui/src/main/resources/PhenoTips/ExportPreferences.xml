@@ -131,11 +131,21 @@
        'creationDate' : "$services.localization.render('phenotips.exportPreferences.field.creationDate')",
        'author' : "$services.localization.render('phenotips.exportPreferences.field.author')",
        'date' : "$services.localization.render('phenotips.exportPreferences.field.date')",
-       'allergies' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')",
-       'genes': "$services.localization.render('phenotips.exportPreferences.field.genes')",
-       'genes_comments': "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
-       'rejectedGenes': "$services.localization.render('phenotips.exportPreferences.field.rejectedGenes')",
-       'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')"
+       'genes' : "$services.localization.render('phenotips.exportPreferences.field.genes')",
+       'genes_status' : "$services.localization.render('phenotips.exportPreferences.field.genesStatus')",
+       'genes_strategy' : "$services.localization.render('phenotips.exportPreferences.field.genesStrategy')",
+       'genes_comments' : "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
+       "variants" : "$services.localization.render('phenotips.exportPreferences.field.variants')",
+       "variants_protein" : "$services.localization.render('phenotips.exportPreferences.field.variantsProtein')", 
+       "variants_transcript" : "$services.localization.render('phenotips.exportPreferences.field.variantsTranscript')",
+       "variants_dbsnp" : "$services.localization.render('phenotips.exportPreferences.field.variantsDbsnp')", 
+       "variants_zygosity" : "$services.localization.render('phenotips.exportPreferences.field.variantsZygosity')", 
+       "variants_effect" : "$services.localization.render('phenotips.exportPreferences.field.variantsEffect')", 
+       "variants_interpretation" : "$services.localization.render('phenotips.exportPreferences.field.variantsInterpretation')",
+       "variants_inheritance" : "$services.localization.render('phenotips.exportPreferences.field.variantsInheritance')",
+       "variants_evidence" : "$services.localization.render('phenotips.exportPreferences.field.variantsEvidence')", 
+       "variants_segregation" : "$services.localization.render('phenotips.exportPreferences.field.variantsSegregation')",
+       "variants_sanger" : "$services.localization.render('phenotips.exportPreferences.field.variantsSanger')"
   })
   #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
   #set($metaFields = ['phenotype'])
