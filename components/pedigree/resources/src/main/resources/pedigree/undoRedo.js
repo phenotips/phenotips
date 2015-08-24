@@ -88,23 +88,23 @@ var ActionStack = Class.create({
 
     /**
      * Pushes a new state to the end of the action stack
-     * 
+     *
      *   eventToGetToThisState - optional. Event which should bring the graph from the previous state to this tsate
      *   eventToGoBack         - optional. Event which should bring the graph back to the previous state
      *   serializedState       - optional. Serialized state of the graph as accepted by the load() funciton.
      *                           may only be used when one of the events is not provided. Will be generated
      *                           automatically when needed if not provided.
-     *   
+     *
      * If one of the events is not provided a complete serializatiomn of the graph will be used to transition
-     * in that direction, which is less efficient (slower/requires more memory for state storage). 
+     * in that direction, which is less efficient (slower/requires more memory for state storage).
      *
      * @method addState
      */
     addState: function( eventToGetToThisState, eventToUndo, serializedState ) {
        //this._debug_print_states();
-       
+
         // 1. remove all states after current state (i.e. all "redo" states) -
-        //    they are replaced by the current chain of states starting with this state 
+        //    they are replaced by the current chain of states starting with this state
         if (this._currentState < this._size())
             this._stack.splice(this._currentState, this._stack.length - this._currentState);
 
@@ -112,7 +112,7 @@ var ActionStack = Class.create({
             serializedState = editor.getSaveLoadEngine().serialize();
         }
         //console.log("Serialized state: " + stringifyObject(serializedState));
-        
+
         //if (!eventToGetToThisState && !serializedState)
         //    serializedState = editor.getSaveLoadEngine().serialize();
         //
@@ -121,14 +121,14 @@ var ActionStack = Class.create({
         //    // => current state needs to have a serialization
         //    .. TODO
         //}
-        
+
         var state = new State( serializedState, eventToGetToThisState, eventToUndo );
-                
+
         // 2. push this new state to the array and increment the current index
-        
-        // spcial case: consequtive name property changes are combined into one property change        
+
+        // spcial case: consequtive name property changes are combined into one property change
         var currentState = this._getCurrentState();
-        if (eventToGetToThisState &&             
+        if (eventToGetToThisState &&
              currentState && currentState.eventToGetToThisState &&
              currentState.eventToGetToThisState.eventName == "pedigree:node:setproperty" &&
              this._combinableEvents(currentState.eventToGetToThisState, eventToGetToThisState) ) {
@@ -138,12 +138,12 @@ var ActionStack = Class.create({
             //this._debug_print_states();
             return;
         }
-        
+
         this._addNewest(state);
-        
+
         if (this._size() > this._MAXUNDOSIZE)
             this._removeOldest();
-        
+
         document.fire( "pedigree:historychange", null );
         //this._debug_print_states();
     },
@@ -155,10 +155,10 @@ var ActionStack = Class.create({
      *
      * @method _size
      * @return {Number}
-     */    
+     */
     _combinableEvents: function ( event1, event2 ) {
         if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
-            return false;        
+            return false;
         if (event1.memo.properties.hasOwnProperty("setFirstName") &&
             event2.memo.properties.hasOwnProperty("setFirstName") )
             return true;
@@ -173,7 +173,7 @@ var ActionStack = Class.create({
             return true;
         if (event1.memo.properties.hasOwnProperty("setChildlessReason") &&
             event2.memo.properties.hasOwnProperty("setChildlessReason") )
-            return true;                        
+            return true;
         return false;
     },
 
@@ -186,17 +186,17 @@ var ActionStack = Class.create({
     _size: function() {
         return this._stack.length;
     },
-    
+
     /**
      * Adds the given state as the latest state in the sequence
      *
      * @method _addNewest
-     */    
+     */
     _addNewest: function(state) {
-        this._stack.push(state);        
-        this._currentState++;        
+        this._stack.push(state);
+        this._currentState++;
     },
-    
+
     /**
      * Removes the front element of the stack (i.e. the oldest stored state)
      *
@@ -251,7 +251,7 @@ var ActionStack = Class.create({
 
 var State = Class.create({
     initialize: function( serializedState, eventToGetToThisState, eventToUndo ) {
-        this.serializedState       = serializedState; 
+        this.serializedState       = serializedState;
         this.eventToGetToThisState = eventToGetToThisState;
         this.eventToUndo           = eventToUndo;
     }

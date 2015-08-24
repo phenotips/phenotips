@@ -117,6 +117,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+                this.logger.debug("No candidate genes information found, returning");
                 return null;
             }
 

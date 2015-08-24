@@ -97,7 +97,7 @@ PositionedGraph.prototype = {
 
         timer.printSinceLast("=== Ordering runtime: ");
 
-		// 2.1)
+        // 2.1)
         // once ordering is known need to re-rank relationship nodes to be on the same level as the
         // lower ranked parent. Attempt to place next to one of the parents; having ordering info
         // helps to pick the parent in case parents are on the same level and not next to each other
@@ -174,7 +174,7 @@ PositionedGraph.prototype = {
         }
 
         var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
-        
+
         if (suggestedRanks) {
             for (var i = 0; i < suggestedRanks.length; i++) {
                 var nodesAtRank = suggestedRanks[i];
@@ -263,7 +263,7 @@ PositionedGraph.prototype = {
         //    resuting component may have other minimum in/out multi-rnak edges
 
         console.log("Re-ranking ranks before: " + stringifyObject(ranks));
-        
+
         while(true) {
             var nodeColor        = [];   // for each node which component it belongs to
             var component        = [];   // for each component list of vertices in the component
@@ -280,17 +280,17 @@ PositionedGraph.prototype = {
                     // This node will be the first node of the next component, which
                     // includes all nodes reachable using non-multi-rank edges (any direction).
                     // All nodes in the component will be colored as "maxComponentColor"
-                    
+
                     var thisComponent = [];
-                    
+
                     var potentialLongEdges = {};
-                    
+
                     var queue = new Queue();
                     queue.push( v );
 
                     while ( queue.size() > 0 ) {
                         var nextV = queue.pop();
-                        
+
                         //console.log("processing: " + nextV);
                         if (nodeColor[nextV] != null) continue;
 
@@ -315,18 +315,18 @@ PositionedGraph.prototype = {
                             }
                         }
                     }
-                    
-                    component[currentComponentColor]      = thisComponent;                
+
+                    component[currentComponentColor]      = thisComponent;
                     minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
-                
+
                     // go over all long edges originating from nodes in the component,
-                    // and find the shortest long edge which goes out of component                    
+                    // and find the shortest long edge which goes out of component
                     for (var vv in potentialLongEdges) {
-                        if (potentialLongEdges.hasOwnProperty(vv)) {                                
+                        if (potentialLongEdges.hasOwnProperty(vv)) {
                                 if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
-                                
+
                                 var nextEdge = potentialLongEdges[vv];
-                                
+
                                 if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
                                     (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
                                      nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
@@ -334,7 +334,7 @@ PositionedGraph.prototype = {
                                 }
                             }
                     }
-                    
+
                     currentComponentColor++;
                 }
             }
@@ -1870,12 +1870,12 @@ PositionedGraph.prototype = {
 
                 //console.log("==> [1] Handling: " + i);
 
-    		    var parents = this.GG.getInEdges(i);
+                var parents = this.GG.getInEdges(i);
 
                 // note: each "relationship" node is guaranteed to have exactly two "parent" nodes (validate() checks that)
 
-	            if (this.ranks[parent[0]] != this.ranks[parent[1]])
-	                throw "Assertion failed: edges betwen neighbouring ranks only";
+                if (this.ranks[parent[0]] != this.ranks[parent[1]])
+                    throw "Assertion failed: edges betwen neighbouring ranks only";
 
                 var order1 = this.order.vOrder[parents[0]];
                 var order2 = this.order.vOrder[parents[1]];
@@ -2163,24 +2163,24 @@ PositionedGraph.prototype = {
 
                 if (this.GG.getInEdges(v).length != 0) continue;  // skip nodes with parents
 
-    		    var relationships = this.GG.getOutEdges(v);
-    		    if (relationships.length != 1) continue;          // only when one and only one relationship
+                var relationships = this.GG.getOutEdges(v);
+                if (relationships.length != 1) continue;          // only when one and only one relationship
 
-    		    var rel = relationships[0];
-    		    if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
+                var rel = relationships[0];
+                if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
 
-    		    var orderV   = this.order.vOrder[v];
-    		    var orderRel = this.order.vOrder[rel];
+                var orderV   = this.order.vOrder[v];
+                var orderRel = this.order.vOrder[rel];
 
-    		    if (Math.abs(orderRel - orderV) != 1) {
-    		        // not next to each other
-    		        if (orderRel > orderV) {
+                if (Math.abs(orderRel - orderV) != 1) {
+                    // not next to each other
+                    if (orderRel > orderV) {
                         this.order.move(r, orderV, (orderRel - orderV - 1));
-    		        } else {
+                    } else {
                         this.order.move(r, orderV, (orderRel - orderV + 1));
-    		        }
-    		    }
-    		}
+                    }
+                }
+            }
         }
 
         // 2) TODO: come up with heuristics which can be applied at this point
@@ -2929,7 +2929,7 @@ PositionedGraph.prototype = {
                 }
                 if (this.GG.properties[person].hasOwnProperty("externalID")) {
                     numLabelLines++;
-                }                
+                }
                 if (numLabelLines > maxNumLinesInComments) {
                     maxNumLinesInComments = numLabelLines;
                 }

@@ -1,0 +1,268 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+package org.phenotips.data.internal.controller;
+
+import org.phenotips.Constants;
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
+
+import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.distribution.internal.DistributionManager;
+import org.xwiki.extension.version.Version;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Provider;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONObject;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+/**
+ * Test for the {@link VersionsController} Component, only the overridden methods from {@link AbstractSimpleController}
+ * are tested here
+ */
+public class VersionsControllerTest
+{
+
+    @Rule
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(VersionsController.class);
+
+    private DocumentAccessBridge documentAccessBridge;
+
+    @Mock
+    private Patient patient;
+
+    @Mock
+    private XWikiDocument doc;
+
+    @Mock
+    private BaseObject firstOntologyVersion;
+
+    @Mock
+    private BaseObject secondOntologyVersion;
+
+    @Mock
+    private Provider<ComponentManager> cmProvider;
+
+    @Mock
+    private ComponentManager contextComponentManager;
+
+    @Mock
+    private DistributionManager distributionManager;
+
+    private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
+        new EntityReference("OntologyVersionClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final String DATA_NAME = "versions";
+
+    private static final String PHENOTIPS_VERSION_STRING = "PHENOTIPS_VERSION";
+
+    @Before
+    public void setUp() throws Exception
+    {
+        MockitoAnnotations.initMocks(this);
+
+        this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
+
+        DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
+        doReturn(patientDocument).when(this.patient).getDocument();
+        doReturn(this.doc).when(this.documentAccessBridge).getDocument(patientDocument);
+
+        doReturn("first").when(this.firstOntologyVersion).getStringValue("name");
+        doReturn("1.0").when(this.firstOntologyVersion).getStringValue("version");
+        doReturn("second").when(this.secondOntologyVersion).getStringValue("name");
+        doReturn("2.0").when(this.secondOntologyVersion).getStringValue("version");
+        List<BaseObject> ontologyVersionList = Arrays.asList(this.firstOntologyVersion, this.secondOntologyVersion);
+        doReturn(ontologyVersionList).when(this.doc).getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
+
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.cmProvider);
+        doReturn(this.contextComponentManager).when(this.cmProvider).get();
+        doReturn(this.distributionManager).when(this.contextComponentManager).getInstance(DistributionManager.class);
+        CoreExtension coreExtension = Mockito.mock(CoreExtension.class);
+        doReturn(coreExtension).when(this.distributionManager).getDistributionExtension();
+        ExtensionId id = Mockito.mock(ExtensionId.class);
+        doReturn(id).when(coreExtension).getId();
+        Version version = Mockito.mock(Version.class);
+        doReturn(version).when(id).getVersion();
+        when(version.toString()).thenReturn(PHENOTIPS_VERSION_STRING);
+    }
+
+    @Test
+    public void checkGetName() throws ComponentLookupException
+    {
+        Assert.assertEquals(DATA_NAME, this.mocker.getComponentUnderTest().getName());
+    }
+
+    @Test
+    public void checkGetJsonPropertyName() throws ComponentLookupException
+    {
+        Assert.assertEquals("meta",
+            ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+    }
+
+    @Test
+    public void checkGetProperties() throws ComponentLookupException
+    {
+        List<String> result = ((AbstractSimpleController) this.mocker.getComponentUnderTest()).getProperties();
+        Assert.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetEnablingFieldName()
+    {
+        Assert.assertEquals(DATA_NAME, VersionsController.getEnablingFieldName());
+    }
+
+    //--------------------load() is Overridden from AbstractSimpleController--------------------
+
+    @Test
+    public void loadCatchesExceptionFromDocumentAccess() throws Exception
+    {
+        Exception exception = new Exception();
+        doThrow(exception).when(this.documentAccessBridge).getDocument(any(DocumentReference.class));
+
+        this.mocker.getComponentUnderTest().load(this.patient);
+
+        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
+            + " error has occurred during controller loading ", exception.getMessage());
+    }
+
+    @Test
+    public void loadReturnsNormallyWhenPatientDoesNotHaveOntologyVersionsClass() throws ComponentLookupException
+    {
+        doReturn(null).when(this.doc).getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertEquals(PHENOTIPS_VERSION_STRING, result.get("phenotips_version"));
+        Assert.assertEquals(1, result.size());
+    }
+
+    @Test
+    public void loadDoesNotAddBlankVersionInformation() throws ComponentLookupException
+    {
+        doReturn("").when(this.firstOntologyVersion).getStringValue("name");
+        doReturn(null).when(this.secondOntologyVersion).getStringValue("version");
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertEquals(PHENOTIPS_VERSION_STRING, result.get("phenotips_version"));
+        Assert.assertEquals(1, result.size());
+    }
+
+    @Test
+    public void loadReturnsNormallyWhenContextComponentManagerThrowsComponentLookupException()
+        throws ComponentLookupException
+    {
+        ComponentLookupException exception = new ComponentLookupException("message");
+        doThrow(exception).when(this.contextComponentManager).getInstance(DistributionManager.class);
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertEquals("1.0", result.get("first_version"));
+        Assert.assertEquals("2.0", result.get("second_version"));
+        Assert.assertEquals(2, result.size());
+        verify(this.mocker.getMockedLogger()).error("Could not find DistributionManager component");
+    }
+
+    //--------------------writeJSON() is Overridden from AbstractSimpleController--------------------
+
+
+    @Test
+    public void writeJSONAddsVersionInformationWhenSelectedFieldsContainsEnablingFieldName()
+        throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("first_version", "1.0");
+        map.put("second_version", "2.0");
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFieldNames = new ArrayList<>();
+        selectedFieldNames.add(VersionsController.getEnablingFieldName());
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFieldNames);
+
+        Assert.assertTrue(json.get("meta") instanceof JSONObject);
+        JSONObject container = json.getJSONObject("meta");
+        Assert.assertEquals("1.0", container.get("first_version"));
+        Assert.assertEquals("2.0", container.get("second_version"));
+
+        // if selectedFieldNames is not Null, version information will be added iff selectedFieldNames
+        // contains the enablingFieldName
+        json.clear();
+        selectedFieldNames.clear();
+        selectedFieldNames.add("other_field_name");
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFieldNames);
+
+        Assert.assertTrue(json.isEmpty());
+    }
+
+    @Test
+    public void writeJSONAddsVersionInformationWhenSelectedFieldsIsNull() throws ComponentLookupException
+    {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("first_version", "1.0");
+        map.put("second_version", "2.0");
+        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, null);
+
+        Assert.assertTrue(json.get("meta") instanceof JSONObject);
+        JSONObject container = json.getJSONObject("meta");
+        Assert.assertEquals("1.0", container.get("first_version"));
+        Assert.assertEquals("2.0", container.get("second_version"));
+    }
+}

@@ -61,11 +61,11 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
         return false;
     },
 
-    setHovered: function(isHovered) { 
+    setHovered: function(isHovered) {
     },
-    
+
     setHighlighted: function(isHighlighted) {
-    },    
+    },
 
     getHoverZoneMask: function() {
         return null;

@@ -89,7 +89,7 @@ var Workspace = Class.create({
             } else {
                 this.canvas.addEventListener('DOMMouseScroll', me.handleMouseWheel, false); // Others
             }
-        } 
+        }
     },
 
     /**
@@ -310,11 +310,11 @@ var Workspace = Class.create({
             this.zoomSlider.setValue(0.25 * 0.9); // 0.25 * 0.9 corresponds to zoomCoefficient of 1, i.e. 1:1
                                                   // - for best chance of decent looks on non-SVG browsers like IE8
         } else {
-            this.zoomSlider.setValue(0.5 * 0.9);  // 0.5 * 0.9 corresponds to zoomCoefficient of 0.75x 
+            this.zoomSlider.setValue(0.5 * 0.9);  // 0.5 * 0.9 corresponds to zoomCoefficient of 0.75x
         }
         this.__zoom['in'].observe('click', function(event) {
             if (_this.zoomCoefficient < 0.25)
-                _this.zoomSlider.setValue(0.9);   // zoom in from the any value below 0.25x goes to 0.25x (which is 0.9 on the slider) 
+                _this.zoomSlider.setValue(0.9);   // zoom in from the any value below 0.25x goes to 0.25x (which is 0.9 on the slider)
             else
                 _this.zoomSlider.setValue(-(_this.zoomCoefficient - 1)*0.9);     // +0.25x
         });
@@ -326,12 +326,12 @@ var Workspace = Class.create({
         });
         // Insert all controls in the document
         this.getWorkArea().insert(this.__controls);
-    },    
-    
+    },
+
     /* To work around a bug in Raphael or Raphaelzpd (?) which creates differently sized lines
      * @ different zoom levels given the same "stroke-width" in pixels this function computes
      * the pixel size to be used at this zoom level to create a line of the correct size.
-     * 
+     *
      * Returns the pixel value to be used in stoke-width
      */
     getSizeNormalizedToDefaultZoom: function(pixelSizeAtDefaultZoom) {
@@ -406,19 +406,19 @@ var Workspace = Class.create({
             oY = this.viewBoxY,
             xDisplacement = x - oX,
             yDisplacement = y - oY;
-        
+
         if (editor.isUnsupportedBrowser()) {
             instant = true;
         }
-        
+
         var numSeconds = instant ? 0 : .4;
         var frames     = instant ? 1 : 11;
-        
+
         var xStep = xDisplacement/frames,
             yStep = yDisplacement/frames;
-        
+
         if (xStep == 0 && yStep == 0) return;
-        
+
         var progress = 0;
 
         (function draw() {
@@ -428,7 +428,7 @@ var Workspace = Class.create({
                     me.viewBoxY += yStep;
                     me.getPaper().setViewBox(me.viewBoxX, me.viewBoxY, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
                     me.background.attr({x: me.viewBoxX, y: me.viewBoxY });
-                    draw();        
+                    draw();
                 }
             }, 1000 * numSeconds / frames);
         })();
@@ -463,10 +463,10 @@ var Workspace = Class.create({
 
     /**
      * Pans the canvas to put the node with the given id at the center.
-     * 
+     *
      * When (xCenterShift, yCenterShift) are given positions the node with the given shift relative
      * to the center instead of exact center of the screen
-     * 
+     *
      * @method centerAroundNode
      * @param {Number} nodeID The id of the node
      */

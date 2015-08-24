@@ -14,7 +14,7 @@ var TemplateSelector = Class.create( {
         this.mainDiv.update("Loading list of templates...");
         var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
         this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector, verticalPosition: "top"});
-        isStartupTemplateSelector && this.dialog.show();
+        isStartupTemplateSelector && this.show();
         new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
             method: 'GET',
             onSuccess: this._onTemplateListAvailable.bind(this)
@@ -103,6 +103,8 @@ var TemplateSelector = Class.create( {
      * @method show
      */
     show: function() {
+        var availableHeight = document.viewport.getHeight() - 80;
+        this.mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
         this.dialog.show();
     },
 
