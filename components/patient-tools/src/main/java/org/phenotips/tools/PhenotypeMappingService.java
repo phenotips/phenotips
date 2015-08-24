@@ -138,7 +138,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     @Override
     public String getName()
     {
-        return "phentoype-mapping-cache";
+        return "phenotype-mapping-cache";
     }
 
     @Override
