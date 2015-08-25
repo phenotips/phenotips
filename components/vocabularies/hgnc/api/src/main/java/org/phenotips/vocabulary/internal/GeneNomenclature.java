@@ -76,7 +76,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     private static final String ALIAS_SYMBOL_FIELD_NAME = "alias_symbol";
 
-    private static final String SYNONYM_FIELD_NAME = "synonym";
+    private static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
 
     private static final Map<String, String> COMMON_SEARCH_OPTIONS;
 
@@ -169,11 +169,11 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         if (result != null) {
             return result;
         }
-        result = getTermByAlternativeId(escapedSymbol);
+        result = getTermBySymbolOrAlias(escapedSymbol);
         if (result != null) {
             return result;
         }
-        result = getTermByMappedId(escapedSymbol);
+        result = getTermByAlternativeId(escapedSymbol);
         return result;
     }
 
@@ -182,7 +182,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         return requestTerm(ID_FIELD_NAME + ':' + id, null);
     }
 
-    private VocabularyTerm getTermByAlternativeId(String id)
+    private VocabularyTerm getTermBySymbolOrAlias(String id)
     {
         return requestTerm(String.format("%2$s:%1$s %3$s:%1$s %4$s:%1$s", id, SYMBOL_FIELD_NAME, PREV_SYMBOL_FIELD_NAME,
             ALIAS_SYMBOL_FIELD_NAME), null);
@@ -195,9 +195,9 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
      * @param id the term identifier that is one of property names: {@code ensembl_gene_id} or {@code entrez_id}
      * @return the requested term, or {@code null} if the term doesn't exist in this vocabulary
      */
-    private VocabularyTerm getTermByMappedId(String id)
+    private VocabularyTerm getTermByAlternativeId(String id)
     {
-        return requestTerm(SYNONYM_FIELD_NAME + ':' + id, null);
+        return requestTerm(ALTERNATIVE_ID_FIELD_NAME + ':' + id, null);
     }
 
     private SolrParams produceDynamicSolrParams(String originalQuery, Integer rows, String sort, String customFilter)
@@ -268,14 +268,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
             VocabularyTerm term = getTerm(symbol);
             if (term != null) {
                 result.add(term);
-            }
-        }
-        if (result.isEmpty()) {
-            for (String symbol : symbols) {
-                VocabularyTerm term = getTermByAlternativeId(symbol);
-                if (term != null) {
-                    result.add(term);
-                }
             }
         }
         return result;
