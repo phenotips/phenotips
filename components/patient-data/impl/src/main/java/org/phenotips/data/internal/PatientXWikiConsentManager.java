@@ -197,8 +197,10 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
             XWikiDocument configDoc = (XWikiDocument) configDocBridge;
             List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
-            for (BaseObject consentObject : consentObjects) {
-                consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
+            if (consentObjects != null) {
+                for (BaseObject consentObject : consentObjects) {
+                    consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
+                }
             }
         } catch (Exception ex) {
             /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
