@@ -149,7 +149,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     protected boolean isCodeFieldsOnly()
     {
         Type type = this.getClass().getGenericSuperclass();
-        if(! (type instanceof ParameterizedType)) {
+        if (!(type instanceof ParameterizedType)) {
             return false;
         }
         ParameterizedType t = (ParameterizedType) type;
