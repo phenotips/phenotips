@@ -89,6 +89,9 @@ public class ShareProtocol
     // (optional) ...and optionally this as well, if enabled on the server:
     public static final String SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN      = "user_login_token";
 
+    // response to GETPATIENTSTATE action request will include the following fields (iff successful):
+    public static final String SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS = "consents";
+
     // response to a PUSH and GETID action requests will include the following fields (iff successful):
     public static final String SERVER_JSON_PUSH_KEY_NAME_PATIENTID   = "patient_id";      // ID of the patient (either updated or newly created)
     public static final String SERVER_JSON_PUSH_KEY_NAME_PATIENTURL  = "patient_url";     // URL of the patient (either updated or newly created)

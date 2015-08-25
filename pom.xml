@@ -423,6 +423,12 @@
               <differenceType>8001</differenceType>
               <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/receive/ReceivePatientData</className>
+              <differenceType>7012</differenceType>
+              <method>net.sf.json.JSONObject getPatientState()</method>
+              <justification>Added a new endpoint on the receiving side in patient push module</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

@@ -19,6 +19,8 @@ package org.phenotips.data.receive.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.data.Consent;
+import org.phenotips.data.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
@@ -62,6 +64,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -139,6 +142,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     @Inject
     private AuthorizationService authService;
+
+    @Inject
+    private ConsentManager consentManager;
 
     @Override
     public boolean isServerTrusted()
@@ -554,6 +560,51 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
                 response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN, token);
             }
+            return response;
+
+        } catch (Exception ex) {
+            this.logger.error("Unable to perform getConfig [{}] {}", ex.getMessage(), ex);
+            return generateFailedActionResponse();
+        }
+    }
+
+    @Override
+    public JSONObject getPatientState()
+    {
+        try {
+            XWikiContext context = getXContext();
+            XWikiRequest request = context.getRequest();
+
+            this.logger.warn("Get state request from remote [{}]", request.getRemoteAddr());
+
+            JSONObject loginError = validateLogin(request, context);
+            if (loginError != null) {
+                return loginError;
+            }
+
+            /* If there is a patient, than return the state of the patient; if there is no existing patient,
+            * then return the state as it will be when a new patient is created. */
+            String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
+            String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
+            JSON consents;
+            if (guid != null) {
+                Patient patient =  getPatientByGUID(guid);
+                if (patient == null) {
+                    return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGUID);
+                }
+                if (!userCanAccessPatient(userName, patient)) {
+                    return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
+                }
+                List<Consent> patientConsents = consentManager.loadConsentsFromPatient(patient);
+                consents = consentManager.toJson(patientConsents);
+            } else {
+                List<Consent> systemConsents = consentManager.getSystemConsents();
+                consents = consentManager.toJson(systemConsents);
+            }
+
+            JSONObject response = generateSuccessfulResponse();
+            response.element(ShareProtocol.SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS, consents);
+
             return response;
 
         } catch (Exception ex) {
