@@ -25,8 +25,10 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -145,7 +147,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
      */
     protected boolean isCodeFieldsOnly()
     {
-        return false;
+        ParameterizedType t = (ParameterizedType) this.getClass().getGenericSuperclass();
+        return new DefaultParameterizedType(null, List.class, VocabularyProperty.class).equals(
+            t.getActualTypeArguments()[0]);
     }
 
     /**
