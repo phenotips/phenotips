@@ -46,20 +46,19 @@ $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true,
   #foreach ($column in [1..$numColumns])
   (% class="column #if($column == 1)first-column#elseif($column==$numColumns)last-column#end" %)(((
     #foreach ($e in $services.uix.getExtensions('org.phenotips.homepage.dashboard', {'sortByParameter' : 'priority'}))
-      #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
       #set ($extensionParameters = $e.getParameters())
-        #if ($extensionParameters.get("column") == "$column")
-          ##Gadget Template
-          {{html wiki=true clean=false}}
-          &lt;div class="gadget"&gt;
-            &lt;div class="gadget-title"&gt;&lt;span&gt;$!{extensionParameters.get("title")}&lt;/span&gt;&lt;/div&gt;
-            &lt;div class="gadget-content"&gt;$extentionContent&lt;/div&gt;
-          &lt;/div&gt;
-          {{/html}}
+      #if ($extensionParameters.get("column") == "$column" &amp;&amp; $extensionParameters.get("enabled") != 'false')
+        #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
+        {{html wiki=true clean=false}}
+        &lt;div class="gadget"&gt;
+          &lt;div class="gadget-title"&gt;&lt;span&gt;$!{extensionParameters.get("title")}&lt;/span&gt;&lt;/div&gt;
+          &lt;div class="gadget-content"&gt;$extentionContent&lt;/div&gt;
+        &lt;/div&gt;
+        {{/html}}
 
-        #end
       #end
-    )))
+    #end
+  )))
   #end
 )))##end of dashboard
 {{/velocity}}</content>
