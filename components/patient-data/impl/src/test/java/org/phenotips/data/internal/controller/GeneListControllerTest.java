@@ -136,7 +136,7 @@ public class GeneListControllerTest
     }
 
     @Test
-    public void loadCatchesExceptionWhenPatientDoesNotHavePatientClass() throws ComponentLookupException
+    public void loadCatchesExceptionWhenPatientDoesNotHaveGeneClass() throws ComponentLookupException
     {
         doReturn(null).when(this.doc).getXObjects(any(EntityReference.class));
 
