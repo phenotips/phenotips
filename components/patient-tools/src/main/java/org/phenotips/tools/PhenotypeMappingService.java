@@ -33,7 +33,6 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
-import org.xwiki.script.ScriptContextManager;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.VelocityManager;
@@ -47,9 +46,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 
 import org.apache.commons.io.output.NullWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -59,9 +55,9 @@ import org.slf4j.Logger;
 import net.sf.json.JSONObject;
 
 /**
- * Provides access to the phenotype mappings configured for the current space. The field mappings are defined by a
- * Groovy script contained in a document. The name of that document must be configured in the "phenotypeMapping" field
- * of a "DBConfigurationClass" object attached to the homepage (WebHome) of the current space.
+ * Provides access to the phenotype mappings configured for the current space. The field mappings are defined as a JSON
+ * object contained in a document. The name of that document must be configured in the "phenotypeMapping" field of a
+ * "DBConfigurationClass" object attached to the homepage (WebHome) of the current space.
  *
  * @version $Id$
  * @since 1.0
@@ -95,23 +91,10 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     private EntityReferenceResolver<String> resolver;
 
     /**
-     * Groovy engine used for running the groovy script containing the mapping.
-     */
-    @Inject
-    @Named("groovy")
-    private ScriptEngineFactory groovy;
-
-    /**
      * Velocity engine manager used for running the script containing the mapping.
      */
     @Inject
     private VelocityManager velocityManager;
-
-    /**
-     * Provides access to the script context.
-     */
-    @Inject
-    private ScriptContextManager scmanager;
 
     /**
      * Provides access to documents.
@@ -230,8 +213,6 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
                 String mappingContent = this.bridge.getDocumentContentForDefaultLanguage(mappingDoc);
                 if (mappingContent.startsWith("{{velocity")) {
                     result = parseVelocityMapping(mappingDoc).get(mappingName);
-                } else if (mappingContent.startsWith("{{groovy")) {
-                    result = parseGroovyMapping(mappingDoc).get(mappingName);
                 } else {
                     result = JSONObject.fromObject(mappingContent).get(mappingName);
                 }
@@ -240,24 +221,6 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
             }
         }
         return result;
-    }
-
-    private Map<String, Object> parseGroovyMapping(DocumentReference mappingDoc)
-    {
-        ScriptEngine e = this.groovy.getScriptEngine();
-        ScriptContext c = this.scmanager.getScriptContext();
-        try {
-            e.eval(this.bridge.getDocumentContentForDefaultLanguage(mappingDoc), c);
-        } catch (Exception ex) {
-            this.logger.error("Failed to parse mapping document [{}]", mappingDoc, ex);
-            return null;
-        }
-        this.observationManager.addEvent(this.getName(), new DocumentUpdatedEvent(mappingDoc));
-        this.observationManager.addEvent(this.getName(), new DocumentDeletedEvent(mappingDoc));
-        @SuppressWarnings("unchecked")
-        Map<String, Object> mappings = (Map<String, Object>) c.getAttribute("mappings");
-        setMappings(mappingDoc, mappings);
-        return mappings;
     }
 
     private Map<String, Object> parseVelocityMapping(DocumentReference mappingDoc)
