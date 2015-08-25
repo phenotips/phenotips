@@ -135,7 +135,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     private ConfigurationSource configuration;
 
     @Inject
-    private PermissionsManager permisionManager;
+    private PermissionsManager permissionManager;
 
     @Inject
     private AuthorizationService authService;
@@ -473,12 +473,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 // assign ownership to group (if provided) or to the user, and set access rights
                 if (groupName != null) {
                     Group group = this.groupManager.getGroup(groupName);
-                    this.permisionManager.getPatientAccess(affectedPatient).setOwner(group.getReference());
-                    this.permisionManager.getPatientAccess(affectedPatient).addCollaborator(user.getProfileDocument(),
-                        this.permisionManager.resolveAccessLevel("manage"));
+                    this.permissionManager.getPatientAccess(affectedPatient).setOwner(group.getReference());
+                    this.permissionManager.getPatientAccess(affectedPatient).addCollaborator(user.getProfileDocument(),
+                        this.permissionManager.resolveAccessLevel("manage"));
                 }
                 else {
-                    this.permisionManager.getPatientAccess(affectedPatient).setOwner(user.getProfileDocument());
+                    this.permissionManager.getPatientAccess(affectedPatient).setOwner(user.getProfileDocument());
                 }
 
                 if (affectedPatient == null) {
@@ -624,7 +624,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     private boolean userCanAccessPatient(String userName, Patient patient)
     {
         try {
-            String owner = this.permisionManager.getPatientAccess(patient).getOwner().getUsername();
+            String owner = this.permissionManager.getPatientAccess(patient).getOwner().getUsername();
             if (owner.equals(userName)) {
                 return true;
             }
