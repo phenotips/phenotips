@@ -79,12 +79,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-groovy</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-gallery</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
