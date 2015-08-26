@@ -109,8 +109,8 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             ResponseBuilder response = Response.created(targetURI);
             return response.build();
         } catch (Exception ex) {
-            this.logger.error("Could not process remote matching request: {}", ex.getMessage(), ex);
-            return Response.status(Status.BAD_REQUEST).build();
+            this.logger.error("Could not process patient creation request: {}", ex.getMessage(), ex);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
