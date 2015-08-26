@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822211000</date>
-  <contentUpdateDate>1401822211000</contentUpdateDate>
+  <date>1440607761000</date>
+  <contentUpdateDate>1440440438000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -3587,6 +3587,7 @@ document.observe('xwiki:dom:loaded', function()
       // Init handlers
       this._setAgeUsingDateAndDob = this._setAgeUsingDateAndDob.bind(this);
       this._updateHiddenFields = this._updateHiddenFields.bind(this);
+      this._globalDobChangeHandler = this._globalDobChangeHandler.bind(this);
 
       // Init datepicker
       if (!this._dateEl.hasClassName('initialized')) {
@@ -3604,6 +3605,12 @@ document.observe('xwiki:dom:loaded', function()
         _this.parent.measurementClassId++;
       });
 
+      // Init rows
+      this._rows = [];
+      this.el.select('.measurement-row').each((function(el) {
+        this._rows.push(new widgets.MeasurementSetRow(el, this));
+      }).bind(this));
+
       // Attach handlers
       this._dateEl.observe('xwiki:date:changed', function(e) {
         _this._updateHiddenFields('date', e.target.alt);
@@ -3616,21 +3623,12 @@ document.observe('xwiki:dom:loaded', function()
           _this._dateEl.readOnly = e.target.value.trim().length &gt; 0;
         });
       });
-      ['duration:format', 'blur'].each(function(ev) {
-        _this._ageEl.observe('duration:format', function(e) {
-          _this._updateHiddenFields('age', e.target.value);
-        });
+      _this._ageEl.observe('duration:format', function(e) {
+        _this._updateHiddenFields('age', e.target.value);
       });
       
-      this._globalDobEl.observe('xwiki:date:changed', function() {
-        if (_this.el.select('.measurement-date')[0].alt.length) {
-          _this._setAgeUsingDateAndDob();
-        }
-      });
-      /*clone.select('.measurement-row input').each(function(el) {
-        el.observe('input', measurementInputHandler)
-      });
-      clone.select('&gt; .delete')[0].observe('click', function() {
+      this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
+      /*clone.select('&gt; .delete')[0].observe('click', function() {
         this.up().remove();
       });
       clone.select('div.more')[0].hide();
@@ -3645,6 +3643,12 @@ document.observe('xwiki:dom:loaded', function()
       });*/
 
       return this;
+    },
+
+    _globalDobChangeHandler: function() {
+      if (_this.el.select('.measurement-date')[0].alt.length) {
+        _this._setAgeUsingDateAndDob();
+      }
     },
 
     _updateHiddenFields: function(fieldName, value) {
@@ -3672,12 +3676,120 @@ document.observe('xwiki:dom:loaded', function()
           if (dateDisplayParts[k] &gt; 0) ageStr += dateDisplayParts[k] + k;
         })
         this._ageEl.value = ageStr;
+        this._ageEl.fire("age:change");
         this._updateHiddenFields('age', ageStr);
       } else {
         this._ageEl.value = '';
+        this._ageEl.fire("age:change");
         this._updateHiddenFields('age', '');
       }
     },
+
+    destroy: function() {
+      this._globalDobEl.stopObserving('xwiki:date:changed', this._globalDobChangeHandler);
+    }
+  });
+
+  widgets.MeasurementSetRow = Class.create({
+    initialize: function(el, parent) {
+      this.el = el; this.parent = parent;
+
+      // Bind handlers
+      this.fetchAndRenderPercentileSd = this.fetchAndRenderPercentileSd.bind(this);
+      this.destroy = this.destroy.bind(this);
+      this._genderChangeHandler = this._genderChangeHandler.bind(this);
+
+      // Attach handlers
+      this.el.select('[name$=value]').each((function(el) {
+        el.observe('input', this.fetchAndRenderPercentileSd);
+      }).bind(this));
+      ['age:change', 'duration:format'].each((function(ev) {
+        this.parent._ageEl.observe(ev, this.fetchAndRenderPercentileSd);
+      }).bind(this));
+      $$('input[name$=gender]').each((function(el) {
+        el.observe('click', this._genderChangeHandler);
+      }).bind(this));
+    },
+
+    fetchAndRenderPercentileSd: function(e) {
+      var thisValue = this.el.select('[name$=value]')[0].value;
+      var pctlEl = this.el.select('.pctl')[0];
+      var fetchParams = {
+        'measurement': this.el.select('[name$=type]')[0].value,
+        'value': thisValue,
+        'age': this.parent._ageEl.value,
+        'sex': $$('[name$=gender]:checked')[0].value,
+      };
+      // Normalize sex for the purposes of measurements, assuming other == male
+      if (fetchParams.sex.length &amp;&amp; fetchParams.sex.toLowerCase() != 'f') {
+        fetchParams.sex == 'm';
+      }
+
+      if (thisValue.length &amp;&amp; fetchParams.age.length &amp;&amp; fetchParams.sex.length) {
+        var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/percentile", {
+          method: 'get',
+          parameters: fetchParams,
+          requestHeaders: {Accept : "application/json"},
+          onSuccess: (function(resp) {
+            this._renderPercentileSd(pctlEl, resp.responseJSON);
+          }).bind(this),
+          onFailure: function (response) {}
+        });
+      } else {
+        this._renderPercentileSd(pctlEl, null);
+      }
+    },
+
+    _genderChangeHandler: function(e) {
+      this.fetchAndRenderPercentileSd();
+    },
+
+    _renderPercentileSd: function(el, values) {
+      el.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
+
+      var displayStr;
+      if (values == null) {
+        displayStr = '';
+      } else {
+        var className = 'sd-2';
+        if (Math.abs(values.stddev) &lt; 1) {
+          className = 'sd-0';
+        } else if (Math.abs(values.stddev) &lt; 2) {
+          className = 'sd-1';
+        }
+
+        el.addClassName(className);
+
+        displayStr = values.percentile;
+        displayStr += this._getOrdinalSuffix(values.percentile);
+        displayStr += ' pctl'; // TODO: translate
+        displayStr += ' (' + values.stddev.toFixed(2) + 'SD)'; // TODO: translate
+      }
+
+      el.innerText = displayStr;
+    },
+
+    // Credit: http://stackoverflow.com/a/13627586
+    _getOrdinalSuffix: function(i) {
+      var j = i % 10,
+          k = i % 100;
+      if (j == 1 &amp;&amp; k != 11) {
+          return "st";
+      }
+      if (j == 2 &amp;&amp; k != 12) {
+          return "nd";
+      }
+      if (j == 3 &amp;&amp; k != 13) {
+          return "rd";
+      }
+      return "th";
+    },
+
+    destroy: function() {
+      $$('input[name$=gender]').each((function(el) {
+        el.stopObserving('click', this._genderChangeHandler);
+      }).bind(this));
+    }
   });
 
   var init = function(event) {
