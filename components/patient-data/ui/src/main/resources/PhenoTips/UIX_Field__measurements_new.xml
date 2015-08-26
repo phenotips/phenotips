@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1440179896000</date>
-  <contentUpdateDate>1439914349000</contentUpdateDate>
+  <date>1440606830000</date>
+  <contentUpdateDate>1440440439000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
   <comment/>
@@ -220,7 +220,7 @@
   width: 60px;
 }
 .measurement-row span.pctl {
-  width: 100px;
+  width: 120px;
   font-size: 80%;
 }
 .measurement-row label {
