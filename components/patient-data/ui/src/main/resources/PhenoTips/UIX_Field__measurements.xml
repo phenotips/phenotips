@@ -220,7 +220,7 @@
   width: 60px;
 }
 .measurement-row span.pctl {
-  width: 100px;
+  width: 120px;
   font-size: 80%;
 }
 .measurement-row label {
