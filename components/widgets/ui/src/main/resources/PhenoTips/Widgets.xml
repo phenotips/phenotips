@@ -3508,6 +3508,9 @@ document.observe("xwiki:dom:loaded", function() {
 
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       element.select(".controlled-group").each(function(group) {
         if (!group.__visibilityController) {
           group.__visibilityController = new XWiki.widgets.VisibilityController(group);
@@ -4158,6 +4161,9 @@ document.observe("xwiki:dom:loaded", function() {
 
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       (element.hasClassName("xHelpButton") ? [element] : element.select(".xHelpButton")).each(function(icon) {
         if (!icon.__helpController) {
           icon.__helpController = new PhenoTips.widgets.HelpButton(icon);
@@ -4557,6 +4563,9 @@ document.observe("xwiki:dom:loaded", function() {
 
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       (element.hasClassName("fuzzy-date") ? [element] : element.select(".fuzzy-date")).each(function(dateInput) {
         if (!dateInput.__datePicker) {
           dateInput.__datePicker = new PhenoTips.widgets.FuzzyDatePicker(dateInput);
@@ -4668,6 +4677,9 @@ document.observe("xwiki:dom:loaded", function() {
   var init = function(event) {
     var containers = (event &amp;&amp; event.memo.elements) || [$('body')];
     containers.each(function(container) {
+      if (!container) { // only in IE9
+        return;
+      }
       container.select('input.suggestWorkgroups').each(function(input) {
         if (!input.hasClassName('initialized')) {
           var options = {

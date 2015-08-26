@@ -330,6 +330,9 @@ document.observe('xwiki:dom:loaded', function() {
       <code>var XWiki = (function(XWiki) {
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       element.select(".mandatory input[type='text']").each(function(element) {
         if (!element.__validation) {
           element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
@@ -2111,6 +2114,9 @@ document.observe('xwiki:dom:loaded', function()
   var init = function(event) {
     // Enamble the MeasurementProcessor for each measurements table (e.g. at birth, postnatal)
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       var chartDataSources = [];
       element.select('table.measurements').each(function(dataTable) {
         new PhenoTips.widgets.MeasurementProcessor(dataTable);
@@ -3305,6 +3311,9 @@ document.observe('xwiki:dom:loaded', function()
 
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      if (!element) { // only in IE9
+        return;
+      }
       element.select('input.check-unique, .external_id input').each(function(input) {
         if (!input.__uniqueness_validator) {
           input.__uniqueness_validator = new XWiki.widgets.UniquenessValidator(input);
