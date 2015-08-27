@@ -326,7 +326,7 @@ if (newFamilyTrigger) {
   /** no id means no family */
   function setFamily(id) {
     if (id) {
-      openFamilyButton.writeAttribute("href", new XWiki.Document(id).getURL("edit"));
+      openFamilyButton.writeAttribute("href", new XWiki.Document(id, "Families").getURL("edit"));
       belongsToFamily = true;
     } else {
       belongsToFamily = false;
