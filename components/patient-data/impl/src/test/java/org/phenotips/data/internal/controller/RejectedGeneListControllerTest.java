@@ -163,7 +163,7 @@ public class RejectedGeneListControllerTest
     //-----------------------------------writeJSON() tests-----------------------------------
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONDoesNotWriteNullData() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
@@ -179,7 +179,7 @@ public class RejectedGeneListControllerTest
     }
 
     @Test
-    public void writeJSONReturnsWhenSelectedFieldsDoesNotContainGeneEnabler() throws ComponentLookupException
+    public void writeJSONChecksThatSelectedFieldsContainsGeneEnabler() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
         PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
