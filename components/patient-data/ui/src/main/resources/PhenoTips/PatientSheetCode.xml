@@ -3558,11 +3558,13 @@ document.observe('xwiki:dom:loaded', function()
       this._dateEl = this.el.select('input.measurement-date')[0];
       this._ageEl = this.el.select('input.measurement-age')[0];
       this._globalDobEl = $(document.documentElement).down('input[name$=date_of_birth]');
+      this._moreContainer = this.el.select('div.expanded-measurements')[0];
 
       // Init handlers
       this._setAgeUsingDateAndDob = this._setAgeUsingDateAndDob.bind(this);
       this._updateHiddenFields = this._updateHiddenFields.bind(this);
       this._globalDobChangeHandler = this._globalDobChangeHandler.bind(this);
+      this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
 
       // Init datepicker
       if (!this._dateEl.hasClassName('initialized')) {
@@ -3603,6 +3605,14 @@ document.observe('xwiki:dom:loaded', function()
       });
 
       this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
+      this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
+        el.observe('click', this._moreToggleButtonHandler);
+      }).bind(this));
+
+      // Hide
+      this._moreContainer.hide();
+      this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
+
       /*clone.select('&gt; .delete')[0].observe('click', function() {
         this.up().remove();
       });
@@ -3658,6 +3668,14 @@ document.observe('xwiki:dom:loaded', function()
         this._ageEl.fire("age:change");
         this._updateHiddenFields('age', '');
       }
+    },
+
+    _moreToggleButtonHandler: function(e) {
+      this._moreContainer.toggle();
+
+      this.el.select('.expand-buttons .buttonwrapper').each(function(el) {
+        el.toggle();
+      })
     },
 
     destroy: function() {

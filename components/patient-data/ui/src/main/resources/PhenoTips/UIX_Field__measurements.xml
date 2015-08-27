@@ -404,10 +404,35 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
       (% class="measurements"%)(((
         #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
         #foreach ($handler in $handlers)
-          #if ($obj.getProperty('enabled').value.contains($handler.getName()))
+          #if ($obj.getProperty('enabled').value.contains($handler.getName())
+               &amp;&amp; $obj.getProperty('default').value.contains($handler.getName()))
             #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided())
           #end
         #end
+        {{html clean="false" wiki="false"}}
+        &lt;div class="expand-buttons"&gt;
+          &lt;span class="buttonwrapper show"&gt;
+            &lt;button type="button" class="tool button secondary"&gt;
+              &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+              $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
+            &lt;/button&gt;
+          &lt;/span&gt;
+          &lt;span class="buttonwrapper hide"&gt;
+            &lt;button type="button" class="tool button secondary"&gt;
+              &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+              $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
+            &lt;/button&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        {{/html}}
+        (% class="expanded-measurements "%)(((
+          #foreach ($handler in $handlers)
+            #if ($obj.getProperty('enabled').value.contains($handler.getName()) 
+                 &amp;&amp; !$obj.getProperty('default').value.contains($handler.getName()))
+              #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided())
+            #end
+          #end
+        )))
       )))
     )))
   )))
