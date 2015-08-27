@@ -235,6 +235,7 @@ if (newFamilyTrigger) {
   A nice way for the user to be able to confirm that the correct family was selected. */
   var newFamilyWrapper = familyIdHolder.up('.new-family-wrapper');
   var openFamilyButton = newFamilyWrapper.up().down('#open-family');
+  var familyIdLabel = newFamilyWrapper.up().down('#familyId');
   var remove = newFamilyWrapper.up().down('a.remove');
 
   var belongsToFamily = newFamilyWrapper.hasClassName('hidden') || Form.Element.getValue(familyIdHolder);
@@ -312,10 +313,12 @@ if (newFamilyTrigger) {
     if (!belongsToFamily) {
       openFamilyButton.up().hide();
       remove.hide();
+      familyIdLabel.hide();
       newFamilyWrapper.show();
     } else {
       openFamilyButton.up().show();
       remove.show();
+      familyIdLabel.show();
       newFamilyWrapper.hide();
     }
   }
@@ -329,6 +332,7 @@ if (newFamilyTrigger) {
       belongsToFamily = false;
       openFamilyButton.writeAttribute("href", '');
     }
+    familyIdLabel.innerHTML=id;
   }
 });
 </code>
@@ -642,6 +646,10 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 (% class="clear family-study" %)(((##
 === $services.localization.render('phenotips.UIXField.family_membership.heading') ===
 {{html wiki='true' clean='false'}}##
+  &lt;label id="familyId"&gt;
+    $family.getName()
+  &lt;/label&gt;
+  &lt;br/&gt;
   &lt;div class="buttonwrapper"&gt;##
     &lt;a id="open-family" class="button family-trigger" href="$xwiki.getURL($family, 'edit')"&gt;
       $services.localization.render('phenotips.UIXField.family_membership.open')
