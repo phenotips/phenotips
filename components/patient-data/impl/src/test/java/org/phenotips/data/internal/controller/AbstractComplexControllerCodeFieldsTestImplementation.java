@@ -56,8 +56,6 @@ public class AbstractComplexControllerCodeFieldsTestImplementation
     @Override
     protected List<String> getCodeFields()
     {
-        ParameterizedType p = (ParameterizedType) this.getClass().getGenericSuperclass();
-        System.out.println(p.getActualTypeArguments()[0]);
         return getProperties();
     }
 
