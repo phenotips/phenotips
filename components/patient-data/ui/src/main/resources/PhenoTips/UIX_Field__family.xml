@@ -132,7 +132,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.family')
 enabled=true
 required=
-order=1
+order=4
 fields=
 privacy_level=3</parameters>
     </property>
