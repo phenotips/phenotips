@@ -12,7 +12,16 @@
  * @id the unique ID number of this node
  */
 
-var Partnership = Class.create(AbstractNode, {
+define([
+        "pedigree/view/abstractNode",
+        "pedigree/view/childlessBehavior",
+        "pedigree/view/partnershipVisuals"
+    ], function(
+        AbstractNode,
+        ChildlessBehavior,
+        PartnershipVisuals
+    ){
+    var Partnership = Class.create(AbstractNode, {
 
    initialize: function($super, x, y, id, properties) {
        //console.log("partnership");
@@ -188,7 +197,9 @@ var Partnership = Class.create(AbstractNode, {
         }
         return false;
     }
-});
+    });
 
-//ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP OBJECTS
-Partnership.addMethods(ChildlessBehavior);
+    //ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP OBJECTS
+    Partnership.addMethods(ChildlessBehavior);
+    return Partnership;
+});

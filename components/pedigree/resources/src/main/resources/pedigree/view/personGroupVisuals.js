@@ -8,45 +8,57 @@
  * @param {Number} x The x coordinate on the canvas
  * @param {Number} y The y coordinate on the canvas
  */
+define([
+        "pedigree/pedigreeEditorParameters",
+        "pedigree/view/personGroupHoverbox",
+        "pedigree/view/personVisuals",
+        "pedigree/view/readonlyHoverbox"
+    ], function(
+        PedigreeEditorParameters,
+        PersonGroupHoverbox,
+        PersonVisuals,
+        ReadOnlyHoverbox
+    ){
+    var PersonGroupVisuals = Class.create(PersonVisuals, {
 
-var PersonGroupVisuals = Class.create(PersonVisuals, {
+        initialize: function($super, node, x, y) {
+            $super(node,x,y);
+            this.setNumPersons(node.getNumPersons());
+        },
 
-    initialize: function($super, node, x, y) {
-        $super(node,x,y);
-        this.setNumPersons(node.getNumPersons());
-    },
+        generateHoverbox: function(x, y) {
+            if (editor.isReadOnlyMode()) {
+                return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+            } else {
+                return new PersonGroupHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+            }
+        },
 
-    generateHoverbox: function(x, y) {
-        if (editor.isReadOnlyMode()) {
-            return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
-        } else {
-            return new PersonGroupHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+        /**
+         * Returns all the graphics associated with this PersonGroup
+         *
+         * @method getAllGraphics
+         * @param [$super]
+         * @return {Raphael.st} Raphael set containing graphics elements
+         */
+        getAllGraphics: function ($super) {
+            return $super().push(this._label);
+        },
+
+        /**
+         * Changes the label for the number of people in this group
+         *
+         * @method setNumPersons
+         * @param {Number} numPersons The number of people in this group
+         */
+        setNumPersons: function(numPersons) {
+            this._label && this._label.remove();
+            var text = (numPersons && numPersons > 1) ? String(numPersons) : "n";
+            var y = (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') ? this.getY() - 12 : this.getY();
+            var x = (this.getNode().getLifeStatus() == 'aborted') ? this.getX() + 8  : this.getX();
+            this._label = editor.getPaper().text(x, y, text).attr(PedigreeEditorParameters.attributes.descendantGroupLabel);
+            this._label.node.setAttribute("class", "no-mouse-interaction");
         }
-    },
-
-    /**
-     * Returns all the graphics associated with this PersonGroup
-     *
-     * @method getAllGraphics
-     * @param [$super]
-     * @return {Raphael.st} Raphael set containing graphics elements
-     */
-    getAllGraphics: function ($super) {
-        return $super().push(this._label);
-    },
-
-    /**
-     * Changes the label for the number of people in this group
-     *
-     * @method setNumPersons
-     * @param {Number} numPersons The number of people in this group
-     */
-    setNumPersons: function(numPersons) {
-        this._label && this._label.remove();
-        var text = (numPersons && numPersons > 1) ? String(numPersons) : "n";
-        var y = (this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') ? this.getY() - 12 : this.getY();
-        var x = (this.getNode().getLifeStatus() == 'aborted') ? this.getX() + 8  : this.getX();
-        this._label = editor.getPaper().text(x, y, text).attr(PedigreeEditor.attributes.descendantGroupLabel);
-        this._label.node.setAttribute("class", "no-mouse-interaction");
-    }
+    });
+    return PersonGroupVisuals;
 });

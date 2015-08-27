@@ -196,38 +196,96 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 }
                 //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + stringifyObject(nodePos) + ", position: " + stringifyObject(position) );
 
-                if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions
-                    goesLeft = true;
-                else if (position.x > xFrom)
-                    goesLeft = false;
+            editor.getPaper().setStart();
 
-                var newVertical = (prevY != position.y);
+            var positionedGraph = editor.getGraph();
 
-                var angled = (prevX != position.x && prevY != position.y);
+            var id = this.getNode().getID();
 
-                var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;
+            var consangr = positionedGraph.isConsangrRelationship(id);
+            var nodeConsangrPreference = this.getNode().getConsanguinity();
+            if (nodeConsangrPreference == "N")
+                consangr = false;
+            if (nodeConsangrPreference == "Y")
+                consangr = true;
 
-                if (i == path.length-1 && prevY == yTop) {
-                    angled = false;
-                    changesDirection = (xFrom != xTo || yFrom != yTo);
-                    newVertical = false;
-                }
+            var lineAttr          = consangr ? PedigreeEditorParameters.attributes.consangrPartnershipLines : PedigreeEditorParameters.attributes.partnershipLines;
+            var lineAttrNoContact = consangr ? PedigreeEditorParameters.attributes.noContactLinesConsangr   : PedigreeEditorParameters.attributes.noContactLines;
 
-                // if necessary, mark first segment on the left as broken
-                if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
-                    editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xFrom-16, yFrom, lineAttr, consangr, goesLeft);
-                    editor.getPaper().path("M " + (xFrom-29) + " " + (yFrom+9) + " L " + (xFrom-15) + " " + (yFrom-9)).attr(lineAttr).toBack();
-                    editor.getPaper().path("M " + (xFrom-24) + " " + (yFrom+9) + " L " + (xFrom-10) + " " + (yFrom-9)).attr(lineAttr).toBack();
-                    xFrom -= 23;
-                }
+            var partnerPaths = positionedGraph.getPathToParents(id);  // partnerPaths = [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
 
-                //console.log("angled: " + angled + ", changes: " + changesDirection);
+            // TODO: a better curve algo for the entire curve at once?
+            var smoothCorners = true;
+            var cornerRadius  = PedigreeEditorParameters.attributes.curvedLinesCornerRadius;
 
-                if (changesDirection) {  // finish drawing the current segment
-                    editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, goesLeft);
-                    xFrom = xTo;
-                    yFrom = yTo;
-                }
+            for (var p = 0; p < partnerPaths.length; p++) {
+                var path = partnerPaths[p];
+
+                // for the last piece which attaches to the person:
+                // need to consider which attachment point to use, and may have to do a bended curve from current Y to the attachment point Y
+                var person           = path[path.length-1];
+                var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
+
+                var nodePos       = editor.getGraph().getPosition(person);
+                var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
+                var finalYTo      = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.attachY ).y;
+                var yTop          = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;
+                var lastBend      = ((finalYTo == yTop) && (yTop < this.getY()) && finalSegmentInfo.attachmentPort == 1) ?
+                                    Infinity :
+                                    ( finalSegmentInfo.numAttachPorts > 1 ?
+                                       PedigreeEditorParameters.attributes.radius * (1.8 + finalSegmentInfo.numAttachPorts*0.1 - finalSegmentInfo.attachmentPort*0.35) :
+                                       PedigreeEditorParameters.attributes.radius * 1.6
+                                    );
+                //console.log("Rel: " + id + ", Y: " + this.getY() + ", Attach/FinalY: " +finalYTo + ", yTOP: " + yTop + ", lastbend: " + lastBend + ", finalPos: " + Helpers.stringifyObject(finalPosition));
+
+                var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right            
+                var xFrom    = this.getX();                  // always the X of the end of the previous segment of the curve
+                var yFrom    = this.getY();                  // always the Y of the end of the previous segment of the curve
+                var xTo      = xFrom;
+                var yTo      = yFrom;
+                var prevY    = yFrom;                        // y-coordinate of the previous node: used to determine vertical vs horizontal segments
+                var prevX    = xFrom;
+                var vertical = false;                        // direction of the previous segment
+                var wasAngle = false;
+
+                //console.log("Path: " + Helpers.stringifyObject(path));
+
+                for (var i = 0; i < path.length; i++) {
+                    var nextNodeOnPath = path[i];
+
+                    var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
+                    var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
+
+                    if (editor.DEBUG_MODE) {
+                        var _idLabel = editor.getPaper().text(position.x, position.y, nextNodeOnPath).attr(PedigreeEditorParameters.attributes.dragMeLabel).toFront();
+                        _idLabel.node.setAttribute("class", "no-mouse-interaction");
+                    }
+                    //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + Helpers.stringifyObject(nodePos) + ", position: " + Helpers.stringifyObject(position) );
+
+                    if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions
+                        goesLeft = true;
+                    else if (position.x > xFrom)
+                        goesLeft = false;
+
+                    var newVertical = (prevY != position.y);
+
+                    var angled = (prevX != position.x && prevY != position.y);
+
+                    var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;
+
+                    if (i == path.length-1 && prevY == yTop) {
+                        angled = false;
+                        changesDirection = (xFrom != xTo || yFrom != yTo);
+                        newVertical = false;
+                    }
+
+                    // if necessary, mark first segment on the left as broken
+                    if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
+                        editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xFrom-16, yFrom, lineAttr, consangr, goesLeft);
+                        editor.getPaper().path("M " + (xFrom-29) + " " + (yFrom+9) + " L " + (xFrom-15) + " " + (yFrom-9)).attr(lineAttr).toBack();
+                        editor.getPaper().path("M " + (xFrom-24) + " " + (yFrom+9) + " L " + (xFrom-10) + " " + (yFrom-9)).attr(lineAttr).toBack();
+                        xFrom -= 23;
+                    }
 
                 xTo      = position.x;
                 yTo      = (i >= path.length - 2) ? yTop : position.y;
@@ -272,32 +330,28 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                             else
                                 xTo += cornerRadius;             // going left: stop a bit to the left
                         }
-                    } else {
-                        // vertical: stop the line a bit earlier so that we can draw a smooth corner
-                        yTo += cornerRadius;                     // always going up, so stop a bit below
                     }
+                    //------------------
+
+                    vertical = newVertical;
+                    wasAngle = angled;
                 }
-                //------------------
 
-                vertical = newVertical;
-                wasAngle = angled;
+                var lostContact = !editor.getView().getNode(person).isProband() &&
+                                  editor.getView().getNode(person).getLostContact() &&
+                                  editor.getGraph().isPartnershipRelatedToProband(id);
+
+                var thisLineAttr = lostContact ? lineAttrNoContact : lineAttr;
+
+                if (yFrom >= finalPosition.y + cornerRadius*2) {
+                    editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, thisLineAttr, consangr, false);
+                }
+                else {
+                    // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
+                    // It may be a line if all y are the same, a line with one bend or a line with two bends
+                    editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, thisLineAttr, consangr, goesLeft );
+                }
             }
-
-            var lostContact = !editor.getView().getNode(person).isProband() &&
-                              editor.getView().getNode(person).getLostContact() &&
-                              editor.getGraph().isPartnershipRelatedToProband(id);
-
-            var thisLineAttr = lostContact ? lineAttrNoContact : lineAttr;
-
-            if (yFrom >= finalPosition.y + cornerRadius*2) {
-                editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, thisLineAttr, consangr, false);
-            }
-            else {
-                // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
-                // It may be a line if all y are the same, a line with one bend or a line with two bends
-                editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, thisLineAttr, consangr, goesLeft );
-            }
-        }
 
         this._partnerConnections = editor.getPaper().setFinish().toBack();
         if (this.getNode().getGraphics()) {
@@ -306,67 +360,67 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         }
     },
 
-    /**
-     * Updates the path of the connection for the given pregnancy or creates a new
-     * connection if it doesn't exist.
-     *
-     * @method updateChildhubConnection
-     */
-    updateChildhubConnection: function() {
-        this._childhubConnection && this._childhubConnection.remove();
+        /**
+         * Updates the path of the connection for the given pregnancy or creates a new
+         * connection if it doesn't exist.
+         *
+         * @method updateChildhubConnection
+         */
+        updateChildhubConnection: function() {
+            this._childhubConnection && this._childhubConnection.remove();
 
         var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;
 
-        var positionedGraph = editor.getGraph();
+            var positionedGraph = editor.getGraph();
 
-        var id = this.getNode().getID();
+            var id = this.getNode().getID();
 
-        var childlinePos = positionedGraph.getRelationshipChildhubPosition(id);
-        var childlineY   = editor.convertGraphCoordToCanvasCoord( childlinePos.x, childlinePos.y ).y;
+            var childlinePos = positionedGraph.getRelationshipChildhubPosition(id);
+            var childlineY   = editor.convertGraphCoordToCanvasCoord( childlinePos.x, childlinePos.y ).y;
 
-        // draw child edges from childhub
-        var children = positionedGraph.getRelationshipChildrenSortedByOrder(id);
+            // draw child edges from childhub
+            var children = positionedGraph.getRelationshipChildrenSortedByOrder(id);
 
-        if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
+            if (children.length == 1 && editor.getGraph().isPlaceholder(children[0])) {
+                editor.getPaper().setStart();
+                //editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), this.getY() + PedigreeEditorParameters.attributes.partnershipHandleBreakY, P
+                this._childhubConnection = editor.getPaper().setFinish();
+                return;
+            }
             editor.getPaper().setStart();
-            //editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), this.getY() + PedigreeEditor.attributes.partnershipHandleBreakY, P
-            this._childhubConnection = editor.getPaper().setFinish();
-            return;
-        }
-        editor.getPaper().setStart();
 
 
-        var leftmostX  = this.getX();
-        var rightmostX = this.getX();
+            var leftmostX  = this.getX();
+            var rightmostX = this.getX();
 
-        var currentTwinGroup        = null;
-        var currentTwinGroupCenterX = null;
-        var currentIsMonozygothic   = false;
+            var currentTwinGroup        = null;
+            var currentTwinGroupCenterX = null;
+            var currentIsMonozygothic   = false;
 
-        var numPregnancies = 0;
+            var numPregnancies = 0;
 
-        var allChildrenLostContact = true;
+            var allChildrenLostContact = true;
 
-        for ( var j = 0; j < children.length; j++ ) {
-            var child  = children[j];
+            for ( var j = 0; j < children.length; j++ ) {
+                var child  = children[j];
 
-            var twinGroupId = positionedGraph.getTwinGroupId(child);
+                var twinGroupId = positionedGraph.getTwinGroupId(child);
 
-            if (twinGroupId != currentTwinGroup) {
-                numPregnancies++;
+                if (twinGroupId != currentTwinGroup) {
+                    numPregnancies++;
 
-                currentTwinGroup = twinGroupId;
+                    currentTwinGroup = twinGroupId;
 
-                var allTwins  = positionedGraph.getAllTwinsSortedByOrder(child);
-                var positionL = editor.getView().getNode(allTwins[0]).getX();
-                var positionR = editor.getView().getNode(allTwins[allTwins.length-1]).getX();
-                var positionY = editor.getView().getNode(allTwins[0]).getY();
-                currentTwinGroupCenterX = (positionL + positionR)/2;
-                if (allTwins.length == 3)
-                    currentTwinGroupCenterX = editor.getView().getNode(allTwins[1]).getX();
-                editor.getView().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
+                    var allTwins  = positionedGraph.getAllTwinsSortedByOrder(child);
+                    var positionL = editor.getView().getNode(allTwins[0]).getX();
+                    var positionR = editor.getView().getNode(allTwins[allTwins.length-1]).getX();
+                    var positionY = editor.getView().getNode(allTwins[0]).getY();
+                    currentTwinGroupCenterX = (positionL + positionR)/2;
+                    if (allTwins.length == 3)
+                        currentTwinGroupCenterX = editor.getView().getNode(allTwins[1]).getX();
+                    editor.getView().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditorParameters.attributes.partnershipLines);
 
-                currentIsMonozygothic = editor.getView().getNode(allTwins[0]).getMonozygotic();
+                    currentIsMonozygothic = editor.getView().getNode(allTwins[0]).getMonozygotic();
 
                 // draw the monozygothinc line, if necessary
                 if (currentIsMonozygothic) {
@@ -375,34 +429,29 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     var xIntercept2 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionR, positionY);
                     editor.getView().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines);
                 }
-            }
-            else if (twinGroupId == null) {
-                numPregnancies++;
-                currentIsMonozygothic = false;
-            }
 
-            var childX = editor.getView().getNode(child).getX();
-            var childY = editor.getView().getNode(child).getY();
+                var childX = editor.getView().getNode(child).getX();
+                var childY = editor.getView().getNode(child).getY();
 
-            var topLineX = (currentTwinGroup === null) ? childX     : currentTwinGroupCenterX;
-            var topLineY = (currentTwinGroup === null) ? childlineY : childlineY + twinCommonVerticalPieceLength;
+                var topLineX = (currentTwinGroup === null) ? childX     : currentTwinGroupCenterX;
+                var topLineY = (currentTwinGroup === null) ? childlineY : childlineY + twinCommonVerticalPieceLength;
 
-            if (topLineX > rightmostX)
-                rightmostX = topLineX;
-            if (topLineX < leftmostX)
-                leftmostX = topLineX;
+                if (topLineX > rightmostX)
+                    rightmostX = topLineX;
+                if (topLineX < leftmostX)
+                    leftmostX = topLineX;
 
-            var lostContact = (editor.getGraph().isChildOfProband(child) || editor.getGraph().isSiblingOfProband(child))
-                              && editor.getView().getNode(child).getLostContact();
+                var lostContact = (editor.getGraph().isChildOfProband(child) || editor.getGraph().isSiblingOfProband(child))
+                                  && editor.getView().getNode(child).getLostContact();
 
-            if (!lostContact) {
-                allChildrenLostContact = false;
-            }
+                if (!lostContact) {
+                    allChildrenLostContact = false;
+                }
 
-            var lineAttr = lostContact ? PedigreeEditor.attributes.noContactLines : PedigreeEditor.attributes.partnershipLines;
-            if (editor.getGraph().isAdoptedIn(child)) {
-                lineAttr = lostContact ? PedigreeEditor.attributes.noContactAdoptedIn : PedigreeEditor.attributes.partnershipLinesAdoptedIn;
-            }
+                var lineAttr = lostContact ? PedigreeEditorParameters.attributes.noContactLines : PedigreeEditorParameters.attributes.partnershipLines;
+                if (editor.getGraph().isAdoptedIn(child)) {
+                    lineAttr = lostContact ? PedigreeEditorParameters.attributes.noContactAdoptedIn : PedigreeEditorParameters.attributes.partnershipLinesAdoptedIn;
+                }
 
             // draw regular child line - for all nodes which are not monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
@@ -413,108 +462,109 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
                 editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, lineAttr);
             }
+
+            var lineAttr = allChildrenLostContact ? PedigreeEditorParameters.attributes.noContactLines : PedigreeEditorParameters.attributes.partnershipLines;
+
+            editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, lineAttr);
+            editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, lineAttr);
+
+            if (editor.DEBUG_MODE) {
+                var childhubID = positionedGraph.DG.GG.getOutEdges(id)[0];
+                var _idLabel = editor.getPaper().text(this.getX(), childlineY, childhubID).attr(PedigreeEditorParameters.attributes.dragMeLabel).toFront();
+                _idLabel.node.setAttribute("class", "no-mouse-interaction");
+            }
+
+            //draw small non-functional childhub junction orb
+            if (numPregnancies > 1)
+                editor.getPaper().circle(this.getX(), childlineY, PedigreeEditorParameters.attributes.partnershipRadius/2).attr({fill: '#666666', stroke: '#888888', 'stroke-width':1, 'opacity': 1});
+
+            this._childhubConnection = editor.getPaper().setFinish();
+        },
+
+        /**
+         * Changes the position of the junction to the coordinate (x,y) and updates all surrounding connections.
+         *
+         * @method setPos
+         * @param {Number} x X coordinate relative to the Raphael canvas
+         * @param {Number} y Y coordinate relative to the Raphael canvas
+         * @param {Boolean} animate Set to True to animate the transition
+         * @param {Function} callback Executed at the end of the animation
+         */
+        setPos: function($super, x, y, animate, callback) {
+
+            this.getHoverBox().removeHandles();
+            this.getHoverBox().removeButtons();
+
+            if(animate) {
+                throw "Can't animate a partnership node";
+            }
+
+            this.mark && this.mark.remove();
+            this.mark2 && this.mark2.remove();
+
+            this.getAllGraphics().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
+            $super(x,y, animate, callback);
+
+            this.updatePartnerConnections();
+            this.updateChildhubConnection();
+            this.updateChildlessStatusLabel();
+        },
+
+        /**
+         * Removes all the graphical elements of this partnership from the canvas
+         *
+         * @method remove
+         */
+        remove: function() {
+            this.getJunctionShape().remove();
+            this.getHoverBox().remove();
+            this._idLabel && this._idLabel.remove();
+            this.getChildlessShape() && this.getChildlessShape().remove();
+            this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
+            this._childhubConnection && this._childhubConnection.remove();
+            this._partnerConnections && this._partnerConnections.remove();
+            this.area && this.area.remove();
+            this.mark && this.mark.remove();
+            this.mark2 && this.mark2.remove();
+        },
+
+        /**
+         * Returns a Raphael set of graphic elements of which the icon of the Partnership consists. Does not
+         * include hoverbox elements and labels.
+         *
+         * @method getShapes
+         * @return {Raphael.st}
+         */
+        getShapes: function($super) {
+            return $super().push(this.getJunctionShape());
+        },
+
+        /**
+         * Returns a Raphael set of all the graphics and labels associated with this Partnership. Includes the hoverbox
+         * elements and labels
+         *
+         * @method getAllGraphics
+         * @return {Raphael.st}
+         */
+        getAllGraphics: function($super) {
+            return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel, this._childlessShape).concat($super()).push(this.getHoverBox().getFrontElements());
+        },
+
+        /**
+         * Displays all the appropriate labels for this Partnership in the correct layering order
+         *
+         * @method drawLabels
+         */
+        drawLabels: function() {
+            // if need to add some - see PersonVisuals.drawLabels()
+        },
+
+        getChildlessShapeAttr: function() {
+            return PedigreeEditorParameters.attributes.partnershipChildlessShapeAttr;
         }
+    });
 
-        var lineAttr = allChildrenLostContact ? PedigreeEditor.attributes.noContactLines : PedigreeEditor.attributes.partnershipLines;
-
-        editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, lineAttr);
-        editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, lineAttr);
-
-        if (editor.DEBUG_MODE) {
-            var childhubID = positionedGraph.DG.GG.getOutEdges(id)[0];
-            var _idLabel = editor.getPaper().text(this.getX(), childlineY, childhubID).attr(PedigreeEditor.attributes.dragMeLabel).toFront();
-            _idLabel.node.setAttribute("class", "no-mouse-interaction");
-        }
-
-        //draw small non-functional childhub junction orb
-        if (numPregnancies > 1)
-            editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#666666', stroke: '#888888', 'stroke-width':1, 'opacity': 1});
-
-        this._childhubConnection = editor.getPaper().setFinish();
-    },
-
-    /**
-     * Changes the position of the junction to the coordinate (x,y) and updates all surrounding connections.
-     *
-     * @method setPos
-     * @param {Number} x X coordinate relative to the Raphael canvas
-     * @param {Number} y Y coordinate relative to the Raphael canvas
-     * @param {Boolean} animate Set to True to animate the transition
-     * @param {Function} callback Executed at the end of the animation
-     */
-    setPos: function($super, x, y, animate, callback) {
-
-        this.getHoverBox().removeHandles();
-        this.getHoverBox().removeButtons();
-
-        if(animate) {
-            throw "Can't animate a partnership node";
-        }
-
-        this.mark && this.mark.remove();
-        this.mark2 && this.mark2.remove();
-
-        this.getAllGraphics().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
-        $super(x,y, animate, callback);
-
-        this.updatePartnerConnections();
-        this.updateChildhubConnection();
-        this.updateChildlessStatusLabel();
-    },
-
-    /**
-     * Removes all the graphical elements of this partnership from the canvas
-     *
-     * @method remove
-     */
-    remove: function() {
-        this.getJunctionShape().remove();
-        this.getHoverBox().remove();
-        this._idLabel && this._idLabel.remove();
-        this.getChildlessShape() && this.getChildlessShape().remove();
-        this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
-        this._childhubConnection && this._childhubConnection.remove();
-        this._partnerConnections && this._partnerConnections.remove();
-        this.area && this.area.remove();
-        this.mark && this.mark.remove();
-        this.mark2 && this.mark2.remove();
-    },
-
-    /**
-     * Returns a Raphael set of graphic elements of which the icon of the Partnership consists. Does not
-     * include hoverbox elements and labels.
-     *
-     * @method getShapes
-     * @return {Raphael.st}
-     */
-    getShapes: function($super) {
-        return $super().push(this.getJunctionShape());
-    },
-
-    /**
-     * Returns a Raphael set of all the graphics and labels associated with this Partnership. Includes the hoverbox
-     * elements and labels
-     *
-     * @method getAllGraphics
-     * @return {Raphael.st}
-     */
-    getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel, this._childlessShape).concat($super()).push(this.getHoverBox().getFrontElements());
-    },
-
-    /**
-     * Displays all the appropriate labels for this Partnership in the correct layering order
-     *
-     * @method drawLabels
-     */
-    drawLabels: function() {
-        // if need to add some - see PersonVisuals.drawLabels()
-    },
-
-    getChildlessShapeAttr: function() {
-        return PedigreeEditor.attributes.partnershipChildlessShapeAttr;
-    }
+    //ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP
+    PartnershipVisuals.addMethods(ChildlessBehaviorVisuals);
+    return PartnershipVisuals;
 });
-
-//ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP
-PartnershipVisuals.addMethods(ChildlessBehaviorVisuals);

@@ -1,65 +1,66 @@
 /**
  * A stub hoverbox used when generating read-only pedigrees
  */
-var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
+define(["pedigree/view/abstractHoverbox"], function(AbstractHoverbox){
+    var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
 
-    initialize: function($super, node, x, y, shapes) {
-        this._node   = node;
-        this._nodeX  = x;
-        this._nodeY  = y;
-        this._shapes = editor.getPaper().set();
-    },
+        initialize: function($super, node, x, y, shapes) {
+            this._node   = node;
+            this._nodeX  = x;
+            this._nodeY  = y;
+            this._shapes = editor.getPaper().set();
+        },
 
-    getWidth: function() {
-        return 0;
-    },
+        getWidth: function() {
+            return 0;
+        },
 
-    getHeight: function() {
-        return 0;
-    },
+        getHeight: function() {
+            return 0;
+        },
 
-    getNode: function() {
-        return this._node;
-    },
+        getNode: function() {
+            return this._node;
+        },
 
-    generateButtons: function() {
-    },
+        generateButtons: function() {
+        },
 
-    removeButtons: function () {
-    },
+        removeButtons: function () {
+        },
 
-    hideButtons: function() {
-    },
+        hideButtons: function() {
+        },
 
-    showButtons: function() {
-    },
+        showButtons: function() {
+        },
 
-    getCurrentButtons: function() {
-        return this._currentButtons;
-    },
+        getCurrentButtons: function() {
+            return this._currentButtons;
+        },
 
-    removeHandles: function () {
-    },
+        removeHandles: function () {
+        },
 
-    hideHandles: function() {
-    },
+        hideHandles: function() {
+        },
 
-    showHandles: function() {
-    },
+        showHandles: function() {
+        },
 
-    generateHandles: function() {
-    },
+        generateHandles: function() {
+        },
 
-    regenerateHandles: function() {
-    },
+        regenerateHandles: function() {
+        },
 
-    getBoxOnHover: function() {
-        return null;
-    },
+        getBoxOnHover: function() {
+            return null;
+        },
 
-    isHovered: function() {
-        return false;
-    },
+        isHovered: function() {
+            return false;
+        },
 
     setHovered: function(isHovered) {
     },
@@ -67,40 +68,42 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
     setHighlighted: function(isHighlighted) {
     },
 
-    getHoverZoneMask: function() {
-        return null;
-    },
+        getHoverZoneMask: function() {
+            return null;
+        },
 
-    getFrontElements: function() {
-        return this._shapes;
-    },
+        getFrontElements: function() {
+            return this._shapes;
+        },
 
-    getBackElements: function() {
-        return this._shapes;
-    },
+        getBackElements: function() {
+            return this._shapes;
+        },
 
-    isMenuToggled: function() {
-        return false;
-    },
+        isMenuToggled: function() {
+            return false;
+        },
 
-    animateDrawHoverZone: function() {
-    },
+        animateDrawHoverZone: function() {
+        },
 
-    animateHideHoverZone: function() {
-    },
+        animateHideHoverZone: function() {
+        },
 
-    disable: function() {
-    },
+        disable: function() {
+        },
 
-    enable: function() {
-    },
+        enable: function() {
+        },
 
-    remove: function() {
-    },
+        remove: function() {
+        },
 
-    onWidgetHide: function() {
-    },
+        onWidgetHide: function() {
+        },
 
-    onWidgetShow: function() {
-    }
+        onWidgetShow: function() {
+        }
+    });
+    return ReadOnlyHoverbox;
 });

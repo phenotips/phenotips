@@ -1,52 +1,53 @@
-Queue = function() {
-    this.data = [];
-};
-
-Queue.prototype = {
-
-    setTo: function(list) {
-        this.data = list.slice();
-    },
-
-    push: function(v) {
-        this.data.push(v);
-    },
-
-    pop: function(v) {
-        return this.data.shift();
-    },
-
-    size: function() {
-        return this.data.length;
-    },
-
-    clear: function() {
+define([], function(){
+    Queue = function() {
         this.data = [];
-    }
-};
+    };
 
+    Queue.prototype = {
 
+        setTo: function(list) {
+            this.data = list.slice();
+        },
 
-Stack = function() {
-    this.data = [];
-};
+        push: function(v) {
+            this.data.push(v);
+        },
 
-Stack.prototype = {
+        pop: function(v) {
+            return this.data.shift();
+        },
 
-    setTo: function(list) {
-        this.data = list.slice();
-    },
+        size: function() {
+            return this.data.length;
+        },
 
-    push: function(v) {
-        this.data.push(v);
-    },
+        clear: function() {
+            this.data = [];
+        }
+    };
 
-    pop: function(v) {
-        return this.data.pop();
-    },
+    Stack = function() {
+        this.data = [];
+    };
 
-    size: function() {
-        return this.data.length;
-    }
-};
+    Stack.prototype = {
 
+        setTo: function(list) {
+            this.data = list.slice();
+        },
+
+        push: function(v) {
+            this.data.push(v);
+        },
+
+        pop: function(v) {
+            return this.data.pop();
+        },
+
+        size: function() {
+            return this.data.length;
+        }
+    };
+
+    return Queue;
+});

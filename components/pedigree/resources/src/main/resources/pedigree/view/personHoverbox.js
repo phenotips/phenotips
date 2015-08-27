@@ -11,8 +11,21 @@
  * @param {Number} centerY The Y coordinate for the center of the hoverbox
  * @param {Raphael.st} nodeShapes All shapes associated with the person node
  */
+define([
+        "pedigree/pedigreeEditorParameters",
+        "pedigree/model/helpers",
+        "pedigree/view/abstractHoverbox"
+    ], function(
+        PedigreeEditorParameters,
+        Helpers,
+        AbstractHoverbox
+    ){
+    var PersonHoverbox = Class.create(AbstractHoverbox, {
 
-var PersonHoverbox = Class.create(AbstractHoverbox, {
+        initialize: function($super, personNode, centerX, centerY, nodeShapes) {
+            var radius = PedigreeEditorParameters.attributes.personHoverBoxRadius;        
+            $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);                
+        },
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
         var radius = PedigreeEditor.attributes.personHoverBoxRadius;
@@ -122,64 +135,64 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         if (this._currentButtons !== null) return;
         $super();
 
-        this.generateMenuBtn();
+            this.generateMenuBtn();
 
-        // proband can't be removed
-        if (!this.getNode().isProband())
-            this.generateDeleteBtn();
-    },
+            // proband can't be removed
+            if (!this.getNode().isProband())
+                this.generateDeleteBtn();
+        },
 
-    /**
-     * Creates a node-shaped show-menu button
-     *
-     * @method generateMenuBtn
-     * @return {Raphael.st} The generated button
-     */
-    generateMenuBtn: function() {
-        var me = this;
-        var action = function() {
-            me.toggleMenu(!me.isMenuToggled());
-        };
-        var genderShapedButton = this.getNode().getGraphics().getGenderShape().clone();
-        genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOff);
-        genderShapedButton.click(action);
-        genderShapedButton.hover(function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOn)},
-                                 function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOff)});
-        genderShapedButton.attr("cursor", "pointer");
-        this._currentButtons.push(genderShapedButton);
-        this.disable();
-        this.getFrontElements().push(genderShapedButton);
-        this.enable();
-    },
+        /**
+         * Creates a node-shaped show-menu button
+         *
+         * @method generateMenuBtn
+         * @return {Raphael.st} The generated button
+         */
+        generateMenuBtn: function() {
+            var me = this;
+            var action = function() {
+                me.toggleMenu(!me.isMenuToggled());
+            };
+            var genderShapedButton = this.getNode().getGraphics().getGenderShape().clone();
+            genderShapedButton.attr(PedigreeEditorParameters.attributes.nodeShapeMenuOff);
+            genderShapedButton.click(action);
+            genderShapedButton.hover(function() { genderShapedButton.attr(PedigreeEditorParameters.attributes.nodeShapeMenuOn)},
+                                     function() { genderShapedButton.attr(PedigreeEditorParameters.attributes.nodeShapeMenuOff)});
+            genderShapedButton.attr("cursor", "pointer");
+            this._currentButtons.push(genderShapedButton);
+            this.disable();
+            this.getFrontElements().push(genderShapedButton);
+            this.enable();
+        },
 
-    /**
-     * Returns true if the menu for this node is open
-     *
-     * @method isMenuToggled
-     * @return {Boolean}
-     */
-    isMenuToggled: function() {
-        return this._isMenuToggled;
-    },
+        /**
+         * Returns true if the menu for this node is open
+         *
+         * @method isMenuToggled
+         * @return {Boolean}
+         */
+        isMenuToggled: function() {
+            return this._isMenuToggled;
+        },
 
-    /**
-     * Shows/hides the menu for this node
-     *
-     * @method toggleMenu
-     */
-    toggleMenu: function(isMenuToggled) {
-        if (this._justClosedMenu) return;
-        //console.log("toggle menu: current = " + this._isMenuToggled);
-        this._isMenuToggled = isMenuToggled;
-        if(isMenuToggled) {
-            this.getNode().getGraphics().unmark();
-            var optBBox = this.getBoxOnHover().getBBox();
-            var x = optBBox.x2;
-            var y = optBBox.y;
-            var position = editor.getWorkspace().canvasToDiv(x+5, y);
-            editor.getNodeMenu().show(this.getNode(), position.x, position.y);
-        }
-    },
+        /**
+         * Shows/hides the menu for this node
+         *
+         * @method toggleMenu
+         */
+        toggleMenu: function(isMenuToggled) {
+            if (this._justClosedMenu) return;
+            //console.log("toggle menu: current = " + this._isMenuToggled);
+            this._isMenuToggled = isMenuToggled;
+            if(isMenuToggled) {
+                this.getNode().getGraphics().unmark();
+                var optBBox = this.getBoxOnHover().getBBox();
+                var x = optBBox.x2;
+                var y = optBBox.y;
+                var position = editor.getWorkspace().canvasToDiv(x+5, y);
+                editor.getNodeMenu().show(this.getNode(), position.x, position.y);
+            }
+        },
 
     /**
      * Hides the hoverbox with a fade out animation
@@ -197,30 +210,30 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         }
     },
 
-    /**
-     * Displays the hoverbox with a fade in animation
-     *
-     * @method animateDrawHoverZone
-     */
-    animateDrawHoverZone: function($super) {
-        this._hidden = false;
-        if(!this.isMenuToggled()){
-            var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-            if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
-                editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
-            $super();
-        }
-    },
+        /**
+         * Displays the hoverbox with a fade in animation
+         *
+         * @method animateDrawHoverZone
+         */
+        animateDrawHoverZone: function($super) {
+            this._hidden = false;
+            if(!this.isMenuToggled()){
+                var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
+                if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
+                    editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
+                $super();
+            }
+        },
 
-    /**
-     * Performs the appropriate action for clicking on the handle of type handleType
-     *
-     * @method handleAction
-     * @param {String} handleType "child", "partner" or "parent"
-     * @param {Boolean} isDrag True if this handle is being dragged
-     */
-    handleAction : function(handleType, isDrag, curHoveredId) {
-        console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);
+        /**
+         * Performs the appropriate action for clicking on the handle of type handleType
+         *
+         * @method handleAction
+         * @param {String} handleType "child", "partner" or "parent"
+         * @param {Boolean} isDrag True if this handle is being dragged
+         */
+        handleAction : function(handleType, isDrag, curHoveredId) {
+            console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);
 
         if(isDrag && curHoveredId !== null) {
             if(handleType == "parent") {
@@ -260,13 +273,32 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                                                                  this.getNodeY() - PedigreeEditor.attributes.personHandleBreakY+PedigreeEditor.attributes.personSiblingHandleLengthY + 15);
                 editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
             }
-            else if(handleType == "parent") {
-                this.removeHandles();
-                this.removeButtons();
-                var event = { "personID": this.getNode().getID() };
-                document.fire("pedigree:person:newparent", event);
+            else if (!isDrag) {
+                if(handleType == "partnerR" || handleType == "partnerL") {
+                    this.removeHandles();
+                    var preferLeft = (this.getNode().getGender() == 'F') || (handleType == "partnerL");
+                    var event = { "personID": this.getNode().getID(), "preferLeft": preferLeft };
+                    document.fire("pedigree:person:newpartnerandchild", event);
+                }
+                else if(handleType == "child") {
+                    var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditorParameters.attributes.personHandleLength + 15));
+                    editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+                    // if user selects anything the bubble will fire an even on its own
+                }
+                else if(handleType == "sibling") {
+                    var position = editor.getWorkspace().canvasToDiv(this.getNodeX() - PedigreeEditorParameters.attributes.personSiblingHandleLengthX,
+                                                                     this.getNodeY() - PedigreeEditorParameters.attributes.personHandleBreakY+PedigreeEditorParameters.attributes.personSiblingHandleLengthY + 15);
+                    editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);                
+                }
+                else if(handleType == "parent") {
+                    this.removeHandles();
+                    this.removeButtons();
+                    var event = { "personID": this.getNode().getID() };
+                    document.fire("pedigree:person:newparent", event);
+                }
             }
+            this.animateHideHoverZone();
         }
-        this.animateHideHoverZone();
-    }
+    });
+    return PersonHoverbox;
 });

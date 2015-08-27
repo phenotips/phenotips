@@ -252,7 +252,7 @@ var ChildlessBehaviorVisuals = {
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
             this._childlessStatusLabel.toBack();
         }
+    });
 
-        this.drawLabels();
-    }
-};
+    return AbstractNodeVisuals;
+});

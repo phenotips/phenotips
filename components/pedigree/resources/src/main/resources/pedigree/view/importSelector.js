@@ -3,6 +3,8 @@
  *
  * @class ImportSelector
  */
+define([], function(){
+    var ImportSelector = Class.create( {
 
 var ImportSelector = Class.create( {
 
@@ -56,10 +58,10 @@ var ImportSelector = Class.create( {
         typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
         //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
 
-        var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
-        var dataSection2 = new Element('div', {'class': 'import-block'});
-        dataSection2.insert(promptType).insert(typeListElement);
-        mainDiv.insert(dataSection2);
+            var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
+            var dataSection2 = new Element('div', {'class': 'import-block'});
+            dataSection2.insert(promptType).insert(typeListElement);
+            mainDiv.insert(dataSection2);
 
         var _addConfigOption = function (checked, labelText, value) {
             var optionWrapper = new Element('tr');
@@ -75,38 +77,38 @@ var ImportSelector = Class.create( {
         configListElement.insert(_addConfigOption(true,  "Treat non-standard phenotype values as new disorders", "accept"));
         configListElement.insert(_addConfigOption(false, "Treat non-standard phenotype values as \"no information\"", "dontaccept"));
 
-        var markEvaluated = new Element('input', {"type" : "checkbox", "value": "1", "name": "mark-evaluated"});
-        var markLabel1     = new Element('label', {'class': 'import-mark-label1'}).insert(markEvaluated).insert("Mark all patients with known disorder status with 'documented evaluation' mark").wrap('td').wrap('tr');
-        configListElement.insert(markLabel1);
-        var markExternal = new Element('input', {"type" : "checkbox", "value": "1", "name": "mark-external"});
-        markExternal.checked = true;
-        var markLabel2   = new Element('label', {'class': 'import-mark-label2'}).insert(markExternal).insert("Save individual IDs as given in the input data as 'external ID'").wrap('td').wrap('tr');
-        configListElement.insert(markLabel2);
+            var markEvaluated = new Element('input', {"type" : "checkbox", "value": "1", "name": "mark-evaluated"});
+            var markLabel1     = new Element('label', {'class': 'import-mark-label1'}).insert(markEvaluated).insert("Mark all patients with known disorder status with 'documented evaluation' mark").wrap('td').wrap('tr');
+            configListElement.insert(markLabel1);
+            var markExternal = new Element('input', {"type" : "checkbox", "value": "1", "name": "mark-external"});
+            markExternal.checked = true;
+            var markLabel2   = new Element('label', {'class': 'import-mark-label2'}).insert(markExternal).insert("Save individual IDs as given in the input data as 'external ID'").wrap('td').wrap('tr');
+            configListElement.insert(markLabel2);
 
         var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
         var dataSection3 = new Element('div', {'class': 'import-block'});
         dataSection3.insert(promptConfig).insert(configListElement);
         mainDiv.insert(dataSection3);
 
-        //TODO: [x] auto-combine multiple unaffected children when the number of children is greater than [5]
+            //TODO: [x] auto-combine multiple unaffected children when the number of children is greater than [5]
 
-        var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
-        buttons.insert(new Element('input', {type: 'button', name : 'import', 'value': 'Import', 'class' : 'button', 'id': 'import_button'}).wrap('span', {'class' : 'buttonwrapper'}));
-        buttons.insert(new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
-        mainDiv.insert(buttons);
+            var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
+            buttons.insert(new Element('input', {type: 'button', name : 'import', 'value': 'Import', 'class' : 'button', 'id': 'import_button'}).wrap('span', {'class' : 'buttonwrapper'}));
+            buttons.insert(new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+            mainDiv.insert(buttons);
 
-        var cancelButton = buttons.down('input[name="cancel"]');
-        cancelButton.observe('click', function(event) {
-            _this.hide();
-        })
-        var importButton = buttons.down('input[name="import"]');
-        importButton.observe('click', function(event) {
-            _this._onImportStarted();
-        })
+            var cancelButton = buttons.down('input[name="cancel"]');
+            cancelButton.observe('click', function(event) {
+                _this.hide();
+            })
+            var importButton = buttons.down('input[name="import"]');
+            importButton.observe('click', function(event) {
+                _this._onImportStarted();
+            })
 
-        var closeShortcut = ['Esc'];
-        this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree import", displayCloseButton: true});
-    },
+            var closeShortcut = ['Esc'];
+            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree import", displayCloseButton: true});
+        },
 
     /*
      * Populates the text input box with the selected file content (asynchronously)
@@ -136,7 +138,7 @@ var ImportSelector = Class.create( {
             if (importType != "ped") {
                 pedOnlyOptions[i].disabled = true;
             } else {
-                pedOnlyOptions[i].disabled = false;
+                saveExternalID.disabled = false;
             }
         }
         var pedAndGedcomOption = $$('input[type=checkbox][name="mark-evaluated"]')[0];
@@ -188,22 +190,24 @@ var ImportSelector = Class.create( {
                                                              false /* add to undo stack */, true /*center around 0*/);
     },
 
-    /**
-     * Displays the template selector
-     *
-     * @method show
-     */
-    show: function() {
-        this.dialog.show();
-    },
+        /**
+         * Displays the template selector
+         *
+         * @method show
+         */
+        show: function() {
+            this.dialog.show();
+        },
 
-    /**
-     * Removes the the template selector
-     *
-     * @method hide
-     */
-    hide: function() {
-        this.importValue.value = "";
-        this.dialog.closeDialog();
-    }
+        /**
+         * Removes the the template selector
+         *
+         * @method hide
+         */
+        hide: function() {
+            this.importValue.value = "";
+            this.dialog.closeDialog();
+        }
+    });
+    return ImportSelector;
 });

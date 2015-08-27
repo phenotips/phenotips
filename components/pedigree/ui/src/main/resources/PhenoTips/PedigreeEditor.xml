@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822196000</date>
-  <contentUpdateDate>1401822196000</contentUpdateDate>
+  <date>1440701829000</date>
+  <contentUpdateDate>1440701602000</contentUpdateDate>
   <version>1.1</version>
   <title>Pedigree editor#if ($request.id): $request.id#end</title>
   <comment/>
@@ -46,67 +46,10 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
-$xwiki.jsfx.use('uicomponents/pedigree/model/helpers.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/queues.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/xcoordclass.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/ordering.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/baseGraph.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/import.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/export.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/filesaver/Blob.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/filesaver/FileSaver.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/datepicker.js')
-$xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/disorderLegend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/cancersLegend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/hpoLegend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/geneLegend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/okCancelDialogue.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/importSelector.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/exportSelector.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/abstractHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/readonlyHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/partnershipHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/abstractNode.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/abstractNodeVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/abstractPerson.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/abstractPersonVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/partnership.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/partnershipVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/person.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personGroup.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personGroupVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personGroupHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholder.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/personPlaceholderHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/preferencesManager.js', true)##
-$xwiki.jsfx.use('uicomponents/pedigree/pedigreeDate.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/hpoTerm.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/versionUpdater.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/controller.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/undoRedo.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/pedigreeApp.js', true)##
+
 {{/velocity}}
 
 {{html}}
-{{/html}}
-</content>
+{{/html}}</content>
 </xwikidoc>

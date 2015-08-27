@@ -11,8 +11,20 @@
  * @param {Number} junctionY The y coordinate around which the partnership bubble is centered
  * @param {Raphael.st} shapes Raphaël set containing the graphical elements that make up the node
  */
+define([
+        "pedigree/pedigreeEditorParameters",
+        "pedigree/view/abstractHoverbox"
+    ], function(
+        PedigreeEditorParameters,
+        AbstractHoverbox
+    ){
+    var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
-var PartnershipHoverbox = Class.create(AbstractHoverbox, {
+        initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
+            var radius = PedigreeEditorParameters.attributes.radius;        
+            $super(partnership, -radius*0.65, -radius*0.8, radius*1.3, radius*2.3, junctionX, junctionY, nodeShapes);
+            this._isMenuToggled = false;
+        },
 
     initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
         var radius = PedigreeEditor.attributes.radius;
@@ -120,17 +132,45 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         }
     },
 
-    /**
-     * Displays the hoverbox with a fade in animation
-     *
-     * @method animateDrawHoverZone
-     */
-    animateDrawHoverZone: function($super) {
-        this._hidden = false;
-        if(!this.isMenuToggled()){
-            $super();
-        }
-    },
+        /**
+         * Returns true if the menu is toggled for this partnership node
+         *
+         * @method isMenuToggled
+         * @return {Boolean}
+         */
+        isMenuToggled: function() {
+            return this._isMenuToggled;
+        },
+        
+        /**
+         * Shows/hides the menu for this partnership node
+         *
+         * @method toggleMenu
+         * @param {Boolean} isMenuToggled Set to True to make the menu visible
+         */
+        toggleMenu: function(isMenuToggled) {
+            if (this._justClosedMenu) return;
+            this._isMenuToggled = isMenuToggled;
+            if(isMenuToggled) {
+                var optBBox = this.getBoxOnHover().getBBox();
+                var x = optBBox.x2;
+                var y = optBBox.y;
+                var position = editor.getWorkspace().canvasToDiv(x+5, y);
+                editor.getPartnershipMenu().show(this.getNode(), position.x, position.y);
+            }
+        },
+        
+        /**
+         * Hides the hoverbox with a fade out animation
+         *
+         * @method animateHideHoverZone
+         */
+        animateHideHoverZone: function($super) {
+            this._hidden = true;
+            if(!this.isMenuToggled()){
+                $super();
+            }
+        },    
 
     /**
      * Performs the appropriate action for clicking on the handle of type handleType
@@ -145,16 +185,33 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
                 var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
                 document.fire("pedigree:person:drag:newparent", event);
             }
+        },
+
+        /**
+         * Performs the appropriate action for clicking on the handle of type handleType
+         *
+         * @method handleAction
+         * @param {String} handleType Can be either "child", "partner" or "parent"
+         * @param {Boolean} isDrag Set to True if the handle is being dragged at the time of the action
+         */
+        handleAction : function(handleType, isDrag, curHoveredId) {
+            if(isDrag && curHoveredId != null) {
+                if(handleType == "child") { 
+                    var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
+                    document.fire("pedigree:person:drag:newparent", event);
+                }
+            }
+            else if (!isDrag && handleType == "child") {
+                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditorParameters.attributes.partnershipHandleLength + 15));
+                var canBeChildless = !editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getNode().getID());
+                if (canBeChildless)
+                    editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+                else
+                    editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
+                // if user selects anything the bubble will fire an even on its own
+            }
+            this.animateHideHoverZone();
         }
-        else if (!isDrag && handleType == "child") {
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));
-            var canBeChildless = !editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getNode().getID());
-            if (canBeChildless)
-                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
-            else
-                editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
-            // if user selects anything the bubble will fire an even on its own
-        }
-        this.animateHideHoverZone();
-    }
+    });
+    return PartnershipHoverbox;
 });
