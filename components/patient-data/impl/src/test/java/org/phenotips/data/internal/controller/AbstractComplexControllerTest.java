@@ -219,7 +219,7 @@ public class AbstractComplexControllerTest
     //-----------------------------------writeJSON() tests-----------------------------------
 
     @Test
-    public void writeJSONReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONDoesNotWriteNullData() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -230,7 +230,7 @@ public class AbstractComplexControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsDoesNotWriteNullData() throws ComponentLookupException
     {
         doReturn(null).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -242,7 +242,7 @@ public class AbstractComplexControllerTest
     }
 
     @Test
-    public void writeJSONReturnsWhenDataIsNotKeyValueBased() throws ComponentLookupException
+    public void writeJSONChecksThatDataIsKeyValueBased() throws ComponentLookupException
     {
         PatientData<String> patientData = new SimpleValuePatientData<>(DATA_NAME, "datum");
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
@@ -254,7 +254,7 @@ public class AbstractComplexControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenDataIsNotKeyValueBased() throws ComponentLookupException
+    public void writeJSONWithSelectedFieldsChecksThatDataIsKeyValueBased() throws ComponentLookupException
     {
         PatientData<String> patientData = new SimpleValuePatientData<>(DATA_NAME, "datum");
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
@@ -286,7 +286,7 @@ public class AbstractComplexControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
+    public void writeJSONWithAllSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_1, "datum1");

@@ -110,7 +110,7 @@ public class GeneListControllerTest
         this.geneXWikiObjects.add(obj2);
         this.geneXWikiObjects.add(obj3);
         int i = 1;
-        for(BaseObject gene : this.geneXWikiObjects){
+        for (BaseObject gene : this.geneXWikiObjects) {
             BaseStringProperty geneString = mock(BaseStringProperty.class);
             doReturn("gene" + i).when(geneString).getValue();
             BaseStringProperty commentString = mock(BaseStringProperty.class);
