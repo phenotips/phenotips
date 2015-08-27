@@ -17,8 +17,12 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.objects.BaseProperty;
-import org.phenotips.data.*;
+import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleValuePatientData;
+import org.phenotips.data.VocabularyProperty;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -39,10 +43,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;

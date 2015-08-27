@@ -20,7 +20,6 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.VocabularyProperty;
 import org.xwiki.component.annotation.Component;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
