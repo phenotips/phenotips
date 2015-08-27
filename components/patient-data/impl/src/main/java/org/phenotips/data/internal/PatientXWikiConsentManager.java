@@ -228,9 +228,11 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
 
     private static String cleanDescription(String toClean)
     {
-        String noDiv = toClean.replace("<div>", "").replace("</div>", "");
-        String noHtml = noDiv.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
-        return noHtml;
+        String clean = toClean;
+        clean = clean.replace("<div>", "").replace("</div>", "");
+        clean = clean.replace("<p>", "").replace("</p>", "");
+        clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        return clean;
     }
 
     /**
