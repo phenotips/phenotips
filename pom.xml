@@ -231,12 +231,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Force a specific version since older incompatible versions are pulled otherwise -->
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>13.0.1</version>
-      </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
