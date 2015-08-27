@@ -128,7 +128,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.consanguinity')
 enabled=true
 required=
-order=8
+order=11
 fields=consanguinity
 privacy_level=3</parameters>
     </property>
