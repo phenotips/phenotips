@@ -22,6 +22,7 @@ import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PushServerPatientStateResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -93,6 +94,17 @@ public class PushPatientScriptService implements ScriptService
     {
         return this.internalService.getRemoteConfiguration(remoteServerIdentifier, remoteUserName, password,
             saveUserToken);
+    }
+
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGuid)
+    {
+        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGuid);
+    }
+
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGuid,
+        String remoteUserName, String password)
+    {
+        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGuid, remoteUserName, password);
     }
 
     public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,

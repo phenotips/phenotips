@@ -26,6 +26,7 @@ import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PushServerPatientStateResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.phenotips.data.securestorage.RemoteLoginData;
@@ -282,6 +283,27 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         return response;
+    }
+
+    @Override
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
+        String remoteUserName, String password)
+    {
+        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGUID,
+            remoteUserName, password, null);
+    }
+
+    @Override
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID)
+    {
+        RemoteLoginData storedData = getStoredData(remoteServerIdentifier);
+        if (storedData == null || storedData.getRemoteUserName() == null || storedData.getLoginToken() == null) {
+            return new DefaultPushServerPatientStateResponse(
+                DefaultPushServerResponse.generateIncorrectCredentialsJSON());
+        }
+
+        return this.internalService.getRemotePatientState(remoteServerIdentifier,
+            remoteGUID, storedData.getRemoteUserName(), null, storedData.getLoginToken());
     }
 
     @Override

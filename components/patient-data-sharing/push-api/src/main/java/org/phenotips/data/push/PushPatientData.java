@@ -58,6 +58,10 @@ public interface PushPatientData
     PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName,
         String password, String user_token);
 
+    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
+        String userName,
+        String password, String userToken);
+
     /**
      * Submits the specified subset of patient data to the specified remote server. The new patient created on the
      * remote server will be created and authored by the given user, and owned by the given group (if provided) or the

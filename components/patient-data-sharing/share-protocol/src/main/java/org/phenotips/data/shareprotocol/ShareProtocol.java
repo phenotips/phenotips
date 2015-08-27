@@ -41,6 +41,7 @@ public class ShareProtocol
 
     // possible ACTION key values are:
     public static final String CLIENT_POST_ACTIONKEY_VALUE_INFO  = "get_server_info";  // get patient data fields supported by the server and remote user groups
+    public static final String CLIENT_POST_ACTIONKEY_VALUE_STATE = "get_patient_state";  // get the state of a patient record
     public static final String CLIENT_POST_ACTIONKEY_VALUE_PUSH  = "push";             // push the patient
     public static final String CLIENT_POST_ACTIONKEY_VALUE_GETID = "get_patient_id";   // get remote ID and remote URL of the patient object with the given GUID
 

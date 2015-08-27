@@ -104,6 +104,11 @@ public interface PushPatientService
      */
     PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier);
 
+    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
+        String remoteUserName, String password);
+
+    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID);
+
     /**
      * Removes stored remote login token, if any - for security purposes
      *
