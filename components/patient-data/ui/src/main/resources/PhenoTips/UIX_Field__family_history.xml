@@ -124,7 +124,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.familyHistory')
 enabled=true
 required=
-order=6
+order=9
 fields=family_history</parameters>
     </property>
     <property>
