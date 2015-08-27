@@ -70,13 +70,6 @@ public interface Pedigree
     void setImage(String image);
 
     /**
-     * Remove a member from the pedigree.
-     *
-     * @param patientId id of the patient to remove
-     */
-    void removeMember(String patientId);
-
-    /**
      * Extracts and returns all PhenoTips patient ids.
      *
      * @return all PhenoTips ids from pedigree nodes that have internal ids

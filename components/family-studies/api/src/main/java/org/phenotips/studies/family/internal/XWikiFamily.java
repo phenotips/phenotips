@@ -214,16 +214,6 @@ public class XWikiFamily implements Family
             return false;
         }
 
-        // Remove patient from family's pedigree
-        Pedigree pedigree = getPedigree();
-        if (pedigree != null && !pedigree.isEmpty()) {
-            pedigree.removeMember(patientId);
-            if (!this.setPedigree(pedigree)) {
-                this.logger.error("Could not remove patient {} from pedigree.", patientId);
-                return false;
-            }
-        }
-
         // Remove patient from family's members list
         List<String> members = getMembersIds();
         String patientAsString = patient.getDocument().getName();

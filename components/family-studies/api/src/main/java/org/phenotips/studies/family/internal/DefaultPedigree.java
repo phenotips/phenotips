@@ -91,28 +91,6 @@ public class DefaultPedigree implements Pedigree
     }
 
     @Override
-    public void removeMember(String patientId)
-    {
-        stripIdsFromPedigree(patientId);
-        String newImage = SvgUpdater.removeLinks(this.getImage(), patientId);
-        this.setImage(newImage);
-    }
-
-    /*
-     * Strips out all linked ids from a pedigree.
-     */
-    private void stripIdsFromPedigree(String patientId)
-    {
-        List<JSONObject> patientProperties = this.extractPatientJSONProperties();
-        for (JSONObject properties : patientProperties) {
-            Object patientLink = properties.get(DefaultPedigree.PATIENT_LINK_JSON_KEY);
-            if (patientLink != null && !StringUtils.equalsIgnoreCase(patientLink.toString(), patientId)) {
-                properties.remove(DefaultPedigree.PATIENT_LINK_JSON_KEY);
-            }
-        }
-    }
-
-    @Override
     public List<String> extractIds()
     {
         List<String> extractedIds = new LinkedList<>();
