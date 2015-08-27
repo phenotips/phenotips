@@ -195,6 +195,23 @@ public class GeneListControllerTest
     }
 
     @Test
+    public void writeJSONChecksThatDataContainsFields() throws ComponentLookupException
+    {
+        List<Map<String, String>> internalList = new LinkedList<>();
+        PatientData<Map<String, String>> patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
+        doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+        selectedFields.add(GENES_ENABLING_FIELD_NAME);
+        selectedFields.add(GENES_COMMENTS_ENABLING_FIELD_NAME);
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertNull(json.get(CONTROLLER_NAME));
+    }
+
+
+    @Test
     public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
