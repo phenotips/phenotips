@@ -132,7 +132,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.ethnicity')
 enabled=true
 required=
-order=4
+order=7
 fields=maternal_ethnicity,paternal_ethnicity
 privacy_level=3</parameters>
     </property>

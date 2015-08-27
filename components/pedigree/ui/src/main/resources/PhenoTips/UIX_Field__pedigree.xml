@@ -282,7 +282,7 @@
       <parameters>title=$services.localization.render('phenotips.patientRecord.pedigree.extensionTitle')
 enabled=true
 required=
-order=14
+order=2
 fields=
 contains_PII=true
 privacy_level=3</parameters>
