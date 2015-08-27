@@ -3713,14 +3713,14 @@ document.observe('xwiki:dom:loaded', function()
         'measurement': this.el.select('[name$=type]')[0].value,
         'value': thisValue,
         'age': this.parent._ageEl.value,
-        'sex': $$('[name$=gender]:checked')[0].value,
+        'sex': ($$('[name$=gender]:checked')[0] || {value:''}).value,
       };
       // Normalize sex for the purposes of measurements, assuming other == male
       if (fetchParams.sex.length &amp;&amp; fetchParams.sex.toLowerCase() != 'f') {
         fetchParams.sex == 'm';
       }
 
-      if (thisValue.length &amp;&amp; fetchParams.age.length &amp;&amp; fetchParams.sex.length) {
+      if (thisValue.length &amp;&amp; fetchParams.sex.length &amp;&amp; fetchParams.age.length &amp;&amp; fetchParams.sex.length) {
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/percentile", {
           method: 'get',
           parameters: fetchParams,
