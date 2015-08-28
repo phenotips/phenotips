@@ -420,7 +420,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
           &lt;span class="buttonwrapper hide"&gt;
             &lt;button type="button" class="tool button secondary"&gt;
               &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
-              $services.localization.render('phenotips.patientSheet.hideExpandedMeasurements')
+              $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
             &lt;/button&gt;
           &lt;/span&gt;
         &lt;/div&gt;
