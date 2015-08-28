@@ -23,14 +23,18 @@ define(["pedigree/view/abstractNode", "pedigree/view/abstractPersonVisuals"], fu
             //console.log("abstract person end");
           },
 
-    initialize: function($super, x, y, gender, id) {
-        //console.log("abstract person");
-        this._gender = this.parseGender(gender);
-        this._adoptedStatus = "";
-        !this._type && (this._type = "AbstractPerson");
-        $super(x, y, id);
-        //console.log("abstract person end");
-      },
+        /**
+         * Initializes the object responsible for creating graphics for this node
+         *
+         * @method _generateGraphics
+         * @param {Number} x The x coordinate on the canvas at which the node is centered
+         * @param {Number} y The y coordinate on the canvas at which the node is centered
+         * @return {AbstractPersonVisuals}
+         * @private
+         */
+        _generateGraphics: function(x, y) {
+            return new AbstractPersonVisuals(this, x, y);
+        },
 
         /**
          * Reads a string of input and converts it into the standard gender format of "M","F","O" or "U".

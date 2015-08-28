@@ -695,7 +695,7 @@
 }
 .node-type-options .person-type-option.square span {
   display: inline-block;
-  width: 12px;
+  width: 12px; 
   height: 12px;
   border: 1px solid black;
 }
@@ -704,7 +704,7 @@
 }
 .node-type-options .person-type-option.diamond span {
   display: inline-block;
-  width: 10px;
+  width: 10px; 
   height: 10px;
   border: 1px solid black;
   -webkit-transform: rotate(45deg);
@@ -716,7 +716,7 @@
 }
 .node-type-options .person-type-option.circle span {
   display: inline-block;
-  width: 12px;
+  width: 12px; 
   height: 12px;
   border-radius: 50%;
   border: 1px solid black;
@@ -728,7 +728,7 @@
   font-weight: bold;
   font-size: 8px;
   position: absolute;
-  top: 8px;
+  top: 8px; 
   left: 10px;
 }
 .expand-arrow {

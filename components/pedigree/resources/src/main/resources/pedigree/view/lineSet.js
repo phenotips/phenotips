@@ -38,14 +38,7 @@ define([
                 var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
                 this._lines[i].owner = newID;
             }
-        this._lineCrossings = newLineCrossings;
-
-        for (var i = 0; i < this._lines.length; i++) {
-            var oldID = this._lines[i].owner;
-            var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
-            this._lines[i].owner = newID;
-        }
-    },
+        },
 
         addLine: function( owner, x1, y1, x2, y2 ) {
             // returns: list of crossings [ {x,y} ... {x, y} ]
@@ -64,10 +57,11 @@ define([
                 var line = this._lines[i];
                 if (line.owner == owner) continue;
 
-            var crossingPoint = this._getLineCrossing(thisLine, line);
-            if (crossingPoint) {
-                this._lineCrossings[line.owner][owner] = true;  // that line affects this one
-                bendPoints.push(crossingPoint);
+                var crossingPoint = this._getLineCrossing(thisLine, line);
+                if (crossingPoint) { 
+                    this._lineCrossings[line.owner][owner] = true;  // that line affects this one
+                    bendPoints.push(crossingPoint);
+                }
             }
 
             this._lines.push(thisLine);

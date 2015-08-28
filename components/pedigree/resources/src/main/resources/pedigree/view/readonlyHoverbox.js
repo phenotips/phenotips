@@ -62,11 +62,11 @@ define(["pedigree/view/abstractHoverbox"], function(AbstractHoverbox){
             return false;
         },
 
-    setHovered: function(isHovered) {
-    },
-
-    setHighlighted: function(isHighlighted) {
-    },
+        setHovered: function(isHovered) { 
+        },
+        
+        setHighlighted: function(isHighlighted) {
+        },    
 
         getHoverZoneMask: function() {
             return null;

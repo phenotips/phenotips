@@ -1,6 +1,6 @@
 /**
  * Class for storing either exact or fuzzy dates.
- *
+ * 
  * Assert:
  *   if day is set   => all of {decade, year, month, day} are set
  *   if month is set => all of {decade, year, month} are set
@@ -119,14 +119,14 @@ define([], function(){
             return localeMonthNames[locale][month0based];
         },
 
-    // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
-    toGEDCOMString: function() {
-        if (this.year === null && this.decade !== null) {
-            // getYear(true) returns first year of decade as integer
-            return "ABT " + this.getYear(true).toString();
-        }
-        return this.toString();
-    },
+        // Returns a string which is a valid GEDCOM date (GEDCOME supports "ABT" keyword)
+        toGEDCOMString: function() {
+            if (this.year === null && this.decade !== null) { 
+                // getYear(true) returns first year of decade as integer
+                return "ABT " + this.getYear(true).toString();
+            }
+            return this.toString();
+        },
 
         isSet: function() {
             return (this.decade !== null || this.year !== null || this.month !== null || this.day !== null);
@@ -155,17 +155,17 @@ define([], function(){
             return date;
         },
 
-    // Returns best possible estimation of this date as a javascript Date object.
-    //
-    // Aproximate dates (e.g. decades, or dates without a day or month) are set as
-    // oldest possible date satisfying the date set (e.g. first year of decade, first month of the year, etc.)
-    toJSDate: function() {
-        var year  = this.getYear(true);       // true: failsafe, get first year of decade if only decade is set
-        var month = this.getMonth(true) - 1;  // "-1": js Date's months are 0 to 11, this.month is 1 to 12
-        var day   = this.getDay(true);
-        var jsDate = new Date(year, month, day);
-        return jsDate;
-    },
+        // Returns best possible estimation of this date as a javascript Date object.
+        //
+        // Aproximate dates (e.g. decades, or dates without a day or month) are set as 
+        // oldest possible date satisfying the date set (e.g. first year of decade, first month of the year, etc.)
+        toJSDate: function() {
+            var year  = this.getYear(true);       // true: failsafe, get first year of decade if only decade is set
+            var month = this.getMonth(true) - 1;  // "-1": js Date's months are 0 to 11, this.month is 1 to 12
+            var day   = this.getDay(true);
+            var jsDate = new Date(year, month, day);
+            return jsDate;
+        },
 
         // Returns either a decade or the year (both as string)
         getBestPrecisionStringYear: function() {
@@ -192,10 +192,10 @@ define([], function(){
             return dateStr;
          },
 
-    // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime())
-    getTime: function() {
-        return this.toJSDate().getTime();
-    },
+        // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime()) 
+        getTime: function() {
+            return this.toJSDate().getTime();
+        },
 
         // Returns an integer or null.
         // Iff "failsafe" returns first year of the decade if year is not set and decade is

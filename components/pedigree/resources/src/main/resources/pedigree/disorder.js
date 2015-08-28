@@ -21,18 +21,9 @@ define([
             this._disorderID = disorderID;
             this._name       = name ? name : "loading...";
 
-    initialize: function(disorderID, name, callWhenReady) {
-        // user-defined disorders
-        if (name == null && !isInt(disorderID)) {
-            name = disorderID;
-        }
-
-        this._disorderID = disorderID;
-        this._name       = name ? name : "loading...";
-
-        if (!name && callWhenReady)
-            this.load(callWhenReady);
-    },
+            if (!name && callWhenReady)
+                this.load(callWhenReady);
+        },
 
         /*
          * Returns the disorderID of the disorder
@@ -74,7 +65,7 @@ define([
 
     Disorder.getOMIMServiceURL = function() {
         return new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain");
-    }
+    };
 
     return Disorder;
 });

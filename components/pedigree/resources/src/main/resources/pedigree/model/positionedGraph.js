@@ -113,11 +113,7 @@ define([
 
             this.order = this.ordering(this.maxInitOrderingBuckets, this.maxOrderingIterations, disconnectedTwins);
 
-        // 2.1)
-        // once ordering is known need to re-rank relationship nodes to be on the same level as the
-        // lower ranked parent. Attempt to place next to one of the parents; having ordering info
-        // helps to pick the parent in case parents are on the same level and not next to each other
-        this.reRankRelationships();
+            timer.printSinceLast("=== Ordering runtime: ");
 
     		// 2.1)
             // once ordering is known need to re-rank relationship nodes to be on the same level as the
@@ -190,14 +186,9 @@ define([
             var numRankedParents = [];       // index == vertexID, numRanked[v] == number of nodes which have
                                              //                    edges to v which were already assigned a rank
 
-        var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
-
-        if (suggestedRanks) {
-            for (var i = 0; i < suggestedRanks.length; i++) {
-                var nodesAtRank = suggestedRanks[i];
-                for (var j = 0; j < nodesAtRank.length; j++) {
-                    ranks[nodesAtRank[j]] = (i*3) + 1;
-                }
+            for (var i = 0; i < baseG.getNumVertices(); i++) {
+                ranks.push(-1);
+                numRankedParents.push(0);
             }
 
             var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
@@ -267,101 +258,103 @@ define([
                 }
             }
 
-    lower_ranks: function (baseG, ranks)
-    {
-        if (ranks.length <= 1) return; // no nodes or only 1 node
+            return ranks;
+        },
 
-        // re-ranks all nodes as far down the tree as possible (e.g. people with no
-        // parents in the tree should be on the same level as their first documented
-        // relationship partner, or as low as possible given their children relationships)
+        lower_ranks: function (baseG, ranks)
+        {
+            if (ranks.length <= 1) return; // no nodes or only 1 node
 
-        // Algorithm:
-        // 1. find disconnected components when multi-rank edges are removed (using "flood fill")
-        // 2. for each component find the incoming or outgoing milti-rank edge of minimum length
-        //    note1: sometimes a component may have both incoming and outgoing muti-rank edges;
-        //           only one of those can be shortened and the choice is made based on edge weight
-        //    note2: we can only keep track of outgoing edges as for each incoming edge there is an
-        //           outgoing edge in another component, and we only shorten one edge per re-ranking iteration
-        // 3. reduce all ranks by that edge's length minus 1
-        // 4. once any two components are merged need to redo the entire process because the new
-        //    resuting component may have other minimum in/out multi-rnak edges
+            // re-ranks all nodes as far down the tree as possible (e.g. people with no
+            // parents in the tree should be on the same level as their first documented
+            // relationship partner, or as low as possible given their children relationships)
 
-        console.log("Re-ranking ranks before: " + stringifyObject(ranks));
+            // Algorithm:
+            // 1. find disconnected components when multi-rank edges are removed (using "flood fill")
+            // 2. for each component find the incoming or outgoing milti-rank edge of minimum length
+            //    note1: sometimes a component may have both incoming and outgoing muti-rank edges;
+            //           only one of those can be shortened and the choice is made based on edge weight
+            //    note2: we can only keep track of outgoing edges as for each incoming edge there is an
+            //           outgoing edge in another component, and we only shorten one edge per re-ranking iteration
+            // 3. reduce all ranks by that edge's length minus 1
+            // 4. once any two components are merged need to redo the entire process because the new
+            //    resuting component may have other minimum in/out multi-rnak edges
 
-        while(true) {
-            var nodeColor        = [];   // for each node which component it belongs to
-            var component        = [];   // for each component list of vertices in the component
-            var minOutEdgeInfo   = [];   // for each component length & weight of the shortest outgoing multi-rank edge
+            console.log("Re-ranking ranks before: " + Helpers.stringifyObject(ranks));
+            
+            while(true) {
+                var nodeColor        = [];   // for each node which component it belongs to
+                var component        = [];   // for each component list of vertices in the component
+                var minOutEdgeInfo   = [];   // for each component length & weight of the shortest outgoing multi-rank edge
 
-            for (var v = 0; v < baseG.getNumVertices(); v++) {
-                nodeColor.push(null);
-            }
+                for (var v = 0; v < baseG.getNumVertices(); v++) {
+                    nodeColor.push(null);
+                }
 
-            var currentComponentColor = 0;
-            for (var v = 0; v < baseG.getNumVertices(); v++) {
+                var currentComponentColor = 0;
+                for (var v = 0; v < baseG.getNumVertices(); v++) {
 
-                if (nodeColor[v] == null) {
-                    // This node will be the first node of the next component, which
-                    // includes all nodes reachable using non-multi-rank edges (any direction).
-                    // All nodes in the component will be colored as "maxComponentColor"
+                    if (nodeColor[v] == null) {
+                        // This node will be the first node of the next component, which
+                        // includes all nodes reachable using non-multi-rank edges (any direction).
+                        // All nodes in the component will be colored as "maxComponentColor"
+                        
+                        var thisComponent = [];
+                        
+                        var potentialLongEdges = {};
+                        
+                        var queue = new Queue();
+                        queue.push( v );
 
-                    var thisComponent = [];
+                        while ( queue.size() > 0 ) {
+                            var nextV = queue.pop();
+                            
+                            //console.log("processing: " + nextV);
+                            if (nodeColor[nextV] != null) continue;
 
-                    var potentialLongEdges = {};
+                            nodeColor[nextV] = currentComponentColor;
+                            thisComponent.push(nextV);
 
-                    var queue = new Queue();
-                    queue.push( v );
+                            var rankV = ranks[nextV];
 
-                    while ( queue.size() > 0 ) {
-                        var nextV = queue.pop();
-
-                        //console.log("processing: " + nextV);
-                        if (nodeColor[nextV] != null) continue;
-
-                        nodeColor[nextV] = currentComponentColor;
-                        thisComponent.push(nextV);
-
-                        var rankV = ranks[nextV];
-
-                        var allEdges = baseG.getAllEdgesWithWeights(nextV);
-                        for (var vv in allEdges) {
-                            if (allEdges.hasOwnProperty(vv) && nodeColor[vv] != currentComponentColor) {
-                                var edgeLength = Math.abs(rankV - ranks[vv]);
-                                if (edgeLength == 1) {          // using only edges between neighbouring ranks
-                                    if (nodeColor[vv] == null)
-                                        queue.push(vv);         // add nodes not in any component to this one
-                                } else {
-                                    // save all long edges into a separate list, and check it once component is fully computed
-                                    if (allEdges[vv].out) {
-                                        potentialLongEdges[vv] = {"length": edgeLength, "weight": allEdges[vv].weight };
+                            var allEdges = baseG.getAllEdgesWithWeights(nextV);
+                            for (var vv in allEdges) {
+                                if (allEdges.hasOwnProperty(vv) && nodeColor[vv] != currentComponentColor) {
+                                    var edgeLength = Math.abs(rankV - ranks[vv]);
+                                    if (edgeLength == 1) {          // using only edges between neighbouring ranks
+                                        if (nodeColor[vv] == null)
+                                            queue.push(vv);         // add nodes not in any component to this one
+                                    } else {
+                                        // save all long edges into a separate list, and check it once component is fully computed
+                                        if (allEdges[vv].out) {
+                                            potentialLongEdges[vv] = {"length": edgeLength, "weight": allEdges[vv].weight };
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-
-                    component[currentComponentColor]      = thisComponent;
-                    minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
-
-                    // go over all long edges originating from nodes in the component,
-                    // and find the shortest long edge which goes out of component
-                    for (var vv in potentialLongEdges) {
-                        if (potentialLongEdges.hasOwnProperty(vv)) {
-                                if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
-
-                                var nextEdge = potentialLongEdges[vv];
-
-                                if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
-                                    (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
-                                     nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
-                                    minOutEdgeInfo[currentComponentColor] = nextEdge;
+                        
+                        component[currentComponentColor]      = thisComponent;                
+                        minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
+                    
+                        // go over all long edges originating from nodes in the component,
+                        // and find the shortest long edge which goes out of component                    
+                        for (var vv in potentialLongEdges) {
+                            if (potentialLongEdges.hasOwnProperty(vv)) {                                
+                                    if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
+                                    
+                                    var nextEdge = potentialLongEdges[vv];
+                                    
+                                    if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
+                                        (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
+                                         nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
+                                        minOutEdgeInfo[currentComponentColor] = nextEdge;
+                                    }
                                 }
                         }
                         
                         currentComponentColor++;
                     }
-
-                    currentComponentColor++;
                 }
 
 
@@ -1895,12 +1888,12 @@ define([
 
                     //console.log("==> [1] Handling: " + i);
 
-                var parents = this.GG.getInEdges(i);
+        		    var parents = this.GG.getInEdges(i);
 
                     // note: each "relationship" node is guaranteed to have exactly two "parent" nodes (validate() checks that)
 
-                if (this.ranks[parent[0]] != this.ranks[parent[1]])
-                    throw "Assertion failed: edges betwen neighbouring ranks only";
+    	            if (this.ranks[parent[0]] != this.ranks[parent[1]])
+    	                throw "Assertion failed: edges betwen neighbouring ranks only";
 
                     var order1 = this.order.vOrder[parents[0]];
                     var order2 = this.order.vOrder[parents[1]];
@@ -2191,25 +2184,31 @@ define([
         		    var relationships = this.GG.getOutEdges(v);
         		    if (relationships.length != 1) continue;          // only when one and only one relationship
 
-                var relationships = this.GG.getOutEdges(v);
-                if (relationships.length != 1) continue;          // only when one and only one relationship
+        		    var rel = relationships[0];
+        		    if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
 
-                var rel = relationships[0];
-                if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
+        		    var orderV   = this.order.vOrder[v];
+        		    var orderRel = this.order.vOrder[rel];
 
-                var orderV   = this.order.vOrder[v];
-                var orderRel = this.order.vOrder[rel];
-
-                if (Math.abs(orderRel - orderV) != 1) {
-                    // not next to each other
-                    if (orderRel > orderV) {
-                        this.order.move(r, orderV, (orderRel - orderV - 1));
-                    } else {
-                        this.order.move(r, orderV, (orderRel - orderV + 1));
-                    }
-                }
+        		    if (Math.abs(orderRel - orderV) != 1) {
+        		        // not next to each other
+        		        if (orderRel > orderV) {
+                            this.order.move(r, orderV, (orderRel - orderV - 1));
+        		        } else {
+                            this.order.move(r, orderV, (orderRel - orderV + 1));
+        		        }
+        		    }
+        		}
             }
-        }
+
+            // 2) TODO: come up with heuristics which can be applied at this point
+            //          (on a need-to-improve basis once an imperfection is discovered):
+            // after re-ranking there may be some orderings which are equivalent in terms
+            // of the number of edge crossings, but more or less visually pleasing
+            // depending on what kinds of edges are crossing.
+            // Until re-ordering is done it is computationally harder to make these tests,
+            // but once reordering is complete it is easier in some cases
+            // (e.g: testcase 5A, relationship with both a parent and parent's child)
 
             // 3) make sure chhubs are ordered in the same way their relationships are
             for (var r = 2; r <= this.maxRank; r+=2) {
@@ -2952,15 +2951,6 @@ define([
                     if (numLabelLines > maxNumLinesInComments) {
                         maxNumLinesInComments = numLabelLines;
                     }
-                }
-                if (this.GG.properties[person].hasOwnProperty("lName") || this.GG.properties[person].hasOwnProperty("fName")) {
-                    numLabelLines++;
-                }
-                if (this.GG.properties[person].hasOwnProperty("externalID")) {
-                    numLabelLines++;
-                }
-                if (numLabelLines > maxNumLinesInComments) {
-                    maxNumLinesInComments = numLabelLines;
                 }
             }
             if (maxNumLinesInComments > 4) {

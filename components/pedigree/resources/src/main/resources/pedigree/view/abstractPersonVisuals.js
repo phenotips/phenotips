@@ -25,8 +25,8 @@ define([
         initialize: function($super, node, x, y) {
         	$super(node, x, y);
 
-    initialize: function($super, node, x, y) {
-        $super(node, x, y);
+            this._radius = PedigreeEditorParameters.attributes.radius;
+            this._width  = PedigreeEditorParameters.attributes.radius * 4;
 
             this._highlightBox   = null;
             this._adoptedShape   = null;

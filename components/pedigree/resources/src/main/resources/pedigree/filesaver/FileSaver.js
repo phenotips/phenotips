@@ -263,20 +263,21 @@ define([
               }
           }
 
-      view.addEventListener("unload", process_deletion_queue, false);
-      saveAs.unload = function () {
-          process_deletion_queue();
-          view.removeEventListener("unload", process_deletion_queue, false);
-      };
-      return saveAs;
-  }(
-       typeof self !== "undefined" && self
-    || typeof window !== "undefined" && window
-    || this.content
-));
-// `self` is undefined in Firefox for Android content script context
-// while `this` is nsIContentFrameMessageManager
-// with an attribute `content` that corresponds to the window
+          var doc = saveTxtWindow.document;
+          doc.charset = charset;
+          if (browser.versionMajor <= 8) {
+            doc.open('text/plain', 'replace');
+          } else {
+            doc.open();
+          }
+          doc.write(textContent);
+          doc.close();
+          fileName += '.txt';
+          var retValue = doc.execCommand('SaveAs', null, fileName);
+          saveTxtWindow.close();
+          return retValue;
+      }
+  })
 
   var FileSaver = {};
   FileSaver.saveAs = saveAs;

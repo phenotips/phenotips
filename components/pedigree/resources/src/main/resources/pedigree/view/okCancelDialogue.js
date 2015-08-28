@@ -62,44 +62,29 @@ define([], function(){
           this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show() 
       },
 
-    /**
-     * Displays the template selector
-     *
-     * @method show
-     */
-    showCustomized: function( message, title,
-                              button1title, on1Function,
-                              button2title, on2Function,
-                              button3title, on3Function, bottomRight ) {
-        this._configButton(0, button1title, on1Function);
-        this._configButton(1, button2title, on2Function);
-        this._configButton(2, button3title, on3Function, bottomRight);
-        this._promptBody.update(message);
-        this.dialog.show();
-        this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
-    },
+      /**
+       * Removes the the template selector
+       *
+       * @method hide
+       */
+      hide: function() {
+          this.dialog.closeDialog();
+      },
 
-    /**
-     * Removes the the template selector
-     *
-     * @method hide
-     */
-    hide: function() {
-        this.dialog.closeDialog();
-    },
-
-    _configButton: function(buttonID, buttonTitle, actionFunction, bottomRightButton) {
-        if (!buttonTitle || buttonTitle == "") {
-            this._buttons[buttonID].hide();
-        } else {
-            this._buttons[buttonID].show();
-            this._buttons[buttonID].writeAttribute("value", buttonTitle);
-            this._onButtonActions[buttonID] = actionFunction;
-        }
-        if (bottomRightButton) {
-            this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"});
-        } else {
-            this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"});
-        }
-    }
+      _configButton: function(buttonID, buttonTitle, actionFunction, bottomRightButton) {
+          if (!buttonTitle || buttonTitle == "") {
+              this._buttons[buttonID].hide();
+          } else {
+              this._buttons[buttonID].show();
+              this._buttons[buttonID].writeAttribute("value", buttonTitle);
+              this._onButtonActions[buttonID] = actionFunction;
+          }
+          if (bottomRightButton) {
+              this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"}); 
+          } else {
+              this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"}); 
+          }
+      }
+  });
+  return OkCancelDialogue;
 });

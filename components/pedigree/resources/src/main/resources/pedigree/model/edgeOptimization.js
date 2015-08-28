@@ -472,56 +472,9 @@ define([
 
             var probability = Math.exp( -(newScore - oldScore) * Math.log((stepsSinceReset+1)*5) );
 
-        if (probability > this.random()) {
-            //console.log("[debug] switch to worse score");
-            return true;
-        }
-        return false;
-    },
-
-    simulatedAnnellingOptimizer: function ( componentID, bestSoFar, maxSteps ) {
-
-        //console.log("[asearch] Starting simulatedAnnellingOptimizer");
-
-        var bestScore = this.componentScoreFunc(bestSoFar, componentID);
-
-        var bestState = isFinite(bestScore) ? bestSoFar : this.makeBasicValidAssignment(bestSoFar, componentID);
-        var bestScore = isFinite(bestScore) ? bestScore : this.componentScoreFunc(bestState, componentID);
-        var bestStep  = maxSteps;
-
-        var currentState = bestState;
-        var currentScore = bestScore;
-
-        //console.log("Component: " + stringifyObject(this.components.getComponentEdges(componentID)) +
-        //            ", init score: " + bestScore + ", best possible score: " + this.components.getMinPossiblePenalty(componentID));
-
-        // alogrithm (as in wiki):
-        //-------------------------------------------
-        // s ← s0; e ← E(s)                                  // Initial state, energy.
-        // sbest ← s; ebest ← e                              // Initial "best" solution
-        // k ← 0                                              // Energy evaluation count.
-        // while k < kmax and e > emax                        // While time left & not good enough:
-        //   T ← temperature(k/kmax)                          // Temperature calculation.
-        //   snew ← neighbour(s)                              // Pick some neighbour.
-        //   enew ← E(snew)                                   // Compute its energy.
-        //   if P(e, enew, T) > random() then                 // Should we move to it?
-        //     s ← snew; e ← enew                            // Yes, change state.
-        //   if enew < ebest then                             // Is this a new best?
-        //     sbest ← snew; ebest ← enew                    // Save 'new neighbour' to 'best found'.
-        //   k ← k + 1                                       // One more evaluation done
-        // return sbest                                      // Return the best solution found.
-
-        var maxWrongDirection = maxSteps/6;
-
-        var step = maxSteps;
-        while (bestScore > this.components.getMinPossiblePenalty(componentID) && step >= 0) {
-
-            // reset once in the middle of the search (TODO: investigate if we need more resets or don't need resets at all)
-            if (step < bestStep - maxWrongDirection) {
-                currentState = bestState.slice(0);
-                currentScore = this.localOptimization(currentState, bestScore, componentID, true);  // restart from a slightly optimized last best point
-                bestStep     = step;
-                console.log("[asearch] reset to: " + stringifyObject(currentState) + ", score: " + currentScore + " (@ step = " + (maxSteps - step + 1) + ")");
+            if (probability > this.random()) {
+                //console.log("[debug] switch to worse score");
+                return true;
             }
             return false;
         },

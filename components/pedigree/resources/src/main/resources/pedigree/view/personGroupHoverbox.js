@@ -32,14 +32,11 @@ define([
         generateHandles: function($super) {
             if (this._currentHandles !== null) return;
 
-    /**
-    * Creates the handles used in this hoverbox - overriden to generate no handles
-    *
-    * @method generateHandles
-    * @return {Raphael.st} A set of handles
-    */
-    generateHandles: function($super) {
-        if (this._currentHandles !== null) return;
+            if (PedigreeEditorParameters.attributes.newHandles) {
+                // TODO: singling handle for person groups?
+            }
+            // else: no handles
+        },
 
         /**
          * Creates the buttons used in this hoverbox

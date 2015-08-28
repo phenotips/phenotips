@@ -46,60 +46,59 @@ define([
             //timer.printSinceLast("Person visuals time");
         },
 
-var PersonVisuals = Class.create(AbstractPersonVisuals, {
+        generateHoverbox: function(x, y) {
+            if (editor.isReadOnlyMode()) {
+                return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+            } else {
+                return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+            }
+        },
 
-    initialize: function($super, node, x, y) {
-        //var timer = new Timer();
-        $super(node, x, y);
-        this._nameLabel = null;
-        this._stillBirthLabel = null;
-        this._ageLabel = null;
-        this._externalIDLabel = null;
-        this._commentsLabel = null;
-        this._cancerAgeOfOnsetLabels = {};
-        this._childlessStatusLabel = null;
-        this._disorderShapes = null;
-        this._deadShape = null;
-        this._unbornShape = null;
-        this._childlessShape = null;
-        this._isSelected = false;
-        this._carrierGraphic = null;
-        this._evalLabel = null;
-        //timer.printSinceLast("Person visuals time");
-    },
+        /**
+         * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
+         * Updates the disorder shapes.
+         *
+         * @method setGenderGraphics
+         */
+        setGenderGraphics: function($super) {
+            //console.log("set gender graphics");
+            if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
+                this._genderGraphics && this._genderGraphics.remove();
 
-    generateHoverbox: function(x, y) {
-        if (editor.isReadOnlyMode()) {
-            return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
-        } else {
-            return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
-        }
-    },
+                var radius = PedigreeEditorParameters.attributes.radius;
+                if (this.getNode().isPersonGroup())
+                    radius *= PedigreeEditorParameters.attributes.groupNodesScale;
+                this._shapeRadius = radius;
 
-    /**
-     * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
-     * Updates the disorder shapes.
-     *
-     * @method setGenderGraphics
-     */
-    setGenderGraphics: function($super) {
-        //console.log("set gender graphics");
-        if(this.getNode().getLifeStatus() == 'aborted' || this.getNode().getLifeStatus() == 'miscarriage') {
-            this._genderGraphics && this._genderGraphics.remove();
+                var side = radius * Math.sqrt(3.5),
+                    height = side/Math.sqrt(2),
+                    x = this.getX() - height,
+                    y = this.getY();
+                var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
+                shape.attr(PedigreeEditorParameters.attributes.nodeShapeAborted);
+                this._genderShape = shape;
+                shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
 
-            var radius = PedigreeEditor.attributes.radius;
-            if (this.getNode().isPersonGroup())
-                radius *= PedigreeEditor.attributes.groupNodesScale;
-            this._shapeRadius = radius;
+                if(this.getNode().isProband()) {
+                    shape.transform(["...s", 1.07]);
+                    shape.attr("stroke-width", 5);
+                }
 
-            var side = radius * Math.sqrt(3.5),
-                height = side/Math.sqrt(2),
-                x = this.getX() - height,
-                y = this.getY();
-            var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
-            shape.attr(PedigreeEditor.attributes.nodeShapeAborted);
-            this._genderShape = shape;
-            shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
+                var gender = this.getNode().getGender();
+                if(gender == 'U' || gender == 'O') {
+                    this._genderGraphics = shape;
+                }
+                else {
+                    x = this.getX();
+                    y = this.getY() + radius/1.4;
+                    var text = (gender == 'M') ? "Male" : "Female";
+                    var genderLabel = editor.getPaper().text(x, y, text).attr(PedigreeEditorParameters.attributes.label);
+                    this._genderGraphics = editor.getPaper().set(shape, genderLabel);
+                }
+            }
+            else {
+                $super();
+            }
 
             if(this.getNode().isProband()) {
                 this._genderGraphics.push(this.generateProbandArrow());
@@ -758,258 +757,66 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     startY = labels[i].getBBox().y2 + 11;
                 }
             }
-            if (editor.isReadOnlyMode())
-                this._carrierGraphic.toFront();
-            else
-                this._carrierGraphic.insertBefore(this.getHoverBox().getFrontElements());
-        } else {
-            this._carrierGraphic = null;
-        }
-    },
+            //if(!editor.isUnsupportedBrowser())
+            //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
+        },
 
-    /**
-     * Returns this Person's disorder carrier graphics
-     *
-     * @method getCarrierGraphics
-     * @return {Raphael.el}
-     */
-    getCarrierGraphics: function() {
-        return this._carrierGraphic;
-    },
+        _labelSelectionOffset: function() {
+            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 : 0;
 
-    /**
-     * Returns this Person's stillbirth label
-     *
-     * @method getSBLabel
-     * @return {Raphael.el}
-     */
-    getSBLabel: function() {
-        return this._stillBirthLabel;
-    },
+            if (this.isSelected() && this.getNode().isPersonGroup())
+                selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;
 
-    /**
-     * Updates the stillbirth label for this Person
-     *
-     * @method updateSBLabel
-     */
-    updateSBLabel: function() {
-        this.getSBLabel() && this.getSBLabel().remove();
-        if (this.getNode().getLifeStatus() == 'stillborn') {
-            this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
-        } else {
-            this._stillBirthLabel = null;
-        }
-        this.drawLabels();
-    },
+            if (this.getChildlessStatusLabel())
+                selectionOffset = selectionOffset/2;
+            return selectionOffset;
+        },
 
-    /**
-     * Returns this Person's comments label
-     *
-     * @method getCommentsLabel
-     * @return {Raphael.el}
-     */
-    getCommentsLabel: function() {
-        return this._commentsLabel;
-    },
+        /**
+         * Returns set with the gender icon, disorder shapes and life status shapes.
+         *
+         * @method getShapes
+         * @return {Raphael.st}
+         */
+        getShapes: function($super) {
+            var lifeStatusShapes = editor.getPaper().set();
+            this.getUnbornShape() && lifeStatusShapes.push(this.getUnbornShape());
+            this.getChildlessShape() && lifeStatusShapes.push(this.getChildlessShape());
+            this.getChildlessStatusLabel() && lifeStatusShapes.push(this.getChildlessStatusLabel());
+            this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
+            return $super().concat(editor.getPaper().set(this.getDisorderShapes(), lifeStatusShapes));
+        },
 
-    /**
-     * Updates the comments label for this Person
-     *
-     * @method updateCommentsLabel
-     */
-    updateCommentsLabel: function() {
-        this.getCommentsLabel() && this.getCommentsLabel().remove();
-        if (this.getNode().getComments() != "") {
-            // note: raphael positions text which starts with a new line in a strange way
-            //       also, blank lines are ignored unless replaced with a space
-            var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
-            this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.commentLabel);
-            this._commentsLabel.node.setAttribute("class", "field-no-user-select");
-            this._commentsLabel.alignTop = true;
-            this._commentsLabel.addGap   = true;
-        } else {
-            this._commentsLabel = null;
-        }
-        this.drawLabels();
-    },
+        /**
+         * Returns all the graphics and labels associated with this Person.
+         *
+         * @method getAllGraphics
+         * @return {Raphael.st}
+         */
+        getAllGraphics: function($super) {
+            //console.log("Node " + this.getNode().getID() + " getAllGraphics");
+            return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
+        },
 
-
-    /**
-     * Returns this Person's cancer age of onset labels
-     *
-     * @method getCancerAgeOfOnsetLabels
-     * @return {Raphael.el}
-     */
-    getCancerAgeOfOnsetLabels: function() {
-        return this._cancerAgeOfOnsetLabels;
-    },
-
-
-    /**
-     * Updates the cancer age of onset labels for this Person
-     *
-     * @method updateCancerAgeOfOnsetLabels
-     */
-    updateCancerAgeOfOnsetLabels: function() {
-        var cancerLabels = this.getCancerAgeOfOnsetLabels();
-        if (!isObjectEmpty(cancerLabels)) {
-            for (var cancerName in cancerLabels) {
-                cancerLabels[cancerName].remove();
-            }
-        }
-        var cancerData = this.getNode().getCancers();
-        if (!isObjectEmpty(cancerData)) {
-            for (var cancerName in cancerData) {
-                if (cancerData.hasOwnProperty(cancerName) && cancerData[cancerName].affected) {
-                    var text = cancerName.toString() + " ca.";
-                    if (cancerData[cancerName].hasOwnProperty("ageAtDiagnosis") && (cancerData[cancerName].ageAtDiagnosis.length > 0)) {
-                        var age = cancerData[cancerName].ageAtDiagnosis;
-                        if (isNaN(parseInt(age))){
-                            if (age == "before_1") {
-                                text += " dx <1";
-                            } else if (age == "before_10") {
-                                text += " dx <10";
-                            } else {
-                                text += (age.indexOf('before_') > -1) ? " dx " + (parseInt(age.substring(7))-10) + "\'s": " dx >100";
-                            }
-                        } else {
-                            text += " dx " + cancerData[cancerName].ageAtDiagnosis;
-                        }
-                    } else {
-                        text += " dx ?";
-                    }
-                    this.getCancerAgeOfOnsetLabels()[cancerName] && this.getCancerAgeOfOnsetLabels()[cancerName].remove();
-                    this._cancerAgeOfOnsetLabels[cancerName] = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.cancerAgeOfOnsetLabels);
-                    this._cancerAgeOfOnsetLabels[cancerName].node.setAttribute("class", "field-no-user-select");
-                    this._cancerAgeOfOnsetLabels[cancerName].alignTop = true;
-                    this._cancerAgeOfOnsetLabels[cancerName].addGap   = true;
-                }
-            }
-
-        } else {
-            this._cancerAgeOfOnsetLabels = {};
-        }
-        this.drawLabels();
-    },
-
-    /**
-     * Displays the correct graphics to represent the current life status for this Person.
-     *
-     * @method updateLifeStatusShapes
-     */
-    updateLifeStatusShapes: function(oldStatus) {
-        var status = this.getNode().getLifeStatus();
-
-        this.getDeadShape()   && this.getDeadShape().remove();
-        this.getUnbornShape() && this.getUnbornShape().remove();
-        this.getSBLabel()     && this.getSBLabel().remove();
-
-        // save some redraws if possible
-        var oldShapeType = (oldStatus == 'aborted' || oldStatus == 'miscarriage');
-        var newShapeType = (status    == 'aborted' || status    == 'miscarriage');
-        if (oldShapeType != newShapeType)
-            this.setGenderGraphics();
-
-        if(status == 'deceased' || status == 'aborted') {  // but not "miscarriage"
-            this.drawDeadShape();
-        }
-        else if (status == 'stillborn') {
-            this.drawDeadShape();
-            this.updateSBLabel();
-        }
-        else if (status == 'unborn') {
-            this.drawUnbornShape();
-        }
-        this.updateAgeLabel();
-    },
-
-    /**
-     * Marks this node as hovered, and moves the labels out of the way
-     *
-     * @method setSelected
-     */
-    setSelected: function($super, isSelected) {
-        $super(isSelected);
-        if(isSelected) {
-            this.shiftLabels();
-        }
-        else {
-            this.unshiftLabels();
-        }
-    },
-
-    /**
-     * Moves the labels down to make space for the hoverbox
-     *
-     * @method shiftLabels
-     */
-    shiftLabels: function() {
-        var shift  = this._labelSelectionOffset();
-        var labels = this.getLabels();
-        for(var i = 0; i<labels.length; i++) {
-            labels[i].stop().animate({"y": labels[i].oy + shift}, 200,">");
-        }
-    },
-
-    /**
-     * Animates the labels of this node to their original position under the node
-     *
-     * @method unshiftLabels
-     */
-    unshiftLabels: function() {
-        var labels = this.getLabels();
-        var firstLabel = this._childlessStatusLabel ? 1 : 0;
-        for(var i = 0; i<labels.length; i++) {
-            labels[i].stop().animate({"y": labels[i].oy}, 200,">");
-        }
-    },
-
-    /**
-     * Returns set of labels for this Person
-     *
-     * @method getLabels
-     * @return {Raphael.st}
-     */
-    getLabels: function() {
-        var labels = editor.getPaper().set();
-        this.getSBLabel() && labels.push(this.getSBLabel());
-        this.getNameLabel() && labels.push(this.getNameLabel());
-        this.getAgeLabel() && labels.push(this.getAgeLabel());
-        this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
-        this.getCommentsLabel() && labels.push(this.getCommentsLabel());
-        var cancerLabels = this.getCancerAgeOfOnsetLabels();
-        if (!isObjectEmpty(cancerLabels)) {
-            for (var cancerName in cancerLabels) {
-                labels.push(cancerLabels[cancerName]);
-            }
-        }
-        return labels;
-    },
-
-    /**
-     * Displays all the appropriate labels for this Person in the correct layering order
-     *
-     * @method drawLabels
-     */
-    drawLabels: function() {
-        var labels = this.getLabels();
-        var selectionOffset = this._labelSelectionOffset();
-        var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditor.attributes.label['font-size'] : 0;
-        childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditor.attributes.infertileMarkerHeight + 2) : 0);
-
-        var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
-
-        var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
-        for (var i = 0; i < labels.length; i++) {
-            var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
-            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - shift) : 0;
-            labels[i].transform(""); // clear all transofrms, using new real x
-            labels[i].attr("x", this.getX());
-            labels[i].attr("y", startY + offset);
-            labels[i].oy = (labels[i].attr("y") - selectionOffset);
-            labels[i].toBack();
-            if (i != labels.length - 1) {   // dont do getBBox() computation if dont need to, it is slow in IE9
-                startY = labels[i].getBBox().y2 + 11;
+        /**
+         * Changes the position of the node to (x,y)
+         *
+         * @method setPos
+         * @param [$super]
+         * @param {Number} x the x coordinate on the canvas
+         * @param {Number} y the y coordinate on the canvas
+         * @param {Boolean} animate set to true if you want to animate the transition
+         * @param {Function} callback a function that will be called at the end of the animation
+         */
+        setPos: function($super, x, y, animate, callback) {
+            var funct = callback;
+            if(animate) {
+                var me = this;
+                this.getHoverBox().disable();
+                funct = function () {
+                    me.getHoverBox().enable();
+                    callback && callback();
+                };
             }
             $super(x, y, animate, funct);
         }

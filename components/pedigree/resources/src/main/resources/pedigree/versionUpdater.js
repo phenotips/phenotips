@@ -1,4 +1,4 @@
-/*
+/* 
  * VersionUpdater is responsible for updating pedigree JSON represenatation to the current version.
  */
 define([], function(){
@@ -15,35 +15,36 @@ define([], function(){
                                         "func":       "updateId"}];
         },
 
-    updateToCurrentVersion: function(pedigreeJSON) {
-        for (var i = 0; i < this.availableUpdates.length; i++) {
-            var update = this.availableUpdates[i];
-
-            var updateResult = this[update.func](pedigreeJSON);
-
-            if (updateResult !== null) {
-                console.log("[update #" + i + "] [updating to " + update.introduced + " version] - performing " + update.comment + " update");
-                pedigreeJSON = updateResult;
+        updateToCurrentVersion: function(pedigreeJSON) {
+            for (var i = 0; i < this.availableUpdates.length; i++) {
+                var update = this.availableUpdates[i];
+                
+                var updateResult = this[update.func](pedigreeJSON);
+                
+                if (updateResult !== null) {
+                    console.log("[update #" + i + "] [updating to " + update.introduced + " version] - performing " + update.comment + " update");
+                    pedigreeJSON = updateResult;
+                }
             }
-        }
+            
+            return pedigreeJSON;
+        },
 
-        return pedigreeJSON;
-    },
-
-    /* - assumes input is in the pre-May-2014 format
-     * - returns null if there were no changes; returns new JSON if there was a change
-     */
-    updateGroupNodeComments: function(pedigreeJSON) {
-        var change = false;
-        var data = JSON.parse(pedigreeJSON);
-        for (var i = 0; i < data.GG.length; i++) {
-            var node = data.GG[i];
-
-            if (node.hasOwnProperty("prop")) {
-                if (node.prop.hasOwnProperty("numPersons") && !node.prop.hasOwnProperty("comments") && node.prop.hasOwnProperty("fName") && node.prop.hasOwnProperty("fName") != "") {
-                    node.prop["comments"] = node.prop.fName;
-                    delete node.prop.fName;
-                    change = true;
+        /* - assumes input is in the pre-May-2014 format
+         * - returns null if there were no changes; returns new JSON if there was a change
+         */
+        updateGroupNodeComments: function(pedigreeJSON) {
+            var change = false;
+            var data = JSON.parse(pedigreeJSON);
+            for (var i = 0; i < data.GG.length; i++) {
+                var node = data.GG[i];
+                
+                if (node.hasOwnProperty("prop")) {
+                    if (node.prop.hasOwnProperty("numPersons") && !node.prop.hasOwnProperty("comments") && node.prop.hasOwnProperty("fName") && node.prop.hasOwnProperty("fName") != "") {
+                        node.prop["comments"] = node.prop.fName;
+                        delete node.prop.fName;
+                        change = true;
+                    }
                 }
             }
 

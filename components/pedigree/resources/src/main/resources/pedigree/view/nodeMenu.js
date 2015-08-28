@@ -17,7 +17,7 @@
     }, ...
  ]
  }
-
+ 
  Note: when an item is specified as "inactive" it is completely removed from the menu; when it
        is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
  */
@@ -419,61 +419,14 @@ define([
             if (field.type == "text" || (document.selection && field.type == "textarea")) {
                 this.__lastCursorPosition = GraphicHelpers.getCaretPosition(field);
             }
-        }
-    },
+        },
 
-    update: function(newTarget) {
-        //console.log("Node menu: update");
-        if (newTarget)
-            this.targetNode = newTarget;
-
-        if (this.targetNode) {
-            this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
-            this._setCrtData(this.targetNode.getSummary());
-            this.reposition();
-            delete this._updating;
-        }
-    },
-
-    _attachDependencyBehavior : function(field, data) {
-        if (data.dependency) {
-            var dependency = data.dependency.split(' ', 3);
-            var element = this.fieldMap[dependency[0]].element;
-            dependency[0] = this.form[dependency[0]];
-            element.inputsContainer.insert(field.up());
-            this.fieldMap[field.name].element = element;
-            this._updatedDependency(field, dependency);
-            dependency[0].observe('pedigree:change', function() {
-                this._updatedDependency(field, dependency);
-                field.value = '';
-                //console.log("dependency observed: " + field + ", dep: " + dependency);
-            }.bindAsEventListener(this));
-        }
-    },
-
-    _updatedDependency : function (field, dependency) {
-        switch (dependency[1]) {
-            case '!=':
-                field.disabled =  (dependency[0].value == dependency[2]);
-                break;
-            default:
-                field.disabled =  (dependency[0].value == dependency[2]);
-                break;
-        }
-    },
-
-    _generateField : {
-        'radio' : function (data) {
-            var result = this._generateEmptyField(data);
-            var columnClass = data.columns ? "field-values-" + data.columns + "-columns" : "field-values";
-            columnClass += " field-no-user-select";
-            var values = new Element('div', {'class' : columnClass});
-            result.inputsContainer.insert(values);
-            var _this = this;
-            var _generateRadioButton = function(v) {
-                var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
-                if (v.hasOwnProperty("columnshiftPX")) {
-                    radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"});
+        _restoreCursorPositionIfNecessary: function(field) {
+            if (this.targetNode == this.__lastNodeID &&
+                field.name      == this.__lastSelectedField) {
+                // for text fields in all browsers, and textarea only in IE9
+                if (field.type == "text" || (document.selection && field.type == "textarea")) {
+                    GraphicHelpers.setCaretPosition(field, this.__lastCursorPosition);
                 }
             }
         },
@@ -1158,11 +1111,10 @@ define([
                     var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                     var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
 
-                if (value.hasOwnProperty(cancerName)) {
-                    if (value[cancerName].hasOwnProperty("affected") && value[cancerName].affected) {
-                        var optionStatus = statusSelect.down('option[value="affected"]');
-                    } else {
-                        var optionStatus = statusSelect.down('option[value="unaffected"]');
+                    if (!statusSelect) {
+                        // unsupported cancer?
+                        alert("This patient is reported to have an unsupported cancer '" + cancerName + "'");
+                        continue;
                     }
 
                     if (value.hasOwnProperty(cancerName)) {

@@ -5,8 +5,6 @@
  * @constructor
  */
 
-var Legend = Class.create( {
-
 define([
         "pedigree/model/helpers"
     ], function(
@@ -357,20 +355,21 @@ define([
             throw "drop functionality is not defined";
         },
 
-    /*
-    * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
-    * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to a numeric value.
-    *
-    * @method _hashID
-    * @param {id} ID string to be converted
-    * @return {int} Hashed integer representation of input string
-    */
-    _hashID : function(s){
-      s.toLowerCase();
-      return "c" + s.split("").reduce(function(a, b) {
-         a = ((a << 5) - a) + b.charCodeAt(0);
-        return a & a;
-      }, 0);
-    }
-
+        /*
+        * IDs are used as part of HTML IDs in the Legend box, which breaks when IDs contain some non-alphanumeric symbols.
+        * For that purpose these symbols in IDs are converted in memory (but not in the stored pedigree) to a numeric value.
+        *
+        * @method _hashID
+        * @param {id} ID string to be converted
+        * @return {int} Hashed integer representation of input string
+        */
+        _hashID : function(s){
+          s.toLowerCase();
+          return "c" + s.split("").reduce(function(a, b) {
+             a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+          }, 0);
+        }   
+    });
+    return Legend;
 });

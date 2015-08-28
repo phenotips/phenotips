@@ -20,46 +20,46 @@ define([
     ){
     var PersonGroup = Class.create(Person, {
 
-    initialize: function($super, x, y, id, properties) {
-        this._numPersons = 1;
-        this._comment    = "";
-        this._type       = "PersonGroup";
-        $super(x, y, id, properties);
-        // already done as the last step in super():
-        // this.assignProperties(properties);
-    },
+        initialize: function($super, x, y, id, properties) {
+            this._numPersons = 1;
+            this._comment    = "";
+            this._type       = "PersonGroup";
+            $super(x, y, id, properties);
+            // already done as the last step in super():
+            // this.assignProperties(properties);  
+        },
 
-    /**
-     * Initializes the object responsible for creating graphics for this PersonGroup
-     *
-     * @method _generateGraphics
-     * @param {Number} x The x coordinate of hte PersonGroup Node
-     * @param {Number} y The y coordinate of hte PersonGroup Node
-     * @return {PersonGroupVisuals}
-     */
-    _generateGraphics: function(x, y) {
-        return new PersonGroupVisuals(this, x, y);
-    },
-
-    /**
-     * Always returns False - needed for compatibility with personHowerBox which uses this
-     *
-     * @method isProband
-     */
-    isProband: function() {
-        return false;
-    },
-
-    /**
-     * Changes the number of people who are in this PersonGroup
-     *
-     * @method setNumPersons
-     * @param {Number} numPersons The number of people in this grouping
-     */
-    setNumPersons: function(numPersons) {
-        this._numPersons = numPersons;
-        this.getGraphics().setNumPersons(numPersons);
-    },
+        /**
+         * Initializes the object responsible for creating graphics for this PersonGroup
+         *
+         * @method _generateGraphics
+         * @param {Number} x The x coordinate of hte PersonGroup Node
+         * @param {Number} y The y coordinate of hte PersonGroup Node
+         * @return {PersonGroupVisuals}
+         */
+        _generateGraphics: function(x, y) {
+            return new PersonGroupVisuals(this, x, y);
+        },
+        
+        /**
+         * Always returns False - needed for compatibility with personHowerBox which uses this
+         *
+         * @method isProband
+         */
+        isProband: function() {
+            return false;
+        },    
+        
+        /**
+         * Changes the number of people who are in this PersonGroup
+         *
+         * @method setNumPersons
+         * @param {Number} numPersons The number of people in this grouping
+         */
+        setNumPersons: function(numPersons) {
+            this._numPersons = numPersons;
+            this.getGraphics().setNumPersons(numPersons);
+        },
 
         /**
          * Returns the number of people who are in this PersonGroup
@@ -82,22 +82,22 @@ define([
             this.getGraphics().setNumPersons(this._numPersons); // force-redraw of the "N" symbol on top of the new shape
         },
 
-    /**
-     * Returns an object containing all the properties of this node
-     * except id, x, y & type
-     *
-     * @method getProperties
-     * @return {Object} in the form
-     *
-     {
-       property: value
-     }
-     */
-    getProperties: function($super) {
-        var info = $super();
-        info['numPersons'] = this.getNumPersons();
-        return info;
-    },
+        /**
+         * Returns an object containing all the properties of this node
+         * except id, x, y & type 
+         *
+         * @method getProperties
+         * @return {Object} in the form
+         *
+         {
+           property: value
+         }
+         */
+        getProperties: function($super) {
+            var info = $super();
+            info['numPersons'] = this.getNumPersons();
+            return info;
+        },
 
         /**
          * Applies the properties found in info to this node.

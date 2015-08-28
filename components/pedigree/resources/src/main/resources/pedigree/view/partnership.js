@@ -28,19 +28,19 @@ define([
        this._childlessStatus = null;
        this._childlessReason = "";
        this._type            = 'Partnership';
-
+       
        this._broken       = false;
        this._consangrMode = "A";    //  Can be either "A" (autodetect), "Y" (always consider consangr.) or "N" (never)
-                                    // "Autodetect": derived from the current pedigree
-
+                                    // "Autodetect": derived from the current pedigree                                    
+       
        // assign some properties before drawing so that relationship lines are drawn properly
        this.setBrokenStatus (properties["broken"]);
        this.setConsanguinity(properties["consangr"]);
-
+       
        $super(x, y, id);
-
-       this.assignProperties(properties);
-       //console.log("partnership end");
+       
+       this.assignProperties(properties);       
+       //console.log("partnership end");       
    },
 
     /**
@@ -66,7 +66,7 @@ define([
     setChildlessStatus: function(status) {
         if(!this.isValidChildlessStatus(status))
             status = null;
-
+        
         if(status != this.getChildlessStatus()) {
             this._childlessStatus = status;
             this.setChildlessReason(null);
@@ -74,15 +74,15 @@ define([
             this.getGraphics().updateChildhubConnection();
             this.getGraphics().getHoverBox().regenerateHandles();
         }
-
-        return this.getChildlessStatus();
+                
+        return this.getChildlessStatus();        
     },
-
+    
     /**
      * Sets the consanguinity setting of this relationship. Valid inputs are "A" (automatic"), "Y" (yes) and "N" (no)
      *
      * @method setConsanguinity
-     */
+     */        
     setConsanguinity: function(value) {
         if (value != "A" && value != "N" && value != "Y")
             value = "A";
@@ -91,12 +91,12 @@ define([
         }
         this.getGraphics() && this.getGraphics().getHoverBox().regenerateButtons();
     },
-
+    
     /**
      * Returns the consanguinity setting of this relationship: "A" (automatic"), "Y" (yes) or "N" (no)
      *
      * @method getConsanguinity
-     */
+     */    
     getConsanguinity: function() {
         return this._consangrMode;
     },
@@ -105,20 +105,20 @@ define([
      * Sets relationship as either broken or not
      *
      * @method getBrokenStatus
-     */
+     */    
     setBrokenStatus: function(value) {
         if (value === undefined)
             value = false;
         if (this._broken != value) {
-            this._broken = value;
-        }
+            this._broken = value;            
+        }        
     },
-
+    
     /**
      * Returns the status of this relationship (broken or not)
      *
      * @method getBrokenStatus
-     */
+     */        
     getBrokenStatus: function() {
         return this._broken;
     },
@@ -179,7 +179,7 @@ define([
      * @param properties Object
      * @return {Boolean} True if info was successfully assigned
      */
-    assignProperties: function($super, info) {
+    assignProperties: function($super, info) {    
         if($super(info)) {
             if(info.childlessStatus && info.childlessStatus != this.getChildlessStatus()) {
                 this.setChildlessStatus(info.childlessStatus);
@@ -187,7 +187,7 @@ define([
             if(info.childlessReason && info.childlessReason != this.getChildlessReason()) {
                 this.setChildlessReason(info.childlessReason);
             }
-            if (info.consangr && info.consangr != this.getConsanguinity()) {
+            if (info.consangr && info.consangr != this.getConsanguinity()) {                
                 this.setConsanguinity(info.consangr);
             }
             if (info.broken && info.broken != this.getBrokenStatus()) {
