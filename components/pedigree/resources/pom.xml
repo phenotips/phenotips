@@ -27,4 +27,41 @@
   </parent>
   <artifactId>pedigree-editor</artifactId>
   <name>PhenoTips - Pedigree - JS and CSS Resources</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.bringking</groupId>
+        <artifactId>requirejs-maven-plugin</artifactId>
+        <version>2.0.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>optimize</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+            <!-- path to optimizer json config file(s) -->
+            <configFile>
+              src/main/resources/pedigree/build.js
+            </configFile>
+            <!-- optional parameters to optimizer executable -->
+            <optimizerParameters>
+            </optimizerParameters>
+            <!--
+            Whether or not to process configFile with maven filters.
+            If you use this option, some options in your configFile
+            must resolve to absolute paths (see below)
+            -->
+            <filterConfig>
+                false
+            </filterConfig>
+            <!-- Skip requirejs optimization if true -->
+            <skip>
+                false
+            </skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
