@@ -17,62 +17,16 @@
  */
 package org.phenotips.translation;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.localization.LocalizationContext;
-import org.xwiki.localization.LocalizationManager;
-import org.xwiki.localization.Translation;
-import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.renderer.BlockRenderer;
-import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
-import org.xwiki.rendering.renderer.printer.WikiPrinter;
-
-import java.util.Locale;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 /**
  * @version $Id$
  */
-@Component(roles = { TranslationManager.class })
-@Singleton
-public final class TranslationManager
+public interface TranslationManager
 {
-    @Inject
-    private static LocalizationManager localizationManager;
-
-    @Inject
-    private static LocalizationContext localizationContext;
-
-    /** Renders content blocks into plain strings. */
-    @Inject
-    @Named("plain/1.0")
-    private static BlockRenderer renderer;
-
-    private TranslationManager()
-    {
-    }
-
     /**
      * Translate a key into a message based on the locale.
      *
      * @param key of message
      * @return locale based message
      */
-    public static String translate(String key)
-    {
-        Locale currentLocale = TranslationManager.localizationContext.getCurrentLocale();
-        Translation translation = TranslationManager.localizationManager.getTranslation(key, currentLocale);
-        if (translation == null) {
-            return "";
-        }
-        Block block = translation.render(TranslationManager.localizationContext.getCurrentLocale());
-
-        // Render the block
-        WikiPrinter wikiPrinter = new DefaultWikiPrinter();
-        TranslationManager.renderer.render(block, wikiPrinter);
-
-        return wikiPrinter.toString();
-    }
+    String translate(String key);
 }
