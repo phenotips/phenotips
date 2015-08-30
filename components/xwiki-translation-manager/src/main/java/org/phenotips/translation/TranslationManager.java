@@ -23,10 +23,10 @@ package org.phenotips.translation;
 public interface TranslationManager
 {
     /**
-     * Translate a key into a message based on the locale.
+     * Get the translation corresponding to the given key, using the current locale.
      *
-     * @param key of message
-     * @return locale based message
+     * @param key the identifier of the message to retrieve
+     * @return the message in the current locale, as plain text (all markup is stripped)
      */
     String translate(String key);
 }
