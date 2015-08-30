@@ -27,8 +27,8 @@
   </parent>
   <artifactId>xwiki-translation-manager</artifactId>
   <name>XWiki Translation Manager</name>
-  <packaging>jar</packaging>
   <description>Messages internationalization translation.</description>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
