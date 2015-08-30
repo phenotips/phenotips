@@ -53,14 +53,14 @@ public class TranslationManagerImplementation implements TranslationManager
     private BlockRenderer renderer;
 
     @Override
-    public String translate(String key)
+    public String translate(String key, Object... parameters)
     {
         Locale currentLocale = this.localizationContext.getCurrentLocale();
         Translation translation = this.localizationManager.getTranslation(key, currentLocale);
         if (translation == null) {
             return "";
         }
-        Block block = translation.render(currentLocale);
+        Block block = translation.render(currentLocale, parameters);
 
         // Render the block
         WikiPrinter wikiPrinter = new DefaultWikiPrinter();

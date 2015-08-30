@@ -26,7 +26,8 @@ public interface TranslationManager
      * Get the translation corresponding to the given key, using the current locale.
      *
      * @param key the identifier of the message to retrieve
+     * @param parameters optional parameters to be used in the translation
      * @return the message in the current locale, as plain text (all markup is stripped)
      */
-    String translate(String key);
+    String translate(String key, Object... parameters);
 }
