@@ -52,6 +52,10 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 import net.sf.json.JSONObject;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -218,7 +222,9 @@ public class AbstractComplexControllerTest
         List<String> list1 = new LinkedList<>();
         list1.add("HP:00000015");
         doReturn(list1).when(this.baseProperty1).getValue();
-        doReturn(list1).when(this.baseProperty2).getValue();
+        List<String> list2 = new LinkedList<>();
+        list2.add("HP:00000120");
+        doReturn(list2).when(this.baseProperty2).getValue();
 
         PatientData<List<VocabularyProperty>> result =
             this.codeFieldImplMocker.getComponentUnderTest().load(this.patient);
@@ -227,6 +233,10 @@ public class AbstractComplexControllerTest
         List<VocabularyProperty> propertyTwoList = result.get(PROPERTY_2);
         Assert.assertNotNull(propertyOneList);
         Assert.assertNotNull(propertyTwoList);
+        Assert.assertThat(propertyOneList, hasSize(1));
+        Assert.assertThat(propertyTwoList, hasSize(1));
+        Assert.assertThat(propertyOneList, contains(hasProperty("id", is("HP:00000015"))));
+        Assert.assertThat(propertyTwoList, contains(hasProperty("id", is("HP:00000120"))));
     }
 
     //-----------------------------------save() tests-----------------------------------
