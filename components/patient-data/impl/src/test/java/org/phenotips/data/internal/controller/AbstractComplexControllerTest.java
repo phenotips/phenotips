@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.internal.controller;
 
-import net.sf.json.JSONArray;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
@@ -291,9 +290,11 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
     {
+        String datum1 = "datum1";
+        String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_1, datum1);
+        map.put(PROPERTY_2, datum2);
         PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -303,16 +304,18 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
+        Assert.assertEquals(datum2, container.get(PROPERTY_2));
     }
 
     @Test
     public void writeJSONWithAllSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
     {
+        String datum1 = "datum1";
+        String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_1, datum1);
+        map.put(PROPERTY_2, datum2);
         PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -325,8 +328,8 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
+        Assert.assertEquals(datum2, container.get(PROPERTY_2));
     }
 
     @Test
@@ -375,9 +378,11 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
     {
+        String datum1 = "datum1";
+        String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_1, datum1);
+        map.put(PROPERTY_2, datum2);
         PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -389,7 +394,7 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
         Assert.assertNull(container.get(PROPERTY_2));
     }
 
@@ -397,9 +402,11 @@ public class AbstractComplexControllerTest
     public void writeJSONWithSelectedFieldsAddsContainerWithAllValuesWhenSelectedFieldsNull()
             throws ComponentLookupException
     {
+        String datum1 = "datum1";
+        String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_1, datum1);
+        map.put(PROPERTY_2, datum2);
         PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -409,16 +416,18 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
+        Assert.assertEquals(datum2, container.get(PROPERTY_2));
     }
 
     @Test
     public void writeJSONDoesNotOverwriteContainer() throws ComponentLookupException
     {
+        String datum1 = "datum1";
+        String datum2 = "datum2";
         Map<String, String> map = new LinkedHashMap<>();
-        map.put(PROPERTY_1, "datum1");
-        map.put(PROPERTY_2, "datum2");
+        map.put(PROPERTY_1, datum1);
+        map.put(PROPERTY_2, datum2);
         PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -430,7 +439,7 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         JSONObject container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
         Assert.assertNull(container.get(PROPERTY_2));
 
         selectedFields.clear();
@@ -441,8 +450,8 @@ public class AbstractComplexControllerTest
         Assert.assertNotNull(json.get(DATA_NAME));
         Assert.assertTrue(json.get(DATA_NAME) instanceof JSONObject);
         container = json.getJSONObject(DATA_NAME);
-        Assert.assertEquals("datum1", container.get(PROPERTY_1));
-        Assert.assertEquals("datum2", container.get(PROPERTY_2));
+        Assert.assertEquals(datum1, container.get(PROPERTY_1));
+        Assert.assertEquals(datum2, container.get(PROPERTY_2));
     }
 
     @Test
