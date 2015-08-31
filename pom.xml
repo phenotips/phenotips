@@ -674,6 +674,18 @@
               <differenceType>7012</differenceType>
               <method>java.lang.String getUnit()</method>
             </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isComputed()</method>
+              <justification>The new measurements section UI needs to be know which measurements are computed.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection getComputationDependencies()</method>
+              <justification>The new measurements section UI needs to be know which measurements are computed.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

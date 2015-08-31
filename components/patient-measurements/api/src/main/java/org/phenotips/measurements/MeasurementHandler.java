@@ -20,6 +20,7 @@ package org.phenotips.measurements;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -99,6 +100,24 @@ public interface MeasurementHandler
      * @return {@code true} if measurements on both sides should be recorded
      */
     boolean isDoubleSided();
+
+    /**
+     * Indicate whether this measurement is computed based on other values.
+     *
+     * @return {@code true} if this measurement is computed based on other values
+     * @since 1.3M4
+     */
+    boolean isComputed();
+
+    /**
+     * Get a list of computation dependencies for this measurement. This is relevant only for {@link #isComputed()
+     * computed measurements}.
+     *
+     * @return the {@link #getName() names} of the computation dependencies for this measurement, or an empty collection
+     *         if this isn't computed
+     * @since 1.3M4
+     */
+    Collection<String> getComputationDependencies();
 
     /**
      * Get the list of charts configured for this type of measurement.

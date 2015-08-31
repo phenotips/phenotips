@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -151,6 +153,18 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     public boolean isDoubleSided()
     {
         return false;
+    }
+
+    @Override
+    public boolean isComputed()
+    {
+        return false;
+    }
+
+    @Override
+    public Collection<String> getComputationDependencies()
+    {
+        return Collections.emptySet();
     }
 
     @Override
