@@ -3575,7 +3575,11 @@ document.observe('xwiki:dom:loaded', function()
       // Init rows
       this._rows = [];
       this.el.select('.measurement-row').each((function(el) {
-        this._rows.push(new widgets.MeasurementSetRow(el, this));
+        if (el.hasClassName('computed')) {
+          this._rows.push(new widgets.ComputedMeasurementSetRow(el, this));
+        } else {
+          this._rows.push(new widgets.MeasurementSetRow(el, this));
+        }
       }).bind(this));
 
       // Attach handlers
@@ -3621,8 +3625,8 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     _globalDobChangeHandler: function() {
-      if (_this.el.select('.measurement-date')[0].alt.length) {
-        _this._setAgeUsingDateAndDob();
+      if (this.el.select('.measurement-date')[0].alt.length) {
+        this._setAgeUsingDateAndDob();
       }
     },
 
@@ -3682,6 +3686,9 @@ document.observe('xwiki:dom:loaded', function()
       this.destroy = this.destroy.bind(this);
       this._genderChangeHandler = this._genderChangeHandler.bind(this);
 
+      // DOM shortcuts
+      this._valueEl = this.el.select('[name$=value]')[0];
+
       // Attach handlers
       this.el.select('[name$=value]').each((function(el) {
         el.observe('input', this.fetchAndRenderPercentileSd);
@@ -3695,11 +3702,10 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     fetchAndRenderPercentileSd: function(e) {
-      var thisValue = this.el.select('[name$=value]')[0].value;
       var pctlEl = this.el.select('.pctl')[0];
       var fetchParams = {
         'measurement': this.el.select('[name$=type]')[0].value,
-        'value': thisValue,
+        'value': this._valueEl.value,
         'age': this.parent._ageEl.value,
         'sex': ($$('[name$=gender]:checked')[0] || {value:''}).value,
       };
@@ -3708,7 +3714,7 @@ document.observe('xwiki:dom:loaded', function()
         fetchParams.sex == 'm';
       }
 
-      if (thisValue.length &amp;&amp; fetchParams.sex.length &amp;&amp; fetchParams.age.length &amp;&amp; fetchParams.sex.length) {
+      if (this._valueEl.value.length &amp;&amp; fetchParams.sex.length &amp;&amp; fetchParams.age.length &amp;&amp; fetchParams.sex.length) {
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/percentile", {
           method: 'get',
           parameters: fetchParams,
@@ -3772,6 +3778,60 @@ document.observe('xwiki:dom:loaded', function()
       $$('input[name$=gender]').each((function(el) {
         el.stopObserving('click', this._genderChangeHandler);
       }).bind(this));
+    }
+  });
+
+  widgets.ComputedMeasurementSetRow = Class.create(widgets.MeasurementSetRow, {
+    initialize: function($super, el, parent) {
+      $super(el, parent);
+
+      this.fetchAndRenderComputedValue = this.fetchAndRenderComputedValue.bind(this);
+      this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
+
+      // Init field
+      this._valueEl.readOnly = true;
+
+      // Set up deps
+      this._deps = this.el.readAttribute('data-computation-deps').split(' ');
+
+      // Attach deps handlers
+      for (var i = 0; i &lt; this._deps.length; i++) {
+        ['input'].each((function(ev) {
+          this._getDependentMeasurementField(this._deps[i]).observe(ev, this.fetchAndRenderComputedValue);
+        }).bind(this));
+      }
+    },
+
+    _getDependentMeasurementField: function(measurement) {
+      return this.parent.el.select('input[name$=type][value='+measurement+']')[0].adjacent('input[name$=value]')[0];
+    },
+
+    fetchAndRenderComputedValue: function(e) {
+      var canCalc = true;
+      var fetchParams = {
+        measurement: this.el.select('[name$=type]')[0].value,
+      };
+      debugger;
+      for (var i = 0; i &lt; this._deps.length; i++) {
+        fetchParams[this._deps[i]] = this._getDependentMeasurementField(this._deps[i]).value;
+        canCalc &amp;= fetchParams[this._deps[i]].length &gt; 0;
+      }
+
+      if (canCalc) {
+        var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/computed", {
+          method: 'get',
+          parameters: fetchParams,
+          requestHeaders: {Accept : "application/json"},
+          onSuccess: (function(resp) {
+            this._valueEl.value = resp.responseJSON.value.toFixed(2);
+            this.fetchAndRenderPercentileSd();
+          }).bind(this),
+          onFailure: function (response) {}
+        });
+      } else {
+        this._valueEl.value = '';
+        this.fetchAndRenderPercentileSd();
+      }
     }
   });
 
