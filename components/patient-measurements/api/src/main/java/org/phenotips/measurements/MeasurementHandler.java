@@ -85,6 +85,13 @@ public interface MeasurementHandler
     boolean isDoubleSided();
 
     /**
+     * Indicate whether this measurement is computed based on other values.
+     *
+     * @return {@code true} if this measurement is computed based on other values
+     */
+    boolean isComputed();
+
+    /**
      * Get the list of charts configured for this type of measurement.
      *
      * @return a list of chart configurations, or an empty list if no charts are configured for this measurement

@@ -361,18 +361,25 @@ div.birthdate {
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
-#macro (measurement $name $unit $isDoubleSided)
+#macro (measurement $name $unit $isDoubleSided $computationDeps)
 (% class="measurement"%)(((
   #if ($isDoubleSided)
-    #measurementRow($name true $unit 'l')
-    #measurementRow($name false $unit 'r')
+    #measurementRow($name true $unit 'l' $computationDeps)
+    #measurementRow($name false $unit 'r' $computationDeps)
   #else
-    #measurementRow($name true $unit '')
+    #measurementRow($name true $unit '' $computationDeps)
   #end
 )))
 #end
-#macro (measurementRow $name $displayName $unit $side)
-(% class="measurement-row"%)(((
+#macro (measurementRow $name $displayName $unit $side $computationDeps)
+#foreach ($dep in $computationDeps)
+  #if ("$!depsStr" == "")
+    #set ($depsStr = "$!{dep}")
+  #else
+    #set ($depsStr = "$!{depsStr} $!{dep}")
+  #end
+#end
+(% class="measurement-row#if ($computationDeps.size()) computed#end"#if ($computationDeps.size()) data-computation-deps="$depsStr"#end%)(((
   {{html clean="false" wiki="false"}}
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}")#end&lt;/label&gt;
   &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
@@ -406,7 +413,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
         #foreach ($handler in $handlers)
           #if ($obj.getProperty('enabled').value.contains($handler.getName())
                &amp;&amp; $obj.getProperty('default').value.contains($handler.getName()))
-            #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided())
+            #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided() $handler.getComputationDependencies())
           #end
         #end
         {{html clean="false" wiki="false"}}
@@ -429,7 +436,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
           #foreach ($handler in $handlers)
             #if ($obj.getProperty('enabled').value.contains($handler.getName()) 
                  &amp;&amp; !$obj.getProperty('default').value.contains($handler.getName()))
-              #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided())
+              #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided() $handler.getComputationDependencies())
             #end
           #end
         )))
