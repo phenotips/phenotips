@@ -291,10 +291,10 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -310,10 +310,10 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONWithAllSelectedFieldsAddsContainerWithAllValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -332,11 +332,11 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONConvertsBooleanValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_3, "1");
         map.put(PROPERTY_4, "0");
         map.put(PROPERTY_5, "SOME_NON_BOOL_STRING");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -353,10 +353,10 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONWithSelectedFieldsConvertsBooleanValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_3, "1");
         map.put(PROPERTY_4, "0");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -375,10 +375,10 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -397,10 +397,10 @@ public class AbstractComplexControllerTest
     public void writeJSONWithSelectedFieldsAddsContainerWithAllValuesWhenSelectedFieldsNull()
             throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -416,10 +416,10 @@ public class AbstractComplexControllerTest
     @Test
     public void writeJSONDoesNotOverwriteContainer() throws ComponentLookupException
     {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put(PROPERTY_1, "datum1");
         map.put(PROPERTY_2, "datum2");
-        PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
+        PatientData<String> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

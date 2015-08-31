@@ -215,8 +215,8 @@ public class GeneListControllerTest
     public void writeJSONAddsContainerWithAllValues() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
-        Map<String, String> gene1 = new LinkedHashMap<String, String>();
-        Map<String, String> gene2 = new LinkedHashMap<String, String>();
+        Map<String, String> gene1 = new LinkedHashMap<>();
+        Map<String, String> gene2 = new LinkedHashMap<>();
         gene1.put(GENE_KEY, "gene1");
         gene1.put(COMMENTS_KEY, "comment1");
         gene2.put(GENE_KEY, "gene2");
@@ -247,8 +247,8 @@ public class GeneListControllerTest
         throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
-        Map<String, String> gene1 = new LinkedHashMap<String, String>();
-        Map<String, String> gene2 = new LinkedHashMap<String, String>();
+        Map<String, String> gene1 = new LinkedHashMap<>();
+        Map<String, String> gene2 = new LinkedHashMap<>();
         gene1.put(GENE_KEY, "gene1");
         gene1.put(COMMENTS_KEY, "comment1");
         gene2.put(GENE_KEY, "gene2");
