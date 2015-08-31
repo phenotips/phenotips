@@ -121,6 +121,17 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      */
     public abstract String getUnit();
 
+    /**
+     * Get a list of computation dependencies for this measurement. (relevant only for computed measurements)
+     *
+     * @return if this is a computed measurement, a list of computation dependencies for this measurement
+     *         otherwise, null
+     */
+    public List<String> getComputationDependencies()
+    {
+        return null;
+    }
+
     @Override
     public int valueToPercentile(boolean male, float ageInMonths, double value)
     {
@@ -157,6 +168,12 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 
     @Override
     public boolean isDoubleSided()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isComputed()
     {
         return false;
     }
