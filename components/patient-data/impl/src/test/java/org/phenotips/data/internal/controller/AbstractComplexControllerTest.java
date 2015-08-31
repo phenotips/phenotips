@@ -17,14 +17,20 @@
  */
 package org.phenotips.data.internal.controller;
 
+import net.sf.json.JSONArray;
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.SimpleValuePatientData;
 import org.phenotips.data.VocabularyProperty;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -34,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,6 +56,7 @@ import net.sf.json.JSONObject;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -94,7 +102,12 @@ public class AbstractComplexControllerTest
     @Mock
     private BaseProperty<ObjectPropertyReference> baseProperty4;
 
+    @Mock
+    private BaseProperty<ObjectPropertyReference> baseProperty5;
+
     private final String DATA_NAME = AbstractComplexControllerTestImplementation.DATA_NAME;
+
+    private final String CODE_FIELDS_DATA_NAME = AbstractComplexControllerCodeFieldsTestImplementation.DATA_NAME;
 
     private final String PROPERTY_1 = AbstractComplexControllerTestImplementation.PROPERTY_1;
 
@@ -103,6 +116,8 @@ public class AbstractComplexControllerTest
     private final String PROPERTY_3 = AbstractComplexControllerTestImplementation.PROPERTY_3;
 
     private final String PROPERTY_4 = AbstractComplexControllerTestImplementation.PROPERTY_4;
+
+    private final String PROPERTY_5 = AbstractComplexControllerTestImplementation.PROPERTY_5;
 
 
     @Before
@@ -121,6 +136,7 @@ public class AbstractComplexControllerTest
         doReturn(baseProperty2).when(this.data).getField(PROPERTY_2);
         doReturn(baseProperty3).when(this.data).getField(PROPERTY_3);
         doReturn(baseProperty4).when(this.data).getField(PROPERTY_4);
+        doReturn(baseProperty5).when(this.data).getField(PROPERTY_5);
     }
 
     @Test
@@ -177,16 +193,22 @@ public class AbstractComplexControllerTest
         String datum1 = "datum1";
         String datum2 = "datum2";
         String datum3 = "datum3";
+        String datum4 = "datum4";
+        String datum5 = "datum5";
         doReturn(datum1).when(this.baseProperty1).getValue();
         doReturn(datum2).when(this.baseProperty2).getValue();
         doReturn(datum3).when(this.baseProperty3).getValue();
+        doReturn(datum4).when(this.baseProperty4).getValue();
+        doReturn(datum5).when(this.baseProperty5).getValue();
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertEquals(datum1, result.get(PROPERTY_1));
         Assert.assertEquals(datum2, result.get(PROPERTY_2));
         Assert.assertEquals(datum3, result.get(PROPERTY_3));
-        Assert.assertEquals(3, result.size());
+        Assert.assertEquals(datum4, result.get(PROPERTY_4));
+        Assert.assertEquals(datum5, result.get(PROPERTY_5));
+        Assert.assertEquals(5, result.size());
     }
 
     @Test
@@ -313,6 +335,7 @@ public class AbstractComplexControllerTest
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PROPERTY_3, "1");
         map.put(PROPERTY_4, "0");
+        map.put(PROPERTY_5, "SOME_NON_BOOL_STRING");
         PatientData<String> patientData = new DictionaryPatientData<String>(this.DATA_NAME, map);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
@@ -324,6 +347,7 @@ public class AbstractComplexControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals(true, container.get(PROPERTY_3));
         Assert.assertEquals(false, container.get(PROPERTY_4));
+        Assert.assertEquals(null, container.get(PROPERTY_5));
     }
 
     @Test
@@ -419,6 +443,51 @@ public class AbstractComplexControllerTest
         container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum2", container.get(PROPERTY_2));
+    }
+
+    @Test
+    public void writeJSONConvertsCodeFields() throws Exception
+    {
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> cmProvider = mock(Provider.class);
+        ComponentManager contextComponentManager = mock(ComponentManager.class);
+        VocabularyManager vm = mock(VocabularyManager.class);
+        VocabularyTerm term = mock(VocabularyTerm.class);
+
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", cmProvider);
+        doReturn(contextComponentManager).when(cmProvider).get();
+        doReturn(vm).when(contextComponentManager).getInstance(VocabularyManager.class);
+        doReturn(term).when(vm).resolveTerm("HP:0009927");
+        doReturn("Congenital absence of nose").when(term).getName();
+        term = mock(VocabularyTerm.class);
+        doReturn(term).when(vm).resolveTerm("HP:0002223");
+        doReturn("Absent eyebrow").when(term).getName();
+
+        Map<String, List<VocabularyProperty>> map = new LinkedHashMap<>();
+        List<VocabularyProperty> list = new LinkedList<>();
+        list.add(new AbstractComplexController.QuickVocabularyProperty("HP:0009927"));
+        map.put(PROPERTY_1, list);
+        list = new LinkedList<>();
+        list.add(new AbstractComplexController.QuickVocabularyProperty("HP:0002223"));
+        map.put(PROPERTY_2, list);
+        PatientData<List<VocabularyProperty>> patientData = new DictionaryPatientData<>(this.DATA_NAME, map);
+        doReturn(patientData).when(this.patient).getData(CODE_FIELDS_DATA_NAME);
+        JSONObject json = new JSONObject();
+
+
+        this.codeFieldImplMocker.getComponentUnderTest().writeJSON(this.patient, json, null);
+
+        Assert.assertNotNull(json.get(CODE_FIELDS_DATA_NAME));
+        Assert.assertTrue(json.get(CODE_FIELDS_DATA_NAME) instanceof JSONObject);
+        JSONObject container = json.getJSONObject(CODE_FIELDS_DATA_NAME);
+        JSONObject item1 = container.getJSONArray(PROPERTY_1).getJSONObject(0);
+        JSONObject item2 = container.getJSONArray(PROPERTY_2).getJSONObject(0);
+        Assert.assertNotNull(item1);
+        Assert.assertEquals("HP:0009927", item1.get("id"));
+        Assert.assertEquals("Congenital absence of nose", item1.get("label"));
+        Assert.assertNotNull(item2);
+        Assert.assertEquals("HP:0002223", item2.get("id"));
+        Assert.assertEquals("Absent eyebrow", item2.get("label"));
     }
 
 

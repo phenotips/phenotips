@@ -44,10 +44,12 @@ public class AbstractComplexControllerTestImplementation extends AbstractComplex
 
     protected static String PROPERTY_4 = "property4";
 
+    protected static String PROPERTY_5 = "property5";
+
     @Override
     protected List<String> getBooleanFields()
     {
-        return Arrays.asList(PROPERTY_3, PROPERTY_4);
+        return Arrays.asList(PROPERTY_3, PROPERTY_4, PROPERTY_5);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class AbstractComplexControllerTestImplementation extends AbstractComplex
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(PROPERTY_1, PROPERTY_2, PROPERTY_3);
+        return Arrays.asList(PROPERTY_1, PROPERTY_2, PROPERTY_3, PROPERTY_4, PROPERTY_5);
     }
 
     @Override
