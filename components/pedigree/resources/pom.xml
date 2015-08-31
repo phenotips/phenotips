@@ -43,7 +43,7 @@
         <configuration>
             <!-- path to optimizer json config file(s) -->
             <configFile>
-              src/main/resources/pedigree/build.js
+              src/main/resources/pedigree/requireConfigs/build.js
             </configFile>
             <!-- optional parameters to optimizer executable -->
             <optimizerParameters>
@@ -54,7 +54,7 @@
             must resolve to absolute paths (see below)
             -->
             <filterConfig>
-                false
+                true
             </filterConfig>
             <!-- Skip requirejs optimization if true -->
             <skip>
