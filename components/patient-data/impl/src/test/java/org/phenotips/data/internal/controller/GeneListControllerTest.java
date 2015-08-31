@@ -178,6 +178,9 @@ public class GeneListControllerTest
 
     }
 
+    /* Tests that the passed JSON will not be affected by writeJSON in this controller if selected fields
+     * is not null, and does not contain GeneListController.GENES_ENABLING_FIELD_NAME
+     */
     @Test
     public void writeJSONChecksThatSelectedFieldsContainsGeneEnabler() throws ComponentLookupException
     {
@@ -186,6 +189,7 @@ public class GeneListControllerTest
         doReturn(patientData).when(this.patient).getData(CONTROLLER_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
+        // selectedFields could contain any number of random strings; it should not affect the behaviour in this case
         selectedFields.add("some_string");
         selectedFields.add(GENES_COMMENTS_ENABLING_FIELD_NAME);
 
