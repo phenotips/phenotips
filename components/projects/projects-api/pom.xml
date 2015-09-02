@@ -26,4 +26,5 @@
     <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>projects-api</artifactId>
+  <name>PhenoTips - Projects - api</name>
 </project>
