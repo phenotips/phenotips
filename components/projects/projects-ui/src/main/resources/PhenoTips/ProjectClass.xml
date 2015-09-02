@@ -422,9 +422,9 @@
 ##
 (% id="project-directory" %)
 #if ($projectData.size() == 0)
-  {{info}}$services.localization.render('phenotips.studyClass.noneDefined')
+  {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
     #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
-      [[$services.localization.render('phenotips.studyClass.manage')>>path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
+      [[$services.localization.render('phenotips.projectClass.manage')>>path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
     #end
   {{/info}}
 #else
