@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>UIX_Field__parental_age</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822217000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1441000219000</date>
+  <contentUpdateDate>1440998790000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$services.localization.render('phenotips.UIXField.parentalAge')</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.UIX_Field__parental_age</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>4353f1b4-8227-44ec-80c5-0f55079e328a</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+#set ($origObj = $obj)
+#set ($obj = $doc.getObject('PhenoTips.ParentalInformationClass', true))
+#set ($origObjClass = $doc.getActiveClass())
+#set ($discard = $doc.use($obj))
+#set ($origClass = $class)
+#set ($class = $xwiki.getClass('PhenoTips.ParentalInformationClass'))
+##
+#__hasDataToDisplay('maternal_age', $showMaternalAge)
+#__hasDataToDisplay('paternal_age', $showPaternalAge)
+#if ($showMaternalAge)
+  #__displayFormatted('2-col' 'maternal_age' '' '' '')
+#end
+#if ($showPaternalAge)
+  #__displayFormatted('2-col' 'paternal_age' '' '' '')
+#end
+##
+#set ($class = $origClass)
+#set ($discard = $doc.use($origObjClass))
+#set ($obj = $origObj)
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.prenatal-info</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.parentalAge</name>
+    </property>
+    <property>
+      <parameters>title=$services.localization.render('phenotips.UIXField.parentalAge')
+enabled=true
+required=
+order=2
+fields=
+privacy_level=3</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>
