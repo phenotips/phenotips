@@ -842,8 +842,22 @@
 }
 .cancer_status_select {
   display: inline-block;
-  width: 100px;
+  width: 90px;
   margin-right: 15px;
+}
+.cancer_age_select {
+  display: inline-block;
+  margin-right: 6px
+}
+.cancer_field .clickable:hover {
+  cursor: pointer;
+}
+.cancer_field label.clickable.disabled {
+  color: #CCC;
+  cursor: initial;
+}
+.cancer_field textarea[name="cancers"] {
+    resize: vertical;
 }
 
 /* Option types */
