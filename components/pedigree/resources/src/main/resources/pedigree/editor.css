@@ -854,10 +854,10 @@
 }
 .cancer_field label.clickable.disabled {
   color: #CCC;
-  cursor: initial;
+  cursor: default;
 }
-.cancer_field textarea[name="cancers"] {
-    resize: vertical;
+.cancer_field textarea {
+  resize: vertical;
 }
 
 /* Option types */
