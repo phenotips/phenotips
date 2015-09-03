@@ -233,19 +233,20 @@ if (newFamilyTrigger) {
 
   /* A link that points to the family page that the user selected after the search.
   A nice way for the user to be able to confirm that the correct family was selected. */
-  var newFamilyWrapper = familyIdHolder.up('.new-family-wrapper');
-  var openFamilyButton = newFamilyWrapper.up().down('#open-family');
-  var familyIdLabel = newFamilyWrapper.up().down('#familyId');
-  var remove = newFamilyWrapper.up().down('a.remove');
+  var addToFamilyWrapper = familyIdHolder.up('.add-to-family-wrapper');
+  var familyIdLabel = addToFamilyWrapper.up().down('#familyId');
+  var familyIdDiv = addToFamilyWrapper.up().down('.family-id-div');
+  var remove = addToFamilyWrapper.up().down('a.remove');
 
-  var belongsToFamily = newFamilyWrapper.hasClassName('hidden') || Form.Element.getValue(familyIdHolder);
+  var familyId = Form.Element.getValue(familyIdHolder);
+  var belongsToFamily = addToFamilyWrapper.hasClassName('hidden') || familyId;
 
   initialize();
   adjustView();
 
   function initialize() {
     familyIdHolder.hide();
-    newFamilyWrapper.removeClassName('hidden');
+    addToFamilyWrapper.removeClassName('hidden');
 
     /* Removing patient from a family. */
     remove.observe("click", function(event) {
@@ -311,28 +312,24 @@ if (newFamilyTrigger) {
 
   function adjustView() {
     if (!belongsToFamily) {
-      openFamilyButton.up().hide();
       remove.hide();
-      familyIdLabel.hide();
-      newFamilyWrapper.show();
+      familyIdDiv.hide();
+      addToFamilyWrapper.show();
     } else {
-      openFamilyButton.up().show();
       remove.show();
-      familyIdLabel.show();
-      newFamilyWrapper.hide();
+      familyIdDiv.show();
+      addToFamilyWrapper.hide();
     }
   }
 
   /** no id means no family */
   function setFamily(id) {
     if (id) {
-      openFamilyButton.writeAttribute("href", new XWiki.Document(id, "Families").getURL("edit"));
       belongsToFamily = true;
+      familyIdLabel.innerHTML=id;
     } else {
       belongsToFamily = false;
-      openFamilyButton.writeAttribute("href", '');
     }
-    familyIdLabel.innerHTML=id;
   }
 });
 </code>
@@ -535,22 +532,18 @@ if (newFamilyTrigger) {
       <cache>long</cache>
     </property>
     <property>
-      <code>.family-study .new-family-wrapper div {
+      <code>.family-study .add-to-family-wrapper div {
   float: left;
 }
-.family-study .new-family-wrapper .separator {
-  margin: 0 15px;
+.family-study .add-to-family-wrapper .section {
   margin-top: 0.2em;
+  font-weight: bold;
 }
-.family-study .new-family-wrapper .buttonwrapper {
+.family-study .add-to-family-wrapper .buttonwrapper {
   margin-top: 0;
   margin-right: 0;
 }
-.family-study .new-family-wrapper a.family-link {
-  float: left;
-  margin-top: 0.2em;
-}
-.family-study .new-family-wrapper div.remove {
+.family-study .add-to-family-wrapper div.remove {
   margin-left: 10px;
 }</code>
     </property>
@@ -646,39 +639,30 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 (% class="clear family-study" %)(((##
 === $services.localization.render('phenotips.UIXField.family_membership.heading') ===
 {{html wiki='true' clean='false'}}##
-  &lt;label id="familyId"&gt;
-    $family.getName()
-  &lt;/label&gt;
-  &lt;br/&gt;
-  &lt;div class="buttonwrapper"&gt;##
-    &lt;a id="open-family" class="button family-trigger" href="$xwiki.getURL($family, 'edit')"&gt;
-      $services.localization.render('phenotips.UIXField.family_membership.open')
-    &lt;/a&gt;##
-  &lt;/div&gt;##
+  &lt;div class="family-id-div"&gt;
+    &lt;a id="familyId" href="$xwiki.getURL($family, 'edit')"&gt;
+      $family.getName()
+    &lt;/a&gt;
+    &lt;/br&gt;
+  &lt;/div&gt;
   #if ($xcontext.action != 'view')
     $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
     #set ($family = $doc.getObject('PhenoTips.FamilyReference', true))##
     #if (!$family)##
       $doc.save()##
     #end##
-    &lt;div class="new-family-wrapper #if($hasFamily)hidden#end"&gt;##
-        &lt;div class="buttonwrapper"&gt;##
-            &lt;a id="new-family" class="button family-trigger"
-               href="$xwiki.getURL('Family.CreateFamily', 'view', "patient_id=${escapetool.url($doc.getDocumentReference().getName())}")"&gt;
-              $services.localization.render('phenotips.UIXField.family_membership.create')
-            &lt;/a&gt;##
-        &lt;/div&gt;##
-        &lt;div class="separator"&gt;
-          $services.localization.render('phenotips.UIXField.family_membership.search_separator')
-        &lt;/div&gt;##
+    ##
+    &lt;div class="add-to-family-wrapper #if($hasFamily)hidden#end">##
+        &lt;p class="section"&gt;
+          $services.localization.render('phenotips.UIXField.family_membership.add')
+        &lt;/p&gt;
         &lt;div class="half-width"&gt;
-          &lt;span&gt;
-            &lt;input type="text" class="family-search-input"&gt;
-            $family.display('reference', 'edit')
-          &lt;/span&gt;
-        &lt;/div&gt;##
-        &lt;span class="clear"&gt;&lt;/span&gt;##
-    &lt;/div&gt;##
+          &lt;input type="text" class="family-search-input">
+          $family.display('reference', 'edit')
+        &lt;/div&gt;
+        &lt;span class="clear"&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    ##
     &lt;div class="buttonwrapper remove"&gt;##
       &lt;a class="remove" class="button" href="#"&gt;
         $services.localization.render('phenotips.UIXField.family_membership.remove')
