@@ -22,7 +22,7 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Named;
@@ -74,6 +74,6 @@ public class FamilyHistoryController extends AbstractComplexController<Integer>
     @Override
     protected List<String> getCodeFields()
     {
-        return new LinkedList<>();
+        return Collections.emptyList();
     }
 }

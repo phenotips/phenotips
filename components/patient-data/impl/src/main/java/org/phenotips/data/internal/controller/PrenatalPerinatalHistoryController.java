@@ -22,14 +22,14 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Handles the information found in the family history section of the patient record.
+ * Handles the information found in the "prenatal and perinatal history" section of the patient record.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -85,6 +85,6 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     @Override
     protected List<String> getCodeFields()
     {
-        return new LinkedList<>();
+        return Collections.emptyList();
     }
 }
