@@ -130,7 +130,7 @@
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXField.family')
-enabled=true
+enabled=false
 required=
 order=4
 fields=
