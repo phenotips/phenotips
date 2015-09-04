@@ -34,6 +34,7 @@
     <module>ui</module>
     <module>hpo</module>
     <module>omim</module>
+    <module>rest</module>
     <module>hgnc</module>
     <module>chebi</module>
     <module>ethnicity</module>
