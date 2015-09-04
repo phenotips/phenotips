@@ -25,6 +25,7 @@ import org.phenotips.data.VocabularyProperty;
 import org.phenotips.data.internal.AbstractPhenoTipsVocabularyProperty;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.Collection;
@@ -71,7 +72,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
@@ -217,6 +218,19 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     protected abstract List<String> getProperties();
 
     protected abstract String getJsonPropertyName();
+
+    /**
+     * The XClass used for storing data managed by this controller. By default, data is stored in the main
+     * {@code PhenoTips.PatientClass} object that defines the patient record. Override this method if a different type
+     * of XObject is used.
+     *
+     * @return a local reference (without the wiki reference) pointing to the XDocument containing the target XClass
+     * @since 1.2RC1
+     */
+    protected EntityReference getXClassReference()
+    {
+        return Patient.CLASS_REFERENCE;
+    }
 
     /**
      * There exists no class currently that would be able to covert a vocabulary code into a human readable format given
