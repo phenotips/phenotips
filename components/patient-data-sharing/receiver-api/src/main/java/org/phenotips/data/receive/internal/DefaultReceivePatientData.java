@@ -19,6 +19,7 @@ package org.phenotips.data.receive.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.configuration.internal.consent.ConsentAuthorizer;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
 import org.phenotips.data.Patient;
@@ -49,6 +50,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -145,6 +147,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     @Inject
     private ConsentManager consentManager;
+
+    @Inject
+    private ConsentAuthorizer consentAuthorizer;
 
     @Override
     public boolean isServerTrusted()
@@ -451,6 +456,21 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 return generateFailedActionResponse();
             }
 
+            List<String> consentIds = null;
+            String patientStateRaw = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE);
+            if (patientStateRaw != null) {
+                consentIds = extractConsents(patientStateRaw);
+                /* there should not be any consent updates if consents are not enabled */
+                if (!consentIds.isEmpty() && !consentAuthorizer.consentsGloballyEnabled()) {
+                    /* no key, as a non malicious user would never arrive to this execution point */
+                    return this.generateFailedActionResponse();
+                }
+            }
+            boolean consentAuthorized = consentAuthorizer.authorizeInteraction(consentIds);
+            if (!consentAuthorized) {
+                return this.generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT);
+            }
+
             String patientJSON = URLDecoder.decode(patientJSONRaw, XWiki.DEFAULT_ENCODING);
 
             Patient affectedPatient;
@@ -497,6 +517,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             JSONObject patientData = JSONObject.fromObject(patientJSON);
 
+            if (consentIds != null) {
+                consentManager.setPatientConsents(affectedPatient, consentIds);
+            }
+
             affectedPatient.updateFromJSON(patientData);
 
             this.logger.warn("Updated patient successfully");
@@ -512,6 +536,43 @@ public class DefaultReceivePatientData implements ReceivePatientData
             this.logger.error("Error importing patient [{}] {}", ex.getMessage(), ex);
             return this.generateFailedActionResponse();
         }
+    }
+
+    /**
+     * Exctacts the list of granted consents from a request
+     * @param rawPatientState patient state JSON string directly from the {@link Request} object
+     */
+    private List<String> extractConsents(String rawPatientState)
+    {
+        List<String> consents = new LinkedList<>();
+        JSONObject patientState = this.patientStateToJson(rawPatientState);
+        if (patientState != null) {
+            try {
+                JSONArray consentsJson =
+                    patientState.getJSONArray(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE_CONSENTS);
+                for (Object consent : consentsJson) {
+                    consents.add(consent.toString());
+                }
+            } catch (Exception ex) {
+                // do nothing
+            }
+        }
+        return consents;
+    }
+
+    /**
+     * Converts raw patient state string from the request to {@link JSONObject}, or {@link null} if the function fails.
+     */
+    private JSONObject patientStateToJson(String rawPatientState)
+    {
+        if (rawPatientState != null) {
+            try {
+                return JSONObject.fromObject(URLDecoder.decode(rawPatientState, XWiki.DEFAULT_ENCODING));
+            } catch (Exception ex) {
+                // do nothing
+            }
+        }
+        return null;
     }
 
     @Override

@@ -52,6 +52,8 @@ public class ShareProtocol
     public static final String CLIENT_POST_KEY_NAME_GUID         = "patient_guid"; // if provided, the existing remote patient object with the given GUID will be updated.
                                                                                    //   an error will be returned if updating is disabled or GUID is incorrect or the patient object
                                                                                    //   referenced does not belong to the given user and/or group (if provided)
+    public static final String CLIENT_POST_KEY_NAME_PATIENTSTATE = "patient_state";
+    public static final String CLIENT_POST_KEY_NAME_PATIENTSTATE_CONSENTS = "consents"; // key name which can exist within the patient state JSON
     // for the GETURL action the String CLIENT_POST_KEY_NAME_GUID key must be set
 
     //=========================================================================
@@ -82,6 +84,7 @@ public class ShareProtocol
     public static final String SERVER_JSON_KEY_NAME_ERROR_INCORRECTGUID    = "incorrect_guid";         // GUID provided in the request does not represents a patient document
     public static final String SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED = "guid_access_denied";     // GUID provided in the request represents a document which is not
                                                                                                        //  authored or owned by the user provided
+    public static final String SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT   = "missing_consent";         // if any of the required consents are missing
 
     // response to a GETINFO action request will include the following fields (iff successful):
     public static final String SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS     = "user_groups";

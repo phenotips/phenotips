@@ -14,6 +14,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 /**
  */
 @Component
@@ -54,6 +56,25 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
     {
         List<Consent> consents = this.consentManager.loadConsentsFromPatient(patient);
         return this.authorizeInteraction(consents);
+    }
+
+    @Override public boolean authorizeInteraction(Iterable<String> grantedConsents)
+    {
+        for(Consent consent : this.consentManager.getSystemConsents()) {
+            boolean found = false;
+            if (consent.isRequired()) {
+                for (String granted : grantedConsents) {
+                    if (StringUtils.equals(granted, consent.getId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean authorizeInteraction(List<Consent> consents)
@@ -101,7 +122,7 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
         List<String> ids = new LinkedList<>();
         for (Consent consent : consents) {
             if (consent.getStatus() == ConsentStatus.YES) {
-                ids.add(consent.getID());
+                ids.add(consent.getId());
             }
         }
         return ids;

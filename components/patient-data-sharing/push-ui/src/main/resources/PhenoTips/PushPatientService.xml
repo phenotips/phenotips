@@ -186,6 +186,9 @@
     #if ($response.isActionFailed_GUIDAccessDenied())
        #set ($data.accessdeniedguid = 'true')
     #end
+    #if ($response.isActionFailed_MissingConsent())
+      #set ($data.missingconsent = 'true')
+    #end
   #end
   $jsontool.serialize($data)
 #end

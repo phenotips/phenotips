@@ -107,18 +107,18 @@ public class PushPatientScriptService implements ScriptService
         return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGuid, remoteUserName, password);
     }
 
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier)
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier)
     {
-        return this.internalService.sendPatient(patientID, exportFieldListJSON, groupName, remoteGUID,
-            remoteServerIdentifier);
+        return this.internalService.sendPatient(patientID, exportFieldListJSON, patientState, groupName,
+            remoteGUID, remoteServerIdentifier);
     }
 
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
     {
-        return this.internalService.sendPatient(patientID, exportFieldListJSON, groupName, remoteGUID,
-            remoteServerIdentifier, remoteUserName, password);
+        return this.internalService.sendPatient(patientID, exportFieldListJSON, patientState, groupName,
+            remoteGUID, remoteServerIdentifier, remoteUserName, password);
     }
 
     public PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remotePatientGUID)

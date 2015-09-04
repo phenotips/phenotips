@@ -7,7 +7,7 @@ import net.sf.json.JSON;
  */
 public interface Consent
 {
-    String getID();
+    String getId();
 
     String getDescription();
 

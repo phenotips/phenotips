@@ -19,7 +19,13 @@ public interface ConsentManager
 
     List<Consent> loadConsentsFromPatient(Patient patient);
 
-    boolean setPatientConsents(Patient patient, List<Consent> consents);
+    /**
+     * Determines if the given ids are present in the system, and grants them on the given patient record.
+     * @param patient
+     * @param consents list of ids
+     * @return
+     */
+    boolean setPatientConsents(Patient patient, Iterable<String> consents);
 
     boolean grantConsent(Patient patient, String consentId);
 

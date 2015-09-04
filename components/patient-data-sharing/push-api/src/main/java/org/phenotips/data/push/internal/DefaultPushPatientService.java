@@ -55,6 +55,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -307,8 +308,8 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier)
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier)
     {
         Patient patient = getPatientByID(patientID, "push");
         if (patient == null) {
@@ -321,9 +322,11 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
+        JSON patientStateJSON = this.parsePatientStateToJSON(patientState);
 
-        PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields, groupName,
-            remoteGUID, remoteServerIdentifier, storedData.getRemoteUserName(), null, storedData.getLoginToken());
+        PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields,
+            patientStateJSON, groupName, remoteGUID, remoteServerIdentifier, storedData.getRemoteUserName(), null,
+            storedData.getLoginToken());
 
         if (response != null && response.isSuccessful()) {
             this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
@@ -333,8 +336,8 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
     {
         Patient patient = getPatientByID(patientID, "push");
         if (patient == null) {
@@ -342,9 +345,10 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
+        JSON patientStateJSON = this.parsePatientStateToJSON(patientState);
 
-        PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields, groupName,
-            remoteGUID, remoteServerIdentifier, remoteUserName, password, null);
+        PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields,
+            patientStateJSON, groupName, remoteGUID, remoteServerIdentifier, remoteUserName, password, null);
 
         if (response != null && response.isSuccessful()) {
             this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
@@ -383,5 +387,39 @@ public class DefaultPushPatientService implements PushPatientService
     {
         return this.internalService.getPatientURL(remoteServerIdentifier, remotePatientGUID, remoteUserName, password,
             null);
+    }
+
+    private JSON parsePatientStateToJSON(String patientStateString) {
+        /* since the state comes directly from the user side, taking some basic security precautions */
+        JSONObject patientState = new JSONObject();
+        try {
+            JSONObject parsedString = JSONObject.fromObject(patientStateString);
+            copyOverConsents(parsedString, patientState);
+        } catch(Exception ex) {
+            // do nothing
+        }
+        return patientState;
+    }
+
+    private JSON copyOverConsents(JSONObject from, JSONObject to) {
+        String key = "consents";
+        try {
+            /* should be an array of strings */
+            JSONArray value = from.getJSONArray(key);
+            boolean improper = false;
+            for (Object consent : value) {
+                if (consent.toString().split("[{\\[}\\]]").length > 1) {
+                    /* then contains JSON and not plain string. */
+                    improper = true;
+                    break;
+                }
+            }
+            if (!improper) {
+                to.put(key, value);
+            }
+        } catch (Exception ex) {
+            // do nothing
+        }
+        return to;
     }
 }

@@ -26,7 +26,7 @@ public class DefaultConsent implements Consent
         this.required = required;
     }
 
-    @Override public String getID()
+    @Override public String getId()
     {
         return this.id;
     }
@@ -54,7 +54,7 @@ public class DefaultConsent implements Consent
     @Override public JSON toJson()
     {
         JSONObject json = new JSONObject();
-        json.put("id", this.getID());
+        json.put("id", this.getId());
         json.put("description", this.getDescription());
         json.put("isRequired", this.isRequired());
         json.put("status", this.getStatus().toString());
@@ -68,7 +68,7 @@ public class DefaultConsent implements Consent
 
     public static Consent copy(Consent from)
     {
-        Consent copy = new DefaultConsent(from.getID(), from.getDescription(), from.isRequired());
+        Consent copy = new DefaultConsent(from.getId(), from.getDescription(), from.isRequired());
         copy.setStatus(from.getStatus());
         return copy;
     }

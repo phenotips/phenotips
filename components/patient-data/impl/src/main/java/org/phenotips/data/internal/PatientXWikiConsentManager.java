@@ -131,7 +131,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
          cache, since those should not have a status. */
         for (Consent systemConsent : this.systemConsents) {
             Consent copy = DefaultConsent.copy(systemConsent);
-            if (xwikiPatientConsents.contains(systemConsent.getID())) {
+            if (xwikiPatientConsents.contains(systemConsent.getId())) {
                 copy.setStatus(ConsentStatus.YES);
             } else {
                 copy.setStatus(ConsentStatus.NO);
@@ -152,17 +152,32 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return ids;
     }
 
-    @Override public boolean setPatientConsents(Patient patient, List<Consent> consents)
+    @Override public boolean setPatientConsents(Patient patient, Iterable<String> consents)
     {
         try {
+            List<Consent> systemConsents = this.selectFromSystem(consents);
             SaveablePatientConsentHolder holder = this.getPatientConsentHolder(patient);
-            holder.setConsents(this.convertToIds(consents));
+            holder.setConsents(convertToIds(systemConsents));
             holder.save();
             return true;
         } catch (Exception ex) {
             this.logger.error("Could not update consents in patient record {}. {}", patient, ex.getMessage());
         }
         return false;
+    }
+
+    /** @return consents that exist in the system and correspond to the given ids */
+    private List<Consent> selectFromSystem(Iterable<String> ids) {
+        List<Consent> systemConsents = new LinkedList<>();
+        for (String id : ids) {
+            for (Consent consent : this.getSystemConsents()) {
+                if (StringUtils.equals(consent.getId(), id)) {
+                    systemConsents.add(consent);
+                    break;
+                }
+            }
+        }
+        return systemConsents;
     }
 
     @Override public boolean grantConsent(Patient patient, String consentId)
@@ -289,7 +304,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private boolean isValidId(String consentId)
     {
         for (Consent consent : this.systemConsents) {
-            if (StringUtils.equals(consentId, consent.getID())) {
+            if (StringUtils.equals(consentId, consent.getId())) {
                 return true;
             }
         }
@@ -300,7 +315,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         List<String> ids = new LinkedList<>();
         for (Consent consent : consents) {
-            ids.add(consent.getID());
+            ids.add(consent.getId());
         }
         return ids;
     }

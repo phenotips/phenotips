@@ -866,7 +866,6 @@
       if (!this._consentsModule) {
         this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
       }
-      /* fixme. if there are no consents configured on remote, do not show consents section. */
       var consentsConfiguredOnRemote = true;
       //AJAX 4: Consents present on the remote server
       new Ajax.Request(this._serviceURL, {
@@ -880,7 +879,12 @@
           onSuccess: function (response)
           {
             console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-            _this._consentsModule.init(_this._consentsManager, "edit", response.responseJSON.consents);
+            /* iff there are any consents to grant - show the section */
+            if (response.responseJSON.consents.length &gt; 1) {
+              _this._consentsModule.init(_this._consentsManager, "edit", response.responseJSON.consents);
+            } else {
+              consentsConfiguredOnRemote = false;
+            }
           },
           onFailure: function (response)
           {

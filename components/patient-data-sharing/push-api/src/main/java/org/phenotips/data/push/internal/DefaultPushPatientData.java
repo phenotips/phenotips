@@ -58,6 +58,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
@@ -281,8 +282,9 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, String groupName,
-        String remoteGUID, String remoteServerIdentifier, String userName, String password, String userToken)
+    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, JSON patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier, String userName, String password,
+        String userToken)
     {
         this.logger.debug("===> Sending to server: [{}]", remoteServerIdentifier);
 
@@ -300,6 +302,9 @@ public class DefaultPushPatientData implements PushPatientData
 
             data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTJSON,
                 URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING)));
+
+            data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE,
+                URLEncoder.encode(patientState.toString(), XWiki.DEFAULT_ENCODING)));
 
             if (groupName != null) {
                 data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_GROUPNAME, groupName));

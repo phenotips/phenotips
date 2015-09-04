@@ -129,6 +129,8 @@ public interface PushPatientService
      * @param exportFieldListJSON patient fields to be pushed, as a string representing a JSON array. When not
      *            {@code null} only patient data fields listed will be pushed. When {@code null}, all available data
      *            fields will be pushed.
+     * @param patientState a JSON encoded as a {@link String}, containing (meta) information about the state of the
+     *            patient's record.
      * @param groupName group name (optional, can be {@code null})
      * @param remoteGUID if a remote patient with the same GUID exists and is owned by the given group and is authored
      *            by the given user patient data will be updated instead of creating a new patient (optional, can be
@@ -143,8 +145,8 @@ public interface PushPatientService
      *         Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network
      *         problem, etc.)
      */
-    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password);
+    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password);
 
     /**
      * Same as above, but uses the previously stored remote user name and login token to authenticate on the remote
@@ -154,8 +156,8 @@ public interface PushPatientService
      *         {@code PushServerSendPatientResponse} equivalent to the "incorrect password" response. Otherwise see the
      *         docs for the other version.
      */
-    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier);
+    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier);
 
     /**
      * @param remoteServerIdentifier
