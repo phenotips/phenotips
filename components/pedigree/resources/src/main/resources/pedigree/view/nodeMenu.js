@@ -684,7 +684,7 @@ NodeMenu = Class.create({
             var div = new Element('div', {'class': 'cancer_field cancer-header'} );
             var label1 = new Element('label', {'class': 'cancer_label_field'} ).update("Name");
             var label2 = new Element('label', {'class': 'cancer_status_select'} ).update("Status");
-            var label3 = new Element('label', {'class': ''} ).update("Age at diagnosis");
+            var label3 = new Element('label', {'class': 'cancer_age_select'} ).update("Age at diagnosis");
             div.insert(label1).insert(label2).insert(label3);
             result.inputsContainer.insert(div);
 
@@ -692,7 +692,7 @@ NodeMenu = Class.create({
             // (Note1: for performace reasons also using raw HTML for options)
             // (Note2: using span around select because IE9 does not allow setting innerHTML of <select>-s)
             var spanAgeProto = new Element('span');
-            var optionsHTML = '<select name="' + data.name + '"><option value=""></option>';
+            var optionsHTML = '<select name="' + data.name + '" class="cancer_age_select"><option value=""></option>';
             var maxAge = 100;
             for (var age = 1; age <= maxAge; age++) {
                 if (age % 10 == 0 || age == 1) {
@@ -724,7 +724,47 @@ NodeMenu = Class.create({
                 var select = spanSelect.firstChild;
                 select.id = "cancer_status_" + cancerName;
 
-                cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge});
+                var textInput = new Element('textArea', {'type': 'text', 'name': data.name}).hide();
+                textInput.disabled = true;
+                textInput.id = "cancer_notes_" + cancerName;
+                var expandNotes = new Element('label', {'class': 'clickable', 'for': textInput.id}).update("<span class='fa fa-file-text-o'></span>");
+
+
+                var toggleNotes = (function(textInput, expandNotes){
+                    return function(){
+                        if (textInput.disabled == true) {
+                            textInput.disabled = false;
+                            textInput.show();
+                            expandNotes.hide();
+                        } else if (textInput.value == "") {
+                            textInput.hide();
+                            textInput.disabled = true;
+                            expandNotes.show()
+                        }
+                    };
+                })(textInput, expandNotes);
+
+                var enableNotes = (function(expandNotes, textInput, toggleNotes){
+                    return function(){
+                        expandNotes.observe('click', toggleNotes);
+                        textInput.observe('blur', toggleNotes);
+                        expandNotes.removeClassName('disabled');
+                    };
+                })(expandNotes, textInput, toggleNotes);
+
+                var disableNotes = (function(expandNotes, textInput, toggleNotes){
+                    return function(){
+                        expandNotes.stopObserving('click', toggleNotes);
+                        textInput.stopObserving('blur', toggleNotes);
+                        textInput.value="";
+                        textInput.hide();
+                        textInput.disabled = true;
+                        expandNotes.show()
+                        expandNotes.addClassName('disabled');
+                    };
+                })(expandNotes, textInput, toggleNotes);
+
+                cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge, "notes": textInput});
 
                 select._getValue = function() {
                     var data = {};
@@ -733,6 +773,7 @@ NodeMenu = Class.create({
 
                         var statusTxt = (nextCancer.status.selectedIndex >= 0) ? nextCancer.status.options[nextCancer.status.selectedIndex].value : '';
                         var ageTxt    = (nextCancer.age.selectedIndex >= 0) ? nextCancer.age.options[nextCancer.age.selectedIndex].value : '';
+                        var notesTxt  = nextCancer.notes.value;
 
                         if (statusTxt && statusTxt != "") {
 
@@ -755,35 +796,39 @@ NodeMenu = Class.create({
 
                             data[nextCancer.name] = { "affected": status,
                                                       "ageAtDiagnosis": ageTxt,
-                                                      "numericAgeAtDiagnosis": ageNumeric };
+                                                      "numericAgeAtDiagnosis": ageNumeric,
+                                                      "notes": notesTxt};
                         }
                     }
                     return [ data ];
                 };
-                selectAge._getValue = select._getValue;
+                selectAge._getValue = textInput._getValue = select._getValue;
 
                 this._attachFieldEventListeners(select, ['change']);
                 this._attachFieldEventListeners(selectAge, ['change']);
+                this._attachFieldEventListeners(textInput, ['change', 'keyup']);
 
-                var genSelectFunction = function(select, selectAge) {
+                var genSelectFunction = function(select, selectAge, enableNotes, disableNotes) {
                     return function() {
                         if (select.selectedIndex > 0) {
                             selectAge.enable();
+                            enableNotes();
                         } else {
                             selectAge.selectedIndex = 0;
                             selectAge.disable();
+                            disableNotes();
                         }
                     }
                 }
                 var events = ['change'];
                 browser.isGecko && events.push('keyup');
                 events.each(function(eventName) {
-                    var selFunc = genSelectFunction(select, selectAge);
+                    var selFunc = genSelectFunction(select, selectAge, enableNotes, disableNotes);
                     select.observe(eventName, function() {
                         selFunc();
                     });
                 });
-                div.insert(label).insert(spanSelect).insert(spanAge);
+                div.insert(label).insert(spanSelect).insert(spanAge).insert(expandNotes).insert(textInput);
                 result.inputsContainer.insert(div);
             }
             //console.log( "=== Generate cancers time: " + timer.report() + "ms ==========" );
@@ -1095,6 +1140,8 @@ NodeMenu = Class.create({
 
                 var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                 var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
+                var notesInput  = container.down('"#cancer_notes_' + cancerName + '"');
+                var enableNotesIcon = container.down("label[for=" + notesInput.id + "]");
 
                 if (!statusSelect) {
                     // unsupported cancer?
@@ -1115,6 +1162,18 @@ NodeMenu = Class.create({
                         var ageOption = ageSelect.down('option[value=""]');
                     }
 
+                    if (value[cancerName].hasOwnProperty("notes") && value[cancerName].notes != "") {
+                        notesInput.value = value[cancerName].notes;
+                        notesInput.show();
+                        notesInput.disabled = false;
+                        enableNotesIcon.hide();
+                    } else {
+                        notesInput.hide();
+                        notesInput.disabled = true;
+                        enableNotesIcon.show();
+                        enableNotesIcon.removeClassName('disabled');
+                    }
+
                     ageSelect.enable();
                 } else {
                     var optionStatus = statusSelect.down('option[value=""]');
@@ -1122,6 +1181,14 @@ NodeMenu = Class.create({
                     var ageOption = ageSelect.down('option[value=""]');
 
                     ageSelect.disable();
+
+                    notesInput.value = "";
+                    notesInput.hide();
+                    notesInput.disabled = true;
+                    if(enableNotesIcon){
+                        enableNotesIcon.show();
+                        enableNotesIcon.addClassName('disabled');
+                    };
                 }
                 if (optionStatus) {
                     optionStatus.selected = 'selected';
