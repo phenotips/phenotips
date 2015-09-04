@@ -13,6 +13,7 @@ org.phenotips.data.internal.controller.SexController
 org.phenotips.data.internal.controller.GlobalQualifiersController
 org.phenotips.data.internal.controller.TextNotesController
 org.phenotips.data.internal.controller.APGARController
+org.phenotips.data.internal.controller.ParentalAgeController
 org.phenotips.data.internal.controller.PrenatalPerinatalHistoryController
 org.phenotips.data.internal.controller.PrenatalPhenotypeController
 org.phenotips.data.internal.controller.FamilyHistoryController
