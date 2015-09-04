@@ -806,7 +806,7 @@ NodeMenu = Class.create({
 
                 this._attachFieldEventListeners(select, ['change']);
                 this._attachFieldEventListeners(selectAge, ['change']);
-                this._attachFieldEventListeners(textInput, ['change']);
+                this._attachFieldEventListeners(textInput, ['change', 'keyup']);
 
                 var genSelectFunction = function(select, selectAge, enableNotes, disableNotes) {
                     return function() {
@@ -1171,6 +1171,7 @@ NodeMenu = Class.create({
                         notesInput.hide();
                         notesInput.disabled = true;
                         enableNotesIcon.show();
+                        enableNotesIcon.removeClassName('disabled');
                     }
 
                     ageSelect.enable();
