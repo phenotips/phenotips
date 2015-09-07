@@ -130,9 +130,6 @@ public class LifeStatusControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ",
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 

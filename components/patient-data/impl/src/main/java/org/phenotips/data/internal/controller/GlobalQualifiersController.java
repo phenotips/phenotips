@@ -82,7 +82,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, List<VocabularyTerm>> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
@@ -124,8 +124,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
     {
         Iterator<Entry<String, List<VocabularyTerm>>> data =
             patient.<List<VocabularyTerm>>getData(DATA_NAME).dictionaryIterator();
-        while (data.hasNext())
-        {
+        while (data.hasNext()) {
             Entry<String, List<VocabularyTerm>> datum = data.next();
             if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
                 List<VocabularyTerm> terms = datum.getValue();

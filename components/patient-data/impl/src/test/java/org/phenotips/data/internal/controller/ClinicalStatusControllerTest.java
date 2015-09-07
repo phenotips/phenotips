@@ -43,7 +43,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link ClinicalStatusController} component, implementation of the
@@ -92,9 +91,6 @@ public class ClinicalStatusControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        verify(this.mocker.getMockedLogger()).error("Could not find requested document or some unforeseen"
-            + " error has occurred during controller loading ",
-            PatientDataController.ERROR_MESSAGE_NO_PATIENT_CLASS);
         Assert.assertNull(result);
     }
 

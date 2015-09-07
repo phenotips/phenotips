@@ -23,7 +23,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
@@ -80,7 +79,7 @@ public class IdentifiersController implements PatientDataController<String>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, String> result = new LinkedHashMap<String, String>();
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));

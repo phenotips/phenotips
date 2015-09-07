@@ -75,7 +75,7 @@ public class APGARController implements PatientDataController<Integer>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, Integer> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {

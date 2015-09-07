@@ -70,7 +70,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, String> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
@@ -105,7 +105,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
                 xwikiDataObject.setStringValue(property, data.get(property));
             }
 
-            XWikiContext context = contextProvider.get();
+            XWikiContext context = this.contextProvider.get();
             String comment = String.format("Updated %s from JSON", this.getName());
             context.getWiki().saveDocument(doc, comment, true, context);
         } catch (Exception e) {

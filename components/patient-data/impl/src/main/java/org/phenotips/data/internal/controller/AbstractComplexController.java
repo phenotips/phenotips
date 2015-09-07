@@ -74,7 +74,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(getXClassReference());
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, T> result = new LinkedHashMap<String, T>();
             for (String propertyName : getProperties()) {

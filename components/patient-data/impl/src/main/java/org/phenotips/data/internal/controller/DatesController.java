@@ -24,7 +24,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
@@ -91,7 +90,7 @@ public class DatesController implements PatientDataController<Date>
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+                return null;
             }
             Map<String, Date> result = new LinkedHashMap<String, Date>();
             for (String propertyName : getProperties()) {
