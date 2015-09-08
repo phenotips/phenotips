@@ -1,3 +1,20 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.configuration.internal.consent;
 
 import org.phenotips.configuration.RecordElement;
@@ -17,6 +34,11 @@ import javax.inject.Singleton;
 import org.apache.commons.codec.binary.StringUtils;
 
 /**
+ * The default implementation of a {@link ConsentAuthorizer}. This is a temporary implementation, as the whole
+ * application-configuration section must be redesigned.
+ *
+ * @version $Id$
+ * @since 1.2RC2
  */
 @Component
 @Singleton
@@ -43,7 +65,7 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
 
         List<String> granted = getGrantedIds(consents);
         List<RecordElement> updatedElements = new LinkedList<>();
-        for(RecordElement element : elements) {
+        for (RecordElement element : elements) {
             if (this.isElementEnabled(element, granted)) {
                 updatedElements.add(element);
             }
@@ -60,7 +82,7 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
 
     @Override public boolean authorizeInteraction(Iterable<String> grantedConsents)
     {
-        for(Consent consent : this.consentManager.getSystemConsents()) {
+        for (Consent consent : this.consentManager.getSystemConsents()) {
             boolean found = false;
             if (consent.isRequired()) {
                 for (String granted : grantedConsents) {
@@ -85,8 +107,7 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
     /** Should not display a form if any of the required consents are missing. */
     private static boolean missingRequired(List<Consent> consents)
     {
-        for (Consent consent : consents)
-        {
+        for (Consent consent : consents) {
             if (consent.isRequired() && consent.getStatus() != ConsentStatus.YES) {
                 return true;
             }
@@ -95,7 +116,8 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
     }
 
     @Override
-    public boolean isElementEnabled(RecordElement element, Patient patient) {
+    public boolean isElementConsented(RecordElement element, Patient patient)
+    {
         List<Consent> consents = this.consentManager.loadConsentsFromPatient(patient);
         return this.isElementEnabled(element, getGrantedIds(consents));
     }
