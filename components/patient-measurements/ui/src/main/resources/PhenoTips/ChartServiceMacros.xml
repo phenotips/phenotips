@@ -171,6 +171,9 @@ $format##
         $response.sendRedirect($src)
       #elseif($doc != $service || $xcontext.action != 'get')
         $response.sendRedirect($service.getURL('get', $queryString))
+      #elseif($options.format == 'svg')
+        $response.setContentType('image/svg+xml')
+        $svg
       #else
         $response.setContentType('text/html')
         ((($svg)))

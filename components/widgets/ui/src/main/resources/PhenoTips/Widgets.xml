@@ -3112,12 +3112,14 @@ return PhenoTips;
         }
         this.resetPosition();
       }
+      this._prevWidth = '';
     },
 
     resetPosition : function() {
       if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
         return;
       }
+
       this.stickyElement.style.height = '';
       this.stickyElement.style.overflow = '';
       this.stickyElement.fire('size:changed');
@@ -3161,6 +3163,7 @@ return PhenoTips;
       if (this.stickyElement.style.position != 'fixed') {
         this.stickyElement.addClassName('sticky');
         this.stickyElement.style.left = this.boxLeft + 'px';
+        this._prevWidth = this.stickyElement.style.width;
         this.stickyElement.style.width = (this.boxWidth) + 'px';
         this.stickyElement.style.top = this.options.offsetTop + 'px';
         this.stickyElement.style.right = '';
@@ -3189,7 +3192,7 @@ return PhenoTips;
         this.stickyElement.style.top = '';
         this.stickyElement.style.left = '';
         this.stickyElement.style.right = '';
-        this.stickyElement.style.width = '';
+        this.stickyElement.style.width = this._prevWidth;
       }
     },
     isFixed: function() {
