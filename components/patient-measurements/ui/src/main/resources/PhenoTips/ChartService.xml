@@ -41,7 +41,7 @@
 
 {{velocity}}
 #set ($format = "$!{request.f}")
-#if ($format != 'raster')
+#if ($format != 'raster' &amp;&amp; $format != 'svg')
   #set ($format = 'vector')
 #end
 #set ($standalone = ($format != '' &amp;&amp; "$!{request.standalone}" != '' &amp;&amp; "$!{request.standalone}" != '0' &amp;&amp; "$!{request.standalone}" != 'false'))
