@@ -104,9 +104,31 @@ public interface PushPatientService
      */
     PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier);
 
+    /**
+     * Retrieves patient state from an existing record, or the patient state of a newly created record. Example of
+     * patient state are granted consents.
+     *
+     * @param remoteServerIdentifier server name as configured in TODO
+     * @param remoteGUID of a patient of interest (optional); could be {@link null}
+     * @param remoteUserName user name on the remote server
+     * @param password user password on the remote server
+     * @return server response, much alike the response retrieved by {@link #getRemoteConfiguration}. Could be
+     * {@link null} in case that no response was received.
+     */
     PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
         String remoteUserName, String password);
 
+    /**
+     * Retrieves patient state from an existing record, or the patient state of a newly created record. Example of
+     * patient state are granted consents.
+     * This functions is the same as {@link #getRemotePatientState(String, String)}, with the exception that it uses
+     * a stored username and token for authentication.
+     *
+     * @param remoteServerIdentifier server name as configured in TODO
+     * @param remoteGUID of a patient of interest (optional); could be {@link null}
+     * @return server response, much alike the response retrieved by {@link #getRemoteConfiguration}. Could be
+     * {@link null} in case that no response was received.
+     */
     PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID);
 
     /**
@@ -126,6 +148,9 @@ public interface PushPatientService
      * case remote patient will be updated (only the submitted fields)
      *
      * @param patient local patient to be pushed to the remove server
+     * @param userName user name on the remote server
+     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
+     *            can be {@code null})
      * @param exportFieldListJSON patient fields to be pushed, as a string representing a JSON array. When not
      *            {@code null} only patient data fields listed will be pushed. When {@code null}, all available data
      *            fields will be pushed.
@@ -136,10 +161,7 @@ public interface PushPatientService
      *            by the given user patient data will be updated instead of creating a new patient (optional, can be
      *            {@code null})
      * @param remoteServerIdentifier server name as configured in TODO
-     * @param userName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
-     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
-     *            can be {@code null})
      * @return Server response, see {@code PushServerSendPatientResponse}.
      *         <p>
      *         Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network
