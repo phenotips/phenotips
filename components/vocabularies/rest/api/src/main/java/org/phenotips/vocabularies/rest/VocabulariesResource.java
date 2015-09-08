@@ -13,6 +13,5 @@ import javax.ws.rs.core.Response;
 public interface VocabulariesResource
 {
     @GET
-    Response
-
+    Response getAllVocabularies();
 }
