@@ -13,8 +13,8 @@
   #end
   #if ($obfuscate == 1)
 $!value.replaceAll('^(.).*@', '$1...@')##
-  #elseif ($value !='')
-<a href="mailto:$!{escapetool.xml($value)">$!{escapetool.xml($value)</a>##
+  #elseif ($value != '')
+<a href="mailto:$!{escapetool.xml($value)}">$!{escapetool.xml($value)}</a>##
   #end
 #elseif ($type == 'hidden')
   #set ($id = $escapetool.xml("${prefix}${name}"))
