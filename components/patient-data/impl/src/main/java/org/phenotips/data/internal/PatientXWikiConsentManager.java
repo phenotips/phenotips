@@ -54,14 +54,16 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 
 /**
+ * {@link ConsentManager} that integrates with XWiki and the {@link DefaultConsent}.
+ *
  * @version $Id$
- * @since 1.2RC1
+ * @since 1.2RC2
  */
 @Component
 @Singleton
 public class PatientXWikiConsentManager implements ConsentManager, Initializable
 {
-    private final static String GRANTED = "granted";
+    private static final String GRANTED = "granted";
 
     /** Logging helper object. */
     @Inject
@@ -155,9 +157,9 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     @Override public boolean setPatientConsents(Patient patient, Iterable<String> consents)
     {
         try {
-            List<Consent> systemConsents = this.selectFromSystem(consents);
+            List<Consent> existingConsents = this.selectFromSystem(consents);
             SaveablePatientConsentHolder holder = this.getPatientConsentHolder(patient);
-            holder.setConsents(convertToIds(systemConsents));
+            holder.setConsents(convertToIds(existingConsents));
             holder.save();
             return true;
         } catch (Exception ex) {
@@ -167,17 +169,18 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     }
 
     /** @return consents that exist in the system and correspond to the given ids */
-    private List<Consent> selectFromSystem(Iterable<String> ids) {
-        List<Consent> systemConsents = new LinkedList<>();
+    private List<Consent> selectFromSystem(Iterable<String> ids)
+    {
+        List<Consent> existingConsents = new LinkedList<>();
         for (String id : ids) {
             for (Consent consent : this.getSystemConsents()) {
                 if (StringUtils.equals(consent.getId(), id)) {
-                    systemConsents.add(consent);
+                    existingConsents.add(consent);
                     break;
                 }
             }
         }
-        return systemConsents;
+        return existingConsents;
     }
 
     @Override public boolean grantConsent(Patient patient, String consentId)
@@ -251,8 +254,6 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     }
 
     /**
-     *
-     * @param patient
      * @param grant if true will grant the consent, otherwise will revoke
      * @return if operation was successful
      */

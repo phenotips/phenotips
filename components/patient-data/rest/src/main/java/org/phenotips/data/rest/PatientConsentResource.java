@@ -29,21 +29,37 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient records, identified by their internal PhenoTips identifier.
  *
  * @version $Id$
- * @since 1.2M5
+ * @since 1.2RC2
  */
 @Path("/patients/{patient_id}/consents")
 public interface PatientConsentResource
 {
-    @GET
-    Response getConsents(@PathParam("patient_id") String patientId);
+    /**
+     * Retrieves a list of all consents for a given patient.
+     *
+     * @param patientId of a record whose consents to retrieve
+     * @return a JSON array of all consents if the user is allowed to do so and such a record exists, otherwise a failed
+     * response.
+     */
+    @GET Response getConsents(@PathParam("patient_id") String patientId);
 
+    /**
+     * For granting a single consent in a patient record.
+     * @param patientId of the record which is to be affected
+     * @param id of the consent to grant
+     * @return response with code 200 if successful, or a response with a non-successful code
+     */
     @PUT
     @Path("/grant")
-    @Consumes(MediaType.TEXT_PLAIN)
-    Response grantConsent(@PathParam("patient_id") String patientId, String id);
+    @Consumes(MediaType.TEXT_PLAIN) Response grantConsent(@PathParam("patient_id") String patientId, String id);
 
+    /**
+     * For revoking a single consent in a patient record.
+     * @param patientId of the record which is to be affected
+     * @param id of the consent to revoke
+     * @return response with code 200 if successful, or a response with a non-successful code
+     */
     @PUT
     @Path("/revoke")
-    @Consumes(MediaType.TEXT_PLAIN)
-    Response revokeConsent(@PathParam("patient_id") String patientId, String id);
+    @Consumes(MediaType.TEXT_PLAIN) Response revokeConsent(@PathParam("patient_id") String patientId, String id);
 }
