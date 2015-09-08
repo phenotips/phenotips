@@ -407,7 +407,13 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
     var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
     item.insert({after: chapterExpandTools});
     [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
-      event.element().up('.chapter').toggleClassName('collapsed');
+      var chapter = event.findElement('.chapter');
+      chapter.toggleClassName('collapsed');
+      if (!chapter.hasClassName('collapsed')) {
+        chapter.fire('chapter:show');
+      } else {
+        chapter.fire('chapter:hide');
+      }
     });
   });
   $$('.chapter').each(function(item) {
