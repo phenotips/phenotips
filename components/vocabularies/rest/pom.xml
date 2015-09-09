@@ -22,10 +22,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>vocabularies</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-rest</artifactId>
+  <artifactId>patient-vocabularies-rest</artifactId>
   <name>PhenoTips - Vocabularies - REST services</name>
 
   <properties>
@@ -33,6 +33,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>vocabularies-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rest-api</artifactId>
@@ -48,7 +53,6 @@
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.restlet.jse</groupId>
       <artifactId>org.restlet.ext.jackson</artifactId>
