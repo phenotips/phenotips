@@ -245,13 +245,13 @@
 #if ($errorMessage != '')
 {{error}}$errorMessage{{/error}}
 #end
-
+##
 #set ($projectClassName = 'PhenoTips.ProjectClass')
 #set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
 #set ($projectsHome = 'Projects.WebHome')
 $xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($projectClassName)
-
+##
 {{html}}
 &lt;form id="project-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;
   &lt;div&gt;
