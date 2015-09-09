@@ -37,5 +37,5 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{phenotips-projects/}}</content>
+  <content>{{phenotips-projects fullinfo="true" tools="true" orderby="name"/}}</content>
 </xwikidoc>
