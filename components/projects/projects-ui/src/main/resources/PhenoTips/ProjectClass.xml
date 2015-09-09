@@ -493,7 +493,18 @@ console.log("loaded");
     <property>
       <code>#project-creation-form input {
     width: auto;
-}</code>
+}
+
+#projects-table td {
+  border: 0 none;
+  border-bottom: 2px solid $theme.borderColor;
+  padding: 1em;
+  vertical-align: top;
+}
+#projects-table tr:last-child td {
+  border-bottom: 0 none;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -643,7 +654,7 @@ console.log("loaded");
 $xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($projectClassName)
 ##
-(% id="project-directory" %)
+(% id="projects-table" %)
 #if ($projectData.size() == 0)
   {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
     #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
@@ -651,8 +662,8 @@ $xwiki.jsx.use($projectClassName)
     #end
   {{/info}}
 #else
-  #foreach ($projectDatum in $Data)
-    $foreach.index
+  #foreach ($project in $projectData)
+    |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]]
   #end
 #end
 {{/velocity}}
