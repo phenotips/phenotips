@@ -28,8 +28,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.joda.time.Period;
-
 import net.sf.json.JSONObject;
 
 /**
@@ -53,17 +51,12 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
                     "Invalid sex. Supported: M or F."));
         }
 
-        Period agePeriod;
+        Double ageMonths;
         try {
-            agePeriod = Period.parse("P" + age);
+            ageMonths = AbstractMeasurementRestResource.convertAgeStrToNumMonths(age);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST, "Cannot parse age."));
         }
-        float ageMonths = 0;
-        ageMonths += agePeriod.getYears() * 12;
-        ageMonths += agePeriod.getMonths();
-        ageMonths += agePeriod.getWeeks() * 7 / 30.4375;
-        ageMonths += agePeriod.getDays() / 30.4375;
 
         MeasurementHandler handler;
         handler = handlers.get(measurement);
@@ -73,8 +66,8 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         }
 
         JSONObject resp = new JSONObject();
-        resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths, value));
-        resp.accumulate("stddev", handler.valueToStandardDeviation(isMale, ageMonths, value));
+        resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths.floatValue(), value));
+        resp.accumulate("stddev", handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value));
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
