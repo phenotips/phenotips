@@ -228,7 +228,25 @@
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute>#set ($projectClassName = 'PhenoTips.ProjectClass')
+      <codeToExecute>#set ($errorMessage = '')
+#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
+  #if ("$!{request.name.trim()}" == '')
+    #set ($errorMessage = "$services.localization.render('phenotips.projectClass.errorMessage.blankName')")
+  #else
+    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
+    #if ($xwiki.exists($targetDocument))
+      #set ($errorMessage = "$services.localization.render('phenotips.projectClass.errorMessage.nameExists', [${request.name}])")
+    #else
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
+    #end
+  #end
+#end
+#if ($errorMessage != '')
+{{error}}$errorMessage{{/error}}
+#end
+
+#set ($projectClassName = 'PhenoTips.ProjectClass')
 #set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
 #set ($projectsHome = 'Projects.WebHome')
 $xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
