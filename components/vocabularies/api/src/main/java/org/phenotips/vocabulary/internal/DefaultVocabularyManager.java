@@ -25,7 +25,9 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -74,6 +76,11 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     public Vocabulary getVocabulary(String vocabularyId)
     {
         return this.vocabularies.get(vocabularyId);
+    }
+
+    @Override
+    public List<String> getAvailableVocabularies() {
+        return new ArrayList<String>(this.vocabularies.keySet());
     }
 
     /**
