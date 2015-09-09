@@ -17,14 +17,14 @@
  */
 package org.phenotips.data.rest;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 /**
- * Resource for getting chart resources.
+ * Resource for getting chart resources, i.e. available charts with their titles and URLs.
  *
  * @version $Id$
  * @since 1.2M5
@@ -33,12 +33,12 @@ import javax.ws.rs.core.UriInfo;
 public interface MeasurementChartResourcesResource
 {
     /**
-     * Get a computed measurement based on a number of inputs required for the computation. The parameters are extracted
-     * manually by the implementation, since computed values vary in their numbers of parameters.
+     * Get a set of chart resources that are available for the given measurement sets.
      *
-     * @param uriInfo the request's URI info
-     * @return the computed measurement value
+     * @param json the request's JSON input
+     * @return the set of available chart resources
      */
-    @GET
-    Response getChartResources(@Context UriInfo uriInfo);
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response getChartResources(String json);
 }

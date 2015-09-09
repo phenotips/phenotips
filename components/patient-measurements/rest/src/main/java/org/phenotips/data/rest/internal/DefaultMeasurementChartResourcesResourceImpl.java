@@ -21,17 +21,21 @@ import org.phenotips.data.rest.MeasurementChartResourcesResource;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -46,22 +50,83 @@ import net.sf.json.JSONObject;
 public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasurementRestResource implements
         MeasurementChartResourcesResource
 {
-    @Override
-    public Response getChartResources(UriInfo uriInfo)
-    {
-        MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-        String sex = params.getFirst("sex");
+    /** Provides access to the XWiki data. */
+    @Inject
+    private DocumentAccessBridge bridge;
 
+    /** The set of chart resource objects corresponding to this request. */
+    private List<ChartResource> charts;
+
+    @Override
+    public Response getChartResources(String json)
+    {
+        JSONObject reqObj = JSONObject.fromObject(json);
+        this.generateChartResources(reqObj);
+        return this.getResponse();
+    }
+
+    /**
+     * Generate the set of chart resource objects corresponding to this request, based on the available chart
+     * configurations.
+     *
+     * @param reqObj the JSON request object
+     * @throws WebApplicationException if an age cannot be parsed
+     */
+    private void generateChartResources(JSONObject reqObj) throws WebApplicationException
+    {
+        String sex = reqObj.getString("sex");
+        JSONArray measurementSets = reqObj.getJSONArray("measurementSets");
+        this.charts = new LinkedList<>();
         for (Map.Entry<String, MeasurementHandler> entry : this.handlers.entrySet()) {
             for (MeasurementsChartConfiguration config : entry.getValue().getChartsConfigurations()) {
-                for (String age : params.get("age")) {
-                    break;
+                ChartResource chart = null;
+
+                for (int i = 0; i < measurementSets.size(); i++) {
+                    JSONObject measurementSet = measurementSets.getJSONObject(i);
+                    String age = measurementSet.getString("age");
+                    JSONObject measurements = measurementSet.getJSONObject("measurements");
+                    double ageMonths;
+                    try {
+                        ageMonths = AbstractMeasurementRestResource.convertAgeStrToNumMonths(age);
+                    } catch (IllegalArgumentException e) {
+                        throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
+                                "Cannot parse age."));
+                    }
+
+                    if (config.getLowerAgeLimit() <= ageMonths && config.getUpperAgeLimit() >= ageMonths
+                            && measurements.containsKey(config.getMeasurementType())) {
+                        if (chart == null) {
+                            chart = new ChartResource(config.getMeasurementType(), sex.charAt(0), config, this.bridge);
+                        }
+
+                        Double value = measurements.getDouble(config.getMeasurementType());
+                        chart.addAgeValue(ageMonths, value);
+                    }
+                }
+
+                if (chart != null) {
+                    this.charts.add(chart);
                 }
             }
         }
+    }
 
+    /**
+     * Get the response based on the generated chart resource objects.
+     *
+     * @return the response
+     */
+    private Response getResponse()
+    {
+        JSONArray chartsJson = new JSONArray();
+        for (ChartResource chart : this.charts) {
+            JSONObject chartJson = new JSONObject();
+            chartJson.accumulate("title", chart.getChartConfig().getChartTitle());
+            chartJson.accumulate("url", chart.toString());
+            chartsJson.add(chartJson);
+        }
         JSONObject resp = new JSONObject();
-        resp.accumulate("value", 12);
+        resp.accumulate("charts", chartsJson);
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
