@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1441747642000</date>
-  <contentUpdateDate>1441747572000</contentUpdateDate>
+  <date>1441831419000</date>
+  <contentUpdateDate>1441827670000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -533,9 +533,35 @@ console.log("loaded");
   padding: 1em;
   vertical-align: top;
 }
+
 #projects-table tr:last-child td {
   border-bottom: 0 none;
 }
+
+#projects-table .members, #studies-directory .patients {
+  font-size: .8em;
+  font-style: italic;
+  opacity: .5;
+}
+
+#projects-table td.desc &gt; div {
+  background-color: $theme.backgroundSecondaryColor;
+  border-radius: 0 4px 4px;
+  padding: 0.5em 1em;
+  position: relative;
+}
+
+#projects-table td.desc &gt; div:before {
+  content: "";
+  border-top: 0 none;
+  border-right: 16px solid $theme.backgroundSecondaryColor;
+  border-bottom: 16px solid transparent;
+  border-left: 0 none;
+  position: absolute;
+  top: 0;
+  left: -16px;
+}
+
 </code>
     </property>
     <property>
@@ -683,19 +709,35 @@ console.log("loaded");
     'name' : $projectDoc.title
   }))
 #end
+##
+#set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
+##
+##
+#set ($max = $mathtool.toInteger($xcontext.macro.params.max))
+#if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $sortedData.size()))
+  #set ($max = $sortedData.size())
+#end
+##
 $xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($projectClassName)
 ##
 (% id="projects-table" %)
-#if ($projectData.size() == 0)
+#if ($sortedData.size() == 0)
   {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
     #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
       [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
     #end
   {{/info}}
 #else
-  #foreach ($project in $projectData)
-    |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]]
+  #foreach ($project in $sortedData)
+    #if ($foreach.index &lt; $max)
+##Adding line breaks and indentation to the mess below ruins the automatic formatting
+|(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] \\ #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($project.get('doc').display('description'))))#end#end 
+#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((## 
+[[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##  
+[[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'delete')||class="tool delete"]]##
+)))#end\\
+    #end
   #end
 #end
 {{/velocity}}
