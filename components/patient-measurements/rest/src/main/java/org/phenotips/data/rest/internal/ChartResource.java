@@ -96,7 +96,7 @@ public class ChartResource
         UriBuilder uriBuilder = UriBuilder.fromUri(docUrl);
         for (Map.Entry<Double, Double> ageToValue : this.agesToValues.entrySet()) {
             uriBuilder.queryParam("a", ageToValue.getKey());
-            uriBuilder.queryParam(this.measurementType, ageToValue.getKey());
+            uriBuilder.queryParam(this.measurementType, ageToValue.getValue());
         }
         uriBuilder.queryParam("standalone", "1");
         uriBuilder.queryParam("n", this.measurementType);
