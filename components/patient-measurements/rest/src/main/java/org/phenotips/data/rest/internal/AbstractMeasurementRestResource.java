@@ -27,6 +27,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.Period;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -42,13 +44,34 @@ public abstract class AbstractMeasurementRestResource extends XWikiResource
     protected Map<String, MeasurementHandler> handlers;
 
     /**
+     * Get the number of months corresponding to a period string.
+     *
+     * @param age the ISO-8601 period string, without leading 'P'
+     * @throws IllegalArgumentException if the age cannot be parsed
+     * @return number of months
+     */
+    public static Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
+    {
+        Period agePeriod;
+        agePeriod = Period.parse("P" + age);
+
+        Double ageMonths = 0.0;
+        ageMonths += agePeriod.getYears() * 12;
+        ageMonths += agePeriod.getMonths();
+        ageMonths += agePeriod.getWeeks() * 7 / 30.4375;
+        ageMonths += agePeriod.getDays() / 30.4375;
+
+        return ageMonths;
+    }
+
+    /**
      * Generate a server response in case of error.
      *
      * @param status the HTTP status
      * @param text the error text to be returned to the client
      * @return the response object
      */
-    protected Response generateErrorResponse(Response.Status status, String text)
+    protected static Response generateErrorResponse(Response.Status status, String text)
     {
         JSONObject resp = new JSONObject();
         resp.accumulate("error", text);
