@@ -25,12 +25,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822207000</creationDate>
+  <creationDate>1441805365000</creationDate>
   <parent>Studies.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822207000</date>
-  <contentUpdateDate>1401822207000</contentUpdateDate>
+  <date>1441805793000</date>
+  <contentUpdateDate>1441805793000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -52,78 +52,6 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <fields>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <idField/>
-        <multiSelect>1</multiSelect>
-        <name>fields</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>fields</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </fields>
-      <mapping>
-        <cache>0</cache>
-        <classname>PhenoTips.PhenotypeMappingClass</classname>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>radio</displayType>
-        <idField>doc.fullName</idField>
-        <multiSelect>0</multiSelect>
-        <name>mapping</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>mapping</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField>doc.name</valueField>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </mapping>
-      <sections>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <idField/>
-        <multiSelect>1</multiSelect>
-        <name>sections</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>sections</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </sections>
     </class>
   </object>
 </xwikidoc>
