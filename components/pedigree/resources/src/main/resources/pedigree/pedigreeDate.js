@@ -127,10 +127,12 @@ var PedigreeDate = Class.create({
         return this.toString();
     },
 
+    /** Returns true if any part of the date has been set. */
     isSet: function() {
         return (this.decade !== null || this.year !== null || this.month !== null || this.day !== null);
     },
 
+    /** Returns true iff the minimum precision level is set, ie. the decade. Useful for displaying the date. */
     isComplete: function() {
         return (this.decade !== null);
     },
@@ -189,7 +191,7 @@ var PedigreeDate = Class.create({
             }
         }
         return dateStr;
-     },
+    },
 
     // Returns the number of milliseconds since 1 January 1970 (same as Date.getTime())
     getTime: function() {
