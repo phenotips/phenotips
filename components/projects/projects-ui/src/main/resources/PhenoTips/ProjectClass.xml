@@ -695,11 +695,20 @@ console.log("loaded");
       <code>{{velocity}}
 #set ($projectClassName = 'PhenoTips.ProjectClass')
 #set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
+#set ($orders = {
+  'name' : 'asc',
+  'members' : 'desc',
+  'cases' : 'desc'
+})
+#set ($defaultOrder = 'name')
+#set ($order = "$!xcontext.macro.params.orderby")
+#if (!$orders.get($order))
+  #set($order = $defaultOrder)
+#end
 ##
 #set ($query = $services.query.xwql("from doc.object(${projectClassName}) as std where doc.fullName&lt;&gt;:template").bindValue('template', $projectTemplateName ))
 #set ($projectDocs = $xwiki.wrapDocs($query.execute()))
 #set ($projectData = [])
-##
 #foreach ($projectDoc in $projectDocs)
   #set ($projectObj = $projectDoc.getObject($projectClassName))
   #set ($discard = $projectData.add({
@@ -709,9 +718,7 @@ console.log("loaded");
     'name' : $projectDoc.title
   }))
 #end
-##
 #set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
-##
 ##
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
 #if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $sortedData.size()))
@@ -732,9 +739,9 @@ $xwiki.jsx.use($projectClassName)
   #foreach ($project in $sortedData)
     #if ($foreach.index &lt; $max)
 ##Adding line breaks and indentation to the mess below ruins the automatic formatting
-|(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] \\ #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($project.get('doc').display('description'))))#end#end 
-#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((## 
-[[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##  
+|(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] \\ #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($project.get('doc').display('description'))))#end#end
+#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
+[[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##
 [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
     #end
