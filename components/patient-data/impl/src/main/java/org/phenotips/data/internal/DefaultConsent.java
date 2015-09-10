@@ -20,6 +20,8 @@ package org.phenotips.data.internal;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -39,6 +41,9 @@ public class DefaultConsent implements Consent
 
     DefaultConsent(String id, String description, boolean required)
     {
+        if (id == null || description == null || StringUtils.isEmpty(id) || StringUtils.isEmpty(description)) {
+            throw new IllegalArgumentException("A consent cannot have empty id or description");
+        }
         this.id = id;
         this.description = description;
         this.required = required;

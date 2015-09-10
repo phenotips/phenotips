@@ -125,8 +125,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
             xwikiPatientConsents = readConsentIdsFromPatientDoc(patientDoc);
         } catch (Exception ex) {
-            this.logger.error(
-                "Could not load patient document {} or read consents. {}", patient.getId(), ex.getMessage());
+            this.logger.error("Could not load patient document {} or read consents. {}",
+                patient == null ? "NULL" : patient.getId(), ex.getMessage());
         }
 
         /* Using system consents to determine what consents a patient has agreed to, but not reusing the system consents
@@ -149,7 +149,10 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         List<String> ids = new LinkedList<>();
         BaseObject idsHolder = doc.getXObject(consentIdsHolderReference);
         if (idsHolder != null) {
-            ids = idsHolder.getListValue(GRANTED);
+            List<String> patientIds = idsHolder.getListValue(GRANTED);
+            if (patientIds != null) {
+                ids = patientIds;
+            }
         }
         return ids;
     }
@@ -217,7 +220,12 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
             if (consentObjects != null) {
                 for (BaseObject consentObject : consentObjects) {
-                    consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
+                    try {
+                        consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
+                    } catch (Exception ex) {
+                        this.logger.warn("An XWiki consent configuration is improperly configured. {}",
+                            ex.getMessage());
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -238,7 +246,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     {
         String id = xwikiConsent.getStringValue("id");
         String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
-        /* removing divs */
+        /* removing divs and ps */
         description = cleanDescription(description);
         boolean required = intToBool(xwikiConsent.getIntValue("required"));
         return new DefaultConsent(id, description, required);
