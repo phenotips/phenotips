@@ -148,6 +148,31 @@
         <valueField/>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </studies>
+      <projects>
+        <cache>0</cache>
+        <classname />
+        <customDisplay />
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <idField />
+        <multiSelect>1</multiSelect>
+        <name>projects</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>projects</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>
+        </separator>
+        <separators />
+        <size>1</size>
+        <sort>none</sort>
+        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.ProjectTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.ProjectClass' order by doc.name</sql>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage />
+        <validationRegExp />
+        <valueField />
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </projects>
     </class>
     <property>
       <description/>
