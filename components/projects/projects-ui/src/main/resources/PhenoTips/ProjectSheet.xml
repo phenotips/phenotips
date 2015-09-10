@@ -49,6 +49,13 @@ $xwiki.jsx.use('PhenoTips.ProjectSheet')##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+
+#if ($xwiki.exists('PhenoTips.ProjectClass'))
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.groups')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.groupsHint')
+: $doc.display('groups')
+#end
+
 )))
 #else
 $!doc.content
