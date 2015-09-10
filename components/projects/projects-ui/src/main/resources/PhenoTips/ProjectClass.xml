@@ -38,6 +38,40 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content/>
+  <class>
+    <name>PhenoTips.ProjectClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <groups>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>checkbox</displayType>
+      <idField/>
+      <multiSelect>1</multiSelect>
+      <name>groups</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>groups</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenoTipsGroupTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenoTipsGroupClass' order by doc.name</sql>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </groups>
+  </class>
   <object>
     <name>PhenoTips.ProjectClass</name>
     <number>0</number>
