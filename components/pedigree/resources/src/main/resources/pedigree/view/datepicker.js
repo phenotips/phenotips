@@ -68,7 +68,9 @@ var PhenoTips = (function (PhenoTips) {
       events.each(function(eventName) {
         _this.dropdown.observe(eventName, function() {
           callback();
-          _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+          if (this.inputFormat != "DMY") {
+            _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
+          }
         });
       });
     },
