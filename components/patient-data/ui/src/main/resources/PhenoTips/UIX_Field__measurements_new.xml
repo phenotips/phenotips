@@ -134,57 +134,71 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>#charts {
-  border: 1px solid black;
-  padding: 15px;
-  padding-left: 260px;
-  position: relative;
+      <code>#measurements .list-actions {
+  width: auto;
+  clear: both;
+}
+#charts-new {
+  border: 1px solid #aaa;
+  padding: 15px; padding-left: 190px;
   height: 100%;
   box-sizing: border-box;
+  float: right; width: 48%;
+  position: relative;
 }
-#charts .sets {
+#charts-new .sets {
   width: 120px;
   position: absolute; top: 0; left: 0;
 }
-#charts .sets &gt; div {
+#charts-new .sets &gt; div {
   cursor: pointer;
   padding: 10px;
 }
-#charts .sets &gt; div.selected::after {
+#charts-new .sets &gt; div.selected::after {
   content: ' &gt;';
 }
-#charts .chart-thumbs {
-  width: 140px;
-  position: absolute; top: 0; left: 100px;
+#charts-new .chart-thumbs {
+  width: 180px;
+  padding: 20px;
+  position: absolute; top: 0; left: 0;
   overflow-y: scroll; overflow-x: hidden;
   height: 100%;
+  box-sizing: border-box;
 }
-#charts .chart-thumbs img {
+#charts-new .chart-thumbs img {
   width: 100px;
   display: block;
   margin: 0 auto;
 }
-#charts .chart-thumbs &gt; div {
+#charts-new .chart-thumbs &gt; div {
   margin-bottom: 20px;
   cursor: pointer;
+  background-color: white;
+  border: 1px solid #aaa;
+  padding: 10px;
 }
-#charts .chart-thumbs &gt; div &gt; span {
+#charts-new .chart-thumbs &gt; div &gt; span {
   text-align: center;
   display: block;
-  padding-top: 5px;
+  padding-bottom: 5px;
 }
-#charts img.main {
+#charts-new .chart-thumbs &gt; div.selected &gt; span {
+  font-weight: bold;
+}
+#charts-new .chart-thumbs &gt; div.selected {
+  border-color: #666;
+}
+#charts-new img.main {
   max-width: 100%;
   max-height: 100%;
+  padding: 0;
 }
-#container {
+#measurements-container {
   position: relative;
-  padding-left: 450px;
-  min-height: 200px;
-  height: 100%;
 }
 #measurements {
-  overflow: auto;
+  width: 485px;
+  float: left;
 }
 .measurement {
   padding: 0.2em 0;
@@ -208,13 +222,18 @@
   float: left;
   min-height: 1px;
 }
+.measurement-row &gt; span {
+  line-height: 20px;
+}
 .measurement-row span.side-label {
   width: 15px;
   font-size: 80%;
   font-weight: bold;
+  text-align: right;
 }
 .measurement-row input {
   width: auto;
+  margin: 0 4px;
 }
 .measurement-row span.unit {
   width: 60px;
@@ -398,58 +417,65 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #set ($itemDoc = $xwiki.getDocument($objs.get(0)))
 #set ($obj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-  (% id="measurements"%)(((
-    (% class="measurement-set proto"%)(((
-      {{html clean="false" wiki="false"}}
-      &lt;label for="date"&gt;Date:&lt;/label&gt; &lt;input class="xwiki-date measurement-date" type="text" title="MM/dd/yyyy" alt=""&gt;
-      {{/html}}
-      (% class="age"%)(((
+  (% id="measurements-container"%)(((
+    (% id="measurements"%)(((
+      (% class="measurement-set proto"%)(((
         {{html clean="false" wiki="false"}}
-        &lt;label for=""&gt;Age:&lt;/label&gt; &lt;input class="pt-duration measurement-age" type="text" placeholder="e.g. 1y5m2w"&gt;
+        &lt;label for="date"&gt;Date:&lt;/label&gt; &lt;input class="xwiki-date measurement-date" type="text" title="MM/dd/yyyy" alt=""&gt;
         {{/html}}
-      )))
-      (% class="measurements"%)(((
-        #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
-        #foreach ($handler in $handlers)
-          #if ($obj.getProperty('enabled').value.contains($handler.getName())
-               &amp;&amp; $obj.getProperty('default').value.contains($handler.getName()))
-            #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided() $handler.getComputationDependencies())
-          #end
-        #end
-        {{html clean="false" wiki="false"}}
-        &lt;div class="expand-buttons"&gt;
-          &lt;span class="buttonwrapper show"&gt;
-            &lt;button type="button" class="tool button secondary"&gt;
-              &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
-              $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
-            &lt;/button&gt;
-          &lt;/span&gt;
-          &lt;span class="buttonwrapper hide"&gt;
-            &lt;button type="button" class="tool button secondary"&gt;
-              &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
-              $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
-            &lt;/button&gt;
-          &lt;/span&gt;
-        &lt;/div&gt;
-        {{/html}}
-        (% class="expanded-measurements "%)(((
+        (% class="age"%)(((
+          {{html clean="false" wiki="false"}}
+          &lt;label for=""&gt;Age:&lt;/label&gt; &lt;input class="pt-duration measurement-age" type="text" placeholder="e.g. 1y5m2w"&gt;
+          {{/html}}
+        )))
+        (% class="measurements"%)(((
+          #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
           #foreach ($handler in $handlers)
-            #if ($obj.getProperty('enabled').value.contains($handler.getName()) 
-                 &amp;&amp; !$obj.getProperty('default').value.contains($handler.getName()))
+            #if ($obj.getProperty('enabled').value.contains($handler.getName())
+                 &amp;&amp; $obj.getProperty('default').value.contains($handler.getName()))
               #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided() $handler.getComputationDependencies())
             #end
           #end
+          {{html clean="false" wiki="false"}}
+          &lt;div class="expand-buttons"&gt;
+            &lt;span class="buttonwrapper show"&gt;
+              &lt;button type="button" class="tool button secondary"&gt;
+                &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+                $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
+              &lt;/button&gt;
+            &lt;/span&gt;
+            &lt;span class="buttonwrapper hide"&gt;
+              &lt;button type="button" class="tool button secondary"&gt;
+                &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+                $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
+              &lt;/button&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;
+          {{/html}}
+          (% class="expanded-measurements "%)(((
+            #foreach ($handler in $handlers)
+              #if ($obj.getProperty('enabled').value.contains($handler.getName()) 
+                   &amp;&amp; !$obj.getProperty('default').value.contains($handler.getName()))
+                #measurement($handler.getName() $handler.getUnit() $handler.isDoubleSided() $handler.getComputationDependencies())
+              #end
+            #end
+          )))
         )))
       )))
+      (% class="list-actions"%)(((
+        {{html clean="false" wiki="false"}}
+        &lt;span class="buttonwrapper"&gt;
+          &lt;label class="create-button-label"&gt;+&lt;/label&gt;
+          &lt;a class="add-data-button" id="btn_add-measurement-set" href="#"&gt;New measurement set&lt;/a&gt;
+        &lt;/span&gt;
+        {{/html}}
+      )))
     )))
-  )))
-  (% class="list-actions"%)(((
-    {{html clean="false" wiki="false"}}
-    &lt;span class="buttonwrapper"&gt;
-      &lt;label class="create-button-label"&gt;+&lt;/label&gt;
-      &lt;a class="add-data-button" id="btn_add-measurement-set" href="#"&gt;New measurement set&lt;/a&gt;
-    &lt;/span&gt;
-    {{/html}}
+    (% id="charts-new"%)(((
+      (% class="chart-thumbs"%)(((
+      )))
+    )))
+	(% class="clear"%)((()))
   )))
   (% class="clear"%)((()))
 #end
