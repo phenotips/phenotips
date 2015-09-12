@@ -745,11 +745,14 @@ console.log("loaded");
 #set ($projectData = [])
 #foreach ($projectDoc in $projectDocs)
   #set ($projectObj = $projectDoc.getObject($projectClassName))
+  #set ($groupsQuery = 'select p.groups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
+  #set ($groups = $services.query.xwql($groupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
   #set ($discard = $projectData.add({
     'doc' : $projectDoc ,
     'obj' : $projectObj ,
     'doc.fullName' : $projectDoc.fullName,
-    'name' : $projectDoc.title
+    'name' : $projectDoc.title,
+    'groups' : $groups.size()
   }))
 #end
 #set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
@@ -772,12 +775,19 @@ $xwiki.jsx.use($projectClassName)
 #else
   #foreach ($project in $sortedData)
     #if ($foreach.index &lt; $max)
-##Adding line breaks and indentation to the mess below ruins the automatic formatting
-|(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] \\ #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($project.get('doc').display('description'))))#end#end
-#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-[[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##
-[[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'delete')||class="tool delete"]]##
-)))#end\\
+      |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] ##
+      \\(% class="members"%)$project.get('groups') group#if($project.get('groups') != 1)s#end(%%)##
+      #if ($xcontext.macro.params.fullinfo == 'true')|##
+        #if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')
+          (% class="desc" %) ((($project.get('doc').display('description'))))
+        #end
+      #end
+      #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
+        (% class="tools" %) (((##
+        [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##
+        [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'delete')||class="tool delete"]]##
+        )))
+      #end\\
     #end
   #end
 #end
