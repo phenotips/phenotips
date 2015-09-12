@@ -128,7 +128,7 @@
 #end
 ##
 #set ($class = $origClass)
-#set ($discard = $doc.use($origObjClass))
+#set ($discard = $doc.use($origObj))
 #set ($obj = $origObj)
 {{/velocity}}</content>
     </property>
