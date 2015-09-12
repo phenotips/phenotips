@@ -47,7 +47,7 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <groups>
+    <contributorsGroups>
       <cache>0</cache>
       <classname/>
       <customDisplay/>
@@ -55,10 +55,10 @@
       <displayType>checkbox</displayType>
       <idField/>
       <multiSelect>1</multiSelect>
-      <name>groups</name>
+      <name>contributorsGroups</name>
       <number>1</number>
       <picker>0</picker>
-      <prettyName>groups</prettyName>
+      <prettyName>Contributors Groups</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
@@ -70,7 +70,7 @@
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </groups>
+    </contributorsGroups>
   </class>
   <object>
     <name>PhenoTips.ProjectClass</name>
@@ -745,14 +745,14 @@ console.log("loaded");
 #set ($projectData = [])
 #foreach ($projectDoc in $projectDocs)
   #set ($projectObj = $projectDoc.getObject($projectClassName))
-  #set ($groupsQuery = 'select p.groups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
-  #set ($groups = $services.query.xwql($groupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
+  #set ($contributorsGroupsQuery = 'select p.contributorsGroups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
+  #set ($contributorsGroups = $services.query.xwql($contributorsGroupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
   #set ($discard = $projectData.add({
     'doc' : $projectDoc ,
     'obj' : $projectObj ,
     'doc.fullName' : $projectDoc.fullName,
     'name' : $projectDoc.title,
-    'groups' : $groups.size()
+    'contributorsGroups' : $contributorsGroups.size()
   }))
 #end
 #set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
@@ -776,7 +776,7 @@ $xwiki.jsx.use($projectClassName)
   #foreach ($project in $sortedData)
     #if ($foreach.index &lt; $max)
       |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] ##
-      \\(% class="members"%)$project.get('groups') group#if($project.get('groups') != 1)s#end(%%)##
+      \\(% class="members"%)$project.get('contributorsGroups') contributors group#if($project.get('contributorsGroups') != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')
           (% class="desc" %) ((($project.get('doc').display('description'))))
@@ -1008,7 +1008,7 @@ $xwiki.jsx.use($projectClassName)
       <defaultValue>name</defaultValue>
     </property>
     <property>
-      <description>How to sort the studies. Supported values: name, groups. Default: name.</description>
+      <description>How to sort the studies. Supported values: name. Default: name.</description>
     </property>
     <property>
       <mandatory>0</mandatory>
