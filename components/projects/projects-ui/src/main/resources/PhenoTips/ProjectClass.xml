@@ -71,6 +71,30 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </contributorsGroups>
+    <leadersGroups>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>checkbox</displayType>
+      <idField/>
+      <multiSelect>1</multiSelect>
+      <name>leadersGroups</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Leaders Groups</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenoTipsGroupTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenoTipsGroupClass' order by doc.name</sql>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </leadersGroups>
   </class>
   <object>
     <name>PhenoTips.ProjectClass</name>
@@ -744,15 +768,20 @@ console.log("loaded");
 #set ($projectDocs = $xwiki.wrapDocs($query.execute()))
 #set ($projectData = [])
 #foreach ($projectDoc in $projectDocs)
+  ## Read groups
   #set ($projectObj = $projectDoc.getObject($projectClassName))
   #set ($contributorsGroupsQuery = 'select p.contributorsGroups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
   #set ($contributorsGroups = $services.query.xwql($contributorsGroupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
+  #set ($leadersGroupsQuery = 'select p.leadersGroups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
+  #set ($leadersGroups = $services.query.xwql($leadersGroupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
+  ##
   #set ($discard = $projectData.add({
     'doc' : $projectDoc ,
     'obj' : $projectObj ,
     'doc.fullName' : $projectDoc.fullName,
     'name' : $projectDoc.title,
-    'contributorsGroups' : $contributorsGroups.size()
+    'contributorsGroups' : $contributorsGroups.size(),
+    'leadersGroups' : $leadersGroups.size()
   }))
 #end
 #set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
@@ -777,6 +806,7 @@ $xwiki.jsx.use($projectClassName)
     #if ($foreach.index &lt; $max)
       |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] ##
       \\(% class="members"%)$project.get('contributorsGroups') contributors group#if($project.get('contributorsGroups') != 1)s#end(%%)##
+      \\(% class="members"%)$project.get('leadersGroups') leaders group#if($project.get('leadersGroups') != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')
           (% class="desc" %) ((($project.get('doc').display('description'))))
