@@ -54,6 +54,9 @@ $xwiki.jsx.use('PhenoTips.ProjectSheet')##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributorsGroups')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsGroupsHint')
 : $doc.display('contributorsGroups')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leadersGroups')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersGroupsHint')
+: $doc.display('leadersGroups')
 #end
 
 )))
