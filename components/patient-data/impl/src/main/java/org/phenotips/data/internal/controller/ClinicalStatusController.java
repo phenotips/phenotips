@@ -24,6 +24,7 @@ import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.Collection;
 
@@ -32,10 +33,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.json.JSONObject;
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 
 /**
  * Has only one field corresponding to whether the patient is affected, normal, or pre-symptomatic.
@@ -48,6 +51,10 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
+    private final static String UNAFFECTED = "unaffected";
+
+    private final static String AFFECTED = "affected";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -65,19 +72,17 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public PatientData<String> load(Patient patient)
     {
-        String unaffected = "unaffected";
-        String affected = "affected";
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
                 return null;
             }
-            int isNormal = data.getIntValue(unaffected);
+            int isNormal = data.getIntValue(UNAFFECTED);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), affected);
+                return new SimpleValuePatientData<String>(getName(), AFFECTED);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), unaffected);
+                return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -115,12 +120,37 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseProperty<ObjectPropertyReference> isNormal =
+                (BaseProperty<ObjectPropertyReference>) doc.getXObject(Patient.CLASS_REFERENCE).getField(UNAFFECTED);
+            PatientData<String> data = patient.getData(this.getName());
+            if (isNormal == null || data == null) {
+                return;
+            }
+            if (StringUtils.equals(data.getValue(), AFFECTED)) {
+                isNormal.setValue(0);
+            } else if (StringUtils.equals(data.getValue(), UNAFFECTED)) {
+                isNormal.setValue(1);
+            }
+        } catch (Exception e) {
+            this.logger.error("Could not load patient document or some unknown error has occurred", e.getMessage());
+        }
     }
 
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        JSONObject data = json.optJSONObject(this.getName());
+        if (data == null || data.isNullObject()) {
+            return null;
+        }
+        String status = data.optString(this.getName());
+        if (StringUtils.equals(status, AFFECTED)) {
+            return new SimpleValuePatientData<String>(this.getName(), AFFECTED);
+        } else if (StringUtils.equals(status, UNAFFECTED)) {
+            return new SimpleValuePatientData<String>(this.getName(), UNAFFECTED);
+        }
+        return null;
     }
 }
