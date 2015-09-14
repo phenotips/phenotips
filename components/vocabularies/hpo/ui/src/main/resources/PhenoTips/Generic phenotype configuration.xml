@@ -293,7 +293,58 @@
 "prenatal_phenotype": [
   {
     "type"       : "section",
-    "title"      : "Prenatal growth parameters",
+    "title"      : "Pregnancy history",
+    "categories" : ["HP:0002686"],
+    "data"       : [
+      {"id"      : "HP:0012188", "title" : "Hyperemesis gravidarum (excessive vomiting)"},
+      {"id"      : "HP:0008071"},
+      {"id"      : "HP:0009800"},
+      {"id"      : "HP:0030244"},
+      {"id"      : "HP:0100622"},
+      {"id"      : "HP:0011438"},
+      {"id"      : "HP:0100603"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Prenatal development",
+    "categories" : ["HP:0001197"],
+    "data"       : [
+      {"id"      : "HP:0001511"},
+      {"id"      : "HP:0001562"},
+      {"id"      : "HP:0001561"},
+      {"id"      : "HP:0001558"},
+      {"id"      : "HP:0010519"},
+      {"id"      : "HP:0002898"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Delivery",
+    "categories" : ["HP:0001787"],
+    "data"       : [
+      {
+        "type"  : "conditionalSubsection",
+        "id"    : "HP:0001787",
+        "group_type" : "multi-select",
+        "title" : "Abnormal delivery (Non-NSVD)",
+        "data"  : [
+          {"id" : "HP:0030365"},
+          {"id" : "HP:0030369"},
+          {"id" : "HP:0001623"},
+          {"id" : "HP:0011410"},
+          {"id" : "HP:0011411"},
+          {"id" : "HP:0011412"},
+          {"id" : "HP:0030366"},
+          {"id" : "HP:0005268"}
+        ]
+      },
+      {"id" : "HP:0001622"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neonatal growth parameters",
     "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
       {
@@ -330,28 +381,13 @@
   },
   {
     "type"       : "section",
-    "title"      : "Prenatal development or birth",
-    "categories" : ["HP:0001197"],
+    "title"      : "Perinatal complications",
+    "categories" : ["HP:0000118"],
     "data"       : [
-      {
-        "type"  : "conditionalSubsection",
-        "id"    : "HP:0001787",
-        "group_type" : "multi-select",
-        "title" : "Abnormal delivery (Non-NSVD)",
-        "data"  : [
-          {"id" : "HP:0030369"},
-          {"id" : "HP:0005268"},
-          {"id" : "HP:0001623"},
-          {"id" : "HP:0011410"},
-          {"id" : "HP:0011411"},
-          {"id" : "HP:0011412"},
-          {"id" : "HP:0030365"},
-          {"id" : "HP:0030366"}
-        ]
-      },
-      {"id" : "HP:0001562"},
-      {"id" : "HP:0001561"},
-      {"id" : "HP:0001622"}
+      {"id" : "HP:0002643"},
+      {"id" : "HP:0006579"},
+      {"id" : "HP:0002033"},
+      {"id" : "HP:0001998"}
     ]
   }
 ]
