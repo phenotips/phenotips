@@ -1,14 +1,12 @@
 package org.phenotips.vocabularies.rest.internal;
 
+import org.phenotips.data.rest.Relations;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.Relations;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
 import org.phenotips.vocabularies.rest.VocabularyTermsResource;
 import org.phenotips.vocabularies.rest.model.Link;
-import org.phenotips.vocabularies.rest.model.LinkCollection;
-import org.phenotips.vocabularies.rest.model.VocabularyTermRep;
-import org.phenotips.vocabularies.rest.model.VocabularyTermsRep;
+import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
@@ -24,9 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,7 +45,7 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
     private DomainObjectFactory objectFactory;
 
     @Override
-    public VocabularyTermsRep suggest(String vocabularyId, String input, @DefaultValue("10") int maxResults, String sort,
+    public VocabularyTerms suggest(String vocabularyId, String input, @DefaultValue("10") int maxResults, String sort,
         String customFilter)
     {
         if (StringUtils.isEmpty(input) || StringUtils.isEmpty(vocabularyId)) {
@@ -57,12 +53,11 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
         }
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null){ return null;}
-
         List<VocabularyTerm> termSuggestions = vocabulary.search(input, maxResults, sort, customFilter);
 
-        List<VocabularyTermRep> termReps = new ArrayList<>();
+        List<org.phenotips.vocabularies.rest.model.VocabularyTerm> termReps = new ArrayList<>();
         for (VocabularyTerm term : termSuggestions) {
-            VocabularyTermRep termRep = objectFactory.createVocabularyTermRepresentation(term);
+            org.phenotips.vocabularies.rest.model.VocabularyTerm termRep = objectFactory.createVocabularyTermRepresentation(term);
             List<Link> links = new ArrayList<>();
             links.add(new Link().withRel(Relations.VOCABULARY_TERM)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyTermResource.class)
@@ -78,7 +73,8 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
             termRep.withLinks(links);
             termReps.add(termRep);
         }
-
-        return this.objectFactory.createVocabularyTermsRepresentation(termReps);
+        VocabularyTerms result = this.objectFactory.createVocabularyTermsRepresentation(termReps);
+        result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
+        return result;
     }
 }

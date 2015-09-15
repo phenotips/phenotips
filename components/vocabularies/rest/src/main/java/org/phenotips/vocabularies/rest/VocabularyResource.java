@@ -1,8 +1,6 @@
 package org.phenotips.vocabularies.rest;
 
-import org.phenotips.vocabularies.rest.model.VocabularyRep;
-
-import org.xwiki.component.annotation.Role;
+import org.phenotips.vocabularies.rest.model.Vocabulary;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -22,5 +20,5 @@ public interface VocabularyResource
     @PUT
     Response reindex(@QueryParam("url") String url, @PathParam("vocabulary") String vocabularyId);
 
-    @GET VocabularyRep getVocabulary(@PathParam("vocabulary") String vocabularyId);
+    @GET Vocabulary getVocabulary(@PathParam("vocabulary") String vocabularyId);
 }

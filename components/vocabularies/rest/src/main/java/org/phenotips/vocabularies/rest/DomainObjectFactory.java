@@ -1,9 +1,7 @@
 package org.phenotips.vocabularies.rest;
 
-import org.phenotips.vocabularies.rest.model.VocabulariesRep;
-import org.phenotips.vocabularies.rest.model.VocabularyRep;
-import org.phenotips.vocabularies.rest.model.VocabularyTermRep;
-import org.phenotips.vocabularies.rest.model.VocabularyTermsRep;
+import org.phenotips.vocabularies.rest.model.Vocabularies;
+import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -21,12 +19,12 @@ import java.util.List;
 @Unstable
 public interface DomainObjectFactory
 {
-    VocabularyRep createVocabularyRepresentation(Vocabulary vocabulary);
+    org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary);
 
-    VocabulariesRep createVocabulariesRepresentation(List<VocabularyRep> vocabularyRepList);
+    Vocabularies createVocabulariesRepresentation(List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyRepList);
 
-    VocabularyTermRep createVocabularyTermRepresentation(VocabularyTerm term);
+    org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term);
 
-    VocabularyTermsRep createVocabularyTermsRepresentation(List<VocabularyTermRep> vocabularyTermRepList);
+    VocabularyTerms createVocabularyTermsRepresentation(List<org.phenotips.vocabularies.rest.model.VocabularyTerm> vocabularyTermRepList);
 
 }

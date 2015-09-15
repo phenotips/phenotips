@@ -1,17 +1,15 @@
 package org.phenotips.vocabularies.rest.internal;
 
+import org.phenotips.data.rest.Relations;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
-import org.phenotips.vocabularies.rest.model.VocabularyTermRep;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
-
-import java.net.URI;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,7 +20,6 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 /**
@@ -50,7 +47,7 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
         if (vocabulary == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        VocabularyTerm term = vocabulary.getTerm(vocabularyId);
+        VocabularyTerm term = vocabulary.getTerm(termId);
         if( term == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -72,8 +69,8 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
         JSONObject rep = JSONObject.fromObject(term.toJSON());
         //decorate with links
         JSONObject links = new JSONObject();
-        links.accumulate("self", this.uriInfo.getRequestUri().toString());
-        links.accumulate("vocabulary", UriBuilder.fromUri(this.uriInfo.getBaseUri())
+        links.accumulate(Relations.SELF, this.uriInfo.getRequestUri().toString());
+        links.accumulate(Relations.VOCABULARY, UriBuilder.fromUri(this.uriInfo.getBaseUri())
                 .path(VocabularyResource.class)
                 .build(term.getVocabulary().getAliases().iterator().next())
                 .toString()

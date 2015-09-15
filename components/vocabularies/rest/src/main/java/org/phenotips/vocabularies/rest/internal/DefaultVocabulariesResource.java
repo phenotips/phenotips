@@ -1,12 +1,12 @@
 package org.phenotips.vocabularies.rest.internal;
+
+import org.phenotips.data.rest.Relations;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.Relations;
 import org.phenotips.vocabularies.rest.VocabulariesResource;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermsResource;
 import org.phenotips.vocabularies.rest.model.Link;
-import org.phenotips.vocabularies.rest.model.VocabulariesRep;
-import org.phenotips.vocabularies.rest.model.VocabularyRep;
+import org.phenotips.vocabularies.rest.model.Vocabularies;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
@@ -38,14 +38,14 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
     @Inject
     private DomainObjectFactory objectFactory;
 
-    @Override public VocabulariesRep getAllVocabularies()
+    @Override public Vocabularies getAllVocabularies()
     {
-        VocabulariesRep result = new VocabulariesRep();
+        Vocabularies result = new Vocabularies();
         List<String> vocabularyIDs = this.vm.getAvailableVocabularies();
-        List<VocabularyRep> availableVocabs = new ArrayList<>();
+        List<org.phenotips.vocabularies.rest.model.Vocabulary> availableVocabs = new ArrayList<>();
         for (String vocabularyID : vocabularyIDs) {
             Vocabulary vocab = vm.getVocabulary(vocabularyID);
-            VocabularyRep rep = this.objectFactory.createVocabularyRepresentation(vocab);
+            org.phenotips.vocabularies.rest.model.Vocabulary rep = this.objectFactory.createVocabularyRepresentation(vocab);
             List<Link> linkList = new ArrayList<>();
             linkList.add(new Link().withHref(
                     UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyID)
@@ -53,9 +53,8 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
                     .withRel(Relations.SELF)
             );
             linkList.add(new Link().withRel("suggest")
-                    .withHref(UriBuilder.fromResource(VocabularyTermsResource.class)
+                    .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
                         .path(VocabularyTermsResource.class)
-                        .path(VocabularyTermsResource.class, "suggest")
                         .build(vocabularyID)
                         .toString())
             );

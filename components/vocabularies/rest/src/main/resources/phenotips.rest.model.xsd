@@ -32,7 +32,7 @@
     </sequence>
   </complexType>
 
-  <complexType name="VocabularyRep">
+  <complexType name="Vocabulary">
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
@@ -57,7 +57,7 @@
     </complexContent>
   </complexType>
 
-  <complexType name="VocabularyTermRep">
+  <complexType name="VocabularyTerm">
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
@@ -69,30 +69,30 @@
     </complexContent>
   </complexType>
 
-  <element name="vocabulariesRep">
+  <element name="vocabularies">
     <complexType>
       <complexContent>
         <extension base="phenotips:LinkCollection">
           <sequence>
-            <element name="vocabulary" type="phenotips:VocabularyRep" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="vocabulary" type="phenotips:Vocabulary" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="vocabularyTermsRep">
+  <element name="vocabularyTerms">
     <complexType>
       <complexContent>
         <extension base="phenotips:LinkCollection">
           <sequence>
-            <element name="vocabularyTerms" type="phenotips:VocabularyTermRep" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="vocabularyTerm" type="phenotips:VocabularyTerm" minOccurs="0" maxOccurs="unbounded"/>
           </sequence>
         </extension>
       </complexContent>
     </complexType>
   </element>
 
-  <element name="vocabularyRep" type="phenotips:VocabularyRep"/>
+  <element name="vocabulary" type="phenotips:Vocabulary"/>
 
 </schema>

@@ -1,10 +1,8 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.model.VocabulariesRep;
-import org.phenotips.vocabularies.rest.model.VocabularyRep;
-import org.phenotips.vocabularies.rest.model.VocabularyTermRep;
-import org.phenotips.vocabularies.rest.model.VocabularyTermsRep;
+import org.phenotips.vocabularies.rest.model.Vocabularies;
+import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -24,9 +22,9 @@ import javax.inject.Singleton;
 @Singleton
 public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
-    @Override public VocabularyRep createVocabularyRepresentation(Vocabulary vocabulary)
+    @Override public org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary)
     {
-        VocabularyRep result = new VocabularyRep();
+        org.phenotips.vocabularies.rest.model.Vocabulary result = new org.phenotips.vocabularies.rest.model.Vocabulary();
         result
             .withAliases(vocabulary.getAliases())
             .withSize(vocabulary.size())
@@ -39,14 +37,14 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         return result;
     }
 
-    @Override public VocabulariesRep createVocabulariesRepresentation(List<VocabularyRep> vocabularyRepList)
+    @Override public Vocabularies createVocabulariesRepresentation(List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyRepList)
     {
-        return new VocabulariesRep().withVocabularies(vocabularyRepList);
+        return new Vocabularies().withVocabularies(vocabularyRepList);
     }
 
-    @Override public VocabularyTermRep createVocabularyTermRepresentation(VocabularyTerm term)
+    @Override public org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term)
     {
-        VocabularyTermRep rep = new VocabularyTermRep();
+        org.phenotips.vocabularies.rest.model.VocabularyTerm rep = new org.phenotips.vocabularies.rest.model.VocabularyTerm();
         rep.withId(term.getId());
         rep.withName(term.getName());
         rep.withDescription(term.getDescription());
@@ -54,8 +52,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     }
 
     @Override
-    public VocabularyTermsRep createVocabularyTermsRepresentation(List<VocabularyTermRep> vocabularyTermRepList)
+    public VocabularyTerms createVocabularyTermsRepresentation(List<org.phenotips.vocabularies.rest.model.VocabularyTerm> vocabularyTermRepList)
     {
-        return new VocabularyTermsRep().withVocabularyTerms(vocabularyTermRepList);
+        return new VocabularyTerms().withVocabularyTerms(vocabularyTermRepList);
     }
 }

@@ -1,6 +1,6 @@
 package org.phenotips.vocabularies.rest;
 
-import org.phenotips.vocabularies.rest.model.VocabulariesRep;
+import org.phenotips.vocabularies.rest.model.Vocabularies;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,5 +13,5 @@ import javax.ws.rs.Path;
 @Path("/vocabularies")
 public interface VocabulariesResource
 {
-    @GET VocabulariesRep getAllVocabularies();
+    @GET Vocabularies getAllVocabularies();
 }
