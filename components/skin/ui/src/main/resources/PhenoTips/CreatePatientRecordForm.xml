@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442415265000</date>
-  <contentUpdateDate>1442353148000</contentUpdateDate>
+  <date>1442436659000</date>
+  <contentUpdateDate>1442431648000</contentUpdateDate>
   <version>1.1</version>
   <title>Form for creating new patient records</title>
   <comment/>
@@ -86,9 +86,14 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       #if ($studies.size() &gt; 0)
         $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
         $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
-        &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
+        &lt;input type="hidden" name="studiesSheet" value="PhenoTips.StudyBindingSheet" /&gt;
       #end
     #end
+    ##
+    ## Project choosing section
+    $xwiki.ssx.use('PhenoTips.ProjectBindingClass')##
+    &lt;input type="hidden" name="projectsSheet" value="PhenoTips.ProjectBindingSheet" /&gt;
+    ##
     ## Extensions displayed before the content
     #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
       &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
@@ -180,54 +185,79 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       <code>document.observe("xwiki:dom:loaded", function(event) {
 
    var newPatientForm = $('patient-creation-form');
-   if (!newPatientForm || !newPatientForm.down('input[name="sheet"]')) {
+   var studiesSectionInput = newPatientForm.down('input[name="studiesSheet"]');
+   var projectsSectionInput = newPatientForm.down('input[name="projectsSheet"]');
+   if (!newPatientForm || (!studiesSectionInput &amp;&amp; !projectsSectionInput)) {
      return;
    }
-   var sheetElt = newPatientForm.down('input[name="sheet"]');
-   var sheet = sheetElt.value;
-   var documentReference = XWiki.resource.get(sheet, XWiki.EntityType.DOCUMENT);
 
    var templateSelectionForm = new Element('form', {'action' : newPatientForm.action, 'class' : 'xform'});
    var formDataWrapper = new Element('div');
-   var studiesSection = new Element('div');
    templateSelectionForm.insert(formDataWrapper);
-   formDataWrapper.insert(studiesSection);
+
+   if (studiesSectionInput) {
+      var studiesSection = new Element('div');
+      formDataWrapper.insert(studiesSection);
+   }
+   if (projectsSectionInput) {
+      if (studiesSectionInput) {
+         var hr = new Element('hr');
+         formDataWrapper.insert(hr);
+      }
+      var projectsSection = new Element('div');
+      formDataWrapper.insert(projectsSection);
+   }
 
    newPatientForm.select('input[type="hidden"]').each(function(item) {
      if (item.name != 'sheet') {
          formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
      }
    });
-   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.createButton')", 'class' : 'button'});
+   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.chooseProjectStudy.createButton')", 'class' : 'button'});
    formDataWrapper.insert(submitButton);
-   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
+   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.chooseProjectStudy.cancelButton')", 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.chooseProjectStudy.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
 
-   newPatientForm.observe('submit', function (event) {
-     event.stop();
-     new Ajax.Request(new XWiki.Document(documentReference.name, documentReference.space).getURL('get'), {
+   var onAjaxResponse = function(section) {
+      return {
         onCreate : function() {
-          studiesSection.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
+          section.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
           modalBox.showDialog();
         },
         onSuccess : function(response) {
-           studiesSection.update(response.responseText);
+           section.update(response.responseText);
         },
         onFailure : function(response) {
           var failureReason = response.responseText || response.statusText;
           if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+             failureReason = "$services.localization.render('phenotips.chooseProjectStudy.failure.noResponse')";
           }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.chooseProjectStudy.failureMessage')" + ' ' + failureReason));
         },
         on0 : function (response) {
           response.request.options.onFailure(response);
         }
-     });
+      };
+   };
+
+   newPatientForm.observe('submit', function (event) {
+     event.stop();
+
+     var studiesDocRef, projectsDocRef;
+     if (studiesSectionInput) {
+        var studiesDocRef = XWiki.resource.get(studiesSectionInput.value, XWiki.EntityType.DOCUMENT);
+        new Ajax.Request(new XWiki.Document(studiesDocRef.name, studiesDocRef.space).getURL('get'), onAjaxResponse(studiesSection));
+     }
+
+     if (projectsSectionInput) {
+        var projectsDocRef = XWiki.resource.get(projectsSectionInput.value, XWiki.EntityType.DOCUMENT);
+        new Ajax.Request(new XWiki.Document(projectsDocRef.name, projectsDocRef.space).getURL('get'), onAjaxResponse(projectsSection));
+     }
+
    });
 });</code>
     </property>
