@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data-sharing</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-rc-1</version>
   </parent>
   <artifactId>patient-data-sharing-receiver-ui</artifactId>
   <name>PhenoTips - Patient data sharing - Receiver UI</name>
