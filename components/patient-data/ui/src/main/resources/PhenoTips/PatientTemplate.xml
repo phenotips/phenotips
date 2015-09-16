@@ -52,6 +52,20 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
+      <affectedRelatives>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>affectedRelatives</name>
+        <number>51</number>
+        <prettyName>Other living affected relatives</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </affectedRelatives>
       <apgar1>
         <cache>0</cache>
         <customDisplay/>
@@ -94,34 +108,6 @@
         <values>unknown|0|1|2|3|4|5|6|7|8|9|10</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </apgar5>
-      <assistedReproduction_fertilityMeds>
-        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>assistedReproduction_fertilityMeds</name>
-        <number>38</number>
-        <prettyName>Conception after fertility medication</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </assistedReproduction_fertilityMeds>
-      <assistedReproduction_surrogacy>
-        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>assistedReproduction_surrogacy</name>
-        <number>39</number>
-        <prettyName>Gestational surrogacy</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </assistedReproduction_surrogacy>
       <assistedReproduction_donoregg>
         <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
@@ -150,6 +136,48 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </assistedReproduction_donorsperm>
+      <assistedReproduction_fertilityMeds>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>assistedReproduction_fertilityMeds</name>
+        <number>38</number>
+        <prettyName>Conception after fertility medication</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </assistedReproduction_fertilityMeds>
+      <assistedReproduction_iui>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>assistedReproduction_iui</name>
+        <number>53</number>
+        <prettyName>Intrauterine insemination (IUI)</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </assistedReproduction_iui>
+      <assistedReproduction_surrogacy>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>assistedReproduction_surrogacy</name>
+        <number>39</number>
+        <prettyName>Gestational surrogacy</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </assistedReproduction_surrogacy>
       <consanguinity>
         <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
@@ -290,7 +318,22 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </date_of_death_entered>
+      <date_of_death_unknown>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>date_of_death_unknown</name>
+        <number>47</number>
+        <prettyName>date_of_death_unknown</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </date_of_death_unknown>
       <diagnosis_notes>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
@@ -487,6 +530,7 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </external_id>
       <family_history>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
@@ -568,7 +612,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>M=Male|F=Female</values>
+        <values>M=Male|F=Female|O=Other</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </gender>
       <gestation>
@@ -698,6 +742,20 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </health_card>
+      <icsi>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>icsi</name>
+        <number>49</number>
+        <prettyName>Intra-cytoplasmic sperm injection</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </icsi>
       <identifier>
         <customDisplay/>
         <disabled>0</disabled>
@@ -712,6 +770,7 @@
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </identifier>
       <indication_for_referral>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -740,20 +799,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </ivf>
-      <icsi>
-        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>icsi</name>
-        <number>49</number>
-        <prettyName>Intra-cytoplasmic sperm injection</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </icsi>
       <last_name>
         <customDisplay/>
         <disabled>0</disabled>
@@ -803,6 +848,7 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </maternal_ethnicity>
       <medical_history>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
@@ -831,6 +877,20 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </miscarriages>
+      <multipleGestation>
+        <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>multipleGestation</name>
+        <number>52</number>
+        <prettyName>Multiple gestation</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </multipleGestation>
       <negative_phenotype>
         <cache>0</cache>
         <classname/>
@@ -996,6 +1056,7 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </phenotype>
       <prenatal_development>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>---</editor>
@@ -1118,6 +1179,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </solved__gene_id>
       <solved__notes>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -1299,6 +1361,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -1314,9 +1377,10 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -1329,6 +1393,7 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>

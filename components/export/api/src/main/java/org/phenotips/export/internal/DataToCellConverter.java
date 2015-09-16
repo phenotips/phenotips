@@ -752,6 +752,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("gestation", "Gestation at delivery");
         fieldToHeaderMap.put("prenatal_development", "Notes");
         fieldToHeaderMap.put("assistedReproduction_fertilityMeds", "Fertility medication");
+        fieldToHeaderMap.put("assistedReproduction_iui", "Intrauterine insemination (IUI)");
         fieldToHeaderMap.put("ivf", "In vitro fertilization");
         fieldToHeaderMap.put("icsi", "Intra-cytoplasmic sperm injection");
         fieldToHeaderMap.put("assistedReproduction_surrogacy", "Surrogacy");
@@ -775,8 +776,9 @@ public class DataToCellConverter
 
         List<String> apgarFields = new LinkedList<String>(Arrays.asList("apgar1", "apgar2"));
         List<String> assitedReproductionFields = new LinkedList<String>(
-            Arrays.asList("ivf", "icsi", "assistedReproduction_surrogacy", "assistedReproduction_fertilityMeds",
-                "assistedReproduction_donoregg", "assistedReproduction_donorsperm"));
+            Arrays.asList("assistedReproduction_iui", "ivf", "icsi", "assistedReproduction_surrogacy",
+                "assistedReproduction_fertilityMeds", "assistedReproduction_donoregg",
+                "assistedReproduction_donorsperm"));
         apgarFields.retainAll(present);
         assitedReproductionFields.retainAll(present);
         int apgarOffset = apgarFields.size();
@@ -836,6 +838,12 @@ public class DataToCellConverter
         }
         if (present.contains("assistedReproduction_fertilityMeds")) {
             Integer assisted = history.get("assistedReproduction_fertilityMeds");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("assistedReproduction_iui")) {
+            Integer assisted = history.get("assistedReproduction_iui");
             DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
             bodySection.addCell(cell);
             x++;

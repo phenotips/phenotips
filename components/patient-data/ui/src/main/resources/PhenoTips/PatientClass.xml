@@ -145,6 +145,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </assistedReproduction_fertilityMeds>
+    <assistedReproduction_iui>
+      <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <name>assistedReproduction_iui</name>
+      <number>53</number>
+      <prettyName>Intrauterine insemination (IUI)</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </assistedReproduction_iui>
     <assistedReproduction_surrogacy>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
