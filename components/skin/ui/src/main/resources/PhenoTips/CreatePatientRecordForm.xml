@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822210000</date>
-  <contentUpdateDate>1401822210000</contentUpdateDate>
+  <date>1442415265000</date>
+  <contentUpdateDate>1442353148000</contentUpdateDate>
   <version>1.1</version>
   <title>Form for creating new patient records</title>
   <comment/>
@@ -84,7 +84,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
         #end
       #end
       #if ($studies.size() &gt; 0)
-        $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
+        $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
         $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
         &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
       #end
@@ -100,10 +100,10 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
   <object>
     <name>PhenoTips.CreatePatientRecordForm</name>
     <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>c03dfa51-f4c8-4da2-a235-2314dd8b1b8f</guid>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4a443a3a-0f92-471c-a251-a52ded8f604b</guid>
     <class>
-      <name>XWiki.UIExtensionClass</name>
+      <name>XWiki.JavaScriptExtension</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -111,75 +111,134 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <content>
-        <disabled>0</disabled>
-        <name>content</name>
-        <number>3</number>
-        <prettyName>Extension Content</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </content>
-      <extensionPointId>
-        <disabled>0</disabled>
-        <name>extensionPointId</name>
-        <number>1</number>
-        <prettyName>Extension Point ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </extensionPointId>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>2</number>
-        <prettyName>Extension ID</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parameters>
-        <disabled>0</disabled>
-        <name>parameters</name>
-        <number>4</number>
-        <prettyName>Extension Parameters</prettyName>
-        <rows>10</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </parameters>
-      <scope>
+      <cache>
         <cache>0</cache>
         <disabled>0</disabled>
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
-        <name>scope</name>
+        <name>cache</name>
         <number>5</number>
-        <prettyName>Extension Scope</prettyName>
+        <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <values>long|short|default|forbid</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
     </class>
     <property>
-      <content>{{velocity}}#if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}")){{include reference="PhenoTips.CreatePatientRecordForm" /}}#end{{/velocity}}</content>
+      <cache>long</cache>
     </property>
     <property>
-      <extensionPointId>phenotips.globalTools.create.entries</extensionPointId>
+      <code>document.observe("xwiki:dom:loaded", function(event) {
+
+   var newPatientForm = $('patient-creation-form');
+   if (!newPatientForm || !newPatientForm.down('input[name="sheet"]')) {
+     return;
+   }
+   var sheetElt = newPatientForm.down('input[name="sheet"]');
+   var sheet = sheetElt.value;
+   var documentReference = XWiki.resource.get(sheet, XWiki.EntityType.DOCUMENT);
+
+   var templateSelectionForm = new Element('form', {'action' : newPatientForm.action, 'class' : 'xform'});
+   var formDataWrapper = new Element('div');
+   var studiesSection = new Element('div');
+   templateSelectionForm.insert(formDataWrapper);
+   formDataWrapper.insert(studiesSection);
+
+   newPatientForm.select('input[type="hidden"]').each(function(item) {
+     if (item.name != 'sheet') {
+         formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
+     }
+   });
+   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.createButton')", 'class' : 'button'});
+   formDataWrapper.insert(submitButton);
+   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
+   formDataWrapper.insert(' ').insert(cancelButton);
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
+   cancelButton.observe('click', function(event) {
+     modalBox.closeDialog();
+   });
+
+   newPatientForm.observe('submit', function (event) {
+     event.stop();
+     new Ajax.Request(new XWiki.Document(documentReference.name, documentReference.space).getURL('get'), {
+        onCreate : function() {
+          studiesSection.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
+          modalBox.showDialog();
+        },
+        onSuccess : function(response) {
+           studiesSection.update(response.responseText);
+        },
+        onFailure : function(response) {
+          var failureReason = response.responseText || response.statusText;
+          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+          }
+          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+        },
+        on0 : function (response) {
+          response.request.options.onFailure(response);
+        }
+     });
+   });
+});</code>
     </property>
     <property>
-      <name>phenotips.globalTools.create.patient</name>
+      <name/>
     </property>
     <property>
-      <parameters>order=0</parameters>
+      <parse>1</parse>
     </property>
     <property>
-      <scope>wiki</scope>
+      <use>onDemand</use>
     </property>
   </object>
 </xwikidoc>
