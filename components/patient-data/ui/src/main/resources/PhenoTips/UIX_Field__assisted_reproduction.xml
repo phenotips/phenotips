@@ -120,6 +120,7 @@
 #foreach ($question in $assistedReproductionQuestions)
   #set ($displayedContent = "${displayedContent}#__displayIfSet(${question}, false)${util.newline}")
 #end
+#set ($displayedContent = $displayedContent.replaceAll("${util.newline}{2,}", "${util.newline}"))
 #if ($displayedContent.trim() != '')
 **$services.localization.render('phenotips.UIXField.assistedReproduction.label')**
 $displayedContent.trim()
