@@ -47,7 +47,7 @@
     <connection>scm:git:git://github.com/phenotips/phenotips.git</connection>
     <developerConnection>scm:git:git@github.com:phenotips/phenotips.git</developerConnection>
     <url>https://github.com/phenotips/phenotips.git/tree/master/</url>
-    <tag>HEAD</tag>
+    <tag>stable-1.2.x</tag>
   </scm>
 
   <organization>
