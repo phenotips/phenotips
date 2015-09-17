@@ -29,8 +29,8 @@
   <parent>PhenoTips.StudyClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442353130000</date>
-  <contentUpdateDate>1442265795000</contentUpdateDate>
+  <date>1442523313000</date>
+  <contentUpdateDate>1442523313000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -90,7 +90,8 @@
   #end
 #end
 &lt;div class="form-template-option"&gt;
-&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
+&lt;select&gt;
+&lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
 &lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
@@ -104,11 +105,12 @@
       #set ($configTitle = "${s.name}")
     #end
     &lt;div class="form-template-option"&gt;
-    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${services.rendering.escape($services.model.serialize($s.documentReference), $doc.syntax)}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$services.rendering.escape($configTitle, $doc.syntax)&lt;/label&gt;
+      &lt;option name="${prefix}${name}" value="${s.documentReference}" /&gt;$configTitle&lt;/option&gt;
     &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
     &lt;/div&gt;
   #end
 #end
+&lt;/select&gt;
 #else
   #if ("$!value" == '')
     None
@@ -140,7 +142,7 @@
       <classname/>
       <customDisplay>{{include reference="PhenoTips.StudyBindingClass" /}}</customDisplay>
       <disabled>0</disabled>
-      <displayType>radio</displayType>
+      <displayType>select</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
       <name>studyReference</name>
@@ -545,7 +547,7 @@
       <code>.xform .form-template-option {
   margin: 1em 0;
 }
-.xform .form-template-option label input[type="radio"]  {
+.xform .form-template-option label input[type="select"]  {
   vertical-align: middle;
 }
 .study-assignment-config {
