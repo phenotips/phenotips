@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>diagnosis-suggestion</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
   <artifactId>diagnosis-suggestion-api</artifactId>
   <name>PhenoTips - Diagnosis Suggestion Java Code</name>
