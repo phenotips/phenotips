@@ -101,6 +101,7 @@ public class ChartResource
         uriBuilder.queryParam("standalone", "1");
         uriBuilder.queryParam("n", this.measurementType);
         uriBuilder.queryParam("s", this.sex);
+        uriBuilder.queryParam("f", "svg");
 
         return uriBuilder.toString();
     }
