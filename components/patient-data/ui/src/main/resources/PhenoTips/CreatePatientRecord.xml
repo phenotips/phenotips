@@ -43,17 +43,24 @@
     #set ($patient = $services.patients.create())
     #if ("$!patient.id" != '')
       ## FIXME Move this to a PatientRecordInitializer
-      #set ($formBindingClassName = 'PhenoTips.StudyBindingClass')
-      #set ($formBindingPropertyName = 'studyReference')
-      #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
-      #if ($formBindingPropertyValue)
-        #set ($patientDoc = $xwiki.getDocument($patient.document))
-        #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
-        #if ($formBindingObj)
-          #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
-          #set ($discard = $patientDoc.save())
+      #set ($formBindingClassNameArray = ['PhenoTips.StudyBindingClass', 'PhenoTips.ProjectBindingClass'])
+      #set ($formBindingPropertyNameArray = ['studyReference', 'projectReference'])
+      #set ($patientDoc = $xwiki.getDocument($patient.document))
+      #foreach ($discard in $formBindingClassNameArray)
+        #set ($formBindingClassName = $formBindingClassNameArray[$foreach.index])
+        #set ($formBindingPropertyName = $formBindingPropertyNameArray[$foreach.index])
+        #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
+        #if ($formBindingPropertyValue)
+          #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
+          #if ($formBindingObj)
+            #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
+          #end
+        #else
+          #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
+          #set ($discard = $formBindingObj.set($formBindingPropertyName, 'meow'))
         #end
       #end
+      #set ($discard = $patientDoc.save())
       $response.sendRedirect($xwiki.getURL($patient.document, 'edit', ''))
     #else
       Cannot create patient
