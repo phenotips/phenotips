@@ -52,7 +52,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Handles the patient's date of birth and the exam date.
+ * Handles the patient's global qualifiers, such as global age of onset.
  *
  * @version $Id$
  * @since 1.0M10
