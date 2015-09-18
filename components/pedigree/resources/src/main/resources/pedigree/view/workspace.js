@@ -94,6 +94,44 @@ define ([], function() {
         },
 
         /**
+     * Returns the SVGWrapper object containing a copy of pedigree SVG.
+     *
+     * @method getSVGCopy
+     * @param {Boolean} stripInteractiveElements - if true, all edit-related elements such as handles,
+     *                  backgroundIMage, invisible interactive layers, etc. are removed
+     * @return {Object} SVGWrapper object.
+     */
+    getSVGCopy: function(stripInteractiveElements) {
+        editor.getView().unmarkAll();
+
+        var image = $('canvas');
+
+        var background = image.getElementsByClassName('panning-background')[0];
+        var backgroundPosition = background.nextSibling;
+        var backgroundParent = background.parentNode;
+        backgroundParent.removeChild(background);
+
+        var bbox = image.down().getBBox();
+
+        var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
+                      .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+        // remove invisible elements to slim down svg
+        svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+><\/\w+>/g, "");
+        // remove elements with opacity==0 to slim down svg
+        svgText = svgText.replace(/<[^<>]+"opacity: ?0;[^<>]+><\/\w+>/g, "");
+        // remove partnership clickable circles
+        svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+><\/\w+>/g, "");
+        // remove titles of the handles
+        svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+><\/\w+>/g, "");
+        // remove hoverboxes
+        svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+><\/\w+>/g, "");
+
+        backgroundParent.insertBefore(background, backgroundPosition);
+
+        return new SVGWrapper(svgText, bbox, 1.0);
+    },
+
+    /**
          * Returns the Raphael paper object.
          *
          * @method getPaper
@@ -139,12 +177,28 @@ define ([], function() {
          * @method generateTopMenu
          */
         generateTopMenu: function() {
-            var menu = new Element('div', {'id' : 'editor-menu'});
+        var menu = new Element('div', {'class' : 'editor-menu'});
             this.getWorkArea().insert({before : menu});
-            var submenus = [];
 
+        var secondaryMenu = new Element('div', {'class' : 'editor-menu editor-menu-secondary'});
+        this.getWorkArea().insert({before : secondaryMenu});
+        secondaryMenu.hide();
+
+        var hideShowSubmenu = function(button, icon) {
+            if (secondaryMenu.style.display == "none") {
+                secondaryMenu.show();
+                Element.removeClassName(icon, "fa-caret-down");
+                Element.addClassName(icon, "fa-caret-up");
+            } else {
+                secondaryMenu.hide();
+                Element.removeClassName(icon, "fa-caret-up");
+                Element.addClassName(icon, "fa-caret-down");
+            }
+        }
+
+        var menuItems = [];
             if (editor.isUnsupportedBrowser()) {
-                submenus = [{
+            menuItems = [{
                     name : 'input',
                     items: [
                         { key : 'readonlymessage', label : 'Unsuported browser mode', icon : 'exclamation-triangle'}
@@ -158,7 +212,7 @@ define ([], function() {
                     ]
                 }];
             } else {
-                submenus = [{
+            menuItems = [{
                     name : 'input',
                     items: [
                         { key : 'templates', label : 'Templates', icon : 'copy'},
@@ -170,12 +224,13 @@ define ([], function() {
                         { key : 'undo',   label : 'Undo', icon : 'undo'},
                         { key : 'redo',   label : 'Redo', icon : 'repeat'},
                         { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
-                        { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                    //{ key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                    { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
                     ]
                   }, {
                     name : 'reset',
                     items: [
-                        { key : 'clear',  label : 'Clear all', icon : 'times-circle'},
+                    { key : 'clear',  label : 'Clear', icon : 'times-circle'},
                         { key : 'reload',    label : 'Reload', icon : 'refresh'}
                     ]
                   }, {
@@ -188,23 +243,42 @@ define ([], function() {
                     ]
                 }];
             }
+
+        var secondaryMenuItems = [];
+        if (!editor.isUnsupportedBrowser()) {
+            secondaryMenuItems = [{
+                name : 'edit',
+                items: [
+                    { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                ]
+              }, {
+                name : 'export',
+                items: [
+                    { key : 'print',  label : 'Print', icon : 'print'},
+                ]
+              }];
+        }
+
             var _createSubmenu = function(data) {
                 var submenu = new Element('div', {'class' : data.name + '-actions action-group'});
-                menu.insert(submenu);
+            this.insert(submenu);
                 data.items.each(function (item) {
                     submenu.insert(_createMenuItem(item));
                 });
             };
             var _createMenuItem = function(data) {
-                var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(new Element('span', {'class' : 'fa fa-' + data.icon})).insert(' ').insert(data.label);
-                if (data.callback && typeof(this[data.callback]) == 'function') {
+            var buttonIcon = new Element('span', {'class' : 'fa fa-' + data.icon});
+            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(buttonIcon).insert(' ').insert(data.label);
+            if (data.callback && typeof(data.callback) == 'function') {
                     mi.observe('click', function() {
-                        this[data.callback]();
+                    data.callback(mi, buttonIcon);
                     });
                 }
                 return mi;
             };
-            submenus.each(_createSubmenu);
+
+        menuItems.each(_createSubmenu.bind(menu));
+        secondaryMenuItems.each(_createSubmenu.bind(secondaryMenu));
         },
 
         /**

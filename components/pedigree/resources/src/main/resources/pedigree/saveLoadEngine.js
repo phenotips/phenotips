@@ -113,8 +113,9 @@ define([
         },
 
         save: function() {
-            if (this._saveInProgress)
+        if (this._saveInProgress) {
                 return;   // Don't send parallel save requests
+        }
 
             editor.getView().unmarkAll();
 
@@ -124,12 +125,9 @@ define([
 
             console.log("[SAVE] data: " + Helpers.stringifyObject(jsonData));
 
-            var image = $('canvas');
-            var background = image.getElementsByClassName('panning-background')[0];
-            var backgroundPosition = background.nextSibling;
-            var backgroundParent =  background.parentNode;
-            backgroundParent.removeChild(background);
-            var bbox = image.down().getBBox();
+        var svg = editor.getWorkspace().getSVGCopy();
+        var svgText = svg.getSVGText();
+
             var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
             new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
                 method: 'POST',
@@ -162,7 +160,7 @@ define([
                 onSuccess: function() { editor.getUndoRedoManager().addSaveEvent();
                                         savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
                                       },
-                parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
+            parameters: {"property#data": jsonData, "property#image": svgText}
             });
             backgroundParent.insertBefore(background, backgroundPosition);
         },

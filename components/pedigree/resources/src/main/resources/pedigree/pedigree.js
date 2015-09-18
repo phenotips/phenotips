@@ -116,6 +116,7 @@ define([
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._importSelector = new ImportSelector();
                     this._exportSelector = new ExportSelector();
+                this._printDialog = new PrintDialog();
                 }.bind(this) );
 
             this._controller = new Controller();
@@ -160,6 +161,10 @@ define([
             exportButton && exportButton.on("click", function(event) {
                 editor.getExportSelector().show();
             });
+        var printButton = $('action-print');
+        printButton && printButton.on("click", function(event) {
+            editor.getPrintDialog().show();
+        });
 
             var onLeavePageFunc = function() {
                 if (editor.getUndoRedoManager().hasUnsavedChanges()) {
@@ -427,6 +432,14 @@ define([
         },
 
         /**
+     * @method getPrintDialog
+     * @return {PrintDialog}
+     */
+    getPrintDialog: function() {
+        return this._printDialog;
+     },
+
+    /**
          * Returns true if any of the node menus are visible
          * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom)
          *
