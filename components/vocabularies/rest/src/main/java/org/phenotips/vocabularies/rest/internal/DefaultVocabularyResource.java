@@ -44,6 +44,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -122,7 +123,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
 
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
-            return null;
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         org.phenotips.vocabularies.rest.model.Vocabulary rep
             = this.objectFactory.createVocabularyRepresentation(vocabulary);

@@ -39,6 +39,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,11 +68,11 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
         String customFilter)
     {
         if (StringUtils.isEmpty(input) || StringUtils.isEmpty(vocabularyId)) {
-            return null;
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
-            return null;
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         List<VocabularyTerm> termSuggestions = vocabulary.search(input, maxResults, sort, customFilter);
 
