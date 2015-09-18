@@ -1,20 +1,35 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
-import org.phenotips.vocabularies.rest.model.Vocabularies;
-import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.stability.Unstable;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
+import net.sf.json.JSONObject;
+
 /**
- * @version
+ * @version $Id$
  * @since
  */
 @Unstable
@@ -22,9 +37,11 @@ import javax.inject.Singleton;
 @Singleton
 public class DefaultDomainObjectFactory implements DomainObjectFactory
 {
-    @Override public org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary)
+    @Override
+    public org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary)
     {
-        org.phenotips.vocabularies.rest.model.Vocabulary result = new org.phenotips.vocabularies.rest.model.Vocabulary();
+        org.phenotips.vocabularies.rest.model.Vocabulary result
+            = new org.phenotips.vocabularies.rest.model.Vocabulary();
         result
             .withAliases(vocabulary.getAliases())
             .withSize(vocabulary.size())
@@ -37,23 +54,19 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         return result;
     }
 
-    @Override public Vocabularies createVocabulariesRepresentation(List<org.phenotips.vocabularies.rest.model.Vocabulary> vocabularyRepList)
+    @Override
+    public org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term)
     {
-        return new Vocabularies().withVocabularies(vocabularyRepList);
-    }
-
-    @Override public org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term)
-    {
-        org.phenotips.vocabularies.rest.model.VocabularyTerm rep = new org.phenotips.vocabularies.rest.model.VocabularyTerm();
+        org.phenotips.vocabularies.rest.model.VocabularyTerm rep =
+            new org.phenotips.vocabularies.rest.model.VocabularyTerm();
         rep.withId(term.getId());
         rep.withName(term.getName());
+        JSONObject jsonObject = (JSONObject) term.toJSON();
+        String symbolKey = "symbol";
+        if (jsonObject != null && jsonObject.get(symbolKey) != null) {
+            rep.withSymbol(jsonObject.get(symbolKey).toString());
+        }
         rep.withDescription(term.getDescription());
         return rep;
-    }
-
-    @Override
-    public VocabularyTerms createVocabularyTermsRepresentation(List<org.phenotips.vocabularies.rest.model.VocabularyTerm> vocabularyTermRepList)
-    {
-        return new VocabularyTerms().withVocabularyTerms(vocabularyTermRepList);
     }
 }

@@ -62,6 +62,7 @@
       <extension base="phenotips:LinkCollection">
         <sequence>
           <element name="id" type="string"/>
+          <element name="symbol" type="string"/>
           <element name="name" type="string"/>
           <element name="description" type="string"/>
         </sequence>

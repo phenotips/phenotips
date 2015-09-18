@@ -103,6 +103,11 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.phenotips</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

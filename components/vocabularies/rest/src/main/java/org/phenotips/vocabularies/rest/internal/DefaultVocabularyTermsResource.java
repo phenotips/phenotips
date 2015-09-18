@@ -1,3 +1,20 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.data.rest.Relations;
@@ -27,8 +44,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermsResource}
- * @version
+ * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermsResource}.
+ * @version $Id$
  * @since
  */
 @Component
@@ -52,12 +69,15 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
             return null;
         }
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
-        if (vocabulary == null){ return null;}
+        if (vocabulary == null) {
+            return null;
+        }
         List<VocabularyTerm> termSuggestions = vocabulary.search(input, maxResults, sort, customFilter);
 
         List<org.phenotips.vocabularies.rest.model.VocabularyTerm> termReps = new ArrayList<>();
         for (VocabularyTerm term : termSuggestions) {
-            org.phenotips.vocabularies.rest.model.VocabularyTerm termRep = objectFactory.createVocabularyTermRepresentation(term);
+            org.phenotips.vocabularies.rest.model.VocabularyTerm termRep =
+                objectFactory.createVocabularyTermRepresentation(term);
             List<Link> links = new ArrayList<>();
             links.add(new Link().withRel(Relations.VOCABULARY_TERM)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyTermResource.class)
@@ -73,7 +93,7 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
             termRep.withLinks(links);
             termReps.add(termRep);
         }
-        VocabularyTerms result = this.objectFactory.createVocabularyTermsRepresentation(termReps);
+        VocabularyTerms result = new VocabularyTerms().withVocabularyTerms(termReps);
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
         return result;
     }
