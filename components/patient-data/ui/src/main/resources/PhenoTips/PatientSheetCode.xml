@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1440712788000</date>
-  <contentUpdateDate>1440440438000</contentUpdateDate>
+  <date>1442612799000</date>
+  <contentUpdateDate>1440772865000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -3656,13 +3656,24 @@ document.observe('xwiki:dom:loaded', function()
   widgets.Measurements = Class.create({
     initialize: function(el) {
       this.el = el;
-      this.measurementClassId = 0;
+      this.measurementClassId = parseInt($('measurementclass-max-id').getAttribute('data-value'));
 
       this.getObject = this.getObject.bind(this);
       this._sets = [];
 
       this._handleAddMeasurementSet();
-      this._addMeasurementSet();
+
+      var measurementSetsEls = this.el.select('.measurement-set:not(.proto)');
+      if (!measurementSetsEls.length) {
+        this._addMeasurementSet();
+      } else {
+        measurementSetsEls.each((function(el) {
+          var newSet = new PhenoTips.widgets.MeasurementSet(el, this);
+          newSet._ageEl.fire('age:change');
+          newSet._ageEl.fire('age:change');
+          this._sets.push(newSet);
+        }).bind(this));
+      }
     
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
 
