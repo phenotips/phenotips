@@ -403,7 +403,7 @@
 }
 .menu-box .field-box textarea {
   width: 99%;
-  resize: none;
+  resize: vertical;
   border: 1px solid #E8E8E8;
 }
 /* 3.3em height is set because firefox does not respect the rows qualifier for the textarea,
@@ -624,6 +624,23 @@
 }
 .menu-box .field-childlessSelect {
   padding: 0.5em 0 0.5em;
+}
+
+.menu-box .patient-menu-button {
+  border-radius: 2px;
+  box-shadow: 0px 1px 1px #999;
+  background: #D5D5D5;
+  padding: 1px 8px 2px 8px;
+  cursor: pointer;
+}
+.menu-box .patient-menu-button:hover {
+  background: #B1C2E2;
+}
+.menu-box .patient-no-cancers-button {
+  width: 88%;
+  margin-top: 10px;
+  float: left !important;
+  text-align: center;
 }
 
 /* ===========================================
@@ -893,7 +910,10 @@
 }
 
 .cancer_field {
-  margin-top: 0.7em;
+  margin-top: 0.65em;
+}
+.cancer-notes {
+  margin-left: 2px;
 }
 .cancer-header {
   margin-bottom: 1em;
@@ -920,7 +940,7 @@
   cursor: default;
 }
 .cancer_field textarea {
-  resize: vertical;
+  margin-top: 3px;
 }
 
 /* Option types */

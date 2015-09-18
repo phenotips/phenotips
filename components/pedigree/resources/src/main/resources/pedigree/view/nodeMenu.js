@@ -681,10 +681,10 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var cancerList = editor.getCancerLegend()._getAllSupportedCancers();
 
-            var div = new Element('div', {'class': 'cancer_field cancer-header'} );
+            var div = new Element('div', {'class': 'cancer_field cancer-header field-no-user-select'} );
             var label1 = new Element('label', {'class': 'cancer_label_field'} ).update("Name");
             var label2 = new Element('label', {'class': 'cancer_status_select'} ).update("Status");
-            var label3 = new Element('label', {'class': 'cancer_age_select'} ).update("Age at diagnosis");
+            var label3 = new Element('label', {'class': 'cancer_age_select'} ).update("As of");
             div.insert(label1).insert(label2).insert(label3);
             result.inputsContainer.insert(div);
 
@@ -692,20 +692,20 @@ NodeMenu = Class.create({
             // (Note1: for performace reasons also using raw HTML for options)
             // (Note2: using span around select because IE9 does not allow setting innerHTML of <select>-s)
             var spanAgeProto = new Element('span');
-            var optionsHTML = '<select name="' + data.name + '" class="cancer_age_select"><option value=""></option>';
+            var optionsHTML = '<select name="' + data.name + '" class="cancer_age_select field-no-user-select"><option value=""></option>';
             var maxAge = 100;
             for (var age = 1; age <= maxAge; age++) {
                 if (age % 10 == 0 || age == 1) {
                     optionsHTML += '<option value="before_' + age + '">before age ' + age + '</option>';
                 }
-                optionsHTML += '<option value="' + age + '">at age ' + age + '</option>';
+                optionsHTML += '<option value="' + age + '">age ' + age + '</option>';
             }
             optionsHTML += '<option value="after_' + maxAge + '">after age ' + maxAge + '</option></select>';
             spanAgeProto.innerHTML = optionsHTML;
 
             var spanSelectProto = new Element('span');
-            spanSelectProto.innerHTML = "<select name='"+data.name+"' class='cancer_status_select'>" +
-                                        "<option value=''>Not tested</option>" +
+            spanSelectProto.innerHTML = "<select name='"+data.name+"' class='cancer_status_select field-no-user-select'>" +
+                                        "<option value=''></option>" +
                                         "<option value='affected'>Affected</option>" +
                                         "<option value='unaffected'>Unaffected</option></select>";
 
@@ -727,7 +727,7 @@ NodeMenu = Class.create({
                 var textInput = new Element('textArea', {'type': 'text', 'name': data.name}).hide();
                 textInput.disabled = true;
                 textInput.id = "cancer_notes_" + cancerName;
-                var expandNotes = new Element('label', {'class': 'clickable', 'for': textInput.id}).update("<span class='fa fa-file-text-o'></span>");
+                var expandNotes = new Element('label', {'class': 'clickable cancer-notes', 'for': textInput.id}).update("<span class='fa fa-file-text-o'></span>");
 
 
                 var toggleNotes = (function(textInput, expandNotes){
@@ -766,7 +766,7 @@ NodeMenu = Class.create({
                     };
                 })(expandNotes, textInput, toggleNotes);
 
-                cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge, "notes": textInput});
+                cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge, "notes": textInput, "enableNotes": enableNotes});
 
                 select._getValue = function() {
                     var data = {};
@@ -833,6 +833,31 @@ NodeMenu = Class.create({
                 div.insert(label).insert(spanSelect).insert(spanAge).insert(expandNotes).insert(textInput);
                 result.inputsContainer.insert(div);
             }
+
+            var buttonContainer = new Element('div', { 'class': 'button-container'});
+            var classes = 'patient-menu-button patient-no-cancers-button';
+            var noneButton = new Element('span', {'class': classes}).update("None of the above as of today");
+            var nameHolder = new Element('input', {'type': 'hidden', 'name': data.name});
+            var _this = this;
+            noneButton.observe('click', function(event) {
+                for (var i = 0; i < cancersUIElements.length; i++) {
+                    cancersUIElements[i].status.value = "unaffected";
+                    cancersUIElements[i].enableNotes();
+                    cancersUIElements[i].age.enable();
+                    var birthDate = _this.targetNode.getBirthDate();
+                    if (birthDate) {
+                        var age = getAge(birthDate, _this.targetNode.getDeathDate(), true);
+                        cancersUIElements[i].age.value = age;
+                    }
+                }
+                Event.fire(nameHolder, 'custom:selection:changed');
+                _this.reposition();
+            });
+            nameHolder._getValue = cancersUIElements[0].status._getValue;
+            this._attachFieldEventListeners(nameHolder, ['custom:selection:changed']);
+            buttonContainer.update(noneButton).insert(nameHolder);;
+            result.inputsContainer.insert(buttonContainer);
+
             //console.log( "=== Generate cancers time: " + timer.report() + "ms ==========" );
             return result;
         },
