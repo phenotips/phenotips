@@ -35,6 +35,7 @@ var AbstractHoverbox = Class.create({
         this._currentButtons = null;
         this._handlesZoomSz  = null;
         this._boxOnHover    = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
+        this._boxOnHover.node.setAttribute("class","pedigree-hoverbox");
         this._backElements  = editor.getPaper().set(this._boxOnHover);
         this._mask          = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
         this._frontElements = editor.getPaper().set().push(this._mask);

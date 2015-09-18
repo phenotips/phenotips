@@ -67,6 +67,7 @@ var PedigreeEditor = Class.create({
                 this._partnershipMenu = this.generatePartnershipMenu();
                 this._importSelector = new ImportSelector();
                 this._exportSelector = new ExportSelector();
+                this._printDialog = new PrintDialog();
             }.bind(this) );
 
         this._controller = new Controller();
@@ -110,6 +111,10 @@ var PedigreeEditor = Class.create({
         var exportButton = $('action-export');
         exportButton && exportButton.on("click", function(event) {
             editor.getExportSelector().show();
+        });
+        var printButton = $('action-print');
+        printButton && printButton.on("click", function(event) {
+            editor.getPrintDialog().show();
         });
 
         var onLeavePageFunc = function() {
@@ -376,6 +381,14 @@ var PedigreeEditor = Class.create({
     getExportSelector: function() {
         return this._exportSelector
     },
+
+    /**
+     * @method getPrintDialog
+     * @return {PrintDialog}
+     */
+    getPrintDialog: function() {
+        return this._printDialog;
+     },
 
     /**
      * Returns true if any of the node menus are visible
@@ -894,8 +907,8 @@ PedigreeEditor.attributes = {
     cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },
     externalIDLabels: {'font-size': 18, 'font-family': 'Arial' },
     disorderShapes: {},
-    partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740
-    partnershipRadius: 6.5,
+    partnershipNode: {fill: '#d79185', stroke: 'black', 'stroke-width':2},  //#dc7868, #E25740
+    partnershipRadius: 7.0,
     partnershipHandleBreakY: 18,
     partnershipHandleLength: 36,
     partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
