@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
+import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
  * Base class for handling data in different types of objects (String, List, etc) and preserving the object type. Has
@@ -179,6 +180,30 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
+    /** For converting JSON into internal representation. */
+    private Object inverseFormat(String key, Object value)
+    {
+        if (value != null) {
+            try {
+                if (this.getBooleanFields().contains(key)) {
+                    return (Boolean) value;
+                } else if (this.getCodeFields().contains(key)) {
+                    LinkedList<VocabularyProperty> terms = new LinkedList<>();
+                    for (Object termJson : (JSONArray) value) {
+                        VocabularyProperty term = new QuickVocabularyProperty((JSONObject) termJson);
+                        terms.add(term);
+                    }
+                    return terms;
+                } else {
+                    return value.toString();
+                }
+            } catch (Exception ex) {
+                // improper format
+            }
+        }
+        return null;
+    }
+
     private Boolean booleanConvert(String integerValue)
     {
         if (StringUtils.equals("0", integerValue)) {
@@ -214,13 +239,49 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseObject dataHolder = doc.getXObject(getXClassReference());
+            PatientData<T> data = patient.getData(this.getName());
+            if (dataHolder == null && data != null) {
+                return;
+            }
+            for (String propertyName : getProperties()) {
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
+                Object propertyValue = data.get(propertyName);
+                if (field != null && propertyValue != null) {
+                    if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
+                        List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
+                        List<String> listToStore = new LinkedList<>();
+                        for (VocabularyProperty term : terms) {
+                            listToStore.add(term.getId());
+                        }
+                        ((DBStringListProperty) field).setList(listToStore);
+                    } else {
+                        field.setValue(propertyValue);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
+        }
     }
 
     @Override
     public PatientData<T> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        Map<String, T> result = new LinkedHashMap<String, T>();
+        JSONObject container = json.getJSONObject(getJsonPropertyName());
+        if (container != null || container.isNullObject()) {
+            for (String propertyName : getProperties()) {
+                Object value = this.inverseFormat(propertyName, container.opt(propertyName));
+                if (value != null) {
+                    result.put(propertyName, (T) value);
+                }
+            }
+        }
+        return new DictionaryPatientData<>(getName(), result);
     }
 
     protected abstract List<String> getProperties();
@@ -255,5 +316,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         {
             super(id);
         }
+
+        public QuickVocabularyProperty(JSONObject json) {super(json);}
     }
 }
