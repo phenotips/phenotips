@@ -136,7 +136,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                 }
             }
         } catch (Exception ex) {
-            // nothing to do
+            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 
