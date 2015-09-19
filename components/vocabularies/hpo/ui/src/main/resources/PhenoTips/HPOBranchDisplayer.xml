@@ -191,14 +191,14 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
     <property>
       <code>['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function (eventName) {
   document.observe(eventName, function() {
-    $$('.hpo-branch .term-entry:not(".initialized") .tooltip .hide-tool').invoke('observe', 'click', function(event) {
+    $$('.hpo-branch .term-entry:not(.initialized) .tooltip .hide-tool').invoke('observe', 'click', function(event) {
       event.findElement('.tooltip').addClassName('invisible');
     });
-    $$('.hpo-branch .term-entry:not(".initialized") .info-tool').invoke('observe', 'click', function(event) {
+    $$('.hpo-branch .term-entry:not(.initialized) .info-tool').invoke('observe', 'click', function(event) {
       event.findElement('.hpo-branch').select('.tooltip').invoke('addClassName', 'invisible');
       event.findElement('.term-entry').down('.tooltip').removeClassName('invisible');
     });
-    $$('.hpo-branch .term-entry:not(".initialized")').invoke('addClassName', 'initialized');
+    $$('.hpo-branch .term-entry:not(.initialized)').invoke('addClassName', 'initialized');
   });
 });</code>
     </property>
