@@ -55,9 +55,6 @@
           #if ($formBindingObj)
             #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
           #end
-        #else
-          #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
-          #set ($discard = $formBindingObj.set($formBindingPropertyName, 'meow'))
         #end
       #end
       #set ($discard = $patientDoc.save())
