@@ -4,9 +4,22 @@
  * @param {Date} [deathDate]
  * @return {String} Age formatted with years, months, days
  */
-function getAge(birthDate, deathDate)
+function getAge(birthDate, deathDate, onlyYears)
 {
-    if (birthDate.onlyDecadeAvailable()) {
+    if (birthDate.onlyDecadeAvailable() || (deathDate && deathDate.onlyDecadeAvailable())) {
+        if (onlyYears) {
+            var lastYearAlive = new Date().getFullYear();
+            if (deathDate != null) {
+                lastYearAlive = deathDate.getYear(true);
+                if (deathDate.onlyDecadeAvailable()) {
+                    lastYearAlive += 10;
+                }
+            }
+            var oldestYear = birthDate.onlyDecadeAvailable() ? parseInt(birthDate.getDecade()) : birthDate.getYear();
+            var age = lastYearAlive - oldestYear;
+            var decadeOld = Math.ceil(age/10)*10;
+            return "before_" + decadeOld;
+        }
         return "";
     }
 
@@ -15,9 +28,6 @@ function getAge(birthDate, deathDate)
         now = new Date();
     }
     else {
-        if (deathDate.onlyDecadeAvailable()) {
-            return "";
-        }
         now = deathDate.toJSDate();
     }
 
@@ -43,6 +53,10 @@ function getAge(birthDate, deathDate)
     }
 
     var years = now.getFullYear() - birthDate.getFullYear() - (now.getDayOfYear() < birthDate.getDayOfYear() ? 1 : 0);
+
+    if (onlyYears) {
+        return years;
+    }
 
     var agestr = "";
 
