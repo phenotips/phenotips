@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442613112000</date>
+  <date>1442934747000</date>
   <contentUpdateDate>1442611103000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
@@ -384,8 +384,18 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #macro (measurement $name $unit $isDoubleSided $computationDeps $vals $proto)
 (% class="measurement"%)(((
   #if ($isDoubleSided)
-    #measurementRow($name true $unit 'l' $computationDeps $vals.get('l') $proto)
-    #measurementRow($name false $unit 'r' $computationDeps $vals.get('r') $proto)
+    #if ($vals.get('l')) 
+      #set ($vals_l = $vals.get('l')) 
+    #else
+      #set ($vals_l = "") 
+    #end
+    #if ($vals.get('r')) 
+      #set ($vals_r = $vals.get('r')) 
+    #else
+      #set ($vals_r = "") 
+    #end
+    #measurementRow($name true $unit 'l' $computationDeps $vals_l $proto)
+    #measurementRow($name false $unit 'r' $computationDeps $vals_r $proto)
   #else
     #measurementRow($name true $unit '' $computationDeps $vals $proto)
   #end
@@ -416,8 +426,6 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
       #set ($val = $obj.getProperty('value').value)
     #end
   #end
-  ## $obj
-  ## $obj.getName()
   {{html clean="false" wiki="false"}}
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}")#end&lt;/label&gt;
   &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
@@ -458,7 +466,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
     #if (($showEnabled == $obj.getProperty('enabled').value.contains($handler.getName()))
          &amp;&amp; ($showDefault == $obj.getProperty('default').value.contains($handler.getName())))
       #set($name = $handler.getName())
-      #if ($handler.isDoubleSided() &amp;&amp; $measurementSet.get($name))
+      #if ($handler.isDoubleSided())
         #set($vals = {})
         #set($discard = $vals.put("r", $measurementSet.get("${name}-r")))
         #set($discard = $vals.put("l", $measurementSet.get("${name}-l")))
@@ -481,7 +489,6 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #set ($age = $set.get("age"))
 #set ($date = $set.get("date"))
 #set ($dateFormatted = $datetool.format('MM/dd/yyyy', $date))
-Date: $date $dateFormatted
 (% class="measurement-set#if ($proto) proto#end"%)(((
   {{html clean="false" wiki="false"}}
   &lt;label for="date"&gt;Date:&lt;/label&gt; &lt;input class="xwiki-date measurement-date" type="text" title="MM/dd/yyyy" alt="" value="$!dateFormatted"&gt;
@@ -522,20 +529,21 @@ Date: $date $dateFormatted
 #if ($xcontext.action != 'export' &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
   #set ($sortedMeasurementObjs = [])
   #sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
-
+  ##
   #set ($measurementSets = {})
   #foreach ($obj in $sortedMeasurementObjs)
     #set ($type = $obj.getProperty('type').value)
     #set ($side = $obj.getProperty('side').value)
     #set ($val = $obj.getProperty('value').value)
     #set ($age = $obj.getProperty('age').value)
+    #set ($date = $obj.getProperty('date').value)
     ##
-    #if (!$measurementSets.get("$age"))
-      #set ($discard = $measurementSets.put("$age", {}))
-      #set ($discard = $measurementSets.get("$age").put("date", $obj.getProperty('date').value))
-      #set ($discard = $measurementSets.get("$age").put("age", $obj.getProperty('age').value))
-    #end
-    #if ("$!val" != "")
+    #if ("$!val" != "" &amp;&amp; ("$!age" != "" || "$!date" != ""))
+      #if (!$measurementSets.get("$age"))
+        #set ($discard = $measurementSets.put("$age", {}))
+        #set ($discard = $measurementSets.get("$age").put("date", $obj.getProperty('date').value))
+        #set ($discard = $measurementSets.get("$age").put("age", $obj.getProperty('age').value))
+      #end
       #if ("$!side" != "")
         #set ($discard = $measurementSets.get("$age").put("${type}-${side}", $obj))
       #else
@@ -543,7 +551,6 @@ Date: $date $dateFormatted
       #end
     #end
   #end
-  $measurementSets
   (% id="measurements-container"%)(((
     (% id="measurements"%)(((
       #measurementSet()
