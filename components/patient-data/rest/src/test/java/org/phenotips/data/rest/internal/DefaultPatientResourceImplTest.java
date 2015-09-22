@@ -144,7 +144,7 @@ public class DefaultPatientResourceImplTest
         this.context = provider.get();
     }
 
-    //----------------------------Get Patient Tests----------------------------
+    // ----------------------------Get Patient Tests----------------------------
 
     @Test
     public void getPatientIgnoresMissingPatient()
@@ -186,18 +186,7 @@ public class DefaultPatientResourceImplTest
         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
     }
 
-    @Test
-    public void getPatientAlwaysSendsLoggerMessageOnRequest()
-    {
-        doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
-        doReturn(new JSONObject()).when(this.patient).toJSON();
-
-        this.patientResource.getPatient(this.id);
-
-        verify(this.logger).debug("Retrieving patient record [{}] via REST", this.id);
-    }
-
-    //----------------------------Update Patient Tests----------------------------
+    // ----------------------------Update Patient Tests----------------------------
 
     @Test
     public void updatePatientIgnoresMissingPatient()
@@ -294,20 +283,7 @@ public class DefaultPatientResourceImplTest
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
-    @Test
-    public void updatePatientAlwaysSendsLoggerMessageOnRequest()
-    {
-        doReturn(true).when(this.access).hasAccess(Right.EDIT, this.userProfileDocument, this.patientDocument);
-        JSONObject json = new JSONObject();
-        json.put("id", this.id);
-        doReturn(this.id).when(this.patient).getId();
-
-        this.patientResource.updatePatient(json.toString(), this.id);
-
-        verify(this.logger).debug("Updating patient record [{}] via REST with JSON: {}", this.id, json.toString());
-    }
-
-    //----------------------------Delete Patient Tests----------------------------
+    // ----------------------------Delete Patient Tests----------------------------
 
     @Test
     public void deletePatientIgnoresMissingPatient()
@@ -367,17 +343,5 @@ public class DefaultPatientResourceImplTest
         verify(wiki).getDocument(this.patientDocument, this.context);
         verify(wiki).deleteDocument(patientXWikiDoc, this.context);
         Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void deletePatientAlwaysSendsLoggerMessageOnRequest()
-    {
-        XWiki wiki = mock(XWiki.class);
-        doReturn(wiki).when(this.context).getWiki();
-        doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
-
-        this.patientResource.deletePatient(this.id);
-
-        verify(this.logger).debug("Deleting patient record [{}] via REST", this.id);
     }
 }
