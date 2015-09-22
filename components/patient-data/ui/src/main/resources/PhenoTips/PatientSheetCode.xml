@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442612799000</date>
+  <date>1442941821000</date>
   <contentUpdateDate>1440772865000</contentUpdateDate>
   <version>1.1</version>
   <title/>
@@ -3545,8 +3545,6 @@ document.observe('xwiki:dom:loaded', function()
       } else {
         measurementSetsEls.each((function(el) {
           var newSet = new PhenoTips.widgets.MeasurementSet(el, this);
-          newSet._ageEl.fire('age:change');
-          newSet._ageEl.fire('age:change');
           this._sets.push(newSet);
         }).bind(this));
       }
@@ -3610,13 +3608,14 @@ document.observe('xwiki:dom:loaded', function()
       }).bind(this));
       $('measurements').observe('change', this._updateCharts);
       Event.observe(window, 'resize', this._setChartsWidth);
+
+      // Init using existing data
+      this._updateCharts();
     },
 
     _setChartsWidth: function() {
       var chartsWidth = $('measurements-container').getWidth() - $('measurements').getWidth();
       $('charts-new').style.width = chartsWidth + 'px';
-
-      //this.el.select('img.main')[0].style.maxHeight = (document.viewport.getDimensions().height - 100) + 'px';
     },
 
     _initStickyBox: function() {
@@ -3752,9 +3751,13 @@ document.observe('xwiki:dom:loaded', function()
         }
       }).bind(this));
 
+      // Initialize using existing values
+      this._updateHiddenFields('date', this._dateEl.value);
+      this._updateHiddenFields('age', this._ageEl.value);
+
       // Attach handlers
       this._dateEl.observe('xwiki:date:changed', function(e) {
-        _this._updateHiddenFields('date', e.target.alt);
+        _this._updateHiddenFields('date', e.target.value);
         _this._ageEl.readOnly = e.target.alt.length &gt; 0;
 
         _this._setAgeUsingDateAndDob();
@@ -3773,9 +3776,19 @@ document.observe('xwiki:dom:loaded', function()
         el.observe('click', this._moreToggleButtonHandler);
       }).bind(this));
 
-      // Hide
-      this._moreContainer.hide();
-      this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
+      // Hide (or show)
+      var hasExpandedValue = false;
+      this.el.select('.expanded-measurements input[name$=_value]').each(function(el) {
+        if (el.value.trim().length &gt; 0) {
+          hasExpandedValue = true;
+        }
+      });
+      if (hasExpandedValue) {
+        this.el.select('.expand-buttons .buttonwrapper.show')[0].hide();
+      } else {
+        this._moreContainer.hide();
+        this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
+      }
 
       return this;
     },
@@ -3862,6 +3875,9 @@ document.observe('xwiki:dom:loaded', function()
 
       // DOM shortcuts
       this._valueEl = this.el.select('[name$=value]')[0];
+
+      // Initialize using existing values
+      this.fetchAndRenderPercentileSd();
 
       // Attach handlers
       this.el.select('[name$=value]').each((function(el) {
@@ -3975,6 +3991,9 @@ document.observe('xwiki:dom:loaded', function()
 
       // Set up deps
       this._deps = this.el.readAttribute('data-computation-deps').split(' ');
+
+      // Initialize using existing values
+      this.fetchAndRenderComputedValue();
 
       // Attach deps handlers
       for (var i = 0; i &lt; this._deps.length; i++) {
