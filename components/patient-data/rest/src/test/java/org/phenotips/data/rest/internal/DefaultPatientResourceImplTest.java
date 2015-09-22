@@ -17,36 +17,27 @@
  */
 package org.phenotips.data.rest.internal;
 
-
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import net.sf.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.Relations;
-import org.slf4j.Logger;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.rest.XWikiRestException;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
@@ -55,10 +46,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+
+import net.sf.json.JSONObject;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
@@ -66,19 +67,17 @@ import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link DefaultPatientResourceImpl} component.
- *
  */
 public class DefaultPatientResourceImplTest
 {
-
     @Rule
     public MockitoComponentMockingRule<PatientResource> mocker =
         new MockitoComponentMockingRule<PatientResource>(DefaultPatientResourceImpl.class);
@@ -112,7 +111,6 @@ public class DefaultPatientResourceImplTest
 
     private DefaultPatientResourceImpl patientResource;
 
-
     @Before
     public void setUp() throws ComponentLookupException, URISyntaxException
     {
@@ -124,7 +122,7 @@ public class DefaultPatientResourceImplTest
         when(componentManager.getInstance(Execution.class)).thenReturn(execution);
         doReturn(executionContext).when(execution).getContext();
         doReturn(mock(XWikiContext.class)).when(executionContext).getProperty("xwikicontext");
-        this.patientResource = (DefaultPatientResourceImpl)this.mocker.getComponentUnderTest();
+        this.patientResource = (DefaultPatientResourceImpl) this.mocker.getComponentUnderTest();
 
         this.logger = this.mocker.getMockedLogger();
         this.repository = this.mocker.getInstance(PatientRepository.class);
@@ -180,10 +178,10 @@ public class DefaultPatientResourceImplTest
         Response response = this.patientResource.getPatient(this.id);
 
         Assert.assertTrue(response.getEntity() instanceof JSONObject);
-        Map<String, Map<String, String>> json = (Map<String, Map<String, String>>)response.getEntity();
+        Map<String, Map<String, String>> json = (Map<String, Map<String, String>>) response.getEntity();
         Assert.assertThat(json, hasValue(hasEntry("rel", Relations.SELF)));
         Assert.assertThat(json, hasValue(hasEntry("href", this.uriString)));
-        Map<String, List<MediaType>> actualMap = (Map)response.getMetadata();
+        Map<String, List<MediaType>> actualMap = (Map) response.getMetadata();
         Assert.assertThat(actualMap, hasValue(hasItem(MediaType.APPLICATION_JSON_TYPE)));
         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
     }
@@ -235,7 +233,7 @@ public class DefaultPatientResourceImplTest
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when the User did not have edit rights", ex);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
+        verify(this.logger).debug("Edit access denied to user [{}] on patient record [{}]", this.currentUser, this.id);
     }
 
     @Test
@@ -277,7 +275,8 @@ public class DefaultPatientResourceImplTest
         Assert.assertNotNull("updatePatient did not throw a WebApplicationException as expected " +
             "when catching an Exception from Patient.updateFromJSON", ex);
         Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), ex.getResponse().getStatus());
-        verify(this.logger).warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}", patient.getId(),
+        verify(this.logger).warn("Failed to update patient [{}] from JSON: {}. Source JSON was: {}",
+            this.patient.getId(),
             ex.getMessage(), json.toString());
     }
 
@@ -328,7 +327,8 @@ public class DefaultPatientResourceImplTest
 
         Response response = this.patientResource.deletePatient(this.id);
 
-        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser, this.id);
+        verify(this.logger).debug("Delete access denied to user [{}] on patient record [{}]", this.currentUser,
+            this.id);
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
@@ -338,12 +338,12 @@ public class DefaultPatientResourceImplTest
         XWiki wiki = mock(XWiki.class);
         doReturn(wiki).when(this.context).getWiki();
         doReturn(true).when(this.access).hasAccess(Right.DELETE, this.userProfileDocument, this.patientDocument);
-        doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(context));
+        doThrow(XWikiException.class).when(wiki).deleteDocument(any(XWikiDocument.class), eq(this.context));
 
         WebApplicationException ex = null;
         try {
             this.patientResource.deletePatient(this.id);
-        } catch(WebApplicationException temp) {
+        } catch (WebApplicationException temp) {
             ex = temp;
         }
 
@@ -354,7 +354,8 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    public void checkDeletePatientNormalBehaviour() throws XWikiException {
+    public void checkDeletePatientNormalBehaviour() throws XWikiException
+    {
         XWiki wiki = mock(XWiki.class);
         XWikiDocument patientXWikiDoc = mock(XWikiDocument.class);
         doReturn(wiki).when(this.context).getWiki();
