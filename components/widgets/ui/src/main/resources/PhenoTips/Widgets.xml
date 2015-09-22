@@ -3479,7 +3479,16 @@ document.observe("xwiki:dom:loaded", function() {
     initialize : function(element) {
       this.element = element;
       this.reverse = this.element.hasClassName("exclude");
-      this.controller = this.element.down(".controller input[type=checkbox]");
+      this.controller = this.element.select(".controller input[type=checkbox]");
+      var eventName = "change";
+      if (this.controller.length == 0) {
+        return;
+      } else if (this.controller.length == 1) {
+        this.controller = this.controller[0];
+      } else {
+        this.controller = this.element.down(".controller .yes input[type=checkbox]");
+        eventName = "picker:change";
+      }
       if (!this.controller) {
         // No controller, nothing else to do...
         return;
@@ -3493,7 +3502,7 @@ document.observe("xwiki:dom:loaded", function() {
         this.visibleStyle = {"visibility" : "visible"};
       }
       this.controlVisibility();
-      this.controller.observe("change", this.controlVisibility.bindAsEventListener(this));
+      this.controller.observe(eventName, this.controlVisibility.bindAsEventListener(this));
     },
     controlVisibility : function() {
       if (this.controller.checked ^ this.reverse) {

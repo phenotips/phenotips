@@ -55,6 +55,8 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
 
     private static final String MULTIPLE_GESTATION = "multipleGestation";
 
+    private static final String GESTATION_TWIN = "twinNumber";
+
     private List<String> booleans =
         Arrays.asList(MULTIPLE_GESTATION, ASSISTED_REPRODUCTION_IUI, IVF, ICSI, ASSISTED_REPRODUCTION_FERTILITY_MEDS,
             ASSISTED_REPRODUCTION_SURROGACY, ASSISTED_REPRODUCTION_DONOR_EGG, ASSISTED_REPRODUCTION_DONOR_SPERM);
@@ -74,7 +76,7 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("gestation", MULTIPLE_GESTATION, ASSISTED_REPRODUCTION_IUI, IVF, ICSI,
+        return Arrays.asList("gestation", MULTIPLE_GESTATION, GESTATION_TWIN, ASSISTED_REPRODUCTION_IUI, IVF, ICSI,
             ASSISTED_REPRODUCTION_FERTILITY_MEDS, ASSISTED_REPRODUCTION_SURROGACY, ASSISTED_REPRODUCTION_DONOR_EGG,
             ASSISTED_REPRODUCTION_DONOR_SPERM);
     }

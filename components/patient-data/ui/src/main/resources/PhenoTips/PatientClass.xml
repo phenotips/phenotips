@@ -1202,6 +1202,27 @@ $!{value}#if("$!{value}" != ''){{html clean=false}}&lt;input type='hidden' name=
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </solved__pubmed_id>
+    <twinNumber>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>twinNumber</name>
+      <number>54</number>
+      <picker>0</picker>
+      <prettyName>Twin number</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>Unknown|A|B|Other</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </twinNumber>
     <unaffected>
       <customDisplay/>
       <defaultValue/>

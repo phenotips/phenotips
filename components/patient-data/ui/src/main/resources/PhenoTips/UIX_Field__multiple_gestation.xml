@@ -114,8 +114,20 @@
 #if ($xcontext.action == 'edit')
   $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
+  (% class="controlled-group complete-hide exclude" %)(((
+    (% class="controller exclude" %)(((
+      #__displayIfSet('multipleGestation', false)
+    )))
+    (% class="controlled" %)(((
+      #__displayIfNotUnknown('twinNumber', false)
+    )))
+  )))
+#else
+  #__displayIfSet('multipleGestation', false)
+  #if ($obj.getProperty('multipleGestation').value == 1)
+    #__displayIfNotUnknown('twinNumber', true)
+  #end
 #end
-#__displayIfSet('multipleGestation', false)
 {{/velocity}}</content>
     </property>
     <property>
