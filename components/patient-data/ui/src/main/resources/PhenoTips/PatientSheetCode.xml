@@ -4213,9 +4213,6 @@ h1, h2, h3, h4 {
   background-color: $theme.notificationWarningColor;
   content: "!";
 }
-form .extradata-list tr:hover td {
-  background-color: $theme.highlightColor;
-}
 .extradata-list.measurements {
   border-collapse: separate;
   border-spacing: 0 0;
