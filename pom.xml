@@ -418,7 +418,7 @@
               <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/vocabularies/VocabularyManager</className>
+              <className>org/phenotips/vocabulary/VocabularyManager</className>
               <differenceType>7012</differenceType>
               <method>java.util.List getAvailableVocabularies()</method>
               <justification>The getAvailableVocabularies method should have been included from the start.</justification>

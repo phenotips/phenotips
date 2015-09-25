@@ -23,19 +23,20 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabularies</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-vocabularies-rest</artifactId>
+  <artifactId>vocabularies-rest</artifactId>
   <name>PhenoTips - Vocabularies - REST services</name>
-
-  <properties>
-    <coverage.instructionRatio>0.0</coverage.instructionRatio>
-  </properties>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabularies-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.phenotips</groupId>
+      <artifactId>phenotips-authorization</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -74,11 +75,6 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.8</version>
-    </dependency>
-    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
@@ -102,11 +98,6 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.phenotips</groupId>
-      <artifactId>phenotips-authorization</artifactId>
-      <version>1.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
