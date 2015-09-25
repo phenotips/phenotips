@@ -19,6 +19,7 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.rest.MeasurementPercentileResource;
 import org.phenotips.measurements.MeasurementHandler;
+import org.phenotips.measurements.internal.AbstractMeasurementHandler;
 
 import org.xwiki.component.annotation.Component;
 
@@ -53,7 +54,7 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
 
         Double ageMonths;
         try {
-            ageMonths = AbstractMeasurementRestResource.convertAgeStrToNumMonths(age);
+            ageMonths = AbstractMeasurementHandler.convertAgeStrToNumMonths(age);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST, "Cannot parse age."));
         }
@@ -67,7 +68,9 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
 
         JSONObject resp = new JSONObject();
         resp.accumulate("percentile", handler.valueToPercentile(isMale, ageMonths.floatValue(), value));
-        resp.accumulate("stddev", handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value));
+        double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
+        resp.accumulate("stddev", stddev);
+        resp.accumulate("fuzzy-value", AbstractMeasurementHandler.getFuzzyValue(stddev));
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
