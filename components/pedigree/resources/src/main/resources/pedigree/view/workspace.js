@@ -107,9 +107,7 @@ define ([], function() {
         var image = $('canvas');
 
         var background = image.getElementsByClassName('panning-background')[0];
-        var backgroundPosition = background.nextSibling;
-        var backgroundParent = background.parentNode;
-        backgroundParent.removeChild(background);
+        background.style.display = "none";
 
         var bbox = image.down().getBBox();
 
@@ -125,8 +123,12 @@ define ([], function() {
         svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+><\/\w+>/g, "");
         // remove hoverboxes
         svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+><\/\w+>/g, "");
+        // remove gradient definitions (only used for handles),
+        // or they confuse the browser after used and discarded for print preview
+        svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
+        svgText = svgText.replace(/<radialGradient.*?<\/radialGradient>/g, "");
 
-        backgroundParent.insertBefore(background, backgroundPosition);
+        background.style.display = "";
 
         return new SVGWrapper(svgText, bbox, 1.0);
     },

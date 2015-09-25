@@ -13,7 +13,10 @@ var PrintEngine = Class.create({
         this.yOverlap = 15;
     },
 
-    _generatePages: function(scale, addOverlaps, pageWidth, pageHeight, includeLegend) {
+    /**
+     * @param {emulateFullPage} When true, makes svg include extra blank space up to the pageWidth/pageHeight size
+     */
+    _generatePages: function(scale, addOverlaps, pageWidth, pageHeight, includeLegend, emulateFullPage) {
         var totalLegendHeight = 0;
         var legendHTML = "";
         if (includeLegend) {
@@ -21,13 +24,13 @@ var PrintEngine = Class.create({
             //   - color samples not using background gcolor (which is not printed by default in some browsers)
             //   - known height (need th eheight to compute required number of pages; no need to pre-render in the browser)
             //   - better handling of disabled/enabled legend items (regular legend has both enabled and disabled items)
-    
+
             var legendData = editor.getView().getSettings();
-    
+
             var generateSection = function(colors, names, sectionName) {
                 var count  = 0;
                 var height = 30;
-                var html   = "<div class='legend-section'><h2 class='section-title'>" + sectionName + "</h2>"+
+                var html   = "<div class='legend-section'><h3 class='section-title'>" + sectionName + "</h3>"+
                              "<ul class='abnormality-list'>";
                 for (var id in colors) {
                     if (colors.hasOwnProperty(id)) {
@@ -54,13 +57,13 @@ var PrintEngine = Class.create({
                 legendData["colors"].hasOwnProperty("phenotypes") && sections.push(generateSection(legendData["colors"]["phenotypes"], null, "Phenotypes"));
                 legendData["colors"].hasOwnProperty("cancers")    && sections.push(generateSection(legendData["colors"]["cancers"], null, "Cancers"));
             }
-    
+
             for (var i = 0; i < sections.length; i++) {
                 totalLegendHeight += sections[i].heightInPixels;
                 legendHTML        += sections[i].html;
             }
         } // if includeLegend
-        
+
         var svg = editor.getWorkspace().getSVGCopy();
 
         svg.scale(scale);
@@ -86,11 +89,11 @@ var PrintEngine = Class.create({
         var pageStartY = 0;
         var legendOnSeparatePage = false;
         for (var pageNumY = 0; pageNumY < pagesTall; pageNumY++) {
-            var rowHeight = Math.min(pageHeight, bbox.height - pageStartY);
+            var rowHeight = emulateFullPage ? pageHeight : Math.min(pageHeight, bbox.height - pageStartY);
             var pagesRow = [];
             var pageStartX = 0;
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
-                var columnWidth = Math.min(pageWidth,  bbox.width - pageStartX);
+                var columnWidth = emulateFullPage ? pageWidth : Math.min(pageWidth,  bbox.width - pageStartX);
                 var pageSvg = svg.getCopy().setViewBox(pageStartX, pageStartY, columnWidth, rowHeight).getSVGText();
                 var page = { "pageName" : "page " + pageNumX + ":" + pageNumY,
                              "svg": pageSvg };
@@ -103,7 +106,7 @@ var PrintEngine = Class.create({
             }
             pageStartY += (rowHeight - yOverlap);
         }
-        
+
         return { "pages": pages,
                  "pagesWide": pageNumX,
                  "pagesTall": pageNumY,
@@ -111,16 +114,16 @@ var PrintEngine = Class.create({
                  "legendHTML": legendHTML,
                  "legendHeight": totalLegendHeight }
     },
-    
+
     generatePreviewHTML: function(maxPreviewWidth, maxPreviewHeight, printScale, addOverlaps) {
         var previewWidth = maxPreviewWidth - 30;
-        // need to scale even more than for print, the ratio is the ratio of printWidth to previewWidth        
+        // need to scale even more than for print, the ratio is the ratio of printWidth to previewWidth
         var bbox = editor.getWorkspace().getSVGCopy().getBBox();
-        
+
         var scaledSVGWidth = bbox.width * printScale;
         var scaleComparedToPrint = previewWidth / scaledSVGWidth;
         var useScale = scaleComparedToPrint * printScale;
-        
+
         if (addOverlaps) {
             // adjust for overlaps
             var width = bbox.width * useScale;
@@ -128,7 +131,7 @@ var PrintEngine = Class.create({
             if (width > previewPageWidth) {
                 var pagesWide = Math.ceil(width / previewPageWidth);
                 var svgWidthWithOverlaps = bbox.width + (pagesWide-1)*this.xOverlap;
-                
+
                 scaledSVGWidth = svgWidthWithOverlaps * printScale;
                 scaleComparedToPrint = previewWidth / scaledSVGWidth;
                 useScale = scaleComparedToPrint * printScale;
@@ -139,7 +142,8 @@ var PrintEngine = Class.create({
                                         addOverlaps,
                                         this.printPageWidth*scaleComparedToPrint,
                                         this.printPageHeight*scaleComparedToPrint,
-                                        false);        
+                                        false,
+                                        false);
         var html = "<div class='printPreview' style='max-height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
@@ -147,7 +151,7 @@ var PrintEngine = Class.create({
                 html += "<div class='previewPage' style='border: 1px; border-style: dotted; float: left;' id='pedigree-page-x" + pageNumX + "-" + pageNumY + "'>" + page.svg + "</div>";
             }
             html += "<br>";
-        }        
+        }
         html += "</div>";
         return html;
     },
@@ -157,7 +161,8 @@ var PrintEngine = Class.create({
                                         addOverlaps,
                                         this.printPageWidth,
                                         this.printPageHeight,
-                                        includeLegend);
+                                        includeLegend,
+                                        false);
         var w=window.open();
         //w.document.write("<link rel='stylesheet' type='text/css' href='print.css' />");
         w.document.write("<style type='text/css' media='print'>@page { size: landscape; }</style>");
@@ -168,6 +173,7 @@ var PrintEngine = Class.create({
             ".break_here { page-break-before:always; }" +
             ".abnormality-list { list-style-type: none; }" +
             ".abnormality-color { margin-right: 8px; }" +
+            ".legend-item-name {font-size: 11pt }" +
             "</style>");
 
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {

@@ -1,6 +1,6 @@
 /**
  * The UI Element for selecting pedigree print settings.
- * 
+ *
  * Should be instantiated after preferences have been loaded as default paper/printer
  * settings may be stored in the preferences.
  *
@@ -15,15 +15,15 @@ var PrintDialog = Class.create( {
         this._zoomLevel = 100;
         this._printEngine = new PrintEngine();
 
-        var mainDiv = new Element('div', {'class': 'import-selector'});
+        var mainDiv = new Element('div', {'class': 'import-selector field-no-user-select cursor-normal'});
 
         var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview (each block indicates a separate page):");
         this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
-        var previewFooter = new Element('div', {'class': 'print-preview-footer'}).update("(Note: pedigree is supposed to be printed in landscape orientation; in some browsers you need to manually select landscape print mode)");
+        var previewFooter = new Element('div', {'class': 'print-preview-footer'}).update("(Note: in some browsers you need to manually select landscape print mode)");
         mainDiv.insert(previewHeader).insert(this.previewContainer).insert(previewFooter);
 
-        var minusButton = new Element('input', {"type" : "button", "value": "-", "class": "pedigree-zoom-button print-zoom-minus-button"});
-        var plusButton  = new Element('input', {"type" : "button", "value": "+", "class": "pedigree-zoom-button"});
+        var minusButton = new Element('input', {"type" : "button", "value": "-", "class": "print-zoom-button print-zoom-minus-button"});
+        var plusButton  = new Element('input', {"type" : "button", "value": "+", "class": "print-zoom-button"});
         this.zoomValue  = new Element('label', {"class": "print-zoom-value no-mouse-interaction"}).update("100%");
         var zoomDiv = new Element('div', {'class': 'pedigree-print-zoom-container field-no-user-select'});
         zoomDiv.update("Print scale: ").insert(minusButton).insert(this.zoomValue).insert(plusButton);
@@ -43,7 +43,7 @@ var PrintDialog = Class.create( {
         });
         mainDiv.insert(zoomDiv);
 
-        var configListElement = new Element('table', {id : 'import-type'});
+        var configListElement = new Element('table', {id : 'print-settings'});
         var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
         addLegend.checked = true;
         var markLabel1 = new Element('label', {'class': 'import-mark-label1'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr');
@@ -60,7 +60,7 @@ var PrintDialog = Class.create( {
         var markLabel3 = new Element('label', {'class': 'import-mark-label2'}).insert(closeAfterPrint).insert("Close window with printer-friendly version after printing").wrap('td').wrap('tr');
         configListElement.insert(markLabel3);
 
-        var dataSection3 = new Element('div', {'class': 'import-block'});
+        var dataSection3 = new Element('div', {'class': 'print-settings-block'});
         dataSection3.insert(configListElement);
         mainDiv.insert(dataSection3);
 

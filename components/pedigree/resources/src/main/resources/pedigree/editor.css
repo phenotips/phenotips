@@ -51,22 +51,22 @@
 /* =========================================
  * MENU
  */
-#editor-menu {
+.editor-menu {
   background: #444;
   padding: 5px;
 }
-#editor-menu .action-group {
+.editor-menu .action-group {
   display: inline-block;
 }
-#editor-menu span {
+.editor-menu span {
   font-family: Arial,Verdana,sans-serif;
 }
-#editor-menu .action-group:not(:last-of-type) {
+.editor-menu .action-group:not(:last-of-type) {
   border-right: 1px solid #777;
   margin-right: 1em;
   padding-right: 1em;
 }
-#editor-menu .menu-item {
+.editor-menu .menu-item {
   border-radius: 4px;
   color: #fff;
   padding: .35em;
@@ -75,10 +75,10 @@
   display: inline-block;
   white-space: nowrap;
 }
-#editor-menu .menu-item:last-of-type {
+.editor-menu .menu-item:last-of-type {
   margin: 0;
 }
-#editor-menu .disabled-menu-item {
+.editor-menu .disabled-menu-item {
   color: #777;
   padding: .35em;
   margin: 0 .7em 0 0;
@@ -86,7 +86,7 @@
   display: inline-block;
   white-space: nowrap;
 }
-#editor-menu .disabled-menu-item:last-of-type {
+.editor-menu .disabled-menu-item:last-of-type {
   margin: 0;
 }
 .loading-indicator {
@@ -96,7 +96,7 @@
     height: 100px;
     width: 200px;
 }
-#editor-menu .menu-item:hover {
+.editor-menu .menu-item:hover {
   box-shadow: #fff 0 0 5px 0;
 }
 
@@ -804,9 +804,12 @@
 .minus-button {
   color: #C00;
 }
-
 .plus-button {
   color: #080;
+}
+
+.cursor-normal {
+  cursor: default;
 }
 
 .msdialog-modal-container .pedigree-template-chooser {
@@ -814,18 +817,22 @@
 }
 
 .msdialog-modal-container .pedigree-print-dialog {
-  width: 750px !important;
-  max-width: 750px !important;
+  width: 760px !important;
+  max-width: 760px !important;
 }
 .print-preview-header {
   display: flex;
   margin-bottom: 10px;
 }
 .print-preview-footer {
-  margin-top: 8px;
+  margin-top: 3px;
   margin-bottom: 10px;
   margin-left: 10px;
   margin-right: 25px;
+}
+.print-settings-block {
+  margin: 0.25em 0 0.5em 0;
+  display: block;
 }
 .print-zoom-value {
   display: inline-block;
@@ -836,13 +843,13 @@
   margin-left: 5px;
 }
 .print-zoom-button {
-  width:25px;
-  height:25px;
+  width:26px;
+  height:28px;
+  cursor: pointer;
 }
 .print-zoom-minus-button {
   margin-left: 10px;
 }
-
 .picture-box {
     display: inline-block;
     box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
@@ -852,7 +859,12 @@
     cursor: pointer;
     box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
 }
-
+.preview-container {
+  border: 1px;
+  border-style: solid;
+  border-color: #ccc;
+  display: inline-block;
+}
 .template-picture-container {
     display: inline-block;
     margin: 3px;
