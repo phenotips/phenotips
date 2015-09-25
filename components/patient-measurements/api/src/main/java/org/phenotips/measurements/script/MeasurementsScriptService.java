@@ -51,21 +51,6 @@ import org.slf4j.Logger;
 @Singleton
 public class MeasurementsScriptService implements ScriptService
 {
-    /** Fuzzy value representing a measurement value considered extremely below normal. */
-    private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
-
-    /** Fuzzy value representing a measurement value considered below normal, but not extremely. */
-    private static final String VALUE_BELOW_NORMAL = "below-normal";
-
-    /** Fuzzy value representing a measurement value considered normal. */
-    private static final String VALUE_NORMAL = "normal";
-
-    /** Fuzzy value representing a measurement value considered above normal, but not extremely. */
-    private static final String VALUE_ABOVE_NORMAL = "above-normal";
-
-    /** Fuzzy value representing a measurement value considered extremely above normal. */
-    private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -142,17 +127,7 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(int percentile)
     {
-        String returnValue = VALUE_NORMAL;
-        if (percentile <= 1) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (percentile <= 3) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (percentile >= 99) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (percentile >= 97) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
+        return AbstractMeasurementHandler.getFuzzyValue(percentile);
     }
 
     /**
@@ -163,17 +138,19 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(double deviation)
     {
-        String returnValue = VALUE_NORMAL;
-        if (deviation <= -3.0) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (deviation <= -2.0) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (deviation >= 3.0) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (deviation >= 2.0) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
+        return AbstractMeasurementHandler.getFuzzyValue(deviation);
+    }
+
+    /**
+     * Get the number of months corresponding to a period string.
+     *
+     * @param age the ISO-8601 period string, without leading 'P'
+     * @throws IllegalArgumentException if the age cannot be parsed
+     * @return number of months
+     */
+    public Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
+    {
+        return AbstractMeasurementHandler.convertAgeStrToNumMonths(age);
     }
 
     /**
