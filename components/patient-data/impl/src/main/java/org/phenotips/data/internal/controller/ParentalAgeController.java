@@ -30,7 +30,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,25 +141,27 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(getName())) {
-            return;
-        }
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed() || data.size() <= 0) {
             return;
         }
 
         JSONObject result = new JSONObject();
-
-        for (Iterator<Map.Entry<String, Integer>> entries = data.dictionaryIterator(); entries.hasNext();) {
-            Map.Entry<String, Integer> entry = entries.next();
-            if (entry.getValue() == null) {
-                continue;
+        for (String propertyName : this.getProperties()) {
+            if ((selectedFieldNames == null || selectedFieldNames.contains(propertyName))
+                && data.get(propertyName) != null) {
+                Integer value = data.get(propertyName);
+                result.put(propertyName, value);
             }
-            result.put(entry.getKey(), entry.getValue());
         }
-        if (result.length() > 0) {
-            json.put(getJsonPropertyName(), result);
+        // todo. Chose this block over what was in Master. Need to check that it was the right choice
+        if (!result.isEmpty()) {
+            JSONObject container = json.optJSONObject(this.getJsonPropertyName());
+            if (container != null) {
+                container.putAll(result);
+            } else {
+                json.put(getJsonPropertyName(), result);
+            }
         }
     }
 

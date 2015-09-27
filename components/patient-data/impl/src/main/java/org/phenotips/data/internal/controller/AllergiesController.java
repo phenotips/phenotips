@@ -152,7 +152,10 @@ public class AllergiesController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
+        if (selectedFieldNames != null && (!selectedFieldNames.contains(DATA_NAME) ||
+            /* otherwise push doesn't work; checking for field names present */
+            !(selectedFieldNames.contains(NKDA) || selectedFieldNames.contains("allergies"))
+        )) {
             return;
         }
 
