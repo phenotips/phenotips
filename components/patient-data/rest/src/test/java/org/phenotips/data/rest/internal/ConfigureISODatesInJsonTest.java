@@ -20,69 +20,27 @@ package org.phenotips.data.rest.internal;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.ApplicationStartedEvent;
-import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jackson.JacksonConverter;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link ConfigureISODatesInJson} component.
  */
 public class ConfigureISODatesInJsonTest
 {
-
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
         new MockitoComponentMockingRule<EventListener>(ConfigureISODatesInJson.class);
-
-    @Mock
-    private Event event;
-
-    @Mock
-    private Object source;
-
-    @Mock
-    private Object data;
-
-    @Mock
-    private Engine engine;
-
-    @Mock
-    private ConverterHelper converter;
-
-    @Mock
-    private JacksonConverter jacksonConverter;
-
-    @Mock
-    private ObjectMapper objectMapper;
-
-    private List<ConverterHelper> converterList;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        MockitoAnnotations.initMocks(this);
-        this.converterList = new LinkedList<>();
-    }
 
     @Test
     public void checkConstruction() throws ComponentLookupException
@@ -95,14 +53,13 @@ public class ConfigureISODatesInJsonTest
     @Test
     public void verifyOnEventConfiguresProperly() throws ComponentLookupException
     {
-        this.converterList.add(this.converter);
-        this.converterList.add(this.jacksonConverter);
-        Engine.setInstance(this.engine);
-        when(this.engine.getRegisteredConverters()).thenReturn(this.converterList);
-        when(this.jacksonConverter.getObjectMapper()).thenReturn(this.objectMapper);
+        this.mocker.getComponentUnderTest().onEvent(null, null, null);
 
-        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
-
-        verify(this.objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        for (ConverterHelper converter : Engine.getInstance().getRegisteredConverters()) {
+            if (converter instanceof JacksonConverter) {
+                JacksonConverter jconverter = (JacksonConverter) converter;
+                jconverter.getObjectMapper().getSerializationConfig().isEnabled(Feature.WRITE_DATES_AS_TIMESTAMPS);
+            }
+        }
     }
 }
