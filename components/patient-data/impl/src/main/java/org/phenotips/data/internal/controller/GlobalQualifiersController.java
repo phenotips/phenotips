@@ -121,17 +121,18 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
             }
             for (String propertyName : getProperties()) {
                 List<VocabularyTerm> terms = data.get(propertyName);
-                if (terms != null && !terms.isEmpty()) {
-                    BaseProperty<ObjectPropertyReference> field =
-                        (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
-                    if (field != null) {
-                        String fieldType = field.getClassType();
-                        if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
+                if (terms == null) {
+                    terms = new LinkedList<>();
+                }
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
+                if (field != null) {
+                    String fieldType = field.getClassType();
+                    if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.StringProperty")) {
                         /* there should be only one term present; just taking the head of the list */
-                            field.setValue(termsToXWikiFormat(terms).get(0));
-                        } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
-                            ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
-                        }
+                        field.setValue(terms.isEmpty() ? null : termsToXWikiFormat(terms).get(0));
+                    } else if (StringUtils.equals(fieldType, "com.xpn.xwiki.objects.DBStringListProperty")) {
+                        ((DBStringListProperty) field).setList(termsToXWikiFormat(terms));
                     }
                 }
             }
@@ -189,7 +190,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                 if (elements != null) {
                     List<VocabularyTerm> propertyTerms = new LinkedList<>();
                     Iterator<Object> elementsIterator = elements.iterator();
-                    while(elementsIterator.hasNext()) {
+                    while (elementsIterator.hasNext()) {
                         JSONObject element = (JSONObject) elementsIterator.next();
                         String termId = element.optString("id");
                         if (termId != null) {

@@ -218,17 +218,12 @@ public class SolvedController extends AbstractSimpleController implements Initia
                 return;
             }
 
-            Iterator<Entry<String, String>> dataIterator = data.dictionaryIterator();
-
-            while (dataIterator.hasNext()) {
-                Entry<String, String> datum = dataIterator.next();
-                String key = this.findXWikiKey(datum.getKey());
-                if (StringUtils.isNotEmpty(datum.getValue()) && key != null) {
-                    BaseProperty<ObjectPropertyReference> field =
-                        (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(key);
-                    if (field != null) {
-                        field.setValue(applyCast(datum.getValue()));
-                    }
+            for (String key : this.getProperties()) {
+                String datum = data.get(key);
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(key);
+                if (field != null) {
+                    field.setValue(applyCast(datum));
                 }
             }
         } catch (Exception ex) {
@@ -250,6 +245,9 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private Object applyCast(String value)
     {
+        if (value == null) {
+            return null;
+        }
         if (STATUS_SOLVED_NUMERIC.equals(value) || STATUS_UNSOLVED_NUMERIC.equals(value)) {
             return Integer.parseInt(value);
         } else {
