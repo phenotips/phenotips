@@ -175,8 +175,8 @@ public class DefaultPatientsResourceImplTest
             any(EntityReference.class));
         doThrow(exception).when(this.repository).createNewPatient();
         Response response = this.patientsResource.addPatient(json.toString());
-        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        verify(this.logger).error("Could not process remote matching request: {}", exception.getMessage(), exception);
+        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        verify(this.logger).error("Could not process patient creation request: {}", exception.getMessage(), exception);
     }
 
     @Test
