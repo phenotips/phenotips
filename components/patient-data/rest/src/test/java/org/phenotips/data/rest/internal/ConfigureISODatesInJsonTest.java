@@ -17,8 +17,18 @@
  */
 package org.phenotips.data.rest.internal;
 
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.ApplicationStartedEvent;
+import org.xwiki.observation.event.Event;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,15 +38,6 @@ import org.mockito.MockitoAnnotations;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jackson.JacksonConverter;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.observation.event.ApplicationStartedEvent;
-import org.xwiki.observation.event.Event;
-import org.xwiki.observation.EventListener;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
-
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
@@ -45,9 +46,9 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link ConfigureISODatesInJson} component.
- *
  */
-public class ConfigureISODatesInJsonTest{
+public class ConfigureISODatesInJsonTest
+{
 
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
@@ -77,28 +78,31 @@ public class ConfigureISODatesInJsonTest{
     private List<ConverterHelper> converterList;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Exception
+    {
         MockitoAnnotations.initMocks(this);
-        converterList = new LinkedList<>();
+        this.converterList = new LinkedList<>();
     }
 
     @Test
-    public void checkConstruction() throws ComponentLookupException {
+    public void checkConstruction() throws ComponentLookupException
+    {
         EventListener testInstance = this.mocker.getComponentUnderTest();
         Assert.assertEquals("ConfigureISODatesInJson", testInstance.getName());
         Assert.assertThat(testInstance.getEvents(), hasItem(isA(ApplicationStartedEvent.class)));
     }
 
     @Test
-    public void verifyOnEventConfiguresProperly() throws ComponentLookupException {
-        converterList.add(converter);
-        converterList.add(jacksonConverter);
-        Engine.setInstance(engine);
-        when(engine.getRegisteredConverters()).thenReturn(converterList);
-        when(jacksonConverter.getObjectMapper()).thenReturn(objectMapper);
+    public void verifyOnEventConfiguresProperly() throws ComponentLookupException
+    {
+        this.converterList.add(this.converter);
+        this.converterList.add(this.jacksonConverter);
+        Engine.setInstance(this.engine);
+        when(this.engine.getRegisteredConverters()).thenReturn(this.converterList);
+        when(this.jacksonConverter.getObjectMapper()).thenReturn(this.objectMapper);
 
-        this.mocker.getComponentUnderTest().onEvent(event, source, data);
+        this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
-        verify(objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        verify(this.objectMapper).configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 }
