@@ -744,7 +744,6 @@ define([
                     textInput.id = "cancer_notes_" + cancerName;
                     var expandNotes = new Element('label', {'class': 'clickable cancer-notes', 'for': textInput.id}).update("<span class='fa fa-file-text-o'></span>");
 
-
                     var toggleNotes = (function(textInput, expandNotes){
                         return function(){
                             if (textInput.disabled == true) {
@@ -766,6 +765,8 @@ define([
                             expandNotes.removeClassName('disabled');
                         };
                     })(expandNotes, textInput, toggleNotes);
+
+                    expandNotes.enableNotes = enableNotes;
 
                     var disableNotes = (function(expandNotes, textInput, toggleNotes){
                         return function(){
@@ -1207,6 +1208,9 @@ define([
                             notesInput.show();
                             notesInput.disabled = false;
                             enableNotesIcon.hide();
+                        } else if (value[cancerName].hasOwnProperty("notes") && value[cancerName].notes == "") {
+                            //In case the notes were blank but the cancer was selected, the enableNotes function must be called to add toggle behaviour
+                            enableNotesIcon.enableNotes();
                         } else {
                             notesInput.hide();
                             notesInput.disabled = true;
