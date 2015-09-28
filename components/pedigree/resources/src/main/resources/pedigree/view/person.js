@@ -861,6 +861,7 @@ define([
                 }
             }
             this.getGraphics().updateDisorderShapes();
+            this.getGraphics().updateCancerAgeOfOnsetLabels();
         },
 
         /**
