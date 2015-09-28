@@ -195,10 +195,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
    var formDataWrapper = new Element('div');
    templateSelectionForm.insert(formDataWrapper);
 
-   if (studiesSectionInput) {
-      var studiesSection = new Element('div');
-      formDataWrapper.insert(studiesSection);
-   }
    if (projectsSectionInput) {
       if (studiesSectionInput) {
          var hr = new Element('hr');
@@ -206,6 +202,10 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       }
       var projectsSection = new Element('div');
       formDataWrapper.insert(projectsSection);
+   }
+   if (studiesSectionInput) {
+      var studiesSection = new Element('div');
+      formDataWrapper.insert(studiesSection);
    }
 
    newPatientForm.select('input[type="hidden"]').each(function(item) {
