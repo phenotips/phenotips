@@ -1212,7 +1212,7 @@
         if (!silent) {
           this.sInput = selection;
           this.fld.value = newFieldValue || this.fld.defaultValue || '';
-          //this.fld.focus();
+          this.fld.focus();
           this.clearSuggestions();
         }
         // pass selected object to callback function, if exists
