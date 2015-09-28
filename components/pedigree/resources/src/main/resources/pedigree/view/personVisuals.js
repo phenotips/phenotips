@@ -624,7 +624,7 @@ define([
         },
 
         /**
-         * Updates the stillbirth label for this Person
+         * Updates the comments label for this Person
          *
          * @method updateCommentsLabel
          */
@@ -769,7 +769,7 @@ define([
          */
         unshiftLabels: function() {
             var labels = this.getLabels();
-            var firstLable = this._childlessStatusLabel ? 1 : 0;
+            var firstLabel = this._childlessStatusLabel ? 1 : 0;
             for(var i = 0; i<labels.length; i++) {
                 labels[i].stop().animate({"y": labels[i].oy}, 200,">");
             }

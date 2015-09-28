@@ -114,49 +114,49 @@ define([
 
             // Update disorder colors
             this._updateDisorderColor = function(id, color) {
-            this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
-                var colorBubble = item.up('li').down('.abnormality-color');
-                if (!colorBubble) {
-                colorBubble = new Element('span', {'class' : 'abnormality-color'});
-                item.up('li').insert({top : colorBubble});
-                }
-                colorBubble.setStyle({background : color});
-            });
+                this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
+                    var colorBubble = item.up('li').down('.abnormality-color');
+                    if (!colorBubble) {
+                        colorBubble = new Element('span', {'class' : 'abnormality-color'});
+                        item.up('li').insert({top : colorBubble});
+                    }
+                    colorBubble.setStyle({background : color});
+                });
             }.bind(this);
             document.observe('disorder:color', function(event) {
-            if (!event.memo || !event.memo.id || !event.memo.color) {
-                return;
-            }
-            _this._updateDisorderColor(event.memo.id, event.memo.color);
+                if (!event.memo || !event.memo.id || !event.memo.color) {
+                    return;
+                }
+                _this._updateDisorderColor(event.memo.id, event.memo.color);
             });
             //this._setFieldValue['disease-picker'].bind(this);
 
             // Update gene colors
             this._updateGeneColor = function(id, color) {
-            this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
-                var colorBubble = item.up('li').down('.abnormality-color');
-                if (!colorBubble) {
-                colorBubble = new Element('span', {'class' : 'abnormality-color'});
-                item.up('li').insert({top : colorBubble});
-                }
-                colorBubble.setStyle({background : color});
-            });
+                this.menuBox.select('.field-candidate_genes li input[value="' + id + '"]').each(function(item) {
+                    var colorBubble = item.up('li').down('.abnormality-color');
+                    if (!colorBubble) {
+                        colorBubble = new Element('span', {'class' : 'abnormality-color'});
+                        item.up('li').insert({top : colorBubble});
+                    }
+                    colorBubble.setStyle({background : color});
+                });
             }.bind(this);
             document.observe('gene:color', function(event) {
-            if (!event.memo || !event.memo.id || !event.memo.color) {
-                return;
-            }
-            _this._updateGeneColor(event.memo.id, event.memo.color);
+                if (!event.memo || !event.memo.id || !event.memo.color) {
+                    return;
+                }
+                _this._updateGeneColor(event.memo.id, event.memo.color);
             });
         },
 
         _generatePickersAndSuggests: function() {
             // date
             this.form.select('.fuzzy-date').each(function(item) {
-            if (!item.__datePicker) {
-                var inputMode = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
-                item.__datePicker = new DatePicker(item, inputMode);
-            }
+                if (!item.__datePicker) {
+                    var inputMode = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
+                    item.__datePicker = new DatePicker(item, inputMode);
+                }
             });
             // disease
             this.form.select('input.suggest-omim').each(function(item) {
@@ -382,34 +382,34 @@ define([
         },
 
         _attachFieldEventListeners : function (field, eventNames, values) {
-        var _this = this;
-        eventNames.each(function(eventName) {
-            field.observe(eventName, function(event) {
-            _this._saveCursorPositionIfNecessary(field);
-            if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
-            var target = _this.targetNode;
-            if (!target) return;
-            _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
-            var method = _this.fieldMap[field.name]['function'];
+            var _this = this;
+            eventNames.each(function(eventName) {
+                field.observe(eventName, function(event) {
+                    _this._saveCursorPositionIfNecessary(field);
+                    if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
+                    var target = _this.targetNode;
+                    if (!target) return;
+                    _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
+                    var method = _this.fieldMap[field.name]['function'];
 
-            if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue)
-                return;
+                    if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue) {
+                        return;
+                    }
 
-            if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
-                var properties = {};
-                properties[method] = _this.fieldMap[field.name].crtValue;
-                var event = { "nodeID": target.getID(), "properties": properties };
-                document.fire("pedigree:node:setproperty", event);
-            }
-            else {
-                var properties = {};
-                properties[method] = _this.fieldMap[field.name].crtValue;
-                var event = { "nodeID": target.getID(), "modifications": properties };
-                document.fire("pedigree:node:modify", event);
-            }
-            field.fire('pedigree:change');
+                    if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
+                        var properties = {};
+                        properties[method] = _this.fieldMap[field.name].crtValue;
+                        var event = { "nodeID": target.getID(), "properties": properties };
+                        document.fire("pedigree:node:setproperty", event);
+                    } else {
+                        var properties = {};
+                        properties[method] = _this.fieldMap[field.name].crtValue;
+                        var event = { "nodeID": target.getID(), "modifications": properties };
+                        document.fire("pedigree:node:modify", event);
+                    }
+                    field.fire('pedigree:change');
+                });
             });
-        });
         },
 
         _saveCursorPositionIfNecessary: function(field) {
@@ -546,22 +546,22 @@ define([
                 var diseasePicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-omim', name: data.name});
                 result.insert(diseasePicker);
                 diseasePicker._getValue = function() {
-                var results = [];
-                var container = this.up('.field-box');
-                if (container) {
-                    container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                    results.push(new Disorder(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
-                    });
-                }
-                return [results];
+                    var results = [];
+                    var container = this.up('.field-box');
+                    if (container) {
+                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                            results.push(new Disorder(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
+                        });
+                    }
+                    return [results];
                 }.bind(diseasePicker);
                 // Forward the 'custom:selection:changed' to the input
                 var _this = this;
                 document.observe('custom:selection:changed', function(event) {
-                if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                    Event.fire(event.memo.trigger, 'custom:selection:changed');
-                    _this.reposition();
-                }
+                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                        Event.fire(event.memo.trigger, 'custom:selection:changed');
+                        _this.reposition();
+                    }
                 });
                 this._attachFieldEventListeners(diseasePicker, ['custom:selection:changed']);
                 return result;
@@ -571,22 +571,22 @@ define([
                 var ethnicityPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-ethnicity', name: data.name});
                 result.insert(ethnicityPicker);
                 ethnicityPicker._getValue = function() {
-                var results = [];
-                var container = this.up('.field-box');
-                if (container) {
-                    container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                    results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
-                    });
-                }
-                return [results];
+                    var results = [];
+                    var container = this.up('.field-box');
+                    if (container) {
+                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                        });
+                    }
+                    return [results];
                 }.bind(ethnicityPicker);
                 // Forward the 'custom:selection:changed' to the input
                 var _this = this;
                 document.observe('custom:selection:changed', function(event) {
-                if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                    Event.fire(event.memo.trigger, 'custom:selection:changed');
-                    _this.reposition();
-                }
+                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                        Event.fire(event.memo.trigger, 'custom:selection:changed');
+                        _this.reposition();
+                    }
                 });
                 this._attachFieldEventListeners(ethnicityPicker, ['custom:selection:changed']);
                 return result;
@@ -596,22 +596,22 @@ define([
                 var hpoPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-hpo', name: data.name});
                 result.insert(hpoPicker);
                 hpoPicker._getValue = function() {
-                var results = [];
-                var container = this.up('.field-box');
-                if (container) {
-                    container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                    results.push(new HPOTerm(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
-                    });
-                }
-                return [results];
+                    var results = [];
+                    var container = this.up('.field-box');
+                    if (container) {
+                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                        results.push(new HPOTerm(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
+                        });
+                    }
+                    return [results];
                 }.bind(hpoPicker);
                 // Forward the 'custom:selection:changed' to the input
                 var _this = this;
                 document.observe('custom:selection:changed', function(event) {
-                if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                    Event.fire(event.memo.trigger, 'custom:selection:changed');
-                    _this.reposition();
-                }
+                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                        Event.fire(event.memo.trigger, 'custom:selection:changed');
+                        _this.reposition();
+                    }
                 });
                 this._attachFieldEventListeners(hpoPicker, ['custom:selection:changed']);
                 return result;
@@ -621,22 +621,22 @@ define([
                 var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
                 result.insert(patientPicker);
                 patientPicker._getValue = function() {
-                var results = [];
-                var container = this.up('.field-box');
-                if (container) {
-                    container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                    results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
-                    });
-                }
-                return [results];
+                    var results = [];
+                    var container = this.up('.field-box');
+                    if (container) {
+                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                        });
+                    }
+                    return [results];
                 }.bind(patientPicker);
                 // Forward the 'custom:selection:changed' to the input
                 var _this = this;
                 document.observe('custom:selection:changed', function(event) {
-                if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                    Event.fire(event.memo.trigger, 'custom:selection:changed');
-                    _this.reposition();
-                }
+                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                        Event.fire(event.memo.trigger, 'custom:selection:changed');
+                        _this.reposition();
+                    }
                 });
                 this._attachFieldEventListeners(patientPicker, ['custom:selection:changed']);
                 return result;
@@ -646,22 +646,22 @@ define([
                 var genePicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-genes', name: data.name});
                 result.insert(genePicker);
                 genePicker._getValue = function() {
-                var results = [];
-                var container = this.up('.field-box');
-                if (container) {
-                    container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                    results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
-                    });
-                }
-                return [results];
+                    var results = [];
+                    var container = this.up('.field-box');
+                    if (container) {
+                        container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                        results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                        });
+                    }
+                    return [results];
                 }.bind(genePicker);
                 // Forward the 'custom:selection:changed' to the input
                 var _this = this;
                 document.observe('custom:selection:changed', function(event) {
-                if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
-                    Event.fire(event.memo.trigger, 'custom:selection:changed');
-                    _this.reposition();
-                }
+                    if (event.memo && event.memo.fieldName == data.name && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                        Event.fire(event.memo.trigger, 'custom:selection:changed');
+                        _this.reposition();
+                    }
                 });
                 this._attachFieldEventListeners(genePicker, ['custom:selection:changed']);
                 return result;
@@ -929,58 +929,58 @@ define([
         },
 
         reposition : function(x, y) {
-        x = Math.floor(x);
-        if (x !== undefined && isFinite(x)) {
-            if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {
-                var delta = x + this.menuBox.getWidth() - this.canvas.getWidth();
-                editor.getWorkspace().panByX(delta, true);
-                x -= delta;
+            x = Math.floor(x);
+            if (x !== undefined && isFinite(x)) {
+                if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {
+                    var delta = x + this.menuBox.getWidth() - this.canvas.getWidth();
+                    editor.getWorkspace().panByX(delta, true);
+                    x -= delta;
+                }
+                this.menuBox.style.left = x + 'px';
             }
-            this.menuBox.style.left = x + 'px';
-        }
 
-        this.menuBox.style.height = '';
-        var height = '';
-        var top    = '';
-        if (y !== undefined && isFinite(y)) {
-            y = Math.floor(y);
-        } else {
-            if (this.menuBox.style.top.length > 0) {
-                try {
-                    y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
-                } catch (err) {
-                    // ignore: strange style or negative y, y will b set to 0
+            this.menuBox.style.height = '';
+            var height = '';
+            var top    = '';
+            if (y !== undefined && isFinite(y)) {
+                y = Math.floor(y);
+            } else {
+                if (this.menuBox.style.top.length > 0) {
+                    try {
+                        y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+                    } catch (err) {
+                        // ignore: strange style or negative y, y will b set to 0
+                    }
                 }
             }
-        }
-        if (y === undefined || !isFinite(y) || y < 0) {
-            y = 0;
-        }
+            if (y === undefined || !isFinite(y) || y < 0) {
+                y = 0;
+            }
 
-        // Make sure the menu fits inside the screen
-        if (this.canvas && this.menuBox.getHeight() >= (this.canvas.getHeight() - 1)) {
-            // menu is too big to fit the screen
-            top    = 0;
-            height = (this.canvas.getHeight() - 1) + 'px';
-        } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 1) {
-            // menu fits the screen, but have to move it higher for that
-            var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 1;
-            var position = (y - diff);
-            if (position < 0) {
+            // Make sure the menu fits inside the screen
+            if (this.canvas && this.menuBox.getHeight() >= (this.canvas.getHeight() - 1)) {
+                // menu is too big to fit the screen
                 top    = 0;
                 height = (this.canvas.getHeight() - 1) + 'px';
+            } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 1) {
+                // menu fits the screen, but have to move it higher for that
+                var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 1;
+                var position = (y - diff);
+                if (position < 0) {
+                    top    = 0;
+                    height = (this.canvas.getHeight() - 1) + 'px';
+                } else {
+                    top    = position + 'px';
+                    height = '';
+                }
             } else {
-                top    = position + 'px';
+                top = y + 'px';
                 height = '';
             }
-        } else {
-            top = y + 'px';
-            height = '';
-        }
 
-        this.menuBox.style.top      = top;
-        this.menuBox.style.height   = height;
-        this.menuBox.style.overflow = 'auto';
+            this.menuBox.style.top      = top;
+            this.menuBox.style.height   = height;
+            this.menuBox.style.overflow = 'auto';
         },
 
         _clearCrtData : function () {
@@ -1013,10 +1013,10 @@ define([
                 }
             },
             'checkbox' : function (container, value) {
-            var checkbox = container.down('input[type=checkbox]');
-            if (checkbox) {
-            checkbox.checked = value;
-            }
+                var checkbox = container.down('input[type=checkbox]');
+                if (checkbox) {
+                    checkbox.checked = value;
+                }
             },
             'text' : function (container, value) {
                 var target = container.down('input[type=text]');
