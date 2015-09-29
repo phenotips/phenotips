@@ -18,7 +18,7 @@ var PrintDialog = Class.create( {
 
         var mainDiv = new Element('div', {'class': 'import-selector field-no-user-select cursor-normal'});
 
-        var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate page; click on a page to include/exclude th epage from print job)");
+        var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate printed page; click on a page to exclude/include the page from print job)");
         this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
         var previewFooter = new Element('div', {'class': 'print-preview-footer'}).update("(Note: in some browsers you need to manually select landscape print mode)");
         mainDiv.insert(previewHeader).insert(this.previewContainer).insert(previewFooter);
@@ -66,7 +66,8 @@ var PrintDialog = Class.create( {
         mainDiv.insert(dataSection3);
 
         var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
-        buttons.insert(new Element('input', {type: 'button', name : 'print', 'value': 'Print', 'class' : 'button', 'id': 'print_button'}).wrap('span', {'class' : 'buttonwrapper'}));
+        this._printButton = new Element('input', {type: 'button', name : 'print', 'value': 'Print', 'class' : 'button', 'id': 'print_button'});
+        buttons.insert(this._printButton.wrap('span', {'class' : 'buttonwrapper'}));
         buttons.insert(new Element('input', {type: 'button', name : 'done', 'value': 'Done', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
         mainDiv.insert(buttons);
 
@@ -74,8 +75,7 @@ var PrintDialog = Class.create( {
         doneButton.observe('click', function(event) {
             _this.hide();
         });
-        var printButton = buttons.down('input[name="print"]');
-        printButton.observe('click', function(event) {
+        this._printButton.observe('click', function(event) {
             _this._onPrint();
         });
 
@@ -133,21 +133,38 @@ var PrintDialog = Class.create( {
                 _this._printPageSet["x" + pageX + "y" + pageY] = true;
 
                 page.observe("click", function() {
-                    //console.log("click on page " + pageX + "-" + pageY);
                     if (_this._printPageSet["x" + pageX + "y" + pageY]) {
                         _this._printPageSet["x" + pageX + "y" + pageY] = false;
                         page.style.backgroundColor = "#111";
                         page.style.opacity = 0.1;
+                        _this._checkPrintbuttonStatus();  // check if there are any pages left
                     } else {
                         _this._printPageSet["x" + pageX + "y" + pageY] = true;
                         page.style.backgroundColor = "";
                         page.style.opacity = 1;
+                        _this._checkPrintbuttonStatus();
                     }
                 });
             } catch(err) {
                 console.log("Preview page ID mismatch");
             }
         });
+        this._printButton.enable();
+    },
+
+    /**
+     * Disabled print button if there are no pages selected; enables otherwise
+     */
+    _checkPrintbuttonStatus: function() {
+        for (var page in this._printPageSet) {
+            if (this._printPageSet.hasOwnProperty(page)) {
+                if (this._printPageSet[page]) {
+                    this._printButton.enable();
+                    return;
+                }
+            }
+        }
+        this._printButton.disable();
     },
 
     _getSelectedPrintScale: function() {

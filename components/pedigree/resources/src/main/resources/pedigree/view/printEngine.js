@@ -181,7 +181,7 @@ var PrintEngine = Class.create({
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
                 if (printPageSet && !printPageSet["x" + pageNumX + "y" + pageNumY]) {
-                    // skip pages marked ot be skipped by the user
+                    // skip pages marked to be skipped by the user
                     continue;
                 }
                 var page = pages.pages[pageNumY][pageNumX];
