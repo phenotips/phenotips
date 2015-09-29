@@ -110,9 +110,18 @@ define ([], function() {
         background.style.display = "none";
 
         var bbox = image.down().getBBox();
+        // Due to a bug (?) in firefox bounding box as reported by the browser may be a few pixels
+        // too small and exclude lines at the very edge of the svg - so bbox is manually extended
+        // by a few pixels in all directions.
+        bbox.x      = Math.floor(bbox.x) - 2;
+        bbox.y      = Math.floor(bbox.y) - 2;
+        bbox.width  = Math.ceil(bbox.width)  + 4;
+        bbox.height = Math.ceil(bbox.height) + 4;
+        //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
 
         var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
                       .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+
         // remove invisible elements to slim down svg
         svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+><\/\w+>/g, "");
         // remove elements with opacity==0 to slim down svg

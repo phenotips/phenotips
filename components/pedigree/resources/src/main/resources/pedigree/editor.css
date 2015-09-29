@@ -821,8 +821,9 @@
   max-width: 760px !important;
 }
 .print-preview-header {
-  display: flex;
-  margin-bottom: 10px;
+  text-align: left;
+  margin-bottom: 2pt;
+  line-height: 15pt;
 }
 .print-preview-footer {
   margin-top: 3px;

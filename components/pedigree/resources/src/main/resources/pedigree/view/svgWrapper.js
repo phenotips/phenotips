@@ -11,7 +11,6 @@ var SVGWrapper = Class.create({
     initialize: function(svgText, boundingBox, scale) {
         this._svgText = svgText;
         this._bbox    = boundingBox;
-        this._svgBbox = boundingBox;
         this._scale   = scale ? scale : 1.0;
     },
 
@@ -47,8 +46,8 @@ var SVGWrapper = Class.create({
     scale: function(scaleFactor) {
         this._scale = scaleFactor;
 
-        this._bbox.width  = Math.floor(this._bbox.width  * scaleFactor);
-        this._bbox.height = Math.floor(this._bbox.height * scaleFactor);
+        this._bbox.width  = Math.ceil(this._bbox.width  * scaleFactor);
+        this._bbox.height = Math.ceil(this._bbox.height * scaleFactor);
 
         this._svgText = this._svgText.replace(/(<svg [^<>]+) width=["-]?\d+"? height=["-]?\d+"?/g, "$1 width=\"" +
                                               (this._bbox.width) + "\" height=\"" + (this._bbox.height) + "\"");
@@ -56,10 +55,10 @@ var SVGWrapper = Class.create({
     },
 
     setViewBox: function(xOffset, yOffset, xWidth, yWidth) {
-        xWidth = Math.floor(xWidth);
-        yWidth = Math.floor(yWidth);
+        xWidth = Math.ceil(xWidth);
+        yWidth = Math.ceil(yWidth);
         this._svgText = this._svgText.replace(/(<svg[^<>]+) viewBox="[^<>"]*"/g,
-                        "$1 viewBox=\"" + (this._svgBbox.x + xOffset/this._scale)+ " " + (this._svgBbox.y + yOffset/this._scale) + " " + xWidth/this._scale + " " + yWidth/this._scale + "\"");
+                        "$1 viewBox=\"" + Math.floor(this._bbox.x + xOffset/this._scale)+ " " + Math.floor(this._bbox.y + yOffset/this._scale) + " " + xWidth/this._scale + " " + yWidth/this._scale + "\"");
         this._svgText = this._svgText.replace(/(<svg [^<>]+) width=["-]?\d+"? height=["-]?\d+"?/g, "$1 width=\"" +
                         (xWidth) + "\" height=\"" + (yWidth) + "\"");
         return this;
