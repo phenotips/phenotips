@@ -9,6 +9,8 @@ var PrintEngine = Class.create({
         // TODO: load default paper settings from pedigree preferences in admin section
         this.printPageWidth  = 1055;
         this.printPageHeight = 756;
+        this.printPageWidthPortrait  = 756;
+        this.printPageHeightPortrait = 980;
         this.xOverlap = 18;
         this.yOverlap = 18;
     },
@@ -127,8 +129,8 @@ var PrintEngine = Class.create({
     generatePreviewHTML: function(landscape, maxPreviewWidth, maxPreviewHeight, printScale, moveHorizontallySize, addOverlaps) {
         var previewWidth = maxPreviewWidth - 30;
 
-        var printedWidth  = landscape ? this.printPageWidth : this.printPageHeight;
-        var printedHeight = landscape ? this.printPageHeight : this.printPageWidth;
+        var printedWidth  = landscape ? this.printPageWidth : this.printPageWidthPortrait;
+        var printedHeight = landscape ? this.printPageHeight : this.printPageHeightPortrait;
 
         // generate pages for print, and based on the number of pages used re-generate preview pages
         var pages = this._generatePages(printScale,
@@ -172,8 +174,8 @@ var PrintEngine = Class.create({
         var pages = this._generatePages(printScale,
                                         moveHorizontallySize,
                                         addOverlaps,
-                                        landscape ? this.printPageWidth : this.printPageHeight,
-                                        landscape ? this.printPageHeight : this.printPageWidth,
+                                        landscape ? this.printPageWidth : this.printPageWidthPortrait,
+                                        landscape ? this.printPageHeight : this.printPageHeightPortrait,
                                         includeLegend,
                                         false);
         var w=window.open();
