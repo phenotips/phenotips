@@ -109,14 +109,16 @@ define ([], function() {
         var background = image.getElementsByClassName('panning-background')[0];
         background.style.display = "none";
 
-        var bbox = image.down().getBBox();
+        var _bbox = image.down().getBBox();
+        var bbox = {};
         // Due to a bug (?) in firefox bounding box as reported by the browser may be a few pixels
         // too small and exclude lines at the very edge of the svg - so bbox is manually extended
         // by a few pixels in all directions.
-        bbox.x      = Math.floor(bbox.x) - 2;
-        bbox.y      = Math.floor(bbox.y) - 2;
-        bbox.width  = Math.ceil(bbox.width)  + 4;
-        bbox.height = Math.ceil(bbox.height) + 4;
+        // Also, need to use _bbox and bbox bcause IE does not allow to modify the bbox obtained by getBBox()
+        bbox.x      = Math.floor(_bbox.x) - 2;
+        bbox.y      = Math.floor(_bbox.y) - 2;
+        bbox.width  = Math.ceil(_bbox.width)  + 4;
+        bbox.height = Math.ceil(_bbox.height) + 4;
         //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
 
         var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
