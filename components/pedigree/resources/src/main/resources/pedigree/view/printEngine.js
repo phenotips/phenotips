@@ -100,7 +100,7 @@ var PrintEngine = Class.create({
             var pagesRow = [];
             var pageStartX = 0;
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
-                var columnWidth = emulateFullPage ? pageWidth : Math.min(pageWidth,  bbox.width - pageStartX);
+                var columnWidth = (emulateFullPage || (pagesWide > 1 && pageNumX == pagesWide-1))? pageWidth : Math.min(pageWidth,  bbox.width - pageStartX);
                 var startX = pageStartX;
                 if (emulateFullPage && pagesWide == 1) {
                     startX = pageStartX - (pageWidth - bbox.width)/2;
