@@ -10,7 +10,10 @@ var SVGWrapper = Class.create({
     // needs to get bbox as an input as this needs an external compiutation by the browser
     initialize: function(svgText, boundingBox, scale) {
         this._svgText = svgText;
-        this._bbox    = boundingBox;
+        this._bbox    = {"x": boundingBox.x,
+                         "y": boundingBox.y,
+                         "height": boundingBox.height,
+                         "width":  boundingBox.width};
         this._scale   = scale ? scale : 1.0;
     },
 
@@ -31,7 +34,7 @@ var SVGWrapper = Class.create({
      * @return {Object} {x,y, width, height}
      */
     getBBox: function() {
-        return this._bbox;
+        return cloneObject(this._bbox);
     },
 
     getCopy: function() {
@@ -41,6 +44,11 @@ var SVGWrapper = Class.create({
     setNoAspectRatioPreservation: function() {
         this._svgText = this._svgText.replace(/preserveAspectRatio="xMinYMin"/, "preserveAspectRatio=\"none\"");
         return this;
+    },
+
+    move: function(xShift, yShift) {
+        this._bbox.x += xShift;
+        this._bbox.y += yShift;
     },
 
     scale: function(scaleFactor) {
