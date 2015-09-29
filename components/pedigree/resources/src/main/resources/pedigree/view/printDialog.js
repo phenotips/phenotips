@@ -12,7 +12,9 @@ var PrintDialog = Class.create( {
         var _this = this;
 
         this._defaultScale = 0.4;
+        this._landscape = true;
         this._zoomLevel = 100;
+        this._moveHorizontally = 0;
         this._printPageSet = {};
         this._printEngine = new PrintEngine();
 
@@ -20,17 +22,33 @@ var PrintDialog = Class.create( {
 
         var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate printed page; click on a page to exclude/include the page from print job)");
         this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
-        var previewFooter = new Element('div', {'class': 'print-preview-footer'}).update("(Note: in some browsers you need to manually select landscape print mode)");
+        var previewFooter = new Element('div', {'class': 'print-preview-footer fa fa-exclamation-triangle'});
+        previewFooter.update(new Element('span', {'class': "print-preview-footer-text"}).update("Note: in some browsers you need to manually select correct orientation (landscape or portrait)"));
         mainDiv.insert(previewHeader).insert(this.previewContainer).insert(previewFooter);
 
-        var minusButton = new Element('input', {"type" : "button", "value": "-", "class": "print-zoom-button print-zoom-minus-button"});
-        var plusButton  = new Element('input', {"type" : "button", "value": "+", "class": "print-zoom-button"});
+        var minusButton = new Element('input', {"type" : "button", "value": "-", "class": "print-small-button print-left-margin"});
+        var plusButton  = new Element('input', {"type" : "button", "value": "+", "class": "print-small-button"});
         this.zoomValue  = new Element('label', {"class": "print-zoom-value no-mouse-interaction"}).update("100%");
-        var zoomDiv = new Element('div', {'class': 'pedigree-print-zoom-container field-no-user-select'});
-        zoomDiv.update("Print scale: ").insert(minusButton).insert(this.zoomValue).insert(plusButton);
+        var zoom = new Element('span', {"class": "print-zoom-span"});
+        zoom.update("Print scale:").insert(minusButton).insert(this.zoomValue).insert(plusButton);
+
+        var leftButton = new Element('input', {"type" : "button", "value": "<", "class": "print-small-button print-small-left-margin"});
+        var rightButton  = new Element('input', {"type" : "button", "value": ">", "class": "print-small-button print-small-left-margin"});
+        this._centerButton = new Element('input', {"type" : "button", "value": "no move", "class": "print-long-button print-small-left-margin"});
+        var move = new Element('span', {"class": "print-move-span"});
+        move.update("Move on page:").insert(leftButton).insert(this._centerButton).insert(rightButton);
+
+        var landscape = new Element('input', {"type" : "button", "value": "landscape", "class": "print-long-button", "id": "landscape-button"});
+        var portrait  = new Element('input', {"type" : "button", "value": "portrait", "class": "print-long-button print-small-left-margin", "id": "portrait-button"});
+        var orientation = new Element('span', {"class": "print-orientation-span"});
+        orientation.update(landscape).insert(portrait);
+
+        var controlsDiv = new Element('div', {'class': 'pedigree-print-controls-container field-no-user-select'});
+        controlsDiv.update(zoom).insert(move).insert(orientation);
         minusButton.observe('click', function(event) {
             if (_this._zoomLevel > 10) {
                 _this._zoomLevel -= 10;
+                this._moveHorizontally = 0;
                 _this.zoomValue.update(_this._zoomLevel + "%");
                 _this._updatePreview();
             }
@@ -38,11 +56,37 @@ var PrintDialog = Class.create( {
         plusButton.observe('click', function(event) {
             if (_this._zoomLevel < 250) {
                 _this._zoomLevel += 10;
+                this._moveHorizontally = 0;
                 _this.zoomValue.update(_this._zoomLevel + "%");
                 _this._updatePreview();
             }
         });
-        mainDiv.insert(zoomDiv);
+        leftButton.observe('click', function(event) {
+            _this._moveHorizontally += 40;
+            _this._updatePreview();
+        });
+        rightButton.observe('click', function(event) {
+            _this._moveHorizontally -= 40;
+            _this._updatePreview();
+        });
+        this._centerButton.observe('click', function(event) {
+            _this._moveHorizontally = 0;
+            _this._updatePreview();
+        });
+        landscape.observe('click', function(event) {
+            _this._landscape = true;
+            $('landscape-button').disable();
+            $('portrait-button').enable();
+            _this._updatePreview();
+        });
+        portrait.observe('click', function(event) {
+            _this._landscape = false;
+            $('landscape-button').enable();
+            $('portrait-button').disable();
+            _this._updatePreview();
+        });
+
+        mainDiv.insert(controlsDiv);
 
         var configListElement = new Element('table', {id : 'print-settings'});
         var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
@@ -93,7 +137,9 @@ var PrintDialog = Class.create( {
 
         var addOverlaps = $$('input[type=checkbox][name="add-overlap"]')[0].checked;
 
-        this._printEngine.print(this._getSelectedPrintScale(),
+        this._printEngine.print(this._landscape,
+                                this._getSelectedPrintScale(),
+                                this._moveHorizontally,
                                 addOverlaps,
                                 addLegend,
                                 closePrintVersion,
@@ -107,6 +153,7 @@ var PrintDialog = Class.create( {
      */
     show: function() {
         this.dialog.show();
+        this._moveHorizontally = 0;
         this._updatePreview();
     },
 
@@ -116,8 +163,10 @@ var PrintDialog = Class.create( {
     _updatePreview: function() {
         var overlapCheckBox = $$('input[type=checkbox][name="add-overlap"]')[0];
         var addOverlaps = overlapCheckBox ? overlapCheckBox.checked : true;
-        var previewHTML = this._printEngine.generatePreviewHTML(730, 390,
+        var previewHTML = this._printEngine.generatePreviewHTML(this._landscape,
+                                                                730, 390,
                                                                 this._getSelectedPrintScale(),
+                                                                this._moveHorizontally,
                                                                 addOverlaps);
         this.previewContainer.update(previewHTML);
 
@@ -150,6 +199,19 @@ var PrintDialog = Class.create( {
             }
         });
         this._printButton.enable();
+
+        if (this._landscape) {
+            $('landscape-button').disable();
+            $('portrait-button').enable();
+        } else {
+            $('landscape-button').enable();
+            $('portrait-button').disable();
+        }
+        if (_this._moveHorizontally == 0) {
+            this._centerButton.disable();
+        } else {
+            this._centerButton.enable();
+        }
     },
 
     /**

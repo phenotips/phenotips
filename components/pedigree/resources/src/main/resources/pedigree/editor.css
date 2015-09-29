@@ -439,7 +439,7 @@
   display: block;
 }
 .import-block-bottom {
-  margin: 1.25em 0 0.5em 0;
+  margin: 1.2em 0 0.5em 0;
 }
 .import-section {
   font-weight: bold;
@@ -826,14 +826,23 @@
   line-height: 15pt;
 }
 .print-preview-footer {
-  margin-top: 3px;
-  margin-bottom: 10px;
+  margin-top: 1px;
+  margin-bottom: 13px;
   margin-left: 10px;
   margin-right: 25px;
+  display: block !important;
+  color: #733;
+}
+.print-preview-footer-text {
+  color: black;
+  margin-left: 7px;
 }
 .print-settings-block {
   margin: 0.25em 0 0.5em 0;
   display: block;
+}
+.print-move-span {
+  margin-left: 70px;
 }
 .print-zoom-value {
   display: inline-block;
@@ -843,13 +852,23 @@
   margin-right: 5px;
   margin-left: 5px;
 }
-.print-zoom-button {
+.print-small-button {
   width:26px;
   height:28px;
   cursor: pointer;
 }
-.print-zoom-minus-button {
+.print-long-button {
+  height:28px;
+  cursor: pointer;
+}
+.print-orientation-span {
+  margin-left: 70px;
+}
+.print-left-margin {
   margin-left: 10px;
+}
+.print-small-left-margin {
+  margin-left: 5px;
 }
 .picture-box {
     display: inline-block;

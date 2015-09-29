@@ -122,6 +122,8 @@ define ([], function() {
         var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
                       .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
 
+        // set display:block
+        svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
         // remove invisible elements to slim down svg
         svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+><\/\w+>/g, "");
         // remove elements with opacity==0 to slim down svg
