@@ -13,11 +13,12 @@ var PrintDialog = Class.create( {
 
         this._defaultScale = 0.4;
         this._zoomLevel = 100;
+        this._printPageSet = {};
         this._printEngine = new PrintEngine();
 
         var mainDiv = new Element('div', {'class': 'import-selector field-no-user-select cursor-normal'});
 
-        var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview (each block indicates a separate page):");
+        var previewHeader = new Element('div', {'class': 'print-preview-header'}).update("Print preview:<br>(each block indicates a separate page; click on a page to include/exclude th epage from print job)");
         this.previewContainer = new Element("div", {"id": "preview", "class": "preview-container"});
         var previewFooter = new Element('div', {'class': 'print-preview-footer'}).update("(Note: in some browsers you need to manually select landscape print mode)");
         mainDiv.insert(previewHeader).insert(this.previewContainer).insert(previewFooter);
@@ -95,7 +96,8 @@ var PrintDialog = Class.create( {
         this._printEngine.print(this._getSelectedPrintScale(),
                                 addOverlaps,
                                 addLegend,
-                                closePrintVersion);
+                                closePrintVersion,
+                                this._printPageSet);
     },
 
     /**
@@ -104,8 +106,8 @@ var PrintDialog = Class.create( {
      * @method show
      */
     show: function() {
-        this._updatePreview();
         this.dialog.show();
+        this._updatePreview();
     },
 
     /**
@@ -118,6 +120,34 @@ var PrintDialog = Class.create( {
                                                                 this._getSelectedPrintScale(),
                                                                 addOverlaps);
         this.previewContainer.update(previewHTML);
+
+        var _this = this;
+        this._printPageSet = {};
+        // add click-on-page handlers
+        $$("div[id^=pedigree-page-]").forEach(function(page) {
+            try {
+                var pageIDParts = page.id.match(/pedigree-page-x(\d+)-y(\d+)/);
+                var pageX = pageIDParts[1];
+                var pageY = pageIDParts[2];
+
+                _this._printPageSet["x" + pageX + "y" + pageY] = true;
+
+                page.observe("click", function() {
+                    //console.log("click on page " + pageX + "-" + pageY);
+                    if (_this._printPageSet["x" + pageX + "y" + pageY]) {
+                        _this._printPageSet["x" + pageX + "y" + pageY] = false;
+                        page.style.backgroundColor = "#111";
+                        page.style.opacity = 0.1;
+                    } else {
+                        _this._printPageSet["x" + pageX + "y" + pageY] = true;
+                        page.style.backgroundColor = "";
+                        page.style.opacity = 1;
+                    }
+                });
+            } catch(err) {
+                console.log("Preview page ID mismatch");
+            }
+        });
     },
 
     _getSelectedPrintScale: function() {

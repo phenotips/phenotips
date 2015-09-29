@@ -94,9 +94,13 @@ var PrintEngine = Class.create({
             var pageStartX = 0;
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
                 var columnWidth = emulateFullPage ? pageWidth : Math.min(pageWidth,  bbox.width - pageStartX);
-                var pageSvg = svg.getCopy().setViewBox(pageStartX, pageStartY, columnWidth, rowHeight).getSVGText();
+                var startX = pageStartX;
+                if (emulateFullPage && pagesWide == 1) {
+                    startX = pageStartX - (pageWidth - bbox.width)/2;
+                }
+                var pageSvg = svg.getCopy().setViewBox(startX, pageStartY, columnWidth, rowHeight).getSVGText();
                 var page = { "pageName" : "page " + pageNumX + ":" + pageNumY,
-                             "svg": pageSvg };
+                             "svg": pageSvg, "width": columnWidth };
                 pagesRow.push(page);
                 pageStartX += (columnWidth - xOverlap);
             }
@@ -117,38 +121,36 @@ var PrintEngine = Class.create({
 
     generatePreviewHTML: function(maxPreviewWidth, maxPreviewHeight, printScale, addOverlaps) {
         var previewWidth = maxPreviewWidth - 30;
-        // need to scale even more than for print, the ratio is the ratio of printWidth to previewWidth
-        var bbox = editor.getWorkspace().getSVGCopy().getBBox();
 
-        var scaledSVGWidth = bbox.width * printScale;
-        var scaleComparedToPrint = previewWidth / scaledSVGWidth;
-        var useScale = scaleComparedToPrint * printScale;
+        // generate pages for print, and based on the number of pages used re-generate preview pages
+        var pages = this._generatePages(printScale,
+                addOverlaps,
+                this.printPageWidth,
+                this.printPageHeight,
+                false,
+                false);
 
-        if (addOverlaps) {
-            // adjust for overlaps
-            var width = bbox.width * useScale;
-            var previewPageWidth = this.printPageWidth*scaleComparedToPrint;
-            if (width > previewPageWidth) {
-                var pagesWide = Math.ceil(width / previewPageWidth);
-                var svgWidthWithOverlaps = bbox.width + (pagesWide-1)*this.xOverlap;
-
-                scaledSVGWidth = svgWidthWithOverlaps * printScale;
-                scaleComparedToPrint = previewWidth / scaledSVGWidth;
-                useScale = scaleComparedToPrint * printScale;
-            }
+        var printWidth = 0;
+        for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
+            printWidth += pages.pages[0][pageNumX].width; // this includes overlaps, if any
         }
+        var expectedWidth = pages.pagesWide * this.printPageWidth;
+
+        // need to scale even more than for print, the ratio is the ratio of printWidth to previewWidth
+        var scaleComparedToPrint = previewWidth / expectedWidth;
+        var useScale = scaleComparedToPrint * printScale;
 
         var pages = this._generatePages(useScale,
                                         addOverlaps,
                                         this.printPageWidth*scaleComparedToPrint,
                                         this.printPageHeight*scaleComparedToPrint,
                                         false,
-                                        false);
-        var html = "<div class='printPreview' style='max-height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
+                                        true);
+        var html = "<div class='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
                 var page = pages.pages[pageNumY][pageNumX];
-                html += "<div class='previewPage' style='border: 1px; border-style: dotted; float: left;' id='pedigree-page-x" + pageNumX + "-" + pageNumY + "'>" + page.svg + "</div>";
+                html += "<div class='previewPage' style='border: 1px; border-style: dotted; float: left;' id='pedigree-page-x" + pageNumX + "-y" + pageNumY + "'>" + page.svg + "</div>";
             }
             html += "<br>";
         }
@@ -156,7 +158,7 @@ var PrintEngine = Class.create({
         return html;
     },
 
-    print: function(printScale, addOverlaps, includeLegend, closeAfterPrint) {
+    print: function(printScale, addOverlaps, includeLegend, closeAfterPrint, printPageSet) {
         var pages = this._generatePages(printScale,
                                         addOverlaps,
                                         this.printPageWidth,
@@ -178,6 +180,10 @@ var PrintEngine = Class.create({
 
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
+                if (printPageSet && !printPageSet["x" + pageNumX + "y" + pageNumY]) {
+                    // skip pages marked ot be skipped by the user
+                    continue;
+                }
                 var page = pages.pages[pageNumY][pageNumX];
                 var bottomLeftPage = (pageNumY == (pages.pagesTall - 1)) && (pageNumX == 0);
                 var spaceForLegend = includeLegend && bottomLeftPage && !pages.needLegendOnSeparatePage;
@@ -204,6 +210,7 @@ var PrintEngine = Class.create({
             w.document.write("<div class='break_here'></div>");
             w.document.write("<div id='legend' class='print-legend'>" + pages.legendHTML + "</div>");
         }
+        w.document.close(); // to prevent infinite "page loading"
 
         w.print();
         if (closeAfterPrint) {
