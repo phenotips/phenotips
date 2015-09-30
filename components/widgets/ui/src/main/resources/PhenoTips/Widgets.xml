@@ -346,9 +346,6 @@
 
     switch(key) {
       case Event.KEY_RETURN:
-        if (this.aSuggestions.length == 1) {
-          this.highlightFirst();
-        }
         this.setHighlightedValue();
         Event.stop(event);
         break;
@@ -922,6 +919,7 @@
     if (this.options.timeout &gt; 0) {
       this.toID = setTimeout(function () { pointer.clearSuggestions() }, this.options.timeout);
     }
+    this.highlightFirst();
   },
 
   createListElement : function(arr, pointer) {
