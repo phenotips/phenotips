@@ -335,7 +335,11 @@
    */
   onKeyPress: function(event) {
     if(!$(this.isActive)) {
-      // Let the key events pass through if the UI is not displayed
+      // Stop Return from submitting the form
+      if (event.keyCode == Event.KEY_RETURN) {
+        Event.stop(event);
+      }
+      // Let all other key events pass through if the UI is not displayed
       return;
     }
     var key = event.keyCode;
