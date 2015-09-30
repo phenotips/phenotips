@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822214000</date>
-  <contentUpdateDate>1401822214000</contentUpdateDate>
+  <date>1443644269000</date>
+  <contentUpdateDate>1441741033000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.growthChartsExported')</title>
   <comment/>
@@ -111,10 +111,10 @@
       <content>{{include reference="PhenoTips.ChartServiceMacros" /}}
 
 {{velocity}}
-#if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.MeasurementsClass'))
+#if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.MeasurementClass'))
 
   {{html clean=false}}#pagebreak(){{/html}}
-  #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementsClass', 'obj': $obj, 'link': false})
+  #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementClass', 'obj': $doc.getObject('PhenoTips.PatientClass'), 'link': false, 'useNewMeasurementClass' : true})
   #_measurementCharts($chartOptions)
 #end
 {{/velocity}}</content>
