@@ -450,12 +450,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
       #set ($val = $obj.getProperty('value').value)
       #set ($ageMonths = $services.measurements.convertAgeStrToNumMonths($obj.getProperty('age').value))
       #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-      #set ($percentile = $mathtool.toInteger($handler.valueToStandardDeviation($male, $ageMonths, $val)))
-      #if ($percentile &lt; 0)
-        #set ($percentile = 0)
-      #elseif ($percentile &gt; 100)
-        #set ($percentile = 100)
-      #end
+      #set ($percentile = $handler.valueToPercentile($male, $ageMonths, $val))
       #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
       #set ($eval = "${percentile}#if($percentile&lt;=20 &amp;&amp; $percentile&gt;=4)th#elseif($percentile%10==1)st#elseif($percentile%10==2)nd#elseif($percentile%10==3)rd#{else}th#end pctl (#if ($sd &gt;= 0)+#end${sd}SD)")
     #end
@@ -463,9 +458,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   {{html clean="false" wiki="false"}}
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
   &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
+  &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
   #if ($xcontext.action == 'edit')
     &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
-    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
     &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
     &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
     &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
@@ -626,6 +621,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
     )))
     (% class="clear"%)((()))
     (% id="measurementclass-max-id" data-value="$measurementClassId"%)((()))
+    #if ($xcontext.action == 'view')
+      (% id="measurements-gender" data-value="$doc.getObject('PhenoTips.PatientClass').getProperty('gender').value"%)((()))
+    #end
   )))
   (% class="clear"%)((()))
 #end
