@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442941821000</date>
+  <date>1443632326000</date>
   <contentUpdateDate>1440772865000</contentUpdateDate>
   <version>1.1</version>
   <title/>
@@ -3537,8 +3537,6 @@ document.observe('xwiki:dom:loaded', function()
       this.getObject = this.getObject.bind(this);
       this._sets = [];
 
-      this._handleAddMeasurementSet();
-
       var measurementSetsEls = this.el.select('.measurement-set:not(.proto)');
       if (!measurementSetsEls.length) {
         this._addMeasurementSet();
@@ -3547,6 +3545,10 @@ document.observe('xwiki:dom:loaded', function()
           var newSet = new PhenoTips.widgets.MeasurementSet(el, this);
           this._sets.push(newSet);
         }).bind(this));
+      }
+
+      if (XWiki.contextaction == 'edit') {
+        this._handleAddMeasurementSet();
       }
     
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
@@ -3571,8 +3573,14 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     getObject: function() {
+      if (XWiki.contextaction == 'edit') {
+        var sex = ($$('[name$=gender]:checked')[0] || {value:''}).value;
+      } else {
+        var sex = $('measurements-gender').readAttribute('data-value');
+      }
+
       var obj = {
-        sex: ($$('[name$=gender]:checked')[0] || {value:''}).value,
+        sex: sex,
         measurementSets: []
       }
 
@@ -3588,6 +3596,9 @@ document.observe('xwiki:dom:loaded', function()
     initialize: function(el, parent) {
       this.el = el; this.parent = parent;
 
+      // DOM shortcuts
+      this._thumbsEl = this.el.down('.chart-thumbs');
+
       // Bind methods
       this._setChartsWidth = this._setChartsWidth.bind(this);
       this._updateCharts = this._updateCharts.bind(this);
@@ -3595,27 +3606,29 @@ document.observe('xwiki:dom:loaded', function()
       this._chartResourcesResponseHandler = this._chartResourcesResponseHandler.bind(this);
       this._addThumb = this._addThumb.bind(this);
 
-      // DOM shortcuts
-      this._thumbsEl = this.el.down('.chart-thumbs');
-      this._mainImgEl = this._mainImgEl;
+      if (XWiki.contextaction == 'view') {
+        this._setChartsWidth();
+        this._updateCharts();
+        Event.observe(window, 'resize', this._setChartsWidth);
+      } else {
+        // Event handlers
+        $$('.measurement-info.chapter')[0].observe('chapter:show', (function() {
+          if (!this._stickyBox) {
+            this._setChartsWidth();
+            this._initStickyBox();
+          }
+        }).bind(this));
+        $('measurements').observe('change', this._updateCharts);
+        Event.observe(window, 'resize', this._setChartsWidth);
 
-      // Event handlers
-      $$('.measurement-info.chapter')[0].observe('chapter:show', (function() {
-        if (!this._stickyBox) {
-          this._setChartsWidth();
-          this._initStickyBox();
-        }
-      }).bind(this));
-      $('measurements').observe('change', this._updateCharts);
-      Event.observe(window, 'resize', this._setChartsWidth);
-
-      // Init using existing data
-      this._updateCharts();
+        // Init using existing data
+        this._updateCharts();
+      }
     },
 
     _setChartsWidth: function() {
       var chartsWidth = $('measurements-container').getWidth() - $('measurements').getWidth();
-      $('charts-new').style.width = chartsWidth + 'px';
+      $('charts-new').style.width = chartsWidth - 20 + 'px';
     },
 
     _initStickyBox: function() {
@@ -3725,22 +3738,6 @@ document.observe('xwiki:dom:loaded', function()
       this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
       this.getObject = this.getObject.bind(this);
 
-      // Init datepicker
-      if (!this._dateEl.hasClassName('initialized')) {
-        new XWiki.widgets.DateTimePicker(this._dateEl, this._dateEl.title);
-      }
-
-      // Init hidden inputs
-      var _this = this;
-      this.el.select('.measurement-row').each(function(measurementRow) {
-        measurementRow.select('input').each(function(input) {
-          input.name = input.name.replace('[id]', _this.parent.measurementClassId);
-          input.disabled = false;
-        });
-
-        _this.parent.measurementClassId++;
-      });
-
       // Init rows
       this._rows = [];
       this.el.select('.measurement-row').each((function(el) {
@@ -3751,43 +3748,61 @@ document.observe('xwiki:dom:loaded', function()
         }
       }).bind(this));
 
-      // Initialize using existing values
-      this._updateHiddenFields('date', this._dateEl.value);
-      this._updateHiddenFields('age', this._ageEl.value);
-
-      // Attach handlers
-      this._dateEl.observe('xwiki:date:changed', function(e) {
-        _this._updateHiddenFields('date', e.target.value);
-        _this._ageEl.readOnly = e.target.alt.length &gt; 0;
-
-        _this._setAgeUsingDateAndDob();
-      });
-      ['input', 'keypress'].each(function(ev) {
-        _this._ageEl.observe(ev, function(e) {
-          _this._dateEl.readOnly = e.target.value.trim().length &gt; 0;
-        });
-      });
-      _this._ageEl.observe('duration:format', function(e) {
-        _this._updateHiddenFields('age', e.target.value);
-      });
-      
-      this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
-      this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
-        el.observe('click', this._moreToggleButtonHandler);
-      }).bind(this));
-
-      // Hide (or show)
-      var hasExpandedValue = false;
-      this.el.select('.expanded-measurements input[name$=_value]').each(function(el) {
-        if (el.value.trim().length &gt; 0) {
-          hasExpandedValue = true;
+      if (XWiki.contextaction == 'edit') {
+        // Init datepicker
+        if (!this._dateEl.hasClassName('initialized')) {
+          this._datePicker = new XWiki.widgets.DateTimePicker(this._dateEl, this._dateEl.title);
         }
-      });
-      if (hasExpandedValue) {
-        this.el.select('.expand-buttons .buttonwrapper.show')[0].hide();
-      } else {
-        this._moreContainer.hide();
-        this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
+
+        // Init hidden inputs
+        var _this = this;
+        this.el.select('.measurement-row').each(function(measurementRow) {
+          measurementRow.select('input').each(function(input) {
+            input.name = input.name.replace('[id]', _this.parent.measurementClassId);
+            input.disabled = false;
+          });
+
+          _this.parent.measurementClassId++;
+        });
+
+        // Initialize using existing values
+        this._updateHiddenFields('date', this._dateEl.value);
+        this._updateHiddenFields('age', this._ageEl.value);
+
+        // Attach handlers
+        this._dateEl.observe('xwiki:date:changed', function(e) {
+          _this._updateHiddenFields('date', e.target.value);
+          _this._ageEl.readOnly = e.target.alt.length &gt; 0;
+
+          _this._setAgeUsingDateAndDob();
+        });
+        ['input', 'keypress'].each(function(ev) {
+          _this._ageEl.observe(ev, function(e) {
+            _this._dateEl.readOnly = e.target.value.trim().length &gt; 0;
+          });
+        });
+        _this._ageEl.observe('duration:format', function(e) {
+          _this._updateHiddenFields('age', e.target.value);
+        });
+        
+        this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
+        this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
+          el.observe('click', this._moreToggleButtonHandler);
+        }).bind(this));
+
+        // Hide (or show)
+        var hasExpandedValue = false;
+        this.el.select('.expanded-measurements input[name$=_value]').each(function(el) {
+          if (el.value.trim().length &gt; 0) {
+            hasExpandedValue = true;
+          }
+        });
+        if (hasExpandedValue) {
+          this.el.select('.expand-buttons .buttonwrapper.show')[0].hide();
+        } else {
+          this._moreContainer.hide();
+          this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
+        }
       }
 
       return this;
@@ -3847,7 +3862,7 @@ document.observe('xwiki:dom:loaded', function()
 
     getObject: function() {
       var obj = {
-        age: this._ageEl.value,
+        age: XWiki.contextaction == 'view' ? this.el.down('div.age &gt; span').innerHTML : this._ageEl.value,
         measurements: {}
       };
 
@@ -3873,22 +3888,24 @@ document.observe('xwiki:dom:loaded', function()
       this.getMeasurementType = this.getMeasurementType.bind(this);
       this.getValue = this.getValue.bind(this);
 
-      // DOM shortcuts
-      this._valueEl = this.el.select('[name$=value]')[0];
+      if (XWiki.contextaction == 'edit') {
+        // DOM shortcuts
+        this._valueEl = this.el.select('[name$=value]')[0];
 
-      // Initialize using existing values
-      this.fetchAndRenderPercentileSd();
+        // Initialize using existing values
+        this.fetchAndRenderPercentileSd();
 
-      // Attach handlers
-      this.el.select('[name$=value]').each((function(el) {
-        el.observe('input', this.fetchAndRenderPercentileSd);
-      }).bind(this));
-      ['age:change', 'duration:format'].each((function(ev) {
-        this.parent._ageEl.observe(ev, this.fetchAndRenderPercentileSd);
-      }).bind(this));
-      $$('input[name$=gender]').each((function(el) {
-        el.observe('click', this._genderChangeHandler);
-      }).bind(this));
+        // Attach handlers
+        this.el.select('[name$=value]').each((function(el) {
+          el.observe('input', this.fetchAndRenderPercentileSd);
+        }).bind(this));
+        ['age:change', 'duration:format'].each((function(ev) {
+          this.parent._ageEl.observe(ev, this.fetchAndRenderPercentileSd);
+        }).bind(this));
+        $$('input[name$=gender]').each((function(el) {
+          el.observe('click', this._genderChangeHandler);
+        }).bind(this));
+      }
     },
 
     getMeasurementType: function() {
@@ -3896,7 +3913,11 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     getValue: function() {
-      return this._valueEl.value;
+      if (XWiki.contextaction == 'edit') {
+        return this._valueEl.value;
+      } else {
+        return this.el.down('span.val').innerHTML;
+      }
     },
 
     fetchAndRenderPercentileSd: function(e) {
@@ -3932,20 +3953,15 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     _renderPercentileSd: function(el, values) {
-      el.removeClassName('sd-0').removeClassName('sd-1').removeClassName('sd-2');
-
       var displayStr;
       if (values == null) {
         displayStr = '';
       } else {
-        var className = 'sd-2';
-        if (Math.abs(values.stddev) &lt; 1) {
-          className = 'sd-0';
-        } else if (Math.abs(values.stddev) &lt; 2) {
-          className = 'sd-1';
-        }
+        ['normal', 'below-normal', 'above-normal', 'extreme-below-normal', 'extreme-above-normal'].each(function(className) {
+          el.removeClassName(className);
+        });
 
-        el.addClassName(className);
+        el.addClassName(values['fuzzy-value']);
 
         displayStr = values.percentile;
         displayStr += this._getOrdinalSuffix(values.percentile);
@@ -3986,20 +4002,22 @@ document.observe('xwiki:dom:loaded', function()
       this.fetchAndRenderComputedValue = this.fetchAndRenderComputedValue.bind(this);
       this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
 
-      // Init field
-      this._valueEl.readOnly = true;
+      if (XWiki.contextaction == 'edit') {
+        // Init field
+        this._valueEl.readOnly = true;
 
-      // Set up deps
-      this._deps = this.el.readAttribute('data-computation-deps').split(' ');
+        // Set up deps
+        this._deps = this.el.readAttribute('data-computation-deps').split(' ');
 
-      // Initialize using existing values
-      this.fetchAndRenderComputedValue();
+        // Initialize using existing values
+        this.fetchAndRenderComputedValue();
 
-      // Attach deps handlers
-      for (var i = 0; i &lt; this._deps.length; i++) {
-        ['input'].each((function(ev) {
-          this._getDependentMeasurementField(this._deps[i]).observe(ev, this.fetchAndRenderComputedValue);
-        }).bind(this));
+        // Attach deps handlers
+        for (var i = 0; i &lt; this._deps.length; i++) {
+          ['input'].each((function(ev) {
+            this._getDependentMeasurementField(this._deps[i]).observe(ev, this.fetchAndRenderComputedValue);
+          }).bind(this));
+        }
       }
     },
 
