@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443632326000</date>
+  <date>1443650751000</date>
   <contentUpdateDate>1440772865000</contentUpdateDate>
   <version>1.1</version>
   <title/>
@@ -4388,7 +4388,99 @@ hr {
 .no-selected {
   color: $theme.notificationErrorColor;
 }
-</style>
+
+#measurements-container {
+  position: relative;
+}
+#measurements {
+  width: 485px;
+  float: left;
+}
+.measurement {
+  padding: 0.2em 0;
+  clear: both;
+  overflow: auto;
+}
+.measurement &gt; * {
+  float: left;
+}
+.measurement .delete {
+  width: 15px;
+  cursor: pointer;
+  font-size: 80%;
+  font-weight: bold;
+}
+.measurement-row {
+  clear: both;
+}
+.viewbody .measurement-row &gt; *,
+.editbody .measurement-row &gt; * {
+  display: block;
+  float: left;
+  min-height: 1px;
+}
+.viewbody .measurement-set label {
+  width: auto;
+}
+.measurement-row &gt; span {
+  line-height: 20px;
+}
+.measurement-row span.side-label {
+  width: 15px;
+  font-size: 80%;
+  font-weight: bold;
+  text-align: right;
+}
+.measurement-row span.val {
+  margin: 0 3px;
+  width: 45px;
+  text-align: right;
+}
+.measurement-row span.unit {
+  width: 60px;
+}
+.measurement-row span.pctl {
+  width: 120px;
+  font-size: 80%;
+}
+.editbody .measurement-row label,
+.viewbody .measurement-row label {
+  width: 180px;
+}
+.normal { 
+  color: green; 
+}
+.below-normal,
+.above-normal {
+  color: orange;
+}
+.extreme-below-normal,
+.extreme-above-normal {
+  color: red;
+}
+.measurement-set.proto {
+  display: none;
+}
+.measurement-set {
+  border: 1px solid #aaa;
+  padding: 10px;
+  float: left;
+  clear: both;
+  overflow: auto;
+  margin: 5px;
+  position: relative;
+}
+.measurement-set .age {
+  float: right;
+}
+.measurement-set input {
+  width: auto;
+}
+.measurement-set .measurements {
+  border-top: 1px dotted #aaa;
+  padding-top: 8px;
+  margin-top: 8px;
+}</style>
     </property>
     <property>
       <xhtmlxsl/>

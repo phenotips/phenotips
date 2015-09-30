@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443632820000</date>
-  <contentUpdateDate>1442611103000</contentUpdateDate>
+  <date>1443651919000</date>
+  <contentUpdateDate>1443648875000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
   <comment/>
@@ -579,60 +579,60 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())
 #set ($itemDoc = $xwiki.getDocument($objs.get(0)))
 #set ($obj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
-#if ($xcontext.action != 'export')
-  #set ($sortedMeasurementObjs = [])
-  #sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
+#set ($sortedMeasurementObjs = [])
+#sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
+##
+#set ($measurementSets = {})
+#foreach ($obj in $sortedMeasurementObjs)
+  #set ($type = $obj.getProperty('type').value)
+  #set ($side = $obj.getProperty('side').value)
+  #set ($val = $obj.getProperty('value').value)
+  #set ($age = $obj.getProperty('age').value)
+  #set ($date = $obj.getProperty('date').value)
   ##
-  #set ($measurementSets = {})
-  #foreach ($obj in $sortedMeasurementObjs)
-    #set ($type = $obj.getProperty('type').value)
-    #set ($side = $obj.getProperty('side').value)
-    #set ($val = $obj.getProperty('value').value)
-    #set ($age = $obj.getProperty('age').value)
-    #set ($date = $obj.getProperty('date').value)
-    ##
-    #if ("$!val" != "" &amp;&amp; ("$!age" != "" || "$!date" != ""))
-      #if (!$measurementSets.get("$age"))
-        #set ($discard = $measurementSets.put("$age", {}))
-        #set ($discard = $measurementSets.get("$age").put("date", $obj.getProperty('date').value))
-        #set ($discard = $measurementSets.get("$age").put("age", $obj.getProperty('age').value))
-      #end
-      #if ("$!side" != "")
-        #set ($discard = $measurementSets.get("$age").put("${type}-${side}", $obj))
-      #else
-        #set ($discard = $measurementSets.get("$age").put("$type", $obj))
-      #end
+  #if ("$!val" != "" &amp;&amp; ("$!age" != "" || "$!date" != ""))
+    #if (!$measurementSets.get("$age"))
+      #set ($discard = $measurementSets.put("$age", {}))
+      #set ($discard = $measurementSets.get("$age").put("date", $obj.getProperty('date').value))
+      #set ($discard = $measurementSets.get("$age").put("age", $obj.getProperty('age').value))
+    #end
+    #if ("$!side" != "")
+      #set ($discard = $measurementSets.get("$age").put("${type}-${side}", $obj))
+    #else
+      #set ($discard = $measurementSets.get("$age").put("$type", $obj))
     #end
   #end
-  (% id="measurements-container"%)(((
-    (% id="measurements"%)(((
+#end
+(% id="measurements-container"%)(((
+  (% id="measurements"%)(((
+    #if ($xcontext.action == 'edit')
       #measurementSet()
-      #foreach ($measurementSet in $measurementSets)
-        #measurementSet($measurementSet)
-      #end
-      #if ($xcontext.action == 'edit')
-        (% class="list-actions"%)(((
-          {{html clean="false" wiki="false"}}
-          &lt;span class="buttonwrapper"&gt;
-            &lt;label class="create-button-label"&gt;+&lt;/label&gt;
-            &lt;a class="add-data-button" id="btn_add-measurement-set" href="#"&gt;New measurement set&lt;/a&gt;
-          &lt;/span&gt;
-          {{/html}}
-        )))
-      #end
-    )))
-    (% id="charts-new"%)(((
-      (% class="chart-thumbs"%)(((
+    #end
+    #foreach ($measurementSet in $measurementSets)
+      #measurementSet($measurementSet)
+    #end
+    #if ($xcontext.action == 'edit')
+      (% class="list-actions"%)(((
+        {{html clean="false" wiki="false"}}
+        &lt;span class="buttonwrapper"&gt;
+          &lt;label class="create-button-label"&gt;+&lt;/label&gt;
+          &lt;a class="add-data-button" id="btn_add-measurement-set" href="#"&gt;New measurement set&lt;/a&gt;
+        &lt;/span&gt;
+        {{/html}}
       )))
-    )))
-    (% class="clear"%)((()))
-    (% id="measurementclass-max-id" data-value="$measurementClassId"%)((()))
-    #if ($xcontext.action == 'view')
-      (% id="measurements-gender" data-value="$doc.getObject('PhenoTips.PatientClass').getProperty('gender').value"%)((()))
     #end
   )))
+  (% id="charts-new"%)(((
+    (% class="chart-thumbs"%)(((
+    )))
+  )))
   (% class="clear"%)((()))
-#end
+  (% id="measurementclass-max-id" data-value="$measurementClassId"%)((()))
+  #if ($xcontext.action == 'view')
+    (% id="measurements-gender" data-value="$doc.getObject('PhenoTips.PatientClass').getProperty('gender').value"%)((()))
+  #end
+)))
+(% class="clear"%)((()))
 {{/velocity}}</content>
     </property>
     <property>
