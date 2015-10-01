@@ -52,7 +52,7 @@
          <configuration>
            <archive>
              <manifest>
-               <mainClass>edu.toronto.cs.cidb.oo.Main</mainClass>
+               <mainClass>org.phenotips.oo.Main</mainClass>
              </manifest>
            </archive>
          </configuration>
