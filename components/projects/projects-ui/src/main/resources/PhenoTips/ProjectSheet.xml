@@ -29,17 +29,23 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1441826145000</date>
-  <contentUpdateDate>1441826145000</contentUpdateDate>
+  <date>1443649588000</date>
+  <contentUpdateDate>1443471113000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-$xwiki.ssx.use('PhenoTips.ProjectSheet')##
-$xwiki.jsx.use('PhenoTips.ProjectSheet')##
+  <content>{{velocity output="false"}}
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)
+$xwiki.ssx.use('PhenoTips.ProjectSheet')
+$xwiki.jsx.use('PhenoTips.ProjectSheet')
+{{/velocity}}
+{{velocity}}
 ##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
@@ -50,14 +56,22 @@ $xwiki.jsx.use('PhenoTips.ProjectSheet')##
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
-#if ($xwiki.exists('PhenoTips.ProjectClass'))
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributorsGroups')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsGroupsHint')
-: $doc.display('contributorsGroups')
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leadersGroups')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersGroupsHint')
-: $doc.display('leadersGroups')
-#end
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributors')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsHint')
+: {{html clean="false"}}
+&lt;div id="contributors-div"/&gt;
+&lt;input type="text" name="user" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newCollaborator')" id="new-contributors-user-input"/&gt;
+&lt;input type="text" name="group" class="suggestGroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-contributors-group-input"&gt;
+&lt;/fieldset&gt;
+{{/html}}
+
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersHint')
+: {{html clean="false"}}
+&lt;div id="leaders-div"/&gt;
+&lt;input type="text" name="user" class="suggestUsers" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newCollaborator')" id="new-leaders-user-input"/&gt;
+&lt;input type="text" name="group" class="suggestGroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-leaders-group-input"&gt;
+{{/html}}
 
 )))
 #else
@@ -66,9 +80,9 @@ $!doc.content
 {{/velocity}}</content>
   <object>
     <name>PhenoTips.ProjectSheet</name>
-    <number>0</number>
+    <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
-    <guid>8d0c4135-9fab-4106-9cc8-97b3e9ff99a0</guid>
+    <guid>8362a87c-e5e5-49f9-9ebb-f2a113856594</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -144,15 +158,127 @@ $!doc.content
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:loaded", function () {
-      console.log("project sheet loaded");
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.ProjectSheet = Class.create({
+
+    initialize : function (projectId) {
+      _this = this;
+      _this.projectId = projectId;
+      _this.form = $('inline');
+      _this.ajaxService = '/bin/get/Projects/AjaxHandler';
+
+      _this.contributorsTable = _this._initUsersGroupsSuggestion('contributors');
+      _this._leadersTable= _this._initUsersGroupsSuggestion('leaders');
+
+      this._readCollaborators();
+
+      // Save collaborators when project is saved
+      document.observe("xwiki:actions:save", function(event) {
+        var formData = _this.form.serialize(true);
+        var contributors = formData.contributors || [];
+        var leaders = formData.leaders || [];
+        new Ajax.Request(_this.ajaxService, {
+          parameters : {'projectId'    : _this.projectId,
+                        'xaction'      : 'update',
+                        'contributors' : contributors,
+                        'leaders' : leaders},
+          onComplete: function(response) {
+             _this._readCollaborators();
+          }
+        });
+      });
+    },
+
+    _initUsersGroupsSuggestion : function (fieldName) {
+      var table = new Element('table', {id : fieldName, 'class' : 'usersGroupsTable'});
+      // Body: collaborators
+      var collaboratorsList = new Element('tbody', {'id': fieldName+'List'});
+      // Foot: input for adding a new collaborator
+      var newCollaborator = new Element('tfoot');
+      var newUserInput = $('new-' + fieldName + '-user-input');
+      var newGroupInput = $('new-' + fieldName + '-group-input');
+      newCollaborator.insert(new Element('td', {'colspan' : 4}).insert(newUserInput).insert('&lt;br/&gt;').insert(newGroupInput));
+      // Add the two sections
+      $(fieldName + '-div').insert(table.insert(newCollaborator).insert(collaboratorsList));
+      // Capture selection events
+      newCollaborator.select('input').invoke('observe', 'xwiki:suggest:selected', function(event) {
+         if (event.memo) {
+           var id = event.memo.value;
+           var existingCollaborator = collaboratorsList.down('tr input[value="' + id.replace('"', '\\"') + '"]');
+           if (existingCollaborator) {
+             existingCollaborator.up('tr').addClassName('highlight');
+             // remove highlight after a while
+             new PeriodicalExecuter(function(pe) {
+                existingCollaborator.up('tr').removeClassName('highlight');
+                pe.stop();
+             }, 5);
+           } else {
+             var name = event.memo.info;
+             var type = event.findElement('input').name;
+             var newCollaborator = {'id' : id , 'name' : name , 'type' : type};
+             _this._addCollaborator(newCollaborator, true, fieldName);
+             event.findElement().value = '';
+           }
+         }
+      });
+      return collaboratorsList;
+    },
+
+
+    _addCollaborator : function (c, highlight, collaboratorType) {
+      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+      row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
+      row.insert(new Element('td')
+              .insert(c.name)
+              .insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}))
+      )
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+      row.insert(deleteTool.wrap('td'));
+      deleteTool.observe('click', function(event) {
+         event.findElement('tr').remove();
+      });
+      $(collaboratorType + 'List').insert(row);
+    },
+
+    _loadCollaborators : function(contributors, leaders) {
+      _this.contributorsTable.update('');
+      _this._leadersTable.update('');
+
+      for (var i = 0; i &lt; contributors.length ; i++) {
+        this._addCollaborator(contributors[i], false, 'contributors');
+      }
+      for (var i = 0; i &lt; leaders.length ; i++) {
+        this._addCollaborator(leaders[i], false, 'leaders');
+      }
+    },
+
+    _readCollaborators : function() {
+      new Ajax.Request(_this.ajaxService, {
+        parameters : {'xaction'   : 'get',
+                      'projectId' : _this.projectId},
+        onSuccess : function(response) {
+           var contributors = response.responseJSON.contributors;
+           var leaders = response.responseJSON.leaders;
+           _this._loadCollaborators(contributors, leaders);
+        }
+      });
+    }
+
+  });
+  return PhenoTips;
+})(PhenoTips || {});
+
+
+document.observe("xwiki:dom:loaded", function () {
+   new PhenoTips.widgets.ProjectSheet(document.documentElement.down('meta[name="page"]').content);
 });</code>
     </property>
     <property>
-      <name>Save project before opening configuration file</name>
+      <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -255,7 +381,32 @@ $!doc.content
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
-</code>
+
+.accepted-suggestions {
+display: none;
+}
+
+.usersGroupsTable tbody td {
+  border-bottom: 1px solid $theme.borderColor;
+}
+.usersGroupsTable tfoot td {
+  border-top: 3px solid $theme.borderColor;
+}
+.usersGroupsTable .tool.delete {
+  color: $theme.notificationErrorColor;
+  cursor: pointer;
+}
+.usersGroupsTable .highlight {
+  background-color: $theme.highlightColor !important;
+  color: $theme.notificationErrorColor;
+}
+
+.usersGroupsTable .new {
+  background-color: $theme.highlightColor;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
