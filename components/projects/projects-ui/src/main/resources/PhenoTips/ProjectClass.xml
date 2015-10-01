@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1441831419000</date>
-  <contentUpdateDate>1441827670000</contentUpdateDate>
+  <date>1442943244000</date>
+  <contentUpdateDate>1442943244000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -472,7 +472,7 @@ $xwiki.jsx.use($projectClassName)
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-console.log("loaded");
+
 });</code>
     </property>
     <property>
