@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442943244000</date>
-  <contentUpdateDate>1442943244000</contentUpdateDate>
+  <date>1443732206000</date>
+  <contentUpdateDate>1443732206000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -47,54 +47,34 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <contributorsGroups>
-      <cache>0</cache>
-      <classname/>
+    <openProjectForContribution>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <displayType>checkbox</displayType>
-      <idField/>
-      <multiSelect>1</multiSelect>
-      <name>contributorsGroups</name>
-      <number>1</number>
-      <picker>0</picker>
-      <prettyName>Contributors Groups</prettyName>
-      <relationalStorage>1</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenoTipsGroupTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenoTipsGroupClass' order by doc.name</sql>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>openProjectForContribution</name>
+      <number>2</number>
+      <prettyName>openProjectForContribution</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </contributorsGroups>
-    <leadersGroups>
-      <cache>0</cache>
-      <classname/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </openProjectForContribution>
+    <openProjectForViewing>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
-      <displayType>checkbox</displayType>
-      <idField/>
-      <multiSelect>1</multiSelect>
-      <name>leadersGroups</name>
-      <number>1</number>
-      <picker>0</picker>
-      <prettyName>Leaders Groups</prettyName>
-      <relationalStorage>1</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenoTipsGroupTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenoTipsGroupClass' order by doc.name</sql>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>openProjectForViewing</name>
+      <number>3</number>
+      <prettyName>openProjectForViewing</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </leadersGroups>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </openProjectForViewing>
   </class>
   <object>
     <name>PhenoTips.ProjectClass</name>
