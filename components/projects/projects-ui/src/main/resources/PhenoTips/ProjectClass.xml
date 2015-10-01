@@ -760,6 +760,7 @@ $xwiki.jsx.use($projectClassName)
 })
 #set ($defaultOrder = 'name')
 #set ($order = "$!xcontext.macro.params.orderby")
+#set ($_service = $services.projects)
 #if (!$orders.get($order))
   #set($order = $defaultOrder)
 #end
@@ -770,18 +771,24 @@ $xwiki.jsx.use($projectClassName)
 #foreach ($projectDoc in $projectDocs)
   ## Read groups
   #set ($projectObj = $projectDoc.getObject($projectClassName))
-  #set ($contributorsGroupsQuery = 'select p.contributorsGroups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
-  #set ($contributorsGroups = $services.query.xwql($contributorsGroupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
-  #set ($leadersGroupsQuery = 'select p.leadersGroups from Document doc, doc.object(PhenoTips.ProjectClass) as p where doc.fullName = :project')
-  #set ($leadersGroups = $services.query.xwql($leadersGroupsQuery).bindValue('project', $services.model.serialize($projectDoc.documentReference, 'local')).execute())
+  #set ($rawCollaborators = $_service.getCollaborators($projectDoc.title))
+  #set ($contributorsCount = 0)
+  #set ($leadersCount = 0)
+  #foreach ($c in $rawCollaborators)
+    #if ($c.accessLevel.name == "leader")
+      #set ($leadersCount = $leadersCount + 1)
+    #else
+      #set ($contributorsCount = $contributorsCount + 1)
+    #end
+  #end
   ##
   #set ($discard = $projectData.add({
     'doc' : $projectDoc ,
     'obj' : $projectObj ,
     'doc.fullName' : $projectDoc.fullName,
     'name' : $projectDoc.title,
-    'contributorsGroups' : $contributorsGroups.size(),
-    'leadersGroups' : $leadersGroups.size()
+    'contributorsGroups' : $contributorsCount,
+    'leadersGroups' : $leadersCount
   }))
 #end
 #set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
