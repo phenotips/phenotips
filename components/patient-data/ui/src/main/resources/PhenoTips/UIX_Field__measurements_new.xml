@@ -614,7 +614,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #end
 (% id="measurements-container"%)(((
   #if ($configObj &amp;&amp; "$!{configObj.getProperty('enableImperialUnitSystem').value}" == '1')
-    #set ($measurementUnitInfo = "enable-unit-switch $!{config.getProperty('measurementUnitSystem').value}")
+    #set ($measurementUnitInfo = "enable-unit-switch $!{configObj.getProperty('measurementUnitSystem').value}")
   #else
     #set ($measurementUnitInfo = '')
   #end
