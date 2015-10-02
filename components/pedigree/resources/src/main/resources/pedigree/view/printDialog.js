@@ -48,7 +48,7 @@ var PrintDialog = Class.create( {
         minusButton.observe('click', function(event) {
             if (_this._zoomLevel > 10) {
                 _this._zoomLevel -= 10;
-                this._moveHorizontally = 0;
+                _this._moveHorizontally = 0;
                 _this.zoomValue.update(_this._zoomLevel + "%");
                 _this._updatePreview();
             }
@@ -56,7 +56,7 @@ var PrintDialog = Class.create( {
         plusButton.observe('click', function(event) {
             if (_this._zoomLevel < 250) {
                 _this._zoomLevel += 10;
-                this._moveHorizontally = 0;
+                _this._moveHorizontally = 0;
                 _this.zoomValue.update(_this._zoomLevel + "%");
                 _this._updatePreview();
             }
