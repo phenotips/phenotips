@@ -72,6 +72,20 @@
       <values/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </default>
+    <enableImperialUnitSystem>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <name>enableImperialUnitSystem</name>
+      <number>4</number>
+      <prettyName>enableImperialUnitSystem</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </enableImperialUnitSystem>
     <enabled>
       <cache>0</cache>
       <customDisplay>{{velocity}}
@@ -97,6 +111,31 @@
       <values/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </enabled>
+    <measurementUnitSystem>
+      <cache>0</cache>
+      <customDisplay>{{velocity}}
+#if ($value != 'imperial')#set ($value = 'metric')#end
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
+&lt;br/&gt;
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>radio</displayType>
+      <multiSelect>0</multiSelect>
+      <name>measurementUnitSystem</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>measurementUnitSystem</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>metric=Metric|imperial=Imperial</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </measurementUnitSystem>
     <ordering>
       <cache>0</cache>
       <customDisplay/>
