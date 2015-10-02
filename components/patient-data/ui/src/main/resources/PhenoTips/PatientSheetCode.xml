@@ -3425,6 +3425,16 @@ document.observe('xwiki:dom:loaded', function()
 
       if (XWiki.contextaction == 'edit') {
         this._handleAddMeasurementSet();
+
+        if (this.el.hasClassName('enable-unit-switch')) {
+          new PhenoTips.widgets.UnitConverter(
+             this.el.up(),
+             '.measurement-row:not(.computed) input[type="text"]:not([name$="date"]):not([disabled])',
+             this.el.up(),
+             'before',
+             this.el.hasClassName('imperial') ? 'imperial' : ''
+          );
+        }
       }
 
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
@@ -3772,8 +3782,8 @@ document.observe('xwiki:dom:loaded', function()
         this.fetchAndRenderPercentileSd();
 
         // Attach handlers
-        this.el.select('[name$=value]').each((function(el) {
-          el.observe('input', this.fetchAndRenderPercentileSd);
+        ['input', 'phenotips:measurement-updated'].each((function(ev) {
+          this._valueEl.observe(ev, this.fetchAndRenderPercentileSd);
         }).bind(this));
         ['age:change', 'duration:format'].each((function(ev) {
           this.parent._ageEl.observe(ev, this.fetchAndRenderPercentileSd);
@@ -3898,7 +3908,7 @@ document.observe('xwiki:dom:loaded', function()
     },
 
     _getDependentMeasurementField: function(measurement) {
-      return this.parent.el.select('input[name$=type][value='+measurement+']')[0].adjacent('input[name$=value]')[0];
+      return this.parent.el.select('input[name$=type][value='+measurement+']')[0].up(0).select('input[name$=value]')[0];
     },
 
     fetchAndRenderComputedValue: function(e) {

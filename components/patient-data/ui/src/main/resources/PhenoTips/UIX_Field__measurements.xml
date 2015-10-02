@@ -195,6 +195,7 @@
 }
 #measurements-container {
   position: relative;
+  clear: both;
 }
 #measurements {
   width: 485px;
@@ -217,11 +218,17 @@
 .measurement-row {
   clear: both;
 }
-.viewbody .measurement-row &gt; *,
-.editbody .measurement-row &gt; * {
+.viewbody .measurement-row *,
+.editbody .measurement-row * {
   display: block;
   float: left;
   min-height: 1px;
+}
+.measurement-row div.metric,
+.measurement-row div.imperial {
+  display: block;
+  float: left;
+  width: 120px;
 }
 .viewbody .measurement-set label {
   width: auto;
@@ -251,8 +258,8 @@
   width: 120px;
   font-size: 80%;
 }
-.editbody .measurement-row label,
-.viewbody .measurement-row label {
+.editbody .measurement-row &gt; label,
+.viewbody .measurement-row &gt; label {
   width: 180px;
 }
 .normal {
@@ -399,6 +406,9 @@ div.birthdate {
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 #set ($measurementClassId = $doc.getObjectNumbers('PhenoTips.MeasurementClass'))
+#set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())
+#set ($itemDoc = $xwiki.getDocument($objs.get(0)))
+#set ($configObj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
 #macro (measurement $handler $vals $proto)
 #if (!$vals.isEmpty() || $xcontext.action == 'edit')
   #if ($handler.isDoubleSided())
@@ -434,7 +444,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 #set ($unit = $handler.getUnit())
 #set ($computationDeps = $handler.getComputationDependencies())
 #set ($depsStr = "$!{stringtool.join($computationDeps, ' ')}")
-(% class="measurement-row#if ($depsStr != '') computed#end"#if ($depsStr != '') data-computation-deps="$depsStr"#end%)(((
+(% class="measurement-row $name#if ($depsStr != '') computed#end"#if ($depsStr != '') data-computation-deps="$depsStr"#end%)(((
   #if ($proto)
     #set ($disabled = ' disabled="disabled"')
     #set ($id = '[id]')
@@ -459,15 +469,17 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
   &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
   &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
-  #if ($xcontext.action == 'edit')
-    &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
-    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
-    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
-    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
-  #else
-    &lt;span class="val"&gt;$!{val}&lt;/span&gt;
-  #end
-  &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
+  &lt;div class="metric"&gt;
+    #if ($xcontext.action == 'edit')
+      &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
+    #else
+      &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+    #end
+    &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
+  &lt;/div&gt;
   &lt;span class="pctl#if ("$!val" != "") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$eval#end&lt;/span&gt;
   {{/html}}
 )))
@@ -494,10 +506,11 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 #end
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
-#set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
-#foreach ($handler in $handlers)
-  #if (($showEnabled == $obj.getProperty('enabled').value.contains($handler.getName()))
-       &amp;&amp; ($showDefault == $obj.getProperty('default').value.contains($handler.getName())))
+#set ($orderedMeasurements = $configObj.getProperty('ordering').value)
+#foreach ($measurement in $orderedMeasurements)
+  #set ($handler = $services.measurements.get($measurement))
+  #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
+       &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
     #set($name = $handler.getName())
     #if ($handler.isDoubleSided())
       #set($vals = {})
@@ -570,9 +583,6 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 )))
 #end
 ##
-#set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())
-#set ($itemDoc = $xwiki.getDocument($objs.get(0)))
-#set ($obj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))
 #set ($sortedMeasurementObjs = [])
 #sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
 ##
@@ -598,7 +608,12 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   #end
 #end
 (% id="measurements-container"%)(((
-  (% id="measurements"%)(((
+  #if ($configObj &amp;&amp; "$!{configObj.getProperty('enableImperialUnitSystem').value}" == '1')
+    #set ($measurementUnitInfo = "enable-unit-switch $!{configObj.getProperty('measurementUnitSystem').value}")
+  #else
+    #set ($measurementUnitInfo = '')
+  #end
+  (% id="measurements" class="$!measurementUnitInfo"%)(((
     #if ($xcontext.action == 'edit')
       #measurementSet()
     #end
