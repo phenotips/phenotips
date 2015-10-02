@@ -3721,7 +3721,7 @@ document.observe("xwiki:dom:loaded", function() {
 
      initializeElements : function(element) {
        container = element || this._container;
-        if (container.__unitSwitcher || (!container.up('.measurements') &amp;&amp; !container.hasClassName('measurements'))) {
+       if (container.__unitSwitcher || (!container.up('.measurements') &amp;&amp; !container.up('#measurements') &amp;&amp; !container.hasClassName('measurements') &amp;&amp; !container.id == 'measurements')) {
          return;
        }
        container.__unitSwitcher = this;
@@ -6369,7 +6369,7 @@ input.xwiki-free-multiselect-value {
     </property>
     <property>
       <code>.unit-system-selector {
-  float: right;
+  float: left;
   padding: 3px 3px 0;
   border-radius: 3px;
 }</code>
