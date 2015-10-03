@@ -65,14 +65,6 @@ public class OOSaxParser extends DefaultHandler
         return this.data.entrySet();
     }
 
-    public void printData()
-    {
-        // System.out.println(bookL.size());
-        for (String k : this.data.keySet()) {
-            System.out.println(k + "\t" + this.data.get(k));
-        }
-    }
-
     @Override
     public void startElement(String s, String s1, String elementName, Attributes attributes) throws SAXException
     {
