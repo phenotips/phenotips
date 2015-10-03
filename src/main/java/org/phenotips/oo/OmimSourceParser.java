@@ -20,11 +20,8 @@
 package org.phenotips.oo;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,30 +47,12 @@ public class OmimSourceParser
 
     public OmimSourceParser(String path, Set<String> fieldSelection)
     {
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(new URL(path).openConnection().getInputStream()));
-        } catch (MalformedURLException uex) {
-            try {
-                in = new BufferedReader(new FileReader(path));
-            } catch (FileNotFoundException fex) {
-                // TODO Auto-generated catch block
-                fex.printStackTrace();
-                return;
-            }
-        } catch (IOException iex) {
-            // TODO Auto-generated catch block
-            iex.printStackTrace();
-            return;
-        }
-        try {
+        try (BufferedReader in =
+            new BufferedReader(new InputStreamReader(new URL(path).openConnection().getInputStream(), "UTF-8"))) {
             transform(in, fieldSelection);
-            if (in != null) {
-                in.close();
-            }
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
         } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
     }
