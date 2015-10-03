@@ -784,8 +784,19 @@ define([
         getLabels: function() {
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
-            this.getNameLabel() && labels.push(this.getNameLabel());
-            this.getAgeLabel() && labels.push(this.getAgeLabel());
+        if (!this._anonimized) {
+            if (this.getNameLabel()) {
+                this.getNameLabel().show();
+                labels.push(this.getNameLabel());
+            }
+            if (this.getAgeLabel()) {
+                this.getAgeLabel().show();
+                labels.push(this.getAgeLabel());
+            }
+        } else {
+            this.getNameLabel() && this.getNameLabel().hide();
+            this.getAgeLabel() && this.getAgeLabel().hide();
+        }
             this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
             this.getCommentsLabel() && labels.push(this.getCommentsLabel());
             var cancerLabels = this.getCancerAgeOfOnsetLabels();
@@ -798,6 +809,14 @@ define([
         },
 
         /**
+     * Removes all PII labels
+     */
+    setAnonimizedStatus: function($super, status) {
+        $super(status);
+        this.drawLabels();
+    },
+
+    /**
          * Displays all the appropriate labels for this Person in the correct layering order
          *
          * @method drawLabels

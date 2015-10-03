@@ -18,6 +18,7 @@ define([], function(){
             this._absoluteY = y;
             this._hoverBox  = null;
             this._isGrown   = false;
+        this._anonimized = false;
             //console.log("abstract node visuals end");
         },
 
@@ -50,6 +51,13 @@ define([], function(){
         },
 
         /**
+     * Removes all PII labels
+     */
+    setAnonimizedStatus: function(status) {
+        this._anonimized = status;
+    },
+
+    /**
          * Returns the current Y coordinate of this node on the canvas, taking into consideration transformation data.
          *
          * @method getY

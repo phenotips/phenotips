@@ -162,7 +162,6 @@ define([
                                       },
             parameters: {"property#data": jsonData, "property#image": svgText}
             });
-            backgroundParent.insertBefore(background, backgroundPosition);
         },
 
         load: function() {

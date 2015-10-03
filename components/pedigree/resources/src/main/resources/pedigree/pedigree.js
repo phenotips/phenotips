@@ -144,10 +144,6 @@ define([
             saveButton && saveButton.on("click", function(event) {
                 editor.getSaveLoadEngine().save();
             });
-            var loadButton = $('action-reload');
-            loadButton && loadButton.on("click", function(event) {
-                editor.getSaveLoadEngine().load();
-            });
 
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {

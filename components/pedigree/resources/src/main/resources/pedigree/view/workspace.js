@@ -94,20 +94,24 @@ define ([], function() {
         },
 
         /**
-     * Returns the SVGWrapper object containing a copy of pedigree SVG.
+     * Returns the SVGWrapper object containing a copy of pedigree SVG with all edit-related
+     *                  elements such as handles, invisible interactive layers, etc. removed.
      *
      * @method getSVGCopy
-     * @param {Boolean} stripInteractiveElements - if true, all edit-related elements such as handles,
-     *                  backgroundIMage, invisible interactive layers, etc. are removed
+     * @param {Boolean} anonimize - if true, all names and birthdays are removed.
      * @return {Object} SVGWrapper object.
      */
-    getSVGCopy: function(stripInteractiveElements) {
+    getSVGCopy: function(anonimize) {
         editor.getView().unmarkAll();
 
         var image = $('canvas');
 
         var background = image.getElementsByClassName('panning-background')[0];
         background.style.display = "none";
+
+        if (anonimize) {
+            editor.getView().setAnonimizeStatus(true);
+        }
 
         var _bbox = image.down().getBBox();
         var bbox = {};
@@ -123,6 +127,10 @@ define ([], function() {
 
         var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
                       .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+
+        if (anonimize) {
+            editor.getView().setAnonimizeStatus(false);
+        }
 
         // set display:block
         svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
@@ -243,10 +251,9 @@ define ([], function() {
                     { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
                     ]
                   }, {
-                    name : 'reset',
+                name : 'print',
                     items: [
-                    { key : 'clear',  label : 'Clear', icon : 'times-circle'},
-                        { key : 'reload',    label : 'Reload', icon : 'refresh'}
+                    { key : 'print',  label : 'Print', icon : 'print'},
                     ]
                   }, {
                     name : 'output',
@@ -267,9 +274,9 @@ define ([], function() {
                     { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
                 ]
               }, {
-                name : 'export',
+                name : 'other',
                 items: [
-                    { key : 'print',  label : 'Print', icon : 'print'},
+                    { key : 'clear',  label : 'Clear', icon : 'times-circle'},
                 ]
               }];
         }

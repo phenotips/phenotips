@@ -150,6 +150,18 @@ define([
         },
 
         /**
+     * Redraws the pedigree image in anoimized/non-anonimized way
+     */
+    setAnonimizeStatus: function(status) {
+        for (var nodeID in this._nodeMap) {
+            if (this._nodeMap.hasOwnProperty(nodeID)) {
+                var node = this.getNode(nodeID);
+                node.getGraphics().setAnonimizedStatus(status);
+            }
+        }
+    },
+
+    /**
          * Returns the node that is currently selected
          *
          * @method getCurrentHoveredNode
