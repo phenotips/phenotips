@@ -1,5 +1,9 @@
 package org.phenotips.oo;
 
+import org.phenotips.obo2solr.ParameterPreparer;
+import org.phenotips.obo2solr.SolrUpdateGenerator;
+import org.phenotips.obo2solr.TermData;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,10 +20,6 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-
-import org.phenotips.obo2solr.ParameterPreparer;
-import org.phenotips.obo2solr.SolrUpdateGenerator;
-import org.phenotips.obo2solr.TermData;
 
 @SuppressWarnings("deprecation")
 public class DisorderDataBuilder

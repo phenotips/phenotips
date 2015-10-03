@@ -21,6 +21,7 @@ package org.phenotips.util.maps;
 
 public abstract class AbstractMapOperator<K, N extends Number> implements MapOperator<K, N>
 {
+    @Override
     @SuppressWarnings("unchecked")
     public NumericValueMap<K, N> apply(NumericValueMap<K, N> a, NumericValueMap<K, N> b)
     {

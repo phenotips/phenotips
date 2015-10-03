@@ -1,10 +1,10 @@
 package org.phenotips.oo;
 
+import org.phenotips.util.maps.SetMap;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.phenotips.util.maps.SetMap;
 
 public class RecordData extends SetMap<String, String>
 {

@@ -19,10 +19,10 @@
  */
 package org.phenotips.util.maps;
 
+import org.phenotips.obo2solr.maps.AbstractCollectionMap;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
-
-import org.phenotips.obo2solr.maps.AbstractCollectionMap;
 
 public class SetMap<K, V> extends AbstractCollectionMap<K, V>
 {

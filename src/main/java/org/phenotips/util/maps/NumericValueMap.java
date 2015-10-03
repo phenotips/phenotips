@@ -56,7 +56,7 @@ interface NumericValueMap<K, N extends Number>
 
     public N put(K key, N value);
 
-    public void putAll(Map< ? extends K, ? extends N> m);
+    public void putAll(Map<? extends K, ? extends N> m);
 
     public N remove(K key);
 

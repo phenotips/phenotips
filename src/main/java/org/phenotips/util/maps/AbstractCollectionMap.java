@@ -85,9 +85,10 @@ public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Colle
     {
         K[] sortedKeys = (K[]) this.keySet().toArray();
         Arrays.sort(sortedKeys, new Comparator<K>()
-                    {
+        {
+            @Override
             public int compare(K a, K b)
-                        {
+            {
                 if (safeGet(a).size() == safeGet(b).size()) {
                     return 0;
                 }
