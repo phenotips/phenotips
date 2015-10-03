@@ -1,6 +1,6 @@
 package org.phenotips.oo;
 
-import org.phenotips.util.maps.SetMap;
+import org.phenotips.obo2solr.maps.SetMap;
 
 import java.util.Collection;
 import java.util.HashSet;
