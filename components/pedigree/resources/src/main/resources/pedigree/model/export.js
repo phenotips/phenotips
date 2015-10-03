@@ -251,7 +251,9 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        }
        output += sex + "\t";
 
-       if (pedigree.GG.getTwinGroupId(i) !== null) {
+       if (pedigree.GG.getTwinGroupId(i) !== null
+           && pedigree.GG.properties[i].hasOwnProperty('monozygotic')
+           && pedigree.GG.properties[i].monozygotic) {
            output += "1\t";
        } else {
            output += "0\t";
