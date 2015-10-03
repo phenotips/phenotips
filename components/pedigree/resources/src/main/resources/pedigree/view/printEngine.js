@@ -8,7 +8,7 @@ var PrintEngine = Class.create({
     initialize: function() {
         // TODO: load default paper settings from pedigree preferences in admin section
         this.printPageWidth  = 1055;
-        this.printPageHeight = 756;
+        this.printPageHeight = 758;
         this.printPageWidthPortrait  = 756;
         this.printPageHeightPortrait = 980;
         this.xOverlap = 18;
@@ -18,10 +18,12 @@ var PrintEngine = Class.create({
     /**
      * @param {emulateFullPage} When true, makes svg include extra blank space up to the pageWidth/pageHeight size
      */
-    _generatePages: function(scale, moveHorizontallySize, addOverlaps, pageWidth, pageHeight, includeLegend, emulateFullPage) {
+    _generatePages: function(scale, moveHorizontallySize, pageWidth, pageHeight, options, emulateFullPage) {
         var totalLegendHeight = 0;
-        var legendHTML = "";
-        if (includeLegend) {
+        var patientInfoHeight = 0;
+        var legendHTML      = "";
+        var patientInfoHTML = "";
+        if (options.includeLegend) {
             // Manually compose legend for print; 3 benefits:
             //   - color samples not using background gcolor (which is not printed by default in some browsers)
             //   - known height (need th eheight to compute required number of pages; no need to pre-render in the browser)
@@ -65,8 +67,27 @@ var PrintEngine = Class.create({
                 legendHTML        += sections[i].html;
             }
         } // if includeLegend
+        if (options.includePatientInfo) {
+            patientInfoHeight = 35;
+            if (options.anonimize) {
+                patientInfoHTML = "Patient " + XWiki.currentDocument.page + ". ";
+            } else {
+                // TODO: update to correct proband/family when fmaly studies are merged in
+                var proband = editor.getNode(0);
+                var probandName = proband.getFirstName() + " " + proband.getLastName();
+                patientInfoHTML = probandName + ", " + XWiki.currentDocument.page + ". ";
+            }
+            var userFirstName = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('first_name').value}";
+            var userLastName  = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('last_name').value}";
+            var date = new Date();
+            patientInfoHTML += "Printed";
+            if (userFirstName || userLastName) {
+                patientInfoHTML += " by " + userFirstName + " " + userLastName;
+            }
+            patientInfoHTML += " on " + date.getDate() + "/" + date.getMonth() + "/" + (1900 + date.getYear()) + ".";
+        }
 
-        var svg = editor.getWorkspace().getSVGCopy();
+        var svg = editor.getWorkspace().getSVGCopy(options.anonimize);
 
         //console.log("BBOX: " + stringifyObject(svg.getBBox()));
 
@@ -77,16 +98,16 @@ var PrintEngine = Class.create({
         var svgText = svg.getSVGText();
         var bbox    = svg.getBBox();
 
-        var xOverlap = addOverlaps ? Math.floor(this.xOverlap * scale) : 0;
-        var yOverlap = addOverlaps ? Math.floor(this.yOverlap * scale) : 0;
+        var xOverlap = options.addOverlaps ? Math.floor(this.xOverlap * scale) : 0;
+        var yOverlap = options.addOverlaps ? Math.floor(this.yOverlap * scale) : 0;
 
         var pagesWide = (bbox.width  < pageWidth)  ? 1 : Math.ceil(bbox.width  / pageWidth);
         var pagesTall = (bbox.height < pageHeight) ? 1 : Math.ceil(bbox.height / pageHeight);
-        if (pagesWide > 1 && addOverlaps) {
+        if (pagesWide > 1 && options.addOverlaps) {
             var realWidthWithOverlaps = bbox.width + (pagesWide-1)*xOverlap;
             pagesWide = Math.ceil(realWidthWithOverlaps / pageWidth);
         }
-        if (pagesTall > 1 && addOverlaps) {
+        if (pagesTall > 1 && options.addOverlaps) {
             var realHeightWithOverlaps = bbox.height + (pagesTall-1)*yOverlap;
             pagesTall = Math.ceil(realHeightWithOverlaps / pageHeight);
         }
@@ -99,6 +120,13 @@ var PrintEngine = Class.create({
             var rowHeight = emulateFullPage ? pageHeight : Math.min(pageHeight, bbox.height - pageStartY);
             var pagesRow = [];
             var pageStartX = 0;
+            if (options.includePatientInfo) {
+                if (emulateFullPage) {
+                    svg.move(0, -patientInfoHeight);
+                } else {
+                    rowHeight -= patientInfoHeight;
+                }
+            }
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
                 var columnWidth = pageWidth; //(emulateFullPage || (pagesWide > 1 && pageNumX == pagesWide-1))? pageWidth : Math.min(pageWidth,  bbox.width - pageStartX);
                 var startX = pageStartX;
@@ -123,10 +151,12 @@ var PrintEngine = Class.create({
                  "pagesTall": pageNumY,
                  "needLegendOnSeparatePage": legendOnSeparatePage,
                  "legendHTML": legendHTML,
-                 "legendHeight": totalLegendHeight }
+                 "legendHeight": totalLegendHeight,
+                 "patientInfoHTML": patientInfoHTML,
+                 "patientInfoHeight": patientInfoHeight}
     },
 
-    generatePreviewHTML: function(landscape, maxPreviewWidth, maxPreviewHeight, printScale, moveHorizontallySize, addOverlaps) {
+    generatePreviewHTML: function(landscape, maxPreviewWidth, maxPreviewHeight, printScale, moveHorizontallySize, options) {
         var previewWidth = maxPreviewWidth - 30;
 
         var printedWidth  = landscape ? this.printPageWidth : this.printPageWidthPortrait;
@@ -135,10 +165,9 @@ var PrintEngine = Class.create({
         // generate pages for print, and based on the number of pages used re-generate preview pages
         var pages = this._generatePages(printScale,
                 moveHorizontallySize,
-                addOverlaps,
                 printedWidth,
                 printedHeight,
-                false,
+                options,
                 false);
 
         var printWidth = 0;
@@ -153,10 +182,9 @@ var PrintEngine = Class.create({
 
         var pages = this._generatePages(useScale,
                                         moveHorizontallySize,
-                                        addOverlaps,
                                         scaleComparedToPrint * printedWidth,
                                         scaleComparedToPrint * printedHeight,
-                                        false,
+                                        options,
                                         true);
         var html = "<div class='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
@@ -170,13 +198,12 @@ var PrintEngine = Class.create({
         return html;
     },
 
-    print: function(landscape, printScale, moveHorizontallySize, addOverlaps, includeLegend, closeAfterPrint, printPageSet) {
+    print: function(landscape, printScale, moveHorizontallySize, options, printPageSet) {
         var pages = this._generatePages(printScale,
                                         moveHorizontallySize,
-                                        addOverlaps,
                                         landscape ? this.printPageWidth : this.printPageWidthPortrait,
                                         landscape ? this.printPageHeight : this.printPageHeightPortrait,
-                                        includeLegend,
+                                        options,
                                         false);
         var w=window.open();
         //w.document.write("<link rel='stylesheet' type='text/css' href='print.css' />");
@@ -193,6 +220,7 @@ var PrintEngine = Class.create({
             ".abnormality-list { list-style-type: none; }" +
             ".abnormality-color { margin-right: 8px; }" +
             ".legend-item-name {font-size: 11pt }" +
+            ".patient-info {font-size: 11pt }" +
             "</style>");
 
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
@@ -201,9 +229,13 @@ var PrintEngine = Class.create({
                     // skip pages marked to be skipped by the user
                     continue;
                 }
+                if(pageNumY == 0 && options.includePatientInfo) {
+                    var content = (pageNumX == 0) ? pages.patientInfoHTML : "";
+                    w.document.write("<div id='patientInfo' class='header patient-info' style='height: " + pages.patientInfoHeight + "px;'>" + content + "</div>");
+                }
                 var page = pages.pages[pageNumY][pageNumX];
                 var bottomLeftPage = (pageNumY == (pages.pagesTall - 1)) && (pageNumX == 0);
-                var spaceForLegend = includeLegend && bottomLeftPage && !pages.needLegendOnSeparatePage;
+                var spaceForLegend = options.includeLegend && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
                 if (spaceForLegend) {
                     w.document.write("<div class='wrapper' style='margin: 0 auto -" + pages.legendHeight + "px;'>");
                 }
@@ -223,14 +255,14 @@ var PrintEngine = Class.create({
             }
         }
 
-        if (includeLegend && pages.needLegendOnSeparatePage) {
+        if (options.includeLegend && options.legendAtBottom && pages.needLegendOnSeparatePage) {
             w.document.write("<div class='break_here'></div>");
             w.document.write("<div id='legend' class='print-legend'>" + pages.legendHTML + "</div>");
         }
         w.document.close(); // to prevent infinite "page loading"
 
         w.print();
-        if (closeAfterPrint) {
+        if (options.closeAfterPrint) {
             w.close();
         }
     }

@@ -75,12 +75,14 @@ var PrintDialog = Class.create( {
         });
         landscape.observe('click', function(event) {
             _this._landscape = true;
+            _this._moveHorizontally = 0;
             $('landscape-button').disable();
             $('portrait-button').enable();
             _this._updatePreview();
         });
         portrait.observe('click', function(event) {
             _this._landscape = false;
+            _this._moveHorizontally = 0;
             $('landscape-button').enable();
             $('portrait-button').disable();
             _this._updatePreview();
@@ -89,21 +91,30 @@ var PrintDialog = Class.create( {
         mainDiv.insert(controlsDiv);
 
         var configListElement = new Element('table', {id : 'print-settings'});
+        var anonimize = new Element('input', {"type" : "checkbox", "value": "0", "name": "anonimize"});
+        anonimize.checked = false;
+        anonimize.observe('click', function() {
+            _this._updatePreview();
+        });
+        configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonimize).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
         var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
         addLegend.checked = true;
-        var markLabel1 = new Element('label', {'class': 'import-mark-label1'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr');
-        configListElement.insert(markLabel1);
+        configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr'));
         var includeOverlaps = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-overlap"});
         includeOverlaps.checked = true;
         includeOverlaps.observe('click', function() {
             _this._updatePreview();
         });
-        var markLabel2 = new Element('label', {'class': 'import-mark-label2'}).insert(includeOverlaps).insert("Make pages slightly overlapped").wrap('td').wrap('tr');
-        configListElement.insert(markLabel2);
+        configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(includeOverlaps).insert("Make pages slightly overlapped").wrap('td').wrap('tr'));
+        var info = new Element('input', {"type" : "checkbox", "value": "1", "name": "patient-info"});
+        info.checked = true;
+        info.observe('click', function() {
+            _this._updatePreview();
+        });
+        configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(info).insert("Include patient information and print date at the top of the first page").wrap('td').wrap('tr'));
         var closeAfterPrint = new Element('input', {"type" : "checkbox", "value": "1", "name": "close-print"});
         closeAfterPrint.checked = true;
-        var markLabel3 = new Element('label', {'class': 'import-mark-label2'}).insert(closeAfterPrint).insert("Close window with printer-friendly version after printing").wrap('td').wrap('tr');
-        configListElement.insert(markLabel3);
+        configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(closeAfterPrint).insert("Close window with printer-friendly version after printing").wrap('td').wrap('tr'));
 
         var dataSection3 = new Element('div', {'class': 'print-settings-block'});
         dataSection3.insert(configListElement);
@@ -131,19 +142,35 @@ var PrintDialog = Class.create( {
      * Prints the pedigree using the scale and option selected.
      */
     _onPrint: function() {
+        var options = this._generateOptions();
+
+        this._printEngine.print(this._landscape,
+                                this._getSelectedPrintScale(),
+                                this._moveHorizontally,
+                                options,
+                                this._printPageSet);
+    },
+
+    /**
+     * Creates an options object based on state of UI input elements
+     */
+    _generateOptions: function() {
+        var patientInfo = $$('input[type=checkbox][name="patient-info"]')[0].checked;
+
+        var anonimize = $$('input[type=checkbox][name="anonimize"]')[0].checked;
+
         var closePrintVersion = $$('input[type=checkbox][name="close-print"]')[0].checked;
 
         var addLegend = $$('input[type=checkbox][name="add-legend"]')[0].checked;
 
         var addOverlaps = $$('input[type=checkbox][name="add-overlap"]')[0].checked;
 
-        this._printEngine.print(this._landscape,
-                                this._getSelectedPrintScale(),
-                                this._moveHorizontally,
-                                addOverlaps,
-                                addLegend,
-                                closePrintVersion,
-                                this._printPageSet);
+        return { "includeLegend": addLegend,
+                 "legendAtBottom": true,
+                 "addOverlaps": addOverlaps,
+                 "closeAfterPrint": closePrintVersion,
+                 "anonimize": anonimize,
+                 "includePatientInfo": patientInfo};
     },
 
     /**
@@ -161,13 +188,12 @@ var PrintDialog = Class.create( {
      * Updates print preview using currently selected zoom level.
      */
     _updatePreview: function() {
-        var overlapCheckBox = $$('input[type=checkbox][name="add-overlap"]')[0];
-        var addOverlaps = overlapCheckBox ? overlapCheckBox.checked : true;
+        var options = this._generateOptions();
         var previewHTML = this._printEngine.generatePreviewHTML(this._landscape,
                                                                 730, 390,
                                                                 this._getSelectedPrintScale(),
                                                                 this._moveHorizontally,
-                                                                addOverlaps);
+                                                                options);
         this.previewContainer.update(previewHTML);
 
         var _this = this;
