@@ -29,11 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class OmimSourceParser
 {
-    private final static String RECORD_MARKER = "*RECORD*";
+    private static final String RECORD_MARKER = "*RECORD*";
 
-    private final static String END_MARKER = "*THEEND*";
+    private static final String END_MARKER = "*THEEND*";
 
-    private final static String FIELD_MARKER = "*FIELD* ";
+    private static final String FIELD_MARKER = "*FIELD* ";
 
     private int counter = 0;
 
@@ -64,7 +64,7 @@ public class OmimSourceParser
         String fieldName = "";
         this.counter = 0;
         while ((line = in.readLine()) != null) {
-            if (line.trim().equalsIgnoreCase(RECORD_MARKER) || line.trim().equalsIgnoreCase(END_MARKER)) {
+            if (RECORD_MARKER.equalsIgnoreCase(line) || END_MARKER.equalsIgnoreCase(line)) {
                 if (this.counter > 0) {
                     storeCrtTerm();
                 }
