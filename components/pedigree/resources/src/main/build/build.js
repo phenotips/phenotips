@@ -1,8 +1,8 @@
 ({
-  mainConfigFile : '${basedir}/src/main/resources/pedigree/requireConfigs/optimizerConfig.js',
+  mainConfigFile : '${basedir}/src/main/build/optimizerConfig.js',
   baseUrl: "${basedir}/src/main/resources/pedigree",
   name : 'pedigreeApp',
-  out : '${basedir}/target/classes/pedigree/minified/pedigree.min.js',
+  out : '${project.build.outputDirectory}/pedigree/minified/pedigree.min.js',
   //Do not minify prototype key variable "$super"
   uglify: {
     except: ["$super"]

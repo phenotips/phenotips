@@ -42,7 +42,7 @@
         </executions>
         <configuration>
           <!-- Path to optimizer configuration file -->
-          <configFile>src/main/resources/pedigree/requireConfigs/build.js</configFile>
+          <configFile>src/main/build/build.js</configFile>
           <!-- Expand parameters in the configuration file -->
           <filterConfig>true</filterConfig>
           <!-- Skip requirejs optimization if true -->
