@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1440701829000</date>
-  <contentUpdateDate>1440701602000</contentUpdateDate>
+  <date>1440795631000</date>
+  <contentUpdateDate>1440795601000</contentUpdateDate>
   <version>1.1</version>
   <title>Pedigree editor#if ($request.id): $request.id#end</title>
   <comment/>
@@ -46,8 +46,12 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
-$xwiki.jsfx.use('uicomponents/pedigree/pedigreeApp.js', true)##
-
+$xwiki.jsfx.use('uicomponents/pedigree/requireConfigs/runtimeConfig.js', true)##
+#if ($request.getParameter('minify') == 'false')
+  $xwiki.jsfx.use('uicomponents/pedigree/pedigreeApp.js', true)##
+#else
+  $xwiki.jsfx.use('uicomponents/pedigree/minified/pedigree.min.js', true)##
+#end
 {{/velocity}}
 
 {{html}}
