@@ -649,11 +649,19 @@ define([
                     'function' : 'makePlaceholder'
                 },
                 {
-                    'name' : 'comments',
+                    'name' : 'commentsClinical',
                     'label' : 'Comments',
                     'type' : 'textarea',
                     'tab': 'Clinical',
                     'rows' : 4,
+                    'function' : 'setComments'
+                },
+                {
+                    'name' : 'commentsPersonal',
+                    'label' : 'Comments',
+                    'type' : 'textarea',
+                    'tab': 'Personal',
+                    'rows' : 2,
                     'function' : 'setComments'
                 },
                 {
@@ -668,6 +676,14 @@ define([
                     'type' : 'cancerlist',
                     'tab' : 'Cancers',
                     'function' : 'setCancers'
+                },
+                {
+                    'name' : 'commentsCancers',
+                    'label' : 'Comments',
+                    'type' : 'textarea',
+                    'tab': 'Cancers',
+                    'rows' : 2,
+                    'function' : 'setComments'
                 }
             ], ["Personal", "Clinical", "Cancers"]);
         },

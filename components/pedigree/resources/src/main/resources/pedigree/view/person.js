@@ -1008,7 +1008,9 @@ define([
                 adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:         {value : this.getLifeStatus(), inactive: inactiveStates},
                 date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
-                comments:      {value : this.getComments(), inactive: false},
+                commentsClinical:{value : this.getComments(), inactive: false},
+                commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
+                commentsCansers: {value : this.getComments(), inactive: false},
                 gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
                 childlessSelect: {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
                 childlessText:   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
