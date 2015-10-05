@@ -694,11 +694,19 @@ var PedigreeEditor = Class.create({
                 'function' : 'setDisorders'
             },
             {
-                'name' : 'comments',
+                'name' : 'commentsClinical',
                 'label' : 'Comments',
                 'type' : 'textarea',
-                'rows' : 4,
                 'tab': 'Clinical',
+                'rows' : 4,
+                'function' : 'setComments'
+            },
+            {
+                'name' : 'commentsPersonal',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'tab': 'Personal',
+                'rows' : 2,
                 'function' : 'setComments'
             },
             {
@@ -736,6 +744,14 @@ var PedigreeEditor = Class.create({
                 'default' : '',
                 'tab': 'Personal',
                 'function' : 'setAdopted'
+            },
+            {
+                'name' : 'commentsCancers',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'tab': 'Cancers',
+                'rows' : 2,
+                'function' : 'setComments'
             }
         ], ["Personal", "Clinical"]);
     },
