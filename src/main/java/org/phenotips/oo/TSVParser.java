@@ -18,9 +18,9 @@
 package org.phenotips.oo;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,8 +62,8 @@ public class TSVParser
 
     private void parseDocument()
     {
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(this.sourceFileName));
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(new URL(this.sourceFileName).openConnection().getInputStream(), "UTF-8"))) {
             String line;
             while ((line = in.readLine()) != null) {
                 String pieces[] = line.split("\t");
@@ -77,9 +77,6 @@ public class TSVParser
                     pieces[IDX__GENE_ID].trim() + " " + pieces[IDX__GENE_SYMBOL].trim());
             }
             in.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

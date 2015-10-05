@@ -21,69 +21,71 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrInputDocument;
 
 public class OmimSourceParser
 {
     private static final String RECORD_MARKER = "*RECORD*";
 
-    private static final String END_MARKER = "*THEEND*";
-
     private static final String FIELD_MARKER = "*FIELD* ";
 
-    private int counter = 0;
+    private static final String FIELD_MIM_NUMBER = "NO";
 
-    private RecordData crtTerm = new RecordData();
+    private static final String FIELD_TITLE = "TI";
 
-    private Map<String, RecordData> data = new LinkedHashMap<String, RecordData>();
+    private static final String FIELD_TEXT = "TX";
 
-    private Set<String> fieldSelection;
+    private static final String END_MARKER = "*THEEND*";
 
-    public OmimSourceParser(String path, Set<String> fieldSelection)
+    private SolrInputDocument crtTerm;
+
+    private Map<String, SolrInputDocument> data = new HashMap<>();
+
+    public OmimSourceParser(String path)
     {
         try (BufferedReader in =
-            new BufferedReader(new InputStreamReader(new URL(path).openConnection().getInputStream(), "UTF-8"))) {
-            transform(in, fieldSelection);
+            new BufferedReader(new InputStreamReader(new CompressorStreamFactory().createCompressorInputStream(
+                new URL(path).openConnection().getInputStream()), "UTF-8"))) {
+            transform(in);
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (NullPointerException ex) {
             ex.printStackTrace();
+        } catch (CompressorException ex) {
+            ex.printStackTrace();
         }
     }
 
-    private Map<String, RecordData> transform(BufferedReader in, Set<String> fieldSelection) throws IOException
+    public Map<String, SolrInputDocument> getData()
     {
-        this.fieldSelection = fieldSelection;
+        return this.data;
+    }
 
+    private Map<String, SolrInputDocument> transform(BufferedReader in) throws IOException
+    {
         String line;
         StringBuilder fieldValue = new StringBuilder();
-        String fieldName = "";
-        this.counter = 0;
+        String fieldName = null;
         while ((line = in.readLine()) != null) {
             if (RECORD_MARKER.equalsIgnoreCase(line) || END_MARKER.equalsIgnoreCase(line)) {
-                if (this.counter > 0) {
-                    storeCrtTerm();
-                }
-                ++this.counter;
-                continue;
-            }
-            if (line.startsWith(FIELD_MARKER)) {
-                if (!StringUtils.isBlank(fieldValue) && !StringUtils.isBlank(fieldName)) {
+                if (this.crtTerm != null) {
                     loadField(fieldName, fieldValue.toString().trim());
+                    storeCrtTerm();
+                } else {
+                    this.crtTerm = new SolrInputDocument();
                 }
-                fieldValue.delete(0, fieldValue.length());
+            } else if (line.startsWith(FIELD_MARKER)) {
+                loadField(fieldName, fieldValue.toString().trim());
+                fieldValue.setLength(0);
                 fieldName = line.substring(FIELD_MARKER.length());
-                if (fieldSelection.size() > 0 && !fieldSelection.contains(fieldName)) {
-                    fieldName = "";
-                }
             } else {
-                if (!StringUtils.isBlank(line) && !StringUtils.isBlank(fieldName)) {
-                    fieldValue.append(line.trim()).append(" ");
-                }
+                fieldValue.append(line.trim()).append(" ");
             }
         }
 
@@ -92,28 +94,32 @@ public class OmimSourceParser
 
     private void storeCrtTerm()
     {
-        if (this.crtTerm.getId() != null) {
-            this.data.put(this.crtTerm.getId(), this.crtTerm);
-        }
-        this.crtTerm = new RecordData();
-    }
-
-    private boolean isFieldSelected(String name)
-    {
-        return this.fieldSelection.isEmpty() || this.fieldSelection.contains(name);
+        this.data.put(String.valueOf(this.crtTerm.get("id").getFirstValue()), this.crtTerm);
+        this.crtTerm = new SolrInputDocument();
     }
 
     private void loadField(String name, String value)
     {
-        if (!(isFieldSelected(name))) {
+        if (StringUtils.isAnyBlank(name, value)) {
             return;
         }
-        // System.out.println("Adding " + name + " " + value.replaceAll("\"([^\"]+)\".*", "$1"));
-        this.crtTerm.addTo(name, value.replaceAll("\"([^\"]+)\".*", "$1"));
-    }
-
-    public Map<String, RecordData> getData()
-    {
-        return this.data;
+        switch (name) {
+            case FIELD_MIM_NUMBER:
+                this.crtTerm.addField("id", value);
+                break;
+            case FIELD_TITLE:
+                String title = StringUtils.substringBefore(value, ";;").trim();
+                String[] synonyms = StringUtils.split(StringUtils.substringAfter(value, ";;"), ";;");
+                this.crtTerm.addField("name", title);
+                for (String synonym : synonyms) {
+                    this.crtTerm.addField("synonym", synonym.trim());
+                }
+                break;
+            case FIELD_TEXT:
+                this.crtTerm.addField("def", value);
+                break;
+            default:
+                return;
+        }
     }
 }

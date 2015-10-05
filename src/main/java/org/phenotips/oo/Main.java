@@ -17,77 +17,98 @@
  */
 package org.phenotips.oo;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Map;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.solr.common.SolrInputDocument;
 
 public class Main
 {
+    private static final String ANNOTATIONS_BASE_URL =
+        "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
+
+    private static final String POSITIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
+
+    private static final String NEGATIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "negative_phenotype_annotation.tab";
+
+    private static final String GENEREVIEWS_MAPPING_URL =
+        "ftp://ftp.ncbi.nih.gov/pub/GeneReviews/NBKid_shortname_OMIM.txt";
+
+    private static final String ENCODING = "UTF-8";
+
     /**
      * @param args
      */
     public static void main(String[] args)
     {
-        OOSaxParser omimMappingDataSource = new OOSaxParser(args[0]);
-        OOSaxParser prelevanceDataSource = new OOSaxParser(args[1]);
+        OmimSourceParser omimDataSource = new OmimSourceParser("ftp://ftp.omim.org/OMIM/omim.txt.Z");
+        TSVParser geneMappingDataSource = new TSVParser("ftp://ftp.omim.org/OMIM/mim2gene.txt");
 
-        OmimSourceParser omimDataSource = new OmimSourceParser(args[2], new HashSet<String>());
-        TSVParser geneMappingDataSource = new TSVParser(args[3]);
-        Map<String, RecordData> omimData = omimDataSource.getData();
+        Map<String, SolrInputDocument> omimData = omimDataSource.getData();
         Map<String, String> geneData = geneMappingDataSource.getData();
         for (String key : geneData.keySet()) {
-            RecordData d = omimData.get(key);
+            SolrInputDocument d = omimData.get(key);
             if (d != null) {
-                d.addTo("GENE", geneData.get(key));
+                d.addField("GENE", geneData.get(key));
             }
         }
+        loadSymptoms(omimData);
+        loadGeneReviews(omimData);
 
-        System.out.println(omimData.size() + " " + geneData.size());
-
-        Map<String, Double> omimPrelevanceData = new HashMap<String, Double>();
-
-        for (String k : omimMappingDataSource.keySet()) {
-            String omimID = omimMappingDataSource.get(k);
-            String prelevance = prelevanceDataSource.get(k);
-            if (omimID != null && prelevance != null) {
-                omimPrelevanceData.put(omimID, interpretPrelevance(prelevance));
-            }
+        for (SolrInputDocument doc : omimData.values()) {
+            System.out.println(doc.toString());
         }
-        new DisorderDataBuilder(omimDataSource.getData(), omimPrelevanceData, args[4], args[5]).generate(new File(
-            args[6]));
     }
 
-    private static double interpretPrelevance(String text)
+    private static void loadSymptoms(Map<String, SolrInputDocument> data)
     {
-        double result = 0.00005; // just average
-        String t = text.trim();
-        // as ratio, e.g. "1/1000"
-        t = t.replaceAll("\\s*+of\\s*+", "/");
-        t = t.replaceAll("\\s++", "");
-        if (t.indexOf('/') > 0) {
-            String pieces[] = t.split("/");
-            if (pieces[0].indexOf('-') > 0) {
-                String iPieces[] = pieces[0].split("\\s*-\\s*");
-                try {
-                    result = (Double.parseDouble(iPieces[0]) + Double.parseDouble(iPieces[1])) / 2.0;
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                }
-            } else {
-                try {
-                    result = Double.parseDouble(pieces[0]);
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(new URL(POSITIVE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
+                if ("OMIM".equals(row.get(0))) {
+                    SolrInputDocument term = data.get(row.get(1));
+                    if (term != null) {
+                        term.addField("actual_symptom", row.get(4));
+                    }
                 }
             }
-            try {
-                result = (result / Double.parseDouble(pieces[1]));
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        result = 6.0 + (Math.round(Math.log10(result) * 5.0 / 3.0) / 2.0);
-        return result;
+
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(new URL(NEGATIVE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
+                if ("OMIM".equals(row.get(0))) {
+                    SolrInputDocument term = data.get(row.get(1));
+                    if (term != null) {
+                        term.addField("actual_not_symptom", row.get(4));
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static void loadGeneReviews(Map<String, SolrInputDocument> data)
+    {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(new URL(GENEREVIEWS_MAPPING_URL).openConnection().getInputStream(), ENCODING))) {
+            for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
+                SolrInputDocument term = data.get(row.get(2));
+                if (term != null) {
+                    term.addField("gene_reviews_link", row.get(0));
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
 }
