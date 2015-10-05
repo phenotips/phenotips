@@ -41,25 +41,12 @@
           </execution>
         </executions>
         <configuration>
-            <!-- path to optimizer json config file(s) -->
-            <configFile>
-              src/main/resources/pedigree/requireConfigs/build.js
-            </configFile>
-            <!-- optional parameters to optimizer executable -->
-            <optimizerParameters>
-            </optimizerParameters>
-            <!--
-            Whether or not to process configFile with maven filters.
-            If you use this option, some options in your configFile
-            must resolve to absolute paths (see below)
-            -->
-            <filterConfig>
-                true
-            </filterConfig>
-            <!-- Skip requirejs optimization if true -->
-            <skip>
-                false
-            </skip>
+          <!-- Path to optimizer configuration file -->
+          <configFile>src/main/resources/pedigree/requireConfigs/build.js</configFile>
+          <!-- Expand parameters in the configuration file -->
+          <filterConfig>true</filterConfig>
+          <!-- Skip requirejs optimization if true -->
+          <skip>false</skip>
         </configuration>
       </plugin>
     </plugins>
