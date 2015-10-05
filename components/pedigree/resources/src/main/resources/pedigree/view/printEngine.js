@@ -120,11 +120,13 @@ var PrintEngine = Class.create({
             var rowHeight = emulateFullPage ? pageHeight : Math.min(pageHeight, bbox.height - pageStartY);
             var pagesRow = [];
             var pageStartX = 0;
-            if (options.includePatientInfo) {
+            if (pageNumY == 0 && options.includePatientInfo) {
                 if (emulateFullPage) {
                     svg.move(0, -patientInfoHeight);
                 } else {
-                    rowHeight -= patientInfoHeight;
+                    if (rowHeight == pageHeight) {
+                        rowHeight -= patientInfoHeight;
+                    }
                 }
             }
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
