@@ -1,8 +1,11 @@
 package org.phenotips.data.internal.controller;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -12,12 +15,13 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import javax.inject.Provider;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -40,7 +44,7 @@ public class ObstetricHistoryControllerTest {
     private static final String LIVE_BIRTHS = "births";
 
     @Rule
-    MockitoComponentMockingRule<PatientDataController> mocker =
+    public MockitoComponentMockingRule<PatientDataController> mocker =
             new MockitoComponentMockingRule<PatientDataController>(ObstetricHistoryController.class);
 
     private DocumentAccessBridge documentAccessBridge;
@@ -63,6 +67,12 @@ public class ObstetricHistoryControllerTest {
 
     private Provider<XWikiContext> provider;
 
+    private XWikiContext xWikiContext;
+
+    @Mock
+    private XWiki xwiki;
+
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
@@ -70,22 +80,27 @@ public class ObstetricHistoryControllerTest {
         this.obstetricHistoryController =
                 (ObstetricHistoryController) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
-        this.provider = this.mocker.getInstance(Provider.class);
+
+        this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        this.xWikiContext = provider.get();
+        doReturn(this.xwiki).when(this.xWikiContext).getWiki();
+
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         doReturn(this.patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
-        //doReturn(this.data).when(this.doc).getXObject(this.obstetricHistoryController.getXClassReference());
+        doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
 
     }
 
     @Test
     public void loadHandlesEmptyPatientTest(){
 
-        doReturn(null).when(this.doc).getXObject(this.obstetricHistoryController.getXClassReference());
+        doReturn(null).when(this.doc).getXObject(any(EntityReference.class));
 
         PatientData<Integer> testPatientData= this.obstetricHistoryController.load(this.patient);
 
+        Assert.assertNull(testPatientData);
         verify(this.logger).debug("No data for patient [{}]", this.patientDocument);
 
     }
