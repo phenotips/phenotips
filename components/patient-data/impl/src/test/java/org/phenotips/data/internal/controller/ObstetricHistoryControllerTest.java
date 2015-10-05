@@ -89,7 +89,7 @@ public class ObstetricHistoryControllerTest {
 
         doReturn(this.patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
-        doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
+        //doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
 
     }
 
@@ -102,7 +102,11 @@ public class ObstetricHistoryControllerTest {
 
         Assert.assertNull(testPatientData);
         verify(this.logger).debug("No data for patient [{}]", this.patientDocument);
-
     }
+
+    @Test
+    public void load
+
+
 
 }
