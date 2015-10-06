@@ -72,7 +72,8 @@ public class OmimSourceParser
                 new URL(OMIM_SOURCE_URL).openConnection().getInputStream()), "UTF-8"))) {
             transform(in);
             loadGenes();
-            loadSymptoms();
+            loadSymptoms(true);
+            loadSymptoms(false);
             loadGeneReviews();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -144,29 +145,16 @@ public class OmimSourceParser
         }
     }
 
-    private void loadSymptoms()
+    private void loadSymptoms(boolean positive)
     {
         try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(new URL(POSITIVE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+            new InputStreamReader(new URL(positive ? POSITIVE_ANNOTATIONS_URL : NEGATIVE_ANNOTATIONS_URL)
+                .openConnection().getInputStream(), ENCODING))) {
             for (CSVRecord row : CSVFormat.TDF.parse(in)) {
                 if ("OMIM".equals(row.get(0))) {
                     SolrInputDocument term = this.data.get(row.get(1));
                     if (term != null) {
-                        term.addField("actual_symptom", row.get(4));
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(new URL(NEGATIVE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
-            for (CSVRecord row : CSVFormat.TDF.parse(in)) {
-                if ("OMIM".equals(row.get(0))) {
-                    SolrInputDocument term = this.data.get(row.get(1));
-                    if (term != null) {
-                        term.addField("actual_not_symptom", row.get(4));
+                        term.addField(positive ? "actual_symptom" : "actual_not_symptom", row.get(4));
                     }
                 }
             }
