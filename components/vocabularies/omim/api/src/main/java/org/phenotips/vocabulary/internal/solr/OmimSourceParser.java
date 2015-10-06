@@ -176,13 +176,13 @@ public class OmimSourceParser
         }
         switch (name) {
             case FIELD_MIM_NUMBER:
-                this.crtTerm.addField(ID_FIELD, value);
+                this.crtTerm.setField(ID_FIELD, value);
                 break;
             case FIELD_TITLE:
                 String title = StringUtils.substringBefore(value, TITLE_SEPARATOR).trim();
                 String[] synonyms =
                     StringUtils.split(StringUtils.substringAfter(value, TITLE_SEPARATOR), TITLE_SEPARATOR);
-                this.crtTerm.addField(NAME_FIELD, title);
+                this.crtTerm.setField(NAME_FIELD, title);
                 for (String synonym : synonyms) {
                     this.crtTerm.addField(SYNONYM_FIELD, synonym.trim());
                 }
@@ -270,7 +270,7 @@ public class OmimSourceParser
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
                 SolrInputDocument term = this.data.get(row.get(2));
                 if (term != null) {
-                    term.addField("gene_reviews_link", "https://www.ncbi.nlm.nih.gov/books/" + row.get(0));
+                    term.setField("gene_reviews_link", "https://www.ncbi.nlm.nih.gov/books/" + row.get(0));
                 }
             }
         } catch (IOException ex) {
