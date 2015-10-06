@@ -37,9 +37,13 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
@@ -156,6 +160,26 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
             params.add(CommonParams.SORT, sort);
         }
         return params;
+    }
+
+    @Override
+    public String getVersion()
+    {
+        SolrQuery query = new SolrQuery();
+        query.setQuery("version:*");
+        query.set(CommonParams.ROWS, "1");
+        try {
+            QueryResponse response = this.externalServicesAccess.getSolrConnection().query(query);
+            SolrDocumentList termList = response.getResults();
+            if (!termList.isEmpty()) {
+                return termList.get(0).getFieldValue("version").toString();
+            }
+        } catch (SolrServerException | SolrException ex) {
+            this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.error("IOException while getting vocabulary version", ex);
+        }
+        return null;
     }
 
     @Override

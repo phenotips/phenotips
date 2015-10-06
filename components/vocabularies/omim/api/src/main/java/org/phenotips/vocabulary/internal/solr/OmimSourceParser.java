@@ -36,6 +36,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +125,7 @@ public class OmimSourceParser
             loadSymptoms(true);
             loadSymptoms(false);
             loadGeneReviews();
+            loadVersion();
         } catch (NullPointerException | CompressorException | IOException ex) {
             this.logger.error("Failed to prepare the OMIM index: {}", ex.getMessage(), ex);
         }
@@ -281,5 +284,13 @@ public class OmimSourceParser
         } catch (IOException ex) {
             this.logger.error("Failed to load OMIM-GeneReviews links: {}", ex.getMessage(), ex);
         }
+    }
+
+    private void loadVersion()
+    {
+        SolrInputDocument metaTerm = new SolrInputDocument();
+        metaTerm.addField(ID_FIELD, "HEADER_INFO");
+        metaTerm.addField("version", ISODateTimeFormat.dateTime().withZoneUTC().print(new DateTime()));
+        this.data.put("VERSION", metaTerm);
     }
 }

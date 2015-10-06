@@ -115,6 +115,7 @@
   </types>
 
   <fields>
+    <field name="version" type="string" indexed="true" stored="true" omitNorms="true"/>
     <field name="id" type="string" indexed="true" stored="true" required="true" />
     <field name="name" type="text_general" indexed="true" stored="true"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
