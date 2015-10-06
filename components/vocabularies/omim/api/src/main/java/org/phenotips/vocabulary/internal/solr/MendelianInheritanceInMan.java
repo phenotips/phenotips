@@ -23,6 +23,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import org.xwiki.component.annotation.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -156,14 +157,14 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     public synchronized int reindex(String sourceURL)
     {
         try {
-            Map<String, SolrInputDocument> data = new OmimSourceParser().getData();
+            Collection<SolrInputDocument> data = new OmimSourceParser().getData();
             if (data.isEmpty()) {
                 return 2;
             }
             if (clear() == 1) {
                 return 1;
             }
-            this.externalServicesAccess.getSolrConnection().add(data.values());
+            this.externalServicesAccess.getSolrConnection().add(data);
             this.externalServicesAccess.getSolrConnection().commit();
             this.externalServicesAccess.getTermCache().removeAll();
         } catch (SolrServerException | IOException ex) {

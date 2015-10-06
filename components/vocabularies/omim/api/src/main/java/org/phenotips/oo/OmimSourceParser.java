@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,11 +109,11 @@ public class OmimSourceParser
     /**
      * Return the parsed vocabulary data.
      *
-     * @return the vocabulary data, may be an empty map if parsing the source failed
+     * @return the vocabulary data, may be an empty collection if parsing the source failed
      */
-    public Map<String, SolrInputDocument> getData()
+    public Collection<SolrInputDocument> getData()
     {
-        return this.data;
+        return this.data.values();
     }
 
     private Map<String, SolrInputDocument> transform(BufferedReader in) throws IOException
