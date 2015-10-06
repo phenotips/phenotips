@@ -163,7 +163,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     public synchronized int reindex(String sourceURL)
     {
         try {
-            Collection<SolrInputDocument> data = new OmimSourceParser(this.hpo).getData();
+            Collection<SolrInputDocument> data = new OmimSourceParser(this.hpo, sourceURL).getData();
             if (data.isEmpty()) {
                 return 2;
             }

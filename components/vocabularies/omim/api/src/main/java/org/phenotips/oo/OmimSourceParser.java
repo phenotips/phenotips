@@ -102,10 +102,22 @@ public class OmimSourceParser
      */
     public OmimSourceParser(Vocabulary hpo)
     {
+        this(hpo, OMIM_SOURCE_URL);
+    }
+
+    /**
+     * Constructor which prepares the vocabulary data, parsing OMIM from the specified source file.
+     *
+     * @param hpo the HPO vocabulary, needed for computing the ancestors for the MIM-Phenotype mapping
+     * @param sourceURL the location from which to fetch the OMIM source, as a zipped file; may be a ftp, http, or local
+     *            file URL
+     */
+    public OmimSourceParser(Vocabulary hpo, String sourceURL)
+    {
         this.hpo = hpo;
         try (BufferedReader in =
             new BufferedReader(new InputStreamReader(new CompressorStreamFactory().createCompressorInputStream(
-                new URL(OMIM_SOURCE_URL).openConnection().getInputStream()), ENCODING))) {
+                new URL(sourceURL).openConnection().getInputStream()), ENCODING))) {
             transform(in);
             loadGenes();
             loadSymptoms(true);
