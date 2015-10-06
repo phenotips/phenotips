@@ -33,8 +33,16 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for parsing the special OMIM source, while also gathering annotations from other sources: OMIM-Gene symbols
+ * mapping from OMIM, OMIM-Phenotype mapping from HPO, OMIM-GeneReviews mapping from NCBI.
+ *
+ * @version $Id$
+ * @since 1.2RC2
+ */
 public class OmimSourceParser
 {
+    /** The location for the official OMIM source. */
     public static final String OMIM_SOURCE_URL = "ftp://ftp.omim.org/OMIM/omim.txt.Z";
 
     private static final String RECORD_MARKER = "*RECORD*";
@@ -79,6 +87,9 @@ public class OmimSourceParser
 
     private Logger logger = LoggerFactory.getLogger(OmimSourceParser.class);
 
+    /**
+     * Constructor which prepares the vocabulary data, parsing OMIM from the official site.
+     */
     public OmimSourceParser()
     {
         try (BufferedReader in =
@@ -94,6 +105,11 @@ public class OmimSourceParser
         }
     }
 
+    /**
+     * Return the parsed vocabulary data.
+     *
+     * @return the vocabulary data, may be an empty map if parsing the source failed
+     */
     public Map<String, SolrInputDocument> getData()
     {
         return this.data;
