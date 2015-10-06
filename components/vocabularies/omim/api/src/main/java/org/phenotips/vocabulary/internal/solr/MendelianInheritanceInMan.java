@@ -17,7 +17,6 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
-import org.phenotips.oo.OmimSourceParser;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
