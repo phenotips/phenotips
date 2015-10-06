@@ -51,16 +51,9 @@ public class Main
     public static void main(String[] args)
     {
         OmimSourceParser omimDataSource = new OmimSourceParser(OMIM_SOURCE_URL);
-        TSVParser geneMappingDataSource = new TSVParser(GENE_ANNOTATIONS_URL);
 
         Map<String, SolrInputDocument> omimData = omimDataSource.getData();
-        Map<String, String> geneData = geneMappingDataSource.getData();
-        for (String key : geneData.keySet()) {
-            SolrInputDocument d = omimData.get(key);
-            if (d != null) {
-                d.addField("GENE", geneData.get(key));
-            }
-        }
+        loadGenes(omimData);
         loadSymptoms(omimData);
         loadGeneReviews(omimData);
 
@@ -92,6 +85,31 @@ public class Main
                     SolrInputDocument term = data.get(row.get(1));
                     if (term != null) {
                         term.addField("actual_not_symptom", row.get(4));
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static void loadGenes(Map<String, SolrInputDocument> data)
+    {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(new URL(GENE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
+            for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
+                if (!row.get("Type").contains("gene")) {
+                    continue;
+                }
+                SolrInputDocument term = data.get(row.get(2));
+                if (term != null) {
+                    String gs = row.get("Approved Gene Symbol");
+                    if (!"-".equals(gs)) {
+                        term.addField("GENE", gs);
+                    }
+                    String eid = row.get("Ensembl Gene ID");
+                    if (!"-".equals(eid)) {
+                        term.addField("GENE", eid);
                     }
                 }
             }
