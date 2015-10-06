@@ -123,7 +123,7 @@ public class OmimSourceParser
             loadSymptoms(true);
             loadSymptoms(false);
             loadGeneReviews();
-        } catch (CompressorException | IOException ex) {
+        } catch (NullPointerException | CompressorException | IOException ex) {
             this.logger.error("Failed to prepare the OMIM index: {}", ex.getMessage(), ex);
         }
     }
@@ -206,28 +206,33 @@ public class OmimSourceParser
             for (CSVRecord row : CSVFormat.TDF.parse(in)) {
                 if ("OMIM".equals(row.get(0))) {
                     omimId = row.get(1);
-                    if (previousOmimId != null && !previousOmimId.equals(omimId)) {
-                        addAncestors(previousOmimId, ancestors, positive);
-                    }
+                    addAncestors(previousOmimId, omimId, ancestors, positive);
                     previousOmimId = omimId;
                     SolrInputDocument term = this.data.get(omimId);
                     if (term != null) {
                         term.addField(positive ? "actual_symptom" : "actual_not_symptom", row.get(4));
                     }
-                    for (VocabularyTerm vterm : this.hpo.getTerm(row.get(4)).getAncestorsAndSelf()) {
-                        ancestors.add(vterm.getId());
+                    VocabularyTerm vterm = this.hpo.getTerm(row.get(4));
+                    if (vterm != null) {
+                        for (VocabularyTerm ancestor : vterm.getAncestorsAndSelf()) {
+                            ancestors.add(ancestor.getId());
+                        }
                     }
                 }
             }
+            addAncestors(omimId, null, ancestors, positive);
         } catch (IOException ex) {
             this.logger.error("Failed to load OMIM-HPO links: {}", ex.getMessage(), ex);
         }
     }
 
-    private void addAncestors(String omimId, Set<String> ancestors, boolean positive)
+    private void addAncestors(String previousOmimId, String newOmimId, Set<String> ancestors, boolean positive)
     {
+        if (previousOmimId == null || previousOmimId.equals(newOmimId)) {
+            return;
+        }
         final String symptomField = "symptom";
-        SolrInputDocument term = this.data.get(omimId);
+        SolrInputDocument term = this.data.get(previousOmimId);
         if (!positive) {
             ancestors.removeAll(term.getFieldValues(symptomField));
             term.addField("not_symptom", ancestors);
