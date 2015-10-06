@@ -103,7 +103,7 @@ public class Main
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
                 SolrInputDocument term = data.get(row.get(2));
                 if (term != null) {
-                    term.addField("gene_reviews_link", row.get(0));
+                    term.addField("gene_reviews_link", "https://www.ncbi.nlm.nih.gov/books/" + row.get(0));
                 }
             }
         } catch (IOException ex) {
