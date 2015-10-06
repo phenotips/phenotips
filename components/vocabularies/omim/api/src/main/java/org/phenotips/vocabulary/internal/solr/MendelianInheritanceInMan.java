@@ -17,10 +17,12 @@
  */
 package org.phenotips.vocabulary.internal.solr;
 
+import org.phenotips.oo.OmimSourceParser;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,8 +35,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
@@ -102,8 +106,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     @Override
     public String getDefaultSourceLocation()
     {
-        // FIX ME. For now returns just an empty string.
-        return "";
+        return OmimSourceParser.OMIM_SOURCE_URL;
     }
 
     private Map<String, String> getStaticSolrParams()
@@ -147,5 +150,44 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
             params.add(CommonParams.SORT, sort);
         }
         return params;
+    }
+
+    @Override
+    public synchronized int reindex(String sourceURL)
+    {
+        try {
+            Map<String, SolrInputDocument> data = new OmimSourceParser().getData();
+            if (data.isEmpty()) {
+                return 2;
+            }
+            if (clear() == 1) {
+                return 1;
+            }
+            this.externalServicesAccess.getSolrConnection().add(data.values());
+            this.externalServicesAccess.getSolrConnection().commit();
+            this.externalServicesAccess.getTermCache().removeAll();
+        } catch (SolrServerException | IOException ex) {
+            this.logger.error("Failed to reindex OMIM: {}", ex.getMessage(), ex);
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Delete all the data in the Solr index.
+     *
+     * @return {@code 0} if the command was successful, {@code 1} otherwise
+     */
+    private int clear()
+    {
+        try {
+            this.externalServicesAccess.getSolrConnection().deleteByQuery("*:*");
+            return 0;
+        } catch (SolrServerException ex) {
+            this.logger.error("SolrServerException while clearing the Solr index", ex);
+        } catch (IOException ex) {
+            this.logger.error("IOException while clearing the Solr index", ex);
+        }
+        return 1;
     }
 }

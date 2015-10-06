@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class OmimSourceParser
 {
-    private static final String OMIM_SOURCE_URL = "ftp://ftp.omim.org/OMIM/omim.txt.Z";
+    public static final String OMIM_SOURCE_URL = "ftp://ftp.omim.org/OMIM/omim.txt.Z";
 
     private static final String RECORD_MARKER = "*RECORD*";
 
