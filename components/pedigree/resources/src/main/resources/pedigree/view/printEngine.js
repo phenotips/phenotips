@@ -8,7 +8,7 @@ var PrintEngine = Class.create({
     initialize: function() {
         // TODO: load default paper settings from pedigree preferences in admin section
         this.printPageWidth  = 1055;
-        this.printPageHeight = 758;
+        this.printPageHeight = 756;
         this.printPageWidthPortrait  = 756;
         this.printPageHeightPortrait = 980;
         this.xOverlap = 18;
@@ -18,7 +18,9 @@ var PrintEngine = Class.create({
     /**
      * @param {emulateFullPage} When true, makes svg include extra blank space up to the pageWidth/pageHeight size
      */
-    _generatePages: function(scale, moveHorizontallySize, pageWidth, pageHeight, options, emulateFullPage) {
+    _generatePages: function(scale, moveHorizontallySize,
+                             pageWidth, pageHeight,
+                             options, emulateFullPage, scaleComparedToPrint) {
         var totalLegendHeight = 0;
         var patientInfoHeight = 0;
         var legendHTML      = "";
@@ -70,17 +72,18 @@ var PrintEngine = Class.create({
         if (options.includePatientInfo) {
             patientInfoHeight = 35;
             if (options.anonimize) {
-                patientInfoHTML = "Patient " + XWiki.currentDocument.page + ". ";
+                patientInfoHTML = "Patient " + XWiki.currentDocument.page;
             } else {
                 // TODO: update to correct proband/family when fmaly studies are merged in
                 var proband = editor.getNode(0);
-                var probandName = proband.getFirstName() + " " + proband.getLastName();
-                patientInfoHTML = probandName + ", " + XWiki.currentDocument.page + ". ";
+                var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
+                var probandName = proband.getFirstName() + space + proband.getLastName();
+                patientInfoHTML = probandName + ", " + XWiki.currentDocument.page;
             }
             var userFirstName = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('first_name').value}";
             var userLastName  = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('last_name').value}";
             var date = new Date();
-            patientInfoHTML += "Printed";
+            patientInfoHTML += ". Printed";
             if (userFirstName || userLastName) {
                 patientInfoHTML += " by " + userFirstName + " " + userLastName;
             }
@@ -101,8 +104,8 @@ var PrintEngine = Class.create({
         var xOverlap = options.addOverlaps ? Math.floor(this.xOverlap * scale) : 0;
         var yOverlap = options.addOverlaps ? Math.floor(this.yOverlap * scale) : 0;
 
-        var pagesWide = (bbox.width  < pageWidth)  ? 1 : Math.ceil(bbox.width  / pageWidth);
-        var pagesTall = (bbox.height < pageHeight) ? 1 : Math.ceil(bbox.height / pageHeight);
+        var pagesWide = (bbox.width  < pageWidth) ? 1 : Math.ceil(bbox.width  / pageWidth);
+        var pagesTall = (bbox.height + patientInfoHeight*scaleComparedToPrint < pageHeight) ? 1 : Math.ceil((bbox.height + patientInfoHeight*scaleComparedToPrint) / pageHeight);
         if (pagesWide > 1 && options.addOverlaps) {
             var realWidthWithOverlaps = bbox.width + (pagesWide-1)*xOverlap;
             pagesWide = Math.ceil(realWidthWithOverlaps / pageWidth);
@@ -121,12 +124,8 @@ var PrintEngine = Class.create({
             var pagesRow = [];
             var pageStartX = 0;
             if (pageNumY == 0 && options.includePatientInfo) {
-                if (emulateFullPage) {
-                    svg.move(0, -patientInfoHeight);
-                } else {
-                    if (rowHeight == pageHeight) {
-                        rowHeight -= patientInfoHeight;
-                    }
+                if (rowHeight == pageHeight) {
+                    rowHeight -= patientInfoHeight*scaleComparedToPrint;
                 }
             }
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
@@ -170,7 +169,8 @@ var PrintEngine = Class.create({
                 printedWidth,
                 printedHeight,
                 options,
-                false);
+                false,
+                1);
 
         var printWidth = 0;
         for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
@@ -187,12 +187,19 @@ var PrintEngine = Class.create({
                                         scaleComparedToPrint * printedWidth,
                                         scaleComparedToPrint * printedHeight,
                                         options,
-                                        true);
+                                        true,
+                                        scaleComparedToPrint);
         var html = "<div class='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
                 var page = pages.pages[pageNumY][pageNumX];
-                html += "<div class='previewPage' style='border: 1px; border-style: dotted; float: left;' id='pedigree-page-x" + pageNumX + "-y" + pageNumY + "'>" + page.svg + "</div>";
+                html += "<div class='previewPage' style='border: 1px; border-style: dotted; float: left;' id='pedigree-page-x" + pageNumX + "-y" + pageNumY + "'>";
+                if(pageNumY == 0 && options.includePatientInfo) {
+                    var content = (pageNumX == 0) ? pages.patientInfoHTML : "";
+                    html += "<div style='height: " + pages.patientInfoHeight*scaleComparedToPrint  + "px; font-size: " + (11*scaleComparedToPrint) + "pt; text-align: left'>" + content + "</div>";
+                }
+                html += page.svg;
+                html += "</div>";
             }
             //html += "<br>";
         }
@@ -206,7 +213,8 @@ var PrintEngine = Class.create({
                                         landscape ? this.printPageWidth : this.printPageWidthPortrait,
                                         landscape ? this.printPageHeight : this.printPageHeightPortrait,
                                         options,
-                                        false);
+                                        false,
+                                        1);
         var w=window.open();
         //w.document.write("<link rel='stylesheet' type='text/css' href='print.css' />");
         if (landscape) {
