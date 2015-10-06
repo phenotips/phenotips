@@ -32,6 +32,10 @@ public class Main
     private static final String ANNOTATIONS_BASE_URL =
         "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
 
+    private static final String OMIM_SOURCE_URL = "ftp://ftp.omim.org/OMIM/omim.txt.Z";
+
+    private static final String GENE_ANNOTATIONS_URL = "ftp://ftp.omim.org/OMIM/mim2gene.txt";
+
     private static final String POSITIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
 
     private static final String NEGATIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "negative_phenotype_annotation.tab";
@@ -46,8 +50,8 @@ public class Main
      */
     public static void main(String[] args)
     {
-        OmimSourceParser omimDataSource = new OmimSourceParser("ftp://ftp.omim.org/OMIM/omim.txt.Z");
-        TSVParser geneMappingDataSource = new TSVParser("ftp://ftp.omim.org/OMIM/mim2gene.txt");
+        OmimSourceParser omimDataSource = new OmimSourceParser(OMIM_SOURCE_URL);
+        TSVParser geneMappingDataSource = new TSVParser(GENE_ANNOTATIONS_URL);
 
         Map<String, SolrInputDocument> omimData = omimDataSource.getData();
         Map<String, String> geneData = geneMappingDataSource.getData();
@@ -109,6 +113,5 @@ public class Main
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 }
