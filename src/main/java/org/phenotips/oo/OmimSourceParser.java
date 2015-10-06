@@ -30,6 +30,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OmimSourceParser
 {
@@ -47,6 +49,8 @@ public class OmimSourceParser
 
     private static final String END_MARKER = "*THEEND*";
 
+    private static final String TITLE_SEPARATOR = ";;";
+
     private static final String ANNOTATIONS_BASE_URL =
         "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
 
@@ -61,26 +65,32 @@ public class OmimSourceParser
 
     private static final String ENCODING = "UTF-8";
 
+    private static final String ID_FIELD = "id";
+
+    private static final String NAME_FIELD = "name";
+
+    private static final String SYNONYM_FIELD = "synonym";
+
+    private static final String GENE_FIELD = "GENE";
+
     private SolrInputDocument crtTerm;
 
     private Map<String, SolrInputDocument> data = new HashMap<>();
+
+    private Logger logger = LoggerFactory.getLogger(OmimSourceParser.class);
 
     public OmimSourceParser()
     {
         try (BufferedReader in =
             new BufferedReader(new InputStreamReader(new CompressorStreamFactory().createCompressorInputStream(
-                new URL(OMIM_SOURCE_URL).openConnection().getInputStream()), "UTF-8"))) {
+                new URL(OMIM_SOURCE_URL).openConnection().getInputStream()), ENCODING))) {
             transform(in);
             loadGenes();
             loadSymptoms(true);
             loadSymptoms(false);
             loadGeneReviews();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } catch (CompressorException ex) {
-            ex.printStackTrace();
+        } catch (CompressorException | IOException ex) {
+            this.logger.error("Failed to prepare the OMIM index: {}", ex.getMessage(), ex);
         }
     }
 
@@ -116,7 +126,7 @@ public class OmimSourceParser
 
     private void storeCrtTerm()
     {
-        this.data.put(String.valueOf(this.crtTerm.get("id").getFirstValue()), this.crtTerm);
+        this.data.put(String.valueOf(this.crtTerm.get(ID_FIELD).getFirstValue()), this.crtTerm);
         this.crtTerm = new SolrInputDocument();
     }
 
@@ -127,14 +137,15 @@ public class OmimSourceParser
         }
         switch (name) {
             case FIELD_MIM_NUMBER:
-                this.crtTerm.addField("id", value);
+                this.crtTerm.addField(ID_FIELD, value);
                 break;
             case FIELD_TITLE:
-                String title = StringUtils.substringBefore(value, ";;").trim();
-                String[] synonyms = StringUtils.split(StringUtils.substringAfter(value, ";;"), ";;");
-                this.crtTerm.addField("name", title);
+                String title = StringUtils.substringBefore(value, TITLE_SEPARATOR).trim();
+                String[] synonyms =
+                    StringUtils.split(StringUtils.substringAfter(value, TITLE_SEPARATOR), TITLE_SEPARATOR);
+                this.crtTerm.addField(NAME_FIELD, title);
                 for (String synonym : synonyms) {
-                    this.crtTerm.addField("synonym", synonym.trim());
+                    this.crtTerm.addField(SYNONYM_FIELD, synonym.trim());
                 }
                 break;
             case FIELD_TEXT:
@@ -159,12 +170,13 @@ public class OmimSourceParser
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.error("Failed to load OMIM-HPO links: {}", ex.getMessage(), ex);
         }
     }
 
     private void loadGenes()
     {
+        final String missing = "-";
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(new URL(GENE_ANNOTATIONS_URL).openConnection().getInputStream(), ENCODING))) {
             for (CSVRecord row : CSVFormat.TDF.withHeader().parse(in)) {
@@ -174,17 +186,17 @@ public class OmimSourceParser
                 SolrInputDocument term = this.data.get(row.get(2));
                 if (term != null) {
                     String gs = row.get("Approved Gene Symbol");
-                    if (!"-".equals(gs)) {
-                        term.addField("GENE", gs);
+                    if (!missing.equals(gs)) {
+                        term.addField(GENE_FIELD, gs);
                     }
                     String eid = row.get("Ensembl Gene ID");
-                    if (!"-".equals(eid)) {
-                        term.addField("GENE", eid);
+                    if (!missing.equals(eid)) {
+                        term.addField(GENE_FIELD, eid);
                     }
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.error("Failed to load OMIM-Gene links: {}", ex.getMessage(), ex);
         }
     }
 
@@ -199,7 +211,7 @@ public class OmimSourceParser
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.error("Failed to load OMIM-GeneReviews links: {}", ex.getMessage(), ex);
         }
     }
 }
