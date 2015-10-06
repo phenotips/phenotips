@@ -18,6 +18,7 @@
 package org.phenotips.vocabulary.internal.solr;
 
 import org.phenotips.oo.OmimSourceParser;
+import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -59,6 +61,10 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
 {
     /** The standard name of this ontology, used as a term prefix. */
     public static final String STANDARD_NAME = "MIM";
+
+    @Inject
+    @Named("hpo")
+    private Vocabulary hpo;
 
     @Override
     protected String getName()
@@ -157,7 +163,7 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     public synchronized int reindex(String sourceURL)
     {
         try {
-            Collection<SolrInputDocument> data = new OmimSourceParser().getData();
+            Collection<SolrInputDocument> data = new OmimSourceParser(this.hpo).getData();
             if (data.isEmpty()) {
                 return 2;
             }

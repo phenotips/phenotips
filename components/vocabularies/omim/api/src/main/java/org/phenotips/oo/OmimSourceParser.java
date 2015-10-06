@@ -17,13 +17,18 @@
  */
 package org.phenotips.oo;
 
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -88,11 +93,16 @@ public class OmimSourceParser
 
     private Logger logger = LoggerFactory.getLogger(OmimSourceParser.class);
 
+    private Vocabulary hpo;
+
     /**
      * Constructor which prepares the vocabulary data, parsing OMIM from the official site.
+     *
+     * @param hpo the HPO vocabulary, needed for computing the ancestors for the MIM-Phenotype mapping
      */
-    public OmimSourceParser()
+    public OmimSourceParser(Vocabulary hpo)
     {
+        this.hpo = hpo;
         try (BufferedReader in =
             new BufferedReader(new InputStreamReader(new CompressorStreamFactory().createCompressorInputStream(
                 new URL(OMIM_SOURCE_URL).openConnection().getInputStream()), ENCODING))) {
@@ -175,20 +185,44 @@ public class OmimSourceParser
 
     private void loadSymptoms(boolean positive)
     {
+        String omimId = "";
+        String previousOmimId = null;
+        Set<String> ancestors = new HashSet<>();
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(new URL(positive ? POSITIVE_ANNOTATIONS_URL : NEGATIVE_ANNOTATIONS_URL)
                 .openConnection().getInputStream(), ENCODING))) {
             for (CSVRecord row : CSVFormat.TDF.parse(in)) {
                 if ("OMIM".equals(row.get(0))) {
-                    SolrInputDocument term = this.data.get(row.get(1));
+                    omimId = row.get(1);
+                    if (previousOmimId != null && !previousOmimId.equals(omimId)) {
+                        addAncestors(previousOmimId, ancestors, positive);
+                    }
+                    previousOmimId = omimId;
+                    SolrInputDocument term = this.data.get(omimId);
                     if (term != null) {
                         term.addField(positive ? "actual_symptom" : "actual_not_symptom", row.get(4));
+                    }
+                    for (VocabularyTerm vterm : this.hpo.getTerm(row.get(4)).getAncestorsAndSelf()) {
+                        ancestors.add(vterm.getId());
                     }
                 }
             }
         } catch (IOException ex) {
             this.logger.error("Failed to load OMIM-HPO links: {}", ex.getMessage(), ex);
         }
+    }
+
+    private void addAncestors(String omimId, Set<String> ancestors, boolean positive)
+    {
+        final String symptomField = "symptom";
+        SolrInputDocument term = this.data.get(omimId);
+        if (!positive) {
+            ancestors.removeAll(term.getFieldValues(symptomField));
+            term.addField("not_symptom", ancestors);
+        } else {
+            term.addField(symptomField, ancestors);
+        }
+        ancestors.clear();
     }
 
     private void loadGenes()
