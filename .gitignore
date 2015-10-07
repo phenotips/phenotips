@@ -13,6 +13,9 @@ atlassian-ide-plugin.xml
 P00*.xml
 F00*.xml
 
+# Solr locks
+write.lock
+
 # Eclipse
 .classpath
 .project
