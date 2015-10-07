@@ -71,11 +71,11 @@ var PrintEngine = Class.create({
         } // if includeLegend
         if (options.includePatientInfo) {
             patientInfoHeight = 35;
-            if (options.anonimize) {
+            var proband = editor.getNode(0);
+            if (options.anonimize || (!proband.getFirstName() && !proband.getLastName())) {
                 patientInfoHTML = "Patient " + XWiki.currentDocument.page;
             } else {
                 // TODO: update to correct proband/family when fmaly studies are merged in
-                var proband = editor.getNode(0);
                 var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
                 var probandName = proband.getFirstName() + space + proband.getLastName();
                 patientInfoHTML = probandName + ", " + XWiki.currentDocument.page;
@@ -239,7 +239,8 @@ var PrintEngine = Class.create({
                     // skip pages marked to be skipped by the user
                     continue;
                 }
-                if(pageNumY == 0 && options.includePatientInfo) {
+                var patientInfoOnThisPage = (pageNumY == 0 && options.includePatientInfo);
+                if(patientInfoOnThisPage) {
                     var content = (pageNumX == 0) ? pages.patientInfoHTML : "";
                     w.document.write("<div id='patientInfo' class='header patient-info' style='height: " + pages.patientInfoHeight + "px;'>" + content + "</div>");
                 }
@@ -247,7 +248,8 @@ var PrintEngine = Class.create({
                 var bottomLeftPage = (pageNumY == (pages.pagesTall - 1)) && (pageNumX == 0);
                 var spaceForLegend = options.includeLegend && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
                 if (spaceForLegend) {
-                    w.document.write("<div class='wrapper' style='margin: 0 auto -" + pages.legendHeight + "px;'>");
+                    var skipHeight = pages.legendHeight + (patientInfoOnThisPage ? pages.patientInfoHeight : 0);
+                    w.document.write("<div class='wrapper' style='margin: 0 auto -" + skipHeight + "px;'>");
                 }
                 if (pages.pagesWide == 1) {
                     w.document.write("<center>");
