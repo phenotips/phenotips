@@ -18,6 +18,10 @@
 
 package org.phenotips.measurements.internal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 
@@ -30,19 +34,31 @@ import org.joda.time.Period;
 public final class MeasurementUtils
 {
     /** Fuzzy value representing a measurement value considered extremely below normal. */
-    private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
+    public static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
 
     /** Fuzzy value representing a measurement value considered below normal, but not extremely. */
-    private static final String VALUE_BELOW_NORMAL = "below-normal";
+    public static final String VALUE_BELOW_NORMAL = "below-normal";
 
     /** Fuzzy value representing a measurement value considered normal. */
-    private static final String VALUE_NORMAL = "normal";
+    public static final String VALUE_NORMAL = "normal";
 
     /** Fuzzy value representing a measurement value considered above normal, but not extremely. */
-    private static final String VALUE_ABOVE_NORMAL = "above-normal";
+    public static final String VALUE_ABOVE_NORMAL = "above-normal";
 
     /** Fuzzy value representing a measurement value considered extremely above normal. */
-    private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
+    public static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
+
+    /** Map of fuzzy values to the corresponding key string used in the config file. */
+    public static final Map<String, String> FUZZY_VALUE_TO_CONFIG_KEY;
+    static {
+        Map<String, String> map = new HashMap<>();
+        map.put(VALUE_EXTREME_BELOW_NORMAL, "extremeBelowNormal");
+        map.put(VALUE_BELOW_NORMAL, "belowNormal");
+        map.put(VALUE_NORMAL, VALUE_NORMAL);
+        map.put(VALUE_ABOVE_NORMAL, "aboveNormal");
+        map.put(VALUE_EXTREME_ABOVE_NORMAL, "extremeAboveNormal");
+        FUZZY_VALUE_TO_CONFIG_KEY = Collections.unmodifiableMap(map);
+    }
 
     /** Private default constructor, so that this utility class can't be instantiated. */
     private MeasurementUtils()
