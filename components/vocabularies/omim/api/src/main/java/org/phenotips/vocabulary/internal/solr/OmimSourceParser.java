@@ -238,9 +238,9 @@ public class OmimSourceParser
         SolrInputDocument term = this.data.get(previousOmimId);
         if (!positive) {
             ancestors.removeAll(term.getFieldValues(symptomField));
-            term.addField("not_symptom", ancestors);
+            term.addField("not_symptom", new HashSet<String>(ancestors));
         } else {
-            term.addField(symptomField, ancestors);
+            term.addField(symptomField, new HashSet<String>(ancestors));
         }
         ancestors.clear();
     }
