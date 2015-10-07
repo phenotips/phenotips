@@ -13,11 +13,12 @@ var AbstractNodeVisuals = Class.create({
 
     initialize: function(node, x, y) {
         //console.log("abstract node visuals");
-        this._node = node;
-        this._absoluteX = x;
-        this._absoluteY = y;
-        this._hoverBox  = null;
-        this._isGrown   = false;
+        this._node       = node;
+        this._absoluteX  = x;
+        this._absoluteY  = y;
+        this._hoverBox   = null;
+        this._isGrown    = false;
+        this._anonimized = false;
         //console.log("abstract node visuals end");
     },
 
@@ -47,6 +48,13 @@ var AbstractNodeVisuals = Class.create({
      * @method onSetID
      */
     onSetID: function(id) {
+    },
+
+    /**
+     * Removes all PII labels
+     */
+    setAnonimizedStatus: function(status) {
+        this._anonimized = status;
     },
 
     /**
