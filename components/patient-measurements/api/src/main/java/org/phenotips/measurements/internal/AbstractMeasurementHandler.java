@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -205,6 +206,12 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     {
         readData();
         this.chartConfigurations = this.settingsFactory.loadConfigurationsForMeasurementType(getName());
+    }
+
+    @Override
+    public List<String> getAssociatedTerms(double standardDeviation)
+    {
+        return Collections.<String>emptyList();
     }
 
     /**

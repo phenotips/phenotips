@@ -19,6 +19,9 @@ package org.phenotips.measurements.internal;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -43,5 +46,18 @@ public class WeightMeasurementHandler extends AbstractMeasurementHandler
     public String getUnit()
     {
         return "kg";
+    }
+
+    @Override
+    public List<String> getAssociatedTerms(double standardDeviation)
+    {
+        List<String> terms = new LinkedList<>();
+        if (standardDeviation >= 2.0) {
+            terms.add("HP:0004324");
+        } else if (standardDeviation <= -2.0) {
+            terms.add("HP:0004325");
+        }
+
+        return terms;
     }
 }

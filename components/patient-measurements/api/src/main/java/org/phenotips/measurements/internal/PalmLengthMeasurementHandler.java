@@ -19,6 +19,9 @@ package org.phenotips.measurements.internal;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -49,5 +52,18 @@ public class PalmLengthMeasurementHandler extends AbstractMeasurementHandler
     public boolean isDoubleSided()
     {
         return true;
+    }
+
+    @Override
+    public List<String> getAssociatedTerms(double standardDeviation)
+    {
+        List<String> terms = new LinkedList<>();
+        if (standardDeviation >= 2.0) {
+            terms.add("HP:0011302");
+        } else if (standardDeviation <= -2.0) {
+            terms.add("HP:0004279");
+        }
+
+        return terms;
     }
 }
