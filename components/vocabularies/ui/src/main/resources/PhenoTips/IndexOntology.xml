@@ -63,7 +63,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 == $services.localization.render('phenotips.indexOntology.heading') ==
 (% class="half" %)(((
 {{html wiki=false clean=false}}
-#foreach ($ontology in ['hpo', 'chebi', 'hgnc'])
+#foreach ($ontology in ['hpo', 'omim', 'chebi', 'hgnc'])
 &lt;form class="xform solr-admin" action='' method="post"&gt;
 &lt;dl&gt;
 &lt;dt&gt;
