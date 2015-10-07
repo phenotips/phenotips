@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443798430000</date>
-  <contentUpdateDate>1443648875000</contentUpdateDate>
+  <date>1443822813000</date>
+  <contentUpdateDate>1443801747000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
   <comment/>
@@ -209,11 +209,9 @@
 .measurement &gt; * {
   float: left;
 }
-.measurement .delete {
-  width: 15px;
-  cursor: pointer;
-  font-size: 80%;
-  font-weight: bold;
+.measurement-set .delete {
+  float: right;
+  margin-left: 15px;
 }
 .measurement-row {
   clear: both;
@@ -290,14 +288,6 @@
 }
 .measurement-set input {
   width: auto;
-}
-.measurement-set &gt; .delete {
-  width: 15px;
-  font-size: 80%;
-  font-weight: bold;
-  cursor: pointer;
-  position: absolute;
-  top: 10px; right: 10px;
 }
 .measurement-set .measurements {
   border-top: 1px dotted #aaa;
@@ -547,6 +537,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
     &lt;input class="xwiki-date measurement-date" type="text" title="MM/dd/yyyy" alt="" value="$!dateFormatted"&gt;
   #else
     &lt;span&gt;$!dateFormatted&lt;/span&gt;
+  #end
+  #if ($xcontext.action == 'edit')
+    &lt;a class="delete" href="#" title="Delete this measurement set"&gt;✖&lt;/a&gt;
   #end
   {{/html}}
   (% class="age"%)(((
