@@ -3744,6 +3744,7 @@ document.observe('xwiki:dom:loaded', function()
       this._updateHiddenFields = this._updateHiddenFields.bind(this);
       this._globalDobChangeHandler = this._globalDobChangeHandler.bind(this);
       this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
+      this._deleteHandler = this._deleteHandler.bind(this);
       this.getObject = this.getObject.bind(this);
 
       // Init rows
@@ -3797,6 +3798,7 @@ document.observe('xwiki:dom:loaded', function()
         this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
           el.observe('click', this._moreToggleButtonHandler);
         }).bind(this));
+        this.el.select('.delete')[0].observe('click', this._deleteHandler);
 
         // Hide (or show)
         var hasExpandedValue = false;
@@ -3826,6 +3828,38 @@ document.observe('xwiki:dom:loaded', function()
       this.el.select('input[name$=_'+fieldName+']').each(function(input) {
         input.value = value;
       });
+    },
+
+    _deleteHandler: function(event) {
+      event.stop();
+      var deleteTrigger = event.element();
+      if (deleteTrigger.disabled) {
+        return;
+      }
+      var removeElement = (function() {
+        this.destroy();
+        this.el.remove();
+      }).bind(this);
+
+      if (this._ageEl.value.length) {
+        var url = XWiki.contextPath+"/bin/get/PhenoTips/MeasurementSetDeletionService";
+        url += "?document="+XWiki.Document.currentSpace+"."+XWiki.Document.currentPage;
+        url += "&amp;age="+this._ageEl.value;
+        new XWiki.widgets.ConfirmedAjaxRequest(url, {
+          onCreate : function() {
+            deleteTrigger.disabled = true;
+          },
+          onSuccess : removeElement,
+          onComplete : function() {
+            deleteTrigger.disabled = false;
+          }
+        },
+        {
+          confirmationText : "$services.localization.render('phenotips.patientSheet.measurements.confirmDeleteSet')"
+        });
+      } else {
+        removeElement();
+      }
     },
 
     _setAgeUsingDateAndDob: function() {
