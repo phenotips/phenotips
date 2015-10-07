@@ -752,8 +752,6 @@ NodeMenu = Class.create({
                     };
                 })(expandNotes, textInput, toggleNotes);
 
-                expandNotes.enableNotes = enableNotes;
-
                 var disableNotes = (function(expandNotes, textInput, toggleNotes){
                     return function(){
                         expandNotes.stopObserving('click', toggleNotes);
@@ -765,6 +763,9 @@ NodeMenu = Class.create({
                         expandNotes.addClassName('disabled');
                     };
                 })(expandNotes, textInput, toggleNotes);
+
+                expandNotes.enableNotes  = enableNotes;
+                expandNotes.disableNotes = disableNotes;
 
                 cancersUIElements.push({"name": cancerName, "status": select, "age": selectAge, "notes": textInput, "enableNotes": enableNotes});
 
@@ -1216,8 +1217,7 @@ NodeMenu = Class.create({
                     notesInput.hide();
                     notesInput.disabled = true;
                     if(enableNotesIcon){
-                        enableNotesIcon.show();
-                        enableNotesIcon.addClassName('disabled');
+                        enableNotesIcon.disableNotes();
                     };
                 }
                 if (optionStatus) {
