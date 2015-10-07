@@ -227,7 +227,7 @@ $!doc.content
     _initializeSuggestTemplates: function() {
       var suggestTemplates = $('suggestTemplates');
       suggestTemplates._suggest = new PhenoTips.widgets.Suggest(suggestTemplates, {
-        script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&amp;json=true&amp;",
+        script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&amp;",
         varname: "input",
         noresults: "No matching terms",
         resultsParameter: "matchedStudies",
