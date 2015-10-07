@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc version="1.1">
+  <web>Studies</web>
+  <name>StudiesSearch</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1444161874000</creationDate>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1444163045000</date>
+  <contentUpdateDate>1444163035000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+## ------------------------
+## URL parameters retrieval
+## ------------------------
+#set ($input = "$!request.input.toLowerCase()")
+#set ($nb = "$!request.nb")
+#if ($nb != '')
+  #set ($nb = $mathtool.toInteger($nb) + 1)
+#else
+  #set ($nb = 6)
+#end
+## -----------------------------------
+## Query execution, results formatting
+## -----------------------------------
+#if ($input != '')
+  #if ($request.json)
+    #set ($discard = $response.setContentType('application/json'))
+  #else
+    #set ($discard = $response.setContentType('text/xml'))
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+  #end
+  $services.studies.searchStudies($input, $nb, $request.json)
+#end
+{{/velocity}}</content>
+</xwikidoc>
