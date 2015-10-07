@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
 <xwikidoc version="1.1">
   <web>Studies</web>
   <name>StudiesSearch</name>
@@ -13,6 +31,7 @@
   <date>1444163045000</date>
   <contentUpdateDate>1444163035000</contentUpdateDate>
   <version>1.1</version>
+  <parent>PhenoTips.StudyClass</parent>
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
@@ -33,13 +52,8 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #if ($request.json)
-    #set ($discard = $response.setContentType('application/json'))
-  #else
-    #set ($discard = $response.setContentType('text/xml'))
-    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-  #end
-  $services.studies.searchStudies($input, $nb, $request.json)
+  #set ($discard = $response.setContentType('application/json'))
+  $services.studies.searchStudies($input, $nb)
 #end
 {{/velocity}}</content>
 </xwikidoc>
