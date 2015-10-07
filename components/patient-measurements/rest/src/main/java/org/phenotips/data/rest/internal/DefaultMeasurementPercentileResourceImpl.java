@@ -71,6 +71,7 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
         resp.accumulate("stddev", stddev);
         resp.accumulate("fuzzy-value", AbstractMeasurementHandler.getFuzzyValue(stddev));
+        resp.accumulate("associated-terms", handler.getAssociatedTerms(stddev));
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
