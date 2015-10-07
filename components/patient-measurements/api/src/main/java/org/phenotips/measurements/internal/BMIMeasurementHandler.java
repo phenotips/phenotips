@@ -20,6 +20,7 @@ package org.phenotips.measurements.internal;
 import org.xwiki.component.annotation.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Named;
@@ -62,6 +63,17 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
         deps.add("height");
 
         return deps;
+    }
+
+    @Override
+    public List<String> getAssociatedTerms(double standardDeviation)
+    {
+        List<String> terms = new LinkedList<>();
+        if (standardDeviation >= 2.0) {
+            terms.add("HP:0001513");
+        }
+
+        return terms;
     }
 
     /**

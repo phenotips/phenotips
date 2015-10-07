@@ -92,6 +92,14 @@ public interface MeasurementHandler
     boolean isComputed();
 
     /**
+     * Get associated (HPO) terms for this measurement with the given standard deviation value.
+     *
+     * @param standardDeviation the measurement's standard deviation
+     * @return a list of terms
+     */
+    List<String> getAssociatedTerms(double standardDeviation);
+
+    /**
      * Get the list of charts configured for this type of measurement.
      *
      * @return a list of chart configurations, or an empty list if no charts are configured for this measurement
