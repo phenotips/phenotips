@@ -609,11 +609,19 @@ var PedigreeEditor = Class.create({
                 'function' : 'makePlaceholder'
             },
             {
-                'name' : 'comments',
+                'name' : 'commentsClinical',
                 'label' : 'Comments',
                 'type' : 'textarea',
                 'tab': 'Clinical',
                 'rows' : 4,
+                'function' : 'setComments'
+            },
+            {
+                'name' : 'commentsPersonal',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'tab': 'Personal',
+                'rows' : 2,
                 'function' : 'setComments'
             },
             {
@@ -628,6 +636,14 @@ var PedigreeEditor = Class.create({
                 'type' : 'cancerlist',
                 'tab' : 'Cancers',
                 'function' : 'setCancers'
+            },
+            {
+                'name' : 'commentsCancers',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'tab': 'Cancers',
+                'rows' : 2,
+                'function' : 'setComments'
             }
         ], ["Personal", "Clinical", "Cancers"]);
     },
@@ -703,19 +719,11 @@ var PedigreeEditor = Class.create({
                 'function' : 'setDisorders'
             },
             {
-                'name' : 'commentsClinical',
+                'name' : 'comments',
                 'label' : 'Comments',
                 'type' : 'textarea',
-                'tab': 'Clinical',
                 'rows' : 4,
-                'function' : 'setComments'
-            },
-            {
-                'name' : 'commentsPersonal',
-                'label' : 'Comments',
-                'type' : 'textarea',
-                'tab': 'Personal',
-                'rows' : 2,
+                'tab': 'Clinical',
                 'function' : 'setComments'
             },
             {
@@ -753,14 +761,6 @@ var PedigreeEditor = Class.create({
                 'default' : '',
                 'tab': 'Personal',
                 'function' : 'setAdopted'
-            },
-            {
-                'name' : 'commentsCancers',
-                'label' : 'Comments',
-                'type' : 'textarea',
-                'tab': 'Cancers',
-                'rows' : 2,
-                'function' : 'setComments'
             }
         ], ["Personal", "Clinical"]);
     },
