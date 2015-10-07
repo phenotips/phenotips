@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443736760000</date>
-  <contentUpdateDate>1443732249000</contentUpdateDate>
+  <date>1444246240000</date>
+  <contentUpdateDate>1444243757000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -44,8 +44,11 @@ $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)
 $xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)
 $xwiki.ssx.use('PhenoTips.ProjectSheet')
 $xwiki.jsx.use('PhenoTips.ProjectSheet')
+$xwiki.jsx.use('PhenoTips.Widgets')
 {{/velocity}}
 {{velocity}}
+##
+## General project attributes
 ##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
@@ -59,6 +62,9 @@ $xwiki.jsx.use('PhenoTips.ProjectSheet')
 $doc.display('openProjectForViewing') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
 $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 
+##
+## Contributors section
+##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributors')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsHint')
 : {{html clean="false"}}
@@ -68,6 +74,9 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 &lt;/fieldset&gt;
 {{/html}}
 
+##
+## Leaders section
+##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.leadersHint')
 : {{html clean="false"}}
@@ -76,6 +85,21 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 &lt;input type="text" name="group" class="suggestGroups" value="" placeholder="$services.localization.render('phenotips.patientAccessRightsManagement.newGroupCollaborator')" id="new-leaders-group-input"&gt;
 {{/html}}
 
+##
+## Templates section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.templates')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.projectSheet.templatesHint')
+{{html clean="false"}}
+&lt;table id="templatesTable"&gt;
+   &lt;tfoot&gt;
+      &lt;td colspan="2"&gt;
+      &lt;input type="text" id="suggestTemplates" placeholder="$services.localization.render('phenotips.projectSheet.templatesPlaceHolder')""/&gt;
+      &lt;/td&gt;
+   &lt;/tfoot&gt;
+   &lt;tbody id="templatesList"/&gt;
+&lt;/table&gt;
+{{/html}}
 )))
 #else
 $!doc.content
@@ -180,6 +204,7 @@ $!doc.content
       _this._leadersTable= _this._initUsersGroupsSuggestion('leaders');
 
       this._readCollaborators();
+      this._initializeSuggestTemplates();
 
       // Save collaborators when project is saved
       document.observe("xwiki:actions:save", function(event) {
@@ -190,12 +215,39 @@ $!doc.content
           parameters : {'projectId'    : _this.projectId,
                         'xaction'      : 'update',
                         'contributors' : contributors,
-                        'leaders' : leaders},
+                        'leaders'      : leaders,
+                        'templates'    : templates},
           onComplete: function(response) {
              _this._readCollaborators();
           }
         });
       });
+    },
+
+    _initializeSuggestTemplates: function() {
+      var suggestTemplates = $('suggestTemplates');
+      suggestTemplates._suggest = new PhenoTips.widgets.Suggest(suggestTemplates, {
+        script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&amp;json=true&amp;",
+        varname: "input",
+        noresults: "No matching terms",
+        resultsParameter: "matchedStudies",
+        json: true,
+        resultId: "id",
+        resultValue: "textSummary",
+        enableHierarchy: false,
+        fadeOnClear: false,
+        timeout: 30000,
+        parentContainer: $('body')
+      });
+
+      suggestTemplates.observe("focus", function (event) {
+        Form.Element.clear(suggestTemplates);
+      });
+
+      suggestTemplates.observe("ms:suggest:selected", function (event) {
+        _this._addTemplate(event.memo, true);
+      });
+
     },
 
     _openForContributionCheckboxClicked : function() {
@@ -240,6 +292,18 @@ $!doc.content
       return collaboratorsList;
     },
 
+    _addTemplate : function (template, highlight) {
+      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+      row.insert(new Element('td').insert(template.value)
+              .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
+      )
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+      row.insert(deleteTool.wrap('td'));
+      deleteTool.observe('click', function(event) {
+         event.findElement('tr').remove();
+      });
+      $('templatesList').insert(row);
+    }, 
 
     _addCollaborator : function (c, highlight, collaboratorType) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
@@ -299,7 +363,7 @@ document.observe("xwiki:dom:loaded", function () {
       <parse>1</parse>
     </property>
     <property>
-      <use>onDemand</use>
+      <use>currentPage</use>
     </property>
   </object>
   <object>
@@ -404,24 +468,31 @@ document.observe("xwiki:dom:loaded", function () {
 display: none;
 }
 
-.usersGroupsTable tbody td {
+.usersGroupsTable tbody td, #templatesTable tbody td {
   border-bottom: 1px solid $theme.borderColor;
 }
-.usersGroupsTable tfoot td {
+.usersGroupsTable tfoot td, #templatesTable tfoot td {
   border-top: 3px solid $theme.borderColor;
 }
-.usersGroupsTable .tool.delete {
+.usersGroupsTable .tool.delete, #templatesTable .tool.delete {
   color: $theme.notificationErrorColor;
   cursor: pointer;
+  width: 32px;
 }
-.usersGroupsTable .highlight {
+.usersGroupsTable .highlight, #templatesTable .highlight {
   background-color: $theme.highlightColor !important;
   color: $theme.notificationErrorColor;
 }
 
-.usersGroupsTable .new {
+.usersGroupsTable .new, #templatesTable .new {
   background-color: $theme.highlightColor;
-}</code>
+}
+
+#templatesTable {
+   width: 183px;
+   font-size: 14px;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
