@@ -19,6 +19,7 @@ package org.phenotips.data.internal.controller;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import org.junit.Assert;
@@ -41,6 +42,7 @@ import javax.inject.Provider;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 public class ObstetricHistoryControllerTest {
@@ -120,7 +122,7 @@ public class ObstetricHistoryControllerTest {
     public void loadHandlesEmptyPatientTest(){
         doReturn(null).when(this.doc).getXObject(any(EntityReference.class));
 
-        PatientData<Integer> testPatientData= this.obstetricHistoryController.load(this.patient);
+        PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
 
         Assert.assertNull(testPatientData);
         verify(this.logger).debug("No data for patient [{}]", this.patientDocument);
@@ -147,6 +149,20 @@ public class ObstetricHistoryControllerTest {
         Assert.assertEquals(testPatientData.size(), 4);
 
     }
+
+    @Test
+    public void loadCatchesUnforeseenExceptions() throws Exception {
+        Exception testException = new Exception("Test Exception");
+        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+
+        PatientData<Integer> testPatientData = this.obstetricHistoryController.load(this.patient);
+
+        verify(this.logger).error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", "Test Exception");
+
+    }
+
+    
 
 
 
