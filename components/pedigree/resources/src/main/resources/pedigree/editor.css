@@ -540,7 +540,9 @@
 .field-inputs label {
   font-family: Arial,Verdana,sans-serif;
 }
-
+.field-cancers {
+  margin-bottom: 5px;
+}
 .menu-box .field-first_name {
   width: 48%;
   float: left;
@@ -853,7 +855,6 @@
   margin-left: 2px;
 }
 .cancer-header {
-  margin-bottom: 1em;
   color: #888;
 }
 .cancer_label_field {
