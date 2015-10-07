@@ -134,8 +134,9 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     private Map<String, String> getStaticFieldSolrParams()
     {
         Map<String, String> params = new HashMap<>();
-        params.put(DisMaxParams.PF, "name^40 nameSpell^100 keywords^6 text^3 textSpell^5");
-        params.put(DisMaxParams.QF, "name^20 nameSpell^50 keywords^2 text^1 textSpell^2");
+        params.put(DisMaxParams.PF, "name^40 nameSpell^70 synonym^15 synonymSpell^25 text^3 textSpell^5");
+        params.put(DisMaxParams.QF,
+            "name^10 nameSpell^18 nameStub^5 synonym^6 synonymSpell^10 synonymStub^3 text^1 textSpell^2 textStub^0.5");
         return params;
     }
 
