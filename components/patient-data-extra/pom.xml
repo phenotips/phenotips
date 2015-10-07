@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-components</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-rc-2</version>
   </parent>
   <artifactId>patient-data-extra</artifactId>
   <packaging>pom</packaging>
