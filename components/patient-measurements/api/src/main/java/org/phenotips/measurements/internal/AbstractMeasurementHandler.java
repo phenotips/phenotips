@@ -20,6 +20,8 @@ package org.phenotips.measurements.internal;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -32,7 +34,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
@@ -48,6 +52,9 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 {
     /** Tool used for computing the percentile corresponding to a given z-score. */
     private static final NormalDistribution NORMAL = new NormalDistribution();
+
+    /** Configuration for the mapping between a measurement type and its associated terms. */
+    private static final ResourceBundle ASSOCIATED_TERMS = ResourceBundle.getBundle("measurementsAssociatedTerms");
 
     /**
      * Triplet storing the median (M), the generalized coefficient of variation (S), and the power in the Box-Cox
@@ -92,6 +99,10 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /** Provides access to the charts configurations. */
     @Inject
     private MeasurementsChartConfigurationsFactory settingsFactory;
+
+    /** Used to resolve vocabulary terms for associated phenotypes. */
+    @Inject
+    private VocabularyManager vocabularyManager;
 
     /**
      * Table storing the LMS triplets for each month of the normal development of boys corresponding to this measurement
@@ -178,6 +189,68 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     {
         readData();
         this.chartConfigurations = this.settingsFactory.loadConfigurationsForMeasurementType(getName());
+    }
+
+    @Override
+    public Collection<VocabularyTerm> getAssociatedTerms(Double standardDeviation)
+    {
+        List<String> configKeys;
+
+        if (standardDeviation != null) {
+            configKeys = new LinkedList<>();
+
+            if (standardDeviation <= -3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                    MeasurementUtils.VALUE_EXTREME_BELOW_NORMAL));
+            }
+            if (standardDeviation <= -2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                    MeasurementUtils.VALUE_BELOW_NORMAL));
+            }
+            if (standardDeviation >= 2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                    MeasurementUtils.VALUE_ABOVE_NORMAL));
+            }
+            if (standardDeviation >= 3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                    MeasurementUtils.VALUE_EXTREME_ABOVE_NORMAL));
+            }
+        } else {
+            configKeys = new LinkedList<>(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.values());
+        }
+
+        List<VocabularyTerm> terms = new ArrayList<>();
+        for (String key : configKeys) {
+            terms.addAll(getResolvedTermsForConfigKey(this.getName(), key));
+        }
+
+        return terms;
+    }
+
+    /**
+     * Convenience method to get present, resolvable vocabulary terms for a given measurement and fuzzy value.
+     *
+     * @param measurement the name of the measurement
+     * @param key the fuzzy value name key to check, e.g. "aboveNormal"
+     * @return the set of resolved vocabulary terms; an empty list if no resolvable terms are present
+     */
+    private List<VocabularyTerm> getResolvedTermsForConfigKey(String measurement, String key)
+    {
+        List<VocabularyTerm> terms = new LinkedList<>();
+
+        String configKey = "measurements." + measurement + '.' + key;
+
+        if (ASSOCIATED_TERMS.containsKey(configKey)) {
+            String[] termStrs = ASSOCIATED_TERMS.getString(configKey).split(";");
+            for (String termStr : termStrs) {
+                VocabularyTerm term = this.vocabularyManager.resolveTerm(termStr);
+                if (term != null) {
+                    terms.add(term);
+                }
+            }
+        }
+
+        return terms;
     }
 
     /**
