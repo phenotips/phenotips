@@ -22,6 +22,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.projects.access.DefaultProjectCollaborator;
 import org.phenotips.projects.data.Project;
+import org.phenotips.studies.data.Study;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -59,6 +60,8 @@ public class ProjectsScriptService implements ScriptService
     private static final String ACCESS_KEY = "access";
 
     private static final String COLLABORATOR_KEY = "collaborator";
+
+    private static final String TEMPLATE_KEY = "study";
 
     @Inject
     @Named("current")
@@ -177,7 +180,65 @@ public class ProjectsScriptService implements ScriptService
             this.logger.error("Error in ProjectScriptService.setCollaborators: {}", e.getMessage(), e);
         }
         return false;
+    }
 
+    /**
+     * Returns a collection templates available for the project.
+     *
+     * @param projectId identifier of the project
+     * @return a collection of templates
+     */
+    public Collection<EntityReference> getTemplates(String projectId)
+    {
+        List<EntityReference> templates = new ArrayList<EntityReference>();
+        XWikiDocument projectDocument = this.getProjectObject(projectId);
+        DocumentReference projectReference = projectDocument.getDocumentReference();
+        DocumentReference classReference = this.entityResolver.resolve(Study.CLASS_REFERENCE, projectReference);
+        Collection<BaseObject> xTemplates = projectDocument.getXObjects(classReference);
+
+        if (xTemplates != null) {
+            for (BaseObject o : xTemplates) {
+                if (o == null) {
+                    continue;
+                }
+                String templateString = o.getStringValue(TEMPLATE_KEY);
+                if (StringUtils.isBlank(templateString)) {
+                    continue;
+                }
+                EntityReference template = this.stringResolver.resolve(templateString);
+                templates.add(template);
+            }
+        }
+
+        return templates;
+    }
+
+    /**
+     * Sets the list of templates available for the project.
+     *
+     * @param projectId identifier of the project
+     * @param templates collection of templates
+     * @return true if successful
+     */
+    public boolean setTemplates(String projectId, Collection<EntityReference> templates)
+    {
+        XWikiDocument projectDocument = this.getProjectObject(projectId);
+        DocumentReference projectReference = projectDocument.getDocumentReference();
+        XWikiContext xContext = getXContext();
+        DocumentReference classReference = this.entityResolver.resolve(Study.CLASS_REFERENCE, projectReference);
+
+        projectDocument.removeXObjects(classReference);
+        try {
+            for (EntityReference template : templates) {
+                BaseObject o = projectDocument.newXObject(classReference, xContext);
+                o.setStringValue(TEMPLATE_KEY, this.entitySerializer.serialize(template));
+            }
+            xContext.getWiki().saveDocument(projectDocument, "Updated templates", true, xContext);
+            return true;
+        } catch (Exception e) {
+            this.logger.error("Error in ProjectScriptService.setTempaltes: {}", e.getMessage(), e);
+        }
+        return false;
     }
 
     private XWikiDocument getProjectObject(String projectId)
