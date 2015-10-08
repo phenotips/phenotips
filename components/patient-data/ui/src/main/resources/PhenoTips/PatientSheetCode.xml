@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443822953000</date>
+  <date>1444321117000</date>
   <contentUpdateDate>1443801746000</contentUpdateDate>
   <version>1.1</version>
   <title/>
@@ -4078,6 +4078,10 @@ document.observe('xwiki:dom:loaded', function()
       this._genderChangeHandler = this._genderChangeHandler.bind(this);
       this.getMeasurementType = this.getMeasurementType.bind(this);
       this.getValue = this.getValue.bind(this);
+      this._selectAssocPhenotypes = this._selectAssocPhenotypes.bind(this);
+      this._selectMeasurementTerm = this._selectMeasurementTerm.bind(this);
+      this._unselectMeasurementTerm = this._unselectMeasurementTerm.bind(this);
+      this._selectFormElementForPhenotype = this._selectFormElementForPhenotype.bind(this);
 
       if (XWiki.contextaction == 'edit') {
         // DOM shortcuts
@@ -4131,6 +4135,7 @@ document.observe('xwiki:dom:loaded', function()
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
             this._renderPercentileSd(pctlEl, resp.responseJSON);
+            this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
           }).bind(this),
           onFailure: function (response) {}
         });
@@ -4163,6 +4168,81 @@ document.observe('xwiki:dom:loaded', function()
       el.innerText = displayStr;
     },
 
+    _selectAssocPhenotypes: function(terms) {
+      var allTerms = this.measurementTypeToAssocTerms[this.getMeasurementType()];
+      if (allTerms &amp;&amp; allTerms.length) {
+        allTerms.each((function(term) {
+          this._unselectMeasurementTerm(findFormElementForPhenotype(term));
+        }).bind(this));
+      }
+
+      terms.each((function(term) {
+        var targetEl = this._selectFormElementForPhenotype(term);
+        this._selectMeasurementTerm(targetEl);
+      }).bind(this));
+    },
+
+    _selectMeasurementTerm : function (elt, force) {
+      if (elt &amp;&amp; (!elt.checked || force)) {
+        if (elt._ynpicker) {
+          elt._ynpicker._select('yes');
+        } else {
+          elt.checked = true;
+        }
+        highlightChecked(elt);
+        var addedItem = $('current-phenotype-selection').down('label input[value="' + elt.value + '"]');
+        if (addedItem) {
+          addedItem.up('label').insert({before : new Element('span', {
+                                                               'class' : 'fa fa-bolt',
+                                                               'title' : 'This phenotype was automatically added based on abnormal measurement values'
+          }).update(' ')});
+        }
+      }
+    },
+
+    _unselectMeasurementTerm : function (elt) {
+      if (elt &amp;&amp; elt.checked) {
+        if (elt._ynpicker) {
+          elt._ynpicker._onUnselect();
+        } else {
+          elt.checked = false;
+        }
+      }
+    },
+
+    _selectFormElementForPhenotype: function(id) {
+      if (!id) {
+        return null;
+      }
+      var _this = this;
+      var existingElement = findFormElementForPhenotype(id);
+      if (existingElement == null) {
+        var suggestWidget = $("quick-phenotype-search")._suggestWidget;
+        if (!suggestWidget) {
+           return null;
+        }
+        searchURL = this.solarService + "?q=" + id;
+        new Ajax.Request(searchURL, {
+          method: 'get',
+          onSuccess: function(transport) {
+            var response = transport.responseJSON.rows[0];
+            if (response) {
+              var categories = '&lt;span class="hidden term-category"&gt;';
+              response.term_category.each(function(category){categories += '&lt;input type="hidden" value="' + category + '"&gt;'});
+              categories + "&lt;/span&gt;";
+              var data = {'id':id, 'value':response.name, 'category': categories}
+              var title =  response.name;
+              suggestWidget.acceptEntry(data, title, title);
+              _this._selectMeasurementTerm(findFormElementForPhenotype(id), true);
+            }
+          }
+        });
+        return null;
+      } else {
+        return existingElement;
+      }
+    },
+
     // Credit: http://stackoverflow.com/a/13627586
     _getOrdinalSuffix: function(i) {
       var j = i % 10,
@@ -4178,6 +4258,15 @@ document.observe('xwiki:dom:loaded', function()
       }
       return "th";
     },
+
+    measurementTypeToAssocTerms:
+    #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
+    #set ($map = {})
+    #foreach ($handler in $handlers)
+      #set ($discard = $map.put($handler.getName(), $handler.getAssociatedTerms(null)))
+    #end
+    $jsontool.serialize($map)
+    ,
 
     destroy: function() {
       $$('input[name$=gender]').each((function(el) {
@@ -4198,7 +4287,7 @@ document.observe('xwiki:dom:loaded', function()
         this._valueEl.readOnly = true;
 
         // Set up deps
-        this._deps = this.el.readAttribute('data-computation-deps').split(' ');
+        this._deps = this.measurementTypeToComputationDeps[this.getMeasurementType()];
 
         // Initialize using existing values
         this.fetchAndRenderComputedValue();
@@ -4241,7 +4330,18 @@ document.observe('xwiki:dom:loaded', function()
         this._valueEl.value = '';
         this.fetchAndRenderPercentileSd();
       }
-    }
+    },
+
+    measurementTypeToComputationDeps:
+    #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
+    #set ($map = {})
+    #foreach ($handler in $handlers)
+      #if ($handler.getComputationDependencies())
+        #set ($discard = $map.put($handler.getName(), $handler.getComputationDependencies()))
+      #end
+    #end
+    $jsontool.serialize($map)
+    ,
   });
 
   var init = function(event) {
@@ -4258,7 +4358,7 @@ document.observe('xwiki:dom:loaded', function()
       <name>Measurements section</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
