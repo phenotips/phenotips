@@ -94,7 +94,7 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 &lt;table id="templatesTable"&gt;
    &lt;tfoot&gt;
       &lt;td colspan="2"&gt;
-      &lt;input type="text" id="suggestTemplates" placeholder="$services.localization.render('phenotips.projectSheet.templatesPlaceHolder')""/&gt;
+      &lt;input type="text" id="suggestTemplates" placeholder="$services.localization.render('phenotips.projectSheet.templatesPlaceHolder')"/&gt;
       &lt;/td&gt;
    &lt;/tfoot&gt;
    &lt;tbody id="templatesList"/&gt;
@@ -193,7 +193,7 @@ $!doc.content
       _this = this;
       _this.projectId = projectId;
       _this.form = $('inline');
-      _this.ajaxService = '/bin/get/Projects/AjaxHandler';
+      _this.ajaxService = '/bin/get/Projects/SaveProjectHandler';
 
       $('PhenoTips.ProjectClass_0_openProjectForContribution').observe('click', function() {
          _this._openForContributionCheckboxClicked();
@@ -203,14 +203,15 @@ $!doc.content
       _this.contributorsTable = _this._initUsersGroupsSuggestion('contributors');
       _this._leadersTable= _this._initUsersGroupsSuggestion('leaders');
 
-      this._readCollaborators();
+      this._readCollaboratorsAndTemplates();
       this._initializeSuggestTemplates();
 
-      // Save collaborators when project is saved
+      // Save collaborators and templates when project is saved
       document.observe("xwiki:actions:save", function(event) {
         var formData = _this.form.serialize(true);
         var contributors = formData.contributors || [];
         var leaders = formData.leaders || [];
+        var templates = formData.templates || [];
         new Ajax.Request(_this.ajaxService, {
           parameters : {'projectId'    : _this.projectId,
                         'xaction'      : 'update',
@@ -218,7 +219,7 @@ $!doc.content
                         'leaders'      : leaders,
                         'templates'    : templates},
           onComplete: function(response) {
-             _this._readCollaborators();
+             _this._readCollaboratorsAndTemplates();
           }
         });
       });
@@ -303,7 +304,7 @@ $!doc.content
          event.findElement('tr').remove();
       });
       $('templatesList').insert(row);
-    }, 
+    },
 
     _addCollaborator : function (c, highlight, collaboratorType) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
@@ -323,7 +324,7 @@ $!doc.content
       $(collaboratorType + 'List').insert(row);
     },
 
-    _loadCollaborators : function(contributors, leaders) {
+    _loadCollaboratorsAndTemplates : function(contributors, leaders, templates) {
       _this.contributorsTable.update('');
       _this._leadersTable.update('');
 
@@ -333,16 +334,22 @@ $!doc.content
       for (var i = 0; i &lt; leaders.length ; i++) {
         this._addCollaborator(leaders[i], false, 'leaders');
       }
+
+      $('templatesList').update('');
+      for (var i = 0; i &lt; templates.length ; i++) {
+        this._addTemplate(templates[i], false);
+      }
     },
 
-    _readCollaborators : function() {
+    _readCollaboratorsAndTemplates : function() {
       new Ajax.Request(_this.ajaxService, {
         parameters : {'xaction'   : 'get',
                       'projectId' : _this.projectId},
         onSuccess : function(response) {
            var contributors = response.responseJSON.contributors;
            var leaders = response.responseJSON.leaders;
-           _this._loadCollaborators(contributors, leaders);
+           var templates = response.responseJSON.templates;
+           _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
         }
       });
     }
