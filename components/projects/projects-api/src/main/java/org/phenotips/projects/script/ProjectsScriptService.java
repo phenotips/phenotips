@@ -161,11 +161,11 @@ public class ProjectsScriptService implements ScriptService
     {
         XWikiDocument projectDocument = this.getProjectObject(projectId);
         DocumentReference projectReference = projectDocument.getDocumentReference();
+        DocumentReference classReference = this.entityResolver.resolve(Collaborator.CLASS_REFERENCE, projectReference);
+        XWikiContext context = getXContext();
+
+        projectDocument.removeXObjects(classReference);
         try {
-            DocumentReference classReference =
-                this.entityResolver.resolve(Collaborator.CLASS_REFERENCE, projectReference);
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            projectDocument.removeXObjects(classReference);
             for (Collaborator collaborator : collaborators) {
                 BaseObject o = projectDocument.newXObject(classReference, context);
                 o.setStringValue(COLLABORATOR_KEY, this.entitySerializer.serialize(collaborator.getUser()));
@@ -189,5 +189,10 @@ public class ProjectsScriptService implements ScriptService
             this.logger.warn("Failed to access project with id [{}]: {}", projectId, ex.getMessage(), ex);
         }
         return null;
+    }
+
+    private XWikiContext getXContext()
+    {
+        return (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
     }
 }
