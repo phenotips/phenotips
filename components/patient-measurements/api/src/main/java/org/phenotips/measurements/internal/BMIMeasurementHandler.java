@@ -66,10 +66,10 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
     }
 
     @Override
-    public List<String> getAssociatedTerms(double standardDeviation)
+    public List<String> getAssociatedTerms(Double standardDeviation)
     {
         List<String> terms = new LinkedList<>();
-        if (standardDeviation >= 2.0) {
+        if (standardDeviation == null || standardDeviation >= 2.0) {
             terms.add("HP:0001513");
         }
 

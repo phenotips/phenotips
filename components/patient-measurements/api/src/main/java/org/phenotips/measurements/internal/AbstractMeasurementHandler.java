@@ -209,7 +209,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     @Override
-    public List<String> getAssociatedTerms(double standardDeviation)
+    public List<String> getAssociatedTerms(Double standardDeviation)
     {
         return Collections.<String>emptyList();
     }
