@@ -97,7 +97,7 @@ public interface MeasurementHandler
      * @param standardDeviation the measurement's standard deviation
      * @return a list of terms
      */
-    List<String> getAssociatedTerms(double standardDeviation);
+    List<String> getAssociatedTerms(Double standardDeviation);
 
     /**
      * Get the list of charts configured for this type of measurement.
