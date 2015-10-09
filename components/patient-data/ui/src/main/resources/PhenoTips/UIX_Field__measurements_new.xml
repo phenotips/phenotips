@@ -29,7 +29,7 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1444249910000</date>
+  <date>1444427811000</date>
   <contentUpdateDate>1443801747000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
@@ -494,8 +494,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #end
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
-  #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
-  #foreach ($handler in $handlers)
+  #set ($orderedMeasurements = $configObj.getProperty('ordering').value)
+  #foreach ($measurement in $orderedMeasurements)
+    #set ($handler = $services.measurements.get($measurement))
     #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
          &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
       #set($name = $handler.getName())
