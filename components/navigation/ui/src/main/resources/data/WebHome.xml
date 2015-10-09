@@ -44,10 +44,10 @@ $xwiki.ssfx.use('uicomponents/dashboard/dashboard.css', true)##
 $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true, 'columns' : $numColumns})##
 (% id="dashboard" class="panels container-columns"%)(((
   #foreach ($column in [1..$numColumns])
-  (% class="column #if($column == 1)first-column#elseif($column==$numColumns)last-column#end" %)(((
+  (% class="column #if($column == 1)first-column#elseif($column == $numColumns)last-column#end" %)(((
     #foreach ($e in $services.uix.getExtensions('org.phenotips.homepage.dashboard', {'sortByParameter' : 'priority'}))
       #set ($extensionParameters = $e.getParameters())
-      #if ($extensionParameters.get("column") == "$column" &amp;&amp; $extensionParameters.get("enabled") != 'false')
+      #if ($extensionParameters.get('column') == "$column" &amp;&amp; $extensionParameters.get('enabled') != 'false')
         #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
         #set ($gadgetDocRef = $e.getDocumentReference())
         #set ($gadgetDoc = $xwiki.getDocument($gadgetDocRef))
