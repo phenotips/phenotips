@@ -29,8 +29,8 @@
   <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1443798263000</date>
-  <contentUpdateDate>1443798263000</contentUpdateDate>
+  <date>1444419733000</date>
+  <contentUpdateDate>1444419733000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -140,8 +140,8 @@
       <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>0</multiSelect>
+      <displayType>checkbox</displayType>
+      <multiSelect>1</multiSelect>
       <name>ordering</name>
       <number>3</number>
       <picker>0</picker>
@@ -154,7 +154,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values/>
+      <values>weight|height|bmi|sitting|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </ordering>
   </class>
