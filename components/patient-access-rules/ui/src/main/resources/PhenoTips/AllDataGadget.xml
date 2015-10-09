@@ -185,9 +185,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
 #end
-{{html clean=false}}
 #livetable('sharedpatients' $columns $columnsProperties $options)
-{{/html}}
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #else
 {{warning}}**$services.localization.render('phenotips.configurationMissing')**{{/warning}}

@@ -51,12 +51,10 @@ $xwiki.ssfx.use('uicomponents/container/columns.css', {'forceSkinAction' : true,
         #set ($extentionContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
         #set ($gadgetDocRef = $e.getDocumentReference())
         #set ($gadgetDoc = $xwiki.getDocument($gadgetDocRef))
-        {{html wiki=true clean=false}}
-        &lt;div class="gadget"&gt;
-          &lt;div class="gadget-title"&gt;&lt;span&gt;$gadgetDoc.getPlainTitle()&lt;/span&gt;&lt;/div&gt;
-          &lt;div class="gadget-content"&gt;$extentionContent&lt;/div&gt;
-        &lt;/div&gt;
-        {{/html}}
+        (% class="gadget" %)(((
+          (% class="gadget-title" %)((($gadgetDoc.getPlainTitle())))
+          (% class="gadget-content" %)((({{html wiki="false" clean="false"}}$extentionContent{{/html}})))
+        )))
 
       #end
     #end
