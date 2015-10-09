@@ -117,7 +117,7 @@ $!value
       </enableImperialUnitSystem>
       <livetableColumns>
         <cache>0</cache>
-        <customDisplay>//Meta information: //
+        <customDisplay>//{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}//
 
 {{velocity output=false}}
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
@@ -139,7 +139,7 @@ $!value
 &lt;/ul&gt;
 {{/html}}{{/velocity}}
 
-//Patient information: //
+//{{translation key="phenotips.DBConfigurationClass.patientInfo" /}}//
 
 {{include reference="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
@@ -294,6 +294,7 @@ $!value
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -309,9 +310,10 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -324,6 +326,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -364,6 +367,7 @@ $!value
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -379,9 +383,10 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -394,6 +399,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -434,6 +440,7 @@ $!value
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -449,9 +456,10 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -464,6 +472,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -504,6 +513,7 @@ $!value
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -519,9 +529,10 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -534,6 +545,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -574,6 +586,7 @@ $!value
       <nameField/>
       <validationScript/>
       <data>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -589,9 +602,10 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
       <description>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>description</name>
         <number>3</number>
         <picker>0</picker>
@@ -604,6 +618,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
       <image>
+        <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
@@ -1860,7 +1875,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -1992,7 +2007,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -2107,7 +2122,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -2192,7 +2207,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
