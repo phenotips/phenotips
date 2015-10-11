@@ -29,7 +29,8 @@ import java.util.Set;
 public interface VocabularyInputTerm extends VocabularyTerm
 {
     /**
-     * Sets the (mandatory) term identifier.
+     * Sets the (mandatory) term identifier. This is usually already present in the vocabulary source, so this method
+     * should rarely be used.
      *
      * @param id the term identifier to set, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066} or {@code MIM:260540}
