@@ -20,8 +20,11 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.rest.MeasurementPercentileResource;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
+
+import java.util.Collection;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,6 +32,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -71,7 +75,16 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         double stddev = handler.valueToStandardDeviation(isMale, ageMonths.floatValue(), value);
         resp.accumulate("stddev", stddev);
         resp.accumulate("fuzzy-value", AbstractMeasurementHandler.getFuzzyValue(stddev));
-        resp.accumulate("associated-terms", handler.getAssociatedTerms(Double.valueOf(stddev)));
+
+        Collection<VocabularyTerm> terms = handler.getAssociatedTerms(Double.valueOf(stddev));
+        JSONArray termsJson = new JSONArray();
+        for (VocabularyTerm term : terms) {
+            if (term.getId() != null) {
+                termsJson.add(term.getId());
+            }
+        }
+        resp.accumulate("associated-terms", termsJson);
+
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
