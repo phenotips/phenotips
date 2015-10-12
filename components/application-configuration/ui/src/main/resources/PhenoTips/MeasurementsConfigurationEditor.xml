@@ -37,11 +37,6 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-#if ($request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
-  form data
-#end## CSRF token is valid
-##
-##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.ssx.use('PhenoTips.FormDesigner')##
 $xwiki.ssx.use('PhenoTips.MeasurementsConfigurationEditor')##
