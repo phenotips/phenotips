@@ -222,39 +222,40 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
         List<VocabularyTerm> terms = new ArrayList<>();
 
         if (null == standardDeviation || standardDeviation <= -3) {
-            addResolvedTermToList(configuration, this.getName(), "extremeBelowNormal", terms);
+            addResolvedTermsToList(configuration, this.getName(), "extremeBelowNormal", terms);
         }
         if (null == standardDeviation || standardDeviation <= -2) {
-            addResolvedTermToList(configuration, this.getName(), "belowNormal", terms);
+            addResolvedTermsToList(configuration, this.getName(), "belowNormal", terms);
         }
         if (null == standardDeviation || standardDeviation >= 2) {
-            addResolvedTermToList(configuration, this.getName(), "aboveNormal", terms);
+            addResolvedTermsToList(configuration, this.getName(), "aboveNormal", terms);
         }
         if (null == standardDeviation || standardDeviation >= 3) {
-            addResolvedTermToList(configuration, this.getName(), "extremeAboveNormal", terms);
+            addResolvedTermsToList(configuration, this.getName(), "extremeAboveNormal", terms);
         }
 
         return terms;
     }
 
     /**
-     * Convenience method to add a vocabulary term to the given list, if it exists in the given configuration and can be
-     * resolved.
+     * Convenience method to add present, resolvable vocabulary terms for a given measurement to the given list.
      *
      * @param config the configuration resource bundle
      * @param measurement the name of the measurement
      * @param key the fuzzy value name key to check, e.g. "aboveNormal"
-     * @param list the list to which the term should be added, if it exists in the configuration and can be resolved.
+     * @param list the list to which present and resolvable terms should be added
      */
-    private void addResolvedTermToList(ResourceBundle config, String measurement, String key, List<VocabularyTerm> list)
+    private void addResolvedTermsToList(ResourceBundle config, String measurement, String key,
+                                        List<VocabularyTerm> list)
     {
         String configKey = "measurements." + measurement + '.' + key;
-        VocabularyTerm term;
         if (config.containsKey(configKey)) {
-            String termStr = config.getString(configKey);
-            term = vocabularyManager.resolveTerm(termStr);
-            if (term != null) {
-                list.add(term);
+            String[] termStrs = config.getString(configKey).split(";");
+            for (String termStr : termStrs) {
+                VocabularyTerm term = vocabularyManager.resolveTerm(termStr);
+                if (term != null) {
+                    list.add(term);
+                }
             }
         }
     }
