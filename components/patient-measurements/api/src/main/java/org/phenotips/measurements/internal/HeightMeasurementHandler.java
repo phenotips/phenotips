@@ -19,9 +19,6 @@ package org.phenotips.measurements.internal;
 
 import org.xwiki.component.annotation.Component;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -47,19 +44,5 @@ public class HeightMeasurementHandler extends AbstractMeasurementHandler
     public String getUnit()
     {
         return "cm";
-    }
-
-    @Override
-    public List<String> getAssociatedTerms(Double standardDeviation)
-    {
-        List<String> terms = new LinkedList<>();
-        if (standardDeviation == null || standardDeviation >= 2.0) {
-            terms.add("HP:0000098");
-        }
-        if (standardDeviation == null || standardDeviation <= -2.0) {
-            terms.add("HP:0004322");
-        }
-
-        return terms;
     }
 }
