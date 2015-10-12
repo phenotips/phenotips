@@ -19,9 +19,6 @@ package org.phenotips.measurements.internal;
 
 import org.xwiki.component.annotation.Component;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -52,19 +49,5 @@ public class EarLengthMeasurementHandler extends AbstractMeasurementHandler
     public boolean isDoubleSided()
     {
         return true;
-    }
-
-    @Override
-    public List<String> getAssociatedTerms(Double standardDeviation)
-    {
-        List<String> terms = new LinkedList<>();
-        if (standardDeviation == null || standardDeviation >= 2.0) {
-            terms.add("HP:0000400");
-        }
-        if (standardDeviation == null || standardDeviation <= -2.0) {
-            terms.add("HP:0008551");
-        }
-
-        return terms;
     }
 }
