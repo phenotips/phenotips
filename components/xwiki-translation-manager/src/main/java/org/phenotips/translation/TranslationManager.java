@@ -18,10 +18,12 @@
 package org.phenotips.translation;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  */
+@Unstable("New API introduced in 1.2")
 @Role
 public interface TranslationManager
 {
