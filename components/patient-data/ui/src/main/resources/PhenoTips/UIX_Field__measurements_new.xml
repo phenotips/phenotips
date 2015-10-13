@@ -522,12 +522,12 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
 #end
 #set ($age = $set.get("age"))
 #set ($date = $set.get("date"))
-#set ($dateFormatted = $datetool.format('MM/dd/yyyy', $date))
+#set ($dateFormatted = $datetool.format('dd/MM/yyyy', $date))
 (% class="measurement-set#if ($proto) proto#end"%)(((
   {{html clean="false" wiki="false"}}
   &lt;label for="date"&gt;Date:&lt;/label&gt;
   #if ($xcontext.action == 'edit')
-    &lt;input class="xwiki-date measurement-date" type="text" title="MM/dd/yyyy" alt="" value="$!dateFormatted"&gt;
+    &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
   #else
     &lt;span&gt;$!dateFormatted&lt;/span&gt;
   #end

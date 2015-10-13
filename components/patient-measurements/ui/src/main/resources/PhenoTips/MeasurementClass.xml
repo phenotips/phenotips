@@ -57,7 +57,7 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </age>
     <date>
-      <dateFormat>dd/MM/yyyy HH:mm:ss</dateFormat>
+      <dateFormat>dd/MM/yyyy</dateFormat>
       <disabled>0</disabled>
       <emptyIsToday>0</emptyIsToday>
       <name>date</name>
