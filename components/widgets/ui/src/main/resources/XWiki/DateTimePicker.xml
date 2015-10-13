@@ -307,10 +307,10 @@ _translations = {
     </property>
     <property>
       <code>/**
- * Version: 1.0 Alpha-1 
+ * Version: 1.0 Alpha-1
  * Build Date: 12-Nov-2007
  * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
- * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
  * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
  */
 
@@ -322,8 +322,8 @@ _translations = {
 Date.getMonthNumberFromName = function (name) {
     var n = Date.CultureInfo.monthNames, m = Date.CultureInfo.abbreviatedMonthNames, s = name.toLowerCase();
     for (var i = 0; i &lt; n.length; i++) {
-        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) { 
-            return i; 
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) {
+            return i;
         }
     }
     return -1;
@@ -336,12 +336,12 @@ Date.getMonthNumberFromName = function (name) {
  */
 Date.getDayNumberFromName = function (name) {
     var n = Date.CultureInfo.dayNames, m = Date.CultureInfo.abbreviatedDayNames, o = Date.CultureInfo.shortestDayNames, s = name.toLowerCase();
-    for (var i = 0; i &lt; n.length; i++) { 
-        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) { 
-            return i; 
+    for (var i = 0; i &lt; n.length; i++) {
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) {
+            return i;
         }
     }
-    return -1;  
+    return -1;
 };
 
 /**
@@ -349,8 +349,8 @@ Date.getDayNumberFromName = function (name) {
  * @param {Number}   The year (0-9999).
  * @return {Boolean} true if date is within a LeapYear, otherwise false.
  */
-Date.isLeapYear = function (year) { 
-    return (((year % 4 === 0) &amp;&amp; (year % 100 !== 0)) || (year % 400 === 0)); 
+Date.isLeapYear = function (year) {
+    return (((year % 4 === 0) &amp;&amp; (year % 100 !== 0)) || (year % 400 === 0));
 };
 
 /**
@@ -370,9 +370,9 @@ Date.getTimezoneOffset = function (s, dst) {
 
 Date.getTimezoneAbbreviation = function (offset, dst) {
     var n = (dst || false) ? Date.CultureInfo.abbreviatedTimeZoneDST : Date.CultureInfo.abbreviatedTimeZoneStandard, p;
-    for (p in n) { 
-        if (n[p] === offset) { 
-            return p; 
+    for (p in n) {
+        if (n[p] === offset) {
+            return p;
         }
     }
     return null;
@@ -383,32 +383,32 @@ Date.getTimezoneAbbreviation = function (offset, dst) {
  * @return {Date}    A new Date instance
  */
 Date.prototype.clone = function () {
-    return new Date(this.getTime()); 
+    return new Date(this.getTime());
 };
 
 /**
- * Compares this instance to a Date object and return an number indication of their relative values.  
+ * Compares this instance to a Date object and return an number indication of their relative values.
  * @param {Date}     Date object to compare [Required]
  * @return {Number}  1 = this is greaterthan date. -1 = this is lessthan date. 0 = values are equal
  */
 Date.prototype.compareTo = function (date) {
-    if (isNaN(this)) { 
-        throw new Error(this); 
+    if (isNaN(this)) {
+        throw new Error(this);
     }
     if (date instanceof Date &amp;&amp; !isNaN(date)) {
         return (this &gt; date) ? 1 : (this &lt; date) ? -1 : 0;
-    } else { 
-        throw new TypeError(date); 
+    } else {
+        throw new TypeError(date);
     }
 };
 
 /**
- * Compares this instance to another Date object and returns true if they are equal.  
+ * Compares this instance to another Date object and returns true if they are equal.
  * @param {Date}     Date object to compare [Required]
  * @return {Boolean} true if dates are equal. false if they are not equal.
  */
-Date.prototype.equals = function (date) { 
-    return (this.compareTo(date) === 0); 
+Date.prototype.equals = function (date) {
+    return (this.compareTo(date) === 0);
 };
 
 /**
@@ -423,7 +423,7 @@ Date.prototype.between = function (start, end) {
 };
 
 /**
- * Adds the specified number of milliseconds to this instance. 
+ * Adds the specified number of milliseconds to this instance.
  * @param {Number}   The number of milliseconds to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
@@ -433,52 +433,52 @@ Date.prototype.addMilliseconds = function (value) {
 };
 
 /**
- * Adds the specified number of seconds to this instance. 
+ * Adds the specified number of seconds to this instance.
  * @param {Number}   The number of seconds to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
-Date.prototype.addSeconds = function (value) { 
-    return this.addMilliseconds(value * 1000); 
+Date.prototype.addSeconds = function (value) {
+    return this.addMilliseconds(value * 1000);
 };
 
 /**
- * Adds the specified number of seconds to this instance. 
+ * Adds the specified number of seconds to this instance.
  * @param {Number}   The number of seconds to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
-Date.prototype.addMinutes = function (value) { 
+Date.prototype.addMinutes = function (value) {
     return this.addMilliseconds(value * 60000); /* 60*1000 */
 };
 
 /**
- * Adds the specified number of hours to this instance. 
+ * Adds the specified number of hours to this instance.
  * @param {Number}   The number of hours to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
-Date.prototype.addHours = function (value) { 
+Date.prototype.addHours = function (value) {
     return this.addMilliseconds(value * 3600000); /* 60*60*1000 */
 };
 
 /**
- * Adds the specified number of days to this instance. 
+ * Adds the specified number of days to this instance.
  * @param {Number}   The number of days to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
-Date.prototype.addDays = function (value) { 
+Date.prototype.addDays = function (value) {
     return this.addMilliseconds(value * 86400000); /* 60*60*24*1000 */
 };
 
 /**
- * Adds the specified number of weeks to this instance. 
+ * Adds the specified number of weeks to this instance.
  * @param {Number}   The number of weeks to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
-Date.prototype.addWeeks = function (value) { 
+Date.prototype.addWeeks = function (value) {
     return this.addMilliseconds(value * 604800000); /* 60*60*24*7*1000 */
 };
 
 /**
- * Adds the specified number of months to this instance. 
+ * Adds the specified number of months to this instance.
  * @param {Number}   The number of months to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
@@ -491,7 +491,7 @@ Date.prototype.addMonths = function (value) {
 };
 
 /**
- * Adds the specified number of years to this instance. 
+ * Adds the specified number of years to this instance.
  * @param {Number}   The number of years to add. The number can be positive or negative [Required]
  * @return {Date}    this
  */
@@ -504,38 +504,38 @@ Date.prototype.addYears = function (value) {
  * Example
 &lt;pre&gt;&lt;code&gt;
 Date.today().add( { day: 1, month: 1 } )
- 
+
 new Date().add( { year: -1 } )
-&lt;/code&gt;&lt;/pre&gt; 
+&lt;/code&gt;&lt;/pre&gt;
  * @param {Object}   Configuration object containing attributes (month, day, etc.)
  * @return {Date}    this
  */
 Date.prototype.add = function (config) {
     if (typeof config == "number") {
         this._orient = config;
-        return this;    
+        return this;
     }
     var x = config;
-    if (x.millisecond || x.milliseconds) { 
-        this.addMilliseconds(x.millisecond || x.milliseconds); 
+    if (x.millisecond || x.milliseconds) {
+        this.addMilliseconds(x.millisecond || x.milliseconds);
     }
-    if (x.second || x.seconds) { 
-        this.addSeconds(x.second || x.seconds); 
+    if (x.second || x.seconds) {
+        this.addSeconds(x.second || x.seconds);
     }
-    if (x.minute || x.minutes) { 
-        this.addMinutes(x.minute || x.minutes); 
+    if (x.minute || x.minutes) {
+        this.addMinutes(x.minute || x.minutes);
     }
-    if (x.hour || x.hours) { 
-        this.addHours(x.hour || x.hours); 
+    if (x.hour || x.hours) {
+        this.addHours(x.hour || x.hours);
     }
-    if (x.month || x.months) { 
-        this.addMonths(x.month || x.months); 
+    if (x.month || x.months) {
+        this.addMonths(x.month || x.months);
     }
-    if (x.year || x.years) { 
-        this.addYears(x.year || x.years); 
+    if (x.year || x.years) {
+        this.addYears(x.year || x.years);
     }
     if (x.day || x.days) {
-        this.addDays(x.day || x.days); 
+        this.addDays(x.day || x.days);
     }
     return this;
 };
@@ -543,9 +543,9 @@ Date.prototype.add = function (config) {
 // private
 Date._validate = function (value, min, max, name) {
     if (typeof value != "number") {
-        throw new TypeError(value + " is not a Number."); 
+        throw new TypeError(value + " is not a Number.");
     } else if (value &lt; min || value &gt; max) {
-        throw new RangeError(value + " is not a valid value for " + name + "."); 
+        throw new RangeError(value + " is not a valid value for " + name + ".");
     }
     return true;
 };
@@ -621,66 +621,66 @@ Date.today().set( { day: 20, month: 1 } )
 
 new Date().set( { millisecond: 0 } )
 &lt;/code&gt;&lt;/pre&gt;
- * 
+ *
  * @param {Object}   Configuration object containing attributes (month, day, etc.)
  * @return {Date}    this
  */
 Date.prototype.set = function (config) {
     var x = config;
 
-    if (!x.millisecond &amp;&amp; x.millisecond !== 0) { 
-        x.millisecond = -1; 
+    if (!x.millisecond &amp;&amp; x.millisecond !== 0) {
+        x.millisecond = -1;
     }
-    if (!x.second &amp;&amp; x.second !== 0) { 
-        x.second = -1; 
+    if (!x.second &amp;&amp; x.second !== 0) {
+        x.second = -1;
     }
-    if (!x.minute &amp;&amp; x.minute !== 0) { 
-        x.minute = -1; 
+    if (!x.minute &amp;&amp; x.minute !== 0) {
+        x.minute = -1;
     }
-    if (!x.hour &amp;&amp; x.hour !== 0) { 
-        x.hour = -1; 
+    if (!x.hour &amp;&amp; x.hour !== 0) {
+        x.hour = -1;
     }
-    if (!x.day &amp;&amp; x.day !== 0) { 
-        x.day = -1; 
+    if (!x.day &amp;&amp; x.day !== 0) {
+        x.day = -1;
     }
-    if (!x.month &amp;&amp; x.month !== 0) { 
-        x.month = -1; 
+    if (!x.month &amp;&amp; x.month !== 0) {
+        x.month = -1;
     }
-    if (!x.year &amp;&amp; x.year !== 0) { 
-        x.year = -1; 
+    if (!x.year &amp;&amp; x.year !== 0) {
+        x.year = -1;
     }
 
     if (x.millisecond != -1 &amp;&amp; Date.validateMillisecond(x.millisecond)) {
-        this.addMilliseconds(x.millisecond - this.getMilliseconds()); 
+        this.addMilliseconds(x.millisecond - this.getMilliseconds());
     }
     if (x.second != -1 &amp;&amp; Date.validateSecond(x.second)) {
-        this.addSeconds(x.second - this.getSeconds()); 
+        this.addSeconds(x.second - this.getSeconds());
     }
     if (x.minute != -1 &amp;&amp; Date.validateMinute(x.minute)) {
-        this.addMinutes(x.minute - this.getMinutes()); 
+        this.addMinutes(x.minute - this.getMinutes());
     }
     if (x.hour != -1 &amp;&amp; Date.validateHour(x.hour)) {
-        this.addHours(x.hour - this.getHours()); 
+        this.addHours(x.hour - this.getHours());
     }
     if (x.month !== -1 &amp;&amp; Date.validateMonth(x.month)) {
-        this.addMonths(x.month - this.getMonth()); 
+        this.addMonths(x.month - this.getMonth());
     }
     if (x.year != -1 &amp;&amp; Date.validateYear(x.year)) {
-        this.addYears(x.year - this.getFullYear()); 
+        this.addYears(x.year - this.getFullYear());
     }
-    
-	/* day has to go last because you can't validate the day without first knowing the month */
+
+  /* day has to go last because you can't validate the day without first knowing the month */
     if (x.day != -1 &amp;&amp; Date.validateDay(x.day, this.getFullYear(), this.getMonth())) {
-        this.addDays(x.day - this.getDate()); 
+        this.addDays(x.day - this.getDate());
     }
-    if (x.timezone) { 
-        this.setTimezone(x.timezone); 
+    if (x.timezone) {
+        this.setTimezone(x.timezone);
     }
-    if (x.timezoneOffset) { 
-        this.setTimezoneOffset(x.timezoneOffset); 
+    if (x.timezoneOffset) {
+        this.setTimezoneOffset(x.timezoneOffset);
     }
-    
-    return this;   
+
+    return this;
 };
 
 /**
@@ -688,10 +688,10 @@ Date.prototype.set = function (config) {
  * @return {Date}    this
  */
 Date.prototype.clearTime = function () {
-    this.setHours(0); 
-    this.setMinutes(0); 
+    this.setHours(0);
+    this.setMinutes(0);
     this.setSeconds(0);
-    this.setMilliseconds(0); 
+    this.setMilliseconds(0);
     return this;
 };
 
@@ -699,16 +699,16 @@ Date.prototype.clearTime = function () {
  * Determines whether or not this instance is in a leap year.
  * @return {Boolean} true if this instance is in a leap year, else false
  */
-Date.prototype.isLeapYear = function () { 
-    var y = this.getFullYear(); 
-    return (((y % 4 === 0) &amp;&amp; (y % 100 !== 0)) || (y % 400 === 0)); 
+Date.prototype.isLeapYear = function () {
+    var y = this.getFullYear();
+    return (((y % 4 === 0) &amp;&amp; (y % 100 !== 0)) || (y % 400 === 0));
 };
 
 /**
  * Determines whether or not this instance is a weekday.
  * @return {Boolean} true if this instance is a weekday
  */
-Date.prototype.isWeekday = function () { 
+Date.prototype.isWeekday = function () {
     return !(this.is().sat() || this.is().sun());
 };
 
@@ -716,7 +716,7 @@ Date.prototype.isWeekday = function () {
  * Get the number of days in the current month, adjusted for leap year.
  * @return {Number}  The number of days in the month
  */
-Date.prototype.getDaysInMonth = function () { 
+Date.prototype.getDaysInMonth = function () {
     return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
 };
 
@@ -732,7 +732,7 @@ Date.prototype.moveToFirstDayOfMonth = function () {
  * Moves the date to the last day of the month.
  * @return {Date}    this
  */
-Date.prototype.moveToLastDayOfMonth = function () { 
+Date.prototype.moveToLastDayOfMonth = function () {
     return this.set({ day: this.getDaysInMonth()});
 };
 
@@ -773,9 +773,9 @@ Date.prototype.getDayOfYear = function () {
  */
 Date.prototype.getWeekOfYear = function (firstDayOfWeek) {
     var y = this.getFullYear(), m = this.getMonth(), d = this.getDate();
-    
+
     var dow = firstDayOfWeek || Date.CultureInfo.firstDayOfWeek;
-	
+
     var offset = 7 + 1 - new Date(y, 0, 1).getDay();
     if (offset == 8) {
         offset = 1;
@@ -785,10 +785,10 @@ Date.prototype.getWeekOfYear = function (firstDayOfWeek) {
     if (w === dow) {
         y--;
         var prevOffset = 7 + 1 - new Date(y, 0, 1).getDay();
-        if (prevOffset == 2 || prevOffset == 8) { 
-            w = 53; 
-        } else { 
-            w = 52; 
+        if (prevOffset == 2 || prevOffset == 8) {
+            w = 53;
+        } else {
+            w = 52;
         }
     }
     return w;
@@ -814,12 +814,12 @@ Date.prototype.getTimezone = function () {
 
 Date.prototype.setTimezoneOffset = function (s) {
     var here = this.getTimezoneOffset(), there = Number(s) * -6 / 10;
-    this.addMinutes(there - here); 
+    this.addMinutes(there - here);
     return this;
 };
 
-Date.prototype.setTimezone = function (s) { 
-    return this.setTimezoneOffset(Date.getTimezoneOffset(s)); 
+Date.prototype.setTimezone = function (s) {
+    return this.setTimezoneOffset(Date.getTimezoneOffset(s));
 };
 
 /**
@@ -828,12 +828,12 @@ Date.prototype.setTimezone = function (s) {
  */
 Date.prototype.getUTCOffset = function () {
     var n = this.getTimezoneOffset() * -10 / 6, r;
-    if (n &lt; 0) { 
-        r = (n - 10000).toString(); 
-        return r[0] + r.substr(2); 
-    } else { 
-        r = (n + 10000).toString();  
-        return "+" + r.substr(1); 
+    if (n &lt; 0) {
+        r = (n - 10000).toString();
+        return r[0] + r.substr(2);
+    } else {
+        r = (n + 10000).toString();
+        return "+" + r.substr(1);
     }
 };
 
@@ -843,7 +843,7 @@ Date.prototype.getUTCOffset = function () {
  * @return {String}  The name of the day
  */
 Date.prototype.getDayName = function (abbrev) {
-    return abbrev ? Date.CultureInfo.abbreviatedDayNames[this.getDay()] : 
+    return abbrev ? Date.CultureInfo.abbreviatedDayNames[this.getDay()] :
         Date.CultureInfo.dayNames[this.getDay()];
 };
 
@@ -853,7 +853,7 @@ Date.prototype.getDayName = function (abbrev) {
  * @return {String}  The name of the month
  */
 Date.prototype.getMonthName = function (abbrev) {
-    return abbrev ? Date.CultureInfo.abbreviatedMonthNames[this.getMonth()] : 
+    return abbrev ? Date.CultureInfo.abbreviatedMonthNames[this.getMonth()] :
         Date.CultureInfo.monthNames[this.getMonth()];
 };
 
@@ -868,21 +868,21 @@ Format  Description                                                             
 ------  ---------------------------------------------------------------------------  -----------------------
  s      The seconds of the minute between 1-59.                                      "1" to "59"
  ss     The seconds of the minute with leading zero if required.                     "01" to "59"
- 
+
  m      The minute of the hour between 0-59.                                         "1"  or "59"
  mm     The minute of the hour with leading zero if required.                        "01" or "59"
- 
+
  h      The hour of the day between 1-12.                                            "1"  to "12"
  hh     The hour of the day with leading zero if required.                           "01" to "12"
- 
+
  H      The hour of the day between 1-23.                                            "1"  to "23"
  HH     The hour of the day with leading zero if required.                           "01" to "23"
- 
+
  d      The day of the month between 1 and 31.                                       "1"  to "31"
  dd     The day of the month with leading zero if required.                          "01" to "31"
- ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                  "Mon" to "Sun" 
+ ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                  "Mon" to "Sun"
  dddd   The full day name. Date.CultureInfo.dayNames.                                "Monday" to "Sunday"
- 
+
  M      The month of the year between 1-12.                                          "1" to "12"
  MM     The month of the year with leading zero if required.                         "01" to "12"
  MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.              "Jan" to "Dec"
@@ -890,7 +890,7 @@ Format  Description                                                             
 
  yy     Displays the year as a maximum two-digit number.                             "99" or "07"
  yyyy   Displays the full four digit year.                                           "1999" or "2007"
- 
+
  t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
         Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
  tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
@@ -906,7 +906,7 @@ Date.prototype.toString = function (format) {
         return (s.toString().length == 1) ? "0" + s : s;
     };
 
-    return format ? format.replace(/dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|zz?z?/g, 
+    return format ? format.replace(/dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|zz?z?/g,
     function (format) {
         switch (format) {
         case "hh":
@@ -959,14 +959,14 @@ Date.prototype.toString = function (format) {
 };
 
 /**
- * Version: 1.0 Alpha-1 
+ * Version: 1.0 Alpha-1
  * Build Date: 12-Nov-2007
  * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
- * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
  * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
  */
- 
-/* 
+
+/*
  * TimeSpan(days, hours, minutes, seconds, milliseconds);
  * TimeSpan(milliseconds);
  */
@@ -976,18 +976,18 @@ TimeSpan = function (days, hours, minutes, seconds, milliseconds) {
     this.minutes = 0;
     this.seconds = 0;
     this.milliseconds = 0;
-    
-    if (arguments.length == 5) { 
-        this.days = days; 
-        this.hours = hours; 
-        this.minutes = minutes; 
-        this.seconds = seconds; 
-        this.milliseconds = milliseconds; 
-    } 
+
+    if (arguments.length == 5) {
+        this.days = days;
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
+        this.milliseconds = milliseconds;
+    }
     else if (arguments.length == 1 &amp;&amp; typeof days == "number") {
         var orient = (days &lt; 0) ? -1 : +1;
         this.milliseconds = Math.abs(days);
-        
+
         this.days = Math.floor(this.milliseconds / (24 * 60 * 60 * 1000)) * orient;
         this.milliseconds = this.milliseconds % (24 * 60 * 60 * 1000);
 
@@ -1002,7 +1002,7 @@ TimeSpan = function (days, hours, minutes, seconds, milliseconds) {
 
         this.milliseconds = this.milliseconds * orient;
         return this;
-    } 
+    }
     else {
         return null;
     }
@@ -1010,52 +1010,52 @@ TimeSpan = function (days, hours, minutes, seconds, milliseconds) {
 
 TimeSpan.prototype.compare = function (timeSpan) {
     var t1 = new Date(1970, 1, 1, this.hours(), this.minutes(), this.seconds()), t2;
-    if (timeSpan === null) { 
-        t2 = new Date(1970, 1, 1, 0, 0, 0); 
+    if (timeSpan === null) {
+        t2 = new Date(1970, 1, 1, 0, 0, 0);
     }
-    else { 
-        t2 = new Date(1970, 1, 1, timeSpan.hours(), timeSpan.minutes(), timeSpan.seconds()); /* t2 = t2.addDays(timeSpan.days()); */ 
+    else {
+        t2 = new Date(1970, 1, 1, timeSpan.hours(), timeSpan.minutes(), timeSpan.seconds()); /* t2 = t2.addDays(timeSpan.days()); */
     }
     return (t1 &gt; t2) ? 1 : (t1 &lt; t2) ? -1 : 0;
 };
 
-TimeSpan.prototype.add = function (timeSpan) { 
-    return (timeSpan === null) ? this : this.addSeconds(timeSpan.getTotalMilliseconds() / 1000); 
+TimeSpan.prototype.add = function (timeSpan) {
+    return (timeSpan === null) ? this : this.addSeconds(timeSpan.getTotalMilliseconds() / 1000);
 };
 
-TimeSpan.prototype.subtract = function (timeSpan) { 
-    return (timeSpan === null) ? this : this.addSeconds(-timeSpan.getTotalMilliseconds() / 1000); 
+TimeSpan.prototype.subtract = function (timeSpan) {
+    return (timeSpan === null) ? this : this.addSeconds(-timeSpan.getTotalMilliseconds() / 1000);
 };
 
-TimeSpan.prototype.addDays = function (n) { 
-    return new TimeSpan(this.getTotalMilliseconds() + (n * 24 * 60 * 60 * 1000)); 
+TimeSpan.prototype.addDays = function (n) {
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 24 * 60 * 60 * 1000));
 };
 
-TimeSpan.prototype.addHours = function (n) { 
-    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 60 * 1000)); 
+TimeSpan.prototype.addHours = function (n) {
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 60 * 1000));
 };
 
-TimeSpan.prototype.addMinutes = function (n) { 
-    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 1000)); 
+TimeSpan.prototype.addMinutes = function (n) {
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 1000));
 };
 
 TimeSpan.prototype.addSeconds = function (n) {
-    return new TimeSpan(this.getTotalMilliseconds() + (n * 1000)); 
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 1000));
 };
 
 TimeSpan.prototype.addMilliseconds = function (n) {
-    return new TimeSpan(this.getTotalMilliseconds() + n); 
+    return new TimeSpan(this.getTotalMilliseconds() + n);
 };
 
 TimeSpan.prototype.getTotalMilliseconds = function () {
-    return (this.days() * (24 * 60 * 60 * 1000)) + (this.hours() * (60 * 60 * 1000)) + (this.minutes() * (60 * 1000)) + (this.seconds() * (1000)); 
+    return (this.days() * (24 * 60 * 60 * 1000)) + (this.hours() * (60 * 60 * 1000)) + (this.minutes() * (60 * 1000)) + (this.seconds() * (1000));
 };
 
 TimeSpan.prototype.get12HourHour = function () {
-    return ((h = this.hours() % 12) ? h : 12); 
+    return ((h = this.hours() % 12) ? h : 12);
 };
 
-TimeSpan.prototype.getDesignator = function () { 
+TimeSpan.prototype.getDesignator = function () {
     return (this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator;
 };
 
@@ -1064,47 +1064,47 @@ TimeSpan.prototype.toString = function (format) {
         if (this.days() !== null &amp;&amp; this.days() &gt; 0) {
             return this.days() + "." + this.hours() + ":" + p(this.minutes()) + ":" + p(this.seconds());
         }
-        else { 
+        else {
             return this.hours() + ":" + p(this.minutes()) + ":" + p(this.seconds());
         }
     }
     function p(s) {
         return (s.toString().length &lt; 2) ? "0" + s : s;
-    } 
+    }
     var self = this;
-    return format ? format.replace(/d|dd|HH|H|hh|h|mm|m|ss|s|tt|t/g, 
+    return format ? format.replace(/d|dd|HH|H|hh|h|mm|m|ss|s|tt|t/g,
     function (format) {
         switch (format) {
-        case "d":	
+        case "d":
             return self.days();
-        case "dd":	
+        case "dd":
             return p(self.days());
-        case "H":	
+        case "H":
             return self.hours();
-        case "HH":	
+        case "HH":
             return p(self.hours());
-        case "h":	
+        case "h":
             return self.get12HourHour();
-        case "hh":	
+        case "hh":
             return p(self.get12HourHour());
-        case "m":	
+        case "m":
             return self.minutes();
-        case "mm":	
+        case "mm":
             return p(self.minutes());
-        case "s":	
+        case "s":
             return self.seconds();
-        case "ss":	
+        case "ss":
             return p(self.seconds());
-        case "t":	
+        case "t":
             return ((this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator).substring(0, 1);
-        case "tt":	
+        case "tt":
             return (this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator;
         }
     }
     ) : this._toString();
 };
 
-/* 
+/*
  * TimePeriod(startDate, endDate);
  */
 var TimePeriod = function (years, months, days, hours, minutes, seconds, milliseconds) {
@@ -1115,19 +1115,19 @@ var TimePeriod = function (years, months, days, hours, minutes, seconds, millise
     this.minutes = 0;
     this.seconds = 0;
     this.milliseconds = 0;
-    
+
     // startDate and endDate as arguments
     if (arguments.length == 2 &amp;&amp; arguments[0] instanceof Date &amp;&amp; arguments[1] instanceof Date) {
-    
+
         var date1 = years.clone();
         var date2 = months.clone();
-    
+
         var temp = date1.clone();
         var orient = (date1 &gt; date2) ? -1 : +1;
-        
+
         this.years = date2.getFullYear() - date1.getFullYear();
         temp.addYears(this.years);
-        
+
         if (orient == +1) {
             if (temp &gt; date2) {
                 if (this.years !== 0) {
@@ -1141,7 +1141,7 @@ var TimePeriod = function (years, months, days, hours, minutes, seconds, millise
                 }
             }
         }
-        
+
         date1.addYears(this.years);
 
         if (orient == +1) {
@@ -1156,12 +1156,12 @@ var TimePeriod = function (years, months, days, hours, minutes, seconds, millise
                 this.months--;
             }
         }
-        
+
         var diff = date2 - date1;
 
         if (diff !== 0) {
             var ts = new TimeSpan(diff);
-            
+
             this.days = ts.days;
             this.hours = ts.hours;
             this.minutes = ts.minutes;
@@ -1172,14 +1172,14 @@ var TimePeriod = function (years, months, days, hours, minutes, seconds, millise
         // UTC Hacks required...
         return this;
     }
- 
+
 };
 
 /**
- * Version: 1.0 Alpha-1 
+ * Version: 1.0 Alpha-1
  * Build Date: 12-Nov-2007
  * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
- * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
  * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
  */
 
@@ -1188,16 +1188,16 @@ var TimePeriod = function (years, months, days, hours, minutes, seconds, millise
  ** SugarPak - Domain Specific Language -  Syntactical Sugar **
  **************************************************************
  */
- 
+
 /**
- * Gets a date that is set to the current date and time. 
+ * Gets a date that is set to the current date and time.
  * @return {Date}    The current date and time.
  */
 Date.now = function () {
     return new Date();
 };
 
-/** 
+/**
  * Gets a date that is set to the current date. The time is set to the start of the day (00:00 or 12:00 AM).
  * @return {Date}    The current date.
  */
@@ -1208,7 +1208,7 @@ Date.today = function () {
 // private
 Date.prototype._orient = +1;
 
-/** 
+/**
  * Moves the date to the next instance of a date as specified by a trailing date element function (eg. .day(), .month()), month name function (eg. .january(), .jan()) or day name function (eg. .friday(), fri()).
  * Example
 &lt;pre&gt;&lt;code&gt;
@@ -1218,7 +1218,7 @@ Date.today().next().march();
 Date.today().next().mar();
 Date.today().next().week();
 &lt;/code&gt;&lt;/pre&gt;
- * 
+ *
  * @return {Date}    this
  */
 Date.prototype.next = function () {
@@ -1226,7 +1226,7 @@ Date.prototype.next = function () {
     return this;
 };
 
-/** 
+/**
  * Moves the date to the previous instance of a date as specified by a trailing date element function (eg. .day(), .month()), month name function (eg. .january(), .jan()) or day name function (eg. .friday(), fri()).
  * Example
 &lt;pre&gt;&lt;code&gt;
@@ -1236,7 +1236,7 @@ Date.today().last().march();
 Date.today().last().mar();
 Date.today().last().week();
 &lt;/code&gt;&lt;/pre&gt;
- *  
+ *
  * @return {Date}    this
  */
 Date.prototype.last = Date.prototype.prev = Date.prototype.previous = function () {
@@ -1246,8 +1246,8 @@ Date.prototype.last = Date.prototype.prev = Date.prototype.previous = function (
 
 // private
 Date.prototype._is = false;
-    
-/** 
+
+/**
  * Performs a equality check when followed by either a month name or day name function.
  * Example
 &lt;pre&gt;&lt;code&gt;
@@ -1256,18 +1256,18 @@ Date.today().is().fri();
 Date.today().is().march();
 Date.today().is().mar();
 &lt;/code&gt;&lt;/pre&gt;
- *  
+ *
  * @return {bool}    true|false
  */
-Date.prototype.is = function () { 
-    this._is = true; 
-    return this; 
-}; 
+Date.prototype.is = function () {
+    this._is = true;
+    return this;
+};
 
 // private
 Number.prototype._dateElement = "day";
 
-/** 
+/**
  * Creates a new Date (Date.now()) and adds this (Number) to the date based on the preceding date element function (eg. second|minute|hour|day|month|year).
  * Example
 &lt;pre&gt;&lt;code&gt;
@@ -1275,11 +1275,11 @@ Number.prototype._dateElement = "day";
 (3).days().fromNow();
 (6).months().fromNow();
 
-// Declared Number variables do not require parentheses. 
+// Declared Number variables do not require parentheses.
 var n = 6;
 n.months().fromNow();
 &lt;/code&gt;&lt;/pre&gt;
- *  
+ *
  * @return {Date}    A new Date instance
  */
 Number.prototype.fromNow = function () {
@@ -1288,7 +1288,7 @@ Number.prototype.fromNow = function () {
     return Date.now().add(c);
 };
 
-/** 
+/**
  * Creates a new Date (Date.now()) and subtract this (Number) from the date based on the preceding date element function (eg. second|minute|hour|day|month|year).
  * Example
 &lt;pre&gt;&lt;code&gt;
@@ -1296,11 +1296,11 @@ Number.prototype.fromNow = function () {
 (3).days().ago();
 (6).months().ago();
 
-// Declared Number variables do not require parentheses. 
+// Declared Number variables do not require parentheses.
 var n = 6;
 n.months().ago();
 &lt;/code&gt;&lt;/pre&gt;
- *  
+ *
  * @return {Date}    A new Date instance
  */
 Number.prototype.ago = function () {
@@ -1318,47 +1318,47 @@ Number.prototype.ago = function () {
         mx = ("january february march april may june july august september october november december").split(/\s/),
         px = ("Millisecond Second Minute Hour Day Week Month Year").split(/\s/),
         de;
-    
+
     // Create day name functions and abbreviated day name functions (eg. monday(), friday(), fri()).
     var df = function (n) {
-        return function () { 
-            if (this._is) { 
-                this._is = false; 
-                return this.getDay() == n; 
+        return function () {
+            if (this._is) {
+                this._is = false;
+                return this.getDay() == n;
             }
             return this.moveToDayOfWeek(n, this._orient);
         };
     };
-    
-    for (var i = 0 ; i &lt; dx.length ; i++) { 
+
+    for (var i = 0 ; i &lt; dx.length ; i++) {
         $D[dx[i]] = $D[dx[i].substring(0, 3)] = df(i);
     }
-    
+
     // Create month name functions and abbreviated month name functions (eg. january(), march(), mar()).
-    var mf = function (n) { 
+    var mf = function (n) {
         return function () {
-            if (this._is) { 
-                this._is = false; 
-                return this.getMonth() === n; 
+            if (this._is) {
+                this._is = false;
+                return this.getMonth() === n;
             }
-            return this.moveToMonth(n, this._orient); 
+            return this.moveToMonth(n, this._orient);
         };
     };
-    
-    for (var j = 0 ; j &lt; mx.length ; j++) { 
+
+    for (var j = 0 ; j &lt; mx.length ; j++) {
         $D[mx[j]] = $D[mx[j].substring(0, 3)] = mf(j);
     }
-    
+
     // Create date element functions and plural date element functions used with Date (eg. day(), days(), months()).
-    var ef = function (j) { 
+    var ef = function (j) {
         return function () {
-            if (j.substring(j.length - 1) != "s") { 
-                j += "s"; 
+            if (j.substring(j.length - 1) != "s") {
+                j += "s";
             }
-            return this["add" + j](this._orient); 
+            return this["add" + j](this._orient);
         };
     };
-    
+
     // Create date element functions and plural date element functions used with Number (eg. day(), days(), months()).
     var nf = function (n) {
         return function () {
@@ -1366,7 +1366,7 @@ Number.prototype.ago = function () {
             return this;
         };
     };
-    
+
     for (var k = 0 ; k &lt; px.length ; k++) {
         de = px[k].toLowerCase();
         $D[de] = $D[de + "s"] = ef(px[k]);
@@ -1420,17 +1420,17 @@ Date.prototype.toLongTimeString = function () {
  */
 Date.prototype.getOrdinal = function () {
     switch (this.getDate()) {
-    case 1: 
-    case 21: 
-    case 31: 
+    case 1:
+    case 21:
+    case 31:
         return "st";
-    case 2: 
-    case 22: 
+    case 2:
+    case 22:
         return "nd";
-    case 3: 
-    case 23: 
+    case 3:
+    case 23:
         return "rd";
-    default: 
+    default:
         return "th";
     }
 };
@@ -1469,7 +1469,7 @@ Date.prototype.setAsUTC = function() {
    this.setUTCFullYear( year );
    this.setUTCHours( hours );
    this.setUTCMinutes( minutes );
-} 
+}
 Date.prototype.toFormattedString = function(display_options){
    var hour, str;
    var mask = display_options.format_mask;
@@ -1678,7 +1678,7 @@ CalendarDateSelect = Class.create({
     this.target_element = $(target_element); // make sure it's an element, not a string
     if (!this.target_element) { alert("Target element " + target_element + " not found!"); return false;}
     if (this.target_element.tagName != "INPUT") this.target_element = this.target_element.down("INPUT")
-    
+
     this.target_element.calendar_date_select = this;
     this.last_click_at = 0;
     // initialize the date control
@@ -1687,9 +1687,9 @@ CalendarDateSelect = Class.create({
     this.options.onchange = this.options.onchange || this.target_element.onchange;
     // change the format to reflect the options
     var mask = this.target_element.title || this.options.format_mask || this.options.default_format_mask;
-    if (this.options.time &amp;&amp; 
-         !mask.toLowerCase().include('h') &amp;&amp; 
-         !mask.include('m') &amp;&amp; 
+    if (this.options.time &amp;&amp;
+         !mask.toLowerCase().include('h') &amp;&amp;
+         !mask.include('m') &amp;&amp;
          !mask.include('a')) {
       if( this.options.hour_format_12 ) {
         this.options.format_mask = mask + " hh:mm tt";
@@ -1740,7 +1740,7 @@ CalendarDateSelect = Class.create({
         c_top = c_pos[1],
         c_dim = this.calendar_div.getDimensions(),
         c_height = c_dim.height,
-        c_width = c_dim.width; 
+        c_width = c_dim.width;
     var w_top = document.viewport.getScrollOffsets().top,
         w_height = document.viewport.getHeight();
     var e_dim = $(this.options.popup_by).cumulativeOffset(),
@@ -1748,18 +1748,18 @@ CalendarDateSelect = Class.create({
         e_left = e_dim[0],
         e_height = $(this.options.popup_by).getDimensions().height,
         e_bottom = e_top + e_height;
-    
+
     if ((( e_bottom + c_height ) &gt; (w_top + w_height)) &amp;&amp; ( e_bottom - c_height &gt; w_top )) {
       above = true;
     }
     var left_px = e_left.toString() + "px",
         top_px = (above ? (e_top - c_height ) : ( e_top + e_height )).toString() + "px";
-    
+
     this.calendar_div.style.left = left_px;
     this.calendar_div.style.top = top_px;
-    
+
     this.calendar_div.setStyle({visibility : ''});
-    
+
     // draw an iframe behind the calendar -- ugly hack to make IE 6 happy
     if(navigator.appName=="Microsoft Internet Explorer") {
       this.iframe = this.newElement('iframe', {
@@ -1778,18 +1778,18 @@ CalendarDateSelect = Class.create({
       var style = { position:"absolute", visibility: "hidden", left:0, top:0 }
     }
     this.calendar_div = this.newElement('div', {'parent' : $(parent), attrs: {'class': "calendar_date_select"}, 'style' : style});
-    
+
     var context = this;
     // create the divs
     $w("top header body buttons footer bottom").each(function(name) {
       eval("context." + name + "_div = context.newElement('div', {parent : context.calendar_div, attrs : { 'class': 'cds_part cds_" + name + "' } }); ");
     });
-    
+
     this.initHeaderDiv();
     this.initButtonsDiv();
     this.initCalendarGrid();
     this.updateFooter("&amp;#160;");
-    
+
     this.refresh();
     this.setUseTime(this.use_time);
   },
@@ -1834,13 +1834,13 @@ CalendarDateSelect = Class.create({
         $R(0,11).map(function(m){return [dateUtils.months[m], m]}),
         "month",
         this.navMonth.bindAsEventListener(this)
-      ); 
+      );
       this.year_select = new SelectBox(
         this.header_div,
         [],
         "year",
         this.navYear.bindAsEventListener(this)
-      ); 
+      );
       this.populateYearRange();
     } else {
       this.month_year_label = this.newElement("span", {parent : this.header_div});
@@ -1859,7 +1859,7 @@ CalendarDateSelect = Class.create({
     this.dateUtils.weekdays.each( function(weekday) {
       Element.insert(weekdays_row, new Element('th').update(isLatin(weekday) ? weekday.substring(0,2) : weekday));
     });
-    
+
     var days_tbody = this.newElement('tbody', {parent : days_table});
     var row_number = 0, weekday;
     for (var cell_index = 0; cell_index &lt; 42; cell_index++) {
@@ -1889,19 +1889,19 @@ CalendarDateSelect = Class.create({
       }
       return formatted;
     }
-    
+
     var buttons_div = this.buttons_div;
     var time_div = this.newElement('div', {parent : buttons_div, attrs : {'class': "timediv"}});
     if (this.options.time) {
       var blank_time = $A(this.options.time == "mixed" ? [[" - ", ""]] : []);
       time_div.update(new Element("span", {'class': "at_sign"}).update('@'));
-      
+
       if (this.options.hour_format_12) {
         var t = new Date();
         blank_time = blank_time.concat($R(0, 23).map(function(x) {
           t.setHours(x); return $A([this.dateUtils.getAMPMHour(t) + " " + this.dateUtils.getAMPM(t), x])
         }));
-      } else { 
+      } else {
         blank_time = blank_time.concat($R(0, 23).map(function(x) {
           return $A([_formatNumber0d(x), x])
         }));
@@ -1913,7 +1913,7 @@ CalendarDateSelect = Class.create({
         this.calendar_date_select.updateSelectedDate.bind(this, {hour: this.value })
       );
       this.hour_select.calendar_date_select = this;
-      
+
       time_div.insert(new Element ("span", {'class' : "separator"}).update(':'));
       var context = this;
       blank_time = $A([]);
@@ -1928,11 +1928,11 @@ CalendarDateSelect = Class.create({
         this.calendar_date_select.updateSelectedDate.bind(this, {minute: this.value})
       );
       this.minute_select.calendar_date_select = this;
-      
+
     } else if (!this.options.buttons) {
       buttons_div.remove();
     }
-    
+
     if (this.options.buttons) {
       var _insertButton = function(parent, textKey, clickListener) {
         this.newElement("a", {
@@ -1949,7 +1949,7 @@ CalendarDateSelect = Class.create({
           attrs : {'class' : "button_separator"}
         })
       }.bind(this);
-      
+
       this.newElement('span', {parent : buttons_div, content : "&amp;#160;"});
       if (this.options.time == "mixed" || !this.options.time) {
         _insertButton(buttons_div, "Today", function(event) {this.today(false); event.stop(); return false;}.bindAsEventListener(this));
@@ -1973,7 +1973,7 @@ CalendarDateSelect = Class.create({
   refresh: function () {
     this.refreshMonthYear();
     this.refreshCalendarGrid();
-    
+
     this.setSelectedClass();
     this.updateFooter();
   },
@@ -1984,9 +1984,9 @@ CalendarDateSelect = Class.create({
     var pre_days = this.beginning_date.getDay() // draw some days before the fact
     if (pre_days &lt; 3) pre_days += 7;
     this.beginning_date.setDate(1 - pre_days + this.dateUtils.firstDayOfWeek);
-    
+
     var iterator = new Date(this.beginning_date);
-    
+
     var today = new Date().clearTime();
     var this_month = this.date.getMonth();
     vdc = this.options.valid_date_check;
@@ -2007,36 +2007,36 @@ CalendarDateSelect = Class.create({
       }
       iterator.setDate(day + 1);
     }
-    
+
     if (this.today_cell) {
       this.today_cell.removeClassName("today");
     }
-    
+
     if ($R(0, 41).include(days_until = this.dateUtils.daysDistance(this.beginning_date.clearTime(), (today)))) {
       this.today_cell = this.calendar_day_grid[days_until];
       this.today_cell.addClassName("today");
     }
   },
-  
+
   refreshMonthYear : function() {
     var m = this.date.getMonth();
     var y = this.date.getFullYear();
     // set the month
     if (this.options.month_year == "dropdowns") {
       this.month_select.setValue(m, false);
-      var e = this.year_select.element; 
+      var e = this.year_select.element;
       if (this.flexibleYearRange() &amp;&amp;
         (!(this.year_select.setValue(y, false)) || e.selectedIndex &lt;= 1 || e.selectedIndex &gt;= e.options.length - 2 )
       ) {
         this.populateYearRange();
       }
       this.year_select.setValue(y);
-      
+
     } else {
       this.month_year_label.update(this.dateUtils.months[m] + " " + y.toString());
     }
   },
-  
+
   populateYearRange : function() {
     this.year_select.populate(this.yearRange().toArray());
   },
@@ -2124,7 +2124,7 @@ CalendarDateSelect = Class.create({
     if (parts.get("day")) {
       var t_selected_date = this.selected_date, vdc = this.options.valid_date_check;
       t_selected_date.setFullYear(parts.get("year"), parts.get("month"), parts.get("day"));
-      
+
       if (vdc &amp;&amp; ! vdc(t_selected_date.clearTime())) { return false; }
       this.selected_date = t_selected_date;
       this.selection_made = true;
@@ -2188,7 +2188,7 @@ CalendarDateSelect = Class.create({
     if (this.use_time &amp;&amp; this.selected_date) { // only set hour/minute if a date is already selected
       var minute = this.alignMinutesToInterval(this.selected_date.getMinutes());
       var hour = this.selected_date.getHours();
-      
+
       this.hour_select.setValue(hour);
       this.minute_select.setValue(minute)
     } else if (this.options.time == "mixed") {
@@ -2206,7 +2206,7 @@ CalendarDateSelect = Class.create({
   today: function(now) {
     var d = new Date(); this.date = new Date();
     var o = $H({ day: d.getDate(), month: d.getMonth(), year: d.getFullYear(), hour: d.getHours(), minute: d.getMinutes()});
-    if ( ! now ) o = o.merge({hour: "", minute:""}); 
+    if ( ! now ) o = o.merge({hour: "", minute:""});
     this.updateSelectedDate(o, true);
     this.refresh();
   },
@@ -2466,20 +2466,20 @@ document.observe('xwiki:dom:loaded', function () {
     <property>
       <code>/**
  * Copyright 2007 Tim Down.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 /**
  * simpledateformat.js
  *
@@ -2489,7 +2489,7 @@ document.observe('xwiki:dom:loaded', function () {
  *
  * Thanks to Ash Searle (http://hexmen.com/blog/) for his fix to my
  * misinterpretation of pattern letters h and k.
- * 
+ *
  * See the official Sun documentation for the Java version:
  * http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html
  *
@@ -2497,285 +2497,285 @@ document.observe('xwiki:dom:loaded', function () {
  * Last modified: 6/2/2007
  * Website: http://www.timdown.co.uk/code/simpledateformat.php
  */
- 
+
 /* ------------------------------------------------------------------------- */
 
 var SimpleDateFormat;
 
 (function() {
-	function isUndefined(obj) {
-		return typeof obj == "undefined";
-	}
+  function isUndefined(obj) {
+    return typeof obj == "undefined";
+  }
 
-	var regex = /('[^']*')|(G+|y+|M+|w+|W+|D+|d+|F+|E+|a+|H+|k+|K+|h+|m+|s+|S+|Z+)|([a-zA-Z]+)|([^a-zA-Z']+)/;
-	var monthNames = Date.CultureInfo.monthNames;
-	var dayNames = Date.CultureInfo.dayNames;
-	var TEXT2 = 0, TEXT3 = 1, NUMBER = 2, YEAR = 3, MONTH = 4, TIMEZONE = 5;
-	var types = {
-		G : TEXT2,
-		y : YEAR,
-		M : MONTH,
-		w : NUMBER,
-		W : NUMBER,
-		D : NUMBER,
-		d : NUMBER,
-		F : NUMBER,
-		E : TEXT3,
-		a : TEXT2,
-		H : NUMBER,
-		k : NUMBER,
-		K : NUMBER,
-		h : NUMBER,
-		m : NUMBER,
-		s : NUMBER,
-		S : NUMBER,
-		Z : TIMEZONE
-	};
-	var ONE_DAY = 24 * 60 * 60 * 1000;
-	var ONE_WEEK = 7 * ONE_DAY;
-	var DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK = 1;
+  var regex = /('[^']*')|(G+|y+|M+|w+|W+|D+|d+|F+|E+|a+|H+|k+|K+|h+|m+|s+|S+|Z+)|([a-zA-Z]+)|([^a-zA-Z']+)/;
+  var monthNames = Date.CultureInfo.monthNames;
+  var dayNames = Date.CultureInfo.dayNames;
+  var TEXT2 = 0, TEXT3 = 1, NUMBER = 2, YEAR = 3, MONTH = 4, TIMEZONE = 5;
+  var types = {
+    G : TEXT2,
+    y : YEAR,
+    M : MONTH,
+    w : NUMBER,
+    W : NUMBER,
+    D : NUMBER,
+    d : NUMBER,
+    F : NUMBER,
+    E : TEXT3,
+    a : TEXT2,
+    H : NUMBER,
+    k : NUMBER,
+    K : NUMBER,
+    h : NUMBER,
+    m : NUMBER,
+    s : NUMBER,
+    S : NUMBER,
+    Z : TIMEZONE
+  };
+  var ONE_DAY = 24 * 60 * 60 * 1000;
+  var ONE_WEEK = 7 * ONE_DAY;
+  var DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK = 1;
 
-	var newDateAtMidnight = function(year, month, day) {
-		var d = new Date(year, month, day, 0, 0, 0);
-		d.setMilliseconds(0);
-		return d;
-	}
+  var newDateAtMidnight = function(year, month, day) {
+    var d = new Date(year, month, day, 0, 0, 0);
+    d.setMilliseconds(0);
+    return d;
+  }
 
-	Date.prototype.getDifference = function(date) {
-		return this.getTime() - date.getTime();
-	};
+  Date.prototype.getDifference = function(date) {
+    return this.getTime() - date.getTime();
+  };
 
-	Date.prototype.isBefore = function(d) {
-		return this.getTime() &lt; d.getTime();
-	};
+  Date.prototype.isBefore = function(d) {
+    return this.getTime() &lt; d.getTime();
+  };
 
-	Date.prototype.getUTCTime = function() {
-		return Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), this.getHours(), this.getMinutes(),
-				this.getSeconds(), this.getMilliseconds());
-	};
+  Date.prototype.getUTCTime = function() {
+    return Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), this.getHours(), this.getMinutes(),
+        this.getSeconds(), this.getMilliseconds());
+  };
 
-	Date.prototype.getTimeSince = function(d) {
-		return this.getUTCTime() - d.getUTCTime();
-	};
+  Date.prototype.getTimeSince = function(d) {
+    return this.getUTCTime() - d.getUTCTime();
+  };
 
-	Date.prototype.getPreviousSunday = function() {
-		// Using midday avoids any possibility of DST messing things up
-		var midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
-		var previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
-		return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(),
-				previousSunday.getDate());
-	}
+  Date.prototype.getPreviousSunday = function() {
+    // Using midday avoids any possibility of DST messing things up
+    var midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
+    var previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
+    return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(),
+        previousSunday.getDate());
+  }
 
-	Date.prototype.getWeekInYear = function(minimalDaysInFirstWeek) {
-		if (isUndefined(this.minimalDaysInFirstWeek)) {
-			minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
-		}
-		var previousSunday = this.getPreviousSunday();
-		var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
-		var numberOfSundays = previousSunday.isBefore(startOfYear) ?
-			0 : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
-		var numberOfDaysInFirstWeek =  7 - startOfYear.getDay();
-		var weekInYear = numberOfSundays;
-		if (numberOfDaysInFirstWeek &lt; minimalDaysInFirstWeek) {
-			weekInYear--;
-		}
-		return weekInYear;
-	};
+  Date.prototype.getWeekInYear = function(minimalDaysInFirstWeek) {
+    if (isUndefined(this.minimalDaysInFirstWeek)) {
+      minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
+    }
+    var previousSunday = this.getPreviousSunday();
+    var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
+    var numberOfSundays = previousSunday.isBefore(startOfYear) ?
+      0 : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
+    var numberOfDaysInFirstWeek =  7 - startOfYear.getDay();
+    var weekInYear = numberOfSundays;
+    if (numberOfDaysInFirstWeek &lt; minimalDaysInFirstWeek) {
+      weekInYear--;
+    }
+    return weekInYear;
+  };
 
-	Date.prototype.getWeekInMonth = function(minimalDaysInFirstWeek) {
-		if (isUndefined(this.minimalDaysInFirstWeek)) {
-			minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
-		}
-		var previousSunday = this.getPreviousSunday();
-		var startOfMonth = newDateAtMidnight(this.getFullYear(), this.getMonth(), 1);
-		var numberOfSundays = previousSunday.isBefore(startOfMonth) ?
-			0 : 1 + Math.floor((previousSunday.getTimeSince(startOfMonth)) / ONE_WEEK);
-		var numberOfDaysInFirstWeek =  7 - startOfMonth.getDay();
-		var weekInMonth = numberOfSundays;
-		if (numberOfDaysInFirstWeek &gt;= minimalDaysInFirstWeek) {
-			weekInMonth++;
-		}
-		return weekInMonth;
-	};
+  Date.prototype.getWeekInMonth = function(minimalDaysInFirstWeek) {
+    if (isUndefined(this.minimalDaysInFirstWeek)) {
+      minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
+    }
+    var previousSunday = this.getPreviousSunday();
+    var startOfMonth = newDateAtMidnight(this.getFullYear(), this.getMonth(), 1);
+    var numberOfSundays = previousSunday.isBefore(startOfMonth) ?
+      0 : 1 + Math.floor((previousSunday.getTimeSince(startOfMonth)) / ONE_WEEK);
+    var numberOfDaysInFirstWeek =  7 - startOfMonth.getDay();
+    var weekInMonth = numberOfSundays;
+    if (numberOfDaysInFirstWeek &gt;= minimalDaysInFirstWeek) {
+      weekInMonth++;
+    }
+    return weekInMonth;
+  };
 
-	Date.prototype.getDayInYear = function() {
-		var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
-		return 1 + Math.floor(this.getTimeSince(startOfYear) / ONE_DAY);
-	};
+  Date.prototype.getDayInYear = function() {
+    var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
+    return 1 + Math.floor(this.getTimeSince(startOfYear) / ONE_DAY);
+  };
 
-	/* ----------------------------------------------------------------- */
+  /* ----------------------------------------------------------------- */
 
-	SimpleDateFormat = function(formatString) {
-		this.formatString = formatString;
-	};
+  SimpleDateFormat = function(formatString) {
+    this.formatString = formatString;
+  };
 
-	/**
-	 * Sets the minimum number of days in a week in order for that week to
-	 * be considered as belonging to a particular month or year
-	 */
-	SimpleDateFormat.prototype.setMinimalDaysInFirstWeek = function(days) {
-		this.minimalDaysInFirstWeek = days;
-	};
+  /**
+   * Sets the minimum number of days in a week in order for that week to
+   * be considered as belonging to a particular month or year
+   */
+  SimpleDateFormat.prototype.setMinimalDaysInFirstWeek = function(days) {
+    this.minimalDaysInFirstWeek = days;
+  };
 
-	SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function(days) {
-		return isUndefined(this.minimalDaysInFirstWeek)	?
-			DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK : this.minimalDaysInFirstWeek;
-	};
+  SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function(days) {
+    return isUndefined(this.minimalDaysInFirstWeek)  ?
+      DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK : this.minimalDaysInFirstWeek;
+  };
 
-	SimpleDateFormat.prototype.format = function(date) {
+  SimpleDateFormat.prototype.format = function(date) {
     if (date == "Invalid Date") {
       return "";
     }
     var formattedString = "";
-		var result;
-		var padWithZeroes = function(str, len) {
-			while (str.length &lt; len) {
-				str = "0" + str;
-			}
-			return str;
-		};
+    var result;
+    var padWithZeroes = function(str, len) {
+      while (str.length &lt; len) {
+        str = "0" + str;
+      }
+      return str;
+    };
 
-		var formatText = function(data, numberOfLetters, minLength) {
-			return (numberOfLetters &gt;= 4) ? data : data.substr(0, Math.max(minLength, numberOfLetters));
-		};
+    var formatText = function(data, numberOfLetters, minLength) {
+      return (numberOfLetters &gt;= 4) ? data : data.substr(0, Math.max(minLength, numberOfLetters));
+    };
 
-		var formatNumber = function(data, numberOfLetters) {
-			var dataString = "" + data;
-			// Pad with 0s as necessary
-			return padWithZeroes(dataString, numberOfLetters);
-		};
+    var formatNumber = function(data, numberOfLetters) {
+      var dataString = "" + data;
+      // Pad with 0s as necessary
+      return padWithZeroes(dataString, numberOfLetters);
+    };
 
-		var searchString = this.formatString;
-		while ((result = regex.exec(searchString))) {
-			var matchedString = result[0];
-			var quotedString = result[1];
-			var patternLetters = result[2];
-			var otherLetters = result[3];
-			var otherCharacters = result[4];
+    var searchString = this.formatString;
+    while ((result = regex.exec(searchString))) {
+      var matchedString = result[0];
+      var quotedString = result[1];
+      var patternLetters = result[2];
+      var otherLetters = result[3];
+      var otherCharacters = result[4];
 
-			// If the pattern matched is quoted string, output the text between the quotes
-			if (quotedString) {
-				if (quotedString == "''") {
-					formattedString += "'";
-				} else {
-					formattedString += quotedString.substring(1, quotedString.length - 1);
-				}
-			} else if (otherLetters) {
-				// Swallow non-pattern letters by doing nothing here
-			} else if (otherCharacters) {
-				// Simply output other characters
-				formattedString += otherCharacters;
-			} else if (patternLetters) {
-				// Replace pattern letters
-				var patternLetter = patternLetters.charAt(0);
-				var numberOfLetters = patternLetters.length;
-				var rawData = "";
-				switch (patternLetter) {
-					case "G":
-						rawData = "AD";
-						break;
-					case "y":
-						rawData = date.getFullYear();
-						break;
-					case "M":
-						rawData = date.getMonth();
-						break;
-					case "w":
-						rawData = date.getWeekInYear(this.getMinimalDaysInFirstWeek());
-						break;
-					case "W":
-						rawData = date.getWeekInMonth(this.getMinimalDaysInFirstWeek());
-						break;
-					case "D":
-						rawData = date.getDayInYear();
-						break;
-					case "d":
-						rawData = date.getDate();
-						break;
-					case "F":
-						rawData = 1 + Math.floor((date.getDate() - 1) / 7);
-						break;
-					case "E":
-						rawData = dayNames[date.getDay()];
-						break;
-					case "a":
-						rawData = (date.getHours() &gt;= 12) ? "PM" : "AM";
-						break;
-					case "H":
-						rawData = date.getHours();
-						break;
-					case "k":
-						rawData = date.getHours() || 24;
-						break;
-					case "K":
-						rawData = date.getHours() % 12;
-						break;
-					case "h":
-						rawData = (date.getHours() % 12) || 12;
-						break;
-					case "m":
-						rawData = date.getMinutes();
-						break;
-					case "s":
-						rawData = date.getSeconds();
-						break;
-					case "S":
-						rawData = date.getMilliseconds();
-						break;
-					case "Z":
-						rawData = date.getTimezoneOffset(); // This is returns the number of minutes since GMT was this time.
-						break;
-				}
-				// Format the raw data depending on the type
-				switch (types[patternLetter]) {
-					case TEXT2:
-						formattedString += formatText(rawData, numberOfLetters, 2);
-						break;
-					case TEXT3:
-						formattedString += formatText(rawData, numberOfLetters, 3);
-						break;
-					case NUMBER:
-						formattedString += formatNumber(rawData, numberOfLetters);
-						break;
-					case YEAR:
-						if (numberOfLetters &lt;= 3) {
-							// Output a 2-digit year
-							var dataString = "" + rawData;
-							formattedString += dataString.substr(2, 2);
-						} else {
-							formattedString += formatNumber(rawData, numberOfLetters);
-						}
-						break;
-					case MONTH:
-						if (numberOfLetters &gt;= 3) {
-							formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
-						} else {
-							// NB. Months returned by getMonth are zero-based
-							formattedString += formatNumber(rawData + 1, numberOfLetters);
-						}
-						break;
-					case TIMEZONE:
-						var isPositive = (rawData &gt; 0);
-						// The following line looks like a mistake but isn't
-						// because of the way getTimezoneOffset measures.
-						var prefix = isPositive ? "-" : "+";
-						var absData = Math.abs(rawData);
+      // If the pattern matched is quoted string, output the text between the quotes
+      if (quotedString) {
+        if (quotedString == "''") {
+          formattedString += "'";
+        } else {
+          formattedString += quotedString.substring(1, quotedString.length - 1);
+        }
+      } else if (otherLetters) {
+        // Swallow non-pattern letters by doing nothing here
+      } else if (otherCharacters) {
+        // Simply output other characters
+        formattedString += otherCharacters;
+      } else if (patternLetters) {
+        // Replace pattern letters
+        var patternLetter = patternLetters.charAt(0);
+        var numberOfLetters = patternLetters.length;
+        var rawData = "";
+        switch (patternLetter) {
+          case "G":
+            rawData = "AD";
+            break;
+          case "y":
+            rawData = date.getFullYear();
+            break;
+          case "M":
+            rawData = date.getMonth();
+            break;
+          case "w":
+            rawData = date.getWeekInYear(this.getMinimalDaysInFirstWeek());
+            break;
+          case "W":
+            rawData = date.getWeekInMonth(this.getMinimalDaysInFirstWeek());
+            break;
+          case "D":
+            rawData = date.getDayInYear();
+            break;
+          case "d":
+            rawData = date.getDate();
+            break;
+          case "F":
+            rawData = 1 + Math.floor((date.getDate() - 1) / 7);
+            break;
+          case "E":
+            rawData = dayNames[date.getDay()];
+            break;
+          case "a":
+            rawData = (date.getHours() &gt;= 12) ? "PM" : "AM";
+            break;
+          case "H":
+            rawData = date.getHours();
+            break;
+          case "k":
+            rawData = date.getHours() || 24;
+            break;
+          case "K":
+            rawData = date.getHours() % 12;
+            break;
+          case "h":
+            rawData = (date.getHours() % 12) || 12;
+            break;
+          case "m":
+            rawData = date.getMinutes();
+            break;
+          case "s":
+            rawData = date.getSeconds();
+            break;
+          case "S":
+            rawData = date.getMilliseconds();
+            break;
+          case "Z":
+            rawData = date.getTimezoneOffset(); // This is returns the number of minutes since GMT was this time.
+            break;
+        }
+        // Format the raw data depending on the type
+        switch (types[patternLetter]) {
+          case TEXT2:
+            formattedString += formatText(rawData, numberOfLetters, 2);
+            break;
+          case TEXT3:
+            formattedString += formatText(rawData, numberOfLetters, 3);
+            break;
+          case NUMBER:
+            formattedString += formatNumber(rawData, numberOfLetters);
+            break;
+          case YEAR:
+            if (numberOfLetters &lt;= 3) {
+              // Output a 2-digit year
+              var dataString = "" + rawData;
+              formattedString += dataString.substr(2, 2);
+            } else {
+              formattedString += formatNumber(rawData, numberOfLetters);
+            }
+            break;
+          case MONTH:
+            if (numberOfLetters &gt;= 3) {
+              formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
+            } else {
+              // NB. Months returned by getMonth are zero-based
+              formattedString += formatNumber(rawData + 1, numberOfLetters);
+            }
+            break;
+          case TIMEZONE:
+            var isPositive = (rawData &gt; 0);
+            // The following line looks like a mistake but isn't
+            // because of the way getTimezoneOffset measures.
+            var prefix = isPositive ? "-" : "+";
+            var absData = Math.abs(rawData);
 
-						// Hours
-						var hours = "" + Math.floor(absData / 60);
-						hours = padWithZeroes(hours, 2);
-						// Minutes
-						var minutes = "" + (absData % 60);
-						minutes = padWithZeroes(minutes, 2);
+            // Hours
+            var hours = "" + Math.floor(absData / 60);
+            hours = padWithZeroes(hours, 2);
+            // Minutes
+            var minutes = "" + (absData % 60);
+            minutes = padWithZeroes(minutes, 2);
 
-						formattedString += prefix + hours + minutes;
-						break;
-				}
-			}
-			searchString = searchString.substr(result.index + result[0].length);
-		}
-		return formattedString;
-	};
+            formattedString += prefix + hours + minutes;
+            break;
+        }
+      }
+      searchString = searchString.substr(result.index + result[0].length);
+    }
+    return formattedString;
+  };
 })();</code>
     </property>
     <property>
