@@ -17,9 +17,12 @@
  */
 package org.phenotips.translation;
 
+import org.xwiki.component.annotation.Role;
+
 /**
  * @version $Id$
  */
+@Role
 public interface TranslationManager
 {
     /**
