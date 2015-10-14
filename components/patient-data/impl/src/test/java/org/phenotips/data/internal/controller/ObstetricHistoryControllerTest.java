@@ -22,6 +22,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import net.sf.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -201,6 +202,20 @@ public class ObstetricHistoryControllerTest {
         this.obstetricHistoryController.save(this.patient);
 
         verify(this.logger).error("Failed to save obstetric history: [{}]", "Test Exception");
+    }
+
+    @Test
+    public void writeJSONWithoutSelectedFieldsTest(){
+        PatientData<Integer> patientData = mock(PatientData.class);
+        JSONObject json = new JSONObject();
+        doReturn(patientData).when(this.patient).getData(this.obstetricHistoryController.getName());
+        doReturn(true).when(patientData).isNamed();
+        doReturn(5).when(patientData).size();
+        doReturn("test key").when(patientData.dictionaryIterator()).next().getKey();
+        doReturn("test value").when(patientData.dictionaryIterator()).next().getValue();
+
+        this.obstetricHistoryController.writeJSON(this.patient, json);
+
     }
 
 
