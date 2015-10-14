@@ -82,12 +82,16 @@ var PrintEngine = Class.create({
             }
             var userFirstName = editor.getPreferencesManager().getConfigurationOption("firstName");
             var userLastName  = editor.getPreferencesManager().getConfigurationOption("lastName");
-            var date = new Date();
+            var date = new PedigreeDate(new Date());
             patientInfoHTML += ". Printed";
             if (userFirstName || userLastName) {
                 patientInfoHTML += " by " + userFirstName + " " + userLastName;
             }
-            patientInfoHTML += " on " + date.getDate() + "/" + date.getMonth() + "/" + (1900 + date.getYear()) + ".";
+            if (editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat") == "DMY") {
+                patientInfoHTML += " on " + date.getBestPrecisionStringDDMMYYY() + ".";
+            } else {
+                patientInfoHTML += " on " + date.getMonthName() + " " + date.getDay() + ", " + date.getYear() + ".";
+            }
         }
 
         var svg = editor.getWorkspace().getSVGCopy(options.anonimize);
