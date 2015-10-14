@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>0.69</coverage.instructionRatio>
+    <coverage.instructionRatio>0.68</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -51,11 +51,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-bridge</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-localization-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -86,6 +81,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-translation-manager</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -18,13 +18,9 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.translation.TranslationManager;
 
-import org.xwiki.localization.LocalizationContext;
-import org.xwiki.localization.LocalizationManager;
-import org.xwiki.localization.Translation;
-import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.renderer.BlockRenderer;
-import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,14 +32,14 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractVisibility implements Visibility
 {
-    /** @see #getPermissiveness() */
+    /**
+     * @see #getPermissiveness()
+     */
     private int permissiveness;
 
+    /** Provides access to translations. */
     @Inject
-    private LocalizationContext lc;
-
-    @Inject
-    private LocalizationManager lm;
+    private TranslationManager tm;
 
     @Inject
     @Named("plain/1.0")
@@ -58,34 +54,18 @@ public abstract class AbstractVisibility implements Visibility
     public String getLabel()
     {
         String key = "phenotips.permissions.visibility." + getName() + ".label";
-        Translation translation = this.lm.getTranslation(key, this.lc.getCurrentLocale());
-        if (translation == null) {
+        String translation = this.tm.translate(key);
+        if (StringUtils.isBlank(translation)) {
             return StringUtils.capitalize(getName());
         }
-        Block block = translation.render(this.lc.getCurrentLocale());
-
-        // Render the block
-        DefaultWikiPrinter wikiPrinter = new DefaultWikiPrinter();
-        this.renderer.render(block, wikiPrinter);
-
-        return wikiPrinter.toString();
+        return translation;
     }
 
     @Override
     public String getDescription()
     {
         String key = "phenotips.permissions.visibility." + getName() + ".description";
-        Translation translation = this.lm.getTranslation(key, this.lc.getCurrentLocale());
-        if (translation == null) {
-            return "";
-        }
-        Block block = translation.render(this.lc.getCurrentLocale());
-
-        // Render the block
-        DefaultWikiPrinter wikiPrinter = new DefaultWikiPrinter();
-        this.renderer.render(block, wikiPrinter);
-
-        return wikiPrinter.toString();
+        return this.tm.translate(key);
     }
 
     @Override

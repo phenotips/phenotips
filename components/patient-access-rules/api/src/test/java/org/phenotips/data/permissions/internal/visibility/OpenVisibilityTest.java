@@ -19,27 +19,17 @@ package org.phenotips.data.permissions.internal.visibility;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.localization.LocalizationContext;
-import org.xwiki.localization.LocalizationManager;
-import org.xwiki.localization.Translation;
-import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.renderer.BlockRenderer;
-import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.Locale;
-
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Matchers;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +44,13 @@ public class OpenVisibilityTest
     public final MockitoComponentMockingRule<Visibility> mocker =
         new MockitoComponentMockingRule<Visibility>(OpenVisibility.class);
 
+    @Before
+    public void setup() throws ComponentLookupException
+    {
+        TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
+        when(tm.translate(Matchers.anyString())).thenReturn("");
+    }
+
     /** Basic test for {@link Visibility#getName()}. */
     @Test
     public void getName() throws ComponentLookupException
@@ -65,26 +62,9 @@ public class OpenVisibilityTest
     @Test
     public void getLabel() throws ComponentLookupException
     {
-        LocalizationContext lc = this.mocker.getInstance(LocalizationContext.class);
-        LocalizationManager lm = this.mocker.getInstance(LocalizationManager.class);
-        Translation t = mock(Translation.class);
-        Block b = mock(Block.class);
-        BlockRenderer r = this.mocker.getInstance(BlockRenderer.class, "plain/1.0");
-        when(lc.getCurrentLocale()).thenReturn(Locale.US);
-        when(lm.getTranslation("phenotips.permissions.visibility.open.label", Locale.US)).thenReturn(t);
-        when(t.render(Locale.US)).thenReturn(b);
-        Mockito.doAnswer(new Answer<Object>()
-        {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable
-            {
-                WikiPrinter printer = (WikiPrinter) invocation.getArguments()[1];
-                printer.print("Open");
-                return null;
-            }
-        }).when(r).render(same(b), any(WikiPrinter.class));
-        Assert.assertEquals("Open", this.mocker.getComponentUnderTest()
-            .getLabel());
+        TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
+        when(tm.translate("phenotips.permissions.visibility.open.label")).thenReturn("Open");
+        Assert.assertEquals("Open", this.mocker.getComponentUnderTest().getLabel());
     }
 
     /** {@link Visibility#getLabel()} returns the capitalized name when a translation isn't found. */
@@ -98,24 +78,9 @@ public class OpenVisibilityTest
     @Test
     public void getDescription() throws ComponentLookupException
     {
-        LocalizationContext lc = this.mocker.getInstance(LocalizationContext.class);
-        LocalizationManager lm = this.mocker.getInstance(LocalizationManager.class);
-        Translation t = mock(Translation.class);
-        Block b = mock(Block.class);
-        BlockRenderer r = this.mocker.getInstance(BlockRenderer.class, "plain/1.0");
-        when(lc.getCurrentLocale()).thenReturn(Locale.US);
-        when(lm.getTranslation("phenotips.permissions.visibility.open.description", Locale.US)).thenReturn(t);
-        when(t.render(Locale.US)).thenReturn(b);
-        Mockito.doAnswer(new Answer<Object>()
-        {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable
-            {
-                WikiPrinter printer = (WikiPrinter) invocation.getArguments()[1];
-                printer.print("All registered users can edit open cases.");
-                return null;
-            }
-        }).when(r).render(same(b), any(WikiPrinter.class));
+        TranslationManager tm = this.mocker.getInstance(TranslationManager.class);
+        when(tm.translate("phenotips.permissions.visibility.open.description"))
+            .thenReturn("All registered users can edit open cases.");
         Assert.assertEquals("All registered users can edit open cases.", this.mocker.getComponentUnderTest()
             .getDescription());
     }
