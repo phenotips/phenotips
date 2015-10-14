@@ -67,6 +67,23 @@ function cloneObject(obj) {
     return target;
 }
 
+// (Recursively) for every property in template check if data has the same property
+// and set template value to the one in data.
+function setByTemplate(template, data) {
+    if (typeof template !== 'object') {
+        return;
+    }
+    for (var key in template) {
+        if (data.hasOwnProperty(key) && template.hasOwnProperty(key)) {
+            if (typeof template[key] === 'object') {
+                this.setByTemplate(template[key], data[key]);
+            } else {
+                template[key] = data[key];
+            }
+        }
+    }
+}
+
 // Assigns values to all properties which are set in Source to the Target
 function copyProperties(objectSource, objectTarget) {
   for (var p in objectSource) {

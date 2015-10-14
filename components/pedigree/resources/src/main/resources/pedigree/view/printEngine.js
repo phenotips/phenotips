@@ -80,8 +80,8 @@ var PrintEngine = Class.create({
                 var probandName = proband.getFirstName() + space + proband.getLastName();
                 patientInfoHTML = probandName + ", " + XWiki.currentDocument.page;
             }
-            var userFirstName = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('first_name').value}";
-            var userLastName  = "$!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers').getProperty('last_name').value}";
+            var userFirstName = editor.getPreferencesManager().getConfigurationOption("firstName");
+            var userLastName  = editor.getPreferencesManager().getConfigurationOption("lastName");
             var date = new Date();
             patientInfoHTML += ". Printed";
             if (userFirstName || userLastName) {

@@ -16,14 +16,18 @@ var PedigreeEditor = Class.create({
         //  nonStandardAdoptedOutGraphic: {true|false}   - use out-brackets for adopted out persons; default "false"
         //  hideDraggingHint:             {true|false}   - do not display the hint on top of the legend; default "false"
         //  propagateFatherLastName:      {true|false}   - auto-propagate father's last name or not; default: "true"
-        //  dateDisplayFormat:            {"MDY"|"DMY"}  - date display format; default "MDY";
-        //  dateEditFormat:               {"YMD"|"DMY"}  - defines order of fields in the date picker; default "YMD";
+        //  dateDisplayFormat:            {"MDY"|"DMY"}  - date display format; default "MDY"
+        //  dateEditFormat:               {"YMD"|"DMY"}  - defines order of fields in the date picker; default "YMD"
+        //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
         //
         this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                  propagateFatherLastName: true,
-                                                 dateDisplayFormat: "YMD",
-                                                 dateEditFormat: "YMD" },
-                                     user:     { hideDraggingHint: false },
+                                                 dateDisplayFormat: "zzYMD",
+                                                 dateEditFormat: "zzzYMD",
+                                                 useGradientOnNodes: false },
+                                     user:     { hideDraggingHint: false,
+                                                 firstName: "",
+                                                 lastName: "" },
                                      pedigree: {}
                                    };
         this._preferencesManager = new PreferencesManager(this._defaultPreferences);

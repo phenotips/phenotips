@@ -95,9 +95,9 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/svgWrapper.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/printEngine.js', true)##
+$xwiki.jsfx.use('uicomponents/pedigree/view/printEngine.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/printDialog.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/preferencesManager.js', true)##
+$xwiki.jsfx.use('uicomponents/pedigree/preferencesManager.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/pedigreeDate.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/hpoTerm.js')##
