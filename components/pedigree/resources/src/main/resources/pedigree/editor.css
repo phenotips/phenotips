@@ -302,41 +302,44 @@
 .relationship-menu {
   width: 290px;
 }
+.template-import-selector-modal .display-none {
+  display: none;
+}
 .menu-box .tabs {
   margin-bottom: 0 !important;
   margin-left: 2px;
   display: inline-block;
 }
-.menu-box .tabs dd, .tabs .tab-title {
+.menu-box .tabs dd, .tabs .tab-title, .template-import-tabs dd {
   position: relative;
   margin-bottom: -3px !important;
   list-style: none;
   float: left;
   border-radius: 0.8em 0.8em 0 0;
 }
-.menu-box .tabs dd.active {
+.menu-box .tabs dd.active, .template-import-tabs dd.active {
   box-shadow: none;
   background-color: #E1E1E1;
 }
-.menu-box .tabs dd:not(.active) {
+.menu-box .tabs dd:not(.active), .template-import-tabs dd:not(.active) {
   box-shadow: none;
   background-color: #EFEFEF;
   box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
 }
-.menu-box .tabs dd a  {
+.menu-box .tabs dd a, .template-import-tabs dd a  {
   text-decoration: none;
 }
-.menu-box .tabs dd.active a, .tabs .tab-title.active a {
+.menu-box .tabs dd.active a, .tabs .tab-title.active a, .template-import-tabs dd.active a {
   color: #222222;
   font-weight: bold;
   pointer-events: none;
   box-shadow: none;
 }
-.menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover {
+.menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover, .template-import-tabs dd:not(.active):hover {
   background-color: #D1D1D1;
   cursor:pointer;
 }
-.menu-box .tabs dd > a, .tabs .tab-title > a {
+.menu-box .tabs dd > a, .tabs .tab-title > a, .template-import-tabs dd > a {
   display: block;
   color: #222222;
   padding: 0.88889em 1.77778em;
@@ -821,12 +824,14 @@
     cursor: pointer;
     box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
 }
-
 .template-picture-container {
     display: inline-block;
     margin: 3px;
 }
-
+.import-selector {
+    display: inline-block;
+    margin: 15px;
+}
 .msdialog-box {
     /*overflow:auto;*/
     width: 60% !important;

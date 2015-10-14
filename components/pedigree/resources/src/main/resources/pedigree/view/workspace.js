@@ -161,8 +161,7 @@ define ([], function() {
                 submenus = [{
                     name : 'input',
                     items: [
-                        { key : 'templates', label : 'Templates', icon : 'copy'},
-                        { key : 'import',    label : 'Import', icon : 'upload'}
+                        { key : 'templates', label : 'Templates', icon : 'copy'}
                     ]
                   }, {
                     name : 'edit',

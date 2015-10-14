@@ -148,14 +148,51 @@ define([
                 editor.getSaveLoadEngine().load();
             });
 
-            var templatesButton = $('action-templates');
-            templatesButton && templatesButton.on("click", function(event) {
-                editor.getTemplateSelector().show();
+            //define modal with 2 tabs to select pedigree template or import
+            var mainModalDiv = new Element('div', {'class': 'template-import-selector-modal'});
+
+            editor.getImportSelector().mainDiv.toggleClassName("display-none");
+
+            var tabs = [];
+            var tabHeaders = [];
+            var tabTop = new Element('dl', {'class':'template-import-tabs'});
+            tabs.push(editor.getTemplateSelector().mainDiv);
+            tabs.push(editor.getImportSelector().mainDiv);
+            tabHeaders.push(new Element('dd', {"class": "active"}).insert("<a>" + "Pedigree templates" + "</a>"));
+            tabHeaders.push(new Element('dd').insert("<a>" + "Pedigree import" + "</a>"));
+            var switchTab = function(index) {
+                return function() {
+					var isActive = tabHeaders[index].hasClassName('active');
+					if (!isActive) {
+						tabs.each(function(item) {
+							item.toggleClassName("display-none");
+						});
+						tabHeaders.each(function(item) {
+							item.toggleClassName("active");	
+						});
+					}
+				}
+            }
+			tabHeaders.each(function(item, index) {
+				item.observe('click', switchTab(index))
+			});
+            tabTop.insert(tabHeaders[0]).insert(tabHeaders[1]);
+            mainModalDiv.insert(tabTop).insert(tabs[0]).insert(tabs[1]);
+
+            var closeShortcut = ['Esc'];
+            var dialogModal = new PhenoTips.widgets.ModalPopup(mainModalDiv, {close: {method : hideModal.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Select or import pedigree template", displayCloseButton: true, verticalPosition: "top"});
+            function hideModal() {
+                editor.getImportSelector().importValue.value = "";
+                dialogModal.closeDialog();
+            }
+
+			var modalButton = $('action-templates');
+            modalButton && modalButton.on('click', function(event) {
+                var availableHeight = document.viewport.getHeight() - 80;
+                editor.getTemplateSelector().mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
+                dialogModal.show();
             });
-            var importButton = $('action-import');
-            importButton && importButton.on("click", function(event) {
-                editor.getImportSelector().show();
-            });
+
             var exportButton = $('action-export');
             exportButton && exportButton.on("click", function(event) {
                 editor.getExportSelector().show();

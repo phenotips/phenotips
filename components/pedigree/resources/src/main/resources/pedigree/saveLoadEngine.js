@@ -184,7 +184,7 @@ define([
                 onSuccess: function (response) {
                     //console.log("Data from LOAD: >>" + response.responseText + "<<");
                     if (response.responseJSON) {
-                        console.log("[LOAD] recived JSON: " + Helpers.stringifyObject(response.responseJSON));
+                        console.log("[LOAD] received JSON: " + Helpers.stringifyObject(response.responseJSON));
 
                         var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
 
@@ -193,7 +193,8 @@ define([
                         // since we just loaded data from disk data in memory is equivalent to data on disk
                         editor.getUndoRedoManager().addSaveEvent();
                     } else {
-                        new TemplateSelector(true);
+                        document.fire("pedigree:load:finish");
+                        $('action-templates').click();
                     }
                 }.bind(this)
             })
