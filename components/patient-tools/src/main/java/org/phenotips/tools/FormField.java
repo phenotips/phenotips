@@ -18,12 +18,11 @@
 package org.phenotips.tools;
 
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.localization.LocalizationContext;
-import org.xwiki.localization.LocalizationManager;
 import org.xwiki.xml.XMLUtils;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -108,12 +107,9 @@ public class FormField extends AbstractFormElement
         if (this.term == null || StringUtils.isEmpty(this.term.getId())) {
             String customTitle = "";
             try {
-                LocalizationManager lm =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationManager.class);
-                LocalizationContext lc =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(LocalizationContext.class);
-                String key = "phenotips.patientSheetCode.termSuggest.nonStandardPhenotype";
-                customTitle = String.valueOf(lm.getTranslation(key, lc.getCurrentLocale()).getRawSource());
+                TranslationManager tm =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(TranslationManager.class);
+                customTitle = tm.translate("phenotips.patientSheetCode.termSuggest.nonStandardPhenotype");
             } catch (ComponentLookupException ex) {
                 // Will not happen, and if it does, it doesn't matter, the tooltip is not that critical
             }
