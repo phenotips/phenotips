@@ -40,10 +40,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import javax.inject.Provider;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ObstetricHistoryControllerTest {
 
@@ -108,7 +105,7 @@ public class ObstetricHistoryControllerTest {
         this.logger = this.mocker.getMockedLogger();
 
         this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
-        this.xWikiContext = provider.get();
+        this.xWikiContext = this.provider.get();
         doReturn(this.xwiki).when(this.xWikiContext).getWiki();
 
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
@@ -162,7 +159,23 @@ public class ObstetricHistoryControllerTest {
 
     }
 
-    
+    @Test
+    public void saveHandlesEmptyPatientTest() throws XWikiException {
+        doReturn(null).when(this.patient).getData(this.obstetricHistoryController.getName());
+
+        this.obstetricHistoryController.save(this.patient);
+
+        verifyNoMoreInteractions(this.data);
+        verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
+                "Updated obstetric history from JSON", true, this.xWikiContext);
+    }
+
+    @Test
+    public void saveDefaultBehaviourTest(){
+        doReturn(this.data).when(this.patient).getData(this.obstetricHistoryController.getName());
+
+    }
+
 
 
 
