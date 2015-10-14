@@ -86,7 +86,7 @@
     #set ($pedigreeDocRoot = $services.xml.parse($pedigree).getDocumentElement())
     #set ($width = $mathtool.toInteger($pedigreeDocRoot.getAttribute('width')))
     #set ($height = $mathtool.toInteger($pedigreeDocRoot.getAttribute('height')))
-    #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigreeSVG, $height, $width))
+    #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigree, $height, $width))
     $response.sendRedirect($pedigreeRasterUrl)
   #else
     $response.setContentType('image/svg+xml')##
