@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -39,6 +40,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import javax.inject.Provider;
+
+import java.util.*;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -206,15 +209,28 @@ public class ObstetricHistoryControllerTest {
 
     @Test
     public void writeJSONWithoutSelectedFieldsTest(){
-        PatientData<Integer> patientData = mock(PatientData.class);
+        Map<String, Integer> testData = new LinkedHashMap<String, Integer>();
+        testData.put(GRAVIDA, AGE_NON_ZERO);
+        testData.put(PARA, AGE_ZERO);
         JSONObject json = new JSONObject();
-        doReturn(patientData).when(this.patient).getData(this.obstetricHistoryController.getName());
-        doReturn(true).when(patientData).isNamed();
-        doReturn(5).when(patientData).size();
-        doReturn("test key").when(patientData.dictionaryIterator()).next().getKey();
-        doReturn("test value").when(patientData.dictionaryIterator()).next().getValue();
+        PatientData<Integer> testObstetricHistoryData = new DictionaryPatientData("obstetric-history", testData);
+        doReturn(testObstetricHistoryData).when(this.patient).getData(this.obstetricHistoryController.getName());
 
         this.obstetricHistoryController.writeJSON(this.patient, json);
+        System.out.println(json);
+        Assert.assertNotNull(json);
+        Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history").get("obstetric-history"));
+
+    }
+
+    @Test
+    public void writeJSONWithoutObstetricHistoryField(){
+        JSONObject json = new JSONObject();
+        Collection<String> fieldList = new ArrayList<>();
+        fieldList.add("test field");
+
+        this.obstetricHistoryController.writeJSON(this.patient, json, fieldList);
+        Assert.assertTrue(json.isEmpty());
 
     }
 
