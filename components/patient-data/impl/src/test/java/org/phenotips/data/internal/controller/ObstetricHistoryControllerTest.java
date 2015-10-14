@@ -23,6 +23,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -217,7 +218,6 @@ public class ObstetricHistoryControllerTest {
         doReturn(testObstetricHistoryData).when(this.patient).getData(this.obstetricHistoryController.getName());
 
         this.obstetricHistoryController.writeJSON(this.patient, json);
-        System.out.println(json);
         Assert.assertNotNull(json);
         Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history").get("obstetric-history"));
 
@@ -231,6 +231,37 @@ public class ObstetricHistoryControllerTest {
 
         this.obstetricHistoryController.writeJSON(this.patient, json, fieldList);
         Assert.assertTrue(json.isEmpty());
+
+    }
+
+    @Test
+    public void readJSONObjectWithNoData(){
+        JSONObject json = new JSONObject();
+        json.put("prenatal_perinatal_history", "obstetric-history");
+
+        PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(json);
+        Assert.assertNull(patientData);
+    }
+
+    @Test
+    public void readJSONDefaultBehaviour(){
+        JSONObject obstetricData = new JSONObject();
+        obstetricData.put(TERM, 0);
+        JSONObject json = new JSONObject();
+        JSONObject container = json;
+        for (String path : StringUtils.split("prenatal_perinatal_history.obstetric-history", '.')) {
+            JSONObject parent = container;
+            container = parent.optJSONObject(path);
+            if (container == null) {
+                parent.put(path, new JSONObject());
+                container = parent.optJSONObject(path);
+            }
+        }
+        container.putAll(obstetricData);
+
+        PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(json);
+        Assert.assertEquals("obstetric-history", patientData.getName());
+        Assert.assertTrue(patientData.get(TERM) == 0);
 
     }
 
