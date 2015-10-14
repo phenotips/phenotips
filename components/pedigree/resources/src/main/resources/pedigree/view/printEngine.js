@@ -253,7 +253,7 @@ var PrintEngine = Class.create({
                 var spaceForLegend = options.includeLegend && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
                 if (spaceForLegend) {
                     var skipOnTop = patientInfoOnThisPage ? -pages.patientInfoHeight : 0;
-                    w.document.write("<div class='wrapper' style='margin: " + skipOnTop + " auto -" + pages.legendHeight + "px;'>");
+                    w.document.write("<div class='wrapper' style='margin: " + skipOnTop + "px auto -" + pages.legendHeight + "px;'>");
                     if (patientInfoOnThisPage) {
                         w.document.write("<div style='height: " + pages.patientInfoHeight + "px;'></div>");
                     }
