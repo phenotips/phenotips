@@ -171,11 +171,37 @@ public class ObstetricHistoryControllerTest {
     }
 
     @Test
-    public void saveDefaultBehaviourTest(){
-        doReturn(this.data).when(this.patient).getData(this.obstetricHistoryController.getName());
+    public void saveDefaultBehaviourTest() throws XWikiException {
+        PatientData<Integer> patientData = mock(PatientData.class);
+        doReturn(patientData).when(this.patient).getData(this.obstetricHistoryController.getName());
+        doReturn(true).when(patientData).isNamed();
+
+        doReturn(AGE_NON_ZERO).when(patientData).get(GRAVIDA);
+        doReturn(AGE_NON_ZERO).when(patientData).get(PARA);
+        doReturn(AGE_ZERO).when(patientData).get(TERM);
+        doReturn(AGE_ZERO).when(patientData).get(PRETERM);
+        doReturn(AGE_NON_ZERO).when(patientData).get(SAB);
+        doReturn(AGE_NON_ZERO).when(patientData).get(TAB);
+        doReturn(AGE_ZERO).when(patientData).get(LIVE_BIRTHS);
+
+        doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class), eq(true), eq(this.xWikiContext));
+
+        this.obstetricHistoryController.save(this.patient);
+
+        verify(this.xWikiContext.getWiki()).saveDocument(this.doc, "Updated obstetric history from JSON", true,
+                this.xWikiContext);
 
     }
 
+    @Test
+    public void saveHandlesExceptionsTest() throws Exception {
+        Exception testException = new Exception("Test Exception");
+        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+
+        this.obstetricHistoryController.save(this.patient);
+
+        verify(this.logger).error("Failed to save obstetric history: [{}]", "Test Exception");
+    }
 
 
 
