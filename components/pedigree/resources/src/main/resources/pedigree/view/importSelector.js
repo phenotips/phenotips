@@ -29,12 +29,12 @@ define([], function(){
                         // some older browsers do not allow setting value of a file input element and may generate a security error
                     }
                 })        
-                var uploadButton = new Element('input', {type: 'button', 'value': 'Select a local file to be imported', 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper'});
+                var uploadButton = new Element('input', {type: 'button', 'value': 'Select file', 'class' : 'button'}).wrap('span', {'class' : 'buttonwrapper import-file-button'});
                 uploadButton.observe('click', function(event) {
                     var fileElem = document.getElementById("pedigreeInputFile");
                     fileElem.click();
                 })
-		var promptImportFile = new Element('div', {'class': 'import-section import-file-button', }).update("Import file:");
+		        var promptImportFile = new Element('div', {'class': 'import-section', }).update("Import file:");
                 mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
             }
             
