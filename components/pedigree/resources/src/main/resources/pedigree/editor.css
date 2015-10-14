@@ -317,14 +317,24 @@
   float: left;
   border-radius: 0.8em 0.8em 0 0;
 }
-.menu-box .tabs dd.active, .template-import-tabs dd.active {
+.menu-box .tabs dd.active {
   box-shadow: none;
   background-color: #E1E1E1;
 }
-.menu-box .tabs dd:not(.active), .template-import-tabs dd:not(.active) {
+.menu-box .tabs dd:not(.active) {
   box-shadow: none;
   background-color: #EFEFEF;
   box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+}
+.template-import-tabs dd.active {
+  box-shadow: none;
+  background-color: #F5F5F5;
+  box-shadow: 0 0 16px #FFF, 0 0 15px #DDDDDD inset;
+}
+.template-import-tabs dd:not(.active) {
+  box-shadow: none;
+  background-color: #E4E4E4;
+  box-shadow: 0 0 6px #FFF, 0 0 5px #DDDDDD inset;
 }
 .menu-box .tabs dd a, .template-import-tabs dd a  {
   text-decoration: none;
