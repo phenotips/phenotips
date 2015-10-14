@@ -70,7 +70,7 @@ var PrintEngine = Class.create({
             }
         } // if includeLegend
         if (options.includePatientInfo) {
-            patientInfoHeight = 35;
+            patientInfoHeight = 30;
             var proband = editor.getNode(0);
             if (options.anonimize || (!proband.getFirstName() && !proband.getLastName())) {
                 patientInfoHTML = "Patient " + XWiki.currentDocument.page;
@@ -248,8 +248,11 @@ var PrintEngine = Class.create({
                 var bottomLeftPage = (pageNumY == (pages.pagesTall - 1)) && (pageNumX == 0);
                 var spaceForLegend = options.includeLegend && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
                 if (spaceForLegend) {
-                    var skipHeight = pages.legendHeight + (patientInfoOnThisPage ? pages.patientInfoHeight : 0);
-                    w.document.write("<div class='wrapper' style='margin: 0 auto -" + skipHeight + "px;'>");
+                    var skipOnTop = patientInfoOnThisPage ? -pages.patientInfoHeight : 0;
+                    w.document.write("<div class='wrapper' style='margin: " + skipOnTop + " auto -" + pages.legendHeight + "px;'>");
+                    if (patientInfoOnThisPage) {
+                        w.document.write("<div style='height: " + pages.patientInfoHeight + "px;'></div>");
+                    }
                 }
                 if (pages.pagesWide == 1) {
                     w.document.write("<center>");
