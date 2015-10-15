@@ -169,16 +169,25 @@ define([], function(){
             return jsDate;
         },
 
-        // Returns either a decade or the year (both as string)
+        // Returns either a decade or the year (as string, which may include non-numeric characters, e.g. "1920s")
         getBestPrecisionStringYear: function() {
             if (!this.isComplete()) return "";
             if (this.year == null) return this.decade;
             return this.year.toString();
         },
 
+        // If year is given returns the year; for decades returns the first year of the decade
+        // (as string representation of an integer)
         getMostConservativeYearEstimate: function() {
-            // for any year returns the year;l for decades returns the first year of the decade
-            return this.getBestPrecisionStringYear().replace(/s^/,"");
+            if (!this.isComplete()) return "";
+            return this.getYear(true, false).toString();
+        },
+
+        // If year is given returns the year; for decades returns the middle of the decade
+        // (as string representation of an integer)
+        getAverageYearEstimate: function() {
+            if (!this.isComplete()) return "";
+            return this.getYear(true, true).toString();
         },
 
         getBestPrecisionStringDDMMYYY: function(dateFormat) {
@@ -203,11 +212,15 @@ define([], function(){
         },
 
         // Returns an integer or null.
-        // Iff "failsafe" returns first year of the decade if year is not set and decade is
-        getYear: function(failsafe) {
+        // Iff "failsafe" returns a value even if only decade is availabe (and year is not):
+        //  - iff "average" the middle year of the decade is returned, otherwise the first year of the decade.
+        getYear: function(failsafe, average) {
             if (this.isComplete() && this.year == null && failsafe) {
                 // remove trailing "s" from the decade && convert to integer
                 var year = parseInt( this.decade.slice(0,-1) );
+                if (average) {
+                    year += 5;
+                }
                 return year;
             }
             return this.year;
