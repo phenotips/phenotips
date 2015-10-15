@@ -270,10 +270,22 @@ PedigreeExport.exportAsBOADICEA = function(dynamicPedigree, idGenerationPreferen
        var age = "0";
        var yob = "0";
        if (pedigree.GG.properties[i].hasOwnProperty("dob")) {
-           var date = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
+           var birthDate = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
            // BOADICEA file format does not support fuzzy dates, so get an estimate if only decade is available
-           yob = parseInt(date.getMostConservativeYearEstimate());
-           age = new Date().getFullYear() - yob;
+           yob = parseInt(birthDate.getAverageYearEstimate());
+           if (pedigree.GG.properties[i].hasOwnProperty("dod")) {
+               var deathDate = new PedigreeDate(pedigree.GG.properties[i]["dod"]);
+               var lastYearAlive = parseInt(deathDate.getAverageYearEstimate());
+               if (deathDate.toJSDate().getDayOfYear() < birthDate.toJSDate().getDayOfYear()) {
+                   lastYearAlive--;
+               }
+           } else {
+               var lastYearAlive = new Date().getFullYear();
+           }
+           age = lastYearAlive - yob;
+           if (age < 0) {  // e.g.: Birth: 2007, Death: 2000s
+               age = "0";
+           }
        }
        output += age + "\t" + yob + "\t";
 
