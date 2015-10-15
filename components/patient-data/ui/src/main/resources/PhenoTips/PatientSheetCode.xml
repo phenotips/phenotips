@@ -438,7 +438,7 @@ document.observe('xwiki:dom:loaded', function()
   date_of_birth.observe('xwiki:date:changed', validate_birth_death_dates);
   date_of_death.observe('xwiki:date:changed', validate_birth_death_dates);
 
-  date_of_death.__validation = new LiveValidation(date_of_death);
+  date_of_death.__validation = new LiveValidation(date_of_death, {validMessage: ''});
   date_of_death.__validation.add(is_death_date_after_birth_date);
   
   // when date of death years are given as a decade, the value of that field is empty.
@@ -4865,7 +4865,7 @@ h1, h2, h3, h4 {
 .LV_validation_message {
   position: static !important;
 }
-.LV_valid {
+.LV_valid:empty {
   display: none;
 }
 input.LV_invalid_field {
