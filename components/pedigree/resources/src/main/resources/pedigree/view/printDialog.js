@@ -100,8 +100,8 @@ var PrintDialog = Class.create( {
         var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
         addLegend.checked = true;
         configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr'));
-        var includeOverlaps = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-overlap"});
-        includeOverlaps.checked = true;
+        var includeOverlaps = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-overlap", "id": "add-overlaps-checkbox"});
+        includeOverlaps.checked = false;
         includeOverlaps.observe('click', function() {
             _this._updatePreview();
         });
@@ -197,6 +197,7 @@ var PrintDialog = Class.create( {
         this.previewContainer.update(previewHTML);
 
         var _this = this;
+        var numPrinted = 0;
         this._printPageSet = {};
         // add click-on-page handlers
         $$("div[id^=pedigree-page-]").forEach(function(page) {
@@ -206,6 +207,7 @@ var PrintDialog = Class.create( {
                 var pageY = pageIDParts[2];
 
                 _this._printPageSet["x" + pageX + "y" + pageY] = true;
+                numPrinted++;
 
                 page.observe("click", function() {
                     if (_this._printPageSet["x" + pageX + "y" + pageY]) {
@@ -225,6 +227,12 @@ var PrintDialog = Class.create( {
             }
         });
         this._printButton.enable();
+
+        if (numPrinted < 2) {
+            $('add-overlaps-checkbox').disable();
+        } else {
+            $('add-overlaps-checkbox').enable();
+        }
 
         if (this._landscape) {
             $('landscape-button').disable();
