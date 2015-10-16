@@ -17,11 +17,20 @@
  */
 package org.phenotips.export.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
+import org.phenotips.translation.TranslationManager;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Provider;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -140,8 +149,10 @@ public class SpreadsheetExporterTest
         verifyNoMoreInteractions(sheet);
     }
 
+    @SuppressWarnings("static-access")
     @Test
-    public void commitTest()
+    public void commitTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException,
+        ComponentLookupException
     {
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         SpreadsheetExporter spy = spy(exporter);
@@ -157,7 +168,23 @@ public class SpreadsheetExporterTest
         doReturn(0).when(section).getMaxY();
         doReturn(matrix).when(section).getMatrix();
         doReturn(1).when(cell).getMergeX();
-        doReturn(DataToCellConverter.charactersPerLine * 210 + 1).when(sheet).getColumnWidth(anyInt());
+
+        Field field = ReflectionUtils.getField(ComponentManagerRegistry.class, "cmProvider");
+        boolean isAccessible = field.isAccessible();
+        try {
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Provider<ComponentManager> cmp = mock(Provider.class);
+            field.set(null, cmp);
+            ComponentManager cm = mock(ComponentManager.class);
+            when(cmp.get()).thenReturn(cm);
+            TranslationManager tm = mock(TranslationManager.class);
+            when(cm.getInstance(TranslationManager.class)).thenReturn(tm);
+        } finally {
+            field.setAccessible(isAccessible);
+        }
+        DataToCellConverter conv = mock(DataToCellConverter.class);
+        doReturn(conv.charactersPerLine * 210 + 1).when(sheet).getColumnWidth(anyInt());
 
         spy.commit(section, sheet);
         order.verify(sheet, atLeastOnce()).autoSizeColumn(anyInt());
