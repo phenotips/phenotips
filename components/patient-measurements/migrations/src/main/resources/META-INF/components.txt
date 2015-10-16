@@ -1,3 +1,4 @@
 org.phenotips.measurements.internal.R45190PhenoTips362DataMigration
 org.phenotips.measurements.internal.R45390PhenoTips433DataMigration
 org.phenotips.measurements.internal.R54691PhenoTips1428DataMigration
+org.phenotips.measurements.internal.R71291PhenoTips1969DataMigration
