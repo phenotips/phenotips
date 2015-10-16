@@ -67,11 +67,13 @@ define([
                 editor.getWorkspace().adjustSizeToScreen();
             }
 
-            if (centerAround0)
+            if (centerAround0) {
                 editor.getWorkspace().centerAroundNode(0);
+            }
 
-            if (!noUndo)
+            if (!noUndo && !editor.isReadOnlyMode()) {
                 editor.getUndoRedoManager().addState(null, null, JSONString);
+            }
 
             document.fire("pedigree:load:finish");
         },
@@ -103,11 +105,13 @@ define([
                 editor.getWorkspace().adjustSizeToScreen();
             }
 
-            if (centerAround0)
+            if (centerAround0) {
                 editor.getWorkspace().centerAroundNode(0);
+            }
 
-            if (!noUndo)
+            if (!noUndo && !editor.isReadOnlyMode()) {
                 editor.getUndoRedoManager().addState(null, null, JSONString);
+            }
 
             document.fire("pedigree:load:finish");
         },
