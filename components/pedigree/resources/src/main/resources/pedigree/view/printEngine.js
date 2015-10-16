@@ -220,6 +220,7 @@ var PrintEngine = Class.create({
                                         false,
                                         1);
         var w=window.open();
+        w.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">');
         //w.document.write("<link rel='stylesheet' type='text/css' href='print.css' />");
         if (landscape) {
             w.document.write("<style type='text/css' media='print'>@page { size: landscape; }</style>");
@@ -250,7 +251,7 @@ var PrintEngine = Class.create({
                 }
                 var page = pages.pages[pageNumY][pageNumX];
                 var bottomLeftPage = (pageNumY == (pages.pagesTall - 1)) && (pageNumX == 0);
-                var spaceForLegend = options.includeLegend && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
+                var spaceForLegend = options.includeLegend && (pages.legendHeight > 0) && options.legendAtBottom && bottomLeftPage && !pages.needLegendOnSeparatePage;
                 if (spaceForLegend) {
                     var skipOnTop = patientInfoOnThisPage ? -pages.patientInfoHeight : 0;
                     w.document.write("<div class='wrapper' style='margin: " + skipOnTop + "px auto -" + pages.legendHeight + "px;'>");
@@ -268,7 +269,7 @@ var PrintEngine = Class.create({
                 if (spaceForLegend) {
                     w.document.write("<div style='height: " + pages.legendHeight + "px;'></div></div>");
                     w.document.write("<div id='legend' class='footer print-legend' style='height: " + pages.legendHeight + "px;'>" + pages.legendHTML + "</div>");
-                } else {
+                } else if (!this._isLastPage(pageNumY, pageNumX, pages, printPageSet)) {  // IE9 is not smart enough to realize there is no page after the very last break
                     w.document.write("<div class='break_here'></div>");
                 }
             }
@@ -284,5 +285,18 @@ var PrintEngine = Class.create({
         if (options.closeAfterPrint) {
             w.close();
         }
+    },
+
+    _isLastPage: function(pageY, pageX, pages, printPageSet) {
+        for (var pageNumY = pageY; pageNumY < pages.pagesTall; pageNumY++) {
+            var startX = ((pageNumY == pageY) ? pageX + 1 : 0);
+            for (var pageNumX = startX; pageNumX < pages.pagesWide; pageNumX++) {
+                if (printPageSet && !printPageSet["x" + pageNumX + "y" + pageNumY]) {
+                    continue;  // skip pages marked to be skipped by the user
+                }
+                return false;  // yes, there is another page to be printed
+            }
+        }
+        return true;
     }
 });
