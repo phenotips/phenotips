@@ -71,8 +71,8 @@ define([
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
-                                                 dateDisplayFormat: "zzYMD",
-                                                 dateEditFormat: "zzzYMD",
+                                                 dateDisplayFormat: "YMD",
+                                                 dateEditFormat: "YMD",
                                                  useGradientOnNodes: false },
                                      user:     { hideDraggingHint: false,
                                                  firstName: "",
