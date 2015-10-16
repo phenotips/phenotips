@@ -2947,7 +2947,21 @@ define([
                     }
                     if (this.GG.properties[person].hasOwnProperty("externalID")) {
                         numLabelLines++;
-                    }                
+                    }
+                    if (editor && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
+                        // count number of cancer labels
+                        if (this.GG.properties[person].hasOwnProperty("cancers")) {
+                            for (var cancer in this.GG.properties[person].cancers) {
+                                if (this.GG.properties[person].cancers.hasOwnProperty(cancer)) {
+                                    if (this.GG.properties[person].cancers[cancer].hasOwnProperty("affected")) {
+                                        if (this.GG.properties[person].cancers[cancer].affected) {
+                                            numLabelLines++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if (numLabelLines > maxNumLinesInComments) {
                         maxNumLinesInComments = numLabelLines;
                     }

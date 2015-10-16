@@ -72,6 +72,7 @@ define([
             //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
+            //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -79,7 +80,8 @@ define([
                                                      dateEditFormat: "YMD",
                                                      useGradientOnNodes: false,
                                                      drawNodeShadows: true,
-                                                     disabledFields: [] },
+                                                     disabledFields: [],
+                                                     displayCancerLabels: true },
                                          user:     { hideDraggingHint: false,
                                                      firstName: "",
                                                      lastName: "" },
