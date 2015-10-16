@@ -257,11 +257,11 @@ $!value
     <property>
       <livetableColumns>
         <value>doc.name</value>
+        <value>external_id</value>
         <value>doc.creator</value>
         <value>doc.author</value>
         <value>doc.creationDate</value>
         <value>doc.date</value>
-        <value>external_id</value>
         <value>first_name</value>
         <value>last_name</value>
       </livetableColumns>
