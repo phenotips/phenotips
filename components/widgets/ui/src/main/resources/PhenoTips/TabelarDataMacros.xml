@@ -46,11 +46,11 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action btn btn-default delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;&lt;span class="fa fa-times fa-fw"&gt;&lt;/span&gt;&lt;/a&gt;{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.newEntry')"&gt;$services.localization.render('phenotips.tableMacros.newEntry')&lt;/a&gt;&lt;/span&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
+  {{html clean="false"}}&lt;a class="add btn btn-primary add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url(${doc.getURL($options.mode)})&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})#foreach($d in $options.defaults.keySet())&amp;amp;${classname}_${escapetool.url($d)}=$!{escapetool.url($options.defaults.get($d))}#end&amp;amp;addedDisplaySheet=$!escapetool.url($!{options.addedDisplaySheet})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="$services.localization.render('phenotips.tableMacros.newEntry')"&gt;$services.localization.render('phenotips.tableMacros.newEntry')&lt;/a&gt;{{/html}}#if ($services.localization.get("$!{classname}_hint")) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}#end
 #end
 
 #macro (__extradata_displayTable $dataClassName $options)
@@ -450,9 +450,6 @@ table.extradata-list {
 .extradata-list .xwiki-form-listclass {
     display: block;
     white-space: nowrap;
-}
-.extradata-list th.actions {
-  width: 24px;
 }
 .extradata-list th.actions .buttonwrapper {
     display: block;

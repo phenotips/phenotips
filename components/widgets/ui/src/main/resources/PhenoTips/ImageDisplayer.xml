@@ -214,7 +214,7 @@ $content
         #__displayUploadForm($targetDoc)
       #else
         #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
-        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="$!{escapetool.xml($actionURL)}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;a class="add-data-button btn btn-primary manage-images-button" href="$!{escapetool.xml($actionURL)}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/div&gt;{{/html}}
       #end
       #__displaySelectableAttachmentList($targetDoc $propValue)
       )))
