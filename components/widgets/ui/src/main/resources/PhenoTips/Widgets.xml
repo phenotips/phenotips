@@ -6430,33 +6430,33 @@ div.resultContainer div.sourceContent.loading {
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
-.dropdown {
+form .dropdown {
   margin-left: 1.2em;
   width: 95%;
   z-index: 100;
 }
-.dropdown.emphasized-box {
+form .dropdown.emphasized-box {
   margin-left: -4px;
   padding: 0.25em 0.25em 0.25em 1.05em;
   /*position: absolute;*/
 }
-.dropdown .close {
+form .dropdown .close {
   cursor: pointer;
   right: .25em;
   position: absolute;
 }
-.dropdown .ontology-tree .entry-data {
+form .dropdown .ontology-tree .entry-data {
   line-height: 1.4em;
   padding-right: 1.1em;
 }
-.dropdown .ontology-tree .entry-data&gt;.info .key {
+form .dropdown .ontology-tree .entry-data&gt;.info .key {
   display: none;
 }
 .term-label .expand-tool {
   display: inline-block;
   margin-top: -0.5em;
 }
-.dropdown:not(.invisible) + br {
+form .dropdown:not(.invisible) + br {
   display: none;
 }</code>
     </property>
