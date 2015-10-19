@@ -4974,12 +4974,14 @@ document.observe("xwiki:dom:loaded", function() {
       this.regexp = new RegExp("^((" + this.subgroups.y + sep + this.subgroups.m + ")|" + this.subgroups.w + ")" + sep + this.subgroups.d + "$");
       this.element = element;
       var _this = this;
-      element.observe('keypress', function(event) {
-        if (_this.match(element.value)) {
-           element.removeClassName('error');
-        } else {
-           element.addClassName('error');
-        }
+      ['keyup', 'input'].each(function(ev) {
+        element.observe(ev, function(event) {
+          if (_this.regexp.match(element.value)) {
+            element.removeClassName('error');
+          } else {
+            element.addClassName('error');
+          }
+        });
       });
       element.observe('blur', function(event) {
         element.value = _this.format(element.value);
