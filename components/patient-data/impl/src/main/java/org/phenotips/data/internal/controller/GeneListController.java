@@ -123,6 +123,9 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
             for (BaseObject geneObject : geneXWikiObjects) {
+                if (geneObject == null || geneObject.getFieldList().size() == 0) {
+                    continue;
+                }
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
                     BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
