@@ -84,7 +84,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   #set ($id = 'expanded')
 #end
 (% class="section-maquette" id="${id}"%)(((
-  (% class="section-title" %)(((#if ($isDefault) Default #else Expanded #end)))
+  (% class="section-title" %)(((#if ($isDefault) $services.localization.render("phenotips.MeasurementsConfigurationClass.default") #else $services.localization.render("phenotips.MeasurementsConfigurationClass.expanded") #end)))
   (% class="section-contents" %)(((
     #foreach ($meas in $configObj.getProperty('ordering').value)
       #if ($isDefault == $defaults.contains($meas))
