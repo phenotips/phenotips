@@ -123,6 +123,9 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
             for (BaseObject geneObject : geneXWikiObjects) {
+                if (geneObject == null || geneObject.getFieldList().size() == 0) {
+                    continue;
+                }
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
                     BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
@@ -132,7 +135,11 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
                 }
                 allGenes.add(singleGene);
             }
-            return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            if (allGenes.isEmpty()) {
+                return null;
+            } else {
+                return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
                 + "error has occurred during controller loading ", e.getMessage());

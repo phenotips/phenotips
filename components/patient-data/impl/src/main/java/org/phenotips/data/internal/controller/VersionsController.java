@@ -98,6 +98,9 @@ public class VersionsController extends AbstractSimpleController
         }
 
         for (BaseObject versionObject : ontologyVersionObjects) {
+            if (versionObject == null) {
+                continue;
+            }
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
             if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
