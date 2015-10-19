@@ -200,6 +200,20 @@ public class VersionsControllerTest
     }
 
     @Test
+    public void loadIgnoresNullOntologyVersions()
+        throws ComponentLookupException
+    {
+        List<BaseObject> ontologyVersionList = Arrays.asList(null, this.firstOntologyVersion);
+        doReturn(ontologyVersionList).when(this.doc).getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+
+        Assert.assertEquals("1.0", result.get("first_version"));
+        Assert.assertEquals(PHENOTIPS_VERSION_STRING, result.get("phenotips_version"));
+        Assert.assertEquals(2, result.size());
+    }
+
+    @Test
     public void loadReturnsNormallyWhenContextComponentManagerThrowsComponentLookupException()
         throws ComponentLookupException
     {
