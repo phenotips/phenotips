@@ -139,7 +139,6 @@
   clear: both;
 }
 #charts-new {
-  border: 1px solid #aaa;
   padding: 15px; padding-left: 190px;
   height: 100%;
   box-sizing: border-box;
@@ -164,6 +163,10 @@
   overflow-y: scroll; overflow-x: hidden;
   height: 100%;
   box-sizing: border-box;
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
 }
 #charts-new .chart-thumbs img {
   width: 100px;
@@ -171,10 +174,10 @@
   margin: 0 auto;
 }
 #charts-new .chart-thumbs &gt; div {
+  border: 1px solid #aaa;
   margin-bottom: 20px;
   cursor: pointer;
   background-color: white;
-  border: 1px solid #aaa;
   padding: 10px;
 }
 #charts-new .chart-thumbs &gt; div &gt; span {
@@ -216,37 +219,38 @@
 .measurement-row {
   clear: both;
 }
-.viewbody .measurement-row *,
-.editbody .measurement-row * {
+.measurement-row &gt; label,
+.measurement-row &gt; span,
+.measurement-row &gt; div,
+.measurement-row span.val
+ {
   display: block;
   float: left;
   min-height: 1px;
+  line-height: 20px;
+}
+.measurement-row input {
+  width: auto; margin: 0 3px;
+}
+.measurement-row span.val {
+  margin: 0 6px;
+  width: 40px;
+  text-align: right;
+}
+.measurement-row span.val.empty {
+  text-align: center;
 }
 .measurement-row div.metric,
 .measurement-row div.imperial {
-  display: block;
-  float: left;
   width: 120px;
 }
 .viewbody .measurement-set label {
   width: auto;
 }
-.measurement-row &gt; span {
-  line-height: 20px;
-}
 .measurement-row span.side-label {
   width: 15px;
   font-size: 80%;
   font-weight: bold;
-  text-align: right;
-}
-.measurement-row input {
-  width: auto;
-  margin: 0 4px;
-}
-.measurement-row span.val {
-  margin: 0 3px;
-  width: 45px;
   text-align: right;
 }
 .measurement-row span.unit {
@@ -275,7 +279,7 @@
   display: none;
 }
 .measurement-set {
-  border: 1px solid #aaa;
+  border: 1px dotted #aaa;
   padding: 10px;
   float: left;
   clear: both;
@@ -285,6 +289,11 @@
 }
 .measurement-set .age {
   float: right;
+}
+.measurement-set .age span {
+  display: inline-block;
+  width: 85px;
+  text-align: right;
 }
 .measurement-set input {
   width: auto;
@@ -392,6 +401,8 @@ div.birthdate {
     <property>
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
+{{include reference="PhenoTips.ChartServiceMacros" /}}
+
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
@@ -455,11 +466,16 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   #end
   {{html clean="false" wiki="false"}}
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
-  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end&lt;/span&gt;
+  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.isComputed())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputedMsg')"&gt;&lt;/span&gt;#end&lt;/span&gt;
   &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
   &lt;div class="metric"&gt;
     #if ($xcontext.action == 'edit')
-      &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+      #if ($handler.isComputed())
+        &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+        &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+      #else
+        &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+      #end
       &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
       &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
       &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
@@ -529,7 +545,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   #if ($xcontext.action == 'edit')
     &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
   #else
-    &lt;span&gt;$!dateFormatted&lt;/span&gt;
+    &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
   #end
   #if ($xcontext.action == 'edit')
     &lt;a class="delete" href="#" title="Delete this measurement set"&gt;✖&lt;/a&gt;
@@ -573,6 +589,8 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   )))
 )))
 #end
+##
+#if ($xcontext.action == 'edit' || $doc.getObject('PhenoTips.MeasurementClass'))##
 ##
 #set ($sortedMeasurementObjs = [])
 #sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
@@ -622,18 +640,27 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
       )))
     #end
   )))
-  (% id="charts-new"%)(((
-    (% class="chart-thumbs"%)(((
+  #if ($xcontext.action == 'edit')
+    (% id="charts-new"%)(((
+      (% class="chart-thumbs"%)(((
+      )))
     )))
-  )))
-  (% class="clear"%)((()))
+    (% class="clear"%)((()))
+  #end
   (% id="measurementclass-max-id" data-value="$measurementClassId"%)((()))
   #if ($xcontext.action == 'view')
     (% id="measurements-gender" data-value="$doc.getObject('PhenoTips.PatientClass').getProperty('gender').value"%)((()))
   #end
 )))
 (% class="clear"%)((()))
-{{/velocity}}</content>
+#if ($xcontext.action == 'view')
+  #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementClass', 'obj': $doc.getObject('PhenoTips.PatientClass'), 'link': true, 'useNewMeasurementClass' : true})
+  (% id="charts"%)(((
+    #_measurementCharts($chartOptions)
+  )))
+#end
+##
+#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.measurement-info</extensionPointId>
