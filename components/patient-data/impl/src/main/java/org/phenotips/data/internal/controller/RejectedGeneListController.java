@@ -132,7 +132,11 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
                 }
                 allGenes.add(singleGene);
             }
-            return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            if (allGenes.isEmpty()) {
+                return null;
+            } else {
+                return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
                 + "error has occurred during controller loading ", e.getMessage());
