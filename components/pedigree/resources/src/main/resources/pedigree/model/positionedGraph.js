@@ -2921,13 +2921,15 @@ define([
                 if (this.GG.isPerson(this.order.order[r][i])) {
                     var person = this.order.order[r][i];
                     var numLabelLines = 0;
-                    if (this.GG.properties[person].hasOwnProperty("comments")) {
-                        var comments = this.GG.properties[person].comments.replace(/^\s+|\s+$/g,'');
+                    var personProperties = this.GG.properties[person];
+
+                    if (personProperties.hasOwnProperty("comments")) {
+                        var comments = personProperties.comments.replace(/^\s+|\s+$/g,'');
                         // count number of new lines
                         numLabelLines += ((comments.match(/\n/g) || []).length + 1);
                     }
-                    var dob = this.GG.properties[person].hasOwnProperty("dob") ? new PedigreeDate(this.GG.properties[person].dob) : null;
-                    var dod = this.GG.properties[person].hasOwnProperty("dod") ? new PedigreeDate(this.GG.properties[person].dod) : null;
+                    var dob = personProperties.hasOwnProperty("dob") ? new PedigreeDate(personProperties.dob) : null;
+                    var dod = personProperties.hasOwnProperty("dod") ? new PedigreeDate(personProperties.dod) : null;
                     if (dob !== null && dob.isComplete()) {
                         numLabelLines++;
                     }
@@ -2942,19 +2944,19 @@ define([
                             numLabelLines--;
                         }
                     }
-                    if (this.GG.properties[person].hasOwnProperty("lName") || this.GG.properties[person].hasOwnProperty("fName")) {
+                    if (personProperties.hasOwnProperty("lName") || personProperties.hasOwnProperty("fName")) {
                         numLabelLines++;
                     }
-                    if (this.GG.properties[person].hasOwnProperty("externalID")) {
+                    if (personProperties.hasOwnProperty("externalID")) {
                         numLabelLines++;
                     }
                     if (editor && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
                         // count number of cancer labels
-                        if (this.GG.properties[person].hasOwnProperty("cancers")) {
-                            for (var cancer in this.GG.properties[person].cancers) {
-                                if (this.GG.properties[person].cancers.hasOwnProperty(cancer)) {
-                                    if (this.GG.properties[person].cancers[cancer].hasOwnProperty("affected")) {
-                                        if (this.GG.properties[person].cancers[cancer].affected) {
+                        if (personProperties.hasOwnProperty("cancers")) {
+                            for (var cancer in personProperties.cancers) {
+                                if (personProperties.cancers.hasOwnProperty(cancer)) {
+                                    if (personProperties.cancers[cancer].hasOwnProperty("affected")) {
+                                        if (personProperties.cancers[cancer].affected) {
                                             numLabelLines++;
                                         }
                                     }
