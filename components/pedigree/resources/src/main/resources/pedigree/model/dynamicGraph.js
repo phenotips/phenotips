@@ -222,7 +222,8 @@ define([
             if (patientObject.hasOwnProperty("features")) {
                 // e.g.: "features":[{"id":"HP:0000359","label":"Abnormality of the inner ear","type":"phenotype","observed":"yes"},{"id":"HP:0000639","label":"Nystagmus","type":"phenotype","observed":"yes"}]
                 for (var i = 0; i < patientObject.features.length; i++) {
-                    if (patientObject.features[i].observed && patientObject.features[i].type == "phenotype") {
+                    if ((patientObject.features[i].observed === true || patientObject.features[i].observed === "yes")
+                        && patientObject.features[i].type == "phenotype") {
                         hpoTerms.push(patientObject.features[i].id);
                     }
                 }
@@ -230,7 +231,8 @@ define([
             if (patientObject.hasOwnProperty("nonstandard_features")) {
                 //e.g.: "nonstandard_features":[{"label":"freetext","type":"phenotype","observed":"yes","categories":[{"id":"HP:0001507","label":"Growth abnormality"},{"id":"HP:0000240","label":"Abnormality of skull size"}]}]
                 for (var i = 0; i < patientObject.nonstandard_features.length; i++) {
-                    if (patientObject.nonstandard_features[i].observed && patientObject.nonstandard_features[i].type == "phenotype") {
+                    if ((patientObject.nonstandard_features[i].observed === true || patientObject.nonstandard_features[i].observed === "yes")
+                        && patientObject.nonstandard_features[i].type == "phenotype") {
                         hpoTerms.push(patientObject.nonstandard_features[i].label);
                     }
                 }
