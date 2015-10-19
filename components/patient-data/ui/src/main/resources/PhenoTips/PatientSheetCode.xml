@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1444321117000</date>
-  <contentUpdateDate>1443801746000</contentUpdateDate>
+  <date>1445287507000</date>
+  <contentUpdateDate>1444938554000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -1506,846 +1506,6 @@ document.observe('xwiki:dom:loaded', function()
   </object>
   <object>
     <name>PhenoTips.PatientSheetCode</name>
-    <number>7</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>47891262-4dc8-44ea-83b2-944326a5acd0</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var PhenoTips = (function(PhenoTips) {
-  // Start PhenoTips augmentation
-  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
-
-  //  ========================================================================
-  /**
-   * Measurement processor
-   * */
-  widgets.MeasurementProcessor = Class.create({
-    /**
-     * Initialization
-     * */
-    initialize : function(dataTable) {
-      /** Measurement evaluation service */
-      this.measurementsService = new XWiki.Document('PatientToolsService', 'PhenoTips').getURL('get');
-      this.solarService = new XWiki.Document('SolrService', 'PhenoTips').getURL("get");
-
-      this.dataTable = dataTable;
-      this.dataTable._processor = this;
-      this.dataType = this.dataTable.hasClassName('at-birth') ? 'at-birth' : 'postnatal';
-
-      // Track requests to the measurement evaluation service:
-      this.lastRequestID = 0;
-      // Reorganize the rows of large tables
-      if (dataTable.hasClassName('full')) {
-        this._reorganizeRow = this._reorganizeRow.bind(this);
-        this.dataTable.select('tr').each(this._reorganizeRow);
-      } else {
-        this.dataTable.select('tr').invoke('addClassName', 'data-row');
-      }
-      // Attach event listeners to inputs
-      this._valueChanged = this._valueChanged.bindAsEventListener(this);
-      this._updateDataRow = this._updateDataRow.bind(this);
-      this._handleInputValueChanged(this.dataTable.select('input[type=text]'));
-      this._handleInputValueChanged($$('input[name$=date_of_birth], input[name$=gender]'));
-      this._handleRowAdded();
-      this._handleRowDeleted();
-      // Attach a measurement unit switcher (imperila|metric) if enabled
-      var configuredUnitSystem = this.dataTable.hasClassName('enable-unit-switch');
-      //   - this element will exist iff switching to imeprial system is enabled
-      if (configuredUnitSystem) {
-        var unitSwitchContainer = this.dataTable.down('.unit-switch-container');
-        new PhenoTips.widgets.UnitConverter(
-           this.dataTable,
-           'input[type="text"]:not([name$="date"])',
-           unitSwitchContainer || this.dataTable,
-           unitSwitchContainer &amp;&amp; 'top' || 'before',
-           this.dataTable.hasClassName('imperial') &amp;&amp; 'imperial' || ''
-        );
-      }
-    },
-    /**
-     * Reorganize data rows for large tables
-     * */
-    _reorganizeRow : function(row) {
-      // Skip table headers
-      if (row.down('th')) {return;}
-      // each row becomes a new table
-      var table = new Element('table');
-      var tbody = new Element('tbody');
-      table.update(tbody);
-
-      // Start building the table
-      this._rowMapping.each(function (data) {
-        var newRow = new Element('tr', {'class' : data.name + '-group'});
-        newRow.insert(new Element('td', {'class' : 'icon'}))
-        data.values.each(function (className) {
-          var element = row.down('td.' + className);
-          if (element) {
-            newRow.insert(element);
-            if (className == 'age') { element.setAttribute('colspan', 6);}
-          }
-        });
-        if (newRow.down('td')) {
-          tbody.insert(newRow);
-        }
-      });
-      row.update(table.wrap('td'));
-      row.addClassName('data-row');
-    },
-    /**
-     * Reorganization of rows for large table: this is how the rows should be split:
-     * */
-    _rowMapping : [
-      {
-        name : 'head',
-        values : ['date', 'age', 'actions']
-      }, {
-        name : 'general',
-        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation']
-      }, {
-        name : 'ratios',
-        values : ['armspan', 'armspan_evaluation', 'sitting', 'sitting_evaluation']
-      }, {
-        name : 'face',
-        values : ['hc', 'hc_evaluation', 'philtrum', 'philtrum_evaluation', 'ear', 'ear_evaluation', 'ear_right', 'ear_right_evaluation']
-      }, {
-        name : 'eyes',
-        values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
-      }, {
-        name : 'left-side',
-        values : ['hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
-      }, {
-        name : 'right-side',
-        values : ['hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
-      }
-    ],
-    /*
-     * Prepare to re-evaluate when measurement or measurement context has changed
-     * */
-    _handleInputValueChanged : function(elementsList) {
-      var dataTable = this.dataTable;
-      // TODO: make sure events work on all browsers
-      ['blur', 'keypress', 'keyup', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
-        elementsList.invoke('observe', eventName, this._valueChanged);
-      }.bind(this));
-      ['blur', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
-        elementsList.invoke('observe', eventName, function(event) {
-           Event.fire(dataTable, 'phenotips:measurement-info:updated');
-        });
-      });
-    },
-    /**
-     * When a new row is added, attach all the listeners that will enable evaluating the data in it
-     * */
-    _handleRowAdded : function() {
-      var _this = this;
-      this.dataTable.observe('extradata:added', function (event) {
-        var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
-        if (elements) {
-          _this._reorganizeRow(event.memo.element);
-          _this._handleInputValueChanged(elements);
-          if (window.dateTimePicker) {
-            window.dateTimePicker.attachPickers(event.memo.element);
-          } else {
-            var crtYear = new Date().getFullYear();
-            window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
-          }
-        }
-      });
-    },
-
-    /**
-     * When a row is deleted:
-     * */
-    _handleRowDeleted : function() {
-      var _this = this;
-      this.dataTable.observe('extradata:deleted', function (event) {
-        _this.dataTable.select('tr.data-row').each(function (row) {
-          _this._updateDataRow(row);
-        });
-        Event.fire(_this.dataTable, 'phenotips:measurement-info:updated');
-      });
-    },
-
-    /**
-     * A value affecting measurement evaluation has changed. It can be an actual measurement, in which case only
-     * the current measurement set needs to be updated, or it can be a value affecting the context of all measurements
-     * (e.g. gender or date of birth), in which case all measurements need to be evaluated.
-     * */
-    _valueChanged : function(event) {
-      // Get inputs holding the values needed for computing the dependent values
-      var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr.data-row');
-      if (row) {
-        this._updateDataRow(row);
-      } else {
-         this.dataTable.select('tr.data-row').each(this._updateDataRow);
-      }
-    },
-
-    /**
-     * Request the re-evaluation of all measurements on a row ans display the results
-     * */
-    _updateDataRow : function(row) {
-      // Generate the query string to pass to the measurement evaluation service
-      var qs = this._createRowQueryString(row);
-      if (qs == '') {return;}
-
-      var sex = $(document.documentElement).down('input[name$=gender]:checked');
-      var requestID = ++this.lastRequestID;
-
-      var ajx = new Ajax.Request(this.measurementsService, {
-        method: 'post',
-        parameters:  qs + this._createReqParamSex('s', sex) + '&amp;outputSyntax=plain',
-        requestHeaders: {Accept : "application/json"},
-        onSuccess: function(response) {
-          if (requestID &lt; this.lastRequestID) {return;}
-          this._updateDependentValues(row, response.responseJSON)
-        }.bind(this),
-        onFailure: function (response) {}
-      });
-    },
-
-     /**
-     * Generate query string for all data
-     * */
-    _createQueryString : function () {
-      var _this = this;
-      var qs = '';
-      this.dataTable.select('tr.data-row').each(function(row) {
-        qs += _this._createRowQueryString(row, true);
-      })
-      if (qs != '') {
-        var sex = $(document.documentElement).down('input[name$=gender]:checked');
-        qs += this._createReqParamSex('s', sex);
-      }
-      return qs;
-    },
-
-    /**
-     * Generate querry string for updating the evaluations on a data row
-     * */
-    _createRowQueryString : function (row, forceParam) {
-      return this._createReqParam('weight', row.down('td.weight input'), forceParam) +
-             this._createReqParam('height', row.down('td.height input'), forceParam) +
-             this._createReqParam('bmi', row.down('td.bmi input'), forceParam) +
-             this._createReqParam('hc', row.down('td.hc input'), forceParam) +
-             this._createReqParam('ocd', row.down('td.ocd input'), forceParam) +
-             this._createReqParam('icd', row.down('td.icd input'), forceParam) +
-             this._createReqParam('pfl', row.down('td.pfl input'), forceParam) +
-             this._createReqParam('ipd', row.down('td.ipd input'), forceParam) +
-             this._createReqParam('ear', row.down('td.ear input'), forceParam) +
-             this._createReqParam('hand', row.down('td.hand input'), forceParam) +
-             this._createReqParam('palm', row.down('td.palm input'), forceParam) +
-             this._createReqParam('foot', row.down('td.foot input'), forceParam) +
-             this._createReqParam('ear_right', row.down('td.ear_right input'), forceParam) +
-             this._createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
-             this._createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
-             this._createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
-             this._createReqParam('philtrum', row.down('td.philtrum input'), forceParam) +
-             this._createReqParam('armspan', row.down('td.armspan input'), forceParam) +
-             this._createReqParam('sitting', row.down('td.sitting input'), forceParam) +
-             (this.dataType == 'at-birth' ? '&amp;a=0' : this._createReqParamAge('a', row.down('td.date input'), forceParam));
-    },
-
-    /**
-     * Generate the query string fragment corresponding to a specific measurement
-     * */
-    _createReqParam : function (name, sourceInput, forceParam) {
-      var value = sourceInput &amp;&amp; sourceInput.value != '' &amp;&amp; parseFloat(sourceInput.value);
-      if (value) {
-        return '&amp;' + name + '=' + encodeURIComponent(value);
-      }
-      return forceParam &amp;&amp; ('&amp;' + name + '=') || '';
-    },
-
-    /**
-     * Generate the query string fragment corresponding to the age
-     * */
-    _createReqParamAge : function (name, crtDate, forceParam) {
-      var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
-      if (!birthDate || !crtDate) {return ''}
-      var bDateObj = Date.parseISO_8601(birthDate.alt || '');
-      var cDateObj = Date.parseISO_8601(crtDate.alt || '');
-      if (bDateObj &amp;&amp; cDateObj) {
-        // The two dates have different timezones, move back the birthdate to the local timezone
-        bDateObj.setTimezoneOffset(bDateObj.getTimezoneOffset() * -10/3);
-        var daysInMonth = 30.4375;
-        var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
-        var ageOffset = (cDateObj.getDate() &lt; bDateObj.getDate()) ? (daysInMonth+cDateObj.getDate()-bDateObj.getDate())/daysInMonth : (cDateObj.getDate() - bDateObj.getDate())/daysInMonth;
-        var age = age + ageOffset;
-      } else {
-        age=null;
-      }
-      if (age != null &amp;&amp; age &gt;= 0) {
-        var displayedAge = '';
-        var y = Math.floor(age / 12);
-        var m = Math.floor(age % 12);
-        if (y &gt; 0) {
-          displayedAge = y + 'y ';
-        }
-        if (m &gt;= 0) {
-          displayedAge += m + 'm ';
-        }
-        var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');
-        if (target) {
-          if (target.down('input')) {
-            target.down('input').value = age;
-          }
-          if (target.down('.displayed-value')) {
-            target.down('.displayed-value').update(displayedAge);
-          }
-        }
-      } else if (age == null){
-        var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');
-        if (target) {
-          if (target.down('input')) {
-            target.down('input').value = age;
-          }
-          if (target.down('.displayed-value')) {
-            target.down('.displayed-value').update("-");
-          }
-        }
-      }
-      return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || forceParam &amp;&amp; ('&amp;' + name + '=') || '';
-    },
-
-    /**
-     * Generate the query string fragment corresponding to the gender
-     * */
-    _createReqParamSex : function (name, sourceInput) {
-      return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
-    },
-
-    /**
-     * Perform the actual update of all the measurement evals in a data row and select phenotypes corresponding to abnormal measurements
-     * */
-    _updateDependentValues : function (row, values) {
-      var _this = this;
-      var _info = this._measurementEvaluationInfo;
-      for (var p in values) {
-        ['value', 'evaluation'].each( function (value) {
-          if (values[p] &amp;&amp; values[p][value] &amp;&amp; _info[p] &amp;&amp; _info[p][value]) {
-            var cell = row.down(_info[p][value]);
-            if (!cell) {
-              return;
-            }
-            _this._updateValue(cell, values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
-            var target = _info[p];
-            if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
-              var targetElt = values[p]['valCategory'] &amp;&amp; (target['valueHooks'][values[p]['valCategory']] || target['valueHooks'][values[p]['valCategory'].sub("extreme-", '')]);
-              targetElt = _this._selectFormElementForPhenotype(targetElt);
-              _this._selectMeasurementTerm(targetElt);
-              if (values[p]['valCategory']) {
-                ['extreme-below-normal', 'below-normal', 'above-normal', 'extreme-above-normal'].without(values[p]['valCategory'], values[p]['valCategory'].sub("extreme-", '')).each(function(val) {
-                  var elt = findFormElementForPhenotype(target['valueHooks'][val]);
-                  _this._unselectMeasurementTerm(elt);
-                });
-              }
-            }
-          }
-        });
-      }
-    },
-
-    /**
-     *
-     * */
-    _selectMeasurementTerm : function (elt, force) {
-      if (elt &amp;&amp; (!elt.checked || force)) {
-        if (elt._ynpicker) {
-          elt._ynpicker._select('yes');
-        } else {
-          elt.checked = true;
-        }
-        highlightChecked(elt);
-        var addedItem = $('current-phenotype-selection').down('label input[value="' + elt.value + '"]');
-        if (addedItem) {
-          addedItem.up('label').insert({before : new Element('span', {
-                                                               'class' : 'fa fa-bolt',
-                                                               'title' : 'This phenotype was automatically added based on abnormal measurement values'
-          }).update(' ')});
-        }
-      }
-    },
-
-
-    /**
-     *
-     * */
-    _unselectMeasurementTerm : function (elt) {
-      if (elt &amp;&amp; elt.checked) {
-        if (elt._ynpicker) {
-          elt._ynpicker._onUnselect();
-        } else {
-          elt.checked = false;
-        }
-      }
-    },
-
-    _selectFormElementForPhenotype: function(id) {
-      if (!id) {
-        return null;
-      }
-      var _this = this;
-      var existingElement = findFormElementForPhenotype(id);
-      if (existingElement == null) {
-        var suggestWidget = $("quick-phenotype-search")._suggestWidget;
-        if (!suggestWidget) {
-           return null;
-        }
-        searchURL = this.solarService + "?q=" + id;
-        new Ajax.Request(searchURL, {
-          method: 'get',
-          onSuccess: function(transport) {
-            var response = transport.responseJSON.rows[0];
-            if (response) {
-              var categories = '&lt;span class="hidden term-category"&gt;';
-              response.term_category.each(function(category){categories += '&lt;input type="hidden" value="' + category + '"&gt;'});
-              categories + "&lt;/span&gt;";
-              var data = {'id':id, 'value':response.name, 'category': categories}
-              var title =  response.name;
-              suggestWidget.acceptEntry(data, title, title);
-              _this._selectMeasurementTerm(findFormElementForPhenotype(id), true);
-            }
-          }
-        });
-        return null;
-      } else {
-        return existingElement;
-      }
-    },
-
-    /**
-     * Information about how to handle each measurement:
-     * - where to find the value (selector to be used using the current data row as root)
-     * - where to put the evaluation (selector to be used using the current data row as root)
-     * - what phenotype elements to select when an abnormal value is found (optional)
-     * */
-    _measurementEvaluationInfo : {
-       bmi : {
-         value : 'td.bmi',
-         evaluation : 'td.bmi_evaluation',
-         valueHooks : {
-           'above-normal': 'HP:0001513'
-         }
-       },
-       weight : {
-         evaluation : 'td.weight_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0004325',
-           'above-normal': 'HP:0004324'
-         }
-       },
-       height : {
-         evaluation : 'td.height_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0004322',
-           'above-normal': 'HP:0000098'
-         }
-       },
-       hc : {
-         evaluation : 'td.hc_evaluation',
-         valueHooks : {
-           'extreme-below-normal': 'HP:0000252',
-           'above-normal': 'HP:0000256'
-         }
-       },
-       ocd : {
-         evaluation : 'td.ocd_evaluation'
-       },
-       icd : {
-         evaluation : 'td.icd_evaluation'
-       },
-       pfl : {
-         evaluation : 'td.pfl_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0012745',
-           'above-normal': 'HP:0000637'
-         }
-       },
-       ipd : {
-         evaluation : 'td.ipd_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0000601',
-           'above-normal': 'HP:0000316'
-         }
-       },
-       ear : {
-         evaluation : 'td.ear_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0008551',
-           'above-normal': 'HP:0000400'
-         }
-       },
-       hand : {
-         evaluation : 'td.hand_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0200055',
-           'above-normal': 'HP:0001176'
-         }
-       },
-       palm : {
-         evaluation : 'td.palm_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0004279',
-           'above-normal': 'HP:0011302'
-         }
-       },
-       foot : {
-         evaluation : 'td.foot_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0001773',
-           'above-normal': 'HP:0001833'
-         }
-       },
-       ear_right : {
-         evaluation : 'td.ear_right_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0008551',
-           'above-normal': 'HP:0000400'
-         }
-       },
-       hand_right : {
-         evaluation : 'td.hand_right_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0200055',
-           'above-normal': 'HP:0001176'
-         }
-       },
-       palm_right : {
-         evaluation : 'td.palm_right_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0004279',
-           'above-normal': 'HP:0011302'
-         }
-       },
-       foot_right : {
-         evaluation : 'td.foot_right_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0001773',
-           'above-normal': 'HP:0001833'
-         }
-       },
-       philtrum : {
-         evaluation : 'td.philtrum_evaluation',
-         valueHooks : {
-           'below-normal': 'HP:0000322',
-           'above-normal': 'HP:0000343'
-         }
-       },
-       armspan : {
-         evaluation : 'td.armspan_evaluation'
-       },
-       sitting : {
-         evaluation : 'td.sitting_evaluation'
-       }
-    },
-
-    /**
-     * Perform the actual update of a specific measurement eval
-     * */
-    _updateValue : function (target, value, fuzzyValue) {
-      var input = target.down('input[type=hidden]');
-      var displayed = target.down('.displayed-value');
-      input &amp;&amp; (input.value = value);
-      displayed.update(value || '-');
-
-      ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
-        displayed.removeClassName(cssClass);
-      });
-      if (fuzzyValue) {
-        displayed.addClassName(fuzzyValue);
-      }
-    },
-
-    /**
-     * Find the latest measurements entered in the data table
-     * */
-    _getMostRecentEntry : function() {
-      var mostRecentEntry;
-      var mostRecentDate;
-      this.dataTable.select('tr input.xwiki-date').each(function(element) {
-        var date = Date.parseISO_8601(element.alt.strip());
-        if (!mostRecentDate || mostRecentDate &lt; date) {
-          mostRecentDate = date;
-          mostRecentEntry = element.up('tr.data-row');
-        }
-      })
-      return mostRecentEntry;
-    }
-  });
-
-  //  ========================================================================
-  /**
-   * Chart generator
-   * */
-  widgets.ChartGenerator = Class.create({
-    /**
-     * Initialization
-     * */
-    initialize : function(container, dataSources) {
-      // Check that there is a container where the charts are to be displayed and at least one data source
-      if (!container || dataSources.size() == 0) {
-        return;
-      }
-      this.chartContainer = container;
-      if (this.chartContainer.innerHTML == '') {
-        this.chartContainer.up().hide();
-      }
-      this.dataSources = dataSources;
-      /** Chart update service */
-      this.chartService = new XWiki.Document('ChartService', 'PhenoTips').getURL('get');
-      // Track requests to the chart update service
-      this.lastRequestID = 0;
-      // Initialize the element: enable expand/collapse, adjust sizes, etc
-      this.initChartsWidget();
-      // Listen to changes in the data sources
-      this._updateCharts = this._updateCharts.bindAsEventListener(this);
-      this.dataSources.invoke('observe', 'phenotips:measurement-info:updated', this._updateCharts);
-    },
-     /**
-     * Initialize the element: enable expand/collapse, adjust sizes, etc
-     * */
-    initChartsWidget : function() {
-      // If the charts are not enabled or if they're already initialized, nothing more to do here
-      if (!this.chartContainer || this.chartContainer.hasClassName('initialized')) {
-        return;
-      }
-      // Enable expand/collapse
-      var chartsZone = this.chartContainer.up('.growth-charts-section');
-      if (chartsZone) {
-        chartsZone.select('h3, .expand-tools .tool').invoke('observe', 'click', function(event) {
-           event.element().up('.growth-charts-section').toggleClassName('collapsed');
-        });
-      }
-      this.__adjustAllSVGHeights();
-      Event.observe(window, 'resize', this.__adjustAllSVGHeights.bindAsEventListener(this));
-
-      // Mark the chart widget as initialized
-      this.chartContainer.addClassName('initialized');
-    },
-    /**----------------------------------------------------------------------------
-     * Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
-     * Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-     * (adapted from jQuery to Prototype.js)
-     * */
-    __adjustSVGHeight : function(svgElt) {
-       // Original width/height of the svg graphic: 952 X 1225
-       svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
-    },
-    __adjustAllSVGHeights : function() {
-       this.chartContainer &amp;&amp; this.chartContainer.select('.chart-wrapper').each(this.__adjustSVGHeight.bind(this));
-    },
-    /**
-     * Request to re-generate growth charts
-     * */
-    _updateCharts : function(event) {
-      if (!this.chartContainer) {
-        return;
-      }
-      var _this = this;
-      // Generate the query string to pass to the chart service
-      var qs = '';
-      this.dataSources.each(function (item) {
-        qs += item._processor._createQueryString();
-      });
-      if (qs == '') {return;}
-
-      var requestID = ++this.lastRequestID;
-      var ajx = new Ajax.Request(this.chartService, {
-        method: 'get',
-        parameters : qs + "&amp;width=" + this.chartContainer.getDimensions()['width'],
-        onSuccess: function(response) {
-          if (requestID &lt; this.lastRequestID) {return;}
-          this.chartContainer.update(response.responseText);
-          if (response.responseText == '&lt;div class="clear"&gt;&lt;/div&gt;') {
-            this.chartContainer.up().hide();
-          } else {
-            this.chartContainer.up().show();
-          }
-          this.__adjustAllSVGHeights();
-        }.bind(this),
-        onFailure: function (response) {}
-      });
-    }
-  });
-
-
-  //  ========================================================================
-  /**
-   * Attach the behaviors that will allow evaluating measurements and generating charts in real time
-   * */
-
-  var init = function(event) {
-    // Enamble the MeasurementProcessor for each measurements table (e.g. at birth, postnatal)
-    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
-      var chartDataSources = [];
-      element.select('table.measurements').each(function(dataTable) {
-        new PhenoTips.widgets.MeasurementProcessor(dataTable);
-        chartDataSources.push(dataTable);
-      });
-      new PhenoTips.widgets.ChartGenerator($('charts'), chartDataSources);
-    });
-
-    // Create a warning when measurements are being entered but no birth date is specified
-    var dateOfBirth = $(document.documentElement).down('input[name$=date_of_birth]');
-    if (dateOfBirth) {
-      _updateNoBirthDateWarning();
-      dateOfBirth.observe('xwiki:date:changed', _updateNoBirthDateWarning);
-    }
-    function _updateNoBirthDateWarning(){
-      birthdate = dateOfBirth.value;
-      var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
-      if (!warningInsertionPoint) { return; }
-      if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
-        warningInsertionPoint.insert({
-          after:"&lt;div id ='no-birth-date-warning' class='box warningmessage'&gt;$services.localization.render('phenotips.patientSheetCode.noBirthdateWarning')&lt;/div&gt;"
-        });
-      } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
-        $('no-birth-date-warning').remove();
-      }
-    };
-    // ------------------------------------------------------------------------------------------
-    // And one more thing (not exactly related to measurements directly:
-    // If we're collecting data about gestational age, select premature birth for low gestational ages
-    var gaInput = $$('input[type="text"][name$="_gestation"]');
-    var gaTermInput = $$('input[type="checkbox"][name$="_gestation"]');
-    gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
-    gaTermInput = gaTermInput.size() &gt; 0 &amp;&amp; gaTermInput[0] || '';
-    var pbInput = findFormElementForPhenotype('HP:0001622', false, 'prenatal');
-    if (gaInput &amp;&amp; pbInput) {
-      gaInput.observe('blur', function (event) {
-        var ga = parseInt(gaInput.value);
-        var targetElt = pbInput;
-        if (!isNaN(ga)) {
-          if (ga &lt; 37) {
-            if (!targetElt.checked) {
-              if (targetElt._ynpicker) {
-                targetElt._ynpicker._onClick(false, 'yes');
-              } else {
-                targetElt.checked = true;
-              }
-              highlightChecked(targetElt);
-            }
-          } else {
-            if (targetElt._ynpicker) {
-              targetElt._ynpicker._onClick(false, 'no');
-              highlightChecked(targetElt);
-            }
-          }
-        } else {
-          if (targetElt._ynpicker) {
-            targetElt._ynpicker._onNA();
-            highlightChecked(targetElt);
-          }
-        }
-      });
-    }
-    // FIXME This code is a bit fragile... Both inputs should be handled in the same method
-    if (gaTermInput &amp;&amp; pbInput) {
-      gaTermInput.observe('blur', function (event) {
-        var targetElt = pbInput;
-        if (gaTermInput.checked &amp;&amp; targetElt._ynpicker) {
-          targetElt._ynpicker._onClick(false, 'no');
-          highlightChecked(targetElt);
-        }
-      });
-    }
-
-    return true;
-  };
-
-  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
-  document.observe('xwiki:dom:updated', init);
-
-  // End PhenoTips augmentation.
-  return PhenoTips;
-}(PhenoTips || {}));</code>
-    </property>
-    <property>
-      <name>Automatic computation of growth parameters</name>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.PatientSheetCode</name>
     <number>8</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>fee0fd2a-16d1-45ac-8a44-16af9afec0f7</guid>
@@ -3684,6 +2844,71 @@ document.observe('xwiki:dom:loaded', function()
           );
         }
       }
+
+      // Create a warning when measurements are being entered but no birth date is specified
+      var dateOfBirth = $(document.documentElement).down('input[name$=date_of_birth]');
+      if (dateOfBirth) {
+        _updateNoBirthDateWarning();
+        dateOfBirth.observe('xwiki:date:changed', _updateNoBirthDateWarning);
+      }
+      function _updateNoBirthDateWarning(){
+        birthdate = dateOfBirth.value;
+        var warningInsertionPoint = $$('.measurement-info &gt; .expand-tools')[0] ? $$('.measurement-info &gt; .expand-tools')[0] : $('HMeasurements');
+        if (!warningInsertionPoint) { return; }
+        if (!birthdate &amp;&amp; !$('no-birth-date-warning')) {
+          warningInsertionPoint.insert({
+            after:"&lt;div id ='no-birth-date-warning' class='box infomessage'&gt;$services.localization.render('phenotips.patientSheetCode.noBirthdateWarning')&lt;/div&gt;"
+          });
+        } else if (birthdate &amp;&amp; $('no-birth-date-warning')) {
+          $('no-birth-date-warning').remove();
+        }
+      };
+      // ------------------------------------------------------------------------------------------
+      // And one more thing (not exactly related to measurements directly:
+      // If we're collecting data about gestational age, select premature birth for low gestational ages
+      var gaInput = $$('input[type="text"][name$="_gestation"]');
+      var gaTermInput = $$('input[type="checkbox"][name$="_gestation"]');
+      gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
+      gaTermInput = gaTermInput.size() &gt; 0 &amp;&amp; gaTermInput[0] || '';
+      var pbInput = findFormElementForPhenotype('HP:0001622', false, 'prenatal');
+      if (gaInput &amp;&amp; pbInput) {
+        gaInput.observe('blur', function (event) {
+          var ga = parseInt(gaInput.value);
+          var targetElt = pbInput;
+          if (!isNaN(ga)) {
+            if (ga &lt; 37) {
+              if (!targetElt.checked) {
+                if (targetElt._ynpicker) {
+                  targetElt._ynpicker._onClick(false, 'yes');
+                } else {
+                  targetElt.checked = true;
+                }
+                highlightChecked(targetElt);
+              }
+            } else {
+              if (targetElt._ynpicker) {
+                targetElt._ynpicker._onClick(false, 'no');
+                highlightChecked(targetElt);
+              }
+            }
+          } else {
+            if (targetElt._ynpicker) {
+              targetElt._ynpicker._onNA();
+              highlightChecked(targetElt);
+            }
+          }
+        });
+      }
+      // FIXME This code is a bit fragile... Both inputs should be handled in the same method
+      if (gaTermInput &amp;&amp; pbInput) {
+        gaTermInput.observe('blur', function (event) {
+          var targetElt = pbInput;
+          if (gaTermInput.checked &amp;&amp; targetElt._ynpicker) {
+            targetElt._ynpicker._onClick(false, 'no');
+            highlightChecked(targetElt);
+          }
+        });
+      }
     
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
 
@@ -3750,14 +2975,48 @@ document.observe('xwiki:dom:loaded', function()
           if (!this._stickyBox) {
             this._setChartsWidth();
             this._initStickyBox();
+          } else {
+            this._stickyBox.makeDefault();
+            this._setChartsWidth();
+            this._stickyBox.resetPosition();
           }
         }).bind(this));
-        $('measurements').observe('change', this._updateCharts);
+        ['change', 'age:change', 'measurementSet:delete'].each((function(ev) {
+          $('measurements').observe(ev, this._updateCharts);
+        }).bind(this));
         Event.observe(window, 'resize', this._setChartsWidth);
+
+        $$('input[name$=gender]').each((function(el) {
+          el.observe('click', this._updateCharts);
+        }).bind(this));
 
         // Init using existing data
         this._updateCharts();
+
+        if (!this._mainImgEl) {
+          this._addPlaceholder();
+        }
       }
+    },
+
+    _addPlaceholder: function() {
+      var infoEl = new Element('div');
+      infoEl.addClassName('infomessage');
+      infoEl.innerHTML = "$services.localization.render('phenotips.patientSheet.measurements.chartPlaceholderMsg')";
+
+      var url = XWiki.contextPath+"/bin/get/PhenoTips/ChartService?a=12.0&amp;weight=10.0&amp;standalone=1&amp;n=weight&amp;s=M&amp;f=svg";
+      var mainChartEl = new Element('a');
+      mainChartEl.setAttribute('href', url.replace("&amp;f=svg", ""));
+      mainChartEl.setAttribute('target', "_blank");
+
+      var mainChartImgEl = new Element('img');
+      mainChartImgEl.setAttribute('src', url);
+      mainChartImgEl.addClassName('main');
+      mainChartEl.insert(mainChartImgEl);
+
+      this.el.insert(infoEl);
+      this.el.insert({bottom: mainChartEl});
+      this._mainImgEl = mainChartEl;
     },
 
     _setChartsWidth: function() {
@@ -3772,14 +3031,26 @@ document.observe('xwiki:dom:loaded', function()
     _updateCharts: function() {
       var post = this.parent.getObject();
 
-      var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/chart-resources", {
-        method: 'post',
-        postBody: JSON.stringify(post),
-        requestHeaders: {Accept : "application/json"},
-        contentType: "application/json",
-        onSuccess: this._chartResourcesResponseHandler,
-        onFailure: function (response) {}
-      });
+      var shouldSend = false;
+      for (var i = 0; i &lt; post.measurementSets.length; i++) {
+        if (post.measurementSets[i].age.length &amp;&amp; Object.keys(post.measurementSets[i].measurements).length) {
+          shouldSend = true;
+        }
+      }
+      shouldSend &amp;= !!post.sex;
+
+      if (shouldSend) {
+        var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/chart-resources", {
+          method: 'post',
+          postBody: JSON.stringify(post),
+          requestHeaders: {Accept : "application/json"},
+          contentType: "application/json",
+          onSuccess: this._chartResourcesResponseHandler,
+          onFailure: function (response) {}
+        });
+      } else {
+        this._chartResourcesResponseHandler({responseJSON: {charts: {}}});
+      }
     },
 
     _chartResourcesResponseHandler: function(resp) {
@@ -3792,7 +3063,7 @@ document.observe('xwiki:dom:loaded', function()
             return;
           }
         }
-        if (this._mainImgEl &amp;&amp; this._mainImgEl.src == el.down('img').src) {
+        if (this._mainImgEl &amp;&amp; this._mainImgEl.down('img').src == el.down('img').src) {
           this._mainImgEl.remove(); this._mainImgEl = undefined;
         }
         el.remove();
@@ -3806,6 +3077,14 @@ document.observe('xwiki:dom:loaded', function()
           j++;
         } else {
           var below = (els &amp;&amp; j &lt; els.length) ? els[j] : undefined;
+
+          var infoEl = this.el.down('.infomessage');
+          if (infoEl) {
+            infoEl.remove();
+            this._mainImgEl.remove();
+            this._mainImgEl = undefined;
+          }
+
           var thumbEl = this._addThumb(charts[i], below);
           if (!this._mainImgEl) {
             this.selectChart(thumbEl);
@@ -3844,9 +3123,14 @@ document.observe('xwiki:dom:loaded', function()
 
       var url = thumbEl.down('img').src;
 
-      var mainChartEl = new Element('img');
-      mainChartEl.setAttribute('src', url);
-      mainChartEl.addClassName('main');
+      var mainChartEl = new Element('a');
+      mainChartEl.setAttribute('href', url.replace("&amp;f=svg", ""));
+      mainChartEl.setAttribute('target', "_blank");
+
+      var mainChartImgEl = new Element('img');
+      mainChartImgEl.setAttribute('src', url);
+      mainChartImgEl.addClassName('main');
+      mainChartEl.insert(mainChartImgEl);
 
       this._mainImgEl &amp;&amp; this._mainImgEl.remove();
       this.el.insert({bottom: mainChartEl});
@@ -3962,6 +3246,7 @@ document.observe('xwiki:dom:loaded', function()
       if (deleteTrigger.disabled) {
         return;
       }
+      this.el.fire('measurementSet:delete');
       var removeElement = (function() {
         this.destroy();
         this.el.remove();
@@ -3999,8 +3284,7 @@ document.observe('xwiki:dom:loaded', function()
         var dateDisplayParts = {
           y: age.years,
           m: age.months,
-          w: Math.floor(age.days/7),
-          d: age.days % 7,
+          d: age.days,
         };
         var ageStr = "";
         Object.keys(dateDisplayParts).each(function(k) {
@@ -4265,6 +3549,8 @@ document.observe('xwiki:dom:loaded', function()
       this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
 
       if (XWiki.contextaction == 'edit') {
+      	this._displayEl = this.el.down('span.val');
+
         // Init field
         this._valueEl.readOnly = true;
 
@@ -4304,12 +3590,16 @@ document.observe('xwiki:dom:loaded', function()
           requestHeaders: {Accept : "application/json"},
           onSuccess: (function(resp) {
             this._valueEl.value = resp.responseJSON.value.toFixed(2);
+            this._displayEl.removeClassName('empty');
+            this._displayEl.innerHTML = resp.responseJSON.value.toFixed(2);
             this.fetchAndRenderPercentileSd();
           }).bind(this),
           onFailure: function (response) {}
         });
       } else {
         this._valueEl.value = '';
+        this._displayEl.innerHTML = '-';
+        this._displayEl.addClassName('empty');
         this.fetchAndRenderPercentileSd();
       }
     },
@@ -4327,7 +3617,9 @@ document.observe('xwiki:dom:loaded', function()
   });
 
   var init = function(event) {
-    new PhenoTips.widgets.Measurements($('measurements'));
+    if (XWiki.contextaction == 'edit') {
+      new PhenoTips.widgets.Measurements($('measurements'));
+    }
   };
 
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
