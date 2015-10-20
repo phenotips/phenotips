@@ -318,16 +318,23 @@ define([
                 shape.attr(PedigreeEditorParameters.attributes.nodeShapeFemale);
             }
 
-            if (!editor.isUnsupportedBrowser()) {
+        this._genderShape = shape;
+
+        if (!editor.isUnsupportedBrowser() && editor.getPreferencesManager().getConfigurationOption("drawNodeShadows")) {
+            var shadow = this.makeNodeShadow(shape);
+            this._genderGraphics = editor.getPaper().set(shadow, shape);
+        } else {
+            this._genderGraphics = editor.getPaper().set(shape);
+        }
+    },
+
+    makeNodeShadow: function(shape) {
                 //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
                 var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
                 shadow.translate(3,3);
                 shadow.insertBefore(shape);
-            }
-
-            this._genderShape = shape;
-
-            this._genderGraphics = editor.getPaper().set(shadow, shape);
+        shadow.node.setAttribute("class","pedigree-node-shadow");
+        return shadow;
         },
 
         /**
