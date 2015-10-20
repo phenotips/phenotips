@@ -57,4 +57,14 @@ public interface GroupManager
      * @return the corresponding group, if found, or {@code null} if the requested group doesn't exist
      */
     Group getGroup(DocumentReference groupReference);
+
+    /**
+     * Checks if a user belongs to a group
+     *
+     * @param user the user to check
+     * @param group the group to check whether the user belongs to
+     * @return true if the user belongs to the group
+     */
+    boolean isUserInGroup(User user, Group group);
+
 }
