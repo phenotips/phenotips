@@ -59,7 +59,7 @@ public interface GroupManager
     Group getGroup(DocumentReference groupReference);
 
     /**
-     * Checks if a user belongs to a group
+     * Checks if a user belongs to a group.
      *
      * @param user the user to check
      * @param group the group to check whether the user belongs to
