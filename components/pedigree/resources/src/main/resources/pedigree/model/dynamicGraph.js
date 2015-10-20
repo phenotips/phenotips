@@ -234,7 +234,7 @@ define([
                     ethnicities = ethnicities.concat(patientObject.ethnicity.paternal_ethnicity.slice(0));
                 }
                 if (ethnicities.length > 0) {
-                    this.DG.GG.properties[0].ethnicities = filterUnique(ethnicities);
+                    this.DG.GG.properties[0].ethnicities = Helpers.filterUnique(ethnicities);
                 }
             }
 
