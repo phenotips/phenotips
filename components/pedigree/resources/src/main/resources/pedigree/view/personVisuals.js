@@ -290,11 +290,11 @@ define([
             else {
                 var disorderAngle = (360/colors.length).round();
                 delta = (360/(colors.length))/2;
-                if (colors.length == 1 && this.getNode().getGender() == 'U')
+                if (colors.length == 1 && (this.getNode().getGender() == 'U' || this.getNode().getGender() == 'O'))
                     delta -= 45; // since this will be rotated by shape transform later
 
                 var radius = (this._shapeRadius-0.6);    // -0.6 to avoid disorder fills to overlap with shape borders (due to aliasing/Raphael pixel layout)
-                if (this.getNode().getGender() == 'U')
+                if (this.getNode().getGender() == 'U' || this.getNode().getGender() == 'O')
                     radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
 
                 for(var i = 0; i < colors.length; i++) {
