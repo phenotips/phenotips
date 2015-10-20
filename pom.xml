@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -490,6 +490,24 @@
               <method>net.sf.json.JSONObject *(*)</method>
               <to>org.json.JSONObject</to>
               <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/receive/ReceivePatientData</className>
+              <differenceType>7012</differenceType>
+              <method>org.json.JSONObject getPatientState()</method>
+              <justification>Added a new endpoint on the receiving side in patient push module</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushPatientData</className>
+              <differenceType>7012</differenceType>
+              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
+              <justification>Needed for synchronizing consents</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/groups/GroupManager</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isUserInGroup(org.xwiki.users.User, org.phenotips.groups.Group)</method>
+              <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
             </difference>
             <difference>
               <className>org/phenotips/data/push/PushPatientData</className>
