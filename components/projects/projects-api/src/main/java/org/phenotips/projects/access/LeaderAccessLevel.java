@@ -18,8 +18,6 @@
 
 package org.phenotips.projects.access;
 
-import org.phenotips.data.permissions.internal.AbstractAccessLevel;
-
 import org.xwiki.component.annotation.Component;
 
 import javax.inject.Named;
@@ -31,7 +29,7 @@ import javax.inject.Singleton;
 @Component
 @Named("leader")
 @Singleton
-public class LeaderAccessLevel extends AbstractAccessLevel
+public class LeaderAccessLevel extends AbstractProjectAccessLevel
 {
     /**
      * Create a new LeaderAccessLevel.
