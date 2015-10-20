@@ -1351,10 +1351,16 @@ define([
 
         _setFieldDisabled : {
             'radio' : function (container, disabled) {
-                if (disabled && Object.prototype.toString.call(disabled) === '[object Array]') {
+                if (disabled) {
+                    if (Object.prototype.toString.call(disabled) === '[object Array]') {
                         container.select('input[type=radio]').each(function(item) {
-                        item.disabled = (disabled.indexOf(item.value) >= 0);
-                    });
+                            item.disabled = (disabled.indexOf(item.value) >= 0);
+                        });
+                    } else if (disabled === true || didsabled === false) {
+                        container.select('input[type=radio]').each(function(item) {
+                            item.disabled = disabled;
+                        });
+                    }
                 }
             },
             'checkbox' : function (container, disabled) {
@@ -1372,20 +1378,26 @@ define([
             'textarea' : function (container, inactive) {
                 // FIXME: Not implemented
             },
-            'date-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'date-picker' : function (container, disabled) {
+                Element.select(container,'select').forEach(function(element) {
+                    if (disabled) {
+                        element.addClassName('disabled-select');
+                    } else {
+                        element.removeClassName('disabled-select');
+                    }
+                });
             },
-            'disease-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'disease-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
             'ethnicity-picker' : function (container, inactive) {
                 // FIXME: Not implemented
             },
-            'hpo-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'hpo-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
-            'gene-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'gene-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
             'phenotipsid-picker' : function (container, inactive) {
                 // FIXME: Not implemented
@@ -1399,6 +1411,31 @@ define([
             'hidden' : function (container, inactive) {
                 // FIXME: Not implemented
             }
+        },
+
+        __disableEnableSuggestModification: function(container, disabled) {
+            var numElements = 0;
+            Element.select(container,'.delete-tool').forEach(function(element) {
+                numElements++;
+                if (disabled) {
+                    element.addClassName('hidden');
+                } else {
+                    element.removeClassName('hidden');
+                }
+            });
+            Element.select(container,'input').forEach(function(element) {
+                element.disabled = disabled;
+                if (disabled) {
+                    if (numElements > 1) {  // 1 for delete all; if there is more than one no need to display empty input box
+                        element.addClassName('hidden');
+                    } else {
+                        element.placeholder = "none";
+                    }
+                } else {
+                    element.removeClassName('hidden');
+                    element.placeholder = "";
+                }
+            });
         }
     });
     return NodeMenu;
