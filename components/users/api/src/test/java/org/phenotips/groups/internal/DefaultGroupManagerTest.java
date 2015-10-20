@@ -58,7 +58,7 @@ public class DefaultGroupManagerTest
 
     @Rule
     public final MockitoComponentMockingRule<GroupManager> mocker =
-        new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
+    new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
 
     /** Basic tests for {@link DefaultGroupManager#getGroupsForUser(org.xwiki.model.reference.DocumentReference)}. */
     @Test
@@ -76,7 +76,7 @@ public class DefaultGroupManagerTest
         when(q.bindValue("u", "xwiki:XWiki.Admin")).thenReturn(q);
         when(q.bindValue("su", "XWiki.Admin")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL))
-            .thenReturn(q);
+        .thenReturn(q);
         List<Object> groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
         groupNames.add("Group B Administrators");
@@ -93,7 +93,7 @@ public class DefaultGroupManagerTest
         when(q.bindValue(1, "xwiki:Groups.Group A")).thenReturn(q);
         when(q.bindValue(2, "xwiki:Groups.Group B Administrators")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2)", Query.XWQL))
-            .thenReturn(q);
+        .thenReturn(q);
         groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group B");
         when(q.<Object>execute()).thenReturn(groupNames);
@@ -103,7 +103,7 @@ public class DefaultGroupManagerTest
         when(resolver.resolve(eq("Groups.Group B"), eq(GROUP_SPACE))).thenReturn(b);
         when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1)", Query.XWQL))
-            .thenReturn(q);
+        .thenReturn(q);
         when(q.<Object>execute()).thenReturn(Collections.emptyList());
 
         q = mock(Query.class);
@@ -180,5 +180,70 @@ public class DefaultGroupManagerTest
     {
         Assert.assertNull(this.mocker.getComponentUnderTest().getGroup((String) null));
         Assert.assertNull(this.mocker.getComponentUnderTest().getGroup(""));
+    }
+
+    @Test
+    public void isUserInGroup() throws ComponentLookupException, QueryException
+    {
+        User u = mock(User.class);
+        DefaultGroup defaultGroupA = new DefaultGroup(new DocumentReference("xwiki", "Groups", "Group A"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isUserInGroup(u, defaultGroupA));
+
+        DocumentReference userProfile = new DocumentReference("xwiki", "XWiki", "Admin");
+        when(u.getProfileDocument()).thenReturn(userProfile);
+        EntityReferenceSerializer<String> serializer =
+            this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING, "compactwiki");
+        when(serializer.serialize(userProfile)).thenReturn("XWiki.Admin");
+
+        QueryManager qm = this.mocker.getInstance(QueryManager.class);
+        Query q = mock(Query.class);
+        when(q.bindValue("u", "xwiki:XWiki.Admin")).thenReturn(q);
+        when(q.bindValue("su", "XWiki.Admin")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL))
+        .thenReturn(q);
+        List<Object> groupNames = new LinkedList<Object>();
+        groupNames.add("Groups.Group A");
+        groupNames.add("Group B Administrators");
+        when(q.<Object>execute()).thenReturn(groupNames);
+
+        DocumentReferenceResolver<String> resolver =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        DocumentReference a = new DocumentReference("xwiki", "Groups", "Group A");
+        when(resolver.resolve(eq("Groups.Group A"), eq(GROUP_SPACE))).thenReturn(a);
+        DocumentReference ba = new DocumentReference("xwiki", "Groups", "Group B Administrators");
+        when(resolver.resolve(eq("Group B Administrators"), eq(GROUP_SPACE))).thenReturn(ba);
+
+        q = mock(Query.class);
+        when(q.bindValue(1, "xwiki:Groups.Group A")).thenReturn(q);
+        when(q.bindValue(2, "xwiki:Groups.Group B Administrators")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2)", Query.XWQL))
+        .thenReturn(q);
+        groupNames = new LinkedList<Object>();
+        groupNames.add("Groups.Group B");
+        when(q.<Object>execute()).thenReturn(groupNames);
+
+        q = mock(Query.class);
+        DocumentReference b = new DocumentReference("xwiki", "Groups", "Group B");
+        when(resolver.resolve(eq("Groups.Group B"), eq(GROUP_SPACE))).thenReturn(b);
+        when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1)", Query.XWQL))
+        .thenReturn(q);
+        when(q.<Object>execute()).thenReturn(Collections.emptyList());
+
+        q = mock(Query.class);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass) phgrp",
+            Query.XWQL)).thenReturn(q);
+        groupNames = new LinkedList<Object>();
+        groupNames.add("Groups.Group A");
+        groupNames.add("Groups.Group B");
+        when(q.<Object>execute()).thenReturn(groupNames);
+
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isUserInGroup(u, defaultGroupA));
+
+        DefaultGroup defaultGroupB = new DefaultGroup(new DocumentReference("xwiki", "Groups", "Group B"));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isUserInGroup(u, defaultGroupB));
+
+        DefaultGroup defaultGroupC = new DefaultGroup(new DocumentReference("xwiki", "Groups", "Group C"));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isUserInGroup(u, defaultGroupC));
     }
 }
