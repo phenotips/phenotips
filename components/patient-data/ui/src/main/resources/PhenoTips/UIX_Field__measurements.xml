@@ -405,7 +405,7 @@ div.birthdate {
 
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
-$xwiki.ssx.use('PhenoTips.UIX_Field__measurements_new')##
+$xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 #set ($measurementClassId = $doc.getObjectNumbers('PhenoTips.MeasurementClass'))##
 #set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())##
 #set ($itemDoc = $xwiki.getDocument($objs.get(0)))##
