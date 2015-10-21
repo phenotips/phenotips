@@ -113,6 +113,29 @@ public class DefaultProject implements Project
     }
 
     @Override
+    public String getName() {
+        return this.projectReference.getName();
+    }
+
+    @Override
+    public String getFullName() {
+        return projectId;
+    }
+
+    @Override
+    public String getDescription() {
+        // TODO
+        return "";
+    }
+
+    @Override
+    public int getNumberOfCollaboratorsUsers() {
+
+        //TODO - this is incorrect!
+        return this.getCollaborators().size();
+    }
+
+    @Override
     public Collection<Collaborator> getCollaborators()
     {
         List<Collaborator> collaborators = new ArrayList<Collaborator>();
