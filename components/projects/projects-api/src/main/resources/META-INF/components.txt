@@ -1,3 +1,4 @@
 org.phenotips.projects.script.ProjectsScriptService
 org.phenotips.projects.access.LeaderAccessLevel
 org.phenotips.projects.access.ContributorAccessLevel
+org.phenotips.projects.internal.ProjectsRepository
