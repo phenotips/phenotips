@@ -41,39 +41,43 @@
 {{html wiki="false" clean="false"}}
 #set ($_service = $services.projects)
 #set ($discard = $response.setContentType('application/json'))
+#set ($project = $_service.getProjectById($request.projectId))
 #if ("$!{request.xaction}" == 'get')
   #set ($data = {})
   #set ($contributors = [])
   #set ($leaders = [])
-  #set ($rawCollaborators = $_service.getCollaborators($request.projectId))
+  #set ($templates = [])
   ##
-  ## Format collaborators for UI side
-  #foreach ($c in $rawCollaborators)
-    #set ($collaborator = {})
-    #set ($discard = $collaborator.put('id', $c.user.toString()))
-    #set ($discard = $collaborator.put('type', $c.type))
-    #if ($c.type == 'user')
-      #set ($discard = $collaborator.put('name', $xwiki.getUserName("${c.user}", false)))
-    #else
-      #set ($discard = $collaborator.put('name', "$!{xwiki.getDocument($c.user).plainTitle}"))
+  #if ($project)
+    #set ($rawCollaborators = $project.getCollaborators())
+    ##
+    ## Format collaborators for UI side
+    #foreach ($c in $rawCollaborators)
+      #set ($collaborator = {})
+      #set ($discard = $collaborator.put('id', $c.user.toString()))
+      #set ($discard = $collaborator.put('type', $c.type))
+      #if ($c.type == 'user')
+        #set ($discard = $collaborator.put('name', $xwiki.getUserName("${c.user}", false)))
+      #else
+        #set ($discard = $collaborator.put('name', "$!{xwiki.getDocument($c.user).plainTitle}"))
+      #end
+      #if ($c.accessLevel.name == "leader")
+        #set ($discard = $leaders.add($collaborator))
+      #else
+        #set ($discard = $contributors.add($collaborator))
+      #end
     #end
-    #if ($c.accessLevel.name == "leader")
-      #set ($discard = $leaders.add($collaborator))
-    #else
-      #set ($discard = $contributors.add($collaborator))
+    ##
+    #set ($rawTempaltes = $project.getTemplates())
+      #foreach ($t in $rawTempaltes)
+      #set ($template = {})
+      #set ($discard = $template.put('id', $t.toString()))
+      #set ($discard = $template.put('value', $t.name))
+      #set ($discard = $templates.add($template))
     #end
   #end
   #set ($discard = $data.put('contributors', $contributors))
   #set ($discard = $data.put('leaders', $leaders))
-  ##
-  #set ($templates = [])
-  #set ($rawTempaltes = $_service.getTemplates($request.projectId))
-  #foreach ($t in $rawTempaltes)
-    #set ($template = {})
-    #set ($discard = $template.put('id', $t.toString()))
-    #set ($discard = $template.put('value', $t.name))
-    #set ($discard = $templates.add($template))
-  #end
   #set ($discard = $data.put('templates', $templates))
   ##
   $jsontool.serialize($data)
@@ -90,13 +94,13 @@
   #foreach ($leader in $leadersString)
     #set ($discard = $leaders.add($services.model.resolveDocument($leader)))
   #end
-  #set ($discard = $_service.setCollaborators($request.projectId, $contributors, $leaders))
+  #set ($discard = $project.setCollaborators($contributors, $leaders))
   ##
   #set ($templates = [])
   #foreach ($template in $templatesString)
     #set ($discard = $templates.add($services.model.resolveDocument($template)))
   #end
-  #set ($discard = $_service.setTemplates($request.projectId, $templates))
+  #set ($discard = $project.setTemplates($templates))
 #end
 {{/velocity}}</content>
 </xwikidoc>
