@@ -48,7 +48,6 @@ public class StudiesScriptService implements ScriptService
 
     private static final String MATCHED_STUDIES = "matchedStudies";
 
-    /** Runs queries for finding families. */
     @Inject
     private QueryManager qm;
 
