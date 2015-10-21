@@ -162,7 +162,7 @@ public class VersionsControllerTest
         Assert.assertEquals(DATA_NAME, VersionsController.getEnablingFieldName());
     }
 
-    //--------------------load() is Overridden from AbstractSimpleController--------------------
+    // --------------------load() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
@@ -228,8 +228,7 @@ public class VersionsControllerTest
         verify(this.mocker.getMockedLogger()).error("Could not find DistributionManager component");
     }
 
-    //--------------------writeJSON() is Overridden from AbstractSimpleController--------------------
-
+    // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void writeJSONAddsVersionInformationWhenSelectedFieldsContainsEnablingFieldName()

@@ -152,8 +152,7 @@ public class MetaDataControllerTest
         Assert.assertTrue(result.isEmpty());
     }
 
-
-    //--------------------load() is Overridden from AbstractSimpleController--------------------
+    // --------------------load() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void loadCatchesExceptionFromDocumentAccess() throws Exception
@@ -201,7 +200,7 @@ public class MetaDataControllerTest
         Assert.assertEquals(UNKNOWN_USER, result.get(AUTHOR));
     }
 
-    //--------------------writeJSON() is Overridden from AbstractSimpleController--------------------
+    // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException

@@ -100,7 +100,7 @@ public class SolvedControllerTest
         Assert.assertThat(result, Matchers.hasItem("solved__notes"));
     }
 
-    //--------------------save() is Overridden from AbstractSimpleController--------------------
+    // --------------------save() is Overridden from AbstractSimpleController--------------------
 
     @Test(expected = UnsupportedOperationException.class)
     public void saveIsUnsupported() throws ComponentLookupException
@@ -108,7 +108,7 @@ public class SolvedControllerTest
         this.mocker.getComponentUnderTest().save(this.patient);
     }
 
-    //--------------------writeJSON() is Overridden from AbstractSimpleController--------------------
+    // --------------------writeJSON() is Overridden from AbstractSimpleController--------------------
 
     @Test
     public void writeJSONWithSelectedFieldsReturnsWhenGetDataReturnsNull() throws ComponentLookupException

@@ -19,6 +19,7 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangingEvent;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
@@ -32,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -84,8 +86,8 @@ public class PatientDeathdateUpdaterTest
     @Test
     public void checkConstruction() throws ComponentLookupException
     {
-        PatientDeathdateUpdater testInstance = (PatientDeathdateUpdater)this.mocker.getComponentUnderTest();
-        Assert.assertEquals(eventListenerName, testInstance.getName());
+        PatientDeathdateUpdater testInstance = (PatientDeathdateUpdater) this.mocker.getComponentUnderTest();
+        Assert.assertEquals(this.eventListenerName, testInstance.getName());
         Assert.assertThat(testInstance.getEvents(), hasItem(isA(PatientChangingEvent.class)));
     }
 
@@ -113,7 +115,7 @@ public class PatientDeathdateUpdaterTest
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
-        verify(this.patientRecordObj).setDateValue(dateOfDeath, null);
-        verify(this.patientRecordObj).setStringValue(dateOfDeathEntered, null);
+        verify(this.patientRecordObj).setDateValue(this.dateOfDeath, null);
+        verify(this.patientRecordObj).setStringValue(this.dateOfDeathEntered, null);
     }
 }
