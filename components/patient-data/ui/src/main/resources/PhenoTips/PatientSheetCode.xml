@@ -615,8 +615,7 @@ document.observe('xwiki:dom:loaded', function()
                   'inputType': 'checkbox',
                   'listInsertionElt' : '.label-other',
                   'listInsertionPosition' : 'before',
-                  'onItemAdded' : enableHighlightChecked,
-                  'acceptFreeText' : true
+                  'onItemAdded' : enableHighlightChecked
                 },
       'generateYesNo' : {
                   'showKey' : false,
@@ -628,8 +627,7 @@ document.observe('xwiki:dom:loaded', function()
                   'listInsertionElt' : '.label-other',
                   'listInsertionPosition' : 'before',
                   'predefinedEntries' : $(document.documentElement),
-                  'onItemAdded' : enableHighlightChecked,
-                  'acceptFreeText' : true
+                  'onItemAdded' : enableHighlightChecked
                 }
     }
     // ------------------------------------------------------------------------
