@@ -18,9 +18,12 @@
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
+import org.phenotips.data.permissions.Collaborator;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
+
+import java.util.Collection;
 
 /**
  * @version $Id$
@@ -33,4 +36,44 @@ public interface Project
 
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Projects", EntityType.SPACE);
+
+    /**
+     * Returns a collection project collaborators, both leaders and contributors.
+     *
+     * @return a collection of collaborators
+     */
+    Collection<Collaborator> getCollaborators();
+
+    /**
+     * Sets the list of project collaborators.
+     *
+     * @param contributors collection of contributors
+     * @param leaders collection of contributors
+     * @return true if successful
+     */
+    boolean setCollaborators(Collection<EntityReference> contributors, Collection<EntityReference> leaders);
+
+    /**
+     * Sets the list of project collaborators.
+     *
+     * @param collaborators collection of contributors
+     * @return true if successful
+     */
+    boolean setCollaborators(Collection<Collaborator> collaborators);
+
+    /**
+     * Returns a collection templates available for the project.
+     *
+     * @return a collection of templates
+     */
+    Collection<EntityReference> getTemplates();
+
+    /**
+     * Sets the list of templates available for the project.
+     *
+     * @param templates collection of templates
+     * @return true if successful
+     */
+    boolean setTemplates(Collection<EntityReference> templates);
+
 }
