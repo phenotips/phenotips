@@ -38,6 +38,35 @@ public interface Project
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Projects", EntityType.SPACE);
 
     /**
+     * Returns the name of the projects.
+     *
+     * @return the name of the project
+     */
+    String getName();
+
+    /**
+     * Returns the full name of project.
+     *
+     * @return the full name of the project
+     */
+    String getFullName();
+
+    /**
+     * Returns the description of the project.
+     *
+     * @return the description of the project
+     */
+    String getDescription();
+
+    /**
+     * Returns the number of users collaborating in the project. That is, number of contributor and leader users plus
+     * the number of all the users in contributor and leader groups.
+     *
+     * @return total number of users who are collaborators in the project
+     */
+    int getNumberOfCollaboratorsUsers();
+
+    /**
      * Returns a collection project collaborators, both leaders and contributors.
      *
      * @return a collection of collaborators
