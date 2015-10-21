@@ -19,10 +19,14 @@ package org.phenotips.projects.script;
 
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.DefaultProject;
+import org.phenotips.projects.internal.ProjectsRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import java.util.Collection;
+
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -35,6 +39,8 @@ import javax.inject.Singleton;
 @Singleton
 public class ProjectsScriptService implements ScriptService
 {
+    @Inject
+    private ProjectsRepository projectsRepository;
 
     /**
      * Returns a project by an id.
@@ -44,5 +50,14 @@ public class ProjectsScriptService implements ScriptService
     public Project getProjectById(String projectId)
     {
         return new DefaultProject(projectId);
+    }
+
+    /**
+     * Returns a collection of all projects.
+     *
+     * @return a collection of all projects
+     */
+    public Collection<Project> getAllProjects() {
+        return this.projectsRepository.getAllProjects();
     }
 }
