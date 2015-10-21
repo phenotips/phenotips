@@ -731,79 +731,40 @@ $xwiki.jsx.use($projectClassName)
     </class>
     <property>
       <code>{{velocity}}
-#set ($projectClassName = 'PhenoTips.ProjectClass')
-#set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
-#set ($orders = {
-  'name' : 'asc',
-  'members' : 'desc',
-  'cases' : 'desc'
-})
-#set ($defaultOrder = 'name')
-#set ($order = "$!xcontext.macro.params.orderby")
-#set ($_service = $services.projects)
-#if (!$orders.get($order))
-  #set($order = $defaultOrder)
-#end
-##
-#set ($query = $services.query.xwql("from doc.object(${projectClassName}) as std where doc.fullName&lt;&gt;:template").bindValue('template', $projectTemplateName ))
-#set ($projectDocs = $xwiki.wrapDocs($query.execute()))
-#set ($projectData = [])
-#foreach ($projectDoc in $projectDocs)
-  ## Read groups
-  #set ($project = $_service.getProjectById($projectDoc.title))
-  #set ($projectObj = $projectDoc.getObject($projectClassName))
-  #set ($rawCollaborators = $project.getCollaborators())
-  #set ($contributorsCount = 0)
-  #set ($leadersCount = 0)
-  #foreach ($c in $rawCollaborators)
-    #if ($c.accessLevel.name == "leader")
-      #set ($leadersCount = $leadersCount + 1)
-    #else
-      #set ($contributorsCount = $contributorsCount + 1)
-    #end
-  #end
-  ##
-  #set ($discard = $projectData.add({
-    'doc' : $projectDoc ,
-    'obj' : $projectObj ,
-    'doc.fullName' : $projectDoc.fullName,
-    'name' : $projectDoc.title,
-    'contributorsGroups' : $contributorsCount,
-    'leadersGroups' : $leadersCount
-  }))
-#end
-#set ($sortedData = $sorttool.sort($projectData, ["${order}:${orders.get($order)}"]))
-##
+#set ($projectsData = $services.projects.getAllProjects())
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
-#if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $sortedData.size()))
-  #set ($max = $sortedData.size())
+#if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $projectsData.size()))
+  #set ($max = $projectsData.size())
 #end
 ##
-$xwiki.ssx.use($projectClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
-$xwiki.jsx.use($projectClassName)
+$xwiki.ssx.use('PhenoTips.ProjectClass', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
+$xwiki.jsx.use('PhenoTips.ProjectClass')
 ##
 (% id="projects-table" %)
-#if ($sortedData.size() == 0)
+#if ($projectsData.size() == 0)
   {{info}}$services.localization.render('phenotips.projectClass.noneDefined')
     #if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences')
       [[$services.localization.render('phenotips.projectClass.manage')&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin','editor=globaladmin&amp;section=studies')}]]
     #end
   {{/info}}
 #else
-  #foreach ($project in $sortedData)
+  #foreach ($project in $projectsData)
     #if ($foreach.index &lt; $max)
-      |(% class="name" %) [[$project.get('name')&gt;&gt;$project.get('doc.fullName')]] ##
-      \\(% class="members"%)$project.get('contributorsGroups') contributors group#if($project.get('contributorsGroups') != 1)s#end(%%)##
-      \\(% class="members"%)$project.get('leadersGroups') leaders group#if($project.get('leadersGroups') != 1)s#end(%%)##
+      #set ($colUsers = $project.getNumberOfCollaboratorsUsers())
+      #set ($description = $project.getDescription())
+      #set ($fullName = $project.getFullName())
+      ##
+      |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
+      \\(% class="members"%)$colUsers collabortor user#if($colUsers != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
-        #if ("$!{project.get('obj').getProperty('description').value.trim()}" != '')
-          (% class="desc" %) ((($project.get('doc').display('description'))))
+        #if ("$!{$description}" != '')
+          (% class="desc" %) ((($description)))
         #end
       #end
       #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
         (% class="tools" %) (((##
-        [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'edit')||class="tool edit"]]##
-        [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($project.get('doc.fullName'), 'delete')||class="tool delete"]]##
+        [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
+        [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
         )))
       #end\\
     #end
