@@ -191,10 +191,7 @@ var PrintDialog = Class.create( {
         var screenHeight = canvas.getHeight() - 10;
         var dialogueHeight = $$('.pedigree-print-dialog')[0].getHeight();
         var freeSpace = screenHeight - dialogueHeight;
-        var previewPaneHeight = PedigreeEditor.attributes.maxPrintPreviewPaneHeight;
-        try {
-              previewPaneHeight  = parseInt($('printPreview').style.height.match( /^(\d+)/g )[0]);
-        } catch (err) {}
+        var previewPaneHeight = $('printPreview').getHeight();
         if (freeSpace < 0) {
             var newPreviewHeight = Math.max(PedigreeEditor.attributes.minPrintPreviewPaneHeight, previewPaneHeight + freeSpace);
             $('printPreview').style.height = newPreviewHeight + "px";
