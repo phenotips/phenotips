@@ -654,10 +654,6 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   padding: 0;
   border: 0
 }
-
-#body {
-  font-family: Arial,Verdana,sans-serif;
-}
 .edit_section {
   display: none !important;
 }
@@ -692,96 +688,28 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
   position: relative;
 }
 
-.actionmenu {
-  height: 1.8em;
-}
-.actionmenu a, .actionmenu a:visited {
-  /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
-  padding-top: .3em;
-  line-height: 1.2em;
-}
-.actionmenu a strong {
-  line-height: inherit;
-}
-/** Bug in Colibri: although the page body has 25px padding, the menus on top have 10px + 10px padding. */
-.rightmenu {
-  padding-right: 15px;
-}
-/** Bug in Colibri: a custom font is used instead of the one used everywhere else. */
-.actionmenu a, .actionmenu a:visited {
-  font-family: inherit;
-}
-#phenotips-mainmenu, #phenotips-globalTools {
-  background-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
-  color: $theme.menuLinkColor;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  /* Keep above .content-actions */
-  z-index: 1001;
-}
-#phenotips-mainmenu .menu-horizontal, #phenotips-globalTools .menu-horizontal {
-  font-size: 1em;
-}
-#phenotips-mainmenu .topmenuentry {
-  background-image: none;
+.dropdown-menu &gt; li label {
+  display: block;
+  padding: 3px 20px;
+  margin: 0;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.428571429;
   white-space: nowrap;
 }
-#phenotips-mainmenu a, #phenotips-globalTools a {
-  display: inline-block;
-  float: none;
-  text-transform: none !important;
-  font-weight: normal !important;
-  font-size: 1em;
-}
-#phenotips-globalTools .search input {
-  font-size: 1em;
-  margin: -1px;
-  padding: 0 3px;
-  vertical-align: baseline;
-  width: 20em;
-}
-
-#phenotips-globalTools label {
-  white-space: nowrap;
-}
-#phenotips-globalTools .menu.menu-horizontal ul ul {
-  background-color: $theme.menuBackgroundColor;
-}
-#phenotips-globalTools .menu.menu-horizontal .xDropdown + ul {
-  margin-left: 0;
-}
-
-#create-patient-record {
+#create-patient-record, .dropdown-menu &gt; li input[type="submit"] {
   box-sizing: content-box;
   background: transparent;
   border: 0 none;
-  color: $theme.menuLinkColor;
   cursor: pointer;
-  display: inline-block;
-  font-family: inherit;
-  font-size: 1em;
-  padding: 2px 0 0;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-  white-space: nowrap;
-  width: auto;
 }
-#create-patient-record:hover {
-  text-decoration: underline;
-}
-#phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
-  color: $theme.menuLinkColor;
-  display: inline-block;
-  margin-right: 5px;
-}
-
 .bottombuttons {
   background: #F9F9F9;
-  border: 1px solid #FFFFFF;
+  border: 1px solid $theme.borderColor;
   bottom: 0;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   left: 0;
-  margin: 0 25px !important;
-  padding: 0.5em 10px;
+  margin: 0 30px !important;
+  padding: 0.5em 20px;
   position: fixed;
   right: 0;
   z-index: 3;
@@ -792,26 +720,6 @@ document.observe('xwiki:suggest:containerCreated', function(event) {
 
 input.button:disabled, .buttonwrapper button:disabled, input.button:disabled:hover, .buttonwrapper button:disabled:hover {
     background-image: none;
-}
-
-.add-data-button,
-.buttonwrapper a.add-data-button:link,
-.buttonwrapper a.add-data-button:visited,
-.buttonwrapper a.add-data-button:active {
-  background-color: $theme.buttonPrimaryBackgroundColor;
-  border-radius: 4px;
-  box-shadow: 0 0 6px $theme.borderColor;
-  color: $theme.buttonPrimaryTextColor;
-  display: inline-block;
-  font: normal normal 700 .8em/140% "Helvetica",sans-serif;
-  padding: .3em .2em .3em  2.2em;
-  position: relative;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.add-data-button:hover,
-.buttonwrapper a.add-data-button:hover {
-  box-shadow: 0 0 6px $theme.linkColor;
 }
 .general-tools {
   float: right;
@@ -850,19 +758,7 @@ label.create-button-label, .add-data-button:before {
   width: .8em !important;
   z-index: 2;
 }
-
-thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter input, thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter select {
-  padding: .3em !important;
-}
-
-input[type=text], input[type=password], textarea {
-  border-color: $theme.borderColor;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.4) inset !important;
-  width: 100%;
-}
-textarea {
-  box-sizing: border-box;
+.patient-form input[type=text], .patient-form textarea {
   width: 100%;
 }
 input[type=text]:focus, input[type=password]:focus, textarea:focus {
@@ -915,6 +811,9 @@ h1:target, h2:target, h3:target {
 }
 #xdocFooter {
   display: none;
+}
+.clinical-info .label {
+  color: $theme.textColor;
 }
 .language-block {
   position: relative;
@@ -1433,6 +1332,587 @@ h1:target, h2:target, h3:target {
     </property>
     <property>
       <users>XWiki.XWikiGuest</users>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>3</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>d3581013-532e-4d38-96b6-04d3e1cae2d2</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>##################################
+##         BROWSE MENU
+##################################
+#xwikitopmenuentrystart($xwiki.getDocument('data.AllData').getURL() $services.localization.render('Browse') 'tmBrowse' '' 'folder-open')
+  #if (!$isGuest)
+    #submenuitem($xwiki.getDocument('data.AllData').getURL() $services.localization.render('My patients') 'tmBrowseMy', '', 'file')
+    #submenuitem($xwiki.getDocument('data.AllData').getURL() $services.localization.render('Patients shared with me') 'tmBrowseAll', '', 'share')
+    ## TODO: Add extension point here
+  #else
+    #submenuitem($xwiki.getDocument('data.AllData').getURL() $services.localization.render('Public data') 'tmBrowseAll', '', 'share')
+  #end
+#xwikitopmenuentryend()
+</content>
+    </property>
+    <property>
+      <path>menus_browse.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>4</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>4366dc28-2443-43dc-a799-49b924473108</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>##################################
+##         CREATE MENU
+##################################
+#if($displayCreateMenu)
+#set ($displayCreateSubmenu = $hasCreatePage)
+#if ($displayCreateSubmenu)
+  &lt;li&gt;&lt;div class="navbar-form navbar-left"&gt;
+  #xwikisplitbuttonentrystart($doc.getURL('create') $services.localization.render('core.menu.create') 'tmCreate' 'btn-success' 'plus')
+  #if ($hasCreatePage)
+    ###submenuitem($doc.getURL('create') $services.localization.render('Patient record') 'tmCreatePatient', '', 'notes-2')
+    ###submenuitem($doc.getURL('create') $services.localization.render('Family') 'tmCreatefamily', '', 'flowchart')
+    ## TODO: Add extension point here
+    
+    &lt;li&gt;&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="hidden" name="doCreate" value="1" /&gt;
+    ##
+    #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
+      ## Is there more than one sheet option?
+      ## Check out all the groups this user is part of
+      #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
+      #if ($studiesVisibilityPreference == 'unrestricted')
+        #set ($studyClassName = 'PhenoTips.StudyClass')
+        #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
+        #set ($query = $services.query.xwql("from doc.object(${studyClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $studyTemplateName))
+        #set ($studyDocs = $xwiki.wrapDocs($query.execute()))
+        #set ($studies = $collectionstool.sortedSet)
+        #foreach ($study in $studyDocs)
+          #set ($discard = $studies.add($services.model.serialize($study.documentReference, 'default')))
+        #end
+      #else
+        #set ($toProcess = $collectionstool.queue)
+        #set ($discard = $toProcess.add($xcontext.userReference.toString()))
+        #set ($groups = [])
+        #set ($studies = $collectionstool.sortedSet)
+        #foreach ($iteration in [0..1000])
+          #if ($toProcess.empty)
+            #break
+          #end
+          #set ($item = $toProcess.poll())
+          #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
+            #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+            #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+              #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+            #end
+            #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
+              #set ($discard = $toProcess.add($group.documentReference.toString()))
+              #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
+              #if ($groupObj.getProperty('studies').value.isEmpty() == false)
+                #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
+              #end
+            #end
+          #end
+        #end
+      #end
+      #if ($studies.size() &gt; 0)
+        $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
+        $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
+        &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
+      #end
+    #end
+    ## Extensions displayed before the content
+    #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
+      &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
+    #end
+    &lt;label for="create-patient-record"&gt;&lt;span class="glyphicon glyphicon-user"&gt; &lt;/span&gt;&lt;input type="submit" id="create-patient-record" title="$services.localization.render('phenotips.globalHeader.createPatient')" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
+  &lt;/div&gt;&lt;/form&gt;&lt;/li&gt;
+  ## TODO: add extension point
+  &lt;li&gt;&lt;form id="family-creation-form" class="family-form" action="$xwiki.getURL('PhenoTips.CreateFamily')" method="post"&gt;&lt;div&gt;
+    &lt;label for="create-family"&gt;&lt;span class="glyphicon glyphicon-family"&gt; &lt;/span&gt;&lt;input type="submit" id="create-family" title="$services.localization.render('New family')" value="$services.localization.render('New family')"/&gt;&lt;/label&gt;
+  &lt;/div&gt;&lt;/form&gt;&lt;/li&gt;
+  #end
+  #xwikibuttonentryend()
+  &lt;/div&gt;&lt;/li&gt;
+#end
+#end</content>
+    </property>
+    <property>
+      <path>menus_create.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>5</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>f933d269-50b3-4343-adf8-5a8ca775dd44</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>#macro(process_uix_param_as_list $uix $param_name $output)
+  #set ($value = $!{uix.parameters.get($param_name)})
+  #if ("$!{value}" == '')
+    #setVariable("$output", [])
+  #else
+    #setVariable("$output", $value.split(","))
+  #end
+#end
+##
+##
+##
+#macro(uiextension_point_content $uixpt_id $generated_content)
+  #set ($generated_content = $NULL)
+  #set ($uixpt_content = '')
+  #foreach ($e in $services.uix.getExtensions($uixpt_id))
+    #process_uix_param_as_list ($e "includeSpaces" $includeSpaces)
+    #process_uix_param_as_list ($e "excludeSpaces" $excludeSpaces)
+    #process_uix_param_as_list ($e "includePages" $includePages)
+    #process_uix_param_as_list ($e "excludePages" $excludePages)
+    #process_uix_param_as_list ($e "includeActions" $includeActions)
+    #process_uix_param_as_list ($e "excludeActions" $excludeActions)
+    #process_uix_param_as_list ($e "includeXClasses" $includeXClasses)
+    #process_uix_param_as_list ($e "excludeXClasses" $excludeXClasses)
+    #if ($includedXClasses.size() == 0)
+      #set ($hasIncludedXObject = true)
+    #else 
+      #set ($hasIncludedXObject = false)
+      #foreach ($xclass in $includedXClasses)
+        #if ($doc.getObject($xclass))
+          #set ($hasIncludedXObject = true)
+        #end
+      #end
+    #end
+    #set ($hasExncludedXObject = false)
+    #foreach ($xclass in $excludedXClasses)
+      #if ($doc.getObject($xclass))
+         #set ($hasExcludedXObject = true)
+      #end
+    #end
+    #if (
+      (!$excludeActions.contains($xcontext.action) &amp;&amp; ($includeActions.size() == 0 || $includeActions.contains($xcontext.action))) &amp;&amp;
+      (!$excludePages.contains($doc.fullName) &amp;&amp; ($includePages.size() == 0 || $includePages.contains($doc.fullName))) || 
+      (!$hasExncludedXObject &amp;&amp; $hasIncludedXObject) || 
+      (!$excludeSpaces.contains($doc.space) &amp;&amp; ($includeSpaces.size() == 0 || $includeSpaces.contains($doc.space)))
+    )
+      #set ($uixContent = $services.rendering.render($e.execute(), 'xhtml/1.0').trim())
+      #set ($uixpt_content = $uixpt_content.concat($uixContent))
+    #end
+  #end
+  $uixpt_content.trim()
+  #setVariable ("$generated_content" $uixpt_content.trim())
+#end
+##
+##
+##
+#macro(uiextension_point $uixpt_id $in_wiki_syntax)
+  ##set ($generated_content = '')
+  #uiextension_point_content ($uixpt_id $generated_content)
+  #if ($in_wiki_syntax)
+
+  {{html clean="false" wiki="false"}}$generated_content{{/html}}
+  #else
+  $generated_content
+  #end
+#end
+##
+##
+##
+#set ($canShare = $canView &amp;&amp; $xwiki.exists('XWiki.SharePage') &amp;&amp; !$isGuest)
+&lt;div id="contentmenu" class="pull-right actionmenu"&gt;
+#if($hasEdit &amp;&amp; !$isReadOnly)
+  ## Compute the default edit mode
+  #set($editaction = $doc.getDefaultEditMode())
+  ##
+  ## Edit menu
+  ##
+  ## By default there is just an edit button for the document
+  ## If more edit options are available for this document, make the menu a dropdown
+  #set ($dropdownContent = '')
+  ###foreach ($e in $services.uix.getExtensions('org.phenotips.contentMenu.edit'))
+  #xwikisplitbuttonentrystart($doc.getURL($editaction, $!languageparams) $services.localization.render('core.menu.edit') 'tmEdit' 'btn-primary' 'pencil')
+      #submenuitem($doc.getURL($editaction, $!languageparams) $services.localization.render('Patient record') 'tmEditInline', '', 'list-alt')
+      ## Extensions displayed after the content
+      #uiextension_point('my.test.point')
+      ## Ext done
+      #submenuitem($doc.getURL('edit', 'editor=rights') $services.localization.render('Access rights and collaborators') 'tmEditRights', '', 'lock')
+      ## TODO add  UIX point here
+  #xwikibuttonentryend()
+  #if($keyboardShortcutsEnabled)
+    &lt;script type="text/javascript"&gt;
+    //&lt;![CDATA[
+      shortcut.add("$services.localization.render('core.shortcuts.view.edit')",function() { location.href=$('tmEdit').down('a').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+      shortcut.add("$services.localization.render('core.shortcuts.view.rights')",function() { location.href=$('tmEditRights').href; }, { 'type':'keypress', 'propagate':false, 'disable_in_input':true });
+    //]]&gt;
+    &lt;/script&gt;
+  #end
+#end
+##
+## Actions menu
+##
+#if($displayMoreActionsMenu &amp;&amp; !$doc.isNew())
+  #xwikibuttonentrystart('' $services.localization.render('core.menu.moreactions') 'tmMoreActions' 'btn-default' 'cog')
+    ## Export
+    #submenuitem('' $services.localization.render('core.menu.export') 'tmExport', '', 'download-alt', 'data-toggle="modal" data-target="#exportModal"')
+    ## Share by email
+    #if ($canShare)
+      #submenuitem($xwiki.getURL($doc.documentReference, 'view', 'viewer=share') $services.localization.render('core.menu.share') 'tmActionShare', '', 'envelope')
+      #userPicker_import()
+      $xwiki.jsx.use('XWiki.SharePage')
+      $xwiki.ssx.use('XWiki.SharePage')
+    #end
+    
+    ## ----------------------------
+    ## Display the shortcuts
+    ## ----------------------------
+    #if($displayShortcuts)
+      #submenuseparator()
+      #template("shortcuts.vm")
+    #end
+    
+  #xwikibuttonentryend()
+  ## Export modal
+  &lt;div class="modal fade text-left" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true"&gt;
+    &lt;div class="modal-dialog"&gt;
+      &lt;div class="modal-content"&gt;
+        &lt;div class="modal-header"&gt;
+          &lt;button type="button" class="close" data-dismiss="modal" aria-hidden="true"&gt;&amp;times;&lt;/button&gt;
+          &lt;h4 class="modal-title" id="exportModalLabel"&gt;$services.localization.render('core.menu.export')&lt;/h4&gt;
+        &lt;/div&gt;
+        &lt;div class="modal-body"&gt;
+          &lt;a href="$doc.getURL('view', "format=pdf&amp;amp;pdfcover=0&amp;amp;pdftoc=0&amp;amp;pdftemplate=PhenoTips.PatientSheetCode&amp;amp;qs=$!escapetool.url($request.getQueryString())")" class="btn btn-primary"&gt;$services.localization.render('core.menu.export.pdf')&lt;/a&gt;
+          #if($hasAdmin)
+            &lt;a href="$xwiki.getDocument('PhenoTips.ExportPatient', "id=${doc.name}&amp;amp;outputSyntax=plain")" class="btn btn-primary"&gt;$services.localization.render('Export JSON')&lt;/a&gt;
+            #if ("$!xwiki.getPlugin('package')" != '')
+              &lt;a href="$doc.getURL('export', "format=xar&amp;amp;name=$escapetool.url($doc.fullName)&amp;amp;pages=$escapetool.url($services.model.serialize($doc.getDocumentReference(),'default'))&amp;amp;$!docvariant")" class="btn btn-primary"&gt;$services.localization.render('core.menu.export.xar')&lt;/a&gt;
+            #end
+          #end
+          &lt;button type="button" class="btn btn-default" data-dismiss="modal"&gt;$services.localization.render('Cancel')&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+#end
+&lt;/div&gt;
+</content>
+    </property>
+    <property>
+      <path>menus_content.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>6</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>59f2e1d5-2d96-48f9-b5e5-3083c954115b</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>##################################
+##          USER MENU
+##################################
+## LOGIN
+#if (!$xcontext.action.startsWith('login') &amp;&amp; $isGuest)
+  #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+  #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin')
+#end
+## REGISTER
+#if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
+  #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister')
+#end
+##
+##
+#if (!$isGuest)
+#if ($isSuperAdmin)
+  #xwikitopmenuentrystart('', $!services.localization.render('superadmin'), 'tmUser', 'navbar-avatar', 'user', '')
+    ## LOGOUT
+    #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout', '', 'log-out')
+  #xwikitopmenuentryend()
+#else
+  #getUserAvatarURL($xcontext.user, $currentUserAvatar, 32)
+  #if($currentUserAvatar.specified)
+    #set($currentUserAvatar = "#smallUserAvatar($xcontext.user)")
+    #set($userGlyphIcon = '')
+  #else
+    #set($currentUserAvatar = "")
+    #set($userGlyphIcon = 'user')
+  #end
+  #xwikitopmenuentrystart($xwiki.getURL($xcontext.user, 'view') "$services.localization.render('core.menu.type.profile')__SEPARATOR__$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'navbar-avatar' $userGlyphIcon $currentUserAvatar)
+    #submenuitem($xwiki.getURL($xcontext.user, 'view') $services.localization.render('core.menu.profile') 'tmProfile', '', 'user')
+    #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=preferences') $services.localization.render('core.menu.userPreferences') 'tmUserPreferences', '', 'wrench')
+    #if ($hasWatch)
+      #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=watchlist') $services.localization.render('core.menu.watchlist.management') 'tmWatchlistManager', '', 'eye-open')
+      #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=network') $services.localization.render('core.menu.network') 'tmUserNetwork', '', 'globe')
+    #end
+    #if ($isWikiUIAvailable &amp;&amp; $isMainWikiUser)
+      #submenuitem($xwiki.getURL($xcontext.user, 'view', 'category=wikis') $services.localization.render('platform.wiki.menu.userwikis') 'tmUserWikis', '', 'list')
+    #end
+    ## ADMIN
+    #if ($hasGlobalAdmin)
+      #submenuseparator()
+      #set ($adminwikiaction = $!xwiki.getURL('XWiki.XWikiPreferences', 'admin'))
+      #set ($importaction = $!xwiki.getURL('XWiki.XWikiPreferences', 'import'))
+      #if ($isAdminAppInstalled)
+        #submenuitem($adminwikiaction $services.localization.render('core.menu.admin') 'tmAdminWiki', '', 'cog')
+      #else
+        #submenuitem($importaction $services.localization.render('core.menu.admin') 'tmAdminWiki' '' 'cog')
+      #end
+    #end
+    ## LOGOUT
+    #submenuseparator()
+    #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout', '', 'log-out')
+  #xwikitopmenuentryend()
+#end
+#end
+</content>
+    </property>
+    <property>
+      <path>menus_user.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>7</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>7740ddd2-03f5-4909-bcd5-099f2c0c47f6</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>################################
+##        MENU VIEW
+################################
+#if ($isInServletMode)## Visible only in a page
+  #template("menus_macros.vm")
+  
+  ## Top Menu
+  #xwikitopmenustart()
+    
+    ## Right menu
+    #xwikitopmenurightstart()
+      #template("quicksearch.vm")
+      #template("menus_language.vm")
+      #template("menus_user.vm")
+    #xwikitopmenurightend()
+    
+    ## Left menu
+    #xwikitopmenuleftstart()
+      #template("menus_browse.vm")
+      #template("menus_create.vm")
+    #xwikitopmenuleftend()
+    
+  ## End of Top Menu
+  #xwikitopmenuend()
+#end
+</content>
+    </property>
+    <property>
+      <path>menus_view.vm</path>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>8</number>
+    <className>XWiki.XWikiSkinFileOverrideClass</className>
+    <guid>ad4dad3a-82b6-46c8-a22a-dec62a87652a</guid>
+    <class>
+      <name>XWiki.XWikiSkinFileOverrideClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>content</name>
+        <number>2</number>
+        <prettyName>Content</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <path>
+        <disabled>0</disabled>
+        <name>path</name>
+        <number>1</number>
+        <prettyName>Path</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </path>
+    </class>
+    <property>
+      <content>#if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
+&lt;li&gt;
+&lt;form class="navbar-form navbar-left globalsearch" role="search" action="#if($xwiki.exists('Main.Search'))$xwiki.getURL('Main.Search')#else$xwiki.getURL('Main.WebSearch')#end"&gt;
+&lt;div class="input-group"&gt;
+&lt;input type="text" name="text" class="form-control" placeholder="$services.localization.render('panels.search.inputText')" id="headerglobalsearchinput" size="20" /&gt;
+&lt;span class="input-group-btn"&gt;
+&lt;button type="submit" class="btn btn-primary"&gt;
+&lt;span class="glyphicon glyphicon-search"&gt;&lt;/span&gt;&lt;span class="sr-only"&gt;$services.localization.render('panels.search.submit')&lt;/span&gt;
+&lt;/button&gt;
+&lt;/span&gt;
+&lt;/div&gt;
+&lt;/form&gt;
+&lt;/li&gt;
+#end
+</content>
+    </property>
+    <property>
+      <path>quicksearch.vm</path>
     </property>
   </object>
   <object>
