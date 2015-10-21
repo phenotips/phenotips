@@ -55,7 +55,7 @@
 {{velocity}}{{html clean="false" wiki="true"}}
 #if ($mode == 'edit')
 ##
-## Create a list of relevant studies to choose from
+## Create a list of relevant projects to choose from
 #set ($projectClassName = 'PhenoTips.ProjectClass')
 #set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
 #set ($query = $services.query.xwql("from doc.object(${projectClassName}) as prj where doc.fullName &lt;&gt; :template").bindValue('template', $projectTemplateName))
