@@ -115,19 +115,22 @@
 #__hasBooleanDataToDisplay('date_of_death_unknown' $showDodUnknown)
 #if ($showDod || $showDodUnknown)
   (% class="controlled-group complete-hide" %)(((
+  #if ($showDod)
+    (% class="controlled" %) (((
+    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+    )))
+  #end
   #if ($showDodUnknown)
-  (% class="controller" %)(((
+  ## This solves the problem of having to duplicate css, or change it at all
+  (% class="half-width" style="height:1em" %)((()))
+  (% class="controller half-width" %)(((
     #if ($xcontext.action == 'edit')
       $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
     #else
       $class.get('date_of_death_unknown').translatedPrettyName
     #end
   )))
-  #end
-  #if ($showDod)
-    (% class="controlled" %) (((
-    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
-    )))
+  (% class="clear" %)((()))
   #end
   )))
 #end
