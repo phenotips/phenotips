@@ -90,7 +90,7 @@ public class ObstetricHistoryControllerTest
 
     private ObstetricHistoryController obstetricHistoryController;
 
-    private DocumentReference patientDocument;
+    private DocumentReference patientDocument = new DocumentReference("wiki", "patient", "00000001");
 
     @Mock
     private Patient patient;
@@ -119,7 +119,6 @@ public class ObstetricHistoryControllerTest
     {
         MockitoAnnotations.initMocks(this);
 
-        this.patientDocument = new DocumentReference("wiki", "patient", "00000001");
         this.obstetricHistoryController =
             (ObstetricHistoryController) this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
@@ -165,6 +164,13 @@ public class ObstetricHistoryControllerTest
         Assert.assertTrue(testPatientData.get(TAB) == 1);
         Assert.assertTrue(testPatientData.get(LIVE_BIRTHS) == 1);
         Assert.assertEquals(testPatientData.size(), 4);
+    }
+
+    @Test
+    public void loadIgnoresNoData()
+    {
+        doReturn(this.data).when(this.doc).getXObject(any(EntityReference.class));
+        Assert.assertNull(this.obstetricHistoryController.load(this.patient));
     }
 
     @Test
@@ -252,12 +258,35 @@ public class ObstetricHistoryControllerTest
     }
 
     @Test
+    public void writeJSONIgnoresMissingData()
+    {
+        JSONObject json = new JSONObject();
+
+        this.obstetricHistoryController.writeJSON(this.patient, json, null);
+        Assert.assertTrue(json.isEmpty());
+    }
+
+    @Test
     public void readJSONObjectWithNoData()
     {
         JSONObject json = new JSONObject();
         json.put("prenatal_perinatal_history", "obstetric-history");
 
         PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(json);
+        Assert.assertNull(patientData);
+    }
+
+    @Test
+    public void readJSONIgnoresNullParameter()
+    {
+        PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(null);
+        Assert.assertNull(patientData);
+    }
+
+    @Test
+    public void readJSONIgnoresEmptyParameter()
+    {
+        PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(new JSONObject());
         Assert.assertNull(patientData);
     }
 
