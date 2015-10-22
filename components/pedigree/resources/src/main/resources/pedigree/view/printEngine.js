@@ -108,8 +108,8 @@ var PrintEngine = Class.create({
         var xOverlap = options.addOverlaps ? Math.floor(this.xOverlap * scale) : 0;
         var yOverlap = options.addOverlaps ? Math.floor(this.yOverlap * scale) : 0;
 
-        var pagesWide = (bbox.width  < pageWidth) ? 1 : Math.ceil(bbox.width  / pageWidth);
-        var pagesTall = (bbox.height + patientInfoHeight*scaleComparedToPrint < pageHeight) ? 1 : Math.ceil((bbox.height + patientInfoHeight*scaleComparedToPrint) / pageHeight);
+        var pagesWide = (bbox.width <= pageWidth) ? 1 : Math.ceil(bbox.width / pageWidth);
+        var pagesTall = (bbox.height + patientInfoHeight*scaleComparedToPrint <= pageHeight) ? 1 : Math.ceil((bbox.height + patientInfoHeight*scaleComparedToPrint) / pageHeight);
         if (pagesWide > 1 && options.addOverlaps) {
             var realWidthWithOverlaps = bbox.width + (pagesWide-1)*xOverlap;
             pagesWide = Math.ceil(realWidthWithOverlaps / pageWidth);
@@ -124,12 +124,21 @@ var PrintEngine = Class.create({
         var pageStartY = 0;
         var legendOnSeparatePage = false;
         for (var pageNumY = 0; pageNumY < pagesTall; pageNumY++) {
-            var rowHeight = emulateFullPage ? pageHeight : Math.min(pageHeight, bbox.height - pageStartY);
+            var rowHeight = Math.min(pageHeight, bbox.height - pageStartY);
+            // to account for rounding & avoid priting pages with just 1 pixel of data
+            if (!emulateFullPage && rowHeight <= 2) {
+                pagesTall = pagesTall - 1;
+                legendOnSeparatePage = true;
+                continue;
+            }
+            if (emulateFullPage) {
+                var rowHeight = pageHeight;
+            }
             var pagesRow = [];
             var pageStartX = 0;
             if (pageNumY == 0 && options.includePatientInfo) {
-                if (rowHeight == pageHeight) {
-                    rowHeight -= patientInfoHeight*scaleComparedToPrint;
+                if (rowHeight + patientInfoHeight*scaleComparedToPrint > pageHeight) {
+                    rowHeight = pageHeight - patientInfoHeight*scaleComparedToPrint;
                 }
             }
             for (var pageNumX = 0; pageNumX < pagesWide; pageNumX++) {
@@ -152,8 +161,8 @@ var PrintEngine = Class.create({
         }
 
         return { "pages": pages,
-                 "pagesWide": pageNumX,
-                 "pagesTall": pageNumY,
+                 "pagesWide": pagesWide,
+                 "pagesTall": pagesTall,
                  "needLegendOnSeparatePage": legendOnSeparatePage,
                  "legendHTML": legendHTML,
                  "legendHeight": totalLegendHeight,
@@ -168,7 +177,7 @@ var PrintEngine = Class.create({
         var printedHeight = landscape ? this.printPageHeight : this.printPageHeightPortrait;
 
         // generate pages for print, and based on the number of pages used re-generate preview pages
-        var pages = this._generatePages(printScale,
+        var pagesReal = this._generatePages(printScale,
                 moveHorizontallySize,
                 printedWidth,
                 printedHeight,
@@ -177,10 +186,10 @@ var PrintEngine = Class.create({
                 1);
 
         var printWidth = 0;
-        for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
-            printWidth += pages.pages[0][pageNumX].width; // this includes overlaps, if any
+        for (var pageNumX = 0; pageNumX < pagesReal.pagesWide; pageNumX++) {
+            printWidth += pagesReal.pages[0][pageNumX].width; // this includes overlaps, if any
         }
-        var expectedWidth = pages.pagesWide * printedWidth;
+        var expectedWidth = pagesReal.pagesWide * printedWidth;
 
         // need to scale even more than for print, the ratio is the ratio of printWidth to previewWidth
         var scaleComparedToPrint = previewWidth / expectedWidth;
@@ -193,6 +202,9 @@ var PrintEngine = Class.create({
                                         options,
                                         true,
                                         scaleComparedToPrint);
+        if (pages.pagesTall > pagesReal.pagesTall) {
+            pages.pagesTall = pagesReal.pagesTall;  // may hapen due to rounding errors
+        }
         var html = "<div class='printPreview' id='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
