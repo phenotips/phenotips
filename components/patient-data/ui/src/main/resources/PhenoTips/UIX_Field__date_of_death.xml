@@ -121,15 +121,30 @@
     )))
   #end
   #if ($showDodUnknown)
-  ## This solves the problem of having to duplicate css, or change it at all
-  (% class="half-width" style="height:1em" %)((()))
-  (% class="controller half-width" %)(((
     #if ($xcontext.action == 'edit')
-      $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
+      ## The style must be applied iff the unknown option is displayed
+      {{html wiki="false" clean="false"}}
+        &lt;style&gt;
+          .fieldset.date_of_death {
+            margin-bottom: 0 !important;
+          }
+        &lt;/style&gt;
+      {{/html}}
+      (% class="#if ($xcontext.action == 'edit') controller #else displayed-value #end" %)(((
+        ## This solves the problem of having to duplicate css, or change it at all
+        (% class="half-width" style="height:1em" %)((()))
+        (% class="half-width" %)(((
+          $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
+        )))
+      )))
     #else
-      $class.get('date_of_death_unknown').translatedPrettyName
+      {{html wiki="false" clean="false"}}
+        &lt;p class="fieldset"&gt;
+          &lt;span class="label"&gt; ${class.get('date_of_death').translatedPrettyName}:&lt;/span&gt;
+          &lt;span class="displayed-value"&gt;$class.get('date_of_death_unknown').translatedPrettyName&lt;/span&gt;
+        &lt;/p&gt;
+      {{/html}}
     #end
-  )))
   (% class="clear" %)((()))
   #end
   )))
