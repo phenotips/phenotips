@@ -31,7 +31,7 @@
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1426735073000</date>
   <contentUpdateDate>1426735073001</contentUpdateDate>
-  <version>1.0</version>
+  <version>1.1</version>
   <title>PedigreeInterface</title>
   <comment/>
   <minorEdit>false</minorEdit>
@@ -44,6 +44,19 @@
   #else
     false##
   #end
+#end
+#macro(__getDisabledFields)
+  #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+  #set ($disabled = ["first_name","last_name","last_name_birth"])
+  #foreach ($section in $recordConfiguration.enabledSections)
+    #foreach ($element in $section.enabledElements)
+      #if ($element == "Patient name")
+        #set ($disabled = [])
+        #break
+      #end
+    #end
+  #end
+  $disabled##
 #end
 $response.setContentType('application/json')##
 {{html wiki="false" clean="false"}}
@@ -62,7 +75,9 @@ $response.setContentType('application/json')##
         "hideDraggingHint": false
     },
     "global": {
+            "disabledFields"               : #__getDisabledFields()
         #if ($config)
+            ,
             "dateDisplayFormat"            : "$!{config.getProperty('dateDisplayFormat').value}",
             "dateEditFormat"               : "$!{config.getProperty('dateInputFormat').value}",
             "nonStandardAdoptedOutGraphic" : #__convertToBooleanString("$!{config.getProperty('nonStandardAdoptedOutGraphic').value}"),

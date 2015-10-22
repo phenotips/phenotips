@@ -367,6 +367,11 @@ define([
             if (data.type == "radio") {
                 fieldNameClass += ' field-no-user-select';
             }
+        if (data.addCSS && typeof data.addCSS === 'object') {
+            for(var styleName in data.addCSS) {
+                result.style[styleName] = data.addCSS[styleName];
+            }
+        }
             var label = new Element('label', {'class' : fieldNameClass}).update(data.label);
             result.inputsContainer = new Element('div', {'class' : 'field-inputs'});
             result.insert(label).insert(result.inputsContainer);
@@ -1051,7 +1056,8 @@ define([
                     }
                 }
 
-                var dmyInputMode = (editor.getPreferencesManager().getConfigurationOption("dateEditFormat") == "DMY");
+            var dateEditFormat = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
+            var dmyInputMode = (dateEditFormat == "DMY" || dateEditFormat == "MY");
                 if ((dmyInputMode || value.year) && value.month) {
                     month = value.month.toString();
                 }

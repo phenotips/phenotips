@@ -65,17 +65,19 @@ define([
             //  nonStandardAdoptedOutGraphic: {true|false}   - use out-brackets for adopted out persons; default "false"
             //  hideDraggingHint:             {true|false}   - do not display the hint on top of the legend; default "false"
             //  propagateFatherLastName:      {true|false}   - auto-propagate father's last name or not; default: "true"
-        //  dateDisplayFormat:            {"MDY"|"DMY"}  - date display format; default "MDY"
-        //  dateEditFormat:               {"YMD"|"DMY"}  - defines order of fields in the date picker; default "YMD"
+        //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
+        //  dateEditFormat:               {"YMD"|"DMY"|"MY"}  - defines order of fields in the date picker; default "YMD"
         //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
         //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
+        //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
                                                  dateDisplayFormat: "YMD",
                                                  dateEditFormat: "YMD",
                                                  useGradientOnNodes: false,
-                                                 drawNodeShadows: true },
+                                                 drawNodeShadows: true,
+                                                 disabledFields: [] },
                                      user:     { hideDraggingHint: false,
                                                  firstName: "",
                                                  lastName: "" },
@@ -462,7 +464,9 @@ define([
         generateNodeMenu: function() {
             if (this.isReadOnlyMode()) return null;
             var _this = this;
-            return new NodeMenu([
+        var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
+
+        var fieldList = [
                 {
                     'name' : 'identifier',
                     'label' : '',
@@ -517,7 +521,10 @@ define([
                     'label': 'External ID',
                     'type' : 'text',
                     'tab': 'Personal',
-                    'function' : 'setExternalID'
+                'function' : 'setExternalID',
+                // UI fix: if 'last_name_birth' is disabled, left-floating externalID element does not
+                //         play nicely with ethnicities element; setting width to 100% fixes this
+                'addCSS': arrayContains(disabledFields, 'last_name_birth') ? {"width":"100%"} : null
                 },
                 {
                     'name' : 'ethnicity',
@@ -700,7 +707,15 @@ define([
                     'rows' : 2,
                     'function' : 'setComments'
                 }
-            ], ["Personal", "Clinical", "Cancers"]);
+        ];
+
+        function isDisabled(field) {
+            if (arrayContains(disabledFields, field.name)) {
+                return false;
+            }
+            return true;
+        }
+        return new NodeMenu(fieldList.filter(isDisabled), ["Personal", "Clinical", "Cancers"]);
         },
 
         /**

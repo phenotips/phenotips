@@ -181,13 +181,16 @@ define([], function(){
             return this.getBestPrecisionStringYear().replace(/s^/,"");
         },
 
-        getBestPrecisionStringDDMMYYY: function() {
+    getBestPrecisionStringDDMMYYY: function(dateFormat) {
+        if (!dateFormat) {
+            dateFormat = "DMY";
+        }
             if (!this.isComplete()) return "";
             if (this.year == null) return this.decade;
             var dateStr = this.getYear().toString();
             if (this.getMonth() != null) {
                 dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
-                if (this.getDay() != null) {
+            if (this.getDay() != null && dateFormat == "DMY") {
                     dateStr = ("0" + this.getDay()).slice(-2) + "-" + dateStr;
                 }
             }
