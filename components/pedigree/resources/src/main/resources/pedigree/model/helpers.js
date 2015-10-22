@@ -76,7 +76,7 @@ define ([], function(){
     // (Recursively) for every property in template check if data has the same property
     // and set template value to the one in data.
     Helpers.setByTemplate = function(template, data) {
-        if (typeof template !== 'object') {
+        if (typeof template !== 'object' || typeof data !== 'object') {
             return;
         }
         for (var key in template) {
