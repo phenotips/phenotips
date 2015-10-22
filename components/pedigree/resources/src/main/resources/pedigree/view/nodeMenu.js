@@ -1356,7 +1356,7 @@ define([
                         container.select('input[type=radio]').each(function(item) {
                             item.disabled = (disabled.indexOf(item.value) >= 0);
                         });
-                    } else if (disabled === true || didsabled === false) {
+                    } else if (disabled === true || disabled === false) {
                         container.select('input[type=radio]').each(function(item) {
                             item.disabled = disabled;
                         });
@@ -1413,6 +1413,8 @@ define([
             }
         },
 
+        // Either enables a suggest picker, or disables/hides all input fields while leaving
+        // the list of current selections visible, with "delete" tool disabled
         __disableEnableSuggestModification: function(container, disabled) {
             var numElements = 0;
             Element.select(container,'.delete-tool').forEach(function(element) {
@@ -1427,8 +1429,10 @@ define([
                 element.disabled = disabled;
                 if (disabled) {
                     if (numElements > 1) {  // 1 for delete all; if there is more than one no need to display empty input box
+                        // if there are selections show the list of selections and hide the input field completely
                         element.addClassName('hidden');
                     } else {
+                        // if there are no selections show "none" in the (disabled) input field
                         element.placeholder = "none";
                     }
                 } else {
