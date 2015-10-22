@@ -59,7 +59,7 @@ define([
 
                 for (var nodeID in editor.getView().getNodeMap()) {
                     if (editor.getView().getNodeMap().hasOwnProperty(nodeID)) {
-                        if (editor.getGraph().isPerson(nodeID)) {
+                        if (editor.getGraph().isPerson(nodeID) && !editor.getGraph().isPlaceholder(nodeID)) {
                             var node = editor.getView().getNode(nodeID);
                             var currentPedNumber = node.getPedNumber();
 
