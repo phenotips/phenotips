@@ -162,7 +162,7 @@ define([
             tabHeaders.push(new Element('dd').insert("<a>" + "Pedigree import" + "</a>"));
             var switchTab = function(index) {
                 return function() {
-					var isActive = tabHeaders[index].hasClassName('active');
+                    var isActive = tabHeaders[index].hasClassName('active');
 					if (!isActive) {
 						tabs.each(function(item) {
 							item.toggleClassName("display-none");
