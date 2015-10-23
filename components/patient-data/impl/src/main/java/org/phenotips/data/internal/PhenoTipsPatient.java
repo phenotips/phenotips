@@ -107,7 +107,7 @@ public class PhenoTipsPatient implements Patient
     private Set<Disorder> disorders = new TreeSet<Disorder>();
 
     /** The list of all the initialized data holders (PatientDataSerializer). */
-    private List<PatientDataController<?>> serializers;
+    private Map<String, PatientDataController<?>> serializers = new HashMap<String, PatientDataController<?>>();
 
     /** Extra data that can be plugged into the patient record. */
     private Map<String, PatientData<?>> extraData = new HashMap<String, PatientData<?>>();
@@ -139,7 +139,6 @@ public class PhenoTipsPatient implements Patient
         this.disorders = Collections.unmodifiableSet(this.disorders);
 
         loadSerializers();
-        readPatientData();
     }
 
     private void loadFeatures(XWikiDocument doc, BaseObject data)
@@ -177,8 +176,12 @@ public class PhenoTipsPatient implements Patient
     private void loadSerializers()
     {
         try {
-            this.serializers =
-                ComponentManagerRegistry.getContextComponentManager().getInstanceList(PatientDataController.class);
+            List<PatientDataController<?>> availableSerializers = ComponentManagerRegistry
+                    .getContextComponentManager()
+                    .getInstanceList(PatientDataController.class);
+            for (PatientDataController<?> serializer : availableSerializers) {
+                this.serializers.put(serializer.getName(), serializer);
+            }
         } catch (ComponentLookupException e) {
             this.logger.error("Failed to find component", e);
         }
@@ -187,9 +190,10 @@ public class PhenoTipsPatient implements Patient
     /**
      * Loops through all the available serializers and passes each a document reference.
      */
-    private void readPatientData()
+    private void readPatientData(String name)
     {
-        for (PatientDataController<?> serializer : this.serializers) {
+        PatientDataController<?> serializer = this.serializers.get(name);
+        if (serializer != null) {
             PatientData<?> data = serializer.load(this);
             if (data != null) {
                 this.extraData.put(data.getName(), data);
@@ -259,6 +263,10 @@ public class PhenoTipsPatient implements Patient
     @Override
     public <T> PatientData<T> getData(String name)
     {
+        //Patient data is lazy loaded on request. Note that calling toString() or toJSON() causes all data to be loaded.
+        if (!this.extraData.containsKey(name)) {
+            this.readPatientData(name);
+        }
         return (PatientData<T>) this.extraData.get(name);
     }
 
@@ -325,7 +333,8 @@ public class PhenoTipsPatient implements Patient
             result.element(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
-        for (PatientDataController<?> serializer : this.serializers) {
+
+        for (PatientDataController<?> serializer: this.serializers.values()) {
             serializer.writeJSON(this, result, onlyFieldNames);
         }
 
@@ -431,7 +440,7 @@ public class PhenoTipsPatient implements Patient
 
             updateDisordersFromJSON(doc, data, context, json);
 
-            for (PatientDataController<?> serializer : this.serializers) {
+            for (PatientDataController<?> serializer : this.serializers.values()) {
                 try {
                     PatientData<?> patientData = serializer.readJSON(json);
                     if (patientData != null) {
