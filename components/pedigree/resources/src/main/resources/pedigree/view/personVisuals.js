@@ -62,7 +62,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
             shape.attr(PedigreeEditor.attributes.nodeShapeAborted);
             this._genderShape = shape;
-            shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
+            if (editor.getPreferencesManager().getConfigurationOption("drawNodeShadows")) {
+                var shadow = this.makeNodeShadow(shape);
+                shape = editor.getPaper().set(shadow, shape);
+            } else {
+                shape = editor.getPaper().set(shape);
+            }
 
             if(this.getNode().isProband()) {
                 shape.transform(["...s", 1.07]);

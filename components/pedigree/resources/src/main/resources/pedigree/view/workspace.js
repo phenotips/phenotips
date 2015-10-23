@@ -143,6 +143,8 @@ var Workspace = Class.create({
         svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+(><\/\w+|\/)>/g, "");
         // remove hoverboxes
         svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+(><\/\w+|\/)>/g, "");
+        // remove node shadows
+        svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+(><\/\w+|\/)>/g, "");
         // remove gradient definitions (only used for handles),
         // or they confuse the browser after used and discarded for print preview
         svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");

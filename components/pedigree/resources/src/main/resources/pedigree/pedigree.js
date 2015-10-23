@@ -19,12 +19,14 @@ var PedigreeEditor = Class.create({
         //  dateDisplayFormat:            {"MDY"|"DMY"}  - date display format; default "MDY"
         //  dateEditFormat:               {"YMD"|"DMY"}  - defines order of fields in the date picker; default "YMD"
         //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
+        //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
         //
         this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                  propagateFatherLastName: true,
-                                                 dateDisplayFormat: "zzYMD",
-                                                 dateEditFormat: "zzzYMD",
-                                                 useGradientOnNodes: false },
+                                                 dateDisplayFormat: "YMD",
+                                                 dateEditFormat: "YMD",
+                                                 useGradientOnNodes: false,
+                                                 drawNodeShadows: true },
                                      user:     { hideDraggingHint: false,
                                                  firstName: "",
                                                  lastName: "" },
