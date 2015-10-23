@@ -11,8 +11,8 @@ var PrintEngine = Class.create({
         this.printPageHeight = 756;
         this.printPageWidthPortrait  = 756;
         this.printPageHeightPortrait = 980;
-        this.xOverlap = 18;
-        this.yOverlap = 18;
+        this.xOverlap = 32;
+        this.yOverlap = 32;
     },
 
     /**
