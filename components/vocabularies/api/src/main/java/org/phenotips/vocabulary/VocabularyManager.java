@@ -20,6 +20,8 @@ package org.phenotips.vocabulary;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
+import java.util.List;
+
 /**
  * Provides access to the available vocabularies and their terms.
  *
@@ -50,4 +52,10 @@ public interface VocabularyManager
      * @return the requested vocabulary, or {@code null} if it doesn't exist or isn't available in the platform
      */
     Vocabulary getVocabulary(String vocabularyId);
+
+    /**
+     * Retrieves a list of vocabulary ids that are available for use.
+     * @return A list of vocabulary ids. One id for each vocabulary.
+     */
+    List<String> getAvailableVocabularies();
 }
