@@ -116,7 +116,12 @@
     <dependency>
       <groupId>org.phenotips</groupId>
       <artifactId>patient-measurements-api</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.phenotips</groupId>
+      <artifactId>vocabularies-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
