@@ -34,7 +34,7 @@ var PrintDialog = Class.create( {
 
         var leftButton = new Element('input', {"type" : "button", "value": "<", "class": "print-small-button print-small-left-margin"});
         var rightButton  = new Element('input', {"type" : "button", "value": ">", "class": "print-small-button print-small-left-margin"});
-        this._centerButton = new Element('input', {"type" : "button", "value": "no move", "class": "print-long-button print-small-left-margin"});
+        this._centerButton = new Element('input', {"type" : "button", "value": "default", "class": "print-long-button print-small-left-margin"});
         var move = new Element('span', {"class": "print-move-span"});
         move.update("Move on page:").insert(leftButton).insert(this._centerButton).insert(rightButton);
 
@@ -123,7 +123,7 @@ var PrintDialog = Class.create( {
         var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
         this._printButton = new Element('input', {type: 'button', name : 'print', 'value': 'Print', 'class' : 'button', 'id': 'print_button'});
         buttons.insert(this._printButton.wrap('span', {'class' : 'buttonwrapper'}));
-        buttons.insert(new Element('input', {type: 'button', name : 'done', 'value': 'Done', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
+        buttons.insert(new Element('input', {type: 'button', name : 'done', 'value': 'Close', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
         mainDiv.insert(buttons);
 
         var doneButton = buttons.down('input[name="done"]');
