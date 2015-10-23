@@ -134,19 +134,21 @@ var Workspace = Class.create({
         // set display:block
         svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
         // remove invisible elements to slim down svg
-        svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+><\/\w+>/g, "");
+        svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+(><\/\w+|\/)>/g, "");
         // remove elements with opacity==0 to slim down svg
-        svgText = svgText.replace(/<[^<>]+"opacity: ?0;[^<>]+><\/\w+>/g, "");
+        svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+(><\/\w+|\/)>/g, "");
         // remove partnership clickable circles
-        svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+><\/\w+>/g, "");
+        svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+(><\/\w+|\/)>/g, "");
         // remove titles of the handles
-        svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+><\/\w+>/g, "");
+        svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+(><\/\w+|\/)>/g, "");
         // remove hoverboxes
-        svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+><\/\w+>/g, "");
+        svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+(><\/\w+|\/)>/g, "");
         // remove gradient definitions (only used for handles),
         // or they confuse the browser after used and discarded for print preview
         svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
         svgText = svgText.replace(/<radialGradient.*?<\/radialGradient>/g, "");
+        // remove "created by raphael", some older browsers may be confused
+        svgText = svgText.replace(/<desc>[^<>]+<\/desc>/g, "");
 
         background.style.display = "";
 
