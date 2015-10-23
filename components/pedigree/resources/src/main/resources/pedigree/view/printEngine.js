@@ -193,7 +193,7 @@ var PrintEngine = Class.create({
                                         options,
                                         true,
                                         scaleComparedToPrint);
-        var html = "<div class='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
+        var html = "<div class='printPreview' id='printPreview' style='height: " + maxPreviewHeight + "px; width: " + maxPreviewWidth + "px; overflow-y: scroll;'>";
         for (var pageNumY = 0; pageNumY < pages.pagesTall; pageNumY++) {
             for (var pageNumX = 0; pageNumX < pages.pagesWide; pageNumX++) {
                 var page = pages.pages[pageNumY][pageNumX];

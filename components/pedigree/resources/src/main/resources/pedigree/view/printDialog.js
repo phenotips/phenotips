@@ -136,6 +136,8 @@ var PrintDialog = Class.create( {
 
         var closeShortcut = ['Esc'];
         this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-print-dialog", title: "Print pedigree", displayCloseButton: true, verticalPosition: "top"});
+
+        Event.observe(window, 'resize', _this._fixPreviewWindowHeight.bind(_this));
     },
 
     /**
@@ -184,17 +186,34 @@ var PrintDialog = Class.create( {
         this._updatePreview();
     },
 
+    _fixPreviewWindowHeight: function() {
+        var canvas = editor.getWorkspace().canvas || $('body');
+        var screenHeight = canvas.getHeight() - 10;
+        var dialogueHeight = $$('.pedigree-print-dialog')[0].getHeight();
+        var freeSpace = screenHeight - dialogueHeight;
+        var previewPaneHeight = $('printPreview').getHeight();
+        if (freeSpace < 0) {
+            var newPreviewHeight = Math.max(PedigreeEditor.attributes.minPrintPreviewPaneHeight, previewPaneHeight + freeSpace);
+            $('printPreview').style.height = newPreviewHeight + "px";
+        }
+        if (freeSpace > 0 && previewPaneHeight < PedigreeEditor.attributes.maxPrintPreviewPaneHeight) {
+            var newPreviewHeight = Math.min(PedigreeEditor.attributes.maxPrintPreviewPaneHeight, previewPaneHeight + freeSpace);
+            $('printPreview').style.height = newPreviewHeight + "px";
+        }
+    },
+
     /**
      * Updates print preview using currently selected zoom level.
      */
     _updatePreview: function() {
         var options = this._generateOptions();
         var previewHTML = this._printEngine.generatePreviewHTML(this._landscape,
-                                                                730, 390,
+                                                                730, PedigreeEditor.attributes.maxPrintPreviewPaneHeight,
                                                                 this._getSelectedPrintScale(),
                                                                 this._moveHorizontally,
                                                                 options);
         this.previewContainer.update(previewHTML);
+        this._fixPreviewWindowHeight();
 
         var _this = this;
         this._printPageSet = {};
