@@ -50,16 +50,18 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Inject
     private Map<String, Vocabulary> vocabularies;
 
+    /** The available vocabularies, including keys for each of their aliases. */
+    private Map<String, Vocabulary> aliasVocabularies;
+
     @Override
     public void initialize() throws InitializationException
     {
-        Map<String, Vocabulary> newVocabulariesMap = new HashMap<String, Vocabulary>();
+        this.aliasVocabularies = new HashMap<String, Vocabulary>();
         for (Vocabulary vocabulary : this.vocabularies.values()) {
             for (String alias : vocabulary.getAliases()) {
-                newVocabulariesMap.put(alias, vocabulary);
+                this.aliasVocabularies.put(alias, vocabulary);
             }
         }
-        this.vocabularies = newVocabulariesMap;
     }
 
     @Override
@@ -75,11 +77,12 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     @Override
     public Vocabulary getVocabulary(String vocabularyId)
     {
-        return this.vocabularies.get(vocabularyId);
+        return this.aliasVocabularies.get(vocabularyId);
     }
 
     @Override
-    public List<String> getAvailableVocabularies() {
+    public List<String> getAvailableVocabularies()
+    {
         return new ArrayList<String>(this.vocabularies.keySet());
     }
 
@@ -94,7 +97,7 @@ public class DefaultVocabularyManager implements VocabularyManager, Initializabl
     {
         String vocabularyId = StringUtils.substringBefore(termId, ":");
         if (StringUtils.isNotBlank(vocabularyId)) {
-            return this.vocabularies.get(vocabularyId);
+            return this.aliasVocabularies.get(vocabularyId);
         }
         return null;
     }
