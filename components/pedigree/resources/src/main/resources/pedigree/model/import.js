@@ -619,7 +619,7 @@ PedigreeImport.validateBaseGraph = function(newG)
  *
  * Creates and returns a BaseGraph from a text string in the "simple JSON" format.
  *
- *  Simple JSON format: an array of objects, each object representing one person, e.g.:
+ *  Simple JSON format: an array of objects, each object representing one person or one relationship, e.g.:
  *
  *    [ { "name": "f11", "sex": "female", "lifeStatus": "deceased" },
  *      { "name": "m11", "sex": "male" },
@@ -627,9 +627,11 @@ PedigreeImport.validateBaseGraph = function(newG)
  *      { "name": "m12", "sex": "male" },
  *      { "name": "m21", "sex": "male", "mother": "f11", "father": "m11" },
  *      { "name": "f21", "sex": "female", "mother": "f12", "father": "m12" },
- *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true } ]
+ *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true },
+ *      { "name": "m22", "sex": "male" },
+ *      { "relationshipId": 1, "partner1": "f21", "partner2": "m22"} ]
  *
- *  Supported properties:
+ *  Supported properties for person nodes:
  *   - "id": string or number (default: none). If two nodes with the same ID are found an error is reported.
  *           If present, this id is used only for the purpose of linking nodes to each other and is not recorded
  *           in the imported pedigree. Use "externalId" if an ID should be stored
@@ -658,12 +660,29 @@ PedigreeImport.validateBaseGraph = function(newG)
  *   - "carrierStatus": one of {'', 'carrier', 'affected', 'presymptomatic'}
  *                      (default: if a disorder is given, default is 'affected', otherwise: none.
  *                       also, if a disorder is given and status is explicitly '', it is automatically changed to 'affected')
+ *   - "childlessStatus": one of {none, 'childless','infertile'} (default: none)
+ *   - "childlessReason": string or null (default: none)
  *   - "mother" and "father": string, a reference to another node given in the JSON.
  *                            First a match versus an existing ID is checked, if not found a check against "externalId",
  *                            if not found a check against "name" and finally "firstName".
  *                            If one of the parents is given and the other one is not a virtual new node is created
  *
- *   Each node should have at least one of {"id", "externalId", "name", "firstName"} defined.
+ *  Supported properties for relationship nodes:
+ *   - "relationshipId": string or number. The valu eis not used, only required ot indicate that this
+ *                       entry represents a relationship.
+ *   - "separated": boolean (default: false)
+ *   - "consanguinity": one of {"Y","N"} (default: none). If not given it is computed automatically based ont the family graph
+ *   - "childlessStatus": one of {none, 'childless','infertile'} (default: none). If there are no children with the same
+ *                        set of parents, "childlessStatus" is automatically set to "childless".
+ *   - "childlessReason": string or null (default: none)
+ *   - "partner1" and "partner2": string, a reference to another node given in the JSON.
+ *                                Used in the same way "mother" and "father" are used for person nodes.
+ *
+ *   Each person node should have at least one of {"id", "externalId", "name", "firstName"} defined,
+ *   each relationship node should have "relationshipId", "mother" and "father".
+ *
+ *   Relationship nodes should only be included to indicate a relationship without children (as a way
+ *   to indicate there is a link) or to spcify relationship properties, if different from default.
  * ===============================================================================================
  */
 PedigreeImport.initFromSimpleJSON = function(inputText)
@@ -690,14 +709,18 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
 
    // first pass: add all vertices and assign vertex IDs
    for (var i = 0; i < inputArray.length; i++) {
+       if (inputArray[i].hasOwnProperty("relationshipId")) {
+           continue;
+       }
+
        var nextPerson = inputArray[i];
 
        if (typeof nextPerson != 'object') {
            throw "Unable to import pedigree: JSON does not represent an array of objects";
        }
 
-       if ( !nextPerson.hasOwnProperty("id") && !nextPerson.hasOwnProperty("name") &&
-            !nextPerson.hasOwnProperty("firstName") && !nextPerson.hasOwnProperty("externalId") ) {
+       if (!nextPerson.hasOwnProperty("id") && !nextPerson.hasOwnProperty("name") &&
+           !nextPerson.hasOwnProperty("firstName") && !nextPerson.hasOwnProperty("externalId") ) {
            throw "Unable to import pedigree: a node with no ID or name is found";
        }
 
@@ -795,6 +818,10 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
 
    // second pass (once all vertex IDs are known): process parents/children & add edges
    for (var i = 0; i < inputArray.length; i++) {
+       if (inputArray[i].hasOwnProperty("relationshipId")) {
+           continue;
+       }
+
        var nextPerson = inputArray[i];
 
        var personID = getPersonID(nextPerson);
@@ -831,6 +858,52 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
        var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
        newG.addEdge( chhubID, personID, defaultEdgeWeight );
+   }
+
+   // finally, go over relationships specified in the input, and either create those not yet created
+   // (because they are childless) or set properties for those already created
+   for (var i = 0; i < inputArray.length; i++) {
+       if (!inputArray[i].hasOwnProperty("relationshipId")) {
+           continue;
+       }
+       var nextRelationship = inputArray[i];
+
+       var partnerLink1 = nextRelationship.hasOwnProperty("partner1") ? nextRelationship["partner1"] : null;
+       var partnerLink2 = nextRelationship.hasOwnProperty("partner2") ? nextRelationship["partner2"] : null;
+
+       if (partnerLink1 == null || partnerLink2 == null) {
+           throw "Unable to import pedigree: a relationship has only one partner specified";
+       }
+
+       var partnerID1 = findReferencedPerson(partnerLink1);
+       var partnerID2 = findReferencedPerson(partnerLink2);
+
+       // get or create a relationship
+       var chhubID = relationshipTracker.createOrGetChildhub(partnerID1, partnerID2);
+
+       // if there are no children, create a placeholder child
+       if (newG.getOutEdges(chhubID).length == 0) {
+           var placeholderID = newG._addVertex(null, TYPE.PERSON, {"gender": "U", "placeholder":true}, newG.defaultPersonNodeWidth );
+           newG.addEdge( chhubID, placeholderID, defaultEdgeWeight );
+       }
+
+       // set relationship properties
+       var relationshipID = relationshipTracker.getRelationshipIDForChildHub(chhubID);
+       for (var property in nextRelationship) {
+           if (nextRelationship.hasOwnProperty(property)) {
+               var value    = nextRelationship[property];
+               var property = property.toLowerCase();
+
+               if (property == "partner1" || property == "partner2")  // those are already processed
+                   continue;
+
+               var processed = PedigreeImport.convertRelationshipProperty(property, value);
+               if (processed !== null) {
+                   // supported property
+                   newG.properties[relationshipID][processed.propertyName] = processed.value;
+               }
+           }
+       }
    }
 
    PedigreeImport.validateBaseGraph(newG);
@@ -1243,9 +1316,10 @@ PedigreeImport.JSONToInternalPropertyMapping = {
         "numpersons":      "numPersons",
         "lostcontact":     "lostContact",
         "nodenumber":      "nodeNumber",
-        "cancers":         "cancers"
+        "cancers":         "cancers",
+        "childlessstatus": "childlessStatus",
+        "childlessreason": "childlessReason"
     };
-
 
 /*
  * Converts property name from external JSON format to internal - also helps to
@@ -1261,6 +1335,27 @@ PedigreeImport.convertProperty = function(externalPropertyName, value) {
     return {"propertyName": internalPropertyName, "value": value };
 }
 
+PedigreeImport.JSONToInternalRelationshipPropertyMapping = {
+        "childlessstatus": "childlessStatus",
+        "childlessreason": "childlessReason",
+        "consanguinity":   "consangr",
+        "separated":       "broken"
+    };
+
+PedigreeImport.convertRelationshipProperty = function(externalPropertyName, value) {
+
+    if (!PedigreeImport.JSONToInternalRelationshipPropertyMapping.hasOwnProperty(externalPropertyName))
+        return null;
+
+    var internalPropertyName = PedigreeImport.JSONToInternalRelationshipPropertyMapping[externalPropertyName];
+
+    if (externalPropertyName == "consanguinity") {
+        if (value != "Y" && value != "N") {
+            return null;
+        }
+    }
+    return {"propertyName": internalPropertyName, "value": value };
+}
 
 //===============================================================================================
 
@@ -1274,34 +1369,40 @@ RelationshipTracker = function (newG, defaultEdgeWeight) {
 
     this.relationships = {};
     this.relChildHubs  = {};
+    this.chhubRels     = {};
 };
 
 RelationshipTracker.prototype = {
 
-    // if there is a relationship between motherID and fatherID the corresponding childhub is returned
+    // if there is a relationship between partnerID1 and partnerID2 the corresponding childhub is returned
     // if there is no relationship, a new one is created together with the chldhub
-    createOrGetChildhub: function (motherID, fatherID)
+    createOrGetChildhub: function (partnerID1, partnerID2)
     {
-        // both motherID and fatherID are now given. Check if there is a relationship between the two of them
-        if (this.relationships.hasOwnProperty(motherID) && this.relationships[motherID].hasOwnProperty(fatherID)) {
-            var relID   = this.relationships[motherID][fatherID];
+        // both partnerID1 and partnerID2 are now given. Check if there is a relationship between the two of them
+        if (this.relationships.hasOwnProperty(partnerID1) && this.relationships[partnerID1].hasOwnProperty(partnerID2)) {
+            var relID   = this.relationships[partnerID1][partnerID2];
             var chhubID = this.relChildHubs[relID];
         } else {
-            if (this.relationships[motherID] === undefined) this.relationships[motherID] = {};
-            if (this.relationships[fatherID] === undefined) this.relationships[fatherID] = {};
+            if (this.relationships[partnerID1] === undefined) this.relationships[partnerID1] = {};
+            if (this.relationships[partnerID2] === undefined) this.relationships[partnerID2] = {};
 
             var relID   = this.newG._addVertex( null, TYPE.RELATIONSHIP, {}, this.newG.defaultNonPersonNodeWidth );
             var chhubID = this.newG._addVertex( null, TYPE.CHILDHUB,     {}, this.newG.defaultNonPersonNodeWidth );
 
             this.newG.addEdge( relID,    chhubID, this.defaultEdgeWeight );
-            this.newG.addEdge( motherID, relID,   this.defaultEdgeWeight );
-            this.newG.addEdge( fatherID, relID,   this.defaultEdgeWeight );
+            this.newG.addEdge( partnerID1, relID,   this.defaultEdgeWeight );
+            this.newG.addEdge( partnerID2, relID,   this.defaultEdgeWeight );
 
-            this.relationships[motherID][fatherID] = relID;
-            this.relationships[fatherID][motherID] = relID;
+            this.relationships[partnerID1][partnerID2] = relID;
+            this.relationships[partnerID2][partnerID1] = relID;
             this.relChildHubs[relID] = chhubID;
+            this.chhubRels[chhubID]  = relID;
         }
 
         return chhubID;
+    },
+
+    getRelationshipIDForChildHub: function(chhubID) {
+        return this.chhubRels[chhubID];
     }
 };

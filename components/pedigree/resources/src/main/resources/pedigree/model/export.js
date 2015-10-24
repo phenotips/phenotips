@@ -16,7 +16,9 @@ PedigreeExport.prototype = {
  *      { "name": "m12", "sex": "male" },
  *      { "name": "m21", "sex": "male", "mother": "f11", "father": "m11" },
  *      { "name": "f21", "sex": "female", "mother": "f12", "father": "m12" },
- *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true } ]
+ *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true },
+ *      { "name": "m22", "sex": "male" },
+ *      { "relationshipId": 1, "partner1": "f21", "partner2": "m22"} ]
  *
  * @param pedigree {PositionedGraph}
  * ===============================================================================================
@@ -25,25 +27,31 @@ PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
 {
    var exportObj = [];
 
-   for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
-       if (!pedigree.GG.isPerson(i)) continue;
-
-       var person = {"id": i};
-
+   var getMotherFather = function(nodeID) {
        // mother & father
-       var parents = pedigree.GG.getParents(i);
+       var parents = pedigree.GG.getParents(nodeID);
        if (parents.length > 0) {
            var father = parents[0];
            var mother = parents[1];
-
            if ( pedigree.GG.properties[parents[0]]["gender"] == "F" ||
                 pedigree.GG.properties[parents[1]]["gender"] == "M" ) {
                father = parents[1];
                mother = parents[0];
            }
-           person["father"] = father;
-           person["mother"] = mother;
        }
+       return {"mother": mother, "father": father};
+   };
+
+   var idToJSONId = PedigreeExport.createNewIDs(pedigree);
+
+   for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
+       if (!pedigree.GG.isPerson(i) || pedigree.GG.isPlaceholder(i)) continue;
+
+       var person = {"id": idToJSONId[i]};
+
+       var parents = getMotherFather(i);
+       person["father"] = idToJSONId[parents.father];
+       person["mother"] = idToJSONId[parents.mother];
 
        // all other properties
        var properties = pedigree.GG.properties[i];
@@ -60,8 +68,37 @@ PedigreeExport.exportAsSimpleJSON = function(pedigree, privacySetting)
                }
            }
        }
-
        exportObj.push(person);
+   }
+
+   var nextRelId = 1;
+   for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
+       if (!pedigree.GG.isRelationship(i)) continue;
+
+       var relationship = {"relationshipId": nextRelId++};
+
+       // only indicate childless relationships or relationships with properties
+       var properties = pedigree.GG.properties[i];
+       var hasProperties = false;
+       for (var property in properties) {
+           if (properties.hasOwnProperty(property)) {
+               hasProperties = true;
+               var converted = PedigreeExport.convertRelationshipProperty(property, properties[property]);
+               if (converted !== null) {
+                   relationship[converted.propertyName] = converted.value;
+               }
+           }
+       }
+
+       if (!hasProperties) {
+           continue;
+       }
+
+       var parents = getMotherFather(i);
+       relationship["partner1"] = idToJSONId[parents.father];
+       relationship["partner2"] = idToJSONId[parents.mother];
+
+       exportObj.push(relationship);
    }
 
    return JSON.stringify(exportObj);
@@ -406,35 +443,71 @@ PedigreeExport.internalToJSONPropertyMapping = {
         "candidateGenes":"candidateGenes",
         "lostContact":   "lostContact",
         "nodeNumber":    "nodeNumber",
-        "cancers":       "cancers"
+        "cancers":       "cancers",
+        "childlessStatus": "childlessStatus",
+        "childlessReason": "childlessReason"
+    };
+
+PedigreeExport.internalToJSONRelationshipPropertyMapping = {
+        "childlessStatus": "childlessStatus",
+        "childlessReason": "childlessReason",
+        "consangr":        "consanguinity",
+        "broken":          "separated"
     };
 
 /*
- * Converts property name from external JSON format to internal - also helps to
+ * Converts property name from internal format to external JSON format - also helps to
  * support aliases for some terms and weed out unsupported terms.
  */
 PedigreeExport.convertProperty = function(internalPropertyName, value) {
 
-    if (!PedigreeExport.internalToJSONPropertyMapping.hasOwnProperty(internalPropertyName))
+    if (!PedigreeExport.internalToJSONPropertyMapping.hasOwnProperty(internalPropertyName)) {
         return null;
+    }
 
     var externalPropertyName = PedigreeExport.internalToJSONPropertyMapping[internalPropertyName];
 
     if (externalPropertyName == "sex") {
-        if (value == "M")
+        if (value == "M") {
             value = "male";
-        else if (value == "F")
+        } else if (value == "F") {
             value = "female";
-        else if (value == "O")
+        } else if (value == "O") {
             value = "other";
-        else
+        } else {
             value = "unknown";
+        }
     }
-
     return {"propertyName": externalPropertyName, "value": value };
 }
 
+/*
+ * Converts property name from internal format to external JSON format.
+ */
+PedigreeExport.convertRelationshipProperty = function(internalPropertyName, value) {
+
+    if (!PedigreeExport.internalToJSONRelationshipPropertyMapping.hasOwnProperty(internalPropertyName)) {
+        return null;
+    }
+
+    var externalPropertyName = PedigreeExport.internalToJSONRelationshipPropertyMapping[internalPropertyName];
+
+    if (externalPropertyName == "consanguinity") {
+        if (value != "Y" && value != "N") {
+            return null;
+        }
+    }
+    return {"propertyName": externalPropertyName, "value": value };
+}
+
+/**
+ * idGenerationPreference: {"newid"|"external"|"name"}, default: "newid"
+ */
 PedigreeExport.createNewIDs = function(pedigree, idGenerationPreference, maxLength, forbidNonAlphaNum) {
+    if (!idGenerationPreference) {
+        idGenerationPreference = "newid";
+    }
+
     var idToNewId = {};
     var usedIDs   = {};
 
