@@ -484,11 +484,11 @@
 .menu-box .accepted-suggestions li:hover {
   background-color: #FFEE99;
 }
-.menu-box .accepted-suggestions li .delete-tool {
+.menu-box .field-box .accepted-suggestions li .delete-tool {
   position: absolute;
   top: .4em;
   right: 0;
-  display: inline !important;
+  display: inline;
 }
 .field-no-user-select {
   -webkit-touch-callout: none;
@@ -626,6 +626,15 @@
 }
 .menu-box .field-childlessSelect {
   padding: 0.5em 0 0.5em;
+}
+
+.menu-box .disabled-select {
+  pointer-events: none;
+  opacity: 0.5;
+  color: black;
+}
+.hidden {
+  display: none !important;
 }
 
 .menu-box .patient-menu-button {
