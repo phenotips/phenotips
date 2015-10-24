@@ -465,14 +465,11 @@ define([
       if (externalPropertyName == "sex") {
           if (value == "M") {
               value = "male";
-          }
-          else if (value == "F") {
+          } else if (value == "F") {
               value = "female";
-          }
-          else if (value == "O") {
+          } else if (value == "O") {
               value = "other";
-          }
-          else {
+          } else {
               value = "unknown";
           }
       }

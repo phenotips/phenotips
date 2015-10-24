@@ -614,7 +614,7 @@ define([
                 //console.log("Affected by line removal: " + Helpers.stringifyObject(affectedByLineRemoval));
                 //console.log("LineSet: " + Helpers.stringifyObject(this._lineSet));
 
-                for (var node in affectedByLineRemoval)
+                for (var node in affectedByLineRemoval) {
                     if (affectedByLineRemoval.hasOwnProperty(node)) {
                         var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node;
                         if (!Helpers.arrayContains(changeSet.moved, newID)) {
@@ -622,6 +622,7 @@ define([
                             changeSet.moved.push(newID);
                         }
                     }
+                }
             }
 
             timer.printSinceLast("=== Removal runtime: ");
@@ -680,8 +681,9 @@ define([
             timer.printSinceLast("=== Bookkeeping/sorting runtime: ");
 
 
-            for (var i = 0; i < movedPersons.length; i++)
+            for (var i = 0; i < movedPersons.length; i++) {
                 this.moveNode(movedPersons[i], animate.hasOwnProperty(movedPersons[i]));
+            }
 
             timer.printSinceLast("=== Move persons runtime: ");
 

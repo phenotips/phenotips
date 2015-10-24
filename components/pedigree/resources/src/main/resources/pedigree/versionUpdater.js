@@ -18,15 +18,15 @@ define([], function(){
         updateToCurrentVersion: function(pedigreeJSON) {
             for (var i = 0; i < this.availableUpdates.length; i++) {
                 var update = this.availableUpdates[i];
-                
+
                 var updateResult = this[update.func](pedigreeJSON);
-                
+
                 if (updateResult !== null) {
                     console.log("[update #" + i + "] [updating to " + update.introduced + " version] - performing " + update.comment + " update");
                     pedigreeJSON = updateResult;
                 }
             }
-            
+
             return pedigreeJSON;
         },
 
@@ -38,7 +38,7 @@ define([], function(){
             var data = JSON.parse(pedigreeJSON);
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
-                
+
                 if (node.hasOwnProperty("prop")) {
                     if (node.prop.hasOwnProperty("numPersons") && !node.prop.hasOwnProperty("comments") && node.prop.hasOwnProperty("fName") && node.prop.hasOwnProperty("fName") != "") {
                         node.prop["comments"] = node.prop.fName;
@@ -48,8 +48,9 @@ define([], function(){
                 }
             }
 
-            if (!change)
+            if (!change) {
                 return null;
+            }
 
             return JSON.stringify(data);
         },
@@ -74,8 +75,9 @@ define([], function(){
                 }
             }
 
-            if (!change)
+            if (!change) {
                 return null;
+            }
 
             return JSON.stringify(data);
         },
@@ -110,8 +112,9 @@ define([], function(){
                 }
             }
 
-            if (!change)
+            if (!change) {
                 return null;
+            }
 
             return JSON.stringify(data);
 
