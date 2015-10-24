@@ -136,7 +136,7 @@ var PhenoTips = (function (PhenoTips) {
 
       var today = new Date();
       var crtYear = today.getYear() + 1900;
-      var startYear = 1900;
+      var startYear = 1850;
 
       var values = [];
       for (var y = crtYear; y >= startYear; --y) {
