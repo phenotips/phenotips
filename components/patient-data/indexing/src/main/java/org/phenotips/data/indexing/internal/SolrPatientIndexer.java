@@ -19,10 +19,13 @@ package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -32,9 +35,13 @@ import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -75,6 +82,10 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Inject
     private PermissionsManager permissions;
 
+    @Inject
+    @Named("hpo")
+    private Vocabulary ontologyService;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -85,6 +96,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void index(Patient patient)
     {
         SolrInputDocument input = new SolrInputDocument();
+        Set<String> allAncestors = new HashSet<String>();
         input.setField("document", patient.getDocument().toString());
         String reporter = "";
         if (patient.getReporter() != null) {
@@ -94,9 +106,27 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
         for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
+            VocabularyTerm properTerm = this.ontologyService.getTerm(phenotype.getId());
+            if (properTerm != null) {
+                Set<VocabularyTerm> parents = properTerm.getAncestorsAndSelf();
+                for (VocabularyTerm term : parents) {
+                    allAncestors.add(term.getId());
+                }
+            }
         }
+
+        Set<String> solved = new HashSet<String>();
+        Set<String> candidate = new HashSet<String>();
+        Set<String> rejected = new HashSet<String>();
+        PatientData<Map<String, String>> allGenes = patient.getData("genes");
+        setGenes(allGenes, solved, candidate, rejected);
+
         input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
         input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
+        input.setField("phenotype_ancestors", allAncestors);
+        input.setField("solved_genes", solved);
+        input.setField("candidate_genes", candidate);
+        input.setField("rejected_genes", rejected);
         try {
             this.server.add(input);
         } catch (SolrServerException ex) {
@@ -136,6 +166,30 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             this.logger.warn("Error occurred while reindexing patients: {}", ex.getMessage());
         } catch (QueryException ex) {
             this.logger.warn("Failed to search patients for reindexing: {}", ex.getMessage());
+        }
+    }
+
+    private void setGenes(PatientData<Map<String, String>> allGenes, Set<String> solved, Set<String> candidate,
+        Set<String> rejected)
+    {
+        if (allGenes != null && allGenes.isIndexed()) {
+            for (Map<String, String> gene : allGenes) {
+                String name = gene.get("gene");
+                String status = gene.get("status");
+                switch (status) {
+                    case "solved":
+                        solved.add(name);
+                        break;
+                    case "candidate":
+                        candidate.add(name);
+                        break;
+                    case "rejected":
+                        rejected.add(name);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
