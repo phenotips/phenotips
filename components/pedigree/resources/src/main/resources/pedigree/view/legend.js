@@ -359,11 +359,17 @@ var Legend = Class.create( {
     * @return {int} Hashed integer representation of input string
     */
     _hashID : function(s){
-      s.toLowerCase();
-      return "c" + s.split("").reduce(function(a, b) {
-         a = ((a << 5) - a) + b.charCodeAt(0);
-        return a & a;
-      }, 0);
+        s.toLowerCase();
+        if (!Array.prototype.reduce) {
+            var n = 0;
+            for (var i = 0; i < s.length; i++) {
+                n += s.charCodeAt(i);
+            }
+            return "c" + n;
+        }
+        return "c" + s.split("").reduce(function(a, b) {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
     }
-
 });

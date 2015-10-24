@@ -233,7 +233,6 @@ var Workspace = Class.create({
                 name : 'output',
                 items: [
                     { key : 'export',    label : 'Export', icon : 'download'},
-                    { key : 'reload',    label : 'Reload', icon : 'refresh'},
                     { key : 'close',     label : 'Close', icon : 'sign-out'}
                 ]
             }];
