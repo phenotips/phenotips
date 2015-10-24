@@ -87,7 +87,8 @@ var PrintEngine = Class.create({
             if (userFirstName || userLastName) {
                 patientInfoHTML += " by " + userFirstName + " " + userLastName;
             }
-            if (editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat") == "DMY") {
+            var dateDisplayFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
+            if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY") {
                 patientInfoHTML += " on " + date.getBestPrecisionStringDDMMYYY() + ".";
             } else {
                 patientInfoHTML += " on " + date.getMonthName() + " " + date.getDay() + ", " + date.getYear() + ".";

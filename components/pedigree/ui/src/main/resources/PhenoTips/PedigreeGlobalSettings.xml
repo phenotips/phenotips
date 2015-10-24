@@ -65,7 +65,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy</values>
+      <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|MMY=mmm yyyy</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateDisplayFormat>
     <dateInputFormat>
@@ -86,7 +86,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy</values>
+      <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateInputFormat>
     <nonStandardAdoptedOutGraphic>

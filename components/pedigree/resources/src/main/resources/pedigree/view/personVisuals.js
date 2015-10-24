@@ -362,10 +362,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var birthDate = person.getBirthDate();
             var deathDate = person.getDeathDate();
 
-            if (editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat") == "DMY") {
+            var dateFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
+            if (dateFormat == "DMY" || dateFormat == "MY") {
                 if(person.getLifeStatus() == 'alive') {
                     if (birthDate && birthDate.isComplete()) {
-                        text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY();
+                        text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);
                         if (person.getBirthDate().getYear() !== null) {
                             var age = getAge(person.getBirthDate());
                             text += " (" + age + ")";
@@ -374,17 +375,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 else {
                     if(deathDate && birthDate && deathDate.isComplete() && birthDate.isComplete()) {
-                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY() + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY();
+                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                         if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
                             var age = getAge(person.getBirthDate(), person.getDeathDate());
                             text += "\n" + age;
                         }
                     }
                     else if (deathDate && deathDate.isComplete()) {
-                        text = "d. " + person.getDeathDate().getBestPrecisionStringDDMMYYY();
+                        text = "d. " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                     }
                     else if(birthDate && birthDate.isComplete()) {
-                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY() + " – ?";
+                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – ?";
                     }
                 }
             } else {
@@ -397,7 +398,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                             if (birthDate.getMonth() == null) {
                                 text = "b. " + birthDate.getYear();                          // b. 1972
                             } else {
-                                if (birthDate.getDay() == null) {
+                                if (birthDate.getDay() == null || dateFormat == "MMY") {
                                     text = "b. " + birthDate.getMonthName() + " " +
                                     birthDate.getYear();                                     // b. Jan 1972
                                 } else {
