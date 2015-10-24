@@ -18,6 +18,7 @@ var PedigreeEditor = Class.create({
         //  propagateFatherLastName:      {true|false}   - auto-propagate father's last name or not; default: "true"
         //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
         //  dateEditFormat:               {"YMD"|"DMY"|"MY"}  - defines order of fields in the date picker; default "YMD"
+        //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
         //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
         //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
         //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
@@ -26,6 +27,7 @@ var PedigreeEditor = Class.create({
                                                  propagateFatherLastName: true,
                                                  dateDisplayFormat: "YMD",
                                                  dateEditFormat: "YMD",
+                                                 displayCancerLabels: true,
                                                  useGradientOnNodes: false,
                                                  drawNodeShadows: true,
                                                  disabledFields: [] },

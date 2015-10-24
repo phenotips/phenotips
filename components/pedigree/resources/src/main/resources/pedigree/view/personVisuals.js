@@ -659,7 +659,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         var cancerData = this.getNode().getCancers();
-        if (!isObjectEmpty(cancerData)) {
+        if (!isObjectEmpty(cancerData)
+            && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
             for (var cancerName in cancerData) {
                 if (cancerData.hasOwnProperty(cancerName) && cancerData[cancerName].affected) {
                     var text = cancerName.toString() + " ca.";

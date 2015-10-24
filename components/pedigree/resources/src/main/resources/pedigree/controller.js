@@ -369,6 +369,9 @@ var Controller = Class.create({
                     // the number of lines may vary depending on age etc., it is easier to just recompute it
                     needUpdateYPositions = true;
                 }
+                if (propertySetFunction == "setCancers") {
+                    needUpdateYPositions = true;
+                }
 
                 if (propertySetFunction == "setMonozygotic") {
                     needUpdateRelationship = true;
