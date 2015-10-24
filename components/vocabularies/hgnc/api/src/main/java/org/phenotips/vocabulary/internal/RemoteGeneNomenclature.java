@@ -299,7 +299,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
-        result.add("hgnc-remote");
+        result.add("hgncRemote");
         result.add("HGNC");
         return result;
     }

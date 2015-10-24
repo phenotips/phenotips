@@ -455,7 +455,7 @@ public class RemoteGeneNomenclatureTest
     public void getAliases() throws ComponentLookupException
     {
         Set<String> aliases = this.mocker.getComponentUnderTest().getAliases();
-        Assert.assertTrue(aliases.contains("hgnc-remote"));
+        Assert.assertTrue(aliases.contains("hgncRemote"));
         Assert.assertTrue(aliases.contains("HGNC"));
     }
 
