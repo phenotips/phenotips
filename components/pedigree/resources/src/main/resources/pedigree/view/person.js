@@ -932,7 +932,7 @@ define([
             var disabledStates = false;
             if (this.isProband()) {
                 disabledStates = ['alive','deceased','unborn','aborted','miscarriage','stillborn']; // all possible
-                removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
+                Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
             var disabledGenders = this.isProband() ? [] : false;
