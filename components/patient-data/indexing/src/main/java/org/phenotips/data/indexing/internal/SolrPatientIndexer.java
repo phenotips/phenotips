@@ -23,6 +23,8 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -32,9 +34,12 @@ import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -75,6 +80,10 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Inject
     private PermissionsManager permissions;
 
+    @Inject
+    @Named("hpo")
+    private Vocabulary ontologyService;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -85,6 +94,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void index(Patient patient)
     {
         SolrInputDocument input = new SolrInputDocument();
+        Set<String> allAncestors = new HashSet<String>();
         input.setField("document", patient.getDocument().toString());
         String reporter = "";
         if (patient.getReporter() != null) {
@@ -94,9 +104,19 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
         for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
+            VocabularyTerm properTerm = this.ontologyService.getTerm(phenotype.getId());
+            if (properTerm != null) {
+                Set<VocabularyTerm> parents = properTerm.getAncestorsAndSelf();
+                for (VocabularyTerm term : parents) {
+                    allAncestors.add(term.getId());
+                }
+            } else {
+                //
+            }
         }
         input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
         input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
+        input.setField("phenotype_ancestors", allAncestors);
         try {
             this.server.add(input);
         } catch (SolrServerException ex) {
