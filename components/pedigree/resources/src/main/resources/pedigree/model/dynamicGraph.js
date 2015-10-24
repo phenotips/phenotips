@@ -151,14 +151,32 @@ DynamicPositionedGraph.prototype = {
     // returns false if this gender is incompatible with this pedigree; true otherwise
     setProbandData: function( patientObject )
     {
-        // TODO: separate patient object parser/data loader
+        // Note: we can't blank all patient properties here, since some are pedigree-specific
+        // and not available in patient document and should be preserved in saved pedigree JSON
+
+        // Fields which are loaded form the patient document are:
+        // - first_name
+        // - last_name
+        // - sex
+        // - date_of_birth
+        // - date_of_death
+        // - life_status
+        // - external_id
+        // - features + nonstandard_features
+        // - disorders
+        // - genes
+        // - maternal_ethnicity + paternal_ethnicity (merged with own ethnicities entered in pedigree editor)
 
         if (patientObject.hasOwnProperty("patient_name")) {
             if (patientObject.patient_name.hasOwnProperty("first_name")) {
                 this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
+            } else {
+                this.DG.GG.properties[0].fName = "";
             }
             if (patientObject.patient_name.hasOwnProperty("last_name")) {
                 this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
+            } else {
+                this.DG.GG.properties[0].lName = "";
             }
         }
 
@@ -176,16 +194,22 @@ DynamicPositionedGraph.prototype = {
         if (patientObject.hasOwnProperty("date_of_birth")) {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+        } else {
+            delete this.DG.GG.properties[0].dob;
         }
         if (patientObject.hasOwnProperty("date_of_death")) {
             var deathDate = new PedigreeDate(patientObject.date_of_death);
             this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+        } else {
+            delete this.DG.GG.properties[0].dod;
         }
         if (patientObject.hasOwnProperty("life_status")) {
             var lifeStatus = patientObject["life_status"];
             if (lifeStatus == "deceased" || lifeStatus == "alive") {
                 this.DG.GG.properties[0].lifeStatus = lifeStatus;
             }
+        } else {
+            delete this.DG.GG.properties[0].lifeStatus;
         }
 
         if (patientObject.hasOwnProperty("ethnicity")) {
@@ -204,6 +228,8 @@ DynamicPositionedGraph.prototype = {
 
         if (patientObject.hasOwnProperty("external_id")) {
             this.DG.GG.properties[0].externalID = patientObject.external_id;
+        } else {
+            delete this.DG.GG.properties[0].externalID;
         }
 
         var hpoTerms = [];
@@ -225,6 +251,8 @@ DynamicPositionedGraph.prototype = {
         }
         if (hpoTerms.length > 0) {
             this.DG.GG.properties[0].hpoTerms = hpoTerms;
+        } else {
+            delete this.DG.GG.properties[0].hpoTerms;
         }
 
         var disorders = [];
@@ -239,6 +267,8 @@ DynamicPositionedGraph.prototype = {
         }
         if (disorders.length > 0) {
             this.DG.GG.properties[0].disorders = disorders;
+        } else {
+            delete this.DG.GG.properties[0].disorders;
         }
 
         var genes = [];
@@ -250,6 +280,8 @@ DynamicPositionedGraph.prototype = {
         }
         if (genes.length > 0) {
             this.DG.GG.properties[0].candidateGenes = genes;
+        } else {
+            delete this.DG.GG.properties[0].candidateGenes;
         }
 
         return genderOK;
