@@ -83,7 +83,7 @@ DynamicPositionedGraph.prototype = {
         var rank  = this.DG.ranks[id];
         for (var i = 0; i < this.DG.order.order[rank].length; i++) {
             var next = this.DG.order.order[rank][i];
-            if (this.DG.GG.isPerson(next)) order++;
+            if (this.DG.GG.isPerson(next) && !this.DG.GG.isPlaceholder(next)) order++;
             if (next == id) break;
         }
         return order;
