@@ -176,7 +176,9 @@ PedigreeImport.initFromPhenotipsInternal = function(inputG)
 PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEvaluated, saveIDAsExternalID, affectedCodeOne, disorderNames)
 {
     var inputLines = inputText.match(/[^\r\n]+/g);
-    if (inputLines.length == 0) throw "Unable to import: no data";
+    if (inputLines.length == 0) {
+        throw "Unable to import: no data";
+    }
 
     // autodetect if data is in pre-makeped or post-makeped format
     var postMakeped = false;
@@ -319,6 +321,9 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
            fatherID = newG._addVertex( null, TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
         } else {
             fatherID = nameToId[fatherID];
+            if (typeof fatherID === 'undefined') {
+                throw "Unable to import pedigree: incorrect father link on line " + (i+1) + "; Maybe import data is not in PED format?";
+            }
             if (newG.properties[fatherID].gender == "F")
                 throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+thisPersonName+"]";
         }
@@ -326,6 +331,9 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
             motherID = newG._addVertex( null, TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
         } else {
             motherID = nameToId[motherID];
+            if (typeof motherID === 'undefined') {
+                throw "Unable to import pedigree: incorrect mother link on line " + (i+1) + "; Maybe import data is not in PED format?";
+            }
             if (newG.properties[motherID].gender == "M")
                 throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+thisPersonName+"]";
         }
