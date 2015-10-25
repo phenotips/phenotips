@@ -351,77 +351,12 @@
                See http://www.mojohaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.2 -->
-            <difference>
-              <className>org/phenotips/diagnosis/DiagnosisService</className>
-              <differenceType>7004</differenceType>
-              <method>java.util.List getDiagnosis(java.util.List, int)</method>
-              <justification>The API should accept both ontology terms and non-standard features.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/diagnosis/script/DiagnosisScriptService</className>
-              <differenceType>7004</differenceType>
-              <method>java.util.List get(java.util.List, int)</method>
-              <justification>The script service passes both ontology terms and non-standard features to the API.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/ontology/SolrOntologyServiceInitializer</className>
-              <differenceType>7006</differenceType>
-              <method>org.apache.solr.client.solrj.SolrServer getServer()</method>
-              <to>org.apache.solr.client.solrj.SolrClient</to>
-              <justification>SolrServer was replaced by SolrClient in Solr 5.0.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/solr/AbstractSolrScriptService</className>
-              <differenceType>6004</differenceType>
-              <field>server</field>
-              <from>org.apache.solr.client.solrj.SolrServer</from>
-              <to>org.apache.solr.client.solrj.SolrClient</to>
-              <justification>SolrServer was replaced by SolrClient in Solr 5.0.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/ontology/**</className>
-              <differenceType>8001</differenceType>
-              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/solr/AbstractSolrScriptService</className>
-              <differenceType>6004</differenceType>
-              <field>initializer</field>
-              <from>org.phenotips.ontology.SolrOntologyServiceInitializer</from>
-              <to>org.phenotips.vocabulary.SolrVocabularyResourceManager</to>
-              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/tools/PropertyDisplayer</className>
-              <differenceType>6004</differenceType>
-              <field>ontologyService</field>
-              <from>org.phenotips.ontology.OntologyService</from>
-              <to>org.phenotips.vocabulary.Vocabulary</to>
-              <justification>Package renamed from org.phenotips.ontology to org.phenotips.vocabulary.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/PatientData</className>
-              <differenceType>7012</differenceType>
-              <method>int size()</method>
-              <justification>The size() method should have been included from the start, since any collection should have it.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/*</className>
-              <differenceType>4001</differenceType>
-              <to>org/phenotips/data/OntologyProperty</to>
-              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/OntologyProperty</className>
-              <differenceType>8001</differenceType>
-              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
-            </difference>
+            <!-- Remove the following ignores after we release 1.3 -->
             <difference>
               <className>org/phenotips/vocabulary/VocabularyManager</className>
               <differenceType>7012</differenceType>
               <method>java.util.List getAvailableVocabularies()</method>
-              <justification>The getAvailableVocabularies method should have been included from the start.</justification>
+              <justification>New method for getting all the vocabularies; it's esential for a Manager to be able to say what it manages.</justification>
             </difference>
           </ignored>
           <excludes>
