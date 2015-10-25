@@ -31,6 +31,9 @@ public final class Relations
     /** Relation for links pointing to a search service for the current type of resource. */
     public static final String SEARCH = "https://phenotips.org/rel/search";
 
+    /** Relation for links pointing to a suggest (automatic search) service for the current type of resource. */
+    public static final String SUGGEST = "https://phenotips.org/rel/suggest";
+
     /** Relation for links pointing to the history of a resource. */
     public static final String HISTORY = "https://phenotips.org/rel/history";
 
