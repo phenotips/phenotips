@@ -130,7 +130,11 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
             this.objectFactory.createVocabularyRepresentation(vocabulary);
         // create links
         Collection<Link> links = new ArrayList<>();
-        links.add(new Link().withRel(Relations.SEARCH)
+        links.add(new Link().withHref(
+            UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyId)
+                .toString())
+            .withRel(Relations.SELF));
+        links.add(new Link().withRel(Relations.SUGGEST)
             .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
                 .path(VocabularyTermsResource.class)
                 .build(vocabularyId).toString()));

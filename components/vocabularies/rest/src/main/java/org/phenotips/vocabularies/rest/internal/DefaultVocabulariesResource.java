@@ -69,8 +69,8 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
             linkList.add(new Link().withHref(
                 UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyID)
                     .toString())
-                .withRel(Relations.SELF));
-            linkList.add(new Link().withRel("suggest")
+                .withRel(Relations.VOCABULARY));
+            linkList.add(new Link().withRel(Relations.SUGGEST)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
                     .path(VocabularyTermsResource.class)
                     .build(vocabularyID)

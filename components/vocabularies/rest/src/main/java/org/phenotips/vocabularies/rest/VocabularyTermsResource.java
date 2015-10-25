@@ -31,7 +31,7 @@ import javax.ws.rs.QueryParam;
  * @version $Id$
  * @since 1.3M1
  */
-@Path("/vocabularies/terms/{vocabulary}/search")
+@Path("/vocabularies/terms/{vocabulary}/suggest")
 public interface VocabularyTermsResource
 {
     /**
