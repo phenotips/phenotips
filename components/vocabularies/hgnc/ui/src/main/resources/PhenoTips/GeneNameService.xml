@@ -26,7 +26,7 @@
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1401822211000</creationDate>
-  <parent>PhenoTips.InvestigationClass</parent>
+  <parent>PhenoTips.GeneClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1401822211000</date>

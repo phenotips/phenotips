@@ -1,0 +1,1537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>GeneVariantMacros</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1438730976000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1439856148000</date>
+  <contentUpdateDate>1439855857000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity output=false}}
+$xwiki.jsx.use('PhenoTips.GeneVariantMacros')##
+$xwiki.ssx.use('PhenoTips.GeneVariantMacros')##
+## =====================================================================
+##
+## Genes and variants entered in the patient report
+##
+##
+## -----------Add/Delete buttons macros-------------------
+##
+#macro (__gene_addTool $classname)
+{{html clean="false"}}&lt;span class="buttonwrapper" style="position : relative"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="button add-gene add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xpage=plain&amp;amp;xaction=lastentry&amp;amp;withLabel=false&amp;amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("$!{classname}.geneTable.newEntry")"&gt;$services.localization.render("$!{classname}.geneTable.newEntry")&lt;/a&gt;&lt;/span&gt;{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}
+#end
+##
+#macro (__gene__deleteWithVariants__tool $geneObj $variantClassName)
+{{html clean="false"}}&lt;span class="buttonwrapper" style="position : relative"&gt;&lt;a class="action delete-gene button secondary" href="$doc.getURL('get', "geneclassname=${geneObj.xWikiClass.name}&amp;amp;variantclassname=$variantClassName&amp;amp;form_token=$!{services.csrf.getToken()}&amp;amp;action=deletegene&amp;amp;objnumber=$geneObj.number&amp;amp;gene=")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;&lt;/span&gt;{{/html}}##
+#end
+##
+##
+#macro (__variant_addTool $classname $genesymbol)
+{{html clean="false"}}&lt;span class="buttonwrapper" style="position : relative"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="button add-variant add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xpage=plain&amp;amp;xaction=lastentry&amp;amp;withLabel=false&amp;amp;${classname}_genesymbol=$genesymbol&amp;amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("${classname}.variantTable.newEntry")"&gt; $services.localization.render("${classname}.variantTable.newEntry")&lt;/a&gt;&lt;/span&gt;{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}.add.hint").replace('"', '~~~"')"/}}
+#end
+##
+#macro (__variant__deleteTool $object)
+{{html clean="false"}}&lt;span class="buttonwrapper" style="position : relative; float: right;"&gt;&lt;a class="action delete-variant button secondary" style="margin-top : 0" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render('phenotips.tableMacros.delete')"&gt;✖&lt;/a&gt;&lt;/span&gt;{{/html}}##
+#end
+##
+##
+## -----------Variants table macros-------------------
+##
+##
+#macro(__variant_head_empty $classname $options)##
+#set($count = 'ZZVARIANT_COUNT_PLACEHOLDERZZ')
+#set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
+#set($geneName = 'ZZGENE_SYMBOL_PLACEHOLDERZZ')
+|(%class="pseudoindent"%) ##
+|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %) $services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
+(%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
+|(%class="pseudoindent"%) ##
+|=(% class="variant var-row-number" %)(%%)##
+#foreach($propName in $options.defaultProperties) 
+|=(% class="variant col-label" %) $services.localization.render("${classname}.variantTable.${propName}") ##
+#end 
+|=(% class="transparent-row" %) 
+#end
+##
+##
+#macro(__variant_head $count $geneObjNumber $geneName $classname $options)##
+|(%class="pseudoindent"%) ##
+|=(% colspan="4" class="variant variant-title gene-$geneObjNumber" %) $services.localization.render("${classname}.variantTable.title", [$geneName, $count]) \\
+(%class="variant-gene-$geneObjNumber variant-title-row variant-hide-heading-$geneObjNumber"%)##
+|(%class="pseudoindent"%) ##
+|=(% class="variant var-row-number"  %) #(%%)##
+#foreach($propName in $options.defaultProperties) 
+|=(% class="variant col-label" %) $services.localization.render("${classname}.variantTable.${propName}") ##
+#end 
+|=(% class="transparent-row" %) 
+#end
+##
+##
+##
+#macro (__variant_row_empty $variantClassName $geneObjNumber $options)##
+#set($fakeObj = $doc.newObject($variantClassName))
+#set($variantIndex = 'ZZVARIANT_INDEX_PLACEHOLDERZZ')
+#set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
+#set($count = 'ZZVRCOUNT_PLACEHOLDERZZ')
+|(% class="v-collapsed" %) $doc.display('genesymbol', $options.mode, $fakeObj)##
+|(% class="pseudoindent" %) ##
+|(% class="variant-row-count variant-${variantIndex} variant" %)$count##
+#foreach($propName in $options.defaultProperties)
+|(% class="variant variant-default-input $propName variant-$variantIndex" %) $doc.display($propName, $options.mode, $fakeObj) ##
+#end
+#__variant__deleteTool($variantObj)\\
+(% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
+|(% class="pseudoindent" %)##
+|(% class = "variant" %)##
+|(% colspan="3" class="variant moreinfo" %)(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)((( ##
+#foreach ($prop in $fakeObj.xWikiClass.properties) 
+#if ($prop.getName() != 'genesymbol' &amp;&amp; !$options.defaultProperties.contains($prop.getName()))
+  
+#set ($isInputString = $options.inputStrings.contains($prop.getName())) 
+#set($rawValue = "")
+|(% class="variant-moreinfo variant-property-name-$variantIndex %)**${prop.translatedPrettyName}**##
+| (% class="variant-property-value ${prop.getName()}-$variantIndex variant-label-$variantIndex" %) ##
+#if($isInputString) 
+$rawValue ##
+#else 
+$doc.display($prop.getName(), 'view', $fakeObj )##
+#end ##
+(%%) (% class="v-collapsed variant-input-$variantIndex" %)$doc.display($prop.getName(), $options.mode, $fakeObj )##
+#end
+#end
+))) (% class="variant-moreinfo-editdonebutton-row variant-$variantIndex" %)\\
+#end
+##
+##
+##
+#macro (__variant_row $variantObj $count $variantIndex $geneObjNumber $options)
+#if ($options.mode == 'edit')
+|(% class="v-collapsed" %) $doc.display('genesymbol', $options.mode, $variantObj)##
+#end
+|(% class="pseudoindent" %) |(% class="variant-row-count variant-${variantIndex} variant" %)$count##
+#foreach($propName in $options.defaultProperties)
+|(% class="variant variant-default-input $propName variant-$variantIndex" %)$doc.display($propName, $options.mode, $variantObj)##
+#end
+#if ($options.mode == 'edit')#__variant__deleteTool($variantObj)#end\\
+(% class="variant-gene-$geneObjNumber variant-moreinfo-row v-collapsed variant-hide-heading-$geneObjNumber" %)##
+|(% class="pseudoindent" %)|(% class = "variant" %)|(% colspan="3" class="variant moreinfo" %)##
+#if ($options.mode == 'edit')(% class="variant-moreinfo-editbutton-row variant-$variantIndex" %)#end((( ##
+#foreach ($prop in $variantObj.xWikiClass.properties)
+#set($rawValue = $variantObj.getProperty($prop.getName()).value)
+#set($isValueEmpty = $rawValue == '' || $rawValue == 'NA' || $rawValue == [])
+#if ($prop.getName() != 'genesymbol' &amp;&amp; !$options.defaultProperties.contains($prop.getName()))
+#if ($options.mode == 'edit' || ($options.mode != 'edit' &amp;&amp; !$isValueEmpty))
+(% class="variant-moreinfo-table" %)
+#set ($isInputString = $options.inputStrings.contains($prop.getName()))
+|(% class="variant-moreinfo variant-property-name-$variantIndex %)**${prop.translatedPrettyName}**##
+| (% class="variant-property-value ${prop.getName()}-$variantIndex ##
+#if ($options.mode == 'edit') variant-label-$variantIndex #end"%) #if($isInputString)$rawValue#else $doc.display($prop.getName(), 'view', $variantObj )#end
+ (%%)#if ($options.mode == 'edit')(% class="v-collapsed variant-input-$variantIndex" %)$doc.display($prop.getName(), $options.mode, $variantObj )#end#end##
+#end#end
+))) #if ($options.mode == 'edit')(% class="variant-moreinfo-editdonebutton-row variant-$variantIndex" %)#end\\
+#end
+##
+##
+##
+##
+#macro(__variant_table $variantObjects $geneNumber $geneObjNumber $options $genesymbol $variantClassName)##
+#if ($variantObjects.size() &gt; 0)##
+(%class="variant-gene-$geneObjNumber variant-title-row"%)#__variant_head($variantObjects.size() $geneObjNumber $genesymbol $variantClassName $options)
+#foreach ($o in $variantObjects)
+#set ($variantIndex = $o.number)
+#set ($variantCount = $foreach.count)
+(%class="variant-gene-$geneObjNumber variant-hide-heading-$geneObjNumber"%)#__variant_row($o "${geneNumber}.${variantCount}" $variantIndex $geneObjNumber $options)
+#end
+#end
+#if ($options.mode == 'edit')
+(%class="variant-gene-$geneObjNumber variant-footer ##
+#if ($genesymbol == "") v-collapsed#end"%)#__variant_foot($options $geneObjNumber $genesymbol $variantClassName)#end
+#end
+##
+##
+#macro(__variant_foot $options $geneObjNumber $genesymbol $variantClassName)##
+#if ($options.mode == 'edit')
+|(%class="pseudoindent"%) ##
+|(% colspan="4" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genesymbol)##
+#end\\
+#end
+##
+## -----------Gene table macros-------------------
+##
+#macro (__gene_row $geneObj $geneNumber $variantClass $options)##
+#set($geneObjNumber = $geneObj.number)
+#set($variantObjects = $doc.getObjects($variantClass.name, "genesymbol", $geneObj.getProperty('gene').value))
+|(% class="row-count" %)$geneNumber ##
+#foreach($prop in $geneObj.xWikiClass.properties) ##
+|(% class="$prop.translatedPrettyName gene gene-$geneObjNumber" ##
+#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %) $doc.display($prop.name, $options.mode, $geneObj) ##
+#end 
+#if ($options.mode == 'edit')
+|(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($geneObj $variantClass.name)##
+#end
+
+#__variant_table($variantObjects $geneNumber $geneObjNumber $options $geneObj.getProperty('gene').value $variantClass.name)
+#end
+##
+##
+##
+#macro (__gene_row_empty $geneClassName $variantClassName $options)##
+#set($fakeObj = $doc.newObject($geneClassName))
+#set($geneNumber = 'ZZGENE_NUMBER_PLACEHOLDERZZ')
+#set($geneObjNumber = 'ZZGENE_INDEX_PLACEHOLDERZZ')
+#set($genesymbol = 'ZZGENE_SYMBOL_PLACEHOLDERZZ')
+|(% class="row-count" %)$geneNumber ##
+#foreach($prop in $xwiki.getDocument($geneClassName).xWikiClass.properties)
+ |(% class="$prop.translatedPrettyName gene gene-$geneObjNumber" ##
+#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %) $doc.display($prop.name, $options.mode, $fakeObj) ##
+#end
+ |(% class="gene delete-gene-button-$geneObjNumber" %)#__gene__deleteWithVariants__tool($fakeObj $variantClassName)  
+
+(%class="variant-gene-$geneObjNumber variant-footer"%)#__variant_foot($options $geneObjNumber $genesymbol $variantClassName)
+#end
+##
+##
+#macro (__gene_table $geneClassName $variantClassName $options)##
+#set($geneClass = $xwiki.getDocument($geneClassName).xWikiClass)
+#set($variantClass = $xwiki.getDocument($variantClassName).xWikiClass)
+(% id="extradata-list-$geneClassName" class="gene-table extradata-list withCounter" %)
+|= #foreach($prop in $geneClass.properties) ##
+|=(% class="gene-t-header-$prop.getName() col-label " ##
+#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %) $prop.translatedPrettyName#end
+#set($geneObjects = $doc.getObjects($geneClass.name))#if ($options.mode == 'edit')|=#end
+
+#foreach ($o in $geneObjects)
+#set ($geneNumber = $foreach.count)
+#__gene_row($o $geneNumber $variantClass $options)
+#end
+#if ($options.mode == 'edit')
+#set($geneIndexPlaceholder = 'ZZGENE_INDEX_PLACEHOLDERZZ')
+#__gene_row_empty($geneClassName $variantClassName $options)
+(%class="variant-gene-$geneIndexPlaceholder variant-title-row"%)#__variant_head_empty($variantClassName $options)
+(%class="variant-gene-$geneIndexPlaceholder variant-hide-heading-$geneIndexPlaceholder"%)#__variant_row_empty($variantClassName $options)##
+#end
+
+
+#if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end\\
+#end
+{{/velocity}}
+
+{{velocity output=false}}
+## =====================================================================
+##
+## Delete gene script service with bulk variants delete
+##
+##
+#if ($xcontext.action == 'get' &amp;&amp; $request.action == 'deletegene' &amp;&amp; "$!{request.gene}" != '' &amp;&amp; "$!{request.objnumber}" != '' &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
+  #set ($geneObject = $doc.getObject($!{request.geneclassname}, $!{request.objnumber}))
+  #set ($variantObjects = $doc.getObjects($!{request.variantclassname}, 'genesymbol', $request.gene))
+  ## delete gene
+  $doc.removeObject($geneObject)
+  ## delete variants
+  #foreach ($v in $variantObjects)
+    $doc.removeObject($v)
+  #end
+  ## save document
+  $doc.save('Deleted gene and variants')
+#end
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.GeneVariantMacros</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4a4dc56b-8095-4872-a16d-361d6b2239c3</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
+  var tools = ExtraGeneVariantData.tools = ExtraGeneVariantData.tools || {};
+  tools.Editor = Class.create({
+  
+    initialize : function () {
+      this.geneClassName = $$('.gene-table.extradata-list')[0].id.substring($$('.gene-table.extradata-list')[0].id.lastIndexOf('-')+1);
+      this.geneVariantClassName = 'PhenoTips.GeneVariantClass';
+      
+      //if edit mode
+      if (!!$('inline')) {
+        this.warnSaving = false;
+        this.areaEditDataListenerArray = [];
+        this.getNewRowsTemplates();
+        this.createEditButtons('.variant-moreinfo-editbutton-row');
+        this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
+        $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+        $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+        $$('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+        $$('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
+        $$('a.button.add-gene.add-data-button').invoke('observe', 'click', this.ajaxAddGeneData.bindAsEventListener(this));
+        $$('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
+        $$('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
+        //invoking click event to hide rows with empty inputs in 'more info' section
+        $$('.gene-table a.variant-edit-done').invoke('click');
+        this.lockGeneInput();
+      }
+      
+      $$('.gene-table tr tr').each( function(item) {
+        item.toggleClassName('moreinfo-view', true);
+      });
+      this.createShowMoreinfoButtons('td.variant-row-count.variant');
+      this.createHideShowButtons('.variant.variant-title');
+      $$('.gene-table tr th')[0].width = '1em';
+    },
+    
+    areaEditData  : function (event) {
+      var el = null;
+      if (event.element().className == 'variant moreinfo')
+        el = event.element();
+      else
+        el = event.element().up('td.variant.moreinfo');
+      el.select('a.variant-edit').invoke('click');
+      var className = el.down('.variant-moreinfo-editbutton-row').className;
+      var varIndex = className.substring(className.lastIndexOf('-')+1);
+      event.stopPropagation();
+      if ( this.areaEditDataListenerArray.indexOf(varIndex) &lt; 0 ) {
+        this.areaEditDataListenerArray.push(varIndex);
+        document.observe('click', function (event) {
+          if (!event.element().up('.variant-'+varIndex)){
+            $$('.variant-'+varIndex+' a.variant-edit-done').invoke('click');
+          }
+        });
+      }
+    },
+    
+     getNewRowsTemplates  : function () {
+      var sizep = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
+      var geneRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
+      var buttonRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep-5];
+      var varHeader_0_TemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep-4];
+      var varHeader_1_TemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep-3];
+      var varRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep-2];
+      var varMoreInfoTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep-1];
+      $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous().remove();
+      $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').each(function(item) {
+        item.remove();
+      });
+      //making templates
+      var syntax = /(^|.|\r|\n)(ZZ(\w+)ZZ)/;
+      this.geneRowTemplate = new Template(geneRowTemplateEl.innerHTML, syntax);
+      this.addVariantButtonTemplate = new Template(buttonRowTemplateEl.innerHTML, syntax);
+      this.variantHeaderTemplate_0  = new Template(varHeader_0_TemplateEl.innerHTML, syntax);
+      this.variantHeaderTemplate_1  = new Template(varHeader_1_TemplateEl.innerHTML, syntax);
+      this.variantRowTemplate  = new Template(varRowTemplateEl.innerHTML, syntax);
+      this.moreInfoSectionTemplate = new Template(varMoreInfoTemplateEl.innerHTML, syntax);
+    },
+    
+    ajaxDeleteGeneData : function (event) {
+      event.stop();
+      
+      var deleteTrigger = event.element();
+      var className = deleteTrigger.up('td').className;
+      var geneIndex = parseInt(className.substring(className.lastIndexOf('-')+1), 10);
+      var geneSymbol = $$('[name="'+this.geneClassName+'_' + geneIndex + '_gene"]')[0].value;
+      
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href+geneSymbol, {
+      
+        onCreate : function() {
+          deleteTrigger.disabled = true
+        },
+        
+        onSuccess : function() {
+          var dataRow = deleteTrigger.up('tr:not(.head-group)');
+          var dataTable = deleteTrigger.up('table.gene-table.extradata-list');
+          if (dataRow) {
+            $$('.variant-gene-'+geneIndex).each(function(item) {
+              item.remove();
+            });
+            dataRow.remove();
+          }
+          if (dataTable) {
+            var i = 1;
+            dataTable.select('td.row-count').each(function(item) {
+              var geneRowIndex = item.next().className.substring(item.next().className.lastIndexOf('-')+1);
+              var y = 1;
+              $$('.variant-hide-heading-' + geneRowIndex + ' .variant-row-count').each(function(vitem) {
+                vitem.childNodes[1].textContent = i + '.' + (y++);
+              });
+              item.update(i++);
+            });
+          }
+        },
+        
+        onComplete : function() {
+          deleteTrigger.disabled = false;
+        }
+        
+      },
+      {
+         confirmationText : "$!services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
+      });
+    },
+    
+    ajaxAddGeneData : function (event) {
+      event.stop();
+
+      var addTrigger = event.element();
+      if (addTrigger.disabled) {
+        return;
+      }
+      
+      var dataTable = addTrigger.up('.list-actions').previous();
+      if (!dataTable) {
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')", 'error');
+      }
+      
+      var idx = dataTable.select('td.row-count').size() + 1;
+      var geneIndex = 0;
+      if (dataTable.select('td.row-count').size() &gt; 0) {
+        var className = dataTable.select('td.row-count')[idx - 2].next().className;
+        geneIndex = parseInt(className.substring(className.lastIndexOf('-')+1), 10) + 1;
+      }
+
+      var newGeneRow = new Element('tr');
+      var newButtonRow = new Element('tr', {'class' : 'variant-gene-'+geneIndex+' variant-footer v-collapsed'});
+
+      var data = {GENE_NUMBER_PLACEHOLDER: idx, GENE_INDEX_PLACEHOLDER: geneIndex};
+      var buttonRowInner = this.addVariantButtonTemplate.evaluate(data);
+      var geneRowInner = this.geneRowTemplate.evaluate(data);
+      
+      geneRowInner = geneRowInner.replace(/_\d+_|=\d+&amp;/g, function (placeholder) {
+        switch(true) {
+          case /_\d+_/.test(placeholder):
+            return '_'+geneIndex+'_';
+            break;
+          case /=\d+&amp;/.test(placeholder):
+            return '_'+geneIndex+'_';
+            break;
+          default:
+            return "";
+            break;
+        }
+      });
+      
+      newGeneRow.insert(geneRowInner);
+      dataTable.down('tbody').insert(newGeneRow);
+      newButtonRow.insert(buttonRowInner);
+      dataTable.down('tbody').insert(newButtonRow);
+
+      newGeneRow.down('a.delete-gene').observe('click', this.ajaxDeleteGeneData.bindAsEventListener(this));
+      $$('tr.variant-gene-'+geneIndex+' a.add-variant')[0].observe('click', this.ajaxAddVariantData.bindAsEventListener(this));
+      
+      $('PhenoTips.GeneClass_' + geneIndex + '_status').value = "candidate";
+
+      var geneLabel = new Element('p', {'class' : ' gene col-label gene-' + geneIndex + ' gene-input-label v-collapsed'});
+      newGeneRow.down('.suggested.suggest-gene.gene-name').insert({before: geneLabel});
+
+      var hintTool = newButtonRow.down('span.fa.fa-question-circle.xHelpButton');
+      var icon_helpController = new PhenoTips.widgets.HelpButton(hintTool);
+
+      Event.fire(document, 'xwiki:dom:updated', {'elements' : [newGeneRow]});
+    },
+    
+    ajaxDeleteVariantData : function (event) {
+      event.stop();
+      var deleteTrigger = event.element();
+      var geneClass = this.geneClassName;
+      if (deleteTrigger.disabled) {
+         return;
+      }
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
+      
+        onCreate : function() {
+          deleteTrigger.disabled = true
+        },
+        
+        onSuccess : function() {
+          var dataRow = deleteTrigger.up('tr:not(.head-group)');
+          if (dataRow) {
+            var className = dataRow.previous().className;
+            var geneIndex = parseInt(className.substring(className.lastIndexOf('-')+1), 10);
+            //we are deleting the only variant in the gene: remove variant table header, 
+            //  unlock the genesymbol input field
+            if (dataRow.previous().hasClassName('variant-title-row') &amp;&amp; dataRow.next(1).hasClassName('variant-footer')) {
+              $$('.variant-gene-'+geneIndex+'.variant-title-row').each(function(item) {
+                item.remove();
+              });
+              $$('[name="'+geneClass+'_' + geneIndex + '_gene"]')[0].toggleClassName('v-collapsed', false);
+              $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', true);
+              dataRow.next().remove();
+              dataRow.remove();
+            } else {
+              //we are removing variant from the middle of the table-> updating table count
+              dataRow.next().remove();
+              dataRow.remove();
+              var element = deleteTrigger.up('tr').select('.variant-row-count.variant')[0];
+              // Get inner text in cross-browser manner
+              var innerText = element.textContent || element.innerText;
+              var geneCount = innerText.substring(0, innerText.indexOf('.'));
+              var i = 1;
+              $$('.variant-hide-heading-' + geneIndex + ' .variant-row-count').each(function(item) {
+                item.childNodes[1].textContent = geneCount + '.' + (i++);
+              });
+              //-update variant table header count
+              var newHeader = $$('.variant.variant-title.gene-'+geneIndex)[0].firstChild.textContent.replace(/(\().+?(\))/g, "$1"+(--i)+"$2");
+              $$('.variant.variant-title.gene-'+geneIndex)[0].firstChild.textContent = newHeader;
+            }    
+          }
+        },
+        
+        onComplete : function() {
+          deleteTrigger.disabled = false;
+        }
+        
+      },
+      {
+         confirmationText : "$!services.localization.render('phenotips.tableMacros.rowDeleteConfirmation')"
+      });
+    },
+    
+    ajaxAddVariantData : function (event) {
+      event.stop();
+      
+      var addTrigger = event.element();
+      if (addTrigger.disabled) 
+         return;
+      var classname = '';
+      try {
+        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
+      } catch (err) {
+         new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.typeNotFound')", 'error');
+         return;
+      }
+      
+      var className = addTrigger.up('td.variant').className;
+      var geneIndex = className.substring(className.lastIndexOf('-')+1);
+      var geneSymbol = $$('.gene.col-label.gene-' + geneIndex)[0].innerHTML;
+        
+      //lock the genesymbol input field
+      $$('[name="'+this.geneClassName+'_' + geneIndex + '_gene"]')[0].toggleClassName('v-collapsed', true);
+      $$('.gene.col-label.gene-' + geneIndex + '.gene-input-label')[0].toggleClassName('v-collapsed', false);
+      
+      var variantFooter = addTrigger.up('tr.variant-footer');
+      if (!variantFooter) {
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound')" + ' ' + classname, 'error');
+      }
+      
+      var varCount = 1;
+      var geneCount = parseInt($$('td.gene.gene-'+geneIndex)[0].up('tr').down('td').innerHTML, 10);
+      var varIndex = 0;
+      $$('.variant-moreinfo-editbutton-row').each( function(item) {
+        var indx = parseInt(item.className.substring(item.className.lastIndexOf('-')+1), 10);
+        varIndex = Math.max(indx, varIndex);
+      });
+      varIndex++;
+      
+
+      var data = {GENE_SYMBOL_PLACEHOLDER: geneSymbol, VARIANT_COUNT_PLACEHOLDER: varCount, GENE_INDEX_PLACEHOLDER: geneIndex, VARIANT_INDEX_PLACEHOLDER: varIndex}
+      
+      //If we insert first row of variants - create headers
+      if (variantFooter.previous().className == '') {
+
+        var varHeader_0_Inner = this.variantHeaderTemplate_0.evaluate(data);
+        var newVariantHeader_0 = new Element('tr', {'class' : 'variant-gene-'+geneIndex+' variant-title-row'});
+        newVariantHeader_0.update(varHeader_0_Inner);
+        variantFooter.insert({before : newVariantHeader_0});
+        
+        var varHeader_1_Inner = this.variantHeaderTemplate_1.evaluate(data);
+        var newVariantHeader_1 = new Element('tr', {'class' : 'variant-gene-'+geneIndex+' variant-title-row  variant-hide-heading-'+geneIndex});
+        newVariantHeader_1.update(varHeader_1_Inner);
+        variantFooter.insert({before : newVariantHeader_1});
+        
+        this.createHideShowButtons('.variant.variant-title.gene-'+geneIndex);
+      } else {      
+        //update variant table header count
+        varCount = $$('.variant-hide-heading-' + geneIndex + ' .variant-row-count').size()+1;
+        var newHeader = $$('.variant.variant-title.gene-'+geneIndex)[0].firstChild.textContent.replace(/(\().+?(\))/g, "$1"+varCount+"$2");
+        $$('.variant.variant-title.gene-'+geneIndex)[0].firstChild.textContent = newHeader;
+        data.VARIANT_COUNT_PLACEHOLDER = varCount;
+      }
+
+      data.VRCOUNT_PLACEHOLDER = geneCount+'.'+varCount;
+  
+      var evaluateTemplate = function evaluateTemplate(placeholder) {
+        switch(true) {
+          case /_\d+_/.test(placeholder):
+            return '_'+varIndex+'_';
+            break;
+          case /=\d+&amp;/.test(placeholder):
+            return '='+varIndex+'&amp;';
+            break;
+          case /\$\{object.xWikiClass.name\}/.test(placeholder):
+            return this.geneVariantClassName;
+            break;
+          case /\$\{object.number\}/.test(placeholder):
+            return varIndex;
+            break;
+          default:
+            return "";
+            break;
+        }
+      }
+
+      var newVariantRow = new Element('tr', {'class' : 'variant-gene-'+geneIndex+' variant-hide-heading-'+geneIndex});
+      var varRowInner = this.variantRowTemplate.evaluate(data);
+      varRowInner = varRowInner.replace(/_\d+_|=\d+&amp;|\$\{object.xWikiClass.name\}|\$\{object.number\}/g, function (placeholder) {return evaluateTemplate(placeholder)});
+      newVariantRow.insert(varRowInner);
+      variantFooter.insert({before : newVariantRow});
+
+      var newMoreInfoRow = new Element('tr', {'class' : 'variant-gene-'+geneIndex+' variant-moreinfo-row variant-hide-heading-'+geneIndex});
+      var varMoreInfoInner = this.moreInfoSectionTemplate.evaluate(data);
+      varMoreInfoInner = varMoreInfoInner.replace(/_\d+_|=\d+&amp;|\$\{object.xWikiClass.name\}|\$\{object.number\}/g, function (placeholder) {return evaluateTemplate(placeholder)});
+      newMoreInfoRow.insert(varMoreInfoInner);
+      variantFooter.insert({before : newMoreInfoRow});
+         
+      newVariantRow.down('a.delete-variant').observe('click', this.ajaxDeleteVariantData.bindAsEventListener(this));
+      
+      this.createEditButtons('.variant-moreinfo-editbutton-row.variant-'+varIndex);
+      this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row.variant-'+varIndex);
+
+      newMoreInfoRow.select('a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+      newMoreInfoRow.select('a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+      //invoking click event to show rows with empty inputs in 'more info' section
+      newMoreInfoRow.select('a.variant-edit').invoke('click');
+
+      this.createShowMoreinfoButtons('td.variant-row-count.variant-'+varIndex);
+
+      newMoreInfoRow.select('.variant-moreinfo-editbutton-row tr').each( function(item) {
+        item.toggleClassName('moreinfo-view', true);
+      });
+      newMoreInfoRow.select('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+      newMoreInfoRow.select('.variant.moreinfo').invoke('click');
+
+      $(this.geneVariantClassName+'_'+varIndex+'_genesymbol').value = geneSymbol;
+          
+      Event.fire(document, 'xwiki:dom:updated', {'elements' : [newVariantRow]});
+    },
+    
+    createHideShowButtons : function (className) {
+      //creating hide/Show variant section buttons
+      $$(className).each( function(item){
+        var geneIndex = item.className.substring(item.className.lastIndexOf('-')+1);
+        var showIcon = new Element('span', {'class' : 'fa fa-plus-square-o fa-lg'});
+        var variantShow = new Element('button', {'class' : 'tool button secondary v-collapsed', 'type' : 'button'}).insert(showIcon).insert(" $services.localization.render('PhenoTips.GeneVariantClass.expand')");
+        var hideIcon = new Element('span', {'class' : 'fa fa-minus-square-o fa-lg'});
+        var variantHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).insert(hideIcon).insert(" $services.localization.render('PhenoTips.GeneVariantClass.collapse')");
+        var variantShowWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantShow);
+        var variantHideWrapper = new Element('span', {'class' : 'buttonwrapper'}).insert(variantHide);
+        var variantExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(variantShowWrapper).insert(variantHideWrapper);
+        item.insert({bottom: variantExpandTools});
+        [variantShow, variantHide].invoke('observe', 'click', function (event) {
+          variantShow.toggleClassName('v-collapsed');
+          variantHide.toggleClassName('v-collapsed');
+          $$('.variant-hide-heading-' + geneIndex).each( function(item) {
+              if (variantShow.hasClassName('v-collapsed')) {
+                item.toggleClassName('v-collapsed', false);
+                //collapse all more info for variants
+                $$('.variant-hide-heading-' + geneIndex+'.variant-moreinfo-row').each( function(item) {
+                  item.toggleClassName('v-collapsed', true);
+                  item.previous().down('.show-moreinfo-button').toggleClassName('triRight', true);
+                  item.previous().down('.show-moreinfo-button').toggleClassName('triDown', false);
+                });
+              }
+              else
+                item.toggleClassName('v-collapsed', true);
+            });
+        });
+      });
+    },
+    
+    createEditDoneButtons : function (className) {
+      $$(className).each(function(row) {
+        var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);
+        var editVariantLink = new Element('a', {'class' : 'action-edit variant-edit-done v-collapsed', 'href' : '#', id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_editDone'});
+        row.insert(editVariantLink);
+      });
+    },
+    
+    createEditButtons : function (className) {
+      $$(className).each(function(row) {
+        var variantIndex = row.className.substring(row.className.lastIndexOf('-')+1);
+        var editVariantLink = new Element('a', {'class' : 'action-edit button secondary variant-edit fa fa-pencil', 'href' : '#', 'title' : "$services.localization.render('PhenoTips.GeneVariantClass.edit.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_edit', 'style' : 'font-size: 90%'}).update(' Edit');
+        var editVarientWrapper = new Element('span', {'class' : 'buttonwrapper variant-moreinfo-button', 'style' : 'margin: 0'}).insert(editVariantLink);
+        row.insert({top : editVarientWrapper});
+      });
+    },
+    
+    createShowMoreinfoButtons : function (className) {
+      $$(className).each(function(td) {
+        var variantIndex = td.className.substring(td.className.lastIndexOf('-')+1);
+        var showMoreinfoWrapper = new Element('div', {'class' : 'show-moreinfo-button triRight', 'title' : "$services.localization.render('PhenoTips.GeneVariantClass.showMoreinfo.hint')", id : 'PhenoTips.GeneVariantClass_'+variantIndex+'_showMoreinfo'});        
+        showMoreinfoWrapper.observe('click', function (event) {
+          event.stop();
+          event.element().up('tr').next().toggleClassName('v-collapsed');
+          if (event.element().up('tr').next().hasClassName('v-collapsed')) {
+            event.element().toggleClassName('triRight', true);
+            event.element().toggleClassName('triDown', false);
+          } else{
+            event.element().toggleClassName('triRight', false);
+            event.element().toggleClassName('triDown', true);
+          }
+        });
+        td.insert({top : showMoreinfoWrapper});
+      });
+    },
+    
+    lockGeneInput : function () {
+      //lock genesymbol inputs if there are variants
+      $$('.suggested.suggest-gene.gene-name').each( function(item) {
+        var className = item.up().className;
+        var geneIndex = className.substring(className.lastIndexOf('-')+1);
+        //generate label
+        var geneLabel = new Element('p', {'class' : ' gene col-label gene-' + geneIndex + ' gene-input-label'});
+        geneLabel.update(item.value);
+        item.insert({before: geneLabel});
+        if ($$('.variant-hide-heading-' + geneIndex).length &gt; 0) {
+          item.toggleClassName('v-collapsed', true);
+        } else {
+          geneLabel.toggleClassName('v-collapsed', true);
+        }
+      });
+    },
+    
+    editData : function (event) {
+      event.stop();
+      
+      var id = event.element().id;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
+      
+      $$('.gene-table tr .variant-'+variantIndex+' tr').each( function(item) {
+        item.toggleClassName('moreinfo-view', false);
+      }); 
+      
+      event.element().toggleClassName('v-collapsed', true); 
+      $(this.geneVariantClassName+'_'+variantIndex+'_editDone').toggleClassName('v-collapsed', false);
+      
+      var labels = $$('.variant-label-'+variantIndex);
+      $$('.variant-input-'+variantIndex).each ( function(item, index) {
+        item.toggleClassName('v-collapsed', false);
+        labels[index].toggleClassName('v-collapsed', true);
+        labels[index].up('tr').toggleClassName('v-collapsed', false);
+      });
+      //set the label column width for variant more info little table
+      event.element().up('td.variant.moreinfo').select('td:first-child').each ( function(item) {
+        item.toggleClassName('moreinfo-table-label-width', true);
+      });
+    },
+    
+    editDoneData : function (event) {
+      event.stop();
+      
+      var id = event.element().id;
+      var variantIndex = id.substring(id.indexOf('_')+1, id.lastIndexOf('_'));
+     
+      $$('.gene-table tr .variant-'+variantIndex+' tr').each( function(item) {
+        item.toggleClassName('moreinfo-view', true);
+      }); 
+      
+      event.element().toggleClassName('v-collapsed', true); 
+      $(this.geneVariantClassName+'_'+variantIndex+'_edit').toggleClassName('v-collapsed', false);
+      
+      var inputs = $$('.variant-input-'+variantIndex);
+      var labels = $$('.variant-label-'+variantIndex);
+     
+      for (var i=0;i&lt;inputs.length;i++) {
+      
+        inputs[i].toggleClassName('v-collapsed', true);
+        if (labels[i].className.indexOf('segregation') &gt; -1 || labels[i].className.indexOf('sanger') &gt; -1 || labels[i].className.indexOf('inheritance') &gt; -1 || labels[i].className.indexOf('zygosity') &gt; -1 || labels[i].className.indexOf('effect') &gt; -1) {
+          labels[i].innerHTML = inputs[i].firstChild[inputs[i].firstChild.selectedIndex].text;
+        } else if (labels[i].className.indexOf('evidence') &gt; -1) {
+          labels[i].innerHTML = "";
+          inputs[i].childElements().each( function(item) {
+            if (item.tagName == "LABEL" &amp;&amp; item.firstDescendant().checked) {
+              // Get inner text with cross-browser support
+              var innerText = item.textContent || item.innerText;
+              labels[i].innerHTML += innerText + '; ';
+            }
+          });
+        } else {
+          labels[i].innerHTML = inputs[i].firstChild.value;
+        }
+        
+        //hide row in "More Info" if empty value
+        if (labels[i].innerHTML == '') {
+          labels[i].up('tr').toggleClassName('v-collapsed', true);
+        } else {
+          labels[i].up('tr').toggleClassName('v-collapsed', false);
+          labels[i].toggleClassName('v-collapsed', false);
+        }
+      }
+      //unset the label column width for variant more info little table
+      event.element().up('td.variant.moreinfo').select('tr td:first-child').each ( function(item) {
+        item.toggleClassName('moreinfo-table-label-width', false);
+      });
+    }
+    
+  });
+  
+  return ExtraGeneVariantData;
+}(ExtraGeneVariantData || {}));
+
+document.observe('xwiki:dom:loaded', function() {
+  new ExtraGeneVariantData.tools.Editor();
+})</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.GeneVariantMacros</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>1ac1fca9-391c-488b-b6ce-2628d6860b35</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.GeneValidator = Class.create({
+    initialize : function(input) {
+      this.input = input;
+      this.valid = true;
+      this.state = 'NEW';
+      this.value = input.value;
+      if (!this.input.__validation) {
+        try {
+          this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+        }
+        catch(err) {
+          //console.log(err);
+        }
+      }
+      if (this.input.__validation)
+        this.input.__validation.add(this.validate.bind(this));
+    },
+    check : function() {
+      if (this.input.value != this.value) {
+        this.value = this.input.value;
+        this.state = 'CHECKING';
+        var el = this.input;
+        var genesymbols = [];
+        $$('.gene.col-label.gene-input-label').each( function (item) {
+          if (item.next() != el)
+            genesymbols.push(item.innerText);
+        });
+        if (genesymbols.indexOf(el.value) &gt; -1) {
+          this.invalid();
+        } else {
+          this.available();
+        }
+        this.responded();
+      }
+    },
+    validate : function(value) {
+      if (this.state == 'DONE') {
+        this.value == value &amp;&amp; (this.valid || Validate.fail("This gene has already been entered."));
+      }
+      this.check();
+      return true;
+    },
+
+    available : function() {
+      this.valid = true;
+    },
+    invalid : function() {
+      this.valid = false;
+    },
+    responded : function() {
+      this.state = 'DONE';
+      this.input.__validation.validate();
+    },
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select('input.gene-name').each(function(input) {
+        if (!input.__Gene_validator) {
+          input.__Gene_validator = new XWiki.widgets.GeneValidator(input);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe('xwiki:dom:updated', init);
+  document.observe('ms:suggest:selected', function(event) {
+    var inputElement = event.findElement();
+    var genesymbols = [];
+    $$('.gene.col-label.gene-input-label').each( function (item) {
+      if (item.next() != inputElement)
+        genesymbols.push(item.innerText);
+    });
+    if (genesymbols.indexOf(event.memo.value) &gt; -1) {
+      inputElement.__Gene_validator.input.value = event.memo.value;
+      inputElement.__Gene_validator.validate(event.memo.value);
+    } else {
+      var event = new Event('keyup');
+      inputElement.dispatchEvent(event);
+    }
+  })
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>Gene uniqueness validation</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.GeneVariantMacros</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>56fd5ce7-3694-4269-84bb-d6fc78e0b189</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.VariantValidator = Class.create({
+    initialize : function(input) {
+      this.input = input;
+      this.valid = true;
+      this.state = 'NEW';
+      this.value = input.value;
+      if (!this.input.__validation) {
+        this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+      }
+      this.input.__validation.add(this.validate.bind(this));
+    },
+    check : function() {
+      if (this.input.value != this.value) {
+        this.value = this.input.value;
+        this.state = 'CHECKING';
+        var el = this.input;
+        var cdnas = [];
+        $$('.variant.variant-default-input.cdna input').each( function (item) {
+          if (item != el)
+            cdnas.push(item.value);
+        });
+        if (cdnas.indexOf(el.value) &gt; -1) {
+          this.invalid();
+        } else {
+          this.available();
+        }
+        this.responded();
+      }
+    },
+    validate : function(value) {
+      if (this.state == 'DONE') {
+        this.value == value &amp;&amp; (this.valid || Validate.fail("$services.localization.render('phenotips.tableMacros.variantAlreadyExist')"));
+      }
+      this.check();
+      return true;
+    },
+
+    available : function() {
+      this.valid = true;
+    },
+    invalid : function() {
+      this.valid = false;
+    },
+    responded : function() {
+      this.state = 'DONE';
+      this.input.__validation.validate();
+    },
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select('.variant.variant-default-input.cdna input').each(function(input) {
+        if (!input.__Variant_validator) {
+          input.__Variant_validator = new XWiki.widgets.VariantValidator(input);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe('xwiki:dom:updated', init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>Variant uniqueness validation</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.GeneVariantMacros</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>388b2125-d87c-4fba-b23c-ed22c966574e</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+.extradata-list th.gene-t-header-gene {
+    width: 15%;
+}
+.extradata-list th.gene-t-header-status {
+    width: 20%
+}
+.extradata-list th.gene-t-header-evidence {
+    width: 25%; 
+}
+.extradata-list td.counter {
+  width: 3em;
+}
+.variant-row-count.variant, .extradata-list td.gene, .variant.variant-default-input {
+  text-align: left;
+}
+.gene-input-label{
+    display: inline;
+    padding-right: 5px;
+}
+.xHelpButton.gene-info{
+    padding-top: 5px;
+    margin-right: -16px;
+    padding-left: 10px;
+}
+.suggested.suggest-gene.gene-name{
+    width : 85%;
+}
+.gene-table td, .gene-table th {
+  vertical-align: top;
+  border-left: 0 none;
+  border-right: 0 none;
+  border-bottom: 0 none;
+}
+.gene-table-borded td, .gene-table-borded th {
+  border: 1px solid #F3F3F3;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+}
+.gene-table td table {
+  margin: 0 !important;
+}
+.gene-table th {
+  border-bottom: 0 none;
+  border-top: 0 none;
+}
+.gene-table td table td{
+  border: 0 none !important;
+}
+.gene-table td.pseudoindent {
+  border: 0 none !important;
+}
+.gene-table td.variant, .gene-table th.variant {
+  font-size: 87%;
+  background: #def;
+}
+.gene-table, .gene-table tr, .gene-table th {
+  position: relative;
+}
+.moreinfo-view {
+  display: inline-block;
+  background-color: #FFF;
+  margin: 3px;
+  border-radius: 4px;
+  opacity: .9;
+}
+.gene-table .variant-title:before {
+  position: absolute;
+  top: -15px;
+  left: 0;
+  content: "";
+  display: block;
+  border: 10px solid transparent;
+  border-bottom: 15px solid #def;
+  border-top: 0 none;
+}
+.gene-table td.variant.editing {
+  background: #FFD;
+}
+.gene-table td.variant.moreinfo {
+  position: relative;
+}
+.gene-table td.variant.moreinfo input[type="button"]{
+  float: right;
+}
+.gene-table td.variant-moreinfo {
+  text-align: left;
+  vertical-align: middle;
+}
+td.variant.moreinfo td{
+  text-align: left;
+  vertical-align: top;
+}
+.variant-moreinfo-button {
+  float: right;
+}
+.variant-showmoreinfo-button {
+  float: left;
+}
+.variant-property-value {
+  text-align: left;
+}
+.variant-moreinfo-button-row {
+  height: 30px;
+}
+.variant-edit-done {
+  display: none;
+}
+.variant-info .extradata-list td {
+  text-align: left;
+}
+.variant-info .extradata-list td.chr {
+  text-align: center;
+}
+.variant-info .extradata-list td {
+  text-align: left;
+}
+.variant-info .extradata-list td.chr {
+  text-align: center;
+}
+.v-collapsed {
+  display: none !important;
+}
+.variant.moreinfo table, .full-width{
+  width: 100%;
+  table-layout: fixed;
+  cursor: pointer;
+}
+.transparent-row {
+  background-color: inherit;
+}
+td.variant.moreinfo {
+  text-align: left;
+  font-size: 75%;
+  cursor: pointer;
+}
+td.variant-moreinfo strong::after {
+  content: ":";
+}
+.gene-table .expand-tools {
+  padding-top: 5px;
+}
+.variant.variant-default-input.cdna input[type="text"] {
+  width: 100px;
+}
+.gene-table select {
+  width: 210px;
+}
+.variant.moreinfo input[type="text"] {
+  width: 210px;
+}
+.gene-table th:first-child {
+  width: 1em;
+}
+td.Evidence.gene select {
+  width: 340px;
+}
+.moreinfo-table-label-width {
+  width: 120px;
+}
+a.delete-variant.secondary:hover {
+  color : red;
+}
+a.action-edit.secondary.variant-edit:hover, a.action-edit.secondary.variant-edit-done:hover {
+  color: #0089DC;
+}
+.variant-moreinfo-table {
+  display: block;
+}
+.triRight {
+  height: 0;
+  width: 0;
+  border-left: 8px solid $theme.titleColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.triDown {
+  height: 0;
+  width: 0;
+  border-top: 8px solid $theme.titleColor;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+.show-moreinfo-button {
+  margin: 0 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+.var-row-number {
+  width: 4%;
+}
+.variant-row-count {
+  white-space: nowrap;
+}
+.variant .LV_validation_message {
+  z-index: 1;
+}
+.gene-table .variant-title { 
+  background-color: #d5e6ff !important;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>
