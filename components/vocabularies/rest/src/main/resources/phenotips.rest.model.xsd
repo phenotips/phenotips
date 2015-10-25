@@ -41,7 +41,7 @@
           </sequence>
           <element name="size" type="long"/>
           <element name="version" type="string"/>
-          <element name="source" type="string"/>
+          <element name="defaultSourceLocation" type="string"/>
         </sequence>
       </extension>
     </complexContent>

@@ -47,7 +47,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
             .withSize(vocabulary.size())
             .withVersion(vocabulary.getVersion());
         try {
-            result.withSource(vocabulary.getDefaultSourceLocation());
+            result.withDefaultSourceLocation(vocabulary.getDefaultSourceLocation());
         } catch (UnsupportedOperationException e) {
             // Don't do anything and leave source empty
         }
