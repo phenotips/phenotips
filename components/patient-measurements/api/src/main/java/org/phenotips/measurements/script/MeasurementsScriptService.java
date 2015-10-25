@@ -19,6 +19,7 @@ package org.phenotips.measurements.script;
 
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -127,7 +128,7 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(int percentile)
     {
-        return AbstractMeasurementHandler.getFuzzyValue(percentile);
+        return MeasurementUtils.getFuzzyValue(percentile);
     }
 
     /**
@@ -138,7 +139,7 @@ public class MeasurementsScriptService implements ScriptService
      */
     public String getFuzzyValue(double deviation)
     {
-        return AbstractMeasurementHandler.getFuzzyValue(deviation);
+        return MeasurementUtils.getFuzzyValue(deviation);
     }
 
     /**
@@ -150,7 +151,7 @@ public class MeasurementsScriptService implements ScriptService
      */
     public Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
     {
-        return AbstractMeasurementHandler.convertAgeStrToNumMonths(age);
+        return MeasurementUtils.convertAgeStrToNumMonths(age);
     }
 
     /**
