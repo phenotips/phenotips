@@ -26,7 +26,8 @@ import org.joda.time.Period;
  * @version $Id$
  * @since 1.2M5
  */
-public final class MeasurementUtils {
+public final class MeasurementUtils
+{
     /** Fuzzy value representing a measurement value considered extremely below normal. */
     private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
 
