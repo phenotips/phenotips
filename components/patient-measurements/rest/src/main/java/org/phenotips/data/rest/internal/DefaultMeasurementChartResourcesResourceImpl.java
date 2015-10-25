@@ -20,7 +20,7 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.rest.MeasurementChartResourcesResource;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
-import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -88,7 +88,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                     JSONObject measurements = measurementSet.getJSONObject("measurements");
                     double ageMonths;
                     try {
-                        ageMonths = AbstractMeasurementHandler.convertAgeStrToNumMonths(age);
+                        ageMonths = MeasurementUtils.convertAgeStrToNumMonths(age);
                     } catch (IllegalArgumentException e) {
                         throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
                                 "Cannot parse age."));
