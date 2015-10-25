@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * A resource for working with an individual {@link org.phenotips.vocabulary.Vocabulary}.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -36,7 +37,8 @@ public interface VocabularyResource
 {
     /**
      * Reindex the whole vocabulary, fetching the source from the specified location. This request must come from an
-     *     adminstrator.
+     * adminstrator.
+     *
      * @param url the URL to be indexed
      * @param vocabularyId the vocabulary to be indexed. Will return an error if the vocabulary cannot be resolved.
      * @return A {@link Response} indicating whether the indexing was successful
@@ -46,10 +48,11 @@ public interface VocabularyResource
 
     /**
      * Retrieves the resource used for working with the specified individual resource.
+     *
      * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
-     *            vocabulary, for example {@code HP} or {@code MIM}, or one of its
-     *            {@link org.phenotips.vocabulary.Vocabulary#getAliases() known aliases}
-     * @return A {@link Vocabulary} representation.
+     *            vocabulary, for example {@code HP} or {@code MIM}
+     * @return a {@link Vocabulary} representation
      */
-    @GET Vocabulary getVocabulary(@PathParam("vocabulary") String vocabularyId);
+    @GET
+    Vocabulary getVocabulary(@PathParam("vocabulary") String vocabularyId);
 }

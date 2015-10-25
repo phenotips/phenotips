@@ -21,8 +21,9 @@ import org.phenotips.vocabularies.rest.model.Vocabularies;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+
 /**
- * Root resource for working with vocabularies.
+ * Root resource for working with vocabularies, listing all the available vocabularies.
  *
  * @version $Id$
  * @since 1.3M1
@@ -32,7 +33,9 @@ public interface VocabulariesResource
 {
     /**
      * Entry resource for the Vocabularies RESTful API. Provides a list of available vocabulary resources.
-     * @return A {@link Vocabularies} representing all the vocabularies that are currently available in PhenoTips.
+     *
+     * @return a {@link Vocabularies} resource representing all the vocabularies that are currently available
      */
-    @GET Vocabularies getAllVocabularies();
+    @GET
+    Vocabularies getAllVocabularies();
 }

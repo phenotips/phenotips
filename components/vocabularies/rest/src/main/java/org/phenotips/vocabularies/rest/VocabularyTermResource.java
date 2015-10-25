@@ -23,7 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /**
- *Resource for working with individual {@link org.phenotips.vocabulary.VocabularyTerm}.
+ * Resource for working with individual {@link org.phenotips.vocabulary.VocabularyTerm}.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -31,10 +32,11 @@ import javax.ws.rs.core.Response;
 public interface VocabularyTermResource
 {
     /**
-     * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by searching the
-     * specified vocabulary.
+     * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by searching the specified
+     * vocabulary.
+     *
      * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
-     *            vocabulary, for example {@code HP} or {@code MIM}, or one of its known aliases
+     *            vocabulary, for example {@code HP} or {@code MIM}
      * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
      * @return the requested term, or an error if the term doesn't exist in this vocabulary
@@ -46,6 +48,7 @@ public interface VocabularyTermResource
     /**
      * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} by resolving the term
      * using its prefix.
+     *
      * @param termId the term identifier, in the format {@code <vocabulary prefix>:<term id>}, for example
      *            {@code HP:0002066}
      * @return the requested term, or an error if the term could not be resolved

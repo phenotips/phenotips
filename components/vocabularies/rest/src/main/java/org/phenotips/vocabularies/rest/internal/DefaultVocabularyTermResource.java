@@ -41,6 +41,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Default implementation of the {@link VocabularyTermResource}.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -55,7 +56,8 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
     @Inject
     private DomainObjectFactory objectFactory;
 
-    @Override public Response getTerm(String vocabularyId, String termId)
+    @Override
+    public Response getTerm(String vocabularyId, String termId)
     {
         if (StringUtils.isEmpty(vocabularyId) || StringUtils.isEmpty(termId)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -72,7 +74,8 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
         return Response.ok(rep, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    @Override public Response resolveTerm(String termId)
+    @Override
+    public Response resolveTerm(String termId)
     {
         VocabularyTerm term = this.vm.resolveTerm(termId);
         if (term == null) {
@@ -82,16 +85,16 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
         return Response.ok(rep, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
-    private JSONObject createTermRepresentation(VocabularyTerm term) {
+    private JSONObject createTermRepresentation(VocabularyTerm term)
+    {
         JSONObject rep = JSONObject.fromObject(term.toJSON());
-        //decorate with links
+        // decorate with links
         JSONObject links = new JSONObject();
         links.accumulate(Relations.SELF, this.uriInfo.getRequestUri().toString());
         links.accumulate(Relations.VOCABULARY, UriBuilder.fromUri(this.uriInfo.getBaseUri())
-                .path(VocabularyResource.class)
-                .build(term.getVocabulary().getAliases().iterator().next())
-                .toString()
-        );
+            .path(VocabularyResource.class)
+            .build(term.getVocabulary().getAliases().iterator().next())
+            .toString());
         rep.accumulate("links", links);
         return rep;
     }

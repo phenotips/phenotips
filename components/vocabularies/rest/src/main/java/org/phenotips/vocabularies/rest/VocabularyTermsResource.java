@@ -26,7 +26,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 /**
- * Resource for working with lists of {@link org.phenotips.vocabulary.VocabularyTerm}.
+ * Resource for searching in a vocabulary for terms matching an input (vocabulary suggest).
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -37,8 +38,10 @@ public interface VocabularyTermsResource
      * Provides term suggestions for the specified {@link org.phenotips.vocabulary.Vocabulary} as a list of
      * {@link VocabularyTerms}. Request can optionally specify additional filters. If no suggestions are found an empty
      * list is returned.
-     * @param vocabularyId The ID of the {@link org.phenotips.vocabulary.Vocabulary} to be used for suggestions.
-     *  Any alias of the vocabulary can be used. If no matching vocabulary is found an error is returned to the user.
+     *
+     * @param vocabularyId The ID of the {@link org.phenotips.vocabulary.Vocabulary} to be used for suggestions. Any
+     *            alias of the vocabulary can be used. If no matching vocabulary is found an error is returned to the
+     *            user.
      * @param input The string which will be used to generate suggestions
      * @param maxResults The maximum number of results to be returned
      * @param sort an optional sort parameter, in a format that depends on the actual engine that stores the vocabulary;
@@ -47,9 +50,10 @@ public interface VocabularyTermsResource
      *            depends on the actual engine that stores the vocabulary; some vocabularies may not support a filter
      *            query; may be empty
      * @return A {@link VocabularyTerms} representing a list of
-     *            {@link org.phenotips.vocabularies.rest.model.VocabularyTerm} suggestions.
+     *         {@link org.phenotips.vocabularies.rest.model.VocabularyTerm} suggestions.
      */
-    @GET VocabularyTerms suggest(@PathParam("vocabulary") String vocabularyId,
+    @GET
+    VocabularyTerms suggest(@PathParam("vocabulary") String vocabularyId,
         @QueryParam("input") String input,
         @QueryParam("maxResults") @DefaultValue("10") int maxResults,
         @QueryParam("sort") String sort,

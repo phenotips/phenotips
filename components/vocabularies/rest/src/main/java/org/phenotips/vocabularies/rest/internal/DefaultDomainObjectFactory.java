@@ -40,8 +40,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     @Override
     public org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary)
     {
-        org.phenotips.vocabularies.rest.model.Vocabulary result
-            = new org.phenotips.vocabularies.rest.model.Vocabulary();
+        org.phenotips.vocabularies.rest.model.Vocabulary result =
+            new org.phenotips.vocabularies.rest.model.Vocabulary();
         result
             .withAliases(vocabulary.getAliases())
             .withSize(vocabulary.size())
@@ -49,7 +49,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         try {
             result.withSource(vocabulary.getDefaultSourceLocation());
         } catch (UnsupportedOperationException e) {
-            //Don't do anything and leave source empty
+            // Don't do anything and leave source empty
         }
         return result;
     }

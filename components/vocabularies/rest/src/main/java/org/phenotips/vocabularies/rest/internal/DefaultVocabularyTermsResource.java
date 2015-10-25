@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermsResource}.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -56,7 +57,6 @@ import org.apache.commons.lang3.StringUtils;
 @Unstable
 public class DefaultVocabularyTermsResource extends XWikiResource implements VocabularyTermsResource
 {
-
     @Inject
     private VocabularyManager vm;
 
@@ -79,19 +79,17 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
         List<org.phenotips.vocabularies.rest.model.VocabularyTerm> termReps = new ArrayList<>();
         for (VocabularyTerm term : termSuggestions) {
             org.phenotips.vocabularies.rest.model.VocabularyTerm termRep =
-                objectFactory.createVocabularyTermRepresentation(term);
+                this.objectFactory.createVocabularyTermRepresentation(term);
             List<Link> links = new ArrayList<>();
             links.add(new Link().withRel(Relations.VOCABULARY_TERM)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyTermResource.class)
                     .path(VocabularyTermResource.class, "getTerm")
                     .build(vocabularyId, term.getId())
-                    .toString())
-            );
+                    .toString()));
             links.add(new Link().withRel(Relations.VOCABULARY)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class)
                     .build(vocabularyId)
-                    .toString())
-            );
+                    .toString()));
             termRep.withLinks(links);
             termReps.add(termRep);
         }

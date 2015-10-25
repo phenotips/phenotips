@@ -52,6 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -86,14 +87,15 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     @Named("current")
     private DocumentReferenceResolver<EntityReference> resolver;
 
-    @Override public Response reindex(String url, String vocabularyId)
+    @Override
+    public Response reindex(String url, String vocabularyId)
     {
         Response result;
 
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(vocabularyId)) {
             result = Response.status(Response.Status.BAD_REQUEST).build();
         }
-        //check permissions, User must have admin rights on the entire wiki
+        // check permissions, User must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
             result = Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -117,23 +119,21 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
         return result;
     }
 
-
-    @Override public org.phenotips.vocabularies.rest.model.Vocabulary getVocabulary(String vocabularyId)
+    @Override
+    public org.phenotips.vocabularies.rest.model.Vocabulary getVocabulary(String vocabularyId)
     {
-
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        org.phenotips.vocabularies.rest.model.Vocabulary rep
-            = this.objectFactory.createVocabularyRepresentation(vocabulary);
-        //create links
+        org.phenotips.vocabularies.rest.model.Vocabulary rep =
+            this.objectFactory.createVocabularyRepresentation(vocabulary);
+        // create links
         Collection<Link> links = new ArrayList<>();
         links.add(new Link().withRel(Relations.SEARCH)
             .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
                 .path(VocabularyTermsResource.class)
-                .build(vocabularyId).toString())
-        );
+                .build(vocabularyId).toString()));
         rep.withLinks(links);
         return rep;
     }
@@ -141,6 +141,6 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     private boolean userIsAdmin()
     {
         User user = this.users.getCurrentUser();
-        return this.authorizationService.hasAccess(user, Right.ADMIN, resolver.resolve(this.MAIN_WIKI_REFERENCE));
+        return this.authorizationService.hasAccess(user, Right.ADMIN, this.resolver.resolve(MAIN_WIKI_REFERENCE));
     }
 }

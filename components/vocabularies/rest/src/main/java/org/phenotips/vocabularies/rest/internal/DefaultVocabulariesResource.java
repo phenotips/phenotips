@@ -38,9 +38,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriBuilder;
 
-
 /**
  * Default implementation for {@link VocabulariesResource} using XWiki's support for REST resources.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -55,34 +55,32 @@ public class DefaultVocabulariesResource extends XWikiResource implements Vocabu
     @Inject
     private DomainObjectFactory objectFactory;
 
-    @Override public Vocabularies getAllVocabularies()
+    @Override
+    public Vocabularies getAllVocabularies()
     {
         Vocabularies result = new Vocabularies();
         List<String> vocabularyIDs = this.vm.getAvailableVocabularies();
         List<org.phenotips.vocabularies.rest.model.Vocabulary> availableVocabs = new ArrayList<>();
         for (String vocabularyID : vocabularyIDs) {
-            Vocabulary vocab = vm.getVocabulary(vocabularyID);
-            org.phenotips.vocabularies.rest.model.Vocabulary rep
-                = this.objectFactory.createVocabularyRepresentation(vocab);
+            Vocabulary vocab = this.vm.getVocabulary(vocabularyID);
+            org.phenotips.vocabularies.rest.model.Vocabulary rep =
+                this.objectFactory.createVocabularyRepresentation(vocab);
             List<Link> linkList = new ArrayList<>();
             linkList.add(new Link().withHref(
-                    UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyID)
-                        .toString())
-                    .withRel(Relations.SELF)
-            );
+                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyID)
+                    .toString())
+                .withRel(Relations.SELF));
             linkList.add(new Link().withRel("suggest")
-                    .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
-                        .path(VocabularyTermsResource.class)
-                        .build(vocabularyID)
-                        .toString())
-            );
+                .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
+                    .path(VocabularyTermsResource.class)
+                    .build(vocabularyID)
+                    .toString()));
             rep.withLinks(linkList);
             availableVocabs.add(rep);
         }
         result.withVocabularies(availableVocabs);
         result.withLinks(new Link().withRel(Relations.SELF)
-            .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabulariesResource.class).toString())
-        );
+            .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabulariesResource.class).toString()));
         return result;
     }
 }

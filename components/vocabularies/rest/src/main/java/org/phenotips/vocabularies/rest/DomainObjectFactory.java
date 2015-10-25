@@ -24,7 +24,8 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- *  Factory for converting internal java objects into their REST representations.
+ * Factory for converting internal java objects into their REST representations.
+ *
  * @version $Id$
  * @since 1.3M1
  */
@@ -34,17 +35,19 @@ public interface DomainObjectFactory
 {
     /**
      * Converts a {@link Vocabulary} into its REST representation,
-     *      {@link org.phenotips.vocabularies.rest.model.Vocabulary}.
-     * @param vocabulary The vocabulary to converted.
-     * @return The REST representation without links
+     * {@link org.phenotips.vocabularies.rest.model.Vocabulary}.
+     *
+     * @param vocabulary the vocabulary to be converted
+     * @return the REST representation without links
      */
     org.phenotips.vocabularies.rest.model.Vocabulary createVocabularyRepresentation(Vocabulary vocabulary);
 
     /**
      * Converts a {@link VocabularyTerm} into a summary representation,
-     *      {@link org.phenotips.vocabularies.rest.model.VocabularyTerm}.
-     * @param term The term to be converted
-     * @return A REST representation summarizing the terms information.
+     * {@link org.phenotips.vocabularies.rest.model.VocabularyTerm}.
+     *
+     * @param term the term to be converted
+     * @return a REST representation summarizing the term information
      */
     org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term);
 }
