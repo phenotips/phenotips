@@ -39,7 +39,6 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
-import org.joda.time.Period;
 import org.slf4j.Logger;
 
 /**
@@ -51,21 +50,6 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 {
     /** Tool used for computing the percentile corresponding to a given z-score. */
     private static final NormalDistribution NORMAL = new NormalDistribution();
-
-    /** Fuzzy value representing a measurement value considered extremely below normal. */
-    private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
-
-    /** Fuzzy value representing a measurement value considered below normal, but not extremely. */
-    private static final String VALUE_BELOW_NORMAL = "below-normal";
-
-    /** Fuzzy value representing a measurement value considered normal. */
-    private static final String VALUE_NORMAL = "normal";
-
-    /** Fuzzy value representing a measurement value considered above normal, but not extremely. */
-    private static final String VALUE_ABOVE_NORMAL = "above-normal";
-
-    /** Fuzzy value representing a measurement value considered extremely above normal. */
-    private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
 
     /**
      * Triplet storing the median (M), the generalized coefficient of variation (S), and the power in the Box-Cox
@@ -472,68 +456,5 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
             return this.measurementsForAgeGirls;
         }
         return this.measurementsForAgeBoys;
-    }
-
-    /**
-     * Get the number of months corresponding to a period string.
-     *
-     * @param age the ISO-8601 period string, without leading 'P'
-     * @throws IllegalArgumentException if the age cannot be parsed
-     * @return number of months
-     */
-    public static Double convertAgeStrToNumMonths(String age) throws IllegalArgumentException
-    {
-        Period agePeriod;
-        agePeriod = Period.parse("P" + age);
-
-        Double ageMonths = 0.0;
-        ageMonths += agePeriod.getYears() * 12;
-        ageMonths += agePeriod.getMonths();
-        ageMonths += agePeriod.getWeeks() * 7 / 30.4375;
-        ageMonths += agePeriod.getDays() / 30.4375;
-
-        return ageMonths;
-    }
-
-    /**
-     * Convert a percentile number into a string grossly describing the value.
-     *
-     * @param percentile a number between 0 and 100
-     * @return the percentile description
-     */
-    public static String getFuzzyValue(int percentile)
-    {
-        String returnValue = VALUE_NORMAL;
-        if (percentile <= 1) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (percentile <= 3) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (percentile >= 99) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (percentile >= 97) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
-    }
-
-    /**
-     * Convert a standard deviation number into a string grossly describing the value.
-     *
-     * @param deviation standard deviation value
-     * @return the deviation description
-     */
-    public static String getFuzzyValue(double deviation)
-    {
-        String returnValue = VALUE_NORMAL;
-        if (deviation <= -3.0) {
-            returnValue = VALUE_EXTREME_BELOW_NORMAL;
-        } else if (deviation <= -2.0) {
-            returnValue = VALUE_BELOW_NORMAL;
-        } else if (deviation >= 3.0) {
-            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
-        } else if (deviation >= 2.0) {
-            returnValue = VALUE_ABOVE_NORMAL;
-        }
-        return returnValue;
     }
 }
