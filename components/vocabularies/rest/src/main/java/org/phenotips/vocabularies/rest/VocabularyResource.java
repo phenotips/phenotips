@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 /**
  * A resource for working with an individual {@link org.phenotips.vocabulary.Vocabulary}.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Path("/vocabularies/{vocabulary}")
 public interface VocabularyResource

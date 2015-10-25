@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  *Resource for working with individual {@link org.phenotips.vocabulary.VocabularyTerm}.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Path("/vocabularies/terms")
 public interface VocabularyTermResource

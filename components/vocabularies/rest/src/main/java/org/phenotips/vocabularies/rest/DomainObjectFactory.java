@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
 /**
  *  Factory for converting internal java objects into their REST representations.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Role
 @Unstable

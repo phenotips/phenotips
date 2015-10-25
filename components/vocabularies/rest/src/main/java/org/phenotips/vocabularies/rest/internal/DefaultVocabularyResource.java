@@ -53,7 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Component
 @Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyResource")

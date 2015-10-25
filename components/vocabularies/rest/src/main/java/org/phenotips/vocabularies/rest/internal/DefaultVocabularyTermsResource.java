@@ -48,7 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermsResource}.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Component
 @Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermsResource")

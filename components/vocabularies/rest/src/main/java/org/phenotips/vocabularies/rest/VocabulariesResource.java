@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
  * Root resource for working with vocabularies.
  *
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Path("/vocabularies")
 public interface VocabulariesResource

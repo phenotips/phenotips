@@ -42,7 +42,7 @@ import javax.ws.rs.core.UriBuilder;
 /**
  * Default implementation for {@link VocabulariesResource} using XWiki's support for REST resources.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Component
 @Named("org.phenotips.vocabularies.rest.internal.DefaultVocabulariesResource")

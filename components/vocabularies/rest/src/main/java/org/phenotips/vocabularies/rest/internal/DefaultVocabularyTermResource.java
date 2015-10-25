@@ -42,7 +42,7 @@ import net.sf.json.JSONObject;
 /**
  * Default implementation of the {@link VocabularyTermResource}.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Component
 @Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResource")

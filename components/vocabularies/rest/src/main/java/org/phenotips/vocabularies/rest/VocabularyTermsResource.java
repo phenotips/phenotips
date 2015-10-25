@@ -28,7 +28,7 @@ import javax.ws.rs.QueryParam;
 /**
  * Resource for working with lists of {@link org.phenotips.vocabulary.VocabularyTerm}.
  * @version $Id$
- * @since
+ * @since 1.3M1
  */
 @Path("/vocabularies/terms/{vocabulary}/search")
 public interface VocabularyTermsResource
