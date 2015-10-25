@@ -28,7 +28,6 @@ import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -76,9 +75,6 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
 
     @Inject
     private AuthorizationService authorizationService;
-
-    @Inject
-    private Execution execution;
 
     @Inject
     private UserManager users;

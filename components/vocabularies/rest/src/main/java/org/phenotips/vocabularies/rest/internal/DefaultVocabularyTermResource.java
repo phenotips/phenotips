@@ -18,7 +18,6 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.data.rest.Relations;
-import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
 import org.phenotips.vocabulary.Vocabulary;
@@ -52,9 +51,6 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
 {
     @Inject
     private VocabularyManager vm;
-
-    @Inject
-    private DomainObjectFactory objectFactory;
 
     @Override
     public Response getTerm(String vocabularyId, String termId)
