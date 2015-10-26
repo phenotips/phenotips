@@ -43,6 +43,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
         org.phenotips.vocabularies.rest.model.Vocabulary result =
             new org.phenotips.vocabularies.rest.model.Vocabulary();
         result
+            .withIdentifier(vocabulary.getIdentifier())
+            .withName(vocabulary.getName())
             .withAliases(vocabulary.getAliases())
             .withSize(vocabulary.size())
             .withVersion(vocabulary.getVersion());

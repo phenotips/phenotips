@@ -36,6 +36,8 @@
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
+          <element name="identifier" type="string"/>
+          <element name="name" type="string"/>
           <sequence>
             <element name="aliases" type="string" minOccurs="1" maxOccurs="unbounded"/>
           </sequence>
