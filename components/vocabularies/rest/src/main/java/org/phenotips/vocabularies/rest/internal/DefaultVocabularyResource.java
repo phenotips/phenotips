@@ -47,8 +47,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
  *
@@ -86,10 +84,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     @Override
     public Response reindex(String url, String vocabularyId)
     {
-        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(vocabularyId)) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        // check permissions, User must have admin rights on the entire wiki
+        // Check permissions, the user must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
