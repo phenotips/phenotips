@@ -86,19 +86,19 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     @Override
     public Response reindex(String url, String vocabularyId)
     {
-        Response result;
-
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(vocabularyId)) {
-            result = Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
         // check permissions, User must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
-            result = Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
         if (vocabulary == null) {
-            result = Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        Response result;
         try {
             int reindexStatus = vocabulary.reindex(url);
 
