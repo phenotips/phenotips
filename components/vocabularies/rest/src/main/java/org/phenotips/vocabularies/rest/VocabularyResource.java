@@ -20,7 +20,7 @@ package org.phenotips.vocabularies.rest;
 import org.phenotips.vocabularies.rest.model.Vocabulary;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -43,7 +43,7 @@ public interface VocabularyResource
      * @param vocabularyId the vocabulary to be indexed. Will return an error if the vocabulary cannot be resolved.
      * @return A {@link Response} indicating whether the indexing was successful
      */
-    @PUT
+    @POST
     Response reindex(@QueryParam("url") String url, @PathParam("vocabulary") String vocabularyId);
 
     /**
