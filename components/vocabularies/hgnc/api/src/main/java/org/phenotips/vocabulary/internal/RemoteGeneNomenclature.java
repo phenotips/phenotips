@@ -68,7 +68,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 /**
- * Provides access to the HUGO Gene Nomenclature Committee's GeneNames ontology. The ontology prefix is {@code HGNC}.
+ * Provides access to the HUGO Gene Nomenclature Committee's GeneNames nomenclature. The prefix is {@code HGNC}.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -215,14 +215,12 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START)))
-                    {
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START))) {
                         start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
                     }
                     int end = docs.size();
                     if (queryOptions.containsKey(CommonParams.ROWS)
-                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS)))
-                    {
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS))) {
                         end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
                     }
 

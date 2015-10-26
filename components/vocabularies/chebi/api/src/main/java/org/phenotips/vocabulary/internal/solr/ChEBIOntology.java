@@ -26,8 +26,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Provides access to the Chemical Entities of Biological Interest Ontology (ChEBI).
- * The ontology prefix is {@code CHEBI}.
+ * Provides access to the Chemical Entities of Biological Interest Ontology (ChEBI). The ontology prefix is
+ * {@code CHEBI}.
  *
  * @version $Id$
  * @since 1.0M8
@@ -38,8 +38,8 @@ import javax.inject.Singleton;
 public class ChEBIOntology extends AbstractOBOSolrVocabulary
 {
     /**
-     * TODO. Determine if this is still relevant.
-     * The name of the Alternative ID field, used for older aliases of updated HPO terms.
+     * TODO. Determine if this is still relevant. The name of the Alternative ID field, used for older aliases of
+     * updated HPO terms.
      */
     protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
 
