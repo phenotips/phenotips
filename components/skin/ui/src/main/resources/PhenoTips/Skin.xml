@@ -531,6 +531,10 @@ h1:target, h2:target, h3:target {
 }
 #xdocFooter {
   display: none;
+}
+
+.date_of_death .controller .displayed-value {
+  display:inline-block;
 }</code>
     </property>
     <property>

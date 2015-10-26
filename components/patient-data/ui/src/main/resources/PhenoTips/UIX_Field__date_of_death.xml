@@ -116,28 +116,27 @@
 #if ($showDod || $showDodUnknown)
   (% class="controlled-group complete-hide" %)(((
   #if ($showDod)
-    (% class="controlled" %) (((
-    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
-    )))
+    #if ($xcontext.action == 'edit')
+      (% class="fieldset date_of_death" %)(((
+      (% class="half-width date_of_death" %)(((
+          #__label('date_of_death' "section" '')
+        )))
+        (% class="half-width date_of_death" %)(((
+          (% class="controlled" %)(((
+            #__display('date_of_death')
+          ))) 
+          #if ($showDodUnknown)(% class="controller" %)(((
+            #__display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
+          )))#end
+        )))
+        (% class="clear" %)((()))
+      )))##fieldset
+    #else
+      #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+    #end
   #end
   #if ($showDodUnknown)
-    #if ($xcontext.action == 'edit')
-      ## The style must be applied iff the unknown option is displayed
-      {{html wiki="false" clean="false"}}
-        &lt;style&gt;
-          .fieldset.date_of_death {
-            margin-bottom: 0 !important;
-          }
-        &lt;/style&gt;
-      {{/html}}
-      (% class="#if ($xcontext.action == 'edit') controller #else displayed-value #end" %)(((
-        ## This solves the problem of having to duplicate css, or change it at all
-        (% class="half-width" style="height:1em" %)((()))
-        (% class="half-width" %)(((
-          $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
-        )))
-      )))
-    #else
+    #if ($xcontext.action != 'edit')
       {{html wiki="false" clean="false"}}
         &lt;p class="fieldset"&gt;
           &lt;span class="label"&gt; ${class.get('date_of_death').translatedPrettyName}:&lt;/span&gt;
