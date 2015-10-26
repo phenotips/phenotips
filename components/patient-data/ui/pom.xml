@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2-rc-3</version>
   </parent>
   <artifactId>patient-data-ui</artifactId>
   <name>PhenoTips - Patient data - Documents providing the patient class, sheet and display code</name>
