@@ -23,6 +23,8 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -35,8 +37,10 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
@@ -75,6 +79,11 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Inject
     private PermissionsManager permissions;
 
+    /** Provides access to the HPO ontology. */
+    @Inject
+    @Named("hpo")
+    private Vocabulary ontologyService;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -92,9 +101,25 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         }
         input.setField("reporter", reporter);
 
+        // Index direct phenotypes and extended ancestor sets
         for (Feature phenotype : patient.getFeatures()) {
-            input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
+            String presence = (phenotype.isPresent() ? "" : "negative_");
+            String fieldName = presence + phenotype.getType();
+            String ancestorFieldName = "extended_" + presence + "phenotype";
+
+            String termId = phenotype.getId();
+            if (StringUtils.isNotBlank(termId)) {
+                input.addField(fieldName, termId);
+                // Add ancestors of the term
+                VocabularyTerm term = this.ontologyService.getTerm(termId);
+                if (term != null) {
+                    for (VocabularyTerm ancestor : term.getAncestorsAndSelf()) {
+                        input.addField(ancestorFieldName, ancestor.getId());
+                    }
+                }
+            }
         }
+
         input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
         input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
         try {
