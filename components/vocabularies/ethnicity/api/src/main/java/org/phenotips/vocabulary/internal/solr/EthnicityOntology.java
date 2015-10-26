@@ -76,9 +76,21 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     }
 
     @Override
-    protected String getName()
+    protected String getCoreName()
+    {
+        return getIdentifier();
+    }
+
+    @Override
+    public String getIdentifier()
     {
         return "ethnicity";
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Ethnicities (non-standard)";
     }
 
     @Override
@@ -91,7 +103,7 @@ public class EthnicityOntology extends AbstractSolrVocabulary
     public Set<String> getAliases()
     {
         Set<String> aliases = new HashSet<String>();
-        aliases.add(getName());
+        aliases.add(getIdentifier());
         aliases.add("ETHNO");
         return aliases;
     }

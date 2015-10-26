@@ -53,9 +53,9 @@ public class ChEBIOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
-    protected String getName()
+    protected String getCoreName()
     {
-        return "chebi";
+        return getIdentifier();
     }
 
     @Override
@@ -65,11 +65,24 @@ public class ChEBIOntology extends AbstractOBOSolrVocabulary
     }
 
     @Override
+    public String getIdentifier()
+    {
+        return "chebi";
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Chemical Entities of Biological Interest (ChEBI)";
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
-        result.add(getName());
+        result.add(getIdentifier());
         result.add("CHEBI");
+        result.add("ChEBI");
         return result;
     }
 }

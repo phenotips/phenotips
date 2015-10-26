@@ -70,9 +70,9 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     private Vocabulary hpo;
 
     @Override
-    protected String getName()
+    protected String getCoreName()
     {
-        return "omim";
+        return getIdentifier();
     }
 
     @Override
@@ -104,10 +104,22 @@ public class MendelianInheritanceInMan extends AbstractSolrVocabulary
     }
 
     @Override
+    public String getIdentifier()
+    {
+        return "omim";
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Online Mendelian Inheritance in Man (OMIM)";
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
-        result.add(getName());
+        result.add(getIdentifier());
         result.add(STANDARD_NAME);
         result.add("OMIM");
         return result;

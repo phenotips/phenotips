@@ -296,10 +296,22 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     }
 
     @Override
+    public String getIdentifier()
+    {
+        return "hgncRemote";
+    }
+
+    @Override
+    public String getName()
+    {
+        return "HUGO Gene Nomenclature Committee's GeneNames (HGNC)";
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
-        result.add("hgncRemote");
+        result.add(getIdentifier());
         result.add("HGNC");
         return result;
     }

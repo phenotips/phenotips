@@ -128,6 +128,23 @@ public interface Vocabulary
     long getDistance(VocabularyTerm fromTerm, VocabularyTerm toTerm);
 
     /**
+     * The identifier of the vocabulary, used internally to differentiate between different vocabularies and different
+     * implementations of the same vocabulary.
+     *
+     * @return a simple string, for example {@code hpo}, {@code omim}, or {@code hgncRemote}
+     * @since 1.3M1
+     */
+    String getIdentifier();
+
+    /**
+     * The official name of the vocabulary.
+     *
+     * @return a string, for example {@code The Human Phenotype Ontology}
+     * @since 1.3M1
+     */
+    String getName();
+
+    /**
      * A vocabulary has an official name, but it can also have other aliases, for example the Human Phenotype Ontology
      * is known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or
      * the lowercase {@code hpo}.

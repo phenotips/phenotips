@@ -73,7 +73,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     @Override
     public void initialize() throws InitializationException
     {
-        this.externalServicesAccess.initialize(this.getName());
+        this.externalServicesAccess.initialize(this.getCoreName());
     }
 
     // Dilemma:
@@ -85,7 +85,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
      *
      * @return the simple core name
      */
-    protected abstract String getName();
+    protected abstract String getCoreName();
 
     @Override
     public VocabularyTerm getTerm(String id)
@@ -220,7 +220,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
     {
         try {
             SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
-            this.logger.debug("Searching [{}] with query [{}]", getName(), enhancedParams);
+            this.logger.debug("Searching [{}] with query [{}]", getCoreName(), enhancedParams);
             QueryResponse response = this.externalServicesAccess.getSolrConnection().query(enhancedParams);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
@@ -228,7 +228,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
                 enhancedParams =
                     SolrQueryUtils.applySpellcheckSuggestion(enhancedParams, response.getSpellCheckResponse()
                         .getCollatedResult());
-                this.logger.debug("Searching [{}] with spellchecked query [{}]", getName(), enhancedParams);
+                this.logger.debug("Searching [{}] with spellchecked query [{}]", getCoreName(), enhancedParams);
                 SolrDocumentList spellcheckResults =
                     this.externalServicesAccess.getSolrConnection().query(enhancedParams).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
@@ -256,7 +256,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
         params.set(CommonParams.ROWS, "0");
         SolrDocumentList results;
         try {
-            this.logger.debug("Counting terms matching [{}] in [{}]", query, getName());
+            this.logger.debug("Counting terms matching [{}] in [{}]", query, getCoreName());
             results = this.externalServicesAccess.getSolrConnection().query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
