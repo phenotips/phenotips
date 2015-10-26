@@ -1,5 +1,5 @@
 org.phenotips.vocabularies.rest.internal.DefaultVocabulariesResource
 org.phenotips.vocabularies.rest.internal.DefaultVocabularyResource
 org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermResource
-org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermsResource
+org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermSuggestionsResource
 org.phenotips.vocabularies.rest.internal.DefaultDomainObjectFactory

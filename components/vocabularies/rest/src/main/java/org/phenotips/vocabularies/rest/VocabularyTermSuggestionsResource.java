@@ -32,7 +32,7 @@ import javax.ws.rs.QueryParam;
  * @since 1.3M1
  */
 @Path("/vocabularies/terms/{vocabulary}/suggest")
-public interface VocabularyTermsResource
+public interface VocabularyTermSuggestionsResource
 {
     /**
      * Provides term suggestions for the specified {@link org.phenotips.vocabulary.Vocabulary} as a list of

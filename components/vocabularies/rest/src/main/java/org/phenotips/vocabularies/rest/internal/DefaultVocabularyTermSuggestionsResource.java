@@ -21,7 +21,7 @@ import org.phenotips.data.rest.Relations;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
-import org.phenotips.vocabularies.rest.VocabularyTermsResource;
+import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.model.Link;
 import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
@@ -46,16 +46,16 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermsResource}.
+ * Default implementation of the {@link org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource}.
  *
  * @version $Id$
  * @since 1.3M1
  */
 @Component
-@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermsResource")
+@Named("org.phenotips.vocabularies.rest.internal.DefaultVocabularyTermSuggestionsResource")
 @Singleton
 @Unstable
-public class DefaultVocabularyTermsResource extends XWikiResource implements VocabularyTermsResource
+public class DefaultVocabularyTermSuggestionsResource extends XWikiResource implements VocabularyTermSuggestionsResource
 {
     @Inject
     private VocabularyManager vm;

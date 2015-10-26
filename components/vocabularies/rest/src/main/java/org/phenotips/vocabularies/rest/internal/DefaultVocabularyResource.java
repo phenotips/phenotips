@@ -22,7 +22,7 @@ import org.phenotips.data.rest.Relations;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
 import org.phenotips.vocabularies.rest.VocabularyResource;
-import org.phenotips.vocabularies.rest.VocabularyTermsResource;
+import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.model.Link;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -127,7 +127,7 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
             .withRel(Relations.SELF));
         links.add(new Link().withRel(Relations.SUGGEST)
             .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
-                .path(VocabularyTermsResource.class)
+                .path(VocabularyTermSuggestionsResource.class)
                 .build(vocabularyId).toString()));
         rep.withLinks(links);
         return rep;
