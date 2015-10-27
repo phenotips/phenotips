@@ -137,7 +137,7 @@ var PrintDialog = Class.create( {
         var closeShortcut = ['Esc'];
         this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-print-dialog", title: "Print pedigree", displayCloseButton: true, verticalPosition: "top"});
 
-        Event.observe(window, 'resize', _this._fixPreviewWindowHeight.bind(_this));
+        Event.observe(window, 'resize', _this._adjustPreviewWindowHeight.bind(_this));
     },
 
     /**
@@ -186,10 +186,17 @@ var PrintDialog = Class.create( {
         this._updatePreview();
     },
 
-    _fixPreviewWindowHeight: function() {
+    /**
+     * Attempts to make preview window fit on screen by adjusting the preview pane height
+     */
+    _adjustPreviewWindowHeight: function() {
         var canvas = editor.getWorkspace().canvas || $('body');
+        var pedigreeDialogue = $$('.pedigree-print-dialog')[0];
+        if (!pedigreeDialogue) {
+            return;
+        }
         var screenHeight = canvas.getHeight() - 10;
-        var dialogueHeight = $$('.pedigree-print-dialog')[0].getHeight();
+        var dialogueHeight = pedigreeDialogue.getHeight();
         var freeSpace = screenHeight - dialogueHeight;
         var previewPaneHeight = $('printPreview').getHeight();
         if (freeSpace < 0) {
@@ -213,11 +220,11 @@ var PrintDialog = Class.create( {
                                                                 this._moveHorizontally,
                                                                 options);
         this.previewContainer.update(previewHTML);
-        this._fixPreviewWindowHeight();
+        this._adjustPreviewWindowHeight();
 
         var _this = this;
-        var numPrinted = 0;
         this._printPageSet = {};
+        var numPrinted = 0;
         // add click-on-page handlers
         $$("div[id^=pedigree-page-]").forEach(function(page) {
             try {
