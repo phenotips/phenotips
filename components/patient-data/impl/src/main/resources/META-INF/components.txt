@@ -31,4 +31,5 @@ org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater
 org.phenotips.data.internal.PatientDeathdateUpdater
+org.phenotips.data.internal.PatientEmptyObjectsRemover
 org.phenotips.data.internal.PatientExtendedPhenotypeUpdater
