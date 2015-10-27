@@ -235,17 +235,11 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(1) > p > span")
     private WebElement summaryPubmedIDTitle;
 
-    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(1) > p > span")
-    private WebElement summaryGeneIDTitle;
-
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(1) > p > span")
     private WebElement summaryResolutionNotesTitle;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__pubmed_id > div:nth-child(2) > div")
     private WebElement summaryPubmedIDField;
-
-    @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__gene_id > div:nth-child(2) > div")
-    private WebElement summaryGeneIDField;
 
     @FindBy(css = ".case-resolution.chapter > div > div.controlled > div.fieldset.solved__notes > div:nth-child(2) > div")
     private WebElement summaryResolutionNotesField;
@@ -424,10 +418,6 @@ public class PatientRecordViewPage extends ViewPage
                 return this.summaryPubmedIDTitle.getText();
             case "fieldPubmed":
                 return this.summaryPubmedIDField.getText();
-            case "titleGeneID":
-                return this.summaryGeneIDTitle.getText();
-            case "fieldGeneID":
-                return this.summaryGeneIDField.getText();
             case "titleResolutionNotes":
                 return this.summaryResolutionNotesTitle.getText();
             case "fieldResolutionNotes":
@@ -438,7 +428,6 @@ public class PatientRecordViewPage extends ViewPage
         return "";
     }
 
-    ///////////////////
     public static PatientRecordViewPage gotoPage(String patientId)
     {
         getUtil().gotoPage("data", patientId, "view");
