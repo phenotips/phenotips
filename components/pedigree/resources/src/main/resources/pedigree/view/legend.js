@@ -310,6 +310,10 @@ define([
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             //console.log("Position x: " + pos.x + " position y: " + pos.y);
             if (node) {
+                if (node.isProband()) {
+                    // TODO: fix this once family-studies are merged in
+                    return;
+                }
                 var id = label.select('input')[0].value;
                 this._onDropObject(node, id);
             }
@@ -333,6 +337,10 @@ define([
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             if (node) {
+                if (node.isProband()) {
+                    // TODO: fix this once family-studies are merged in
+                    return;
+                }
                 editor.getView().setCurrentDraggable(null);
                 node.getGraphics().getHoverBox().setHighlighted(true);
                 this._previousHighightedNode = node;
