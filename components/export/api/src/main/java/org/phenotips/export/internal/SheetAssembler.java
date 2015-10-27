@@ -55,6 +55,7 @@ public class SheetAssembler
         converter.phenotypeSetup(enabledFields);
         converter.prenatalPhenotypeSetup(enabledFields);
         converter.genesSetup(enabledFields);
+        converter.variantsSetup(enabledFields);
 
         /* Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
@@ -120,6 +121,7 @@ public class SheetAssembler
             patientSections.add(converter.isNormalBody(patient));
             patientSections.add(converter.phenotypeBody(patient));
             patientSections.add(converter.genesBody(patient));
+            patientSections.add(converter.variantsBody(patient));
             patientSections.add(converter.disordersBody(patient));
             patientSections.add(converter.isSolvedBody(patient));
 
@@ -153,6 +155,7 @@ public class SheetAssembler
         headerSections.add(converter.isNormalHeader(enabledFields));
         headerSections.add(converter.phenotypeHeader());
         headerSections.add(converter.genesHeader());
+        headerSections.add(converter.variantsHeader());
         headerSections.add(converter.disordersHeaders(enabledFields));
         headerSections.add(converter.isSolvedHeader(enabledFields));
 
