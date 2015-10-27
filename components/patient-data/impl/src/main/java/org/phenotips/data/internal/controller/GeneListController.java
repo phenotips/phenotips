@@ -64,7 +64,7 @@ import net.sf.json.JSONObject;
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
     /** The XClass used for storing gene data. */
-    public static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+    protected static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String GENES_STRING = "genes";
@@ -73,9 +73,17 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
+    private static final String GENES_STATUS_ENABLING_FIELD_NAME = "genes_status";
+
+    private static final String GENES_STRATEGY_ENABLING_FIELD_NAME = "genes_strategy";
+
     private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
 
     private static final String GENE_KEY = "gene";
+
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
 
     private static final String COMMENTS_KEY = "comments";
 
@@ -101,7 +109,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(GENE_KEY, COMMENTS_KEY);
+        return Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
     }
 
     @Override
@@ -153,6 +161,20 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         return null;
     }
 
+    private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
+        Collection<String> selectedFieldNames)
+    {
+        int count = 0;
+        for (String property : keys) {
+            if (StringUtils.isBlank(item.get(property))
+                || (selectedFieldNames != null
+                && !selectedFieldNames.contains(enablingProperties.get(count)))) {
+                item.remove(property);
+            }
+            count++;
+        }
+    }
+
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -174,17 +196,17 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
+        List<String> keys =
+            Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
+
+        List<String> enablingProperties =
+            Arrays.asList(GENES_ENABLING_FIELD_NAME, GENES_STATUS_ENABLING_FIELD_NAME,
+                GENES_STRATEGY_ENABLING_FIELD_NAME, GENES_COMMENTS_ENABLING_FIELD_NAME);
+
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
-
             if (!StringUtils.isBlank(item.get(GENE_KEY))) {
-
-                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                    || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                    item.remove(COMMENTS_KEY);
-                }
-
+                removeKeys(item, keys, enablingProperties, selectedFieldNames);
                 container.add(item);
             }
         }
