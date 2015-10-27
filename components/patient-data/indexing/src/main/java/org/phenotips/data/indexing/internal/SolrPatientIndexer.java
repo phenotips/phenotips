@@ -60,24 +60,6 @@ import org.slf4j.Logger;
 @Singleton
 public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
-    private static final String GENES_KEY = "genes";
-
-    private static final String GENE_NAME_FIELD = "gene";
-
-    private static final String GENE_STATUS_FIELD = "status";
-
-    private static final String GENE_STATUS_SOLVED = "solved";
-
-    private static final String GENE_STATUS_CANDIDATE = "candidate";
-
-    private static final String GENE_STATUS_REJECTED = "rejected";
-
-    private static final String SOLR_FIELD_SOLVED_GENES = "solved_genes";
-
-    private static final String SOLR_FIELD_CANDIDATE_GENES = "candidate_genes";
-
-    private static final String SOLR_FIELD_REJECTED_GENES = "rejected_genes";
-
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -143,13 +125,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         input.setField("visibility", this.permissions.getPatientAccess(patient).getVisibility().getName());
         input.setField("accessLevel", this.permissions.getPatientAccess(patient).getVisibility().getPermissiveness());
 
-        // Add genes
-        PatientData<Map<String, String>> allGenes = patient.getData(GENES_KEY);
-        addGenesWithStatusToField(input, allGenes, GENE_STATUS_SOLVED, SOLR_FIELD_SOLVED_GENES);
-        addGenesWithStatusToField(input, allGenes, GENE_STATUS_CANDIDATE, SOLR_FIELD_CANDIDATE_GENES);
-        addGenesWithStatusToField(input, allGenes, GENE_STATUS_REJECTED, SOLR_FIELD_REJECTED_GENES);
-        // Index genes without a status as candidates
-        addGenesWithStatusToField(input, allGenes, null, SOLR_FIELD_CANDIDATE_GENES);
+        addGenes(input, patient);
 
         try {
             this.server.add(input);
@@ -193,16 +169,31 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         }
     }
 
-    private void addGenesWithStatusToField(SolrInputDocument input, PatientData<Map<String, String>> allGenes,
-        String status, String field)
+    private void addGenes(SolrInputDocument input, Patient patient)
     {
+        PatientData<Map<String, String>> allGenes = patient.getData("genes");
         if (allGenes != null && allGenes.isIndexed()) {
             for (Map<String, String> gene : allGenes) {
-                String name = gene.get(GENE_NAME_FIELD);
-                String geneStatus = gene.get(GENE_STATUS_FIELD);
-                if (StringUtils.equalsIgnoreCase(geneStatus, status) && StringUtils.isNotBlank(name)) {
-                    input.addField(field, name);
+                String name = gene.get("gene");
+                if (StringUtils.isBlank(name)) {
+                    continue;
                 }
+
+                String status = gene.get("status");
+                String field = null;
+                // Index genes with empty or null status as candidates
+                if (StringUtils.isBlank(status) || "candidate".equals(status)) {
+                    field = "candidate_genes";
+                } else if ("solved".equals(status)) {
+                    field = "solved_genes";
+                } else if ("rejected".equals(status)) {
+                    field = "rejected_genes";
+                } else {
+                    this.logger.warn("Unexpected gene status: " + status);
+                    continue;
+                }
+
+                input.addField(field, name);
             }
         }
     }
