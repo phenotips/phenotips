@@ -76,7 +76,11 @@ function setByTemplate(template, data) {
     for (var key in template) {
         if (data.hasOwnProperty(key) && template.hasOwnProperty(key)) {
             if (typeof template[key] === 'object') {
-                this.setByTemplate(template[key], data[key]);
+                if (Object.prototype.toString.call(template[key]) === '[object Array]') {
+                    template[key] = data[key].slice(); // array -> make a copy
+                } else {
+                    this.setByTemplate(template[key], data[key]); // other type of object -> set properties recursively
+                }
             } else {
                 template[key] = data[key];
             }

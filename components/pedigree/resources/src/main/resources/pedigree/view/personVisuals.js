@@ -172,17 +172,26 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateNameLabel: function() {
         this._nameLabel && this._nameLabel.remove();
+        var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
         var text =  "";
-        this.getNode().getFirstName() && (text = this.getNode().getFirstName());
 
-        if (this.getNode().getLastName()) {
-            text += ' ' + this.getNode().getLastName();
-            this.getNode().getLastNameAtBirth() &&
-                (this.getNode().getLastNameAtBirth() != this.getNode().getLastName()) &&
-                (text += ' (' + this.getNode().getLastNameAtBirth() + ')');
+        if (this.getNode().getFirstName() && !arrayContains(disabledFields, 'first_name')) {
+            text = this.getNode().getFirstName();
         }
-        else
-            this.getNode().getLastNameAtBirth() && (text += ' ' + this.getNode().getLastNameAtBirth());
+
+        var lastNameAtBirth = (this.getNode().getLastNameAtBirth() && !arrayContains(disabledFields, 'last_name_birth')) ?
+                this.getNode().getLastNameAtBirth() : "";
+
+        if (this.getNode().getLastName() && !arrayContains(disabledFields, 'last_name')) {
+            text += ' ' + this.getNode().getLastName();
+            if (lastNameAtBirth == this.getNode().getLastName()) {
+                lastNameAtBirth = "";
+            } else {
+                lastNameAtBirth = "(" + lastNameAtBirth + ")";
+            }
+        }
+
+        text += " " + lastNameAtBirth;
 
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {

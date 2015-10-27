@@ -21,7 +21,7 @@ var PreferencesManager = Class.create( {
             setByTemplate(this.preferences, response.responseJSON);
             console.log("Loaded preferences: " + stringifyObject(response.responseJSON));
         } else {
-            console.log("Failed to loaded properties, no JSNO");
+            console.log("Failed to loaded properties, no JSON");
         }
     },
 
