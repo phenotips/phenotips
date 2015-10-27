@@ -68,7 +68,7 @@
          so we must keep it shorter than "actual_" -->
     <dynamicField name="*notype" type="text_ws" indexed="true" stored="false" multiValued="true"/>
 
-    <!-- Ignore everyting else -->
+    <!-- Ignore everything else -->
     <dynamicField name="*" type="ignored" multiValued="true" />
   </fields>
 
