@@ -27,6 +27,12 @@
   </parent>
   <artifactId>patient-data-indexing</artifactId>
   <name>PhenoTips - Patient data - Solr indexing</name>
+
+  <properties>
+    <!-- Instruction Ratio of tests is actually 100%. Maven is Bugged -->
+    <coverage.instructionRatio>0.99</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -135,6 +141,11 @@
       <artifactId>xwiki-commons-component-default</artifactId>
       <version>${xwiki.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
     </dependency>
   </dependencies>
 </project>
