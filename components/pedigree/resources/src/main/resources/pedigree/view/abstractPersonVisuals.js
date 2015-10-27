@@ -179,8 +179,8 @@ define([
          * @method containsXY
          */
         containsXY: function(x,y) {
-            if ( Math.abs(x - this.getX()) <= this._radius &&
-                 Math.abs(y - this.getY()) <= this._radius )
+            if ( Math.abs(x - this.getX()) <= PedigreeEditorParameters.attributes.personHoverBoxRadius &&
+                 Math.abs(y - this.getY()) <= PedigreeEditorParameters.attributes.personHoverBoxRadius )
                 return true;
             return false;
         },
