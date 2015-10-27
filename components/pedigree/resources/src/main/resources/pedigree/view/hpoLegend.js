@@ -92,7 +92,7 @@ var HPOLegend = Class.create( Legend, {
             var event = { "nodeID": node.getID(), "properties": properties };
             document.fire("pedigree:node:setproperty", event);
         } else {
-            alert("This person already has the selected phenotype");
+            this._onFailedDrag(node, "This person already has the selected phenotype", "Can't drag this phenotype to this person");
         }
     }
 });

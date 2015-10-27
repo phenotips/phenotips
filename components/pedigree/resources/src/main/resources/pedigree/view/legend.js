@@ -255,18 +255,12 @@ var Legend = Class.create( {
         Element.observe(item, 'mouseover', function() {
             //item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});
             item.down('.disorder-name').setStyle({'background': color, 'cursor' : 'default'});
-            me._affectedNodes[id] && me._affectedNodes[id].forEach(function(nodeID) {
-                var node = editor.getNode(nodeID);
-                node && node.getGraphics().highlight();
-            });
+            me._highlightAllByItemID(id, true);
         });
         Element.observe(item, 'mouseout', function() {
             //item.setStyle({'text-decoration':'none'});
             item.down('.disorder-name').setStyle({'background':'', 'cursor' : 'default'});
-            me._affectedNodes[id] && me._affectedNodes[id].forEach(function(nodeID) {
-                var node = editor.getNode(nodeID);
-                node && node.getGraphics().unHighlight();
-            });
+            me._highlightAllByItemID(id, false);
         });
         new Draggable(item, {
             revert: true,
@@ -286,6 +280,21 @@ var Legend = Class.create( {
         return item;
     },
 
+    _highlightAllByItemID: function(id, highlight) {
+        if (editor.getView().getCurrentDraggable() == null) {
+            this._affectedNodes[id] && this._affectedNodes[id].forEach(function(nodeID) {
+                var node = editor.getNode(nodeID);
+                if (node) {
+                    if (highlight) {
+                        node.getGraphics().highlight();
+                    } else {
+                        node.getGraphics().unHighlight()
+                    }
+                }
+            });
+        }
+    },
+
     /**
      * Callback for dragging an object from the legend onto nodes. Converts canvas coordinates
      * to nodeID and calls the actual drop holder once the grunt UI work is done.
@@ -300,6 +309,10 @@ var Legend = Class.create( {
         if (editor.isReadOnlyMode()) {
             return;
         }
+        editor.getView().setCurrentDraggable(null);
+        var id = label.select('input')[0].value;
+        this._highlightAllByItemID(id, false); // remove highlight
+        this._unhighlightAfterDrag();
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
         var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
@@ -309,9 +322,15 @@ var Legend = Class.create( {
                 // TODO: fix this once family-studies are merged in
                 return;
             }
-            var id = label.select('input')[0].value;
             this._onDropObject(node, id);
+            node.getGraphics().getHoverBox().animateDrawHoverZone();
         }
+    },
+
+    _onFailedDrag: function(node, message, title) {
+        editor.getOkCancelDialogue().showCustomized(message, title, "OK", function() {
+            node.getGraphics().getHoverBox().animateHideHoverZone();
+        });
     },
 
     /**
@@ -328,6 +347,7 @@ var Legend = Class.create( {
         if (editor.isReadOnlyMode()) {
             return;
         }
+        editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
         var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
@@ -336,14 +356,18 @@ var Legend = Class.create( {
                 // TODO: fix this once family-studies are merged in
                 return;
             }
-            editor.getView().setCurrentDraggable(null);
+            node.getGraphics().getHoverBox().animateHideHoverZone();
             node.getGraphics().getHoverBox().setHighlighted(true);
             this._previousHighightedNode = node;
         } else {
-            if (this._previousHighightedNode) {
-                this._previousHighightedNode.getGraphics().getHoverBox().setHighlighted(false);
-                this._previousHighightedNode = null;
-            }
+            this._unhighlightAfterDrag();
+        }
+    },
+
+    _unhighlightAfterDrag: function() {
+        if (this._previousHighightedNode) {
+            this._previousHighightedNode.getGraphics().getHoverBox().setHighlighted(false);
+            this._previousHighightedNode = null;
         }
     },
 

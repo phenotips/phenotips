@@ -109,7 +109,7 @@ var DisorgerLegend = Class.create( Legend, {
             var event = { "nodeID": node.getID(), "properties": properties };
             document.fire("pedigree:node:setproperty", event);
         } else {
-            alert("This person already has the specified disorder");
+            this._onFailedDrag(node, "This person already has the selected disorder", "Can't drag this disorder to this person");
         }
     },
 

@@ -542,7 +542,7 @@ var AbstractHoverbox = Class.create({
             interactionStarted = false;
             if (wrongClick) return;
 
-            var curHoveredId = editor.getView().getCurrentHoveredNode()
+            var curHoveredId = editor.getView().getCurrentHoveredNode();
 
             editor.getView().setCurrentDraggable(null);
             editor.getView().exitHoverMode();
@@ -625,8 +625,8 @@ var AbstractHoverbox = Class.create({
      * @method animateDrawHoverZone
      */
     animateDrawHoverZone: function() {
-        this._hidden = false;
         if (editor.getView().getCurrentDraggable() !== null) return; // do not redraw when dragging
+        this._hidden = false;
         //console.log("node: " + this.getNode().getID() + " -> show HB");
 
         this.getNode().getGraphics().setSelected(true);
@@ -652,8 +652,8 @@ var AbstractHoverbox = Class.create({
      * @method animateHideHoverZone
      */
     animateHideHoverZone: function() {
-        this._hidden = true;
         if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
+        this._hidden = true;
         //console.log("node: " + this.getNode().getID() + " -> hide HB");
 
         this.getNode().getGraphics().setSelected(false);

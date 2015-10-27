@@ -52,7 +52,7 @@ var GeneLegend = Class.create( Legend, {
             var event = { "nodeID": node.getID(), "properties": properties };
             document.fire("pedigree:node:setproperty", event);
         } else {
-            alert("This person already has the selected candidate gene");
+            this._onFailedDrag(node, "This person already has the selected candidate gene", "Can't drag this gene to this person");
         }
     },
 

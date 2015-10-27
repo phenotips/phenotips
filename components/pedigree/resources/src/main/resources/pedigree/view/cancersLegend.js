@@ -93,7 +93,7 @@ var CancerLegend = Class.create( Legend, {
             var event = { "nodeID": node.getID(), "properties": properties };
             document.fire("pedigree:node:setproperty", event);
         } else {
-            alert("This person already has the selected cancer");
+            this._onFailedDrag(node, "This person is already marked as affected by the selected cancer", "Can't drag this cancer to this person");
         }
     },
 

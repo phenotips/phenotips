@@ -169,8 +169,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @method containsXY
      */
     containsXY: function(x,y) {
-        if ( Math.abs(x - this.getX()) <= this._radius &&
-             Math.abs(y - this.getY()) <= this._radius )
+        if ( Math.abs(x - this.getX()) <= PedigreeEditor.attributes.personHoverBoxRadius &&
+             Math.abs(y - this.getY()) <= PedigreeEditor.attributes.personHoverBoxRadius )
             return true;
         return false;
     },
