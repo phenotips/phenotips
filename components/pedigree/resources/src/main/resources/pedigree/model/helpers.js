@@ -232,6 +232,34 @@ function romanize (num) {
     return keys;
 }*/
 
+function stopEventPropagation (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+}
+function disableMouseclicks (element) {
+    element.__oldMouseDown = element.onmousedown;
+    element.onmousedown = stopEventPropagation;
+    element.__oldClick = element.onclick;
+    element.onclick = stopEventPropagation;
+
+}
+function enableMouseclicks (element) {
+    if (element.hasOwnProperty("__oldMouseDown")) {
+        element.onmousedown = element.__oldMouseDown;
+        delete element.__oldMouseDown;
+    } else {
+        element.onmousedown = null;
+    }
+    if (element.hasOwnProperty("__oldClick")) {
+        element.onclick = element.__oldClick;
+        delete element.__oldClick;
+    } else {
+        element.onclick = null;
+    }
+}
+
 //-------------------------------------------------------------
 // Used during ordering for bucket order permutations
 //-------------------------------------------------------------

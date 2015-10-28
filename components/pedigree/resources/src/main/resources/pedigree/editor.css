@@ -629,7 +629,6 @@
 }
 
 .menu-box .disabled-select {
-  pointer-events: none;
   opacity: 0.5;
   color: black;
 }
@@ -641,7 +640,7 @@
   border-radius: 2px;
   box-shadow: 0px 1px 1px #999;
   background: #D5D5D5;
-  padding: 1px 8px 2px 8px;
+  padding: 2px 8px 2px 8px;
   cursor: pointer;
 }
 .menu-box .patient-menu-button:hover {
