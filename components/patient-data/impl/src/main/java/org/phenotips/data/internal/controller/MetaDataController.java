@@ -64,8 +64,6 @@ public class MetaDataController extends AbstractSimpleController implements Pati
 
     private static final String DOCUMENT_NAME_STRING = "report_id";
 
-    private static final String REFERRER = "referrer";
-
     private static final String CREATION_DATE = "creationDate";
 
     private static final String AUTHOR = "author";
@@ -92,9 +90,6 @@ public class MetaDataController extends AbstractSimpleController implements Pati
             DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
             result.put(DOCUMENT_NAME, doc.getDocumentReference().getName());
-
-            result.put(REFERRER, (doc.getCreatorReference() != null)
-                ? doc.getCreatorReference().getName() : UNKNOWN_USER);
 
             result.put(CREATION_DATE, dateFormatter.print(new DateTime(doc.getCreationDate())));
 
@@ -161,7 +156,7 @@ public class MetaDataController extends AbstractSimpleController implements Pati
             case DATE:
                 return DATE_STRING;
             default:
-                return REFERRER;
+                return key;
         }
     }
 }
