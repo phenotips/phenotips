@@ -90,6 +90,9 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(getName())) {
+            return;
+        }
         PatientData<String> data = patient.getData(getName());
         if (data == null) {
             return;
