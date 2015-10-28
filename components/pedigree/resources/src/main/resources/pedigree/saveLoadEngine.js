@@ -146,6 +146,9 @@ define([
                     Element.addClassName(closeButton, "disabled-menu-item");
                     Element.removeClassName(closeButton, "menu-item");
                     Element.addClassName(closeButton, "no-mouse-interaction");
+                    // IE9 & IE10 do not support "no-mouse-interaction", so add JS to handle this
+                    Helpers.disableMouseclicks(closeButton);
+                    Helpers.disableMouseclicks(saveButton);
                 },
                 onComplete: function() {
                     me._saveInProgress = false;
@@ -160,6 +163,9 @@ define([
                     Element.addClassName(closeButton, "menu-item");
                     Element.removeClassName(closeButton, "disabled-menu-item");
                     Element.removeClassName(closeButton, "no-mouse-interaction");
+                    // remove IE9/IE10 specific handlers
+                    Helpers.enableMouseclicks(closeButton);
+                    Helpers.enableMouseclicks(saveButton);
                 },
                 onSuccess: function() { editor.getUndoRedoManager().addSaveEvent();
                                         savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));

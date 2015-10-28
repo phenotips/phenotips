@@ -181,9 +181,7 @@ define([
             };
             window.onbeforeunload = onLeavePageFunc;
 
-            var closeButton = $('action-close');
-            this._afterSaveFunc = null;
-            closeButton && closeButton.on("click", function(event) {
+            var onCloseButtonClickFunc = function(event) {
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
                 var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
@@ -204,7 +202,10 @@ define([
                         quitFunc();
                     }
                 }
-            });
+            };
+            var closeButton = $('action-close');
+            this._afterSaveFunc = null;
+            closeButton && (closeButton.onclick = onCloseButtonClickFunc);
 
             var renumberButton = $('action-number');
             renumberButton && renumberButton.on("click", function(event) {

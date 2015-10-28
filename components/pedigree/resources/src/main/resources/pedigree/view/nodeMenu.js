@@ -39,6 +39,7 @@ define([
     NodeMenu = Class.create({
         initialize : function(data, tabs, otherCSSClass) {
             //console.log("nodeMenu initialize");
+            this._justOpened = false;
             this.canvas = editor.getWorkspace().canvas || $('body');
             var cssClass = 'menu-box';
             if (otherCSSClass) cssClass += " " + otherCSSClass;
@@ -891,6 +892,10 @@ define([
         },
 
         show : function(node, x, y) {
+            var me = this;
+            this._justOpened = true;
+            setTimeout(function() { me._justOpened = false; }, 150);
+
             this._onscreen = true;
             //console.log("nodeMenu show");
             this.targetNode = node;
@@ -901,6 +906,9 @@ define([
         },
 
         hide : function() {
+            if (this._justOpened) {
+                return;
+            }
             this.hideSuggestPicker();
             this._onscreen = false;
             //console.log("nodeMenu hide");
@@ -1381,9 +1389,16 @@ define([
             'date-picker' : function (container, disabled) {
                 Element.select(container,'select').forEach(function(element) {
                     if (disabled) {
+                        // IE9 & IE10 do not support "pointer-events:none" (and IE11 does not seem to support this for <select>)
+                        // so add some JS to prevent clicks on disabled select
+                        Helpers.disableMouseclicks(element);
                         element.addClassName('disabled-select');
+                        element.addClassName('no-mouse-interaction');
                     } else {
+                        // emove IE-specific workaround handler
+                        Helpers.enableMouseclicks(element);
                         element.removeClassName('disabled-select');
+                        element.removeClassName('no-mouse-interaction');
                     }
                 });
             },

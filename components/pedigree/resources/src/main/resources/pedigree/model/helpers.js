@@ -238,6 +238,34 @@ define ([], function(){
         return keys;
     }*/
 
+    Helpers.stopEventPropagation = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+    }
+    Helpers.disableMouseclicks = function(element) {
+        element.__oldMouseDown = element.onmousedown;
+        element.onmousedown = Helpers.stopEventPropagation;
+        element.__oldClick = element.onclick;
+        element.onclick = Helpers.stopEventPropagation;
+
+    }
+    Helpers.enableMouseclicks = function(element) {
+        if (element.hasOwnProperty("__oldMouseDown")) {
+            element.onmousedown = element.__oldMouseDown;
+            delete element.__oldMouseDown;
+        } else {
+            element.onmousedown = null;
+        }
+        if (element.hasOwnProperty("__oldClick")) {
+            element.onclick = element.__oldClick;
+            delete element.__oldClick;
+        } else {
+            element.onclick = null;
+        }
+    }
+
     //-------------------------------------------------------------
     // Used during ordering for bucket order permutations
     //-------------------------------------------------------------
