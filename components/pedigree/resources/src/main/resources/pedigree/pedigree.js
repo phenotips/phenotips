@@ -186,7 +186,7 @@ define([
                                                                      'Save before closing?',
                                                                      "Save", saveAndQuitFunc,
                                                                      "Don't save", quitFunc,
-                                                                     "Don't quit", dontQuitFunc, true );
+                                                                     "Don't close", dontQuitFunc, true );
                     } else {
                         quitFunc();
                     }
