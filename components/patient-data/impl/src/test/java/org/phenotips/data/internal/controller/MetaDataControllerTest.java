@@ -76,8 +76,6 @@ public class MetaDataControllerTest
 
     private DocumentReference documentReference;
 
-    private DocumentReference creatorReference;
-
     private DocumentReference authorReference;
 
     private Date creationDate;
@@ -91,8 +89,6 @@ public class MetaDataControllerTest
     private static final String DOCUMENT_NAME = "doc.name";
 
     private static final String DOCUMENT_NAME_STRING = "report_id";
-
-    private static final String REFERRER = "referrer";
 
     private static final String CREATION_DATE = "creationDate";
 
@@ -121,8 +117,6 @@ public class MetaDataControllerTest
 
         this.documentReference = new DocumentReference("wiki", "phenotips", "document");
         doReturn(this.documentReference).when(this.doc).getDocumentReference();
-        this.creatorReference = new DocumentReference("wiki", "phenotips", "creator");
-        doReturn(this.creatorReference).when(this.doc).getCreatorReference();
         this.authorReference = new DocumentReference("wiki", "phenotips", "author");
         doReturn(this.authorReference).when(this.doc).getAuthorReference();
         this.date = new Date(10);
@@ -173,22 +167,11 @@ public class MetaDataControllerTest
     {
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(5, result.size());
+        Assert.assertEquals(4, result.size());
         Assert.assertEquals(this.documentReference.getName(), result.get(DOCUMENT_NAME));
-        Assert.assertEquals(this.creatorReference.getName(), result.get(REFERRER));
         Assert.assertEquals(this.authorReference.getName(), result.get(AUTHOR));
         Assert.assertEquals(this.formatter.print(new DateTime(this.date)), result.get(DATE));
         Assert.assertEquals(this.formatter.print(new DateTime(this.creationDate)), result.get(CREATION_DATE));
-    }
-
-    @Test
-    public void loadSetsUnknownUserWhenCreatorIsNull() throws ComponentLookupException
-    {
-        doReturn(null).when(this.doc).getCreatorReference();
-
-        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
-
-        Assert.assertEquals(UNKNOWN_USER, result.get(REFERRER));
     }
 
     @Test
@@ -233,7 +216,6 @@ public class MetaDataControllerTest
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
-        map.put(REFERRER, this.creatorReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
@@ -242,7 +224,6 @@ public class MetaDataControllerTest
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(DOCUMENT_NAME);
-        selectedFields.add(REFERRER);
         selectedFields.add(CREATION_DATE);
         selectedFields.add(AUTHOR);
         selectedFields.add(DATE);
@@ -250,7 +231,6 @@ public class MetaDataControllerTest
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertEquals(this.documentReference.getName(), json.get(DOCUMENT_NAME_STRING));
-        Assert.assertEquals(this.creatorReference.getName(), json.get(REFERRER));
         Assert.assertEquals(this.authorReference.getName(), json.get(AUTHOR_STRING));
         Assert.assertEquals(this.formatter.print(new DateTime(this.creationDate)), json.get(DATE));
         Assert.assertEquals(this.formatter.print(new DateTime(this.date)), json.get(DATE_STRING));
@@ -261,7 +241,6 @@ public class MetaDataControllerTest
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
-        map.put(REFERRER, this.creatorReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
@@ -276,7 +255,6 @@ public class MetaDataControllerTest
 
         Assert.assertEquals(this.documentReference.getName(), json.get(DOCUMENT_NAME_STRING));
         Assert.assertEquals(this.authorReference.getName(), json.get(AUTHOR_STRING));
-        Assert.assertNull(json.get(REFERRER));
         Assert.assertNull(json.get(DATE));
         Assert.assertNull(json.get(DATE_STRING));
     }
@@ -287,7 +265,6 @@ public class MetaDataControllerTest
     {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(DOCUMENT_NAME, this.documentReference.getName());
-        map.put(REFERRER, this.creatorReference.getName());
         map.put(CREATION_DATE, this.formatter.print(new DateTime(this.creationDate)));
         map.put(AUTHOR, this.authorReference.getName());
         map.put(DATE, this.formatter.print(new DateTime(this.date)));
@@ -298,7 +275,6 @@ public class MetaDataControllerTest
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, null);
 
         Assert.assertEquals(this.documentReference.getName(), json.get(DOCUMENT_NAME_STRING));
-        Assert.assertEquals(this.creatorReference.getName(), json.get(REFERRER));
         Assert.assertEquals(this.authorReference.getName(), json.get(AUTHOR_STRING));
         Assert.assertEquals(this.formatter.print(new DateTime(this.creationDate)), json.get(DATE));
         Assert.assertEquals(this.formatter.print(new DateTime(this.date)), json.get(DATE_STRING));
