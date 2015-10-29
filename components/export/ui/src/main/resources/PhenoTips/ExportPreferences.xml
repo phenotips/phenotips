@@ -135,7 +135,8 @@
        'genes': "$services.localization.render('phenotips.exportPreferences.field.genes')",
        'genes_comments': "$services.localization.render('phenotips.exportPreferences.field.genesComments')",
        'rejectedGenes': "$services.localization.render('phenotips.exportPreferences.field.rejectedGenes')",
-       'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')"
+       'rejectedGenes_comments': "$services.localization.render('phenotips.exportPreferences.field.rejectGenesComments')",
+       'life_status': "$services.localization.render('phenotips.exportPreferences.field.lifeStatus')"
   })
   #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
   #set($metaFields = ['phenotype'])
