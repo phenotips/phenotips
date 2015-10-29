@@ -51,6 +51,8 @@ public class ClinicalStatusController implements PatientDataController<String>
 {
     private static final String UNAFFECTED = "unaffected";
 
+    private static final String FIELD_NAME = UNAFFECTED;
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -91,7 +93,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(UNAFFECTED)) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(FIELD_NAME)) {
             return;
         }
 
