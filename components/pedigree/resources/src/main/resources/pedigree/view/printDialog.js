@@ -96,7 +96,7 @@ var PrintDialog = Class.create( {
         anonimize.observe('click', function() {
             _this._updatePreview();
         });
-        configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonimize).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
+        configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonimize).insert("Remove PII information (anonymize)").wrap('td').wrap('tr'));
         var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
         addLegend.checked = true;
         configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr'));
