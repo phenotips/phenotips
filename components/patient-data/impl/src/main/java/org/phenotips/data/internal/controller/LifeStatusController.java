@@ -151,6 +151,10 @@ public class LifeStatusController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
+            return;
+        }
+
         PatientData<String> lifeStatusData = patient.getData(DATA_NAME);
         if (lifeStatusData == null) {
             return;

@@ -49,6 +49,8 @@ import net.sf.json.JSONObject;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
+    private static final String UNAFFECTED = "unaffected";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -66,7 +68,6 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public PatientData<String> load(Patient patient)
     {
-        String unaffected = "unaffected";
         String affected = "affected";
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -74,11 +75,11 @@ public class ClinicalStatusController implements PatientDataController<String>
             if (data == null) {
                 return null;
             }
-            int isNormal = data.getIntValue(unaffected);
+            int isNormal = data.getIntValue(UNAFFECTED);
             if (isNormal == 0) {
                 return new SimpleValuePatientData<String>(getName(), affected);
             } else if (isNormal == 1) {
-                return new SimpleValuePatientData<String>(getName(), unaffected);
+                return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
             }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
@@ -90,6 +91,10 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(UNAFFECTED)) {
+            return;
+        }
+
         PatientData<String> data = patient.getData(getName());
         if (data == null) {
             return;

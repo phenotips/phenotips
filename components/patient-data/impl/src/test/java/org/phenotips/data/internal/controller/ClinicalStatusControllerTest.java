@@ -27,6 +27,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -168,13 +169,26 @@ public class ClinicalStatusControllerTest
             new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
-        Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add(DATA_NAME);
+        Collection<String> selectedFields = Arrays.asList(UNAFFECTED);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(AFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+    }
+
+    @Test
+    public void writeJSONWithEmptySelectedFieldsAddsAffectedValueToJSON() throws ComponentLookupException
+    {
+        PatientData<String> data =
+            new SimpleValuePatientData<>(DATA_NAME, AFFECTED);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test
@@ -196,13 +210,25 @@ public class ClinicalStatusControllerTest
         PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
-        Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add(DATA_NAME);
+        Collection<String> selectedFields = Arrays.asList(UNAFFECTED);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
         Assert.assertEquals(UNAFFECTED, json.getJSONObject(DATA_NAME).get(DATA_NAME));
+    }
+
+    @Test
+    public void writeJSONWithEmptySelectedFieldsAddsUnaffectedValueToJSON() throws ComponentLookupException
+    {
+        PatientData<String> data = new SimpleValuePatientData<>(DATA_NAME, UNAFFECTED);
+        doReturn(data).when(this.patient).getData(DATA_NAME);
+        JSONObject json = new JSONObject();
+        Collection<String> selectedFields = new LinkedList<>();
+
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
+
+        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
     }
 
     @Test(expected = UnsupportedOperationException.class)
