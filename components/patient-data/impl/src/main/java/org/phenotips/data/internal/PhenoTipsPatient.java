@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +111,7 @@ public class PhenoTipsPatient implements Patient
     private Map<String, PatientDataController<?>> serializers = new HashMap<String, PatientDataController<?>>();
 
     /** Extra data that can be plugged into the patient record. */
-    private Map<String, PatientData<?>> extraData = new HashMap<String, PatientData<?>>();
+    private Map<String, PatientData<?>> extraData = new TreeMap<String, PatientData<?>>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -138,7 +139,6 @@ public class PhenoTipsPatient implements Patient
         this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
 
-        loadSerializers();
     }
 
     private void loadFeatures(XWikiDocument doc, BaseObject data)
@@ -180,6 +180,9 @@ public class PhenoTipsPatient implements Patient
                     .getContextComponentManager()
                     .getInstanceList(PatientDataController.class);
             for (PatientDataController<?> serializer : availableSerializers) {
+                if (serializers.containsKey(serializer.getName())) {
+                    this.logger.warn("Overwriting patient data controller with the name [{}]", serializer.getName());
+                }
                 this.serializers.put(serializer.getName(), serializer);
             }
         } catch (ComponentLookupException e) {
@@ -188,7 +191,7 @@ public class PhenoTipsPatient implements Patient
     }
 
     /**
-     * Loops through all the available serializers and passes each a document reference.
+     * Looks up data controller with the appropriate name and places the controller data in the extraData map.
      */
     private void readPatientData(String name)
     {
@@ -264,6 +267,10 @@ public class PhenoTipsPatient implements Patient
     public <T> PatientData<T> getData(String name)
     {
         //Patient data is lazy loaded on request. Note that calling toString() or toJSON() causes all data to be loaded.
+        if (serializers.isEmpty()) {
+            loadSerializers();
+        }
+
         if (!this.extraData.containsKey(name)) {
             this.readPatientData(name);
         }
