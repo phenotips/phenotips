@@ -66,7 +66,7 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
     /**
      * Onsets, as defined in HPO. Not all the terms in HPO are used, just the relevant ones.
      */
-    private static enum HpoOnsets
+    private enum HpoOnsets
     {
         /** From birth to 28 days (rounded to a month, since the onset has month granularity). */
         NEONATAL("HP:0003623", 1),

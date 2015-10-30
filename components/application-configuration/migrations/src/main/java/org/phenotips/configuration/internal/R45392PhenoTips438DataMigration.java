@@ -103,7 +103,7 @@ public class R45392PhenoTips438DataMigration extends AbstractHibernateDataMigrat
          *
          * @param className the name of the class to migrate, without a space prefix, for example {@code PatientClass}
          */
-        public MigrateObjectsCallback(String className)
+        MigrateObjectsCallback(String className)
         {
             this.className = className;
         }

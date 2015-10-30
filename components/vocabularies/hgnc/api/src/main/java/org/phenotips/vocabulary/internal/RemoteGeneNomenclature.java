@@ -440,7 +440,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
 
         private Vocabulary ontology;
 
-        public JSONOntologyTerm(JSONObject data, Vocabulary ontology)
+        JSONOntologyTerm(JSONObject data, Vocabulary ontology)
         {
             this.data = data;
             this.ontology = ontology;

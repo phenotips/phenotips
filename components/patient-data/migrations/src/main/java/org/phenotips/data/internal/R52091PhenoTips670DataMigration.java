@@ -94,7 +94,7 @@ public class R52091PhenoTips670DataMigration extends AbstractHibernateDataMigrat
          *
          * @param propertyClass see {@link #propertyClass}
          */
-        public MigrateCustomPhenotypeCategoryCallback(DBListClass propertyClass)
+        MigrateCustomPhenotypeCategoryCallback(DBListClass propertyClass)
         {
             this.propertyClass = propertyClass;
         }
