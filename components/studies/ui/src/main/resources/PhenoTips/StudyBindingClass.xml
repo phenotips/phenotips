@@ -623,15 +623,15 @@
       </scope>
     </class>
     <property>
-      <content>{{velocity output="false"}}
+      <content>{{velocity}}
+#if ($xcontext.action == 'export')
+  #break
+#end
 #set ($sheetName = 'PhenoTips.StudyBindingSheet')
 #set ($className = 'PhenoTips.StudyBindingClass')
-$xwiki.jsx.use('PhenoTips.Widgets')
-$xwiki.jsx.use($className)
-$xwiki.ssx.use($className)
-{{/velocity}}
-
-{{velocity}}
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use($className)##
+$xwiki.ssx.use($className)##
 #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
 #if ($studiesVisibilityPreference == 'unrestricted')
   #set ($studyClassName = 'PhenoTips.StudyClass')
@@ -668,9 +668,7 @@ $xwiki.ssx.use($className)
   #end
 #end
 #if ($studies.size() &gt; 0)
-  #set ($studyConfig = $doc.getObject($className))
-#end
-#if ("$!studyConfig" != '' &amp;&amp; $xcontext.action != 'export')
+  #set ($studyConfig = $doc.getObject($className, true))
   #set ($value = $studyConfig.getProperty('studyReference').value)
   #if ("$!value" == '')
     #set($displayedValue = '(% class="hint" %)None(%%)')
@@ -685,8 +683,8 @@ $xwiki.ssx.use($className)
     #end
     #set($displayedValue = "(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${configTitle}&gt;&gt;${value}||rel='__blank' class='button secondary']]")
   #end
-  #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
-(% class="study-assignment-config" %)(((Study: $displayedValue (% class="buttonwrapper" %)[[ {{icon name="edit" title="$services.localization.render('phenotips.studyBindingClass.changeStudyButton.title')" /}} {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}&gt;&gt;path:$doc.getURL('get', "sheet=$!{sheetName}&amp;faction=$!{faction}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]])))
+  #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;objectPolicy=updateOrCreate&amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
+(% class="study-assignment-config" %)(((Study: $displayedValue (% class="buttonwrapper" %)[[ {{icon name="edit" title="$services.localization.render('phenotips.studyBindingClass.changeStudyButton.title')" /}} {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}&gt;&gt;path:$doc.getURL('get', "sheet=$!{sheetName}&amp;faction=$!{escapetool.url($faction)}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]])))
 #end
 {{/velocity}}</content>
     </property>

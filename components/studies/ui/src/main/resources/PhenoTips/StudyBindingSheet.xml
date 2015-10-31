@@ -39,8 +39,8 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 ; $services.localization.render('phenotips.studyBindingSheet.selectStudy')
-#if ($doc.getObject('PhenoTips.StudyBindingClass'))
-: $doc.getObject('PhenoTips.StudyBindingClass').studyReference
+#if ($doc.getObject('PhenoTips.PatientClass'))
+: $doc.getObject('PhenoTips.StudyBindingClass', true).studyReference
 #else
 : {{include reference="PhenoTips.StudyBindingClass" /}}
 #end
