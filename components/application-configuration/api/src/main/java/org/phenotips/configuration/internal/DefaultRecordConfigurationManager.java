@@ -117,6 +117,10 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
             try {
                 XWikiContext context = getXContext();
                 XWikiDocument doc = context.getWiki().getDocument(this.referenceParser.resolve(boundConfig), context);
+                if (doc == null || doc.isNew()) {
+                    // Inaccessible or deleted document, use default configuration
+                    return null;
+                }
                 CustomConfiguration configuration =
                     new CustomConfiguration(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS));
                 return new ConfiguredRecordConfiguration(configuration, this.execution, this.uixManager,
