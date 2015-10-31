@@ -129,6 +129,76 @@ public class DefaultRecordConfigurationManagerTest
     }
 
     /**
+     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
+     * explicit binding in the current document, but the document doesn't exist.
+     */
+    @Test
+    public void getActiveConfigurationWithDeletedBoundConfiguration() throws ComponentLookupException,
+        XWikiException
+    {
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
+        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Missing");
+        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
+        DocumentReferenceResolver<EntityReference> resolver =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
+        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+            .thenReturn(bindingClass);
+        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Missing");
+        DocumentReferenceResolver<String> referenceParser =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        when(referenceParser.resolve("Studies.Missing")).thenReturn(sr);
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(x.getDocument(sr, context)).thenReturn(doc);
+        when(doc.isNew()).thenReturn(true);
+
+        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
+        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+    }
+
+    /**
+     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
+     * explicit binding in the current document, but requesting the document returns null.
+     */
+    @Test
+    public void getActiveConfigurationWithInaccessibleBoundConfiguration() throws ComponentLookupException,
+        XWikiException
+    {
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "StudyBindingClass");
+        DocumentReference sr = new DocumentReference("xwiki", "Studies", "Inaccessible");
+        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
+        DocumentReferenceResolver<EntityReference> resolver =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
+        when(resolver.resolve(DefaultRecordConfigurationManager.STUDY_BINDING_CLASS_REFERENCE))
+            .thenReturn(bindingClass);
+        when(dab.getProperty(currentDocument, bindingClass, "studyReference")).thenReturn("Studies.Inaccessible");
+        DocumentReferenceResolver<String> referenceParser =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        when(referenceParser.resolve("Studies.Inaccessible")).thenReturn(sr);
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        when(x.getDocument(sr, context)).thenReturn(null);
+
+        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
+        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+    }
+
+    /**
      * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when the user
      * doesn't belong to any groups.
      */
