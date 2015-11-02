@@ -2,6 +2,7 @@ package org.phenotips.data.internal.controller;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import org.junit.Assert;
@@ -22,9 +23,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import javax.inject.Provider;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ParentalAgeControllerTest {
 
@@ -54,6 +53,7 @@ public class ParentalAgeControllerTest {
 
     private ParentalAgeController parentalAgeController;
 
+    @Mock
     private XWiki xwiki;
 
     @Mock
@@ -105,7 +105,7 @@ public class ParentalAgeControllerTest {
     @Test
     public void loadMaternalAndPaternalAgeZero(){
         BaseObject data = mock(BaseObject.class);
-
+        doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
         doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE);
         doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE);
 
@@ -115,8 +115,25 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void loadHandlesExceptions(){
+    public void loadHandlesExceptions() throws Exception {
+        Exception testException = new Exception("Test Exception");
+        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
 
+        this.parentalAgeController.load(this.patient);
+
+        verify(this.logger).error("Could not find requested document or some unforeseen"
+                + " error has occurred during controller loading ", testException.getMessage());
+    }
+
+    @Test
+    public void saveEmptyPatientTest() throws XWikiException {
+        PatientData<Integer> patientData = mock(PatientData.class);
+        doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(false).when(patientData).isNamed();
+        this.parentalAgeController.save(this.patient);
+        verifyNoMoreInteractions(this.doc);
+        verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
+                "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
