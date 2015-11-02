@@ -25,8 +25,6 @@ import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -44,8 +42,11 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -63,17 +64,25 @@ import static org.mockito.Mockito.when;
  */
 public class ConfiguredRecordConfigurationTest
 {
+    @Mock
+    private Provider<XWikiContext> xcp;
+
+    @Before
+    public void setup()
+    {
+        MockitoAnnotations.initMocks(this);
+    }
+
     /** {@link RecordConfiguration#getEnabledSections()} lists only the enabled sections. */
     @Test
     public void getEnabledSections() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -136,12 +145,11 @@ public class ConfiguredRecordConfigurationTest
     public void getEnabledSectionsWithNoOverride() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -198,12 +206,11 @@ public class ConfiguredRecordConfigurationTest
     public void getAllSections() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -267,12 +274,11 @@ public class ConfiguredRecordConfigurationTest
     public void getEnabledFieldNames() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -428,10 +434,9 @@ public class ConfiguredRecordConfigurationTest
     public void getPhenotypeMapping() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
         when(cc.getPhenotypeMapping()).thenReturn("PhenoTips.XPhenotypeMapping");
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
@@ -456,10 +461,9 @@ public class ConfiguredRecordConfigurationTest
     public void getPhenotypeMappingWithMissingConfiguration() throws ComponentLookupException, XWikiException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
         when(cc.getPhenotypeMapping()).thenReturn("");
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
@@ -473,10 +477,8 @@ public class ConfiguredRecordConfigurationTest
         DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "XPhenotypeMapping");
         when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
 
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -496,10 +498,9 @@ public class ConfiguredRecordConfigurationTest
     public void getPhenotypeMappingWithExceptions() throws ComponentLookupException, XWikiException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
-        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, this.xcp, m, filter);
         when(cc.getPhenotypeMapping()).thenReturn("PhenoTips.YPhenotypeMapping");
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
@@ -515,10 +516,8 @@ public class ConfiguredRecordConfigurationTest
         when(resolver.resolve("PhenoTips.YPhenotypeMapping")).thenReturn(null);
         when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
 
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);

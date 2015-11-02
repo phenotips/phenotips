@@ -24,7 +24,6 @@ import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -37,6 +36,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     private static final String SORT_PARAMETER_NAME = "order";
 
     /** Provides access to the current request context. */
-    protected Execution execution;
+    protected Provider<XWikiContext> xcontextProvider;
 
     /** Lists the patient form sections and fields. */
     protected UIExtensionManager uixManager;
@@ -77,13 +78,14 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     /**
      * Simple constructor passing all the needed components.
      *
-     * @param execution the execution context manager
+     * @param xcontextProvider provides access to the current request context
      * @param uixManager the UIExtension manager
      * @param orderFilter UIExtension filter for ordering sections and elements
      */
-    public GlobalRecordConfiguration(Execution execution, UIExtensionManager uixManager, UIExtensionFilter orderFilter)
+    public GlobalRecordConfiguration(Provider<XWikiContext> xcontextProvider, UIExtensionManager uixManager,
+        UIExtensionFilter orderFilter)
     {
-        this.execution = execution;
+        this.xcontextProvider = xcontextProvider;
         this.uixManager = uixManager;
         this.orderFilter = orderFilter;
     }
@@ -143,7 +145,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     public List<String> getAllFieldNames()
     {
         try {
-            XWikiContext context = getXContext();
+            XWikiContext context = this.xcontextProvider.get();
             BaseClass patientClass = context.getWiki().getDocument(Patient.CLASS_REFERENCE, context).getXClass();
             return Collections.unmodifiableList(Arrays.asList(patientClass.getPropertyNames()));
         } catch (XWikiException ex) {
@@ -195,20 +197,10 @@ public class GlobalRecordConfiguration implements RecordConfiguration
         return StringUtils.join(getEnabledSections(), ", ");
     }
 
-    /**
-     * Get the current request context from the execution context manager.
-     *
-     * @return the current request context
-     */
-    private XWikiContext getXContext()
-    {
-        return (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-    }
-
     private BaseObject getGlobalConfigurationObject()
     {
         try {
-            XWikiContext context = getXContext();
+            XWikiContext context = this.xcontextProvider.get();
             return context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(GLOBAL_PREFERENCES_CLASS);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to read preferences: {}", ex.getMessage());

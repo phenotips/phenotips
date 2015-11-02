@@ -25,8 +25,6 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -43,8 +41,11 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -63,16 +64,24 @@ import static org.mockito.Mockito.when;
  */
 public class GlobalRecordConfigurationTest
 {
+    @Mock
+    private Provider<XWikiContext> xcp;
+
+    @Before
+    public void setup()
+    {
+        MockitoAnnotations.initMocks(this);
+    }
+
     /** {@link GlobalRecordConfiguration#getEnabledSections()} lists only the enabled sections. */
     @Test
     public void getEnabledSections() throws ComponentLookupException
     {
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+        RecordConfiguration c = new GlobalRecordConfiguration(this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -127,12 +136,11 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getAllSections() throws ComponentLookupException
     {
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+        RecordConfiguration c = new GlobalRecordConfiguration(this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -188,12 +196,11 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getEnabledFieldNames() throws ComponentLookupException
     {
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+        RecordConfiguration c = new GlobalRecordConfiguration(this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
@@ -336,18 +343,15 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getAllFieldNames() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument doc = mock(XWikiDocument.class);
         when(x.getDocument(Patient.CLASS_REFERENCE, context)).thenReturn(doc);
         BaseClass c = mock(BaseClass.class);
         when(doc.getXClass()).thenReturn(c);
-        String[] props = new String[] {"external_id", "first_name", "last_name", "gender"};
+        String[] props = new String[] { "external_id", "first_name", "last_name", "gender" };
         when(c.getPropertyNames()).thenReturn(props);
 
         List<String> expectedFields = new LinkedList<String>();
@@ -357,7 +361,7 @@ public class GlobalRecordConfigurationTest
         expectedFields.add("gender");
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals(expectedFields, config.getAllFieldNames());
     }
 
@@ -365,17 +369,14 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getAllFieldNamesWithException() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         when(x.getDocument(Patient.CLASS_REFERENCE, context)).thenThrow(new XWikiException());
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertTrue(config.getAllFieldNames().isEmpty());
     }
 
@@ -383,11 +384,8 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getPhenotypeMapping() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -408,7 +406,7 @@ public class GlobalRecordConfigurationTest
         when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals(expectedMapping, config.getPhenotypeMapping());
     }
 
@@ -416,11 +414,8 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getPhenotypeMappingWithNoConfiguration() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -441,7 +436,7 @@ public class GlobalRecordConfigurationTest
         when(resolver.resolve("PhenoTips.PhenotypeMapping")).thenReturn(expectedMapping);
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals(expectedMapping, config.getPhenotypeMapping());
     }
 
@@ -449,18 +444,15 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getPhenotypeMappingWithExceptions() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
         when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertNull(config.getPhenotypeMapping());
 
         BaseObject o = mock(BaseObject.class);
@@ -475,7 +467,7 @@ public class GlobalRecordConfigurationTest
         when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(
             new ComponentLookupException("No such component"));
 
-        config = new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        config = new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertNull(config.getPhenotypeMapping());
     }
 
@@ -483,11 +475,8 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getDateOfBirthFormat() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -497,7 +486,7 @@ public class GlobalRecordConfigurationTest
         when(o.getStringValue("dateOfBirthFormat")).thenReturn("MMMM yyyy");
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals("MMMM yyyy", config.getDateOfBirthFormat());
     }
 
@@ -505,11 +494,8 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getDateOfBirthFormatDefaultValue() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -519,7 +505,7 @@ public class GlobalRecordConfigurationTest
         when(o.getStringValue("dateOfBirthFormat")).thenReturn("");
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
@@ -527,18 +513,15 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getDateOfBirthFormatWithException() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context)))
             .thenThrow(new XWikiException());
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
@@ -546,11 +529,8 @@ public class GlobalRecordConfigurationTest
     @Test
     public void getDateOfBirthFormatWithMissingConfiguration() throws ComponentLookupException, XWikiException
     {
-        Execution e = mock(Execution.class);
-        ExecutionContext ec = mock(ExecutionContext.class);
-        when(e.getContext()).thenReturn(ec);
         XWikiContext context = mock(XWikiContext.class);
-        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        when(this.xcp.get()).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
@@ -558,7 +538,7 @@ public class GlobalRecordConfigurationTest
         when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
 
         RecordConfiguration config =
-            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+            new GlobalRecordConfiguration(this.xcp, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
@@ -566,12 +546,11 @@ public class GlobalRecordConfigurationTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Execution e = mock(Execution.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
         UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
         UIExtensionFilter realFilter = new SortByParameterFilter();
-        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+        RecordConfiguration c = new GlobalRecordConfiguration(this.xcp, m, filter);
 
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();

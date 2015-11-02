@@ -23,7 +23,6 @@ import org.phenotips.configuration.RecordSection;
 import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.uiextension.UIExtensionFilter;
@@ -34,7 +33,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Provider;
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.xpn.xwiki.XWikiContext;
 
 /**
  * Implementation of {@link RecordConfiguration} that takes into account a {@link CustomConfiguration custom
@@ -52,14 +55,14 @@ public class ConfiguredRecordConfiguration extends GlobalRecordConfiguration imp
      * Simple constructor passing all the needed components.
      *
      * @param configuration the custom configuration
-     * @param execution the execution context manager
+     * @param xcontextProvider provides access to the current request context
      * @param uixManager the UIExtension manager
      * @param orderFilter UIExtension filter for ordering sections and elements
      */
-    public ConfiguredRecordConfiguration(CustomConfiguration configuration, Execution execution,
+    public ConfiguredRecordConfiguration(CustomConfiguration configuration, Provider<XWikiContext> xcontextProvider,
         UIExtensionManager uixManager, UIExtensionFilter orderFilter)
     {
-        super(execution, uixManager, orderFilter);
+        super(xcontextProvider, uixManager, orderFilter);
         this.configuration = configuration;
     }
 
