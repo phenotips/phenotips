@@ -3,21 +3,24 @@ package org.phenotips.data.internal.controller;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
-import org.jmock.auto.Mock;
+import org.junit.Assert;
+import org.mockito.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import javax.inject.Provider;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 
 public class ParentalAgeControllerTest {
@@ -27,7 +30,7 @@ public class ParentalAgeControllerTest {
     private static final String PATERNAL_AGE = "paternal_age";
 
     @Rule
-    MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
+    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
             new MockitoComponentMockingRule<PatientDataController<Integer>>(ParentalAgeController.class);
 
     @Mock
@@ -37,16 +40,19 @@ public class ParentalAgeControllerTest {
 
     private XWikiContext xWikiContext;
 
+    @Mock
     private DocumentAccessBridge documentAccessBridge;
 
-    private DocumentReference patientDocument;
+    private DocumentReference patientDocument = new DocumentReference("xwiki", "patient", "0000001");
 
     private ParentalAgeController parentalAgeController;
 
     private XWiki xwiki;
 
+    @Mock
     private Patient patient;
 
+    @Mock
     private XWikiDocument doc;
 
     @Before
@@ -55,7 +61,6 @@ public class ParentalAgeControllerTest {
 
         this.parentalAgeController = (ParentalAgeController) mocker.getComponentUnderTest();
         this.logger = mocker.getMockedLogger();
-        this.patientDocument = new DocumentReference("xwiki", "patient", "0000001");
 
         this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.xWikiContext = this.provider.get();
@@ -67,7 +72,17 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
+    public void loadEmptyPatientTest(){
+        doReturn(null).when(this.doc).getXObject(any(EntityReference.class));
+        PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
+        Assert.assertNull(testData);
+    }
+
+    @Test
     public void loadDefaultBehaviourTest(){
+
+        PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
+
 
     }
 
