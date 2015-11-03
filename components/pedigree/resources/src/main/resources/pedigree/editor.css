@@ -303,7 +303,7 @@
   width: 290px;
 }
 .menu-box .tabs {
-  margin-bottom: 0 !important;
+  margin-bottom: -1px !important;
   margin-left: 2px;
   display: inline-block;
 }
@@ -484,11 +484,11 @@
 .menu-box .accepted-suggestions li:hover {
   background-color: #FFEE99;
 }
-.menu-box .accepted-suggestions li .delete-tool {
+.menu-box .field-box .accepted-suggestions li .delete-tool {
   position: absolute;
   top: .4em;
   right: 0;
-  display: inline !important;
+  display: inline;
 }
 .field-no-user-select {
   -webkit-touch-callout: none;
@@ -570,7 +570,7 @@
   width: 48%;
   float: right;
   margin-top: -5px; /* TODO: investigate why elements float below its intended position */
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;
@@ -628,11 +628,19 @@
   padding: 0.5em 0 0.5em;
 }
 
+.menu-box .disabled-select {
+  opacity: 0.5;
+  color: black;
+}
+.hidden {
+  display: none !important;
+}
+
 .menu-box .patient-menu-button {
   border-radius: 2px;
   box-shadow: 0px 1px 1px #999;
   background: #D5D5D5;
-  padding: 1px 8px 2px 8px;
+  padding: 2px 8px 2px 8px;
   cursor: pointer;
 }
 .menu-box .patient-menu-button:hover {
@@ -931,7 +939,8 @@
 }
 .cancer_age_select {
   display: inline-block;
-  margin-right: 6px
+  margin-right: 6px;
+  max-width: 114px;
 }
 .cancer_field .clickable:hover {
   cursor: pointer;
@@ -960,12 +969,15 @@
 }
 .fuzzy-date-picker .year {
   font-size: 14px;
+  max-width: 68px;
 }
 .fuzzy-date-picker .month {
   font-size: 14px;
+  max-width: 48px;
 }
 .fuzzy-date-picker .day {
   font-size: 14px;
+  max-width: 48px;
 }
 .fuzzy-date-picker .empty {
   font-size: .7em;

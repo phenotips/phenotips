@@ -221,9 +221,9 @@
     }
 
     GraphicHelpers.getCaretPosition = function(elem) {
-        if (elem.selectionEnd) {
+        if (typeof elem.selectionEnd !== "undefined") {
             return elem.selectionEnd;
-        } else if (elem.createTextRange) {
+        } else if (elem.createTextRange && document.selection) {
     		var r = document.selection.createRange();
     		r.moveStart('character', -elem.value.length);
     		return r.text.length;

@@ -72,6 +72,7 @@ define([
             //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
+            //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -79,7 +80,8 @@ define([
                                                      dateEditFormat: "YMD",
                                                      useGradientOnNodes: false,
                                                      drawNodeShadows: true,
-                                                     disabledFields: [] },
+                                                     disabledFields: [],
+                                                     displayCancerLabels: true },
                                          user:     { hideDraggingHint: false,
                                                      firstName: "",
                                                      lastName: "" },
@@ -179,9 +181,7 @@ define([
             };
             window.onbeforeunload = onLeavePageFunc;
 
-            var closeButton = $('action-close');
-            this._afterSaveFunc = null;
-            closeButton && closeButton.on("click", function(event) {
+            var onCloseButtonClickFunc = function(event) {
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
                 var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
@@ -202,7 +202,10 @@ define([
                         quitFunc();
                     }
                 }
-            });
+            };
+            var closeButton = $('action-close');
+            this._afterSaveFunc = null;
+            closeButton && (closeButton.onclick = onCloseButtonClickFunc);
 
             var renumberButton = $('action-number');
             renumberButton && renumberButton.on("click", function(event) {

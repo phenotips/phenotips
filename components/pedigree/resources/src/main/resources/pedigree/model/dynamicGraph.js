@@ -95,7 +95,7 @@ define([
             var rank  = this.DG.ranks[id];
             for (var i = 0; i < this.DG.order.order[rank].length; i++) {
                 var next = this.DG.order.order[rank][i];
-                if (this.DG.GG.isPerson(next)) order++;
+                if (this.DG.GG.isPerson(next) && !this.DG.GG.isPlaceholder(next)) order++;
                 if (next == id) break;
             }
             return order;
@@ -163,14 +163,32 @@ define([
         // returns false if this gender is incompatible with this pedigree; true otherwise
         setProbandData: function( patientObject )
         {
-            // TODO: separate patient object parser/data loader
+            // Note: we can't blank all patient properties here, since some are pedigree-specific
+            // and not available in patient document and should be preserved in saved pedigree JSON
+
+            // Fields which are loaded form the patient document are:
+            // - first_name
+            // - last_name
+            // - sex
+            // - date_of_birth
+            // - date_of_death
+            // - life_status
+            // - external_id
+            // - features + nonstandard_features
+            // - disorders
+            // - genes
+            // - maternal_ethnicity + paternal_ethnicity (merged with own ethnicities entered in pedigree editor)
 
             if (patientObject.hasOwnProperty("patient_name")) {
                 if (patientObject.patient_name.hasOwnProperty("first_name")) {
                     this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
+                } else {
+                    this.DG.GG.properties[0].fName = "";
                 }
                 if (patientObject.patient_name.hasOwnProperty("last_name")) {
                     this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
+                } else {
+                    this.DG.GG.properties[0].lName = "";
                 }
             }
 
@@ -188,16 +206,22 @@ define([
             if (patientObject.hasOwnProperty("date_of_birth")) {
                 var birthDate = new PedigreeDate(patientObject.date_of_birth);
                 this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+            } else {
+                delete this.DG.GG.properties[0].dob;
             }
             if (patientObject.hasOwnProperty("date_of_death")) {
                 var deathDate = new PedigreeDate(patientObject.date_of_death);
                 this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+            } else {
+                delete this.DG.GG.properties[0].dod;
             }
             if (patientObject.hasOwnProperty("life_status")) {
                 var lifeStatus = patientObject["life_status"];
                 if (lifeStatus == "deceased" || lifeStatus == "alive") {
                     this.DG.GG.properties[0].lifeStatus = lifeStatus;
                 }
+            } else {
+                delete this.DG.GG.properties[0].lifeStatus;
             }
 
             if (patientObject.hasOwnProperty("ethnicity")) {
@@ -216,13 +240,16 @@ define([
 
             if (patientObject.hasOwnProperty("external_id")) {
                 this.DG.GG.properties[0].externalID = patientObject.external_id;
+            } else {
+                delete this.DG.GG.properties[0].externalID;
             }
 
             var hpoTerms = [];
             if (patientObject.hasOwnProperty("features")) {
                 // e.g.: "features":[{"id":"HP:0000359","label":"Abnormality of the inner ear","type":"phenotype","observed":"yes"},{"id":"HP:0000639","label":"Nystagmus","type":"phenotype","observed":"yes"}]
                 for (var i = 0; i < patientObject.features.length; i++) {
-                    if (patientObject.features[i].observed && patientObject.features[i].type == "phenotype") {
+                    if ((patientObject.features[i].observed === true || patientObject.features[i].observed === "yes")
+                        && patientObject.features[i].type == "phenotype") {
                         hpoTerms.push(patientObject.features[i].id);
                     }
                 }
@@ -230,13 +257,16 @@ define([
             if (patientObject.hasOwnProperty("nonstandard_features")) {
                 //e.g.: "nonstandard_features":[{"label":"freetext","type":"phenotype","observed":"yes","categories":[{"id":"HP:0001507","label":"Growth abnormality"},{"id":"HP:0000240","label":"Abnormality of skull size"}]}]
                 for (var i = 0; i < patientObject.nonstandard_features.length; i++) {
-                    if (patientObject.nonstandard_features[i].observed && patientObject.nonstandard_features[i].type == "phenotype") {
+                    if ((patientObject.nonstandard_features[i].observed === true || patientObject.nonstandard_features[i].observed === "yes")
+                        && patientObject.nonstandard_features[i].type == "phenotype") {
                         hpoTerms.push(patientObject.nonstandard_features[i].label);
                     }
                 }
             }
             if (hpoTerms.length > 0) {
                 this.DG.GG.properties[0].hpoTerms = hpoTerms;
+            } else {
+                delete this.DG.GG.properties[0].hpoTerms;
             }
 
             var disorders = [];
@@ -251,6 +281,8 @@ define([
             }
             if (disorders.length > 0) {
                 this.DG.GG.properties[0].disorders = disorders;
+            } else {
+                delete this.DG.GG.properties[0].disorders;
             }
 
             var genes = [];
@@ -262,6 +294,8 @@ define([
             }
             if (genes.length > 0) {
                 this.DG.GG.properties[0].candidateGenes = genes;
+            } else {
+                delete this.DG.GG.properties[0].candidateGenes;
             }
 
             return genderOK;

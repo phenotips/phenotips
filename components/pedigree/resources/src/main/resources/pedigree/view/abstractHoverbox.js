@@ -550,7 +550,7 @@ define([
                 interactionStarted = false;
                 if (wrongClick) return;
 
-                var curHoveredId = editor.getView().getCurrentHoveredNode()
+                var curHoveredId = editor.getView().getCurrentHoveredNode();
 
                 editor.getView().setCurrentDraggable(null);
                 editor.getView().exitHoverMode();
@@ -633,10 +633,10 @@ define([
          * @method animateDrawHoverZone
          */
         animateDrawHoverZone: function() {
-            this._hidden = false;        
             if (editor.getView().getCurrentDraggable() !== null) return; // do not redraw when dragging
+            this._hidden = false;
             //console.log("node: " + this.getNode().getID() + " -> show HB");
-                    
+
             this.getNode().getGraphics().setSelected(true);
             this.getBoxOnHover().stop().animate({opacity:0.7}, 200);
 
@@ -660,8 +660,8 @@ define([
          * @method animateHideHoverZone
          */
         animateHideHoverZone: function() {
-            this._hidden = true;
             if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
+            this._hidden = true;
             //console.log("node: " + this.getNode().getID() + " -> hide HB");
 
             this.getNode().getGraphics().setSelected(false);

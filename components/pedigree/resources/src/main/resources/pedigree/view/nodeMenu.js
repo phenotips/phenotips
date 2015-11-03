@@ -39,6 +39,7 @@ define([
     NodeMenu = Class.create({
         initialize : function(data, tabs, otherCSSClass) {
             //console.log("nodeMenu initialize");
+            this._justOpened = false;
             this.canvas = editor.getWorkspace().canvas || $('body');
             var cssClass = 'menu-box';
             if (otherCSSClass) cssClass += " " + otherCSSClass;
@@ -891,6 +892,10 @@ define([
         },
 
         show : function(node, x, y) {
+            var me = this;
+            this._justOpened = true;
+            setTimeout(function() { me._justOpened = false; }, 150);
+
             this._onscreen = true;
             //console.log("nodeMenu show");
             this.targetNode = node;
@@ -901,6 +906,9 @@ define([
         },
 
         hide : function() {
+            if (this._justOpened) {
+                return;
+            }
             this.hideSuggestPicker();
             this._onscreen = false;
             //console.log("nodeMenu hide");
@@ -1351,10 +1359,16 @@ define([
 
         _setFieldDisabled : {
             'radio' : function (container, disabled) {
-                if (disabled && Object.prototype.toString.call(disabled) === '[object Array]') {
+                if (disabled) {
+                    if (Object.prototype.toString.call(disabled) === '[object Array]') {
                         container.select('input[type=radio]').each(function(item) {
-                        item.disabled = (disabled.indexOf(item.value) >= 0);
-                    });
+                            item.disabled = (disabled.indexOf(item.value) >= 0);
+                        });
+                    } else if (disabled === true || disabled === false) {
+                        container.select('input[type=radio]').each(function(item) {
+                            item.disabled = disabled;
+                        });
+                    }
                 }
             },
             'checkbox' : function (container, disabled) {
@@ -1372,20 +1386,33 @@ define([
             'textarea' : function (container, inactive) {
                 // FIXME: Not implemented
             },
-            'date-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'date-picker' : function (container, disabled) {
+                Element.select(container,'select').forEach(function(element) {
+                    if (disabled) {
+                        // IE9 & IE10 do not support "pointer-events:none" (and IE11 does not seem to support this for <select>)
+                        // so add some JS to prevent clicks on disabled select
+                        Helpers.disableMouseclicks(element);
+                        element.addClassName('disabled-select');
+                        element.addClassName('no-mouse-interaction');
+                    } else {
+                        // emove IE-specific workaround handler
+                        Helpers.enableMouseclicks(element);
+                        element.removeClassName('disabled-select');
+                        element.removeClassName('no-mouse-interaction');
+                    }
+                });
             },
-            'disease-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'disease-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
             'ethnicity-picker' : function (container, inactive) {
                 // FIXME: Not implemented
             },
-            'hpo-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'hpo-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
-            'gene-picker' : function (container, inactive) {
-                // FIXME: Not implemented
+            'gene-picker' : function (container, disabled) {
+                this.__disableEnableSuggestModification(container, disabled);
             },
             'phenotipsid-picker' : function (container, inactive) {
                 // FIXME: Not implemented
@@ -1399,6 +1426,35 @@ define([
             'hidden' : function (container, inactive) {
                 // FIXME: Not implemented
             }
+        },
+
+        // Either enables a suggest picker, or disables/hides all input fields while leaving
+        // the list of current selections visible, with "delete" tool disabled
+        __disableEnableSuggestModification: function(container, disabled) {
+            var numElements = 0;
+            Element.select(container,'.delete-tool').forEach(function(element) {
+                numElements++;
+                if (disabled) {
+                    element.addClassName('hidden');
+                } else {
+                    element.removeClassName('hidden');
+                }
+            });
+            Element.select(container,'input').forEach(function(element) {
+                element.disabled = disabled;
+                if (disabled) {
+                    if (numElements > 1) {  // 1 for delete all; if there is more than one no need to display empty input box
+                        // if there are selections show the list of selections and hide the input field completely
+                        element.addClassName('hidden');
+                    } else {
+                        // if there are no selections show "none" in the (disabled) input field
+                        element.placeholder = "none";
+                    }
+                } else {
+                    element.removeClassName('hidden');
+                    element.placeholder = "";
+                }
+            });
         }
     });
     return NodeMenu;
