@@ -41,7 +41,7 @@ define([
         },
 
         /**
-         * To make sure some runaway labal does not appear for a placeholder
+         * Overridden to make sure some runaway label does not appear for a placeholder
          * (E.g. when father's name is propagated)
          */
         drawLabels: function() {
