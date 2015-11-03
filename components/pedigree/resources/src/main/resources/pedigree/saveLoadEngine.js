@@ -113,9 +113,9 @@ define([
         },
 
         save: function() {
-        if (this._saveInProgress) {
+            if (this._saveInProgress) {
                 return;   // Don't send parallel save requests
-        }
+            }
 
             editor.getView().unmarkAll();
 
@@ -125,8 +125,8 @@ define([
 
             console.log("[SAVE] data: " + Helpers.stringifyObject(jsonData));
 
-        var svg = editor.getWorkspace().getSVGCopy();
-        var svgText = svg.getSVGText();
+            var svg = editor.getWorkspace().getSVGCopy();
+            var svgText = svg.getSVGText();
 
             var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
             new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
@@ -160,7 +160,7 @@ define([
                 onSuccess: function() { editor.getUndoRedoManager().addSaveEvent();
                                         savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
                                       },
-            parameters: {"property#data": jsonData, "property#image": svgText}
+                parameters: {"property#data": jsonData, "property#image": svgText}
             });
         },
 

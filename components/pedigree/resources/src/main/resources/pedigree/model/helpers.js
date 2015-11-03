@@ -85,7 +85,7 @@ define ([], function(){
                 if (Object.prototype.toString.call(template[key]) === '[object Array]') {
                     template[key] = data[key].slice(); // array -> make a copy
                 } else {
-                    this.setByTemplate(template[key], data[key]); // other type of object -> set properties recursively
+                    Helpers.setByTemplate(template[key], data[key]); // other type of object -> set properties recursively
                 }
                 } else {
                     template[key] = data[key];

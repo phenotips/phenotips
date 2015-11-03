@@ -46,7 +46,7 @@ define([
          * Saves all pedigree-specific settings/user choices/color scheme into an object
          */
         getSettings: function() {
-        // TODO: filter out items which are currently not being displayed on the pedigree
+            // TODO: filter out items which are currently not being displayed on the pedigree
             return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
                                "genes": editor.getGeneLegend().getAllColors(),
                                "cancers": editor.getCancerLegend().getAllColors() },
@@ -150,18 +150,18 @@ define([
         },
 
         /**
-     * Redraws the pedigree image in anoimized/non-anonimized way
-     */
-    setAnonimizeStatus: function(status) {
-        for (var nodeID in this._nodeMap) {
-            if (this._nodeMap.hasOwnProperty(nodeID)) {
-                var node = this.getNode(nodeID);
-                node.getGraphics().setAnonimizedStatus(status);
+         * Redraws the pedigree image in anoimized/non-anonimized way
+         */
+        setAnonimizeStatus: function(status) {
+            for (var nodeID in this._nodeMap) {
+                if (this._nodeMap.hasOwnProperty(nodeID)) {
+                    var node = this.getNode(nodeID);
+                    node.getGraphics().setAnonimizedStatus(status);
+                }
             }
-        }
-    },
+        },
 
-    /**
+        /**
          * Returns the node that is currently selected
          *
          * @method getCurrentHoveredNode
@@ -208,11 +208,12 @@ define([
          *
          * @method drawCurvedLineWithCrossings
          */
-    drawCurvedLineWithCrossings: function ( id, xFrom, yFrom, yTop, xTo, yTo, lastBend, attr, twoLines, secondLineBelow, startSameX ) {
+        drawCurvedLineWithCrossings: function ( id, xFrom, yFrom, yTop, xTo, yTo, lastBend, attr, twoLines, secondLineBelow, startSameX ) {
             //console.log("yFrom: " + yFrom + ", yTo: " + yTo + ", yTop: " + yTop);
 
-            if (yFrom == yTop && yFrom == yTo)
-            return this.drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, attr, twoLines, secondLineBelow, false, startSameX);
+            if (yFrom == yTop && yFrom == yTo) {
+                return this.drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, attr, twoLines, secondLineBelow, false, startSameX);
+            }
 
             var cornerRadius     = PedigreeEditorParameters.attributes.curvedLinesCornerRadius * 0.8;
             var goesRight        = ( xFrom > xTo );
@@ -230,10 +231,10 @@ define([
             //console.log("XFinalBend: " + xFinalBend + ", xTo : " + xTo);
 
             if (yFrom <= yTop) {
-            this.drawLineWithCrossings(id, xFrom, yFrom, xBeforeFinalBend, yFrom, attr, twoLines, !goesRight, true, startSameX);
+                this.drawLineWithCrossings(id, xFrom, yFrom, xBeforeFinalBend, yFrom, attr, twoLines, !goesRight, true, startSameX);
             }
             else {
-            this.drawLineWithCrossings(id, xFrom, yFrom, xFromAndBit, yFrom, attr, twoLines, !goesRight, true, startSameX);
+                this.drawLineWithCrossings(id, xFrom, yFrom, xFromAndBit, yFrom, attr, twoLines, !goesRight, true, startSameX);
 
                 if (Math.abs(yFrom - yTop) >= cornerRadius*2) {
                     if (goesRight)
@@ -285,7 +286,7 @@ define([
          *
          * @method drawLineWithCrossings
          */
-    drawLineWithCrossings: function(owner, x1, y1, x2, y2, attr, twoLines, secondLineBelow, bothEndsGoDown, sameXStart) {
+        drawLineWithCrossings: function(owner, x1, y1, x2, y2, attr, twoLines, secondLineBelow, bothEndsGoDown, sameXStart) {
 
             // make sure line goes from the left to the right (and if vertical from the top to the bottom):
             // this simplifies drawing the line piece by piece from intersection to intersection
@@ -319,11 +320,11 @@ define([
                 //       because then the curves around crossings wont be exactly above the crossing
                 if (twoLines) {
                     if (!bothEndsGoDown) {
-                    x1 += (sameXStart && !secondLineBelow) ? 0 : (-2.5 + lineNum * 7.5);
-                    x2 += (sameXStart && secondLineBelow)  ? 0 : (-2.5 + lineNum * 7.5);
+                        x1 += (sameXStart && !secondLineBelow) ? 0 : (-2.5 + lineNum * 7.5);
+                        x2 += (sameXStart && secondLineBelow)  ? 0 : (-2.5 + lineNum * 7.5);
                     } else {
-                    x1 -= (sameXStart && secondLineBelow) ? 0 : 2.5;
-                    x2 += (sameXStart && !secondLineBelow) ? 0 : 2.5;
+                        x1 -= (sameXStart && secondLineBelow) ? 0 : 2.5;
+                        x2 += (sameXStart && !secondLineBelow) ? 0 : 2.5;
                     }
 
                     if (secondLineBelow) {
@@ -739,4 +740,3 @@ define([
     });
     return View;
 });
-

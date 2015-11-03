@@ -5,8 +5,8 @@ define(["pedigree/model/helpers"], function(Helpers){
         },
 
         load: function(callWhenReady) {
-        // TODO: get URL from endpoints.js after merger with family-studies
-        var preferencesJsonURL = new XWiki.Document('PedigreeInterface', 'PhenoTips').getURL('get', 'action=getPreferences');
+            // TODO: get URL from endpoints.js after merger with family-studies
+            var preferencesJsonURL = new XWiki.Document('PedigreeInterface', 'PhenoTips').getURL('get', 'action=getPreferences');
             preferencesJsonURL += "&rand=" + Math.random();
 
             new Ajax.Request(preferencesJsonURL, {
@@ -17,12 +17,12 @@ define(["pedigree/model/helpers"], function(Helpers){
         },
 
         onPreferencesAvailable : function(response) {
-        if (response.responseJSON) {
-            // only set preferences which are given in the template
-            setByTemplate(this.preferences, response.responseJSON);
-            console.log("Loaded preferences: " + stringifyObject(response.responseJSON));
-        } else {
-            console.log("Failed to loaded properties, no JSON");
+            if (response.responseJSON) {
+                // only set preferences which are given in the template
+                Helpers.setByTemplate(this.preferences, response.responseJSON);
+                console.log("Loaded preferences: " + stringifyObject(response.responseJSON));
+            } else {
+                console.log("Failed to loaded properties, no JSON");
             }
         },
 

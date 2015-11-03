@@ -813,7 +813,7 @@
 }
 
 .msdialog-modal-container .pedigree-template-chooser {
-    width: 720px;
+  width: 720px;
 }
 
 .msdialog-modal-container .pedigree-print-dialog {
@@ -871,13 +871,13 @@
   margin-left: 5px;
 }
 .picture-box {
-    display: inline-block;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
-    margin: 14px;
+  display: inline-block;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
+  margin: 14px;
 }
 .picture-box:hover {
-    cursor: pointer;
-    box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
+  cursor: pointer;
+  box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
 }
 .preview-container {
   border: 1px;
@@ -886,24 +886,24 @@
   display: inline-block;
 }
 .template-picture-container {
-    display: inline-block;
-    margin: 3px;
+  display: inline-block;
+  margin: 3px;
 }
 
 .msdialog-box {
-    /*overflow:auto;*/
-    width: 60% !important;
-    min-width: 650px !important;
-    max-width: 720px !important;
+  /*overflow:auto;*/
+  width: 60% !important;
+  min-width: 650px !important;
+  max-width: 720px !important;
 }
 .msdialog-box .content {
-    text-align: center;
+  text-align: center;
 }
 .pedigree-okcancel {
-    width: 680px !important;
+  width: 680px !important;
 }
 .no-mouse-interaction {
-    pointer-events: none;
+  pointer-events: none;
 }
 /* Make sure the tooltips fit nicely in the suggest box in the pedigree editor: */
 .suggestItem .xTooltip {

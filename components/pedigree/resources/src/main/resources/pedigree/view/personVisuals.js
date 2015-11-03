@@ -78,12 +78,12 @@ define([
                 var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
                 shape.attr(PedigreeEditorParameters.attributes.nodeShapeAborted);
                 this._genderShape = shape;
-            if (editor.getPreferencesManager().getConfigurationOption("drawNodeShadows")) {
-                var shadow = this.makeNodeShadow(shape);
-                shape = editor.getPaper().set(shadow, shape);
-            } else {
-                shape = editor.getPaper().set(shape);
-            }
+                if (editor.getPreferencesManager().getConfigurationOption("drawNodeShadows")) {
+                    var shadow = this.makeNodeShadow(shape);
+                    shape = editor.getPaper().set(shadow, shape);
+                } else {
+                    shape = editor.getPaper().set(shape);
+                }
 
                 if(this.getNode().isProband()) {
                     shape.transform(["...s", 1.07]);
@@ -188,26 +188,26 @@ define([
          */
         updateNameLabel: function() {
             this._nameLabel && this._nameLabel.remove();
-        var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
+            var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
             var text =  "";
 
-        if (this.getNode().getFirstName() && !arrayContains(disabledFields, 'first_name')) {
-            text = this.getNode().getFirstName();
-        }
+            if (this.getNode().getFirstName() && !Helpers.arrayContains(disabledFields, 'first_name')) {
+                text = this.getNode().getFirstName();
+            }
 
-        var lastNameAtBirth = (this.getNode().getLastNameAtBirth() && !arrayContains(disabledFields, 'last_name_birth')) ?
+            var lastNameAtBirth = (this.getNode().getLastNameAtBirth() && !Helpers.arrayContains(disabledFields, 'last_name_birth')) ?
                 this.getNode().getLastNameAtBirth() : "";
 
-        if (this.getNode().getLastName() && !arrayContains(disabledFields, 'last_name')) {
+            if (this.getNode().getLastName() && !Helpers.arrayContains(disabledFields, 'last_name')) {
                 text += ' ' + this.getNode().getLastName();
-            if (lastNameAtBirth == this.getNode().getLastName()) {
-                lastNameAtBirth = "";
-            } else {
-                lastNameAtBirth = "(" + lastNameAtBirth + ")";
+                if (lastNameAtBirth == this.getNode().getLastName()) {
+                    lastNameAtBirth = "";
+                } else {
+                    lastNameAtBirth = "(" + lastNameAtBirth + ")";
+                }
             }
-        }
 
-        text += " " + lastNameAtBirth;
+            text += " " + lastNameAtBirth;
 
             this._nameLabel && this._nameLabel.remove();
             if(text.strip() != '') {
@@ -387,11 +387,11 @@ define([
                 var birthDate = person.getBirthDate();
                 var deathDate = person.getDeathDate();
 
-            var dateFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
-            if (dateFormat == "DMY" || dateFormat == "MY") {
+                var dateFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
+                if (dateFormat == "DMY" || dateFormat == "MY") {
                     if(person.getLifeStatus() == 'alive') {
                         if (birthDate && birthDate.isComplete()) {
-                        text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);
+                            text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null) {
                                 var age = AgeCalc.getAge(person.getBirthDate());
                                 text += " (" + age + ")";
@@ -400,17 +400,17 @@ define([
                     }
                     else {
                         if(deathDate && birthDate && deathDate.isComplete() && birthDate.isComplete()) {
-                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
+                            text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
                                 var age = AgeCalc.getAge(person.getBirthDate(), person.getDeathDate());
                                 text += "\n" + age;
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
-                        text = "d. " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
+                            text = "d. " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                         }
                         else if(birthDate && birthDate.isComplete()) {
-                        text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – ?";
+                            text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – ?";
                         }
                     }
                 } else {
@@ -423,7 +423,7 @@ define([
                                 if (birthDate.getMonth() == null) {
                                     text = "b. " + birthDate.getYear();                          // b. 1972
                                 } else {
-                                if (birthDate.getDay() == null || dateFormat == "MMY") {
+                                    if (birthDate.getDay() == null || dateFormat == "MMY") {
                                         text = "b. " + birthDate.getMonthName() + " " +
                                         birthDate.getYear();                                     // b. Jan 1972
                                     } else {
@@ -799,19 +799,19 @@ define([
         getLabels: function() {
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
-        if (!this._anonimized) {
-            if (this.getNameLabel()) {
-                this.getNameLabel().show();
-                labels.push(this.getNameLabel());
+            if (!this._anonimized) {
+                if (this.getNameLabel()) {
+                    this.getNameLabel().show();
+                    labels.push(this.getNameLabel());
+                }
+                if (this.getAgeLabel()) {
+                    this.getAgeLabel().show();
+                    labels.push(this.getAgeLabel());
+                }
+            } else {
+                this.getNameLabel() && this.getNameLabel().hide();
+                this.getAgeLabel() && this.getAgeLabel().hide();
             }
-            if (this.getAgeLabel()) {
-                this.getAgeLabel().show();
-                labels.push(this.getAgeLabel());
-            }
-        } else {
-            this.getNameLabel() && this.getNameLabel().hide();
-            this.getAgeLabel() && this.getAgeLabel().hide();
-        }
             this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
             this.getCommentsLabel() && labels.push(this.getCommentsLabel());
             var cancerLabels = this.getCancerAgeOfOnsetLabels();
@@ -824,14 +824,14 @@ define([
         },
 
         /**
-     * Removes all PII labels
-     */
-    setAnonimizedStatus: function($super, status) {
-        $super(status);
-        this.drawLabels();
-    },
+         * Removes all PII labels
+         */
+        setAnonimizedStatus: function($super, status) {
+            $super(status);
+            this.drawLabels();
+        },
 
-    /**
+        /**
          * Displays all the appropriate labels for this Person in the correct layering order
          *
          * @method drawLabels

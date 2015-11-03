@@ -7,7 +7,11 @@
  * @constructor
  */
 
-define ([], function() {
+define([
+        "pedigree/view/svgWrapper"
+    ], function(
+        SVGWrapper
+    ){
     var Workspace = Class.create({
 
         initialize: function() {
@@ -94,71 +98,71 @@ define ([], function() {
         },
 
         /**
-     * Returns the SVGWrapper object containing a copy of pedigree SVG with all edit-related
-     *                  elements such as handles, invisible interactive layers, etc. removed.
-     *
-     * @method getSVGCopy
-     * @param {Boolean} anonimize - if true, all names and birthdays are removed.
-     * @return {Object} SVGWrapper object.
-     */
-    getSVGCopy: function(anonimize) {
-        editor.getView().unmarkAll();
+         * Returns the SVGWrapper object containing a copy of pedigree SVG with all edit-related
+         *                  elements such as handles, invisible interactive layers, etc. removed.
+         *
+         * @method getSVGCopy
+         * @param {Boolean} anonimize - if true, all names and birthdays are removed.
+         * @return {Object} SVGWrapper object.
+         */
+        getSVGCopy: function(anonimize) {
+            editor.getView().unmarkAll();
 
-        var image = $('canvas');
+            var image = $('canvas');
 
-        var background = image.getElementsByClassName('panning-background')[0];
-        background.style.display = "none";
+            var background = image.getElementsByClassName('panning-background')[0];
+            background.style.display = "none";
 
-        if (anonimize) {
-            editor.getView().setAnonimizeStatus(true);
-        }
+            if (anonimize) {
+                editor.getView().setAnonimizeStatus(true);
+            }
 
-        var _bbox = image.down().getBBox();
-        var bbox = {};
-        // Due to a bug (?) in firefox bounding box as reported by the browser may be a few pixels
-        // too small and exclude lines at the very edge of the svg - so bbox is manually extended
-        // by a few pixels in all directions.
-        // Also, need to use _bbox and bbox bcause IE does not allow to modify the bbox obtained by getBBox()
-        bbox.x      = Math.floor(_bbox.x) - 2;
-        bbox.y      = Math.floor(_bbox.y) - 2;
-        bbox.width  = Math.ceil(_bbox.width)  + 4;
-        bbox.height = Math.ceil(_bbox.height) + 4;
-        //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
+            var _bbox = image.down().getBBox();
+            var bbox = {};
+            // Due to a bug (?) in firefox bounding box as reported by the browser may be a few pixels
+            // too small and exclude lines at the very edge of the svg - so bbox is manually extended
+            // by a few pixels in all directions.
+            // Also, need to use _bbox and bbox bcause IE does not allow to modify the bbox obtained by getBBox()
+            bbox.x      = Math.floor(_bbox.x) - 2;
+            bbox.y      = Math.floor(_bbox.y) - 2;
+            bbox.width  = Math.ceil(_bbox.width)  + 4;
+            bbox.height = Math.ceil(_bbox.height) + 4;
+            //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
 
-        var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
-                      .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+            var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
+                          .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
 
-        if (anonimize) {
-            editor.getView().setAnonimizeStatus(false);
-        }
+            if (anonimize) {
+                editor.getView().setAnonimizeStatus(false);
+            }
+ 
+            // set display:block
+            svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
+            // remove invisible elements to slim down svg
+            svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+(><\/\w+|\/)>/g, "");
+            // remove elements with opacity==0 to slim down svg
+            svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+(><\/\w+|\/)>/g, "");
+            // remove partnership clickable circles
+            svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+(><\/\w+|\/)>/g, "");
+            // remove titles of the handles
+            svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+(><\/\w+|\/)>/g, "");
+            // remove hoverboxes
+            svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+(><\/\w+|\/)>/g, "");
+            // remove node shadows
+            svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+(><\/\w+|\/)>/g, "");
+            // remove gradient definitions (only used for handles),
+            // or they confuse the browser after used and discarded for print preview
+            svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
+            svgText = svgText.replace(/<radialGradient.*?<\/radialGradient>/g, "");
+            // remove "created by raphael", some older browsers may be confused
+            svgText = svgText.replace(/<desc>[^<>]+<\/desc>/g, "");
 
-        // set display:block
-        svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
-        // remove invisible elements to slim down svg
-        svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+(><\/\w+|\/)>/g, "");
-        // remove elements with opacity==0 to slim down svg
-        svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+(><\/\w+|\/)>/g, "");
-        // remove partnership clickable circles
-        svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+(><\/\w+|\/)>/g, "");
-        // remove titles of the handles
-        svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+(><\/\w+|\/)>/g, "");
-        // remove hoverboxes
-        svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+(><\/\w+|\/)>/g, "");
-        // remove node shadows
-        svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+(><\/\w+|\/)>/g, "");
-        // remove gradient definitions (only used for handles),
-        // or they confuse the browser after used and discarded for print preview
-        svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
-        svgText = svgText.replace(/<radialGradient.*?<\/radialGradient>/g, "");
-        // remove "created by raphael", some older browsers may be confused
-        svgText = svgText.replace(/<desc>[^<>]+<\/desc>/g, "");
+            background.style.display = "";
 
-        background.style.display = "";
+            return new SVGWrapper(svgText, bbox, 1.0);
+        },
 
-        return new SVGWrapper(svgText, bbox, 1.0);
-    },
-
-    /**
+        /**
          * Returns the Raphael paper object.
          *
          * @method getPaper
@@ -204,28 +208,28 @@ define ([], function() {
          * @method generateTopMenu
          */
         generateTopMenu: function() {
-        var menu = new Element('div', {'class' : 'editor-menu'});
+            var menu = new Element('div', {'class' : 'editor-menu'});
             this.getWorkArea().insert({before : menu});
 
-        var secondaryMenu = new Element('div', {'class' : 'editor-menu editor-menu-secondary'});
-        this.getWorkArea().insert({before : secondaryMenu});
-        secondaryMenu.hide();
+            var secondaryMenu = new Element('div', {'class' : 'editor-menu editor-menu-secondary'});
+            this.getWorkArea().insert({before : secondaryMenu});
+            secondaryMenu.hide();
 
-        var hideShowSubmenu = function(button, icon) {
-            if (secondaryMenu.style.display == "none") {
-                secondaryMenu.show();
-                Element.removeClassName(icon, "fa-caret-down");
-                Element.addClassName(icon, "fa-caret-up");
-            } else {
-                secondaryMenu.hide();
-                Element.removeClassName(icon, "fa-caret-up");
-                Element.addClassName(icon, "fa-caret-down");
+            var hideShowSubmenu = function(button, icon) {
+                if (secondaryMenu.style.display == "none") {
+                    secondaryMenu.show();
+                    Element.removeClassName(icon, "fa-caret-down");
+                    Element.addClassName(icon, "fa-caret-up");
+                } else {
+                    secondaryMenu.hide();
+                    Element.removeClassName(icon, "fa-caret-up");
+                    Element.addClassName(icon, "fa-caret-down");
+                }
             }
-        }
 
-        var menuItems = [];
+            var menuItems = [];
             if (editor.isUnsupportedBrowser()) {
-            menuItems = [{
+                menuItems = [{
                     name : 'input',
                     items: [
                         { key : 'readonlymessage', label : 'Unsuported browser mode', icon : 'exclamation-triangle'}
@@ -239,7 +243,7 @@ define ([], function() {
                     ]
                 }];
             } else {
-            menuItems = [{
+                menuItems = [{
                     name : 'input',
                     items: [
                         { key : 'templates', label : 'Templates', icon : 'copy'},
@@ -251,13 +255,13 @@ define ([], function() {
                         { key : 'undo',   label : 'Undo', icon : 'undo'},
                         { key : 'redo',   label : 'Redo', icon : 'repeat'},
                         { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
-                    //{ key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
-                    { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
+                        //{ key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                        { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
                     ]
                   }, {
-                name : 'print',
+                    name : 'print',
                     items: [
-                    { key : 'print',  label : 'Print', icon : 'print'},
+                        { key : 'print',  label : 'Print', icon : 'print'},
                     ]
                   }, {
                     name : 'output',
@@ -270,41 +274,41 @@ define ([], function() {
                 }];
             }
 
-        var secondaryMenuItems = [];
-        if (!editor.isUnsupportedBrowser()) {
-            secondaryMenuItems = [{
-                name : 'edit',
-                items: [
-                    { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
-                ]
-              }, {
-                name : 'other',
-                items: [
-                    { key : 'clear',  label : 'Clear', icon : 'times-circle'},
-                ]
-              }];
-        }
+            var secondaryMenuItems = [];
+            if (!editor.isUnsupportedBrowser()) {
+                secondaryMenuItems = [{
+                    name : 'edit',
+                    items: [
+                        { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                    ]
+                  }, {
+                    name : 'other',
+                    items: [
+                        { key : 'clear',  label : 'Clear', icon : 'times-circle'},
+                    ]
+                  }];
+            }
 
             var _createSubmenu = function(data) {
                 var submenu = new Element('div', {'class' : data.name + '-actions action-group'});
-            this.insert(submenu);
+                this.insert(submenu);
                 data.items.each(function (item) {
                     submenu.insert(_createMenuItem(item));
                 });
             };
             var _createMenuItem = function(data) {
-            var buttonIcon = new Element('span', {'class' : 'fa fa-' + data.icon});
-            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(buttonIcon).insert(' ').insert(data.label);
-            if (data.callback && typeof(data.callback) == 'function') {
+                var buttonIcon = new Element('span', {'class' : 'fa fa-' + data.icon});
+                var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(buttonIcon).insert(' ').insert(data.label);
+                if (data.callback && typeof(data.callback) == 'function') {
                     mi.observe('click', function() {
-                    data.callback(mi, buttonIcon);
+                        data.callback(mi, buttonIcon);
                     });
                 }
                 return mi;
             };
 
-        menuItems.each(_createSubmenu.bind(menu));
-        secondaryMenuItems.each(_createSubmenu.bind(secondaryMenu));
+            menuItems.each(_createSubmenu.bind(menu));
+            secondaryMenuItems.each(_createSubmenu.bind(secondaryMenu));
         },
 
         /**
