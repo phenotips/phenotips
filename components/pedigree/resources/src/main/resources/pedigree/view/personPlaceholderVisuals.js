@@ -38,6 +38,17 @@ define([
             var shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2).hide();
             this._genderShape = shape;
             this._genderGraphics = editor.getPaper().set(shape);
+        },
+
+        /**
+         * To make sure some runaway labal does not appear for a placeholder
+         * (E.g. when father's name is propagated)
+         */
+        drawLabels: function() {
+            var labels = this.getLabels();
+            for (var i = 0; i < labels.length; i++) {
+                labels[i].hide();
+            }
         }
     });
     return PersonPlaceholderVisuals;
