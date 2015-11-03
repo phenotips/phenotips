@@ -11,11 +11,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -34,6 +36,9 @@ public class ParentalAgeControllerTest {
     private static final Integer AGE_NON_ZERO = 25; // Arbitrary age.
 
     private static final Integer AGE_ZERO = 0;
+
+    public static final EntityReference CLASS_REFERENCE =
+            new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
@@ -137,8 +142,20 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void saveDefaultBehaviourTest(){
+    public void saveDefaultBehaviourTest() throws XWikiException {
+        PatientData<Integer> patientData = mock(PatientData.class);
+        BaseObject data = mock(BaseObject.class);
+        doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(true).when(patientData).isNamed();
+        doReturn(data).when(this.doc).getXObject(CLASS_REFERENCE, true, this.xWikiContext);
 
+        doReturn(AGE_NON_ZERO).when(patientData).get(MATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(patientData).get(PATERNAL_AGE);
+
+        this.parentalAgeController.save(this.patient);
+
+        verify(this.xWikiContext.getWiki()).saveDocument(this.doc,
+                "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
