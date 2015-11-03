@@ -71,7 +71,7 @@ define([
       events.each(function(eventName) {
         _this.dropdown.observe(eventName, function() {
           callback();
-          if (this.inputFormat != "DMY") {
+          if (this.inputFormat == "YMD") {
             _this._tmpSelectedIndex = _this.dropdown.selectedIndex;
           }
         });
@@ -111,8 +111,9 @@ define([
       this.container = new Element('div', {'class' : 'fuzzy-date-picker'});
       this.__input.insert({after : this.container});
 
-      if (this.inputFormat == "DMY") {
-          this.container.insert(this.createDayDropdown());
+      if (this.inputFormat == "DMY" || this.inputFormat == "MY") {
+          var hideDay = (this.inputFormat == "MY")
+          this.container.insert(this.createDayDropdown(hideDay));
           this.container.insert(this.createMonthDropdown());
           this.container.insert(this.createYearDropdown());
       } else {
@@ -134,7 +135,7 @@ define([
 
     createYearDropdown : function() {
       //var timer = new Helpers.Timer();
-      this.yearSelector = new PedigreeFuzzyDatePickerDropdown({name: "year", alwaysEnabled: (this.inputFormat == "DMY")});
+      this.yearSelector = new PedigreeFuzzyDatePickerDropdown({name: "year", alwaysEnabled: (this.inputFormat != "YMD")});
 
       var today = new Date();
       var crtYear = today.getYear() + 1900;
@@ -170,7 +171,7 @@ define([
     },
 
     createMonthDropdown : function() {
-      this.monthSelector = new PedigreeFuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat == "DMY")});
+      this.monthSelector = new PedigreeFuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat != "YMD")});
       this.monthSelector.populate(this.getZeroPaddedValueRange(1,12));
       this.monthSelector.disable();
       this.monthSelector.onSelect(this.monthSelected.bind(this));
@@ -192,11 +193,14 @@ define([
       this.updateDate(doNotNotifyOnChange);
     },
 
-    createDayDropdown : function() {
-      this.daySelector = new PedigreeFuzzyDatePickerDropdown({name: "day", alwaysEnabled: (this.inputFormat == "DMY")});
+    createDayDropdown : function(hide) {
+      this.daySelector = new PedigreeFuzzyDatePickerDropdown({name: "day", alwaysEnabled: (this.inputFormat != "YMD")});
       this.daySelector.populate(this.getZeroPaddedValueRange(1,31));
       this.daySelector.disable();
       this.daySelector.onSelect(this.updateDate.bind(this));
+      if (hide) {
+          this.daySelector.getElement().hide();
+      }
       return this.daySelector.getElement();
     },
 

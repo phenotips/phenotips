@@ -12,12 +12,13 @@ define([], function(){
     var AbstractNodeVisuals = Class.create({
 
         initialize: function(node, x, y) {
-        	//console.log("abstract node visuals");
-            this._node = node;
-            this._absoluteX = x;
-            this._absoluteY = y;
-            this._hoverBox  = null;
-            this._isGrown   = false;
+            //console.log("abstract node visuals");
+            this._node       = node;
+            this._absoluteX  = x;
+            this._absoluteY  = y;
+            this._hoverBox   = null;
+            this._isGrown    = false;
+            this._anonimized = false;
             //console.log("abstract node visuals end");
         },
 
@@ -40,13 +41,20 @@ define([], function(){
         getX: function() {
             return this._absoluteX;
         },
-        
+
         /**
          * Updates whatever needs to change when node id changes (e.g. id label) 
          *
          * @method onSetID
-         */    
+         */
         onSetID: function(id) {
+        },
+
+        /**
+         * Removes all PII labels
+         */
+        setAnonimizedStatus: function(status) {
+            this._anonimized = status;
         },
 
         /**
@@ -58,15 +66,15 @@ define([], function(){
         getY: function() {
             return this._absoluteY;
         },
-          
+
         /**
          * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
          *
          * @method getY
          * @return {Number} The y coordinate
-         */    
+         */
         getBottomY: function() {
-        	return this._absoluteY;
+            return this._absoluteY;
         },
 
         /**
@@ -84,7 +92,7 @@ define([], function(){
             this._absoluteY = y; 
             callback && callback();
         },
-        
+
         /**
          * Expands the node graphics a bit
          *
@@ -92,7 +100,7 @@ define([], function(){
          */
         grow: function() {
             this._isGrown = true;
-        },    
+        },
 
         /**
          * Shrinks node graphics to the original size
@@ -107,7 +115,7 @@ define([], function(){
          * Returns current growth status of the node (true if grown, false if not)
          *
          * @method isGrown
-         */    
+         */
         isGrown: function() { 
             return this._isGrown;
         },
@@ -116,7 +124,7 @@ define([], function(){
          * Returns true if this node's graphic representation covers coordinates (x,y)
          *
          * @method containsXY
-         */    
+         */
         containsXY: function(x,y) {
             return false;
         },

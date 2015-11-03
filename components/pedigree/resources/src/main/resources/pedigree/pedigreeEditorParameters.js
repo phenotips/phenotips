@@ -72,8 +72,8 @@ define([], function(){
         cancerAgeOfOnsetLabels: {'font-size': 19, 'font-family': 'Arial' },
         externalIDLabels: {'font-size': 18, 'font-family': 'Arial' },
         disorderShapes: {},
-        partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740
-        partnershipRadius: 6.5,
+        partnershipNode: {fill: '#d79185', stroke: 'black', 'stroke-width':2},  //#dc7868, #E25740
+        partnershipRadius: 7.0,
         partnershipHandleBreakY: 18,
         partnershipHandleLength: 36,
         partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
@@ -89,9 +89,10 @@ define([], function(){
         graphToCanvasScale: 12,
         layoutRelativePersonWidth: 10,
         layoutRelativeOtherWidth: 2,
-        layoutScale: { xscale: 12.0, yscale: 8 }
+        layoutScale: { xscale: 12.0, yscale: 8 },
+        maxPrintPreviewPaneHeight: 600,
+        minPrintPreviewPaneHeight: 250
     };
-
 
     return PedigreeEditorParameters;
 });

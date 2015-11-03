@@ -51,22 +51,22 @@
 /* =========================================
  * MENU
  */
-#editor-menu {
+.editor-menu {
   background: #444;
   padding: 5px;
 }
-#editor-menu .action-group {
+.editor-menu .action-group {
   display: inline-block;
 }
-#editor-menu span {
+.editor-menu span {
   font-family: Arial,Verdana,sans-serif;
 }
-#editor-menu .action-group:not(:last-of-type) {
+.editor-menu .action-group:not(:last-of-type) {
   border-right: 1px solid #777;
   margin-right: 1em;
   padding-right: 1em;
 }
-#editor-menu .menu-item {
+.editor-menu .menu-item {
   border-radius: 4px;
   color: #fff;
   padding: .35em;
@@ -75,10 +75,10 @@
   display: inline-block;
   white-space: nowrap;
 }
-#editor-menu .menu-item:last-of-type {
+.editor-menu .menu-item:last-of-type {
   margin: 0;
 }
-#editor-menu .disabled-menu-item {
+.editor-menu .disabled-menu-item {
   color: #777;
   padding: .35em;
   margin: 0 .7em 0 0;
@@ -86,7 +86,7 @@
   display: inline-block;
   white-space: nowrap;
 }
-#editor-menu .disabled-menu-item:last-of-type {
+.editor-menu .disabled-menu-item:last-of-type {
   margin: 0;
 }
 .loading-indicator {
@@ -96,7 +96,7 @@
     height: 100px;
     width: 200px;
 }
-#editor-menu .menu-item:hover {
+.editor-menu .menu-item:hover {
   box-shadow: #fff 0 0 5px 0;
 }
 
@@ -439,7 +439,7 @@
   display: block;
 }
 .import-block-bottom {
-  margin: 1.25em 0 0.5em 0;
+  margin: 1.2em 0 0.5em 0;
 }
 .import-section {
   font-weight: bold;
@@ -804,43 +804,106 @@
 .minus-button {
   color: #C00;
 }
-
 .plus-button {
   color: #080;
 }
 
-.msdialog-modal-container .pedigree-template-chooser {
-    width: 720px;
-}
-.picture-box {
-    display: inline-block;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
-    margin: 14px;
-}
-.picture-box:hover {
-    cursor: pointer;
-    box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
+.cursor-normal {
+  cursor: default;
 }
 
+.msdialog-modal-container .pedigree-template-chooser {
+  width: 720px;
+}
+
+.msdialog-modal-container .pedigree-print-dialog {
+  width: 760px !important;
+  max-width: 760px !important;
+}
+.print-preview-header {
+  text-align: left;
+  margin-bottom: 2pt;
+  line-height: 15pt;
+}
+.print-preview-footer {
+  margin-top: 1px;
+  margin-bottom: 13px;
+  margin-left: 10px;
+  margin-right: 25px;
+  display: block !important;
+  color: #733;
+}
+.print-preview-footer-text {
+  color: black;
+  margin-left: 7px;
+}
+.print-settings-block {
+  margin: 0.25em 0 0.5em 0;
+  display: block;
+}
+.print-move-span {
+  margin-left: 70px;
+}
+.print-zoom-value {
+  display: inline-block;
+  width: 45px;
+  height: 25px;
+  text-align: center;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.print-small-button {
+  width:26px;
+  height:28px;
+  cursor: pointer;
+}
+.print-long-button {
+  height:28px;
+  cursor: pointer;
+}
+.print-orientation-span {
+  margin-left: 70px;
+}
+.print-left-margin {
+  margin-left: 10px;
+}
+.print-small-left-margin {
+  margin-left: 5px;
+}
+.picture-box {
+  display: inline-block;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
+  margin: 14px;
+}
+.picture-box:hover {
+  cursor: pointer;
+  box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
+}
+.preview-container {
+  border: 1px;
+  border-style: solid;
+  border-color: #ccc;
+  display: inline-block;
+}
 .template-picture-container {
-    display: inline-block;
-    margin: 3px;
+  display: inline-block;
+  margin: 3px;
 }
 
 .msdialog-box {
-    /*overflow:auto;*/
-    width: 60% !important;
-    min-width: 650px !important;
-    max-width: 720px !important;
+  /*overflow:auto;*/
+  width: 60% !important;
+  min-width: 650px !important;
+  max-width: 720px !important;
 }
 .msdialog-box .content {
-    text-align: center;
+  text-align: center;
 }
 .pedigree-okcancel {
-    width: 680px !important;
+  width: 680px !important;
 }
 .no-mouse-interaction {
-    pointer-events: none;
+  pointer-events: none;
 }
 /* Make sure the tooltips fit nicely in the suggest box in the pedigree editor: */
 .suggestItem .xTooltip {

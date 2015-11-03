@@ -73,6 +73,27 @@ define ([], function(){
         return target;
     }
 
+    // (Recursively) for every property in template check if data has the same property
+    // and set template value to the one in data.
+    Helpers.setByTemplate = function(template, data) {
+        if (typeof template !== 'object' || typeof data !== 'object') {
+            return;
+        }
+        for (var key in template) {
+            if (data.hasOwnProperty(key) && template.hasOwnProperty(key)) {
+                if (typeof template[key] === 'object') {
+                if (Object.prototype.toString.call(template[key]) === '[object Array]') {
+                    template[key] = data[key].slice(); // array -> make a copy
+                } else {
+                    Helpers.setByTemplate(template[key], data[key]); // other type of object -> set properties recursively
+                }
+                } else {
+                    template[key] = data[key];
+                }
+            }
+        }
+    }
+
     // Assigns values to all properties which are set in Source to the Target
     Helpers.copyProperties = function(objectSource, objectTarget) {
       for (var p in objectSource) {
