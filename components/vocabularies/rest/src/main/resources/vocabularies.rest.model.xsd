@@ -97,5 +97,4 @@
   </element>
 
   <element name="vocabulary" type="phenotips:Vocabulary"/>
-
 </schema>
