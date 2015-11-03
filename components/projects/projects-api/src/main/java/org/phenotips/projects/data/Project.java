@@ -18,7 +18,7 @@
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
-import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.projects.permissions.ProjectCollaborator;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -71,7 +71,7 @@ public interface Project
      *
      * @return a collection of collaborators
      */
-    Collection<Collaborator> getCollaborators();
+    Collection<ProjectCollaborator> getCollaborators();
 
     /**
      * Sets the list of project collaborators.
@@ -88,7 +88,7 @@ public interface Project
      * @param collaborators collection of contributors
      * @return true if successful
      */
-    boolean setCollaborators(Collection<Collaborator> collaborators);
+    boolean setCollaborators(Collection<ProjectCollaborator> collaborators);
 
     /**
      * Returns a collection templates available for the project.
