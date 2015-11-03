@@ -200,7 +200,7 @@ define([
 
             if (this.getNode().getLastName() && !Helpers.arrayContains(disabledFields, 'last_name')) {
                 text += ' ' + this.getNode().getLastName();
-                if (lastNameAtBirth == this.getNode().getLastName()) {
+                if (lastNameAtBirth == this.getNode().getLastName() || lastNameAtBirth === "") {
                     lastNameAtBirth = "";
                 } else {
                     lastNameAtBirth = "(" + lastNameAtBirth + ")";
