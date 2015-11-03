@@ -159,7 +159,23 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void saveHandlesExceptions(){
+    public void saveHandlesExceptions() throws Exception {
+        Exception testException = new Exception("Test Exception");
+        doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
+
+        this.parentalAgeController.save(this.patient);
+        verify(this.logger).error("Failed to save parental age: [{}]", testException.getMessage());
 
     }
+
+    @Test
+    public void readJSONDefaultBehaviourTest(){
+
+    }
+
+    @Test
+    public void writeJSONDefaultBehaviourTest(){
+
+    }
+
 }
