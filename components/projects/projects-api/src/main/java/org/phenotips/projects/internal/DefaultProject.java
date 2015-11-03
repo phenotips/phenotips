@@ -21,10 +21,10 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PermissionsManager;
-import org.phenotips.data.permissions.internal.DefaultCollaborator;
-import org.phenotips.data.permissions.internal.PatientAccessHelper;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.permissions.DefaultProjectCollaborator;
+import org.phenotips.projects.permissions.ProjectCollaborator;
 import org.phenotips.studies.data.Study;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -78,14 +78,11 @@ public class DefaultProject implements Project
 
     private static Logger logger;
 
-    private static PatientAccessHelper patientAccessHelper;
-
     private String projectId;
 
     private XWikiDocument projectObject;
 
     private DocumentReference projectReference;
-
 
     static {
         try {
@@ -99,7 +96,6 @@ public class DefaultProject implements Project
             DefaultProject.leaderAccessLevel = ccm.getInstance(ProjectAccessLevel.class, "leader");
             DefaultProject.contributorAccessLevel = ccm.getInstance(ProjectAccessLevel.class, "contributor");
             DefaultProject.logger = ccm.getInstance(Logger.class);
-            DefaultProject.patientAccessHelper = ccm.getInstance(PatientAccessHelper.class);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
@@ -134,16 +130,16 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public int getNumberOfCollaboratorsUsers() {
-
-        //TODO - this is incorrect!
+    public int getNumberOfCollaboratorsUsers()
+    {
+        // TODO - this is incorrect! count user + number of users inside groups
         return this.getCollaborators().size();
     }
 
     @Override
-    public Collection<Collaborator> getCollaborators()
+    public Collection<ProjectCollaborator> getCollaborators()
     {
-        List<Collaborator> collaborators = new ArrayList<Collaborator>();
+        List<ProjectCollaborator> collaborators = new ArrayList<ProjectCollaborator>();
 
         DocumentReference classReference =
             DefaultProject.entityResolver.resolve(Collaborator.CLASS_REFERENCE, projectReference);
@@ -161,7 +157,7 @@ public class DefaultProject implements Project
                 }
                 EntityReference userOrGroup = DefaultProject.stringResolver.resolve(collaboratorName, projectReference);
                 AccessLevel access = DefaultProject.permissionManager.resolveAccessLevel(accessName);
-                collaborators.add(new DefaultCollaborator(userOrGroup, access, DefaultProject.patientAccessHelper));
+                collaborators.add(new DefaultProjectCollaborator(userOrGroup, access));
             }
         }
 
@@ -172,17 +168,15 @@ public class DefaultProject implements Project
     public boolean setCollaborators(Collection<EntityReference> contributors, Collection<EntityReference> leaders)
     {
         // Convert EntityReference lists to Collaborators
-        Collection<Collaborator> collaborators = new ArrayList<Collaborator>();
+        Collection<ProjectCollaborator> collaborators = new ArrayList<ProjectCollaborator>();
         if (contributors != null) {
             for (EntityReference contributorRef : contributors) {
-                collaborators.add(new DefaultCollaborator(contributorRef, contributorAccessLevel,
-                    DefaultProject.patientAccessHelper));
+                collaborators.add(new DefaultProjectCollaborator(contributorRef, contributorAccessLevel));
             }
         }
         if (leaders != null) {
             for (EntityReference leaderRef : leaders) {
-                collaborators.add(new DefaultCollaborator(leaderRef, leaderAccessLevel,
-                    DefaultProject.patientAccessHelper));
+                collaborators.add(new DefaultProjectCollaborator(leaderRef, leaderAccessLevel));
             }
         }
 
@@ -190,7 +184,7 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public boolean setCollaborators(Collection<Collaborator> collaborators)
+    public boolean setCollaborators(Collection<ProjectCollaborator> collaborators)
     {
         DocumentReference classReference =
             DefaultProject.entityResolver.resolve(Collaborator.CLASS_REFERENCE, projectReference);
