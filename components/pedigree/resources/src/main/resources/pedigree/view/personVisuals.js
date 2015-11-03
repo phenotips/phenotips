@@ -184,7 +184,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
         if (this.getNode().getLastName() && !arrayContains(disabledFields, 'last_name')) {
             text += ' ' + this.getNode().getLastName();
-            if (lastNameAtBirth == this.getNode().getLastName()) {
+            if (lastNameAtBirth == this.getNode().getLastName() || lastNameAtBirth === "") {
                 lastNameAtBirth = "";
             } else {
                 lastNameAtBirth = "(" + lastNameAtBirth + ")";
