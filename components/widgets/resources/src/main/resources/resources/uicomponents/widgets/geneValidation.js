@@ -38,8 +38,10 @@ var XWiki = (function(XWiki) {
       }
     },
     validate : function(value) {
-      if (this.state == 'DONE') {
-        this.value == value && (this.valid || Validate.fail("This gene has already been entered."));
+      if (this.state == 'DONE' &&
+          this.value == value &&
+          !this.valid) {
+        Validate.fail("This gene has already been entered.");
       }
       this.check();
       return true;
@@ -81,10 +83,10 @@ var XWiki = (function(XWiki) {
       inputElement.__Gene_validator.input.value = event.memo.value;
       inputElement.__Gene_validator.validate(event.memo.value);
     } else {
-      var event = new Event('keyup');
-      inputElement.dispatchEvent(event);
+      var triggeredEvent = new Event('keyup');
+      inputElement.dispatchEvent(triggeredEvent);
     }
-  })
+  });
 
   // End XWiki augmentation.
   return XWiki;

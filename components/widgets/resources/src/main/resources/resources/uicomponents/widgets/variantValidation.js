@@ -32,8 +32,10 @@ var XWiki = (function(XWiki) {
       }
     },
     validate : function(value) {
-      if (this.state == 'DONE') {
-        this.value == value && (this.valid || Validate.fail("$services.localization.render('phenotips.tableMacros.variantAlreadyExist')"));
+      if (this.state == 'DONE' &&
+          this.value == value &&
+          !this.valid) {
+        Validate.fail("$services.localization.render('phenotips.tableMacros.variantAlreadyExist')");
       }
       this.check();
       return true;
