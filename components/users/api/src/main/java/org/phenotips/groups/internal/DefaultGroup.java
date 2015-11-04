@@ -53,4 +53,20 @@ public class DefaultGroup implements Group
     {
         return "Group " + getReference().getName();
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof DefaultGroup)) {
+            return false;
+        }
+        DefaultGroup otherGroup = (DefaultGroup) o;
+        return this.reference.getName().equals(otherGroup.getReference().getName());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.reference.getName().hashCode();
+    }
 }
