@@ -17,6 +17,7 @@
  */
 package org.phenotips.projects.script;
 
+import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectsRepository;
@@ -42,6 +43,10 @@ public class ProjectsScriptService implements ScriptService
     @Inject
     private ProjectsRepository projectsRepository;
 
+    @Inject
+    @Named("contributor")
+    private ProjectAccessLevel contributorAccessLevel;
+
     /**
      * Returns a project by an id.
      * @param projectId id of the project to return
@@ -59,5 +64,15 @@ public class ProjectsScriptService implements ScriptService
      */
     public Collection<Project> getAllProjects() {
         return this.projectsRepository.getAllProjects();
+    }
+
+    /**
+     * Returns a collection of all projects that the current user has an ContributorAccessLevel on.
+     *
+     * @return a collection of all projects that the current user has an ContributorAccessLevel to.
+     */
+    public Collection<Project> getAllProjectsAsContributor()
+    {
+        return this.projectsRepository.getAllProjects(contributorAccessLevel);
     }
 }
