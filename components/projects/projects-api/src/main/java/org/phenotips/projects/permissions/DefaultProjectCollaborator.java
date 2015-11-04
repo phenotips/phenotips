@@ -21,6 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.groups.GroupManager;
+import org.phenotips.groups.internal.DefaultGroup;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -93,6 +94,15 @@ public class DefaultProjectCollaborator extends DefaultCollaborator implements P
     @Override
     public boolean isUserIncluded(User user)
     {
-        return false;
+        EntityReference thisUser = this.getUser();
+        if (isGroup()) {
+            if (!(thisUser instanceof DocumentReference)) {
+                return false;
+            }
+            DefaultGroup group = new DefaultGroup((DocumentReference) thisUser);
+            return DefaultProjectCollaborator.groupManager.isUserInGroup(user, group);
+        } else {
+            return thisUser.equals(user.getProfileDocument());
+        }
     }
 }
