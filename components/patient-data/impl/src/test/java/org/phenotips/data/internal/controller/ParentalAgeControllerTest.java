@@ -26,6 +26,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import javax.inject.Provider;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -189,7 +191,7 @@ public class ParentalAgeControllerTest {
         testData.put(MATERNAL_AGE, AGE_NON_ZERO);
         testData.put(PATERNAL_AGE, AGE_NON_ZERO);
         PatientData<Integer> testPatientData =
-                new DictionaryPatientData<Integer>("parentalAge", testData);
+                new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
 
         this.parentalAgeController.writeJSON(this.patient, json);
@@ -200,12 +202,41 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void writeJSONDefaultBehaviourTest(){
+    public void writeJSONSelectedFieldsContainsParentalAge(){
+
+        JSONObject json = new JSONObject();
+        Collection<String> fieldList = new ArrayList<>();
+        fieldList.add("test field");
+
+        this.parentalAgeController.writeJSON(this.patient, json, fieldList);
+        Assert.assertTrue(json.isEmpty());
 
     }
 
     @Test
-    public void readJSONDefaultBehaviourTest(){
+    public void readEmptyJSONObject(){
+        JSONObject json = new JSONObject();
+        PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
+        Assert.assertNull(readData);
+    }
+
+    @Test
+    public void readJSONObjectWithNoData(){
+
+        JSONObject json = new JSONObject();
+        json.put("prenatal_perinatal_history", null);
+        PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
+        Assert.assertNull(readData);
+
+    }
+
+    @Test
+    public void readJSONDefaultBehaviour(){
+        JSONObject json = new JSONObject();
+
+        PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
+
+
 
     }
 
