@@ -23,6 +23,7 @@ import org.phenotips.vocabularies.rest.VocabularyResource;
 import org.phenotips.vocabularies.rest.VocabularyTermResource;
 import org.phenotips.vocabularies.rest.VocabularyTermSuggestionsResource;
 import org.phenotips.vocabularies.rest.model.Link;
+import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabularies.rest.model.VocabularyTerms;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
@@ -76,10 +77,9 @@ public class DefaultVocabularyTermSuggestionsResource extends XWikiResource impl
         }
         List<VocabularyTerm> termSuggestions = vocabulary.search(input, maxResults, sort, customFilter);
 
-        List<org.phenotips.vocabularies.rest.model.VocabularyTerm> termReps = new ArrayList<>();
+        List<VocabularyTermSummary> termReps = new ArrayList<>();
         for (VocabularyTerm term : termSuggestions) {
-            org.phenotips.vocabularies.rest.model.VocabularyTerm termRep =
-                this.objectFactory.createVocabularyTermRepresentation(term);
+            VocabularyTermSummary termRep = this.objectFactory.createVocabularyTermRepresentation(term);
             List<Link> links = new ArrayList<>();
             links.add(new Link().withRel(Relations.VOCABULARY_TERM)
                 .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyTermResource.class)

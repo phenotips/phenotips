@@ -18,6 +18,7 @@
 package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.vocabularies.rest.DomainObjectFactory;
+import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -57,10 +58,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
     }
 
     @Override
-    public org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term)
+    public VocabularyTermSummary createVocabularyTermRepresentation(VocabularyTerm term)
     {
-        org.phenotips.vocabularies.rest.model.VocabularyTerm rep =
-            new org.phenotips.vocabularies.rest.model.VocabularyTerm();
+        VocabularyTermSummary rep = new VocabularyTermSummary();
         rep.withId(term.getId());
         rep.withName(term.getName());
         JSONObject jsonObject = (JSONObject) term.toJSON();

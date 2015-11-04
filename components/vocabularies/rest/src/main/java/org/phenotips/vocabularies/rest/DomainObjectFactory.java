@@ -17,6 +17,7 @@
  */
 package org.phenotips.vocabularies.rest;
 
+import org.phenotips.vocabularies.rest.model.VocabularyTermSummary;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -49,5 +50,5 @@ public interface DomainObjectFactory
      * @param term the term to be converted
      * @return a REST representation summarizing the term information
      */
-    org.phenotips.vocabularies.rest.model.VocabularyTerm createVocabularyTermRepresentation(VocabularyTerm term);
+    VocabularyTermSummary createVocabularyTermRepresentation(VocabularyTerm term);
 }
