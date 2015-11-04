@@ -233,10 +233,16 @@ public class ParentalAgeControllerTest {
     @Test
     public void readJSONDefaultBehaviour(){
         JSONObject json = new JSONObject();
+        JSONObject data = new JSONObject();
+        data.put(MATERNAL_AGE, AGE_NON_ZERO);
+        data.put(PATERNAL_AGE, AGE_NON_ZERO);
+        json.put("prenatal_perinatal_history", data);
 
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
-
-
+        Assert.assertNotNull(readData);
+        Assert.assertEquals(AGE_NON_ZERO, readData.get(MATERNAL_AGE));
+        Assert.assertEquals(AGE_NON_ZERO, readData.get(PATERNAL_AGE));
+        Assert.assertEquals(this.parentalAgeController.getName(), readData.getName());
 
     }
 
