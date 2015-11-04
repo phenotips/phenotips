@@ -56,6 +56,12 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultGroupManager implements GroupManager
 {
+    private static final String COMMA = ",";
+
+    private static final String SHORT_USER_PARAMETER = "su";
+
+    private static final String USER_PARAMETER = "u";
+
     /** The space where groups are stored. */
     private static final EntityReference GROUP_SPACE = new EntityReference("Groups", EntityType.SPACE);
 
@@ -89,24 +95,26 @@ public class DefaultGroupManager implements GroupManager
         try {
             Query q =
                 this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL);
-            q.bindValue("u", profile.toString());
-            q.bindValue("su", this.compactSerializer.serialize(profile));
+            q.bindValue(USER_PARAMETER, profile.toString());
+            q.bindValue(SHORT_USER_PARAMETER, this.compactSerializer.serialize(profile));
             List<Object> groups = q.execute();
             List<Object> nestedGroups = new ArrayList<>(groups);
             while (!nestedGroups.isEmpty()) {
                 StringBuilder qs = new StringBuilder("from doc.object(XWiki.XWikiGroups) grp where grp.member in (");
                 for (int i = 0; i < nestedGroups.size(); ++i) {
                     if (i > 0) {
-                        qs.append(',');
+                        qs.append(COMMA);
                     }
-                    qs.append('?').append(i + 1);
+                    qs.append(":u").append(i + 1).append(COMMA);
+                    qs.append(":su").append(i + 1);
                 }
                 qs.append(')');
                 q = this.qm.createQuery(qs.toString(), Query.XWQL);
                 for (int i = 0; i < nestedGroups.size(); ++i) {
-                    String formalGroupName =
-                        this.resolver.resolve(String.valueOf(nestedGroups.get(i)), GROUP_SPACE).toString();
-                    q.bindValue(i + 1, formalGroupName);
+                    String nestedGroupName = String.valueOf(nestedGroups.get(i));
+                    String formalGroupName = this.resolver.resolve(nestedGroupName, GROUP_SPACE).toString();
+                    q.bindValue(SHORT_USER_PARAMETER + (i + 1), formalGroupName);
+                    q.bindValue(USER_PARAMETER + (i + 1), nestedGroupName);
                 }
                 nestedGroups = q.execute();
                 nestedGroups.removeAll(groups);
