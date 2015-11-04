@@ -74,6 +74,8 @@
     </complexType>
   </element>
 
+  <element name="vocabulary" type="phenotips:Vocabulary"/>
+
   <element name="vocabularyTerms">
     <complexType>
       <complexContent>
@@ -85,6 +87,4 @@
       </complexContent>
     </complexType>
   </element>
-
-  <element name="vocabulary" type="phenotips:Vocabulary"/>
 </schema>
