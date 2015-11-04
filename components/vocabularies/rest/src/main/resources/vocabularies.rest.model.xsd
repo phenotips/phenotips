@@ -49,16 +49,6 @@
     </complexContent>
   </complexType>
 
-  <complexType name="Alternative">
-    <complexContent>
-      <extension base="phenotips:LinkCollection">
-        <sequence>
-          <element name="id" type="string"/>
-        </sequence>
-      </extension>
-    </complexContent>
-  </complexType>
-
   <complexType name="VocabularyTerm">
     <complexContent>
       <extension base="phenotips:LinkCollection">
