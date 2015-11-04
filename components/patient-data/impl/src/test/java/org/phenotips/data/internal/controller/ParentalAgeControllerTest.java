@@ -5,6 +5,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import net.sf.json.JSONObject;
 import org.junit.Assert;
 import org.mockito.Mock;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.phenotips.Constants;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -23,6 +25,9 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import javax.inject.Provider;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -169,12 +174,38 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void readJSONDefaultBehaviourTest(){
+    public void writeJSONPatientWithNoData(){
+        JSONObject json = new JSONObject();
+        this.parentalAgeController.writeJSON(this.patient, json, null);
+        Assert.assertTrue(json.isEmpty());
+    }
+
+
+    @Test
+    public void writeJSONDefaultBehaviour(){
+
+        JSONObject json = new JSONObject();
+        Map<String, Integer> testData = new LinkedHashMap<>();
+        testData.put(MATERNAL_AGE, AGE_NON_ZERO);
+        testData.put(PATERNAL_AGE, AGE_NON_ZERO);
+        PatientData<Integer> testPatientData =
+                new DictionaryPatientData<Integer>("parentalAge", testData);
+        doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
+
+        this.parentalAgeController.writeJSON(this.patient, json);
+        Assert.assertNotNull(json);
+        Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history"));
+        System.out.println(json);
 
     }
 
     @Test
     public void writeJSONDefaultBehaviourTest(){
+
+    }
+
+    @Test
+    public void readJSONDefaultBehaviourTest(){
 
     }
 
