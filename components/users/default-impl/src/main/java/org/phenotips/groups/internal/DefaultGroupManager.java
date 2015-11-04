@@ -150,17 +150,6 @@ public class DefaultGroupManager implements GroupManager
     @Override
     public boolean isUserInGroup(User user, Group group)
     {
-        Set<Group> userGroups = this.getGroupsForUser(user);
-
-        // note that Group and default Group implementation do not overwrite equals(), thus
-        // using Set.contains() with groupManager.getGroup(groupName) is not possible
-
-        String groupName = group.getReference().getName();
-        for (Group userGroup : userGroups) {
-            if (userGroup.getReference().getName().equals(groupName)) {
-                return true;
-            }
-        }
-        return false;
+        return this.getGroupsForUser(user).contains(group);
     }
 }
