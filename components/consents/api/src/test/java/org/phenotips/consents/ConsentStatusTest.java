@@ -18,6 +18,7 @@
 package org.phenotips.consents;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,5 +52,24 @@ public class ConsentStatusTest
         Assert.assertSame(ConsentStatus.YES, ConsentStatus.valueOf("YES"));
         Assert.assertSame(ConsentStatus.NO, ConsentStatus.valueOf("NO"));
         Assert.assertSame(ConsentStatus.NOT_SET, ConsentStatus.valueOf("NOT_SET"));
+    }
+
+    @Test
+    public void equalsTest()
+    {
+        DocumentReference a1 = new DocumentReference("xwiki", "Groups", "Group A");
+        DocumentReference a2 = new DocumentReference("xwiki", "Groups", "Group A");
+        DocumentReference a3 = new DocumentReference("xwiki", "Groups", "Group B");
+        Assert.assertTrue(new DefaultGroup(a1).equals(new DefaultGroup(a2)));
+        Assert.assertFalse(new DefaultGroup(a1).equals(new DefaultGroup(a3)));
+        Assert.assertFalse(new DefaultGroup(a1).equals("not a group"));
+    }
+
+    @Test
+    public void hashCodeTest()
+    {
+        DocumentReference a = new DocumentReference("xwiki", "Groups", "group A");
+        Assert.assertTrue(new DefaultGroup(a).hashCode() == "group A".hashCode());
+        Assert.assertFalse(new DefaultGroup(a).hashCode() == "aaa".hashCode());
     }
 }
