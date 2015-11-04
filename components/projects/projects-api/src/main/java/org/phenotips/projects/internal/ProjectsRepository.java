@@ -17,16 +17,21 @@
  */
 package org.phenotips.projects.internal;
 
+import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
+import org.phenotips.projects.permissions.ProjectCollaborator;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,6 +51,9 @@ public class ProjectsRepository
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private UserManager userManager;
 
     /**
      * Returns a collection of EntityReferences of all projects.
@@ -73,6 +81,40 @@ public class ProjectsRepository
             Project p = new DefaultProject(projectId);
             projects.add(p);
         }
+        return projects;
+    }
+
+    /**
+     * Returns a collection of all projects that the current user has an {@link accessLevel} to.
+     *
+     * @param accessLevel access level required for a project
+     * @return a collection of all projects that the current user has an {@link accessLevel} to.
+     */
+    public Collection<Project> getAllProjects(ProjectAccessLevel accessLevel)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+
+        Collection<Project> projects = this.getAllProjects();
+        Iterator<Project> projectsIterator = projects.iterator();
+        while (projectsIterator.hasNext()) {
+            Project p = projectsIterator.next();
+
+            boolean foundAccessLevel = false;
+
+            Collection<ProjectCollaborator> collaborators = p.getCollaborators();
+            for (ProjectCollaborator collaborator : collaborators) {
+                if (collaborator.getAccessLevel().equals(accessLevel)
+                    && collaborator.isUserIncluded(currentUser)) {
+                    foundAccessLevel = true;
+                    break;
+                }
+            }
+
+            if (!foundAccessLevel) {
+                projectsIterator.remove();
+            }
+        }
+
         return projects;
     }
 }
