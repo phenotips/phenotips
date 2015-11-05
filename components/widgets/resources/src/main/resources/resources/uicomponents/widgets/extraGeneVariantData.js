@@ -245,11 +245,12 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         return;
       }
 
-      try {
-        /classname=([^&]+)/.exec(addTrigger.href)[1];
-      } catch (err) {
+      var xWikiClassNameMatches = /classname=([^&]+)/.exec(addTrigger.href);
+      if (xWikiClassNameMatches == null) {
         new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.typeNotFound')", 'error');
         return;
+      } else {
+        var xWikiClassName = xWikiClassNameMatches[1];
       }
 
       var className = addTrigger.up('td.variant').className;
@@ -262,7 +263,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
 
       var variantFooter = addTrigger.up('tr.variant-footer');
       if (!variantFooter) {
-        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound') " + classname, 'error');
+        new XWiki.widgets.Notification("$services.localization.render('phenotips.tableMacros.listNotFound') " + xWikiClassName, 'error');
       }
 
       var varCount = 1;
