@@ -54,33 +54,15 @@
 
 {{velocity}}{{html clean="false" wiki="true"}}
 #if ($mode == 'edit')
-##
-## Create a list of relevant projects to choose from
-#set ($projectClassName = 'PhenoTips.ProjectClass')
-#set ($projectTemplateName = 'PhenoTips.ProjectTemplate')
-#set ($query = $services.query.xwql("from doc.object(${projectClassName}) as prj where doc.fullName &lt;&gt; :template").bindValue('template', $projectTemplateName))
-#set ($projectDocs = $xwiki.wrapDocs($query.execute()))
-#set ($projects = $collectionstool.sortedSet)
-#foreach ($project in $projectDocs)
-  #set ($discard = $projects.add($services.model.serialize($project.documentReference, 'default')))
-#end
-##
+#set ($projects = $services.projects.getAllProjectsAsContributor())
 &lt;div class="form-template-option"&gt;
 &lt;select&gt;
 &lt;option value=""/&gt;$services.localization.render('phenotips.projectBindingClass.noProjectOption')&lt;/option&gt;
 &lt;p class="xHint"&gt;$services.localization.render('phenotips.projectBindingClass.noProjectOption.hint')&lt;/p&gt;
 &lt;/div&gt;
-#foreach ($sName in $projects)
-    #set ($p = $xwiki.getDocument($sName))
-    #set ($config = $s.getObject('PhenoTips.ProjectClass'))
-    #set ($configTitle = '')
-    #if ("$!{p.plainTitle}" != '')
-      #set ($configTitle = "$p.plainTitle")
-    #else
-      #set ($configTitle = "${p.name}")
-    #end
+#foreach ($p in $projects)
     &lt;div class="form-template-option"&gt;
-    &lt;option name="${prefix}${name}" value="${p.documentReference}") /&gt;$configTitle&lt;/option&gt;
+    &lt;option name="${prefix}${name}" value="${p.getName()}" /&gt;${p.getName()}&lt;/option&gt;
     &lt;p class="xHint"&gt;$!{p.content}&lt;/p&gt;
     &lt;/div&gt;
 #end
