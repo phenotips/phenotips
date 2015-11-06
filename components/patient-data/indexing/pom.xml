@@ -29,8 +29,7 @@
   <name>PhenoTips - Patient data - Solr indexing</name>
 
   <properties>
-    <!-- Instruction Ratio of tests is actually 100%. Maven is Bugged -->
-    <coverage.instructionRatio>0.99</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
   </properties>
 
   <dependencies>
