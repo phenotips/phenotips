@@ -29,6 +29,11 @@
   <name>PhenoTips - Vocabularies - Documents providing the patient class, sheet and display code</name>
   <packaging>xar</packaging>
 
+  <properties>
+    <!-- Old name for this module -->
+    <xwiki.extension.features>org.phenotips:ontology-access-ui</xwiki.extension.features>
+  </properties>
+
   <build>
     <extensions>
       <extension>
