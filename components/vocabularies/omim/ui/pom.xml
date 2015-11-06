@@ -34,6 +34,8 @@
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Online Mendelian Inheritance in Man integration</xwiki.extension.name>
+    <!-- Old name for this module -->
+    <xwiki.extension.features>org.phenotips:ontology-omim-access-ui</xwiki.extension.features>
   </properties>
 
   <dependencies>
