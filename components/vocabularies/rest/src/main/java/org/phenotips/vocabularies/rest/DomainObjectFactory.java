@@ -30,8 +30,8 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 1.3M1
  */
+@Unstable("New API introduced in 1.3")
 @Role
-@Unstable
 public interface DomainObjectFactory
 {
     /**
