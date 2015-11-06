@@ -39,18 +39,7 @@ import javax.ws.rs.core.Response;
 public interface VocabularyResource
 {
     /**
-     * Reindex the whole vocabulary, fetching the source from the specified location. This request must come from an
-     * adminstrator.
-     *
-     * @param url the URL to be indexed
-     * @param vocabularyId the vocabulary to be indexed. Will return an error if the vocabulary cannot be resolved.
-     * @return A {@link Response} indicating whether the indexing was successful
-     */
-    @POST
-    Response reindex(@QueryParam("url") String url, @PathParam("vocabulary") String vocabularyId);
-
-    /**
-     * Retrieves the resource used for working with the specified individual resource.
+     * Retrieves the resource used for working with the specified vocabulary.
      *
      * @param vocabularyId the vocabulary identifier, which is also used as a prefix in every term identifier from that
      *            vocabulary, for example {@code HP} or {@code MIM}
@@ -58,4 +47,16 @@ public interface VocabularyResource
      */
     @GET
     Vocabulary getVocabulary(@PathParam("vocabulary") String vocabularyId);
+
+    /**
+     * Reindex the whole vocabulary, fetching the source from the specified location, or from its
+     * {@link Vocabulary#getDefaultSourceLocation() default source location}. This request must come from an
+     * administrator.
+     *
+     * @param vocabularyId the vocabulary to be indexed; will return an error if the vocabulary cannot be resolved
+     * @param sourceUrl the URL to be indexed, optional
+     * @return a {@link Response} indicating whether the indexing was successful
+     */
+    @POST
+    Response reindex(@PathParam("vocabulary") String vocabularyId, @QueryParam("url") String sourceUrl);
 }

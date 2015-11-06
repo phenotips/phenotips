@@ -35,7 +35,7 @@ import javax.ws.rs.Path;
 public interface VocabulariesResource
 {
     /**
-     * Entry resource for the Vocabularies RESTful API. Provides a list of available vocabulary resources.
+     * Entry resource for the Vocabularies RESTful API, provides a list of available vocabulary resources.
      *
      * @return a {@link Vocabularies} resource representing all the vocabularies that are currently available
      */

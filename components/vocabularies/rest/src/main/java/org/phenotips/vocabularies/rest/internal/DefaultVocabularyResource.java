@@ -82,7 +82,30 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
     private DocumentReferenceResolver<EntityReference> resolver;
 
     @Override
-    public Response reindex(String url, String vocabularyId)
+    public org.phenotips.vocabularies.rest.model.Vocabulary getVocabulary(String vocabularyId)
+    {
+        Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
+        if (vocabulary == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        org.phenotips.vocabularies.rest.model.Vocabulary rep =
+            this.objectFactory.createVocabularyRepresentation(vocabulary);
+        // create links
+        Collection<Link> links = new ArrayList<>();
+        links.add(new Link().withHref(
+            UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyId)
+                .toString())
+            .withRel(Relations.SELF));
+        links.add(new Link().withRel(Relations.SUGGEST)
+            .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
+                .path(VocabularyTermSuggestionsResource.class)
+                .build(vocabularyId).toString()));
+        rep.withLinks(links);
+        return rep;
+    }
+
+    @Override
+    public Response reindex(String vocabularyId, String url)
     {
         // Check permissions, the user must have admin rights on the entire wiki
         if (!this.userIsAdmin()) {
@@ -108,29 +131,6 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
             result = Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
         return result;
-    }
-
-    @Override
-    public org.phenotips.vocabularies.rest.model.Vocabulary getVocabulary(String vocabularyId)
-    {
-        Vocabulary vocabulary = this.vm.getVocabulary(vocabularyId);
-        if (vocabulary == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-        org.phenotips.vocabularies.rest.model.Vocabulary rep =
-            this.objectFactory.createVocabularyRepresentation(vocabulary);
-        // create links
-        Collection<Link> links = new ArrayList<>();
-        links.add(new Link().withHref(
-            UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(VocabularyResource.class).build(vocabularyId)
-                .toString())
-            .withRel(Relations.SELF));
-        links.add(new Link().withRel(Relations.SUGGEST)
-            .withHref(UriBuilder.fromUri(this.uriInfo.getBaseUri())
-                .path(VocabularyTermSuggestionsResource.class)
-                .build(vocabularyId).toString()));
-        rep.withLinks(links);
-        return rep;
     }
 
     private boolean userIsAdmin()

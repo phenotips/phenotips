@@ -45,7 +45,7 @@ public interface DomainObjectFactory
 
     /**
      * Converts a {@link VocabularyTerm} into a summary representation,
-     * {@link org.phenotips.vocabularies.rest.model.VocabularyTerm}.
+     * {@link org.phenotips.vocabularies.rest.model.VocabularyTermSummary}.
      *
      * @param term the term to be converted
      * @return a REST representation summarizing the term information
