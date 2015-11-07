@@ -21,24 +21,28 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientDeletedEvent;
 import org.phenotips.data.events.PatientEvent;
 import org.phenotips.data.indexing.PatientIndexer;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class PatientEventListenerTest {
+public class PatientEventListenerTest
+{
 
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
-            new MockitoComponentMockingRule<EventListener>(PatientEventListener.class);
+        new MockitoComponentMockingRule<EventListener>(PatientEventListener.class);
 
     @Mock
     private PatientIndexer patientIndexer;
@@ -49,7 +53,8 @@ public class PatientEventListenerTest {
     private PatientEventListener patientEventListener;
 
     @Before
-    public void setUp() throws ComponentLookupException {
+    public void setUp() throws ComponentLookupException
+    {
         MockitoAnnotations.initMocks(this);
 
         this.patientEventListener = (PatientEventListener) this.mocker.getComponentUnderTest();
@@ -57,7 +62,8 @@ public class PatientEventListenerTest {
     }
 
     @Test
-    public void deletePatientTest() {
+    public void deletePatientTest()
+    {
         Event patientDeleteEvent = mock(PatientDeletedEvent.class);
         doReturn(this.patient).when((PatientEvent) patientDeleteEvent).getPatient();
 
@@ -66,7 +72,8 @@ public class PatientEventListenerTest {
     }
 
     @Test
-    public void indexPatientTest() {
+    public void indexPatientTest()
+    {
         Event patientEvent = mock(PatientEvent.class);
         doReturn(this.patient).when((PatientEvent) patientEvent).getPatient();
 
