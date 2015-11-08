@@ -130,6 +130,7 @@ public class PhenoTipsPatient implements Patient
         try {
             loadFeatures(doc, data);
             loadDisorders(doc, data);
+            loadSerializers();
         } catch (XWikiException ex) {
             this.logger.warn("Failed to access patient data for [{}]: {}", doc.getDocumentReference(), ex.getMessage());
         }
@@ -265,11 +266,6 @@ public class PhenoTipsPatient implements Patient
     @Override
     public <T> PatientData<T> getData(String name)
     {
-        //Patient data is lazy loaded on request. Note that calling toString() or toJSON() causes all data to be loaded.
-        if (serializers.isEmpty()) {
-            loadSerializers();
-        }
-
         if (!this.extraData.containsKey(name)) {
             this.readPatientData(name);
         }
