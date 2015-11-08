@@ -78,7 +78,7 @@ public class SolrPatientIndexerTest
     @Mock
     private SolrClient server;
 
-    private SolrPatientIndexer solrPatientIndexer;
+    private PatientIndexer patientIndexer;
 
     private Logger logger;
 
@@ -97,22 +97,16 @@ public class SolrPatientIndexerTest
         MockitoAnnotations.initMocks(this);
 
         SolrCoreContainerHandler cores = this.mocker.getInstance(SolrCoreContainerHandler.class);
-
-        this.permissions = this.mocker.getInstance(PermissionsManager.class);
-
-        this.qm = this.mocker.getInstance(QueryManager.class);
-
-        this.patientRepository = this.mocker.getInstance(PatientRepository.class);
-
-        this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
-
         doReturn(mock(CoreContainer.class)).when(cores).getContainer();
 
-        this.solrPatientIndexer = (SolrPatientIndexer) this.mocker.getComponentUnderTest();
-
+        this.permissions = this.mocker.getInstance(PermissionsManager.class);
+        this.qm = this.mocker.getInstance(QueryManager.class);
+        this.patientRepository = this.mocker.getInstance(PatientRepository.class);
+        this.patientDocReference = new DocumentReference("wiki", "patient", "P0000001");
+        this.patientIndexer = this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
 
-        ReflectionUtils.setFieldValue(this.solrPatientIndexer, "server", this.server);
+        ReflectionUtils.setFieldValue(this.patientIndexer, "server", this.server);
     }
 
     @Test
@@ -137,13 +131,13 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocument();
         doReturn(reporterReference).when(this.patient).getReporter();
         doReturn(patientFeatures).when(this.patient).getFeatures();
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
 
-        this.solrPatientIndexer.index(this.patient);
+        this.patientIndexer.index(this.patient);
         SolrInputDocument inputDoc = capturedArgument.getLastValue();
         verify(this.server).add(inputDoc);
         Assert.assertEquals("public", inputDoc.getFieldValue("visibility"));
@@ -161,7 +155,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocument();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -174,7 +168,7 @@ public class SolrPatientIndexerTest
         doThrow(new SolrServerException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
 
-        this.solrPatientIndexer.index(this.patient);
+        this.patientIndexer.index(this.patient);
 
         verify(this.logger).warn("Failed to perform Solr search: {}", "Error while adding SolrInputDocument");
     }
@@ -189,7 +183,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocument();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -202,7 +196,7 @@ public class SolrPatientIndexerTest
         doThrow(new IOException("Error while adding SolrInputDocument")).when(this.server)
             .add(any(SolrInputDocument.class));
 
-        this.solrPatientIndexer.index(this.patient);
+        this.patientIndexer.index(this.patient);
 
         verify(this.logger).warn("Error occurred while performing Solr search: {}",
             "Error while adding SolrInputDocument");
@@ -220,7 +214,7 @@ public class SolrPatientIndexerTest
         CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
         when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocument();
         doReturn(null).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -231,7 +225,7 @@ public class SolrPatientIndexerTest
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
 
-        this.solrPatientIndexer.index(this.patient);
+        this.patientIndexer.index(this.patient);
         SolrInputDocument inputDoc = capturedArgument.getLastValue();
         verify(this.server).add(inputDoc);
         Assert.assertEquals(inputDoc.getFieldValue("reporter"), "");
@@ -241,7 +235,7 @@ public class SolrPatientIndexerTest
     public void deleteDefaultBehaviourTest() throws IOException, SolrServerException
     {
         doReturn(this.patientDocReference).when(this.patient).getDocument();
-        this.solrPatientIndexer.delete(this.patient);
+        this.patientIndexer.delete(this.patient);
         verify(this.server).deleteByQuery("document:"
             + ClientUtils.escapeQueryChars(this.patientDocReference.toString()));
         verify(this.server).commit();
@@ -252,7 +246,7 @@ public class SolrPatientIndexerTest
     {
         doReturn(this.patientDocReference).when(this.patient).getDocument();
         doThrow(new SolrServerException("commit failed")).when(this.server).commit();
-        this.solrPatientIndexer.delete(this.patient);
+        this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Failed to delete from Solr: {}", "commit failed");
     }
 
@@ -261,7 +255,7 @@ public class SolrPatientIndexerTest
     {
         doReturn(this.patientDocReference).when(this.patient).getDocument();
         doThrow(new IOException("commit failed")).when(this.server).commit();
-        this.solrPatientIndexer.delete(this.patient);
+        this.patientIndexer.delete(this.patient);
         verify(this.logger).warn("Error occurred while deleting Solr documents: {}", "commit failed");
     }
 
@@ -283,7 +277,7 @@ public class SolrPatientIndexerTest
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
 
-        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(this.patientDocReference).when(this.patient).getDocument();
         doReturn(reporterReference).when(this.patient).getReporter();
 
         doReturn(patientFeatures).when(this.patient).getFeatures();
@@ -294,7 +288,7 @@ public class SolrPatientIndexerTest
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
 
-        this.solrPatientIndexer.reindex();
+        this.patientIndexer.reindex();
 
         verify(this.server).deleteByQuery("*:*");
         verify(this.server).commit();
@@ -313,7 +307,7 @@ public class SolrPatientIndexerTest
 
         doThrow(new SolrServerException("deleteByQuery failed")).when(this.server).deleteByQuery("*:*");
 
-        this.solrPatientIndexer.reindex();
+        this.patientIndexer.reindex();
 
         verify(this.logger).warn("Failed to reindex patients: {}", "deleteByQuery failed");
     }
@@ -330,7 +324,7 @@ public class SolrPatientIndexerTest
 
         doThrow(new IOException("deleteByQuery failed")).when(this.server).deleteByQuery("*:*");
 
-        this.solrPatientIndexer.reindex();
+        this.patientIndexer.reindex();
 
         verify(this.logger).warn("Error occurred while reindexing patients: {}", "deleteByQuery failed");
     }
@@ -341,7 +335,7 @@ public class SolrPatientIndexerTest
         doThrow(new QueryException("createQuery failed", null, null))
             .when(this.qm).createQuery("from doc.object(PhenoTips.PatientClass) as patient", Query.XWQL);
 
-        this.solrPatientIndexer.reindex();
+        this.patientIndexer.reindex();
 
         verify(this.logger).warn("Failed to search patients for reindexing: {}", "createQuery failed");
 

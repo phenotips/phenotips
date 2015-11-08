@@ -24,7 +24,6 @@ import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import org.junit.Before;
@@ -50,34 +49,34 @@ public class PatientEventListenerTest
     @Mock
     private Patient patient;
 
-    private PatientEventListener patientEventListener;
+    private EventListener eventListener;
 
     @Before
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
 
-        this.patientEventListener = (PatientEventListener) this.mocker.getComponentUnderTest();
+        this.eventListener = this.mocker.getComponentUnderTest();
         this.patientIndexer = this.mocker.getInstance(PatientIndexer.class);
     }
 
     @Test
     public void deletePatientTest()
     {
-        Event patientDeleteEvent = mock(PatientDeletedEvent.class);
-        doReturn(this.patient).when((PatientEvent) patientDeleteEvent).getPatient();
+        PatientEvent patientDeleteEvent = mock(PatientDeletedEvent.class);
+        doReturn(this.patient).when(patientDeleteEvent).getPatient();
 
-        this.patientEventListener.onEvent(patientDeleteEvent, mock(Object.class), mock(Object.class));
+        this.eventListener.onEvent(patientDeleteEvent, mock(Object.class), mock(Object.class));
         verify(this.patientIndexer).delete(this.patient);
     }
 
     @Test
     public void indexPatientTest()
     {
-        Event patientEvent = mock(PatientEvent.class);
-        doReturn(this.patient).when((PatientEvent) patientEvent).getPatient();
+        PatientEvent patientEvent = mock(PatientEvent.class);
+        doReturn(this.patient).when(patientEvent).getPatient();
 
-        this.patientEventListener.onEvent(patientEvent, mock(Object.class), mock(Object.class));
+        this.eventListener.onEvent(patientEvent, mock(Object.class), mock(Object.class));
         verify(this.patientIndexer).index(this.patient);
     }
 }
