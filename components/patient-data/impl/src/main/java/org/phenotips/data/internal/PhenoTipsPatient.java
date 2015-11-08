@@ -34,7 +34,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +107,7 @@ public class PhenoTipsPatient implements Patient
     private Set<Disorder> disorders = new TreeSet<Disorder>();
 
     /** The list of all the initialized data holders (PatientDataSerializer). */
-    private Map<String, PatientDataController<?>> serializers = new HashMap<String, PatientDataController<?>>();
+    private Map<String, PatientDataController<?>> serializers = new TreeMap<String, PatientDataController<?>>();
 
     /** Extra data that can be plugged into the patient record. */
     private Map<String, PatientData<?>> extraData = new TreeMap<String, PatientData<?>>();
