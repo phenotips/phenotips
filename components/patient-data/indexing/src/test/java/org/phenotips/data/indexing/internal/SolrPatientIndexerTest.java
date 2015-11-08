@@ -18,7 +18,9 @@
 package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Feature;
+import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 import org.phenotips.data.permissions.PatientAccess;
@@ -27,6 +29,8 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.internal.DefaultPatientAccess;
 import org.phenotips.data.permissions.internal.visibility.PublicVisibility;
 import org.phenotips.vocabulary.SolrCoreContainerHandler;
+import org.phenotips.vocabulary.Vocabulary;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
@@ -38,8 +42,12 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrClient;
@@ -115,8 +123,30 @@ public class SolrPatientIndexerTest
         ReflectionUtils.setFieldValue(this.solrPatientIndexer, "server", this.server);
     }
 
+    @Before
+    public void setupVocabulary() throws ComponentLookupException
+    {
+        // Setup the vocabulary
+        Vocabulary hpo = this.mocker.getInstance(Vocabulary.class, "hpo");
+
+        // Setup mock term
+        String[] ancestorIds = { "HP:0011842", "HP:0000924", "HP:0000118", "HP:0000001" };
+        Set<VocabularyTerm> ancestors = new HashSet<VocabularyTerm>();
+        for (String id : ancestorIds) {
+            VocabularyTerm ancestor = mock(VocabularyTerm.class);
+            when(ancestor.getId()).thenReturn(id);
+            ancestors.add(ancestor);
+        }
+        VocabularyTerm term = mock(VocabularyTerm.class);
+        when(term.getId()).thenReturn("HP:0001367");
+        ancestors.add(term);
+
+        when(term.getAncestorsAndSelf()).thenReturn(ancestors);
+        when(hpo.getTerm(term.getId())).thenReturn(term);
+    }
+
     @Test
-    public void indexDefaultBehaviourTest() throws IOException, SolrServerException
+    public void indexDefaultPhenotypeBehaviourTest() throws IOException, SolrServerException
     {
         Set<Feature> patientFeatures = new HashSet<>();
         Feature testFeature = mock(Feature.class);
@@ -134,7 +164,7 @@ public class SolrPatientIndexerTest
         doReturn(patientFeatures).when(this.patient).getFeatures();
         doReturn(true).when(testFeature).isPresent();
         doReturn("phenotype").when(testFeature).getType();
-        doReturn("id").when(testFeature).getId();
+        doReturn("HP:0001367").when(testFeature).getId();
 
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
@@ -143,7 +173,74 @@ public class SolrPatientIndexerTest
         SolrInputDocument inputDoc = capturedArgument.getLastValue();
         verify(this.server).add(inputDoc);
         Assert.assertEquals("public", inputDoc.getFieldValue("visibility"));
-        Assert.assertEquals("id", inputDoc.getFieldValue("phenotype"));
+        Assert.assertEquals("HP:0001367", inputDoc.getFieldValue("phenotype"));
+        Assert.assertEquals(5, inputDoc.getFieldValues("extended_phenotype").size());
+    }
+
+    @Test
+    public void indexDefaultGeneBehaviourTest() throws IOException, SolrServerException
+    {
+        Set<Feature> patientFeatures = new HashSet<>();
+        Feature testFeature = mock(Feature.class);
+        patientFeatures.add(testFeature);
+        DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
+        PatientAccess patientAccess = mock(DefaultPatientAccess.class);
+        Visibility patientVisibility = new PublicVisibility();
+
+        CapturingMatcher<SolrInputDocument> capturedArgument = new CapturingMatcher<>();
+        when(this.server.add(argThat(capturedArgument))).thenReturn(mock(UpdateResponse.class));
+
+        doReturn(patientDocReference).when(this.patient).getDocument();
+        doReturn(reporterReference).when(this.patient).getReporter();
+
+        doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
+
+        List<Map<String, String>> fakeGenes = new ArrayList<Map<String, String>>();
+        Map<String, String> fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "CANDIDATE1");
+        fakeGenes.add(fakeGene);
+        fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "CANDIDATE2");
+        fakeGene.put("status", "candidate");
+        fakeGenes.add(fakeGene);
+        fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "REJECTED1");
+        fakeGene.put("status", "rejected");
+        fakeGenes.add(fakeGene);
+        fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "SOLVED1");
+        fakeGene.put("status", "solved");
+        fakeGenes.add(fakeGene);
+        fakeGene = new HashMap<String, String>();
+        fakeGene.put("gene", "");
+        fakeGene.put("status", "candidate");
+        fakeGenes.add(fakeGene);
+
+        PatientData<Map<String, String>> fakeGeneData =
+            new IndexedPatientData<Map<String, String>>("genes", fakeGenes);
+        doReturn(fakeGeneData).when(this.patient).getData("genes");
+
+        doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
+        doReturn(patientVisibility).when(patientAccess).getVisibility();
+
+        this.solrPatientIndexer.index(this.patient);
+        SolrInputDocument inputDoc = capturedArgument.getLastValue();
+        verify(this.server).add(inputDoc);
+
+        Collection<Object> indexedGenes;
+        indexedGenes = inputDoc.getFieldValues("candidate_genes");
+        Assert.assertEquals(2, indexedGenes.size());
+        for (Object s : indexedGenes) {
+            Assert.assertTrue(((String) s).startsWith("CANDIDATE"));
+        }
+
+        indexedGenes = inputDoc.getFieldValues("solved_genes");
+        Assert.assertEquals(1, indexedGenes.size());
+        Assert.assertEquals("SOLVED1", indexedGenes.iterator().next());
+
+        indexedGenes = inputDoc.getFieldValues("rejected_genes");
+        Assert.assertEquals(1, indexedGenes.size());
+        Assert.assertEquals("REJECTED1", indexedGenes.iterator().next());
     }
 
     @Test
