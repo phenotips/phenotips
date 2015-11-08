@@ -177,16 +177,16 @@ public class PhenoTipsPatient implements Patient
     {
         try {
             List<PatientDataController<?>> availableSerializers = ComponentManagerRegistry
-                    .getContextComponentManager()
-                    .getInstanceList(PatientDataController.class);
+                .getContextComponentManager()
+                .getInstanceList(PatientDataController.class);
             for (PatientDataController<?> serializer : availableSerializers) {
-                if (serializers.containsKey(serializer.getName())) {
+                if (this.serializers.containsKey(serializer.getName())) {
                     this.logger.warn("Overwriting patient data controller with the name [{}]", serializer.getName());
                 }
                 this.serializers.put(serializer.getName(), serializer);
             }
-        } catch (ComponentLookupException e) {
-            this.logger.error("Failed to find component", e);
+        } catch (ComponentLookupException ex) {
+            this.logger.error("Failed to lookup serializers", ex);
         }
     }
 
@@ -340,8 +340,7 @@ public class PhenoTipsPatient implements Patient
             result.element(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
-
-        for (PatientDataController<?> serializer: this.serializers.values()) {
+        for (PatientDataController<?> serializer : this.serializers.values()) {
             serializer.writeJSON(this, result, onlyFieldNames);
         }
 
