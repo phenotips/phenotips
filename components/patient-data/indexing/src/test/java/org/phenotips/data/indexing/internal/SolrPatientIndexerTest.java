@@ -120,7 +120,16 @@ public class SolrPatientIndexerTest
     {
         Set<Feature> patientFeatures = new HashSet<>();
         Feature testFeature = mock(Feature.class);
+        doReturn(true).when(testFeature).isPresent();
+        doReturn("phenotype").when(testFeature).getType();
+        doReturn("id").when(testFeature).getId();
         patientFeatures.add(testFeature);
+        Feature negativeTestFeature = mock(Feature.class);
+        doReturn(false).when(negativeTestFeature).isPresent();
+        doReturn("phenotype").when(negativeTestFeature).getType();
+        doReturn("id2").when(negativeTestFeature).getId();
+        patientFeatures.add(negativeTestFeature);
+
         DocumentReference reporterReference = new DocumentReference("xwiki", "XWiki", "user");
         PatientAccess patientAccess = mock(DefaultPatientAccess.class);
         Visibility patientVisibility = new PublicVisibility();
@@ -130,12 +139,7 @@ public class SolrPatientIndexerTest
 
         doReturn(patientDocReference).when(this.patient).getDocument();
         doReturn(reporterReference).when(this.patient).getReporter();
-
         doReturn(patientFeatures).when(this.patient).getFeatures();
-        doReturn(true).when(testFeature).isPresent();
-        doReturn("phenotype").when(testFeature).getType();
-        doReturn("id").when(testFeature).getId();
-
         doReturn(patientAccess).when(this.permissions).getPatientAccess(this.patient);
         doReturn(patientVisibility).when(patientAccess).getVisibility();
 
@@ -144,6 +148,7 @@ public class SolrPatientIndexerTest
         verify(this.server).add(inputDoc);
         Assert.assertEquals("public", inputDoc.getFieldValue("visibility"));
         Assert.assertEquals("id", inputDoc.getFieldValue("phenotype"));
+        Assert.assertEquals("id2", inputDoc.getFieldValue("negative_phenotype"));
     }
 
     @Test
