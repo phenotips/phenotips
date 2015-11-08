@@ -41,7 +41,7 @@
 #if ($request.get('doCreate') == '1')
   #if ($services.csrf.isTokenValid($request.form_token))
     #set ($patient = $services.patients.createNewPatient())
-    #if ($patient)
+    #if ("$!patient.id" != '')
       ## FIXME Move this to a PatientRecordInitializer
       #set ($formBindingClassName = 'PhenoTips.StudyBindingClass')
       #set ($formBindingPropertyName = 'studyReference')

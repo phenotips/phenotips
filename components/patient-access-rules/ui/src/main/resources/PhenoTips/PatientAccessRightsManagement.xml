@@ -1076,7 +1076,7 @@ $xwiki.ssx.use($serviceDocName)
 {{velocity}}
 #if ($xcontext.action != 'export')
 #set ($patient = $services.patients.getPatientById($doc.documentReference))
-#if ($patient)
+#if ("$!patient.id" != '')
   #set ($_service = $services.permissions)
   #set ($patientAccess = $_service.getPatientAccess($patient))
   ## ===========================================================

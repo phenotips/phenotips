@@ -52,7 +52,7 @@ $!response.setContentType('application/json')##
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
 #end
-#if (!$patient)
+#if ("$!patient.id" == '')
   $response.setStatus(404)
   {"error" : "Identifier not found."}
   #break
