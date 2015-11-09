@@ -193,6 +193,8 @@ public class ParentalAgeControllerTest
 
         this.parentalAgeController.save(this.patient);
 
+        verify(data).set(MATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
+        verify(data).set(PATERNAL_AGE, AGE_NON_ZERO, this.xWikiContext);
         verify(this.xWikiContext.getWiki()).saveDocument(this.doc,
             "Updated parental age from JSON", true, this.xWikiContext);
     }
@@ -229,11 +231,10 @@ public class ParentalAgeControllerTest
         this.parentalAgeController.writeJSON(this.patient, json);
         Assert.assertNotNull(json);
         Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history"));
-        System.out.println(json);
     }
 
     @Test
-    public void writeJSONSelectedFieldsContainsParentalAge()
+    public void writeJSONSelectedFieldsWithoutParentalAge()
     {
         JSONObject json = new JSONObject();
         Collection<String> fieldList = new ArrayList<>();
