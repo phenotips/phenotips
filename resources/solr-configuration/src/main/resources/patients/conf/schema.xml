@@ -62,11 +62,10 @@
     <field name="visibility" type="string" indexed="true" stored="true" required="false" />
     <field name="accessLevel" type="int" indexed="true" stored="true" required="false" />
 
-    <!-- Index all fields ending in "phenotype", only store those that start with "actual_" -->
-    <dynamicField name="actual_*" type="text_ws" indexed="true" stored="true" multiValued="true"/>
-    <!-- We don't use the full "phenotype" in the pattern since Solr applies the longest matching pattern,
-         so we must keep it shorter than "actual_" -->
-    <dynamicField name="*notype" type="text_ws" indexed="true" stored="false" multiValued="true"/>
+    <!-- Index all fields ending in "phenotype", not storing those that start with "extended_" -->
+    <!-- Solr applies the longest matching pattern, so the full "phenotype" suffix is not used -->
+    <dynamicField name="*henotype" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="extended_*" type="text_ws" indexed="true" stored="false" multiValued="true"/>
 
     <!-- Ignore everything else -->
     <dynamicField name="*" type="ignored" multiValued="true" />
