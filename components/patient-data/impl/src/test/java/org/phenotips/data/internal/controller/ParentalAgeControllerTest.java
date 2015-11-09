@@ -17,56 +17,66 @@
  */
 package org.phenotips.data.internal.controller;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import net.sf.json.JSONObject;
-import org.junit.Assert;
-import org.mockito.Mock;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 import org.phenotips.Constants;
 import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.slf4j.Logger;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import javax.inject.Provider;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.inject.Provider;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONObject;
+
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class ParentalAgeControllerTest {
-
+public class ParentalAgeControllerTest
+{
     private static final String MATERNAL_AGE = "maternal_age";
 
     private static final String PATERNAL_AGE = "paternal_age";
 
-    private static final Integer AGE_NON_ZERO = 25; // Arbitrary age.
+    // Arbitrary age
+    private static final Integer AGE_NON_ZERO = 25;
 
     private static final Integer AGE_ZERO = 0;
 
     public static final EntityReference CLASS_REFERENCE =
-            new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+        new EntityReference("ParentalInformationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     @Rule
     public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-            new MockitoComponentMockingRule<PatientDataController<Integer>>(ParentalAgeController.class);
+        new MockitoComponentMockingRule<PatientDataController<Integer>>(ParentalAgeController.class);
 
     @Mock
     private Logger logger;
@@ -92,11 +102,12 @@ public class ParentalAgeControllerTest {
     private XWikiDocument doc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Exception
+    {
         MockitoAnnotations.initMocks(this);
 
-        this.parentalAgeController = (ParentalAgeController) mocker.getComponentUnderTest();
-        this.logger = mocker.getMockedLogger();
+        this.parentalAgeController = (ParentalAgeController) this.mocker.getComponentUnderTest();
+        this.logger = this.mocker.getMockedLogger();
 
         this.provider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
         this.xWikiContext = this.provider.get();
@@ -104,11 +115,11 @@ public class ParentalAgeControllerTest {
         this.documentAccessBridge = this.mocker.getInstance(DocumentAccessBridge.class);
         doReturn(this.patientDocument).when(this.patient).getDocument();
         doReturn(this.doc).when(this.documentAccessBridge).getDocument(this.patientDocument);
-
     }
 
     @Test
-    public void loadEmptyPatientTest(){
+    public void loadEmptyPatientTest()
+    {
         doReturn(null).when(this.doc).getXObject(any(EntityReference.class));
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
         Assert.assertNull(testData);
@@ -116,7 +127,8 @@ public class ParentalAgeControllerTest {
     }
 
     @Test
-    public void loadMaternalAndPaternalAgeNonZero(){
+    public void loadMaternalAndPaternalAgeNonZero()
+    {
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
@@ -128,11 +140,11 @@ public class ParentalAgeControllerTest {
         Assert.assertEquals("parentalAge", testData.getName());
         Assert.assertTrue(testData.get(MATERNAL_AGE) == 25);
         Assert.assertTrue(testData.get(PATERNAL_AGE) == 25);
-
     }
 
     @Test
-    public void loadMaternalAndPaternalAgeZero(){
+    public void loadMaternalAndPaternalAgeZero()
+    {
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
         doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE);
@@ -140,33 +152,35 @@ public class ParentalAgeControllerTest {
 
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
         Assert.assertNull(testData);
-
     }
 
     @Test
-    public void loadHandlesExceptions() throws Exception {
+    public void loadHandlesExceptions() throws Exception
+    {
         Exception testException = new Exception("Test Exception");
         doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
 
         this.parentalAgeController.load(this.patient);
 
         verify(this.logger).error("Could not find requested document or some unforeseen"
-                + " error has occurred during controller loading ", testException.getMessage());
+            + " error has occurred during controller loading ", testException.getMessage());
     }
 
     @Test
-    public void saveEmptyPatientTest() throws XWikiException {
+    public void saveEmptyPatientTest() throws XWikiException
+    {
         PatientData<Integer> patientData = mock(PatientData.class);
         doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
         doReturn(false).when(patientData).isNamed();
         this.parentalAgeController.save(this.patient);
         verifyNoMoreInteractions(this.doc);
         verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
-                "Updated parental age from JSON", true, this.xWikiContext);
+            "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
-    public void saveDefaultBehaviourTest() throws XWikiException {
+    public void saveDefaultBehaviourTest() throws XWikiException
+    {
         PatientData<Integer> patientData = mock(PatientData.class);
         BaseObject data = mock(BaseObject.class);
         doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
@@ -179,76 +193,75 @@ public class ParentalAgeControllerTest {
         this.parentalAgeController.save(this.patient);
 
         verify(this.xWikiContext.getWiki()).saveDocument(this.doc,
-                "Updated parental age from JSON", true, this.xWikiContext);
+            "Updated parental age from JSON", true, this.xWikiContext);
     }
 
     @Test
-    public void saveHandlesExceptions() throws Exception {
+    public void saveHandlesExceptions() throws Exception
+    {
         Exception testException = new Exception("Test Exception");
         doThrow(testException).when(this.documentAccessBridge).getDocument(this.patientDocument);
 
         this.parentalAgeController.save(this.patient);
         verify(this.logger).error("Failed to save parental age: [{}]", testException.getMessage());
-
     }
 
     @Test
-    public void writeJSONPatientWithNoData(){
+    public void writeJSONPatientWithNoData()
+    {
         JSONObject json = new JSONObject();
         this.parentalAgeController.writeJSON(this.patient, json, null);
         Assert.assertTrue(json.isEmpty());
     }
 
-
     @Test
-    public void writeJSONDefaultBehaviour(){
-
+    public void writeJSONDefaultBehaviour()
+    {
         JSONObject json = new JSONObject();
         Map<String, Integer> testData = new LinkedHashMap<>();
         testData.put(MATERNAL_AGE, AGE_NON_ZERO);
         testData.put(PATERNAL_AGE, AGE_NON_ZERO);
         PatientData<Integer> testPatientData =
-                new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
+            new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
 
         this.parentalAgeController.writeJSON(this.patient, json);
         Assert.assertNotNull(json);
         Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history"));
         System.out.println(json);
-
     }
 
     @Test
-    public void writeJSONSelectedFieldsContainsParentalAge(){
-
+    public void writeJSONSelectedFieldsContainsParentalAge()
+    {
         JSONObject json = new JSONObject();
         Collection<String> fieldList = new ArrayList<>();
         fieldList.add("test field");
 
         this.parentalAgeController.writeJSON(this.patient, json, fieldList);
         Assert.assertTrue(json.isEmpty());
-
     }
 
     @Test
-    public void readEmptyJSONObject(){
+    public void readEmptyJSONObject()
+    {
         JSONObject json = new JSONObject();
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
         Assert.assertNull(readData);
     }
 
     @Test
-    public void readJSONObjectWithNoData(){
-
+    public void readJSONObjectWithNoData()
+    {
         JSONObject json = new JSONObject();
         json.put("prenatal_perinatal_history", null);
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
         Assert.assertNull(readData);
-
     }
 
     @Test
-    public void readJSONDefaultBehaviour(){
+    public void readJSONDefaultBehaviour()
+    {
         JSONObject json = new JSONObject();
         JSONObject data = new JSONObject();
         data.put(MATERNAL_AGE, AGE_NON_ZERO);
@@ -260,7 +273,5 @@ public class ParentalAgeControllerTest {
         Assert.assertEquals(AGE_NON_ZERO, readData.get(MATERNAL_AGE));
         Assert.assertEquals(AGE_NON_ZERO, readData.get(PATERNAL_AGE));
         Assert.assertEquals(this.parentalAgeController.getName(), readData.getName());
-
     }
-
 }
