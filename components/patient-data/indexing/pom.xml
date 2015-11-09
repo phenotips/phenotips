@@ -28,6 +28,10 @@
   <artifactId>patient-data-indexing</artifactId>
   <name>PhenoTips - Patient data - Solr indexing</name>
 
+  <properties>
+    <coverage.instructionRatio>0.93</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
