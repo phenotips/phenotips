@@ -209,8 +209,8 @@ $!doc.content
       });
       _this._openForContributionCheckboxClicked();
 
-      _this._initializeCollaborators('leaders');
-      _this._initializeCollaborators('contributors');
+      _this._initializeCollaborators('leaders', true, false);
+      _this._initializeCollaborators('contributors', true, true);
       this._initializeSuggestTemplates();
 
       this._readCollaboratorsAndTemplates();
@@ -234,10 +234,11 @@ $!doc.content
       });
     },
 
-    _initializeCollaborators : function(type) {
+    _initializeCollaborators : function(type, searchUsers, searchGroups) {
+      var params = "&amp;searchUsers="+searchUsers+"&amp;searchGroups="+searchGroups+"&amp;"
       var suggestInput = $('suggest'+type);
       suggestInput._suggest = new PhenoTips.widgets.Suggest(suggestInput, {
-        script: "$xwiki.getURL('PhenoTips.SearchUsersAndGroups', 'get', 'outputSyntax=plain')" + "&amp;",
+        script: "$xwiki.getURL('PhenoTips.SearchUsersAndGroups', 'get', 'outputSyntax=plain')" + params,
         varname: "input",
         noresults: "No matching terms",
         resultsParameter: "matched",
