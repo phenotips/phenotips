@@ -237,7 +237,7 @@ $!doc.content
     _initializeCollaborators : function(type) {
       var suggestInput = $('suggest'+type);
       suggestInput._suggest = new PhenoTips.widgets.Suggest(suggestInput, {
-        script: "$xwiki.getURL('PhenoTips.SearchUsersOrGroups', 'get', 'outputSyntax=plain')" + "&amp;",
+        script: "$xwiki.getURL('PhenoTips.SearchUsersAndGroups', 'get', 'outputSyntax=plain')" + "&amp;",
         varname: "input",
         noresults: "No matching terms",
         resultsParameter: "matched",
