@@ -99,6 +99,9 @@ public class ParentalAgeControllerTest
     private Patient patient;
 
     @Mock
+    private PatientData<Integer> patientData;
+
+    @Mock
     private XWikiDocument doc;
 
     @Before
@@ -169,9 +172,8 @@ public class ParentalAgeControllerTest
     @Test
     public void saveEmptyPatientTest() throws XWikiException
     {
-        PatientData<Integer> patientData = mock(PatientData.class);
-        doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
-        doReturn(false).when(patientData).isNamed();
+        doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(false).when(this.patientData).isNamed();
         this.parentalAgeController.save(this.patient);
         verifyNoMoreInteractions(this.doc);
         verify(this.xWikiContext.getWiki(), never()).saveDocument(this.doc,
@@ -181,14 +183,13 @@ public class ParentalAgeControllerTest
     @Test
     public void saveDefaultBehaviourTest() throws XWikiException
     {
-        PatientData<Integer> patientData = mock(PatientData.class);
         BaseObject data = mock(BaseObject.class);
-        doReturn(patientData).when(this.patient).getData(this.parentalAgeController.getName());
-        doReturn(true).when(patientData).isNamed();
+        doReturn(this.patientData).when(this.patient).getData(this.parentalAgeController.getName());
+        doReturn(true).when(this.patientData).isNamed();
         doReturn(data).when(this.doc).getXObject(CLASS_REFERENCE, true, this.xWikiContext);
 
-        doReturn(AGE_NON_ZERO).when(patientData).get(MATERNAL_AGE);
-        doReturn(AGE_NON_ZERO).when(patientData).get(PATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(this.patientData).get(MATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(this.patientData).get(PATERNAL_AGE);
 
         this.parentalAgeController.save(this.patient);
 
