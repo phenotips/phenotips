@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content>{{velocity}}
 $response.setContentType('application/json')
-$services.usersAndGroups.searchUsersAndGroups($request.input, true, true)
+$services.usersAndGroups.searchUsersAndGroups($request.input, $request.searchUsers, $request.searchGroups)
 {{/velocity}}
 </content>
 </xwikidoc>
