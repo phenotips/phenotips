@@ -57,7 +57,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
-: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
 $doc.display('openProjectForViewing') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
 $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
