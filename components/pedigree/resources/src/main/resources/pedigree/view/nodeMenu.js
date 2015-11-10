@@ -320,7 +320,8 @@ NodeMenu = Class.create({
         // patient selector
         this.form.select('input.suggest-patients').each(function(item) {
             if (!item.hasClassName('initialized')) {
-                var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&permission=edit&json=true&nb=12&";
+                var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") +
+                   "&permission=edit&json=true&nb=12&markFamilyAssociation=true&";
                 //console.log("PatientSuggest URL: " + patientSuggestURL);
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: patientSuggestURL,

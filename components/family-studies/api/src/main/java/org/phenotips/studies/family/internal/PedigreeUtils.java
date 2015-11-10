@@ -17,242 +17,203 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.Constants;
-import org.phenotips.studies.family.FamilyUtils;
-import org.phenotips.studies.family.Processing;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.security.authorization.AuthorizationService;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.JsonAdapter;
+import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.response.JSONResponse;
+import org.phenotips.studies.family.response.StatusResponse;
 
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.security.authorization.Right;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.LargeStringProperty;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Contains mainly functions for manipulating json from pedigrees. Example usage would be extracting patient data
- * objects from the json.
+ * Processes pedigree from UI.
  *
  * @version $Id$
  * @since 1.2RC1
  */
-public final class PedigreeUtils
+@Component(roles = { PedigreeUtils.class })
+@Singleton
+public class PedigreeUtils
 {
-    /**
-     * XWiki class that holds pedigree data (image, structure, etc).
-     */
-    public static final EntityReference PEDIGREE_CLASS =
-        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+    @Inject
+    private PatientRepository patientRepository;
 
-    private static final String DATA = "data";
+    @Inject
+    private FamilyRepository familyRepository;
 
-    private static final String IMAGE = "image";
+    @Inject
+    private AuthorizationService authorizationService;
 
-    private PedigreeUtils()
-    {
-    }
+    @Inject
+    private JsonAdapter jsonAdapter;
 
     /**
-     * Given a pedigree, will extract and return all PhenoTips patient ids.
+     * Receives a pedigree in form of a JSONObject and an SVG image to be stored in proband's family.
      *
-     * @param pedigree data section of a pedigree
-     * @return all PhenoTips ids from pedigree nodes that have internal ids
+     * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
+     *            for. If it's a proband id, the family assocaited with the patient is used. If not family is
+     *            associated, a new one is created.
+     * @param json (data) part of the pedigree JSON
+     * @param image svg part of the pedigree JSON
+     * @return {@link JSONResponse} with one of many possible statuses
      */
-    public static List<String> extractIdsFromPedigree(JSONObject pedigree)
+    public JSONResponse processPedigree(String documentId, JSONObject json, String image)
     {
-        List<String> extractedIds = new LinkedList<>();
-        for (JSONObject properties : PedigreeUtils.extractPatientJSONPropertiesFromPedigree(pedigree)) {
-            Object id = properties.get(Processing.PATIENT_LINK_JSON_KEY);
-            if (id != null && StringUtils.isNotBlank(id.toString())) {
-                extractedIds.add(id.toString());
+        Pedigree pedigree = new DefaultPedigree(json, image);
+
+        // checking if documentId is family's id
+        Family family = this.familyRepository.getFamilyById(documentId);
+        if (family != null) {
+            return processPedigree(family, pedigree);
+        }
+
+        // checking if documentId is patient's id
+        Patient proband = this.patientRepository.getPatientById(documentId);
+        if (proband != null) {
+            family = this.familyRepository.getFamilyForPatient(proband);
+            if (family == null) {
+                if (!this.authorizationService.hasAccess(Right.EDIT, proband.getDocument())) {
+                    return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(documentId);
+                }
+                family = this.familyRepository.createFamily();
+                family.addMember(proband);
             }
+            return processPedigree(family, pedigree);
         }
-        return extractedIds;
+
+        // documentId is not family's or patient's.
+        return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(documentId);
     }
 
-    /**
-     * Patients are representing in a list within the structure of a pedigree. Extracts JSON objects that belong to
-     * patients.
-     *
-     * @param pedigree data section of a pedigree
-     * @return non-null and non-empty patient properties in JSON objects.
+    /*
+     * @param family not null
+     * @param pedigree not null
+     * @return
      */
-    public static List<JSONObject> extractPatientJSONPropertiesFromPedigree(JSONObject pedigree)
+    private JSONResponse processPedigree(Family family, Pedigree pedigree)
     {
-        List<JSONObject> extractedObjects = new LinkedList<>();
-        JSONArray gg = (JSONArray) pedigree.get("GG");
-        // letting it throw a null exception on purpose
-        for (Object nodeObj : gg) {
-            JSONObject node = (JSONObject) nodeObj;
-            JSONObject properties = (JSONObject) node.get("prop");
-            if (properties == null || properties.isEmpty()) {
-                continue;
-            }
-            extractedObjects.add(properties);
+        StatusResponse response;
+
+        // sometimes pedigree passes in family document name as a member
+        List<String> newMembers = pedigree.extractIds();
+        newMembers.remove(family.getId());
+
+        JSONResponse validityResponse = checkValidity(family, newMembers);
+        if (!validityResponse.isValid()) {
+            return validityResponse;
         }
-        return extractedObjects;
-    }
 
-    /**
-     * Does not do permission checks. Modifies pedigree's image style. Stores the modified image, and data (as is) into
-     * the `document`.
-     *
-     * @param document destination for storing the pedigree
-     * @param pedigree data section of a pedigree
-     * @param image could be null. If it is, no changes will be made to the image.
-     * @param context needed for XWiki calls
-     * @throws XWikiException one of many possible XWiki exceptions
-     */
-    public static void storePedigree(XWikiDocument document, JSON pedigree, String image, XWikiContext context)
-        throws XWikiException
-    {
-        BaseObject pedigreeObject = document.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-        if (image != null) {
-            String updatedImage = SvgUpdater.setPatientStylesInSvg(image, document.getDocumentReference().getName());
-            pedigreeObject.set(IMAGE, updatedImage, context);
+        // Update patient data from pedigree's JSON
+        response = this.updatePatientsFromJson(pedigree);
+        if (!response.isValid()) {
+            return new JSONResponse(response);
         }
-        pedigreeObject.set(DATA, pedigree.toString(), context);
+
+        family.setPedigree(pedigree);
+
+        List<String> members = family.getMembersIds();
+
+        // Removed members who are no longer in the family
+        List<String> patientsToRemove = new LinkedList<>();
+        patientsToRemove.addAll(members);
+        patientsToRemove.removeAll(newMembers);
+        for (String patientId : patientsToRemove) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            family.removeMember(patient);
+        }
+
+        // Add new members to family
+        List<String> patientsToAdd = new LinkedList<>();
+        patientsToAdd.addAll(newMembers);
+        patientsToAdd.removeAll(members);
+        for (String patientId : patientsToAdd) {
+            Patient patient = this.patientRepository.getPatientById(patientId);
+            family.addMember(patient);
+        }
+
+        family.updatePermissions();
+
+        return new JSONResponse(StatusResponse.OK);
     }
 
-    /**
-     * Wrapper around {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)} which saves the XWiki document.
-     *
-     * @param document {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param pedigree {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param image {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param context {@link #storePedigree(XWikiDocument, JSON, String, XWikiContext)}
-     * @param wiki Used for saving the `document`
-     * @throws XWikiException one of many possible XWikiExceptions
-     */
-    public static void storePedigreeWithSave(XWikiDocument document, JSON pedigree, String image, XWikiContext context,
-        XWiki wiki) throws XWikiException
+    private JSONResponse checkValidity(Family family, List<String> newMembers)
     {
-        PedigreeUtils.storePedigree(document, pedigree, image, context);
-        wiki.saveDocument(document, context);
-    }
+        JSONResponse jsonResponse = new JSONResponse();
 
-    /**
-     * Retrieves a pedigree (both image and data).
-     *
-     * @param doc in which to look for a pedigree
-     * @return null on error; an empty {@link org.phenotips.studies.family.internal.PedigreeUtils.Pedigree} if there is
-     *         no pedigree, or the existing pedigree.
-     */
-    public static Pedigree getPedigree(XWikiDocument doc)
-    {
-        try {
-            Pedigree pedigree = new Pedigree();
-            BaseObject pedigreeObj = doc.getXObject(PEDIGREE_CLASS);
-            if (pedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) pedigreeObj.get(DATA);
-                LargeStringProperty image = (LargeStringProperty) pedigreeObj.get(IMAGE);
-                if (StringUtils.isNotBlank(data.toText())) {
-                    pedigree.data = JSONObject.fromObject(data.toText());
-                    pedigree.image = image.toText();
-                    return pedigree;
+        // Checks that current user has edit permissions on family
+        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference()))
+        {
+            return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
+        }
+
+        // Edge case - empty list of new members
+        if (newMembers.size() < 1) {
+            return jsonResponse.setStatusResponse(StatusResponse.FAMILY_HAS_NO_MEMBERS);
+        }
+
+        if (this.containsDuplicates(newMembers)) {
+            return jsonResponse.setStatusResponse(StatusResponse.DUPLICATE_PATIENT);
+        }
+
+        // Check if every member of updatedMembers can be added to the family
+        if (newMembers != null) {
+            for (String patientId : newMembers) {
+                Patient patient = this.patientRepository.getPatientById(patientId);
+                JSONResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
+                if (!response.isValid()) {
+                    return jsonResponse;
                 }
             }
-            return pedigree;
-        } catch (XWikiException ex) {
-            return null;
         }
+
+        jsonResponse.setStatusResponse(StatusResponse.OK);
+        return jsonResponse;
     }
 
-    /**
-     * Overwrites a pedigree in one document given an existing pedigree in another document. Will not throw an exception
-     * if fails. Does not save any documents.
-     *
-     * @param from in which to look for an existing pedigree
-     * @param to into which document to copy the pedigree found in the `from` document
-     * @param context needed for overwriting pedigree fields in the `to` document
-     */
-    public static void copyPedigree(XWikiDocument from, XWikiDocument to, XWikiContext context)
+    private StatusResponse updatePatientsFromJson(Pedigree pedigree)
     {
+        String idKey = "id";
         try {
-            BaseObject fromPedigreeObj = from.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-            if (fromPedigreeObj != null) {
-                LargeStringProperty data = (LargeStringProperty) fromPedigreeObj.get(DATA);
-                LargeStringProperty image = (LargeStringProperty) fromPedigreeObj.get(IMAGE);
-                if (StringUtils.isNotBlank(data.toText())) {
-                    BaseObject toPedigreeObj = to.getXObject(PedigreeUtils.PEDIGREE_CLASS);
-                    toPedigreeObj.set(DATA, data.toText(), context);
-                    toPedigreeObj.set(IMAGE, image.toText(), context);
+            List<JSONObject> patientsJson = this.jsonAdapter.convert(pedigree);
+
+            for (JSONObject singlePatient : patientsJson) {
+                if (singlePatient.containsKey(idKey)) {
+                    Patient patient = this.patientRepository.getPatientById(singlePatient.getString(idKey));
+                    patient.updateFromJSON(singlePatient);
                 }
             }
-        } catch (XWikiException ex) {
-            // do nothing
+        } catch (Exception ex) {
+            return StatusResponse.UNKNOWN_ERROR;
         }
+
+        return StatusResponse.OK;
     }
 
-    /**
-     * A patient can either have their own pedigree or a family pedigree (if they belong to one).
-     *
-     * @param anchorId a valid family or patient id
-     * @param utils an instance of {@link FamilyUtils} for working with XWiki
-     * @return data portion of a pedigree, which could be the family pedigree or the patient's own pedigree
-     * @throws XWikiException can occur while getting patient document or family document
-     */
-    public static JSON getPedigree(String anchorId, FamilyUtils utils) throws XWikiException
+    private boolean containsDuplicates(List<String> updatedMembers)
     {
-        XWikiDocument docWithPedigree = utils.getFamily(anchorId);
-        if (docWithPedigree == null) {
-            // either anchor id is invalid or it is a patient id
-            docWithPedigree = utils.getFromDataSpace(anchorId);
+        List<String> duplicationCheck = new LinkedList<>();
+        duplicationCheck.addAll(updatedMembers);
+        for (String member : updatedMembers) {
+            duplicationCheck.remove(member);
+            if (duplicationCheck.contains(member)) {
+                return true;
+            }
         }
-        PedigreeUtils.Pedigree pedigree = PedigreeUtils.getPedigree(docWithPedigree);
-        if (pedigree != null && !pedigree.isEmpty()) {
-            return pedigree.getData();
-        } else {
-            return new JSONObject(true);
-        }
+
+        return false;
     }
 
-    /** Simplifies passing around pedigree objects which consist of an SVG image and JSON data. */
-    public static class Pedigree
-    {
-        private JSONObject data;
-
-        private String image = "";
-
-        /**
-         * Checks if the `data` field is empty.
-         *
-         * @return true if data is {@link null} or if {@link JSONObject#isEmpty()} returns true
-         */
-        public boolean isEmpty()
-        {
-            return this.data == null || this.data.isEmpty();
-        }
-
-        /**
-         * Getter for `data` which holds all of a pedigree's JSON.
-         *
-         * @return could be null
-         */
-        public JSONObject getData()
-        {
-            return this.data;
-        }
-
-        /**
-         * Getter for `image` string (SVG).
-         *
-         * @return can not be null
-         */
-        public String getImage()
-        {
-            return this.image;
-        }
-    }
 }

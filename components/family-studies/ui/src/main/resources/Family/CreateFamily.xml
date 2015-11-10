@@ -55,8 +55,8 @@
     {{/html}}
     #if ("$!{request.confirmation}" == 'true')
 			#if ("$!{request.patient_id}" != '')
-				#set ($family = $services.families.createFamily($request.patient_id))
         #set ($failureUrl = "data.${request.patient_id}")
+				#set ($family = $services.families.getOrCreateFamily($request.patient_id))
 			#else
 				#set ($family = $services.families.createFamily())
         #set ($failureUrl = "data.WebHome")

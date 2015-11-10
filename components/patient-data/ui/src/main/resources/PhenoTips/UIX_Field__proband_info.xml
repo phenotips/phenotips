@@ -143,7 +143,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.probandInfo')
 enabled=false
 required=
-order=2
+order=5
 fields=proband,family_of
 contains_PII=true</parameters>
     </property>

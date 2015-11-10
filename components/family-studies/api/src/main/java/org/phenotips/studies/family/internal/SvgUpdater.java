@@ -18,7 +18,6 @@
 package org.phenotips.studies.family.internal;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,63 +36,10 @@ public final class SvgUpdater
 {
     private static final int PATIENT_ID_LENGTH = 8;
 
-    /**
-     * The number of pixels to shift text when a link is removed.
-     */
-    private static final int VERTICAL_SHIFT = -22;
-
     private static final String STROKE_ATTR_TOKEN = "stroke-width=\"";
 
     private SvgUpdater()
     {
-    }
-
-    /**
-     * Removes all HTML links from a SVG, except for the current patient's link.
-     *
-     * @param svg which to parse for links
-     * @param currentPatientId whose link should not be removed
-     * @return SVG with `<a></a>` corresponding to patient records cut out
-     */
-    public static String removeLinks(String svg, String currentPatientId)
-    {
-        // must be a list, so that the iterator will return links in order they occur
-        List<SvgElementHolder> links =
-            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
-        Iterable<SvgElementHolder> labels =
-            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgTextParser());
-
-        links = SvgUpdater.filterByCurrentPatient(links, currentPatientId, true);
-        labels = SvgUpdater.synchronizeOnNodeIds(labels, links);
-        String updatedSvg = SvgUpdater.applyActionToSvg(links.iterator(), new SvgRemoveAction(), svg);
-
-        labels = SvgUpdater.findAgain(labels, updatedSvg);
-        labels = SvgUpdater.shiftSvgElements(labels, SvgUpdater.VERTICAL_SHIFT);
-        updatedSvg = SvgUpdater.applyActionToSvg(labels.iterator(), new SvgUpdateAction(), updatedSvg);
-        return updatedSvg;
-    }
-
-    /**
-     * @param elements must be unaltered.
-     */
-    private static List<SvgElementHolder> findAgain(Iterable<SvgElementHolder> elements, String svg)
-    {
-        List<SvgElementHolder> found = new LinkedList<>();
-        for (SvgElementHolder element : elements)
-        {
-            element.startPosition = svg.indexOf(element.content);
-            element.endPosition = element.startPosition + element.content.length();
-        }
-        Collections.sort(found,
-            new Comparator<SvgElementHolder>()
-            {
-                @Override
-                public int compare(SvgElementHolder o1, SvgElementHolder o2)
-                {
-                    return o1.startPosition < o2.startPosition ? -1 : 1;
-                }
-            });
-        return found;
     }
 
     private static List<SvgElementHolder> findAndParseAllElements(String svg, List<SvgElementHolder> elementList,
@@ -220,25 +166,6 @@ public final class SvgUpdater
         return parsedSvg;
     }
 
-    private static Iterable<SvgElementHolder> shiftSvgElements(Iterable<SvgElementHolder> elements, int shiftBy)
-    {
-        for (SvgElementHolder element : elements) {
-            int startYPosition = element.content.indexOf(" y=\"");
-            if (startYPosition != -1) {
-                // accounting for length of ` y="`
-                startYPosition += 4;
-                int endYPosition = element.content.indexOf('"', startYPosition + 1);
-                String yPositionString = element.content.substring(startYPosition, endYPosition);
-                double yPosition = Double.parseDouble(yPositionString);
-
-                Double newYPosition = yPosition + shiftBy;
-                element.content = element.content.substring(0, startYPosition) + newYPosition.toString()
-                    + element.content.substring(endYPosition);
-            }
-        }
-        return elements;
-    }
-
     /**
      * Takes two {@link Iterable}, removes all elements from one that are not present in the other. Element equality is
      * determined by {@link SvgElementHolder}s `nodeId`.
@@ -285,7 +212,7 @@ public final class SvgUpdater
         // would be appropriate to rename these to currentPatientLinks
         links = SvgUpdater.filterByCurrentPatient(links, patientId, false);
         // not ideal, but will likely work fine for a long time - removing stroke from every shape
-        Iterable<SvgElementHolder> nodeShapesWithoutStroke = SvgUpdater.removeStrokeWidth(nodeShapes);
+        SvgUpdater.removeStrokeWidth(nodeShapes);
 
         Iterable<SvgElementHolder> probandShape = SvgUpdater.filterByProbandStatus(copyIntoSetIterable(nodeShapes));
         probandShape = addProbandStyle(probandShape);
@@ -422,43 +349,6 @@ public final class SvgUpdater
         }
     }
 
-    private static class SvgTextParser extends AbstractSvgElementParser
-    {
-        @Override
-        public List<String> getSvgTagOpen()
-        {
-            List<String> list = new LinkedList<>();
-            Collections.addAll(list, "<text");
-            return list;
-        }
-
-        @Override
-        public List<String> getSvgTagClosed()
-        {
-            List<String> list = new LinkedList<>();
-            Collections.addAll(list, "</text>");
-            return list;
-        }
-
-        @Override
-        protected String getNodeIdTokenStartString()
-        {
-            return PEDIGREE_NODE_ID;
-        }
-
-        @Override
-        public boolean test(String testPiece)
-        {
-            return testPiece.contains(PEDIGREE_NODE_ID);
-        }
-
-        @Override
-        protected void performAdditionalOperations(SvgElementHolder holder)
-        {
-            // the pedigree no longer puts the node id into the class name
-        }
-    }
-
     private static class SvgNodeShapeParser extends AbstractSvgElementParser
     {
         private static final String TEXT_ID_TOKEN_START = "node-shape-";
@@ -551,15 +441,6 @@ public final class SvgUpdater
 
         void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
             List<SvgElementHolder> elementList);
-    }
-
-    private static class SvgRemoveAction implements SvgAction
-    {
-        @Override
-        public String getReplacement(SvgElementHolder holder)
-        {
-            return "";
-        }
     }
 
     private static class SvgUpdateAction implements SvgAction

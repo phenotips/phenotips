@@ -242,10 +242,10 @@
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
-#set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
+#set ($pedigreeObj = $services.families.getPedigree($doc.getDocumentReference().getName()))
 #if ($pedigreeObj)
-  #set ($data = $!pedigreeObj.getProperty('data').value)
-  #set ($image = $pedigreeObj.getProperty('image').value)
+  #set ($data = $!pedigreeObj.getData())
+  #set ($image = $pedigreeObj.getImage())
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!data" != '')
   $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
@@ -282,7 +282,7 @@
       <parameters>title=$services.localization.render('phenotips.patientRecord.pedigree.extensionTitle')
 enabled=true
 required=
-order=14
+order=2
 fields=
 contains_PII=true
 privacy_level=3</parameters>

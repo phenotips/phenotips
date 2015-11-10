@@ -17,10 +17,10 @@
  */
 package org.phenotips.studies.family.listener;
 
-import org.phenotips.studies.family.FamilyUtils;
-import org.phenotips.studies.family.Processing;
+import org.phenotips.data.Patient;
+import org.phenotips.studies.family.Family;
+import org.phenotips.studies.family.FamilyRepository;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.DocumentDeletingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;
@@ -31,15 +31,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Detects the deletion of a family and modifies the members' records accordingly.
@@ -53,19 +47,7 @@ import com.xpn.xwiki.objects.BaseObject;
 public class FamilyDeletingListener implements EventListener
 {
     @Inject
-    private Provider<XWikiContext> provider;
-
-    @Inject
-    private DocumentAccessBridge dab;
-
-    @Inject
-    private FamilyUtils familyUtils;
-
-    @Inject
-    private Processing processing;
-
-    @Inject
-    private Logger logger;
+    private FamilyRepository familyRepository;
 
     @Override
     public String getName()
@@ -79,33 +61,20 @@ public class FamilyDeletingListener implements EventListener
         return Collections.<Event>singletonList(new DocumentDeletingEvent());
     }
 
+    // TODO: Test!
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiDocument doc = (XWikiDocument) source;
-        if (doc == null || "FamilyTemplate".equals(doc.getDocumentReference().getName())) {
-            return;
-        }
-        XWikiDocument odoc;
-        try {
-            odoc = (XWikiDocument) this.dab.getDocument(doc.getDocumentReference());
-        } catch (Exception e) {
+        XWikiDocument familyDocument = (XWikiDocument) source;
+        String familyId = familyDocument.getDocumentReference().getName();
+        if (familyDocument == null || "FamilyTemplate".equals(familyId)) {
             return;
         }
 
-        BaseObject familyObj = odoc.getXObject(FamilyUtils.FAMILY_CLASS);
-        if (familyObj == null) {
-            return;
-        }
-
-        XWikiContext context = provider.get();
-        XWiki wiki = context.getWiki();
-        try {
-            for (String id : familyUtils.getFamilyMembers(familyObj)) {
-                processing.removeMember(id, wiki, context);
-            }
-        } catch (Exception ex) {
-            logger.error("Could not delete patient from a family when deleting the family. {}", ex.getMessage());
+        Family family = this.familyRepository.getFamilyById(familyId);
+        List<Patient> members = family.getMembers();
+        for (Patient patient : members) {
+            family.removeMember(patient);
         }
     }
 }

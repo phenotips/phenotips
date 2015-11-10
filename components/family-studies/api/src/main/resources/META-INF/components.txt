@@ -1,8 +1,8 @@
 org.phenotips.studies.family.script.FamilyScriptService
-org.phenotips.studies.family.internal.FamilyUtilsImpl
-org.phenotips.studies.family.internal.ProcessingImpl
-org.phenotips.studies.family.internal.ValidationImpl
+org.phenotips.studies.family.internal.PedigreeUtils
 org.phenotips.studies.family.internal.JsonAdapterImpl
-org.phenotips.studies.family.internal.FamilyInformationImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener
+org.phenotips.studies.family.internal.XWikiFamilyRepository
+org.phenotips.studies.family.internal.XWikiFamilyPermissions
+org.phenotips.studies.family.internal.export.XWikiFamilyExport
 org.phenotips.studies.family.listener.FamilyDeletingListener

@@ -25,6 +25,9 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSON;
 
 /**
  * @version $Id$
@@ -39,6 +42,12 @@ public interface Family
     EntityReference DATA_SPACE = new EntityReference("Families", EntityType.SPACE);
 
     /**
+     * XClass that holds pedigree data (image, structure, etc).
+     */
+    EntityReference PEDIGREE_CLASS =
+        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    /**
      * @return family id
      */
     String getId();
@@ -49,9 +58,14 @@ public interface Family
     DocumentReference getDocumentReference();
 
     /**
+     * @return list of family members
+     */
+    List<Patient> getMembers();
+
+    /**
      * @return list of family members ids
      */
-    List<String> getMembers();
+    List<String> getMembersIds();
 
     /**
      * @param patient check if the patient belongs to this family
@@ -70,4 +84,59 @@ public interface Family
      * @return true if removal was successful
      */
     boolean removeMember(Patient patient);
+
+    /**
+     * Generates a JSON data structure that describes the family and its members.
+     *
+     * @return JSON with info about the family, each member and the current user's permissions.
+     */
+    JSON toJSON();
+
+    /**
+     * Retrieves medical reports for all family members.
+     *
+     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
+     */
+    Map<String, Map<String, String>> getMedicalReports();
+
+    /**
+     * @return external id
+     */
+    String getExternalId();
+
+    /**
+     * @param action to get URL for
+     * @return URL
+     */
+    String getURL(String action);
+
+    /**
+     * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
+     * function returns a warning to display, or empty string
+     *
+     * @return warning message
+     */
+    String getWarningMessage();
+
+    /**
+     * Returns the pedigree associated with the family.
+     *
+     * @return Pedigree associated with the family.
+     */
+    Pedigree getPedigree();
+
+    /**
+     * Sets the pedigree for the family, and saves.
+     *
+     * @param pedigree to set
+     * @return true if successful
+     */
+    boolean setPedigree(Pedigree pedigree);
+
+    /**
+     * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
+     * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
+     * access on p, x has edit access of the family.
+     */
+    void updatePermissions();
 }

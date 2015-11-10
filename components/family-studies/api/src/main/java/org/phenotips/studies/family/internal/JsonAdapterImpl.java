@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.studies.family.JsonAdapter;
+import org.phenotips.studies.family.Pedigree;
 import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -64,11 +65,13 @@ public class JsonAdapterImpl implements JsonAdapter
     private Vocabulary omimService;
 
     @Override
-    public List<JSONObject> convert(JSONObject toConvert)
+    public List<JSONObject> convert(Pedigree pedigree)
     {
+        JSONObject data = pedigree.getData();
+
         String versionKey = "JSON_version";
-        if (toConvert.containsKey(versionKey)
-            && !StringUtils.equalsIgnoreCase(toConvert.getString(versionKey), "1.0"))
+        if (data.containsKey(versionKey)
+            && !StringUtils.equalsIgnoreCase(data.getString(versionKey), "1.0"))
         {
             this.logger.warn("The version of the pedigree JSON differs from the expected.");
         }
@@ -76,7 +79,7 @@ public class JsonAdapterImpl implements JsonAdapter
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
         List<JSONObject> convertedPatients = new LinkedList<>();
-        List<JSONObject> patientJson = PedigreeUtils.extractPatientJSONPropertiesFromPedigree(toConvert);
+        List<JSONObject> patientJson = pedigree.extractPatientJSONProperties();
 
         ServicesHolder holder = new ServicesHolder();
         holder.hpo = this.hpoService;

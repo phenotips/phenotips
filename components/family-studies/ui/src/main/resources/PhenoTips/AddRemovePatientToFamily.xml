@@ -43,40 +43,23 @@
 ##
 #set($familyId = $request.get("familyId"))
 #set($patientId = $request.get("patientId"))
-#set($response = $services.families.verifyLinkable($familyId, $patientId))
-#if ("$!{response}" != '')
-  #set($json = $jsontool.parse($response))
-  #if ($json.get('validLink') != true)
-    #if ("$json.get('errorMessage')" != "")
-      $json.get('errorMessage')
-    #else
-      Unknown error has occurred
-    #end
-  #elseif ($json.get('validLink') == true)
-    #set ($patientDoc = $xwiki.getDocument("data.$patientId"))
-    #set($familyDoc = $xwiki.getDocument("data.$familyId"))
-    #set($familyObject = $familyDoc.getObject('PhenoTips.FamilyClass'))
-    #set($membersProperty = $familyObject.getProperty('members'))
-    #set($membersList = $membersProperty.getProperty().getList())
-    ##
-    #if ("$!{request.add}" == 'true')
-      #set($familyReference = $patientDoc.getObject('PhenoTips.FamilyReference', true))
-      #set($discard = $familyReference.set('reference', $familyId))
-      ##
-      #if (!$membersList.contains($patientId))
-        #set($discard = $membersList.add($patientId))
+##
+#if ("$!{request.add}" == 'true')
+  #set($response = $services.families.canPatientBeLinked($familyId, $patientId))
+  #if ("$!{response}" != '')
+    #set($json = $jsontool.parse($response))
+    #if ($json.get('validLink') != true)
+      #if ("$json.get('errorMessage')" != "")
+        $json.get('errorMessage')
+      #else
+        Unknown error has occurred
       #end
-      ##
-      $familyDoc.save("Added a member", true)
-      $patientDoc.save("Set family reference", true)
-      ## need to account for deletions
-    #elseif("$!{request.remove}" == true)
-      #set($familyReference = $services.families.removeMember($patientId))
-      ##
-      $familyDoc.save("Removed a member", true)
-      $patientDoc.save("Removed family reference", true)
+    #else
+      #set ($discard = $services.families.addPatientToFamily($familyId,$patientId))
     #end
   #end
+#elseif("$!{request.remove}" == true)
+  #set($discard = $services.families.removeMember($patientId))
 #end
 {{/velocity}}
 </content>

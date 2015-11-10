@@ -73,6 +73,7 @@
     &lt;results&gt;
   #end
   #set ($count = 0)
+  #set ($patientsList = [])
   #foreach ($item in $results)
     #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
       #set ($itemdoc = $xwiki.getDocument($item))
@@ -102,22 +103,44 @@
         #end
         #set ($description = "$description)")
       #end
-      #if ($request.json &amp;&amp; $count &gt; 0)
-        ,
+      ##
+      #set ($familyId = '')
+      #if ($request.markFamilyAssociation)
+        #set ($family = $services.families.getFamilyForPatient($phenotipsId))
+        #if ($family)
+          #set ($familyId = $family.getName())
+          #set ($description = "${description}, in family $familyId")
+        #end
       #end
-      #if ($request.json)
-        { "id": "$phenotipsId", "url": "$url", "identifier": "${externalId}", "textSummary": "$description" }##
-      #else
-        &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
-      #end
-      #set ($count = $count + 1)
-      #if ($count &gt;= $nb)
-        #break($foreach)
-      #end
+      ##
+      #set ($discard = $patientsList.add({
+         "id"         : $phenotipsId,
+         "url"        : $url,
+         "identifier" : ${externalId},
+         "textSummary": $description,
+         "info"       : ${escapetool.xml($itemdoc.documentReference)},
+         "familyId"   : $familyId
+      }))
+    #end
+  #end
+  ##
+  #set ($patientsList = $sorttool.sort($patientsList, 'family'))
+  #set ($count = 0)
+  #foreach ($item in $patientsList)
+    #if ($request.json &amp;&amp; $count &gt; 0)
+      ,
+    #end
+    #if ($request.json)
+      { "id": "$item.id", "url": "$item.url", "identifier": "$item.identifier", "textSummary": "$item.textSummary" }##
+    #else
+      &lt;rs id="$item.url" info="$item.info"&gt;$escapetool.xml($item.description)&lt;/rs&gt;
+    #end
+    #set ($count = $count + 1)
+    #if ($count &gt;= $nb)
+      #break($foreach)
     #end
   #end
   #if ($request.json)
-
     ] }
   #else
     &lt;/results&gt;

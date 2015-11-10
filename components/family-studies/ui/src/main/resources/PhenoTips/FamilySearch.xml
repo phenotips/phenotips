@@ -48,127 +48,22 @@
 #else
   #set ($nb = 6)
 #end
+#if ($request.permission)
+  #set ($requiredPermissions = $request.permission)
+#else
+  #set ($requiredPermissions = 'view')
+#end
 ## -----------------------------------
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #set ($queryFamily = 'from doc.object(PhenoTips.FamilyClass) as family where lower(doc.name) like :input ESCAPE ''_'' or lower(family.external_id) like :input ESCAPE ''_''')
-  #set ($queryPatient = 'from doc.object(PhenoTips.PatientClass) as patient, doc.object(PhenoTips.FamilyReference) as familyref where lower(doc.name) like :input ESCAPE ''_'' or lower(patient.external_id) like :input ESCAPE ''_''')
-  ##, doc.object(PhenoTips.FamilyReference) as reference
-  #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
-    #set ($queryPatient = $queryPatient.concat(' or lower(patient.first_name) like :input ESCAPE ''_'' or lower(patient.last_name) like :input ESCAPE ''_'''))
-  #end
-  #set ($queryFamily = $services.query.xwql($queryFamily))
-  #set ($discard = $queryFamily.setLimit($nb))
-  #set ($discard = $queryFamily.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
-  #set ($familyResults = $queryFamily.execute())
-  #set ($queryPatient = $services.query.xwql($queryPatient))
-  #set ($discard = $queryPatient.setLimit($nb))
-  #set ($discard = $queryPatient.bindValue('input', "%${input.replaceAll('[\[_%]', '_$0')}%"))
-  #set ($patientResults = $queryPatient.execute())
-  #if ($request.permission)
-    #set ($requiredPermissions = $request.permission)
-  #else
-    #set ($requiredPermissions = 'view')
-  #end
   #if ($request.json)
     #set ($discard = $response.setContentType('application/json'))
-  { "matchedFamilies": [
   #else
     #set ($discard = $response.setContentType('text/xml'))
-  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-  &lt;results&gt;
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   #end
-  #set ($first = true)
-  #foreach ($item in $patientResults)
-    #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
-      #set ($itemdoc = $xwiki.getDocument($item))
-      #set ($familyReferenceObj = $!itemdoc.getObject('PhenoTips.FamilyReference'))
-      #set ($familyDocId = $!{familyReferenceObj.getProperty('reference').value})
-      #if ("$!{familyDocId}" != '')
-        #set ($familyDoc = $!xwiki.getDocument("data.$!{familyDocId}"))
-        #set ($familyObj = $!familyDoc.getObject('PhenoTips.FamilyClass'))
-        #set ($phenotipsPatientId = $itemdoc.name)
-        #set ($patientObj = $!itemdoc.getObject('PhenoTips.PatientClass'))
-        #set ($url = $familyDoc.getURL())
-        #set ($externalFamilyId = "$!familyObj.getProperty('external_id').value")
-        #set ($externalPatientId = "$!patientObj.getProperty('external_id').value")
-        #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
-          #set ($firstName   = "$!patientObj.getProperty('first_name').value")
-          #set ($lastName    = "$!patientObj.getProperty('last_name').value")
-          #set ($patientName = "$firstName $lastName")
-          #set ($patientName = $patientName.trim())
-        #else
-          #set ($patientName = '')
-        #end
-        #set ($description = "$familyDocId")
-        ##if ($externalFamilyId != '' || $externalPatientId != '' || $patientName != '')
-        ## START; Family's external id
-          #if ($externalFamilyId != '')
-            #set ($description = "$description (${externalFamilyId})")
-          #end
-        ## END; Family's ex.id
-        ## START; Dealing with patient's name and patient's external id
-          #set ($description = "${description} [Patient $!{phenotipsPatientId}")
-          #if ($externalPatientId != '' || $patientName != '')
-            #set ($description = "${description}, ")
-            #if ($patientName != '')
-              #set ($description = "${description}name: ${patientName}")
-            #end
-            #if ($externalPatientId != '')
-              #if ($patientName != '')
-                #set ($description = "${description}, ")
-              #end
-              #set ($description = "${description}identifier: ${externalPatientId}")
-            #end
-          #end
-        ## END; patien name/ex. id
-          #set ($description = "$description]")
-        ##end
-        #if ($request.json &amp;&amp; !$first)
-            ,
-        #else
-          #set ($first = false)
-        #end
-        #if ($request.json)
-            { "id": "$familyDocId", "url": "$url", "identifier": "$!{externalFamilyId}", "textSummary": "$description" }##
-        #else
-            &lt;rs id="$url" info="${escapetool.xml($familyDoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
-        #end
-      #end
-    #end
-  #end
-
-  #foreach ($item in $familyResults)
-    #if ($xwiki.hasAccessLevel($requiredPermissions, $xcontext.user, $item))
-      #set ($itemdoc = $xwiki.getDocument($item))
-      #set ($familyObj = $!itemdoc.getObject('PhenoTips.FamilyClass'))
-      #set ($familyId = $itemdoc.name)
-      #set ($url = $itemdoc.getURL())
-      #set ($externalId  = "$!familyObj.getProperty('external_id').value")
-      #set ($description = "$familyId")
-      #if ($externalId != '')
-        #set ($description = "${description} (${externalId})")
-      #end
-      #if ($request.json &amp;&amp; !$first)
-          ,
-      #else
-        #set ($first = false)
-      #end
-      #if ($request.json)
-          { "id": "$familyId", "url": "$url", "identifier": "$!{externalId}", "textSummary": "$description" }##
-      #else
-          &lt;rs id="$url" info="${escapetool.xml($itemdoc.documentReference)}"&gt;$escapetool.xml($description)&lt;/rs&gt;
-      #end
-    #end
-  #end
-
-  #if ($request.json)
-
-      ] }
-  #else
-  &lt;/results&gt;
-  #end
+  $services.families.searchFamilies($input, $nb, $requiredPermissions, $request.json)
 #end
 {{/velocity}}
 </content>
