@@ -20,8 +20,11 @@ package org.phenotips.groups.internal;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -36,6 +39,10 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -46,11 +53,17 @@ import static org.mockito.Mockito.when;
 /**
  * @version $Id$
  */
-public class SearchUsersAndGroupsTest
+public class UsersAndGroupsTest
 {
+    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
+    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
     @Rule
     public final MockitoComponentMockingRule<UsersAndGroups> mocker =
-        new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
+    new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
 
     private static String groupsQueryString;
 
@@ -62,14 +75,14 @@ public class SearchUsersAndGroupsTest
         groupsQuerySb.append(" where lower(doc.name)  like :input");
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate' ");
         groupsQuerySb.append(" order by doc.name");
-        SearchUsersAndGroupsTest.groupsQueryString = groupsQuerySb.toString();
+        UsersAndGroupsTest.groupsQueryString = groupsQuerySb.toString();
 
         StringBuilder usersQuerySb = new StringBuilder();
         usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
         usersQuerySb.append(" where lower(doc.name) like :input");
         usersQuerySb.append(" or concat(concat(lower(user.first_name), ' '), lower(user.last_name)) like :input");
         usersQuerySb.append(" order by user.first_name, user.last_name");
-        SearchUsersAndGroupsTest.usersQueryString = usersQuerySb.toString();
+        UsersAndGroupsTest.usersQueryString = usersQuerySb.toString();
     }
 
     @Test
@@ -269,4 +282,30 @@ public class SearchUsersAndGroupsTest
         Assert.assertEquals(expectedResult, this.mocker.getComponentUnderTest().search(input, false, false));
     }
 
+    @Test
+    public void getTypeTest() throws Exception
+    {
+        DocumentReference groupDocument = new DocumentReference("xwiki", "Groups", "g1");
+        XWikiDocument groupXDocument = mock(XWikiDocument.class);
+        org.mockito.Mockito.when(groupXDocument.getXObject(GROUP_CLASS)).thenReturn(new BaseObject());
+        DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        when(bridge.getDocument(groupDocument)).thenReturn(groupXDocument);
+        UsersAndGroups usersAndGroups = this.mocker.getComponentUnderTest();
+        org.junit.Assert.assertEquals(UsersAndGroups.GROUP, usersAndGroups.getType(groupDocument));
+
+        DocumentReference userDocument = new DocumentReference("xwiki", "XWiki", "u1");
+        XWikiDocument userXDocument = mock(XWikiDocument.class);
+        org.mockito.Mockito.when(userXDocument.getXObject(USER_CLASS)).thenReturn(new BaseObject());
+        when(bridge.getDocument(userDocument)).thenReturn(userXDocument);
+        org.junit.Assert.assertEquals(UsersAndGroups.USER, usersAndGroups.getType(userDocument));
+
+        DocumentReference unknownDocument = new DocumentReference("xwiki", "qwerty", "qwerty");
+        XWikiDocument unknownXDocument = mock(XWikiDocument.class);
+        when(bridge.getDocument(unknownDocument)).thenReturn(unknownXDocument);
+        org.junit.Assert.assertEquals(UsersAndGroups.UNKNOWN, usersAndGroups.getType(unknownDocument));
+
+        DocumentReference mock = mock(DocumentReference.class);
+        when(bridge.getDocument(mock)).thenThrow(new Exception("Failed"));
+        org.junit.Assert.assertEquals(UsersAndGroups.UNKNOWN, usersAndGroups.getType(mock));
+    }
 }
