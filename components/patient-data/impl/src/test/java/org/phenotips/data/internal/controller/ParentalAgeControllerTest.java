@@ -126,8 +126,8 @@ public class ParentalAgeControllerTest {
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(testData.get(MATERNAL_AGE) == 25);
-        Assert.assertTrue(testData.get(PATERNAL_AGE) == 25);
+        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
 
     }
 
@@ -142,7 +142,7 @@ public class ParentalAgeControllerTest {
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(testData.get(MATERNAL_AGE) == 25);
+        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
         Assert.assertNull(testData.get(PATERNAL_AGE));
 
     }
@@ -159,7 +159,7 @@ public class ParentalAgeControllerTest {
 
         Assert.assertEquals("parentalAge", testData.getName());
         Assert.assertNull(testData.get(MATERNAL_AGE));
-        Assert.assertTrue(testData.get(PATERNAL_AGE) == 25);
+        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
 
     }
 
