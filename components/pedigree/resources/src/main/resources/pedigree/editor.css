@@ -435,8 +435,7 @@
   display: block;
 }
 .import-file-button {
-  padding-left: 27px;
-  display: table;
+  margin-left: -410px;
 }
 .import-block {
   margin: 0.75em 0 0.5em 0;
