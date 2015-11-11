@@ -34,7 +34,7 @@ define([], function(){
                     var fileElem = document.getElementById("pedigreeInputFile");
                     fileElem.click();
                 })
-		        var promptImportFile = new Element('div', {'class': 'import-section', }).update("Import file:");
+                        var promptImportFile = new Element('div', {'class': 'import-section', }).update("Import file:");
                 mainDiv.insert(promptImportFile).insert(uploadFileSelector).insert(uploadButton);
             }
             
