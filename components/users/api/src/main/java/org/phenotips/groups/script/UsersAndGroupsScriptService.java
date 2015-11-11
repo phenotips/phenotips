@@ -17,7 +17,7 @@
  */
 package org.phenotips.groups.script;
 
-import org.phenotips.groups.internal.SearchUsersAndGroups;
+import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -37,7 +37,7 @@ import net.sf.json.JSON;
 public class UsersAndGroupsScriptService implements ScriptService
 {
     @Inject
-    private SearchUsersAndGroups searchUsersAndGroups;
+    private UsersAndGroups usersAndGroups;
 
     /**
      * Searches for users and/or groups matching the input parameter. Result is returned as JSON
@@ -49,6 +49,6 @@ public class UsersAndGroupsScriptService implements ScriptService
      */
     public JSON searchUsersAndGroups(String input, boolean searchUsers, boolean searchGroups)
     {
-        return searchUsersAndGroups.search(input, searchUsers, searchGroups);
+        return usersAndGroups.search(input, searchUsers, searchGroups);
     }
 }
