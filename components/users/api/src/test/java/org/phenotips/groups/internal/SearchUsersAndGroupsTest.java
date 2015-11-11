@@ -49,8 +49,8 @@ import static org.mockito.Mockito.when;
 public class SearchUsersAndGroupsTest
 {
     @Rule
-    public final MockitoComponentMockingRule<SearchUsersAndGroups> mocker =
-    new MockitoComponentMockingRule<SearchUsersAndGroups>(SearchUsersAndGroups.class);
+    public final MockitoComponentMockingRule<UsersAndGroups> mocker =
+        new MockitoComponentMockingRule<UsersAndGroups>(UsersAndGroups.class);
 
     private static String groupsQueryString;
 
