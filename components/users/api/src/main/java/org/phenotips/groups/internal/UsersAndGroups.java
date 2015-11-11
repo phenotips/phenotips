@@ -42,9 +42,9 @@ import net.sf.json.JSONObject;
 /**
  * @version $Id$
  */
-@Component(roles = { SearchUsersAndGroups.class })
+@Component(roles = { UsersAndGroups.class })
 @Singleton
-public class SearchUsersAndGroups
+public class UsersAndGroups
 {
     private static final String INPUT_PARAMETER = "input";
 
@@ -73,18 +73,18 @@ public class SearchUsersAndGroups
     static {
         StringBuilder usersQuerySb = new StringBuilder();
         usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
-        usersQuerySb.append(" where lower(doc.name) like :").append(SearchUsersAndGroups.INPUT_PARAMETER);
+        usersQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
         usersQuerySb.append(" or concat(concat(lower(user.first_name), ' '), lower(user.last_name)) like ");
-        usersQuerySb.append(":").append(SearchUsersAndGroups.INPUT_PARAMETER);
+        usersQuerySb.append(":").append(UsersAndGroups.INPUT_PARAMETER);
         usersQuerySb.append(" order by user.first_name, user.last_name");
-        SearchUsersAndGroups.usersQueryString = usersQuerySb.toString();
+        UsersAndGroups.usersQueryString = usersQuerySb.toString();
 
         StringBuilder groupsQuerySb = new StringBuilder();
         groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups ");
-        groupsQuerySb.append(" where lower(doc.name)  like :").append(SearchUsersAndGroups.INPUT_PARAMETER);
+        groupsQuerySb.append(" where lower(doc.name)  like :").append(UsersAndGroups.INPUT_PARAMETER);
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate' ");
         groupsQuerySb.append(" order by doc.name");
-        SearchUsersAndGroups.groupsQueryString = groupsQuerySb.toString();
+        UsersAndGroups.groupsQueryString = groupsQuerySb.toString();
     }
 
     /**
@@ -98,7 +98,7 @@ public class SearchUsersAndGroups
     public JSON search(String input, boolean searchUsers, boolean searchGroups)
     {
         String formattedInput = input.toLowerCase();
-        formattedInput = String.format(SearchUsersAndGroups.INPUT_FORMAT, input);
+        formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
 
         JSONArray resultArray = new JSONArray();
         if (searchUsers) {
@@ -116,7 +116,7 @@ public class SearchUsersAndGroups
 
     private void runUsersQuery(JSONArray resultArray, String formattedInput)
     {
-        List<String> queryResult = runQuery(SearchUsersAndGroups.usersQueryString, formattedInput, 10);
+        List<String> queryResult = runQuery(UsersAndGroups.usersQueryString, formattedInput, 10);
         for (String userName : queryResult)
         {
             User user = this.userManager.getUser(userName);
@@ -127,7 +127,7 @@ public class SearchUsersAndGroups
 
     private void runGroupsQuery(JSONArray resultArray, String formattedInput)
     {
-        List<String> queryResult = runQuery(SearchUsersAndGroups.groupsQueryString, formattedInput, 10);
+        List<String> queryResult = runQuery(UsersAndGroups.groupsQueryString, formattedInput, 10);
         for (String groupName : queryResult)
         {
             Group group = this.groupManager.getGroup(groupName);
@@ -144,7 +144,7 @@ public class SearchUsersAndGroups
             query = this.qm.createQuery(queryString, Query.XWQL);
             query.setLimit(resultsLimit);
             query.setOffset(0);
-            query.bindValue(SearchUsersAndGroups.INPUT_PARAMETER, formattedInput);
+            query.bindValue(UsersAndGroups.INPUT_PARAMETER, formattedInput);
             queryResults = query.execute();
         } catch (QueryException e) {
             this.logger.error("Error while performing query: [{}] ", queryString, e.getMessage());
@@ -159,9 +159,9 @@ public class SearchUsersAndGroups
 
         StringBuilder idWithType = new StringBuilder();
         idWithType.append(id).append(";").append(type);
-        o.put(SearchUsersAndGroups.ID_KEY, idWithType.toString());
+        o.put(UsersAndGroups.ID_KEY, idWithType.toString());
 
-        o.put(SearchUsersAndGroups.VALUE_KEY, value);
+        o.put(UsersAndGroups.VALUE_KEY, value);
 
         return o;
     }

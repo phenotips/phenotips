@@ -17,7 +17,7 @@
  */
 package org.phenotips.groups.script;
 
-import org.phenotips.groups.internal.SearchUsersAndGroups;
+import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.query.QueryException;
@@ -49,7 +49,7 @@ public class UsersAndGroupsScriptServiceTest
         JSONObject resultJson = new JSONObject();
         resultJson.put("matched", array);
 
-        SearchUsersAndGroups suag = this.mocker.getInstance(SearchUsersAndGroups.class);
+        UsersAndGroups suag = this.mocker.getInstance(UsersAndGroups.class);
         org.mockito.Mockito.when(suag.search("a", true, false)).thenReturn(resultJson);
 
         org.junit.Assert.assertEquals(resultJson,
