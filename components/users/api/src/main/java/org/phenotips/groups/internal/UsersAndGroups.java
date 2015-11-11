@@ -20,7 +20,11 @@ package org.phenotips.groups.internal;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -33,7 +37,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.omg.CORBA.UNKNOWN;
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -46,6 +54,21 @@ import net.sf.json.JSONObject;
 @Singleton
 public class UsersAndGroups
 {
+    /** Result returned in case getType() result is a user. */
+    public static final String USER = "user";
+
+    /** Result returned in case getType() result is a group. */
+    public static final String GROUP = "group";
+
+    /** Result returned in case getType() result is unknown. */
+    public static final String UNKNOWN = "unknown";
+
+    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
+    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
     private static final String INPUT_PARAMETER = "input";
 
     private static final String INPUT_FORMAT = "%%%s%%";
@@ -70,6 +93,9 @@ public class UsersAndGroups
     @Inject
     private GroupManager groupManager;
 
+    @Inject
+    private DocumentAccessBridge bridge;
+
     static {
         StringBuilder usersQuerySb = new StringBuilder();
         usersQuerySb.append("from doc.object(XWiki.XWikiUsers) as user ");
@@ -85,6 +111,27 @@ public class UsersAndGroups
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate' ");
         groupsQuerySb.append(" order by doc.name");
         UsersAndGroups.groupsQueryString = groupsQuerySb.toString();
+    }
+
+    /**
+     * Checks whether an {@link userOrGroup} is an entity that represents a user or a group.
+     *
+     * @param userOrGroup entity to check
+     * @return {@link USER}, @{link GROUP}, or {@link UNKNOWN}
+     */
+    public String getType(EntityReference userOrGroup)
+    {
+        try {
+            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument((DocumentReference) userOrGroup);
+            if (doc.getXObject(USER_CLASS) != null) {
+                return USER;
+            } else if (doc.getXObject(GROUP_CLASS) != null) {
+                return GROUP;
+            }
+        } catch (Exception ex) {
+            this.logger.error("Error in getType({})", userOrGroup.getName(), ex.getMessage());
+        }
+        return UNKNOWN;
     }
 
     /**
@@ -120,7 +167,7 @@ public class UsersAndGroups
         for (String userName : queryResult)
         {
             User user = this.userManager.getUser(userName);
-            JSONObject o = createObject(userName, user.getUsername(), "user");
+            JSONObject o = createObject(userName, user.getUsername(), USER);
             resultArray.add(o);
         }
     }
@@ -131,7 +178,7 @@ public class UsersAndGroups
         for (String groupName : queryResult)
         {
             Group group = this.groupManager.getGroup(groupName);
-            JSONObject o = createObject(groupName, group.getReference().getName(), "group");
+            JSONObject o = createObject(groupName, group.getReference().getName(), GROUP);
             resultArray.add(o);
         }
     }
