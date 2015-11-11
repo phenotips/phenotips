@@ -54,7 +54,7 @@ public class PatientRecordTest extends AbstractTest
     public void patientInformationTest()
     {
         /* PATIENT INFORMATION */
-        this.patientEdit.setPatientName("Ceasar", "Salad");
+        this.patientEdit.setPatientName("Caesar", "Salad");
         this.patientEdit.setPatientDateOfBirth("01", "04", "2013");
         this.patientEdit.setPatientDateOfDeath("02", "03", "2014");
         this.patientEdit.setPatientGender("male");
@@ -122,15 +122,17 @@ public class PatientRecordTest extends AbstractTest
     @Test
     public void prenatalAndPerinatalHistoryTest()
     {
-        /* PRENETAL AND PERINATAL HISTORY */
+        /* PRENATAL AND PERINATAL HISTORY */
         this.patientEdit.expandPrenatalAndPerinatalHistory();
         this.patientEdit.clickTermBirth();
         this.patientEdit.setAssistedReproduction();
         this.patientEdit.setAPGARScores("2", "5");
         this.patientEdit.setPrenatalNotes("Thai food is delicious");
         // TODO: fix visibility issues
-        // patientEdit.setPrenatalGrowthParameters("I had great thai food");
-        // patientEdit.setPrenatalDevelopmentOrBirth("Pad thai is good");
+
+        // Parental Age Tests
+        this.patientEdit.setMaternalAgeAtEDD("25");
+        this.patientEdit.setPaternalAgeAtEDD("25");
 
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
         Assert.assertTrue(
