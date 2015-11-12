@@ -25,6 +25,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
+import java.util.Collection;
+
 /**
  * A group of users.
  *
@@ -55,4 +57,13 @@ public interface Group
      * @return true if the user belongs to the group
      */
     boolean isUserInGroup(User user);
+
+    /**
+     * Returns a collection of all the users under this collaborator. If the collabrator is a user, then
+     * getAllUserNames().size()==1 and getUsername().equals(getAllUserNames().get(0)). If the collaborator is a group
+     * the collection will contain the users contained in the group and all its sub groups.
+     *
+     * @return collections of user names
+     */
+    Collection<String> getAllUserNames();
 }
