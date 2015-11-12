@@ -29,11 +29,22 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.environment.Environment;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.CoreDescriptor;
+import org.apache.solr.core.SolrCore;
 
 /**
  * Default implementation for the {@link SolrVocabularyResourceManager} component.
@@ -45,6 +56,10 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResourceManager
 {
+    /** List of config Solr files. */
+    public static final List<String> CONFIG_FILES = Arrays.asList("/conf/schema.xml", "/conf/solrconfig.xml",
+        "/conf/protwords.txt", "/conf/stopwords.txt", "/conf/synonyms.txt", "/core.properties");
+
     /** @see #getSolrConnection() */
     private SolrClient core;
 
@@ -59,16 +74,43 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     @Inject
     private CacheManager cacheFactory;
 
+    @Inject
+    private Environment environment;
+
     @Override
     public void initialize(String vocabularyName) throws InitializationException
     {
+        // Get data Solr home path
+        File solrHome = new File(this.environment.getPermanentDirectory().getAbsolutePath(), "solr");
+        File dest = solrHome;
+
+        CoreContainer container = this.cores.getContainer();
+
         try {
-            this.core = new EmbeddedSolrServer(this.cores.getContainer(), vocabularyName);
+            // Check if the core doesn't exist already
+            if (container.getCore(vocabularyName) == null) {
+                Files.createDirectories(dest.toPath().resolve(vocabularyName + "/conf"));
+
+                for (String file : CONFIG_FILES) {
+                    InputStream in = this.getClass().getResourceAsStream("/" + vocabularyName + file);
+                    if (in == null) {
+                        continue;
+                    }
+                    Files.copy(in, dest.toPath().resolve(vocabularyName + file));
+                }
+
+                CoreDescriptor dcore =
+                    new CoreDescriptor(container, vocabularyName, solrHome.toPath().resolve(vocabularyName).toString());
+                SolrCore score = container.create(dcore);
+            }
+
+            this.core = new EmbeddedSolrServer(container, vocabularyName);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-        } catch (RuntimeException ex) {
-            throw new InitializationException("Invalid Solr core: " + ex.getMessage());
+
         } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
+            throw new InitializationException("Cannot create cache: ", ex);
+        } catch (IOException ex) {
+            throw new InitializationException("Invalid Solr resource: ", ex);
         }
     }
 
@@ -83,4 +125,5 @@ public class DefaultSolrVocabularyResourceManager implements SolrVocabularyResou
     {
         return this.core;
     }
+
 }
