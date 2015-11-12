@@ -34,6 +34,9 @@ import org.xwiki.users.User;
 @Unstable
 public interface Group
 {
+    /** The space where groups are stored. */
+    EntityReference GROUP_SPACE = new EntityReference("Groups", EntityType.SPACE);
+
     /** The XClass used for storing work groups. */
     EntityReference CLASS_REFERENCE = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
