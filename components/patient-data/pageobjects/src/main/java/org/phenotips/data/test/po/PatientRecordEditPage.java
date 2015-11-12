@@ -46,10 +46,10 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_paternal_ethnicity_2")
     private WebElement paternalEthnicity;
 
-    @FindBy(id = "PhenoTips.ParentalInformationClass_0_maternal_age")
+    @FindBy(css = ".fieldset.maternal_age input[type=\"text\"]")
     private WebElement maternalAgeAtEDD;
 
-    @FindBy(id = "PhenoTips.ParentalInformationClass_0_paternal_age")
+    @FindBy(css = ".fieldset.paternal_age input[type=\"text\"]")
     private WebElement paternalAgeAtEDD;
 
     @FindBy(id = "HPrenatalandperinatalhistory")
