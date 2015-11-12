@@ -17,9 +17,15 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
+import org.phenotips.groups.GroupManager;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.users.User;
+
+import java.util.Set;
 
 /**
  * Default implementation for {@link Group}.
@@ -68,5 +74,25 @@ public class DefaultGroup implements Group
     public int hashCode()
     {
         return this.reference.getName().hashCode();
+    }
+
+    @Override
+    public boolean isUserInGroup(User user)
+    {
+        Set<Group> groups = this.getGroupManager().getGroupsForUser(user);
+        if (groups == null) {
+            return false;
+        }
+        return groups.contains(this);
+    }
+
+    private GroupManager getGroupManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(GroupManager.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
     }
 }

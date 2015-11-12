@@ -596,10 +596,16 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
-              <className>org/phenotips/groups/GroupManager</className>
+              <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
-              <method>boolean isUserInGroup(org.xwiki.users.User, org.phenotips.groups.Group)</method>
+              <method>boolean isUserInGroup(org.xwiki.users.User)</method>
               <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/PatientData</className>
+              <differenceType>7012</differenceType>
+              <method>int size()</method>
+              <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
             <difference>
               <className>org/phenotips/data/push/PushPatientData</className>
