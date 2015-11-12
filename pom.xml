@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -488,32 +488,6 @@
               <justification>Implementation moved to module users-default-impl.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/data/push/**</className>
-              <differenceType>7006</differenceType>
-              <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>
-              <to>org.json.JSONObject</to>
-              <justification>Switched from net.sf.json to org.json.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/receive/**</className>
-              <differenceType>7006</differenceType>
-              <method>net.sf.json.JSONObject *(*)</method>
-              <to>org.json.JSONObject</to>
-              <justification>Switched from net.sf.json to org.json.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/receive/ReceivePatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.json.JSONObject getPatientState()</method>
-              <justification>Added a new endpoint on the receiving side in patient push module</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserInGroup(org.xwiki.users.User)</method>
@@ -532,36 +506,6 @@
               <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/data/push/PushPatientData</className>
-              <differenceType>7004</differenceType>
-              <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(org.phenotips.data.Patient, java.util.Set, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/groups/GroupManager</className>
-              <differenceType>7012</differenceType>
-              <method>boolean isUserInGroup(org.xwiki.users.User, org.phenotips.groups.Group)</method>
-              <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/*</className>
-              <differenceType>4001</differenceType>
-              <to>org/phenotips/data/OntologyProperty</to>
-              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/data/permissions/Collaborator</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserIncluded(org.xwiki.users.User)</method>
@@ -571,13 +515,33 @@
               <className>org/phenotips/data/permissions/Collaborator</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
-              <justification>To returned a (recursive) list of users in a collaborator. Currently used only in projects.</justification>
+              <justification>To return a (recursive) list of users in a collaborator. Currently used only in projects.</justification>
             </difference>
             <difference>
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
-              <justification>To returned a (recursive) list of users in a group. Currently used only in projects.</justification>
+              <justification>To return a (recursive) list of users in a group. Currently used only in projects.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/receive/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject *(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushPatientData</className>
+              <differenceType>7004</differenceType>
+              <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(org.phenotips.data.Patient, java.util.Set, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
+              <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
               <className>org/phenotips/data/push/PushPatientService</className>

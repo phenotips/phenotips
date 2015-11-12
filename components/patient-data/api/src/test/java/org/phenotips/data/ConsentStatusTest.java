@@ -44,23 +44,4 @@ public class ConsentStatusTest
         Assert.assertNotSame(ConsentStatus.fromString("nO"), ConsentStatus.NO);
         Assert.assertNotSame(ConsentStatus.fromString("notset"), ConsentStatus.NOT_SET);
     }
-
-    @Test
-    public void equalsTest()
-    {
-        DocumentReference a1 = new DocumentReference("xwiki", "Groups", "Group A");
-        DocumentReference a2 = new DocumentReference("xwiki", "Groups", "Group A");
-        DocumentReference a3 = new DocumentReference("xwiki", "Groups", "Group B");
-        Assert.assertTrue(new DefaultGroup(a1).equals(new DefaultGroup(a2)));
-        Assert.assertFalse(new DefaultGroup(a1).equals(new DefaultGroup(a3)));
-        Assert.assertFalse(new DefaultGroup(a1).equals("not a group"));
-    }
-
-    @Test
-    public void hashCodeTest()
-    {
-        DocumentReference a = new DocumentReference("xwiki", "Groups", "group A");
-        Assert.assertTrue(new DefaultGroup(a).hashCode() == "group A".hashCode());
-        Assert.assertFalse(new DefaultGroup(a).hashCode() == "aaa".hashCode());
-    }
 }
