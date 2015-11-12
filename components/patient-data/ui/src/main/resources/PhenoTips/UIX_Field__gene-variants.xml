@@ -117,6 +117,9 @@
 {{velocity}}
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #set ($geneClassName = 'PhenoTips.GeneClass')
+#if ($xcontext.action != 'edit' &amp;&amp; $doc.getObjects($geneClassName).isEmpty())
+  #break
+#end
 #set ($variantClassName = 'PhenoTips.GeneVariantClass')
 === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
 #__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'zygosity'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp']})

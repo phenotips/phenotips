@@ -37,12 +37,11 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity output=false}}
+  <content>{{velocity output="false"}}
 $xwiki.jsfx.use('uicomponents/widgets/extraGeneVariantData.js', true)##
 $xwiki.jsfx.use('uicomponents/widgets/geneValidation.js', true)##
 $xwiki.jsfx.use('uicomponents/widgets/variantValidation.js', true)##
 $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 #template('geneVariantMacros.vm')
-{{/velocity}}
-  </content>
+{{/velocity}}</content>
 </xwikidoc>

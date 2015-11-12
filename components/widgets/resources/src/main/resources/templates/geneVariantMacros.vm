@@ -182,12 +182,13 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 ##
 #macro (__gene_table $geneClassName $variantClassName $options)##
-#set($geneClass = $xwiki.getDocument($geneClassName).xWikiClass)
-#set($variantClass = $xwiki.getDocument($variantClassName).xWikiClass)
+#set ($geneClass = $xwiki.getDocument($geneClassName).xWikiClass)
+#set ($variantClass = $xwiki.getDocument($variantClassName).xWikiClass)
 (% id="extradata-list-$geneClassName" class="gene-table extradata-list withCounter" %)
-|= #foreach($prop in $geneClass.properties) ##
+|=##
+#foreach($prop in $geneClass.properties)##
 |=(% class="gene-t-header-$prop.getName() col-label " ##
-#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %) $prop.translatedPrettyName#end
+#if ($foreach.index == 0 || $foreach.index == 3) colspan="2" #end %)$prop.translatedPrettyName#end
 #set($geneObjects = $doc.getObjects($geneClass.name))#if ($options.mode == 'edit')|=#end
 
 #foreach ($o in $geneObjects)
@@ -201,12 +202,11 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 (%class="variant-gene-$geneIndexPlaceholder variant-hide-heading-$geneIndexPlaceholder"%)#__variant_row_empty($variantClassName $options)##
 #end
 
-
-#if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end\\
+#if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end
 #end
 ##
 ##
-
+##
 ## =====================================================================
 ##
 ## Delete gene script service with bulk variants delete
