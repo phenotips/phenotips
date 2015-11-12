@@ -17,14 +17,14 @@
  */
 package org.phenotips.data.permissions;
 
-import java.util.Collection;
-
 import org.phenotips.Constants;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
+
+import java.util.Collection;
 
 /**
  * A collaborator on a patient record, either a user or a group that has been granted a specific {@link AccessLevel
@@ -75,7 +75,7 @@ public interface Collaborator
      * @return true if the user is included in collaborator
      */
     boolean isUserIncluded(User user);
-    
+
     /**
      * Returns a collection of all the users under this collaborator. If the collabrator is a user, then
      * getAllUserNames().size()==1 and getUsername().equals(getAllUserNames().get(0)). If the collaborator is a group
