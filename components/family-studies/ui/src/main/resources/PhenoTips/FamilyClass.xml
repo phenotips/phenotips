@@ -4,20 +4,18 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -49,6 +47,19 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <external_id>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>external_id</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Identifier</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </external_id>
     <identifier>
       <customDisplay/>
       <disabled>0</disabled>
@@ -71,7 +82,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>members</name>
-      <number>2</number>
+      <number>3</number>
       <picker>0</picker>
       <prettyName>members</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -95,13 +106,13 @@
 #end
 {{/velocity}}
 
-{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+{{include reference="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
       <idField/>
       <multiSelect>1</multiSelect>
       <name>reports</name>
-      <number>3</number>
+      <number>4</number>
       <picker>0</picker>
       <prettyName>reports</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -116,6 +127,35 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </reports>
+    <warning>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>warning</name>
+      <number>5</number>
+      <prettyName>warning</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </warning>
+    <warning_message>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <name>warning_message</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>warning_message</prettyName>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </warning_message>
   </class>
   <object>
     <name>PhenoTips.FamilyClass</name>

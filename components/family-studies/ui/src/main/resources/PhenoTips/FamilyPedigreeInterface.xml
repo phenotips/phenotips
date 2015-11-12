@@ -4,20 +4,18 @@
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
 <xwikidoc version="1.1">
@@ -39,17 +37,46 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
-## family member, proband or family
-#set ($anchorId = $request.proband)
-$response.setContentType('application/json')
+  <content>{{velocity wwiki="false"}}
+$response.setContentType('application/json')##
+{{html wiki="false" clean="false"}}
 ##
-#if ("$!request.json" != '')
-  $services.family.processPedigree($anchorId, $request.json, $request.image)
-#elseif ("$!resuest.link_to_id" != '')
-  $services.family.verifyLinkable($anchorId, $request.link_to_id)
-#else
-  $services.family.getFamilyStatus($anchorId)
+#if ("$!request.action" == '')
+  Action was not specified
+  #break
 #end
-{{/velocity}}</content>
+##
+#if ("$!request.action" != "createpatient")
+  #if ("$!request.proband" == '')
+    PROBAND was not specified
+    #break
+  #end
+  ## family member, proband or family
+  #set ($anchorId = $request.proband)
+#end
+##
+#if ("$!request.action" == "save")
+  #if ("$!request.json" != '')
+    $services.families.processPedigree($anchorId, $request.json, $request.image)
+  #else
+    JSON was not specified for action SAVE
+  #end
+#elseif ("$!request.action" == "checklink")
+  #if ("$!request.link_to_id" != '')
+    $services.families.canPatientBeLinked($anchorId, $request.link_to_id)
+  #else
+    LINK_TO_ID was not specified for action CHECKLINK
+  #end
+#elseif ("$!request.action" == "familystatus")
+  $services.families.getFamilyInfo($anchorId)
+#elseif ("$!request.action" == "createpatient")
+  #set ($patient = $services.patients.createNewPatient())
+  #if ($patient)
+    { "newID": "$patient.getId()" }
+  #else
+    { "newID": null }
+  #end
+#else
+  Unknown action
+#end{{/velocity}}</content>
 </xwikidoc>
