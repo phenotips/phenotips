@@ -20,10 +20,13 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.groups.internal.DefaultGroup;
 import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.users.User;
 
 /**
  * @version $Id$
@@ -99,6 +102,21 @@ public class DefaultCollaborator implements Collaborator
     public String toString()
     {
         return "[" + getUser() + ", " + getAccessLevel() + "]";
+    }
+
+    @Override
+    public boolean isUserIncluded(User user)
+    {
+        EntityReference thisUser = this.getUser();
+        if (isGroup()) {
+            if (!(thisUser instanceof DocumentReference)) {
+                return false;
+            }
+            DefaultGroup group = new DefaultGroup((DocumentReference) thisUser);
+            return group.isUserInGroup(user);
+        } else {
+            return thisUser.equals(user.getProfileDocument());
+        }
     }
 
     private UsersAndGroups getUsersAndGroups()

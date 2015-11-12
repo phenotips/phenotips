@@ -22,6 +22,7 @@ import org.phenotips.Constants;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
+import org.xwiki.users.User;
 
 /**
  * A collaborator on a patient record, either a user or a group that has been granted a specific {@link AccessLevel
@@ -63,4 +64,13 @@ public interface Collaborator
      * @return an access level, must not be null.
      */
     AccessLevel getAccessLevel();
+
+    /**
+     * Checks if {@link user} is included in this collaborator. If this.isUser() then a simple comparison is made. If
+     * this.isGroup() then a check is made if the user is in the group.
+     *
+     * @param user to check if included in collaborator
+     * @return true if the user is included in collaborator
+     */
+    boolean isUserIncluded(User user);
 }
