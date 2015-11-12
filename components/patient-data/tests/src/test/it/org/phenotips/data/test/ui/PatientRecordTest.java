@@ -130,10 +130,6 @@ public class PatientRecordTest extends AbstractTest
         this.patientEdit.setPrenatalNotes("Thai food is delicious");
         // TODO: fix visibility issues
 
-        // Parental Age Tests
-        this.patientEdit.setMaternalAgeAtEDD("25");
-        this.patientEdit.setPaternalAgeAtEDD("25");
-
         PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
         Assert.assertTrue(
             patientView.getPrenatalAndPerinatalHistorySummary("fieldGestationAtDelivery").contains("Term birth"));
@@ -147,6 +143,22 @@ public class PatientRecordTest extends AbstractTest
         // This should be set automatically since term birth was specified
         Assert.assertTrue(
             patientView.getPrenatalAndPerinatalHistorySummary("fieldPrematureBirth").contains("NO Premature birth"));
+    }
+
+    @Test
+    public void parentalAgeTest(){
+        this.patientEdit.setMaternalAgeAtEDD("25");
+        this.patientEdit.setPaternalAgeAtEDD("27");
+
+        PatientRecordViewPage patientView = this.patientEdit.clickSaveAndView();
+
+        Assert.assertEquals("25", patientView.getPrenatalAndPerinatalHistorySummary("fieldMaternalAgeAtEDD"));
+        Assert.assertEquals("27", patientView.getPrenatalAndPerinatalHistorySummary("fieldPaternalAgeAtEDD"));
+
+        this.patientEdit.setPaternalAgeAtEDD("");
+        patientView = this.patientEdit.clickSaveAndView();
+        Assert.assertEquals("25", patientView.getPrenatalAndPerinatalHistorySummary("fieldMaternalAgeAtEDD"));
+        Assert.assertNull(patientView.getPrenatalAndPerinatalHistorySummary("fieldPaternalAgeAtEDD"));
     }
 
     @Test

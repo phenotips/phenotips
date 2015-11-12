@@ -307,6 +307,12 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
     private WebElement fieldGestationAtDelivery;
 
+    @FindBy(css = ".prenatal-info.chapter > p:nth-of-type(2) > span:nth-of-type(2)")
+    private WebElement fieldMaternalAgeAtEDD;
+
+    @FindBy(css = ".prenatal-info.chapter > p:nth-of-type(2) > span:nth-of-type(4)")
+    private WebElement fieldPaternalAgeAtEDD;
+
     @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
     private WebElement fieldConceptionAfterFertility;
 
@@ -349,6 +355,10 @@ public class PatientRecordViewPage extends ViewPage
                 return this.fieldIVF.getText();
             case "fieldGestationAtDelivery":
                 return this.fieldGestationAtDelivery.getText();
+            case "fieldMaternalAgeAtEDD":
+                return this.fieldMaternalAgeAtEDD.getText();
+            case "fieldPaternalAgeAtEDD":
+                return this.fieldPaternalAgeAtEDD.getText();
             case "fieldFirstAssistedReproduction":
                 return this.fieldFirstGlobalInheritence.getText();
             case "fieldSecondAssistedReproduction":
