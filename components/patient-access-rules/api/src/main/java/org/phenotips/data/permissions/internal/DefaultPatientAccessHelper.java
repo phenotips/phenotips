@@ -23,7 +23,6 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -98,9 +97,6 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     @Inject
     private AuthorizationManager rights;
 
-    @Inject
-    private UsersAndGroups usersAndGroups;
-
     @Override
     public DocumentReference getCurrentUser()
     {
@@ -152,9 +148,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             this.setProperty(patient.getXDocument(), classReference, "owner", owner);
             if (!previousOwner.equals(userOrGroup)) {
                 addCollaborator(patient,
-                    new DefaultCollaborator(previousOwner, this.manager.resolveAccessLevel("manage"), null), false);
+                    new DefaultCollaborator(previousOwner, this.manager.resolveAccessLevel("manage")), false);
             }
-            removeCollaborator(patient, new DefaultCollaborator(userOrGroup, null, null), false);
+            removeCollaborator(patient, new DefaultCollaborator(userOrGroup, null), false);
 
             XWikiContext context = getXWikiContext();
             context.getWiki().saveDocument(patient.getXDocument(), "Set owner: " + owner, true, context);
@@ -259,7 +255,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                         continue;
                     }
                 }
-                Collaborator collaborator = new DefaultCollaborator(userOrGroup, access, usersAndGroups);
+                Collaborator collaborator = new DefaultCollaborator(userOrGroup, access);
                 collaborators.put(userOrGroup, collaborator);
             }
             return collaborators.values();
