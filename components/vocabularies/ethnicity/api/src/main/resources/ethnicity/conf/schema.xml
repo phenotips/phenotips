@@ -21,6 +21,22 @@
 <!--
  For more information, on how to customize this file, please see
  http://wiki.apache.org/solr/SchemaXml
+
+ PERFORMANCE NOTE: this schema includes many optional features and should not
+ be used for benchmarking.  To improve performance one could
+  - set stored="false" for all fields possible (esp large fields) when you
+    only need to search on the field but don't need to return the original
+    value.
+  - set indexed="false" if you don't need to search on the field, but only
+    return the field as a result of searching on other indexed fields.
+  - remove all unneeded copyField statements
+  - for best index size and searching performance, set "index" to false
+    for all general text fields, use copyField to copy them to the
+    catchall "text" field, and use that for searching.
+  - For maximum indexing performance, use the StreamingUpdateSolrServer
+    java client.
+  - Remember to run the JVM in server mode, and use a higher logging level
+    that avoids logging every request
 -->
 
 <schema name="ethnicity" version="1.5">
@@ -29,7 +45,7 @@
     <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
 
     <!-- A text field that only splits on whitespace for exact matching of words -->
     <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
