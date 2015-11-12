@@ -28,6 +28,7 @@ import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.access.NoAccessLevel;
 import org.phenotips.data.permissions.internal.access.OwnerAccessLevel;
 import org.phenotips.data.permissions.internal.access.ViewAccessLevel;
+import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -77,6 +78,8 @@ public class DefaultPatientAccessHelperTest
     private static final DocumentReference PATIENT_REFERENCE = new DocumentReference("xwiki", "data", "P0000001");
 
     private Patient patient = mock(Patient.class);
+
+    private UsersAndGroups usersAndGroups = mock(UsersAndGroups.class);
 
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "padams");
