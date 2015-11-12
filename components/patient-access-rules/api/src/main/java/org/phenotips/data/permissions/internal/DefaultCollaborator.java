@@ -17,10 +17,6 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
@@ -32,6 +28,10 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.users.User;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -136,7 +136,7 @@ public class DefaultCollaborator implements Collaborator
         }
         return usersSet;
     }
-    
+
     private UsersAndGroups getUsersAndGroups()
     {
         try {
