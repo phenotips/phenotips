@@ -17,9 +17,9 @@
  */
 package org.phenotips.projects.internal;
 
+import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.projects.permissions.ProjectCollaborator;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
@@ -101,8 +101,8 @@ public class ProjectsRepository
 
             boolean foundAccessLevel = false;
 
-            Collection<ProjectCollaborator> collaborators = p.getCollaborators();
-            for (ProjectCollaborator collaborator : collaborators) {
+            Collection<Collaborator> collaborators = p.getCollaborators();
+            for (Collaborator collaborator : collaborators) {
                 if (collaborator.getAccessLevel().equals(accessLevel)
                     && collaborator.isUserIncluded(currentUser)) {
                     foundAccessLevel = true;
