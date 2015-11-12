@@ -242,10 +242,14 @@ public class ParentalAgeControllerTest {
         PatientData<Integer> testPatientData =
                 new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
+        JSONObject jsonTestData = new JSONObject();
+        jsonTestData.put("prenatal_perinatal_history", testData);
 
         this.parentalAgeController.writeJSON(this.patient, json);
+
         Assert.assertNotNull(json);
-        Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history"));
+        Assert.assertEquals(jsonTestData.getJSONObject("prenatal_perinatal_history"),
+                json.getJSONObject("prenatal_perinatal_history"));
         System.out.println(json);
 
     }
