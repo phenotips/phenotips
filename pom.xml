@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -562,6 +562,7 @@
               <justification>New API methods needed for making the configuration more extensible.</justification>
             </difference>
             <difference>
+<<<<<<< HEAD
               <className>org/phenotips/vocabulary/Vocabulary</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getSupportedCategories()</method>
@@ -586,6 +587,8 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
+=======
+>>>>>>> 964aeb1... issue-1987-projects
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserInGroup(org.xwiki.users.User)</method>
@@ -598,6 +601,7 @@
               <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
             <difference>
+<<<<<<< HEAD
               <className>org/phenotips/groups/GroupManager</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserInGroup(org.xwiki.users.User, org.phenotips.groups.Group)</method>
@@ -622,6 +626,8 @@
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
+=======
+>>>>>>> 964aeb1... issue-1987-projects
               <className>org/phenotips/data/permissions/Collaborator</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserIncluded(org.xwiki.users.User)</method>
@@ -631,13 +637,33 @@
               <className>org/phenotips/data/permissions/Collaborator</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
-              <justification>To returned a (recursive) list of users in a collaborator. Currently used only in projects.</justification>
+              <justification>To return a (recursive) list of users in a collaborator. Currently used only in projects.</justification>
             </difference>
             <difference>
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
-              <justification>To returned a (recursive) list of users in a group. Currently used only in projects.</justification>
+              <justification>To return a (recursive) list of users in a group. Currently used only in projects.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/receive/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject *(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushPatientData</className>
+              <differenceType>7004</differenceType>
+              <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(org.phenotips.data.Patient, java.util.Set, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
+              <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
               <className>org/phenotips/groups/Group</className>
