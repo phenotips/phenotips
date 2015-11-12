@@ -17,15 +17,31 @@
  */
 package org.phenotips.groups.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
+import org.phenotips.groups.GroupManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.QueryException;
+import org.xwiki.users.User;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.web.Utils;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 /**
  * Tests for the default {@link Group} implementation, {@link DefaultGroup}.
  *
@@ -33,6 +49,15 @@ import org.junit.Test;
  */
 public class DefaultGroupTest
 {
+    @Mock
+    private ComponentManager cm;
+
+    @Mock
+    private Provider<ComponentManager> mockProvider;
+
+    @Mock
+    private GroupManager groupManager;
+
     /** Basic tests for {@link DefaultGroup#getReference()}. */
     @Test
     public void getReference() throws ComponentLookupException, QueryException
@@ -69,5 +94,40 @@ public class DefaultGroupTest
         DocumentReference a = new DocumentReference("xwiki", "Groups", "group A");
         Assert.assertTrue(new DefaultGroup(a).hashCode() == "group A".hashCode());
         Assert.assertFalse(new DefaultGroup(a).hashCode() == "aaa".hashCode());
+    }
+
+    @Test
+    public void isUserInGroupTest() throws ComponentLookupException, QueryException
+    {
+        MockitoAnnotations.initMocks(this);
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+
+        DocumentReference docref = new DocumentReference("xwiki", "Groups", "Group A");
+        DefaultGroup groupA = new DefaultGroup(docref);
+        User u = mock(User.class);
+
+        when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
+
+        when(groupManager.getGroupsForUser(u)).thenReturn(null);
+        Assert.assertFalse(groupA.isUserInGroup(u));
+
+        Set<Group> groups = new HashSet<Group>();
+        when(groupManager.getGroupsForUser(u)).thenReturn(groups);
+        Assert.assertFalse(groupA.isUserInGroup(u));
+
+        groups.add(groupA);
+        Assert.assertTrue(groupA.isUserInGroup(u));
+
+        when(this.cm.getInstance(GroupManager.class)).thenThrow(new ComponentLookupException("failed"));
+        boolean fails = false;
+        try {
+            groupA.isUserInGroup(u);
+        } catch (NullPointerException e) {
+            fails = true;
+        }
+        Assert.assertTrue(fails);
+
     }
 }

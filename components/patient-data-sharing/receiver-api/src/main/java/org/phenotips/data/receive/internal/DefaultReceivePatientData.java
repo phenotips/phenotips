@@ -455,7 +455,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             User user = this.userManager.getUser(userName);
             Group group = this.groupManager.getGroup(groupName);
 
-            if (group != null && !this.groupManager.isUserInGroup(user, group)) {
+            if (group != null && !group.isUserInGroup(user)) {
                 this.logger.warn("Incorrect group");
                 return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGROUP);
             }
