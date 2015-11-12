@@ -631,6 +631,12 @@
               <method>boolean isUserIncluded(org.xwiki.users.User)</method>
               <justification>To check if a user is included in the collaborator object.</justification>
             </difference>
+             <difference>
+              <className>org/phenotips/groups/Group</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection getAllUserNames()</method>
+              <justification>To returned a (recursive) list of users in a group. Currently used only in projects.</justification>
+            </difference>
             <difference>
               <className>org/phenotips/data/push/PushPatientService</className>
               <differenceType>7004</differenceType>

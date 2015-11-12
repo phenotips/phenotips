@@ -128,6 +128,51 @@ public class DefaultGroupTest
             fails = true;
         }
         Assert.assertTrue(fails);
-
     }
+
+    @Test
+    public void getAllUserNamesTest() throws Exception
+    {
+        // GroupManager groupManagerTest = this.mocker.getComponentUnderTest();
+        //
+        // XWikiDocument groupXDocument = mock(XWikiDocument.class);
+        // DocumentReference groupReference = mock(DocumentReference.class);
+        // Group group = mock(Group.class);
+        // when(group.getReference()).thenReturn(groupReference);
+        //
+        // DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        // when(bridge.getDocument(groupReference)).thenReturn(groupXDocument);
+        // when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(null);
+        // org.junit.Assert.assertTrue(groupManagerTest.getAllUserNames(group).isEmpty());
+        //
+        // DocumentReferenceResolver<String> resolver =
+        // this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        // List<BaseObject> membersList = new LinkedList<BaseObject>();
+        // when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(membersList);
+        // org.junit.Assert.assertTrue(groupManagerTest.getAllUserNames(group).isEmpty());
+        //
+        // BaseObject base1 = mock(BaseObject.class);
+        // StringProperty st1 = mock(StringProperty.class);
+        // when(base1.getField("member")).thenReturn(st1);
+        // when(st1.getValue()).thenReturn("");
+        // membersList.add(base1);
+        //
+        // BaseObject base2 = mock(BaseObject.class);
+        // StringProperty st2 = mock(StringProperty.class);
+        // when(base2.getField("member")).thenReturn(st2);
+        // when(st2.getValue()).thenReturn("user");
+        // when(resolver.resolve("user", GROUP_SPACE)).thenReturn(null);
+        // membersList.add(base2);
+        //
+        // BaseObject base3 = mock(BaseObject.class);
+        // StringProperty st3 = mock(StringProperty.class);
+        // when(base3.getField("member")).thenReturn(st3);
+        // when(st3.getValue()).thenReturn("group");
+        // DocumentReference subGroup = mock(DocumentReference.class);
+        // when(resolver.resolve("group", GROUP_SPACE)).thenReturn(subGroup);
+        // membersList.add(base3);
+        //
+        // org.junit.Assert.assertEquals(1, groupManagerTest.getAllUserNames(group).size());
+    }
+
 }
