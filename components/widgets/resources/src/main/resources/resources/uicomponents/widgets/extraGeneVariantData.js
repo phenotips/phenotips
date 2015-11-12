@@ -3,7 +3,11 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
   tools.Editor = Class.create({
 
     initialize : function () {
-      var geneTableListId = $$('.gene-table.extradata-list')[0].id;
+      var geneTableListId = $$('.gene-table.extradata-list')[0];
+      if (!geneTableListId) {
+        return;
+      }
+      geneTableListId = geneTableListId.id;
       this.geneClassName = geneTableListId.substring(geneTableListId.lastIndexOf('-') + 1);
       this.geneVariantClassName = 'PhenoTips.GeneVariantClass';
 
