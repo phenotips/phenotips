@@ -28,6 +28,7 @@ import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 import org.phenotips.data.permissions.internal.access.NoAccessLevel;
 import org.phenotips.data.permissions.internal.access.OwnerAccessLevel;
 import org.phenotips.data.permissions.internal.access.ViewAccessLevel;
+import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -86,6 +87,8 @@ public class DefaultPatientAccessHelperTest
     private BaseObject ownerObject = mock(BaseObject.class);
 
     private BaseObject visibilityObject = mock(BaseObject.class);
+
+    private UsersAndGroups usersAndGroups = mock(UsersAndGroups.class);
 
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "padams");
@@ -334,9 +337,9 @@ public class DefaultPatientAccessHelperTest
         when(manager.resolveAccessLevel("view")).thenReturn(view);
         Collection<Collaborator> collaborators = this.mocker.getComponentUnderTest().getCollaborators(this.patient);
         Assert.assertEquals(2, collaborators.size());
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
         Assert.assertTrue(collaborators.contains(c));
-        c = new DefaultCollaborator(OTHER_USER, view, this.mocker.getComponentUnderTest());
+        c = new DefaultCollaborator(OTHER_USER, view, usersAndGroups);
         Assert.assertTrue(collaborators.contains(c));
     }
 
@@ -375,7 +378,7 @@ public class DefaultPatientAccessHelperTest
         when(manage.compareTo(edit)).thenReturn(10);
         Collection<Collaborator> collaborators = this.mocker.getComponentUnderTest().getCollaborators(this.patient);
         Assert.assertEquals(1, collaborators.size());
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, manage, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, manage, usersAndGroups);
         Assert.assertTrue(collaborators.contains(c));
     }
 
@@ -430,9 +433,9 @@ public class DefaultPatientAccessHelperTest
         when(view.getName()).thenReturn("view");
         when(manager.resolveAccessLevel("view")).thenReturn(view);
         Collection<Collaborator> collaborators = new HashSet<Collaborator>();
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
         collaborators.add(c);
-        c = new DefaultCollaborator(OTHER_USER, view, this.mocker.getComponentUnderTest());
+        c = new DefaultCollaborator(OTHER_USER, view, usersAndGroups);
         collaborators.add(c);
         BaseObject o = mock(BaseObject.class);
         when(doc.newXObject(COLLABORATOR_CLASS, this.context)).thenReturn(o);
@@ -473,7 +476,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
         Mockito.verify(o).setStringValue("collaborator", COLLABORATOR_STR);
@@ -495,7 +498,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
         Mockito.verify(o).setStringValue("collaborator", COLLABORATOR_STR);
@@ -514,7 +517,7 @@ public class DefaultPatientAccessHelperTest
 
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
     }
@@ -530,7 +533,7 @@ public class DefaultPatientAccessHelperTest
         when(doc.getXObject(COLLABORATOR_CLASS, "collaborator", COLLABORATOR_STR, false)).thenReturn(o);
 
         AccessLevel edit = mock(AccessLevel.class);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
         Mockito.verify(doc).removeXObject(o);
@@ -550,11 +553,12 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
         Mockito.verify(doc, Mockito.never()).removeXObject(Matchers.any(BaseObject.class));
-        Mockito.verify(this.xwiki, Mockito.never()).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR, true,
+        Mockito.verify(this.xwiki, Mockito.never()).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR,
+            true,
             this.context);
     }
 
@@ -569,7 +573,7 @@ public class DefaultPatientAccessHelperTest
 
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, usersAndGroups);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
     }

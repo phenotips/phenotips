@@ -19,6 +19,7 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
@@ -49,7 +50,7 @@ public class DefaultCollaboratorTest
     private AccessLevel access;
 
     @Mock
-    private PatientAccessHelper helper;
+    private UsersAndGroups usersAndGroups;
 
     @Before
     public void setUp()
@@ -61,8 +62,8 @@ public class DefaultCollaboratorTest
     @Test
     public void getType() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
-        Mockito.when(this.helper.getType(COLLABORATOR)).thenReturn("user", "group", "unknown", null);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
+        Mockito.when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("user", "group", "unknown", null);
         Assert.assertEquals("user", c.getType());
         Assert.assertEquals("group", c.getType());
         Assert.assertEquals("unknown", c.getType());
@@ -73,8 +74,8 @@ public class DefaultCollaboratorTest
     @Test
     public void isUser() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
-        Mockito.when(this.helper.getType(COLLABORATOR)).thenReturn("unknown", "user", "group", null);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
+        Mockito.when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("unknown", "user", "group", null);
         Assert.assertFalse(c.isUser());
         Assert.assertTrue(c.isUser());
         Assert.assertFalse(c.isUser());
@@ -85,8 +86,8 @@ public class DefaultCollaboratorTest
     @Test
     public void isGroup() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
-        Mockito.when(this.helper.getType(COLLABORATOR)).thenReturn("unknown", "user", "group", null);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
+        Mockito.when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("unknown", "user", "group", null);
         Assert.assertFalse(c.isGroup());
         Assert.assertFalse(c.isGroup());
         Assert.assertTrue(c.isGroup());
@@ -97,7 +98,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getUser() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         Assert.assertSame(COLLABORATOR, c.getUser());
     }
 
@@ -105,7 +106,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getUserWithNull() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(null, null, this.helper);
+        Collaborator c = new DefaultCollaborator(null, null, this.usersAndGroups);
         Assert.assertNull(c.getUser());
     }
 
@@ -113,7 +114,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getUsername() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         Assert.assertEquals(COLLABORATOR.getName(), c.getUsername());
     }
 
@@ -121,7 +122,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getUsernameWithNull() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(null, null, this.helper);
+        Collaborator c = new DefaultCollaborator(null, null, this.usersAndGroups);
         Assert.assertNull(c.getUsername());
     }
 
@@ -129,7 +130,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getAccessLevel() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         Assert.assertSame(this.access, c.getAccessLevel());
     }
 
@@ -137,7 +138,7 @@ public class DefaultCollaboratorTest
     @Test
     public void getAccessLevelWithNull() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, null, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, null, this.usersAndGroups);
         Assert.assertNull(c.getAccessLevel());
     }
 
@@ -145,23 +146,25 @@ public class DefaultCollaboratorTest
     @Test
     public void equalsTest() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         // Equals itself
         Assert.assertTrue(c.equals(c));
         // Doesn't equal null
         Assert.assertFalse(c.equals(null));
         // Equals an identical collaborator
         AccessLevel otherAccess = mock(AccessLevel.class);
-        Collaborator other = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator other = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         Assert.assertTrue(c.equals(other));
         // Doesn't equal a collaborator with same user but different access
-        other = new DefaultCollaborator(COLLABORATOR, otherAccess, this.helper);
+        other = new DefaultCollaborator(COLLABORATOR, otherAccess, this.usersAndGroups);
         Assert.assertFalse(c.equals(other));
         // Doesn't equal a collaborator with same access but different user
-        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.helper);
+        other =
+            new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.usersAndGroups);
         Assert.assertFalse(c.equals(other));
         // Doesn't equal a collaborator with different user and different access
-        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.helper);
+        other =
+            new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.usersAndGroups);
         Assert.assertFalse(c.equals(other));
         // Doesn't equal different types of objects
         Assert.assertFalse(c.equals("other"));
@@ -171,18 +174,20 @@ public class DefaultCollaboratorTest
     @Test
     public void hashCodeTest() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         AccessLevel otherAccess = mock(AccessLevel.class);
-        Collaborator other = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator other = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         // Equals a different collaborator with the same user and access
         Assert.assertEquals(c.hashCode(), other.hashCode());
         Assert.assertFalse(c.equals(null));
         // Different hashcodes for different coordinates
-        other = new DefaultCollaborator(COLLABORATOR, otherAccess, this.helper);
+        other = new DefaultCollaborator(COLLABORATOR, otherAccess, this.usersAndGroups);
         Assert.assertNotEquals(c.hashCode(), other.hashCode());
-        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.helper);
+        other =
+            new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), this.access, this.usersAndGroups);
         Assert.assertNotEquals(c.hashCode(), other.hashCode());
-        other = new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.helper);
+        other =
+            new DefaultCollaborator(new DocumentReference("xwiki", "XWiki", "padams"), otherAccess, this.usersAndGroups);
         Assert.assertNotEquals(c.hashCode(), other.hashCode());
     }
 
@@ -190,7 +195,7 @@ public class DefaultCollaboratorTest
     @Test
     public void toStringTest() throws ComponentLookupException
     {
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.helper);
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, this.access, this.usersAndGroups);
         Mockito.when(this.access.toString()).thenReturn("edit");
         Assert.assertEquals("[xwiki:XWiki.hmccoy, edit]", c.toString());
     }
