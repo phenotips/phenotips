@@ -151,10 +151,4 @@ public class DefaultGroupManager implements GroupManager
         }
         return new DefaultGroup(groupReference);
     }
-
-    @Override
-    public boolean isUserInGroup(User user, Group group)
-    {
-        return this.getGroupsForUser(user).contains(group);
-    }
 }
