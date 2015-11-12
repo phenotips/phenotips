@@ -21,10 +21,8 @@ import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -61,9 +59,6 @@ public class DefaultGroupManager implements GroupManager
     private static final String SHORT_USER_PARAMETER = "su";
 
     private static final String USER_PARAMETER = "u";
-
-    /** The space where groups are stored. */
-    private static final EntityReference GROUP_SPACE = new EntityReference("Groups", EntityType.SPACE);
 
     /** Logging helper. */
     @Inject
@@ -112,7 +107,7 @@ public class DefaultGroupManager implements GroupManager
                 q = this.qm.createQuery(qs.toString(), Query.XWQL);
                 for (int i = 0; i < nestedGroups.size(); ++i) {
                     String nestedGroupName = String.valueOf(nestedGroups.get(i));
-                    String formalGroupName = this.resolver.resolve(nestedGroupName, GROUP_SPACE).toString();
+                    String formalGroupName = this.resolver.resolve(nestedGroupName, Group.GROUP_SPACE).toString();
                     q.bindValue(SHORT_USER_PARAMETER + (i + 1), formalGroupName);
                     q.bindValue(USER_PARAMETER + (i + 1), nestedGroupName);
                 }
@@ -139,7 +134,7 @@ public class DefaultGroupManager implements GroupManager
         if (StringUtils.isBlank(name)) {
             return null;
         }
-        DocumentReference groupReference = this.resolver.resolve(name, GROUP_SPACE);
+        DocumentReference groupReference = this.resolver.resolve(name, Group.GROUP_SPACE);
         return new DefaultGroup(groupReference);
     }
 
