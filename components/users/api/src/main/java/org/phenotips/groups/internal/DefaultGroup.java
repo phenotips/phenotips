@@ -21,11 +21,23 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.User;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.StringProperty;
 
 /**
  * Default implementation for {@link Group}.
@@ -35,6 +47,9 @@ import java.util.Set;
  */
 public class DefaultGroup implements Group
 {
+    /** The xObject under which members are saved. */
+    private static final DocumentReference MEMBERS_REFERENCE = new DocumentReference("xwiki", "XWiki", "XWikiGroups");
+
     /** @see #getReference() */
     private final DocumentReference reference;
 
@@ -86,10 +101,85 @@ public class DefaultGroup implements Group
         return groups.contains(this);
     }
 
+    @Override
+    public Collection<String> getAllUserNames()
+    {
+        DocumentAccessBridge bridge = this.getBridge();
+        DocumentReferenceResolver<String> resolver = this.getStringResolver();
+        Logger logger = this.getLogger();
+
+        Set<String> usersSet = new HashSet<String>();
+        Stack<DocumentReference> groupsToProcess = new Stack<DocumentReference>();
+        DocumentReference groupReference = this.getReference();
+        groupsToProcess.add(groupReference);
+
+        try {
+            while (!groupsToProcess.isEmpty()) {
+                DocumentReference currentGroup = groupsToProcess.pop();
+                XWikiDocument groupDocument = (XWikiDocument) bridge.getDocument(currentGroup);
+                Collection<BaseObject> members = groupDocument.getXObjects(MEMBERS_REFERENCE);
+                if (members == null) {
+                    continue;
+                }
+
+                for (BaseObject member : members) {
+                    if (member != null) {
+                        StringProperty field = (StringProperty) member.getField("member");
+                        String value = field.getValue();
+                        if (StringUtils.isEmpty(value)) {
+                            continue;
+                        }
+                        DocumentReference subGroup = resolver.resolve(value, GROUP_SPACE);
+                        if (subGroup == null) {
+                            // It's a user
+                            usersSet.add(value);
+                        } else {
+                            groupsToProcess.push(subGroup);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error getting users for {}", groupReference.getName(), e.getMessage());
+        }
+        return usersSet;
+    }
+
+    private DocumentReferenceResolver<String> getStringResolver()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(
+                DocumentReferenceResolver.class, "current");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private DocumentAccessBridge getBridge()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
     private GroupManager getGroupManager()
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(GroupManager.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private Logger getLogger()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
