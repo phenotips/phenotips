@@ -20,7 +20,6 @@ package org.phenotips.projects.permissions;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
-import org.phenotips.groups.GroupManager;
 import org.phenotips.groups.internal.DefaultGroup;
 
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -49,14 +48,11 @@ public class DefaultProjectCollaborator extends DefaultCollaborator implements P
 
     private static DocumentAccessBridge bridge;
 
-    private static GroupManager groupManager;
-
     private static Logger logger;
 
     static {
         try {
             ComponentManager ccm = ComponentManagerRegistry.getContextComponentManager();
-            DefaultProjectCollaborator.groupManager = ccm.getInstance(GroupManager.class);
             DefaultProjectCollaborator.bridge = ccm.getInstance(DocumentAccessBridge.class);
             DefaultProjectCollaborator.logger = ccm.getInstance(Logger.class);
         } catch (ComponentLookupException e) {
@@ -70,7 +66,7 @@ public class DefaultProjectCollaborator extends DefaultCollaborator implements P
      */
     public DefaultProjectCollaborator(EntityReference user, AccessLevel access)
     {
-        super(user, access, null);
+        super(user, access);
     }
 
     @Override
@@ -100,7 +96,7 @@ public class DefaultProjectCollaborator extends DefaultCollaborator implements P
                 return false;
             }
             DefaultGroup group = new DefaultGroup((DocumentReference) thisUser);
-            return DefaultProjectCollaborator.groupManager.isUserInGroup(user, group);
+            return group.isUserInGroup(user);
         } else {
             return thisUser.equals(user.getProfileDocument());
         }
