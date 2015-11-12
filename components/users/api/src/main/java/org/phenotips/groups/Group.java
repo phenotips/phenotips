@@ -23,6 +23,7 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
+import org.xwiki.users.User;
 
 /**
  * A group of users.
@@ -43,4 +44,12 @@ public interface Group
      * @return a valid document reference
      */
     DocumentReference getReference();
+
+    /**
+     * Checks if a user belongs to the group.
+     *
+     * @param user the user to check
+     * @return true if the user belongs to the group
+     */
+    boolean isUserInGroup(User user);
 }
