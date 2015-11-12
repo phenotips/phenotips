@@ -17,10 +17,12 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.groups.internal.UsersAndGroups;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.EntityReference;
 
 /**
@@ -32,19 +34,16 @@ public class DefaultCollaborator implements Collaborator
 
     private final AccessLevel access;
 
-    private final UsersAndGroups usersAndGroups;
-
-    public DefaultCollaborator(EntityReference user, AccessLevel access, UsersAndGroups usersAndGroups)
+    public DefaultCollaborator(EntityReference user, AccessLevel access)
     {
         this.user = user;
         this.access = access;
-        this.usersAndGroups = usersAndGroups;
     }
 
     @Override
     public String getType()
     {
-        return this.usersAndGroups.getType(this.user);
+        return this.getUsersAndGroups().getType(this.user);
     }
 
     @Override
@@ -100,5 +99,15 @@ public class DefaultCollaborator implements Collaborator
     public String toString()
     {
         return "[" + getUser() + ", " + getAccessLevel() + "]";
+    }
+
+    private UsersAndGroups getUsersAndGroups()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(UsersAndGroups.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
     }
 }
