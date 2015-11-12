@@ -20,12 +20,21 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.groups.Group;
+import org.phenotips.groups.GroupManager;
+import org.phenotips.groups.internal.DefaultGroup;
 import org.phenotips.groups.internal.UsersAndGroups;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.users.User;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -57,6 +66,9 @@ public class DefaultCollaboratorTest
     @Mock
     private UsersAndGroups usersAndGroups;
 
+    @Mock
+    private GroupManager groupManager;
+
     /** The user used as a collaborator. */
     private static final DocumentReference COLLABORATOR = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
@@ -70,6 +82,7 @@ public class DefaultCollaboratorTest
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
         when(this.mockProvider.get()).thenReturn(this.cm);
         when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
+        when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
     }
 
     /** Basic tests for {@link Collaborator#getType()}. */
@@ -77,7 +90,7 @@ public class DefaultCollaboratorTest
     public void getType() throws ComponentLookupException
     {
         Collaborator c = new DefaultCollaborator(COLLABORATOR, access);
-        Mockito.when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("user", "group", "unknown", null);
+        when(this.usersAndGroups.getType(COLLABORATOR)).thenReturn("user", "group", "unknown", null);
         Assert.assertEquals("user", c.getType());
         Assert.assertEquals("group", c.getType());
         Assert.assertEquals("unknown", c.getType());
@@ -210,4 +223,31 @@ public class DefaultCollaboratorTest
         Assert.assertEquals("[xwiki:XWiki.hmccoy, edit]", c.toString());
     }
 
+    @Test
+    public void isUserIncludedTest()
+    {
+        User user = mock(User.class);
+
+        DocumentReference userRef = new DocumentReference("xwiki", "XWiki", "user");
+        Collaborator userC = new DefaultCollaborator(userRef, access);
+        when(this.usersAndGroups.getType(userRef)).thenReturn(UsersAndGroups.USER);
+        when(user.getProfileDocument()).thenReturn(userRef);
+        Assert.assertTrue(userC.isUserIncluded(user));
+
+        EntityReference entityReference = new EntityReference("name", EntityType.ATTACHMENT);
+        Collaborator badCollaborator = new DefaultCollaborator(entityReference, access);
+        when(this.usersAndGroups.getType(entityReference)).thenReturn(UsersAndGroups.GROUP);
+        Assert.assertFalse(badCollaborator.isUserIncluded(user));
+
+        Set<Group> groups = new HashSet<Group>();
+
+        DocumentReference documentReference = new DocumentReference("xwiki", "Groups", "group");
+        Collaborator groupC = new DefaultCollaborator(documentReference, access);
+        when(this.usersAndGroups.getType(documentReference)).thenReturn(UsersAndGroups.GROUP);
+        when(this.groupManager.getGroupsForUser(user)).thenReturn(groups);
+        Assert.assertFalse(groupC.isUserIncluded(user));
+
+        groups.add(new DefaultGroup(documentReference));
+        Assert.assertTrue(groupC.isUserIncluded(user));
+    }
 }
