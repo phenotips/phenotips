@@ -1313,6 +1313,9 @@
       <nonStandardAdoptedOutGraphic>0</nonStandardAdoptedOutGraphic>
     </property>
     <property>
+      <probandIsSyncedWithPatient>1</probandIsSyncedWithPatient>
+    </property>
+    <property>
       <propagateFatherLastName>1</propagateFatherLastName>
     </property>
   </object>
