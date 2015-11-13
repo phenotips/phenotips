@@ -103,6 +103,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </nonStandardAdoptedOutGraphic>
+    <probandIsSyncedWithPatient>
+      <customDisplay/>
+      <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>probandIsSyncedWithPatient</name>
+      <number>6</number>
+      <prettyName>Synchronize proband with patient record</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </probandIsSyncedWithPatient>
     <propagateFatherLastName>
       <customDisplay/>
       <defaultValue>1</defaultValue>

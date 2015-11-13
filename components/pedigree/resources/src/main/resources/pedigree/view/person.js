@@ -913,15 +913,17 @@ var Person = Class.create(AbstractPerson, {
      * @return {Object} Summary object for the menu
      */
     getSummary: function() {
+        var isDisabledProband = this.isProband() && editor.getPreferencesManager().getConfigurationOption("probandIsSyncedWithPatient");
+
         var onceAlive = editor.getGraph().hasRelationships(this.getID());
         var inactiveStates = onceAlive ? ['unborn','aborted','miscarriage','stillborn'] : false;
         var disabledStates = false;
-        if (this.isProband()) {
+        if (isDisabledProband) {
             disabledStates = ['alive','deceased','unborn','aborted','miscarriage','stillborn']; // all possible
             removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
         }
 
-        var disabledGenders = this.isProband() ? [] : false;
+        var disabledGenders = isDisabledProband ? [] : false;
         var inactiveGenders = false;
         var genderSet = editor.getGraph().getPossibleGenders(this.getID());
         for (gender in genderSet) {
@@ -931,7 +933,7 @@ var Person = Class.create(AbstractPerson, {
                         inactiveGenders = [];
                     inactiveGenders.push(gender);
                 }
-                if (this.isProband() && gender != this.getGender()) {
+                if (isDisabledProband && gender != this.getGender()) {
                     disabledGenders.push(gender);
                 }
         }
@@ -990,19 +992,19 @@ var Person = Class.create(AbstractPerson, {
 
         return {
             identifier:    {value : this.getID()},
-            first_name:    {value : this.getFirstName(), disabled: this.isProband()},
-            last_name:     {value : this.getLastName(), disabled: this.isProband()},
+            first_name:    {value : this.getFirstName(), disabled: isDisabledProband},
+            last_name:     {value : this.getLastName(), disabled: isDisabledProband},
             last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
-            external_id:   {value : this.getExternalID(), disabled: this.isProband()},
+            external_id:   {value : this.getExternalID(), disabled: isDisabledProband},
             gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
-            date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: this.isProband()},
+            date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: isDisabledProband},
             carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
-            disorders:     {value : disorders, disabled: this.isProband()},
+            disorders:     {value : disorders, disabled: isDisabledProband},
             ethnicity:     {value : this.getEthnicities()},
-            candidate_genes: {value : this.getGenes(), disabled: this.isProband()},
+            candidate_genes: {value : this.getGenes(), disabled: isDisabledProband},
             adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
-            date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: this.isProband()},
+            date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: isDisabledProband},
             commentsClinical:{value : this.getComments(), inactive: false},
             commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
             commentsCancers: {value : this.getComments(), inactive: false},
@@ -1012,7 +1014,7 @@ var Person = Class.create(AbstractPerson, {
             placeholder:   {value : false, inactive: true },
             monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
             evaluated:     {value : this.getEvaluated() },
-            hpo_positive:  {value : hpoTerms, disabled: this.isProband() },
+            hpo_positive:  {value : hpoTerms, disabled: isDisabledProband },
             nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
             cancers:       {value : this.getCancers() },
             phenotipsid:   {value : this.getPhenotipsPatientId() }

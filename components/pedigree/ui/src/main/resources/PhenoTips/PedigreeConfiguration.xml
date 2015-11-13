@@ -74,6 +74,7 @@ $xwiki.ssx.use($displayDocumentName)##
     &lt;legend&gt;Behavior&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_propagateFatherLastName"&gt;${doc.display("propagateFatherLastName", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('propagateFatherLastName').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_probandIsSyncedWithPatient"&gt;${doc.display("probandIsSyncedWithPatient", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('probandIsSyncedWithPatient').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
 

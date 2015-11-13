@@ -167,15 +167,16 @@ DynamicPositionedGraph.prototype = {
         // - genes
         // - maternal_ethnicity + paternal_ethnicity (merged with own ethnicities entered in pedigree editor)
 
+        var shouldResetValues = editor.getPreferencesManager().getConfigurationOption("probandIsSyncedWithPatient");
         if (patientObject.hasOwnProperty("patient_name")) {
             if (patientObject.patient_name.hasOwnProperty("first_name")) {
                 this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
-            } else {
+            } else if (shouldResetValues) {
                 this.DG.GG.properties[0].fName = "";
             }
             if (patientObject.patient_name.hasOwnProperty("last_name")) {
                 this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
-            } else {
+            } else if (shouldResetValues) {
                 this.DG.GG.properties[0].lName = "";
             }
         }
@@ -194,13 +195,13 @@ DynamicPositionedGraph.prototype = {
         if (patientObject.hasOwnProperty("date_of_birth")) {
             var birthDate = new PedigreeDate(patientObject.date_of_birth);
             this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].dob;
         }
         if (patientObject.hasOwnProperty("date_of_death")) {
             var deathDate = new PedigreeDate(patientObject.date_of_death);
             this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].dod;
         }
         if (patientObject.hasOwnProperty("life_status")) {
@@ -208,7 +209,7 @@ DynamicPositionedGraph.prototype = {
             if (lifeStatus == "deceased" || lifeStatus == "alive") {
                 this.DG.GG.properties[0].lifeStatus = lifeStatus;
             }
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].lifeStatus;
         }
 
@@ -228,7 +229,7 @@ DynamicPositionedGraph.prototype = {
 
         if (patientObject.hasOwnProperty("external_id")) {
             this.DG.GG.properties[0].externalID = patientObject.external_id;
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].externalID;
         }
 
@@ -251,7 +252,7 @@ DynamicPositionedGraph.prototype = {
         }
         if (hpoTerms.length > 0) {
             this.DG.GG.properties[0].hpoTerms = hpoTerms;
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].hpoTerms;
         }
 
@@ -267,7 +268,7 @@ DynamicPositionedGraph.prototype = {
         }
         if (disorders.length > 0) {
             this.DG.GG.properties[0].disorders = disorders;
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].disorders;
         }
 
@@ -280,7 +281,7 @@ DynamicPositionedGraph.prototype = {
         }
         if (genes.length > 0) {
             this.DG.GG.properties[0].candidateGenes = genes;
-        } else {
+        } else if (shouldResetValues) {
             delete this.DG.GG.properties[0].candidateGenes;
         }
 
