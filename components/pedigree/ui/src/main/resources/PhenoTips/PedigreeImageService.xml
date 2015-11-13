@@ -60,7 +60,7 @@
   {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPatient')"}
   #break
 #end
-#set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass'))
+#set ($pedigree = $services.families.getPedigree($patient.getId()))
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
@@ -68,14 +68,14 @@
   #break
 #end
 #if ($request.legend)
-  #set ($pedigree = $pedigree.getProperty('data').value)
+  #set ($pedigree = $pedigree.getData())
   $response.setContentType('text/html')##
 
   #pedigreeLegend($pedigree, $request.header)
 
   #break
 #else
-  #set ($pedigree = $pedigree.getProperty('image').value)
+  #set ($pedigree = $pedigree.getImage())
   #if (!$pedigree)
     $response.setStatus(404)##
     $response.setContentType('application/json')##
