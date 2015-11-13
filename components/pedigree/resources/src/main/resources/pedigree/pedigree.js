@@ -22,6 +22,7 @@ var PedigreeEditor = Class.create({
         //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
         //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
         //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
+        //  probandIsSyncedWithPatient:   {true|false}   - disallow editing of proband and synchronize with patient record; default: "true"
         //
         this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                  propagateFatherLastName: true,
@@ -30,7 +31,8 @@ var PedigreeEditor = Class.create({
                                                  displayCancerLabels: true,
                                                  useGradientOnNodes: false,
                                                  drawNodeShadows: true,
-                                                 disabledFields: [] },
+                                                 disabledFields: [],
+                                                 probandIsSyncedWithPatient: true },
                                      user:     { hideDraggingHint: false,
                                                  firstName: "",
                                                  lastName: "" },

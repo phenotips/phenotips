@@ -82,7 +82,8 @@ $response.setContentType('application/json')##
             "dateEditFormat"               : "$!{config.getProperty('dateInputFormat').value}",
             "nonStandardAdoptedOutGraphic" : #__convertToBooleanString("$!{config.getProperty('nonStandardAdoptedOutGraphic').value}"),
             "propagateFatherLastName"      : #__convertToBooleanString("$!{config.getProperty('propagateFatherLastName').value}"),
-            "useGradientOnNodes"           : #__convertToBooleanString("$!{config.getProperty('uiGradientNodes').value}")
+            "useGradientOnNodes"           : #__convertToBooleanString("$!{config.getProperty('uiGradientNodes').value}"),
+            "probandIsSyncedWithPatient"   : #__convertToBooleanString("$!{config.getProperty('probandIsSyncedWithPatient').value}")
         #end
     }
   }
