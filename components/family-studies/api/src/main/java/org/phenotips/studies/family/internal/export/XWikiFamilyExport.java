@@ -135,6 +135,7 @@ public class XWikiFamilyExport
     {
         JSONObject familyJSON = new JSONObject();
         familyJSON.put("familyPage", family.getId());
+        familyJSON.put("externalId", family.getExternalId());
         familyJSON.put("warning", family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
