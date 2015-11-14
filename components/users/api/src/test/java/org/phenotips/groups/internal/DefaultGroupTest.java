@@ -76,6 +76,9 @@ public class DefaultGroupTest
     DocumentReferenceResolver<String> resolver;
     
     @Mock
+    UsersAndGroups usersAndGroups;
+    
+    @Mock
     Logger logger;
    
     @Before
@@ -90,6 +93,7 @@ public class DefaultGroupTest
         when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(bridge);
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(this.resolver);
         when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
+        when(this.cm.getInstance(UsersAndGroups.class)).thenReturn(this.usersAndGroups);
     }
     
     /** Basic tests for {@link DefaultGroup#getReference()}. */
@@ -182,17 +186,20 @@ public class DefaultGroupTest
        
          BaseObject base2 = mock(BaseObject.class);
          StringProperty st2 = mock(StringProperty.class);
+         DocumentReference doc2 = mock(DocumentReference.class);
          when(base2.getField("member")).thenReturn(st2);
          when(st2.getValue()).thenReturn("user");
-         when(resolver.resolve("user", Group.GROUP_SPACE)).thenReturn(null);
+         when(resolver.resolve("user", Group.GROUP_SPACE)).thenReturn(doc2);
+         when(this.usersAndGroups.getType(doc2)).thenReturn(UsersAndGroups.USER);
          membersList.add(base2);
         
          BaseObject base3 = mock(BaseObject.class);
          StringProperty st3 = mock(StringProperty.class);
+         DocumentReference doc3 = mock(DocumentReference.class);
          when(base3.getField("member")).thenReturn(st3);
          when(st3.getValue()).thenReturn("group");
-         DocumentReference subGroup = mock(DocumentReference.class);
-         when(resolver.resolve("group", Group.GROUP_SPACE)).thenReturn(subGroup);
+         when(resolver.resolve("group", Group.GROUP_SPACE)).thenReturn(doc3);
+         when(this.usersAndGroups.getType(doc3)).thenReturn(UsersAndGroups.GROUP);
          membersList.add(base3);
 
          Assert.assertEquals(1, group.getAllUserNames().size());
@@ -208,6 +215,7 @@ public class DefaultGroupTest
         when(this.cm.getInstance(DocumentAccessBridge.class)).thenThrow(new ComponentLookupException(""));
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(new ComponentLookupException(""));
         when(this.cm.getInstance(Logger.class)).thenThrow(new ComponentLookupException(""));
+        when(this.cm.getInstance(UsersAndGroups.class)).thenThrow(new ComponentLookupException(""));
         
         DocumentReference groupReference = mock(DocumentReference.class);
         DefaultGroup g = new DefaultGroup(groupReference);
