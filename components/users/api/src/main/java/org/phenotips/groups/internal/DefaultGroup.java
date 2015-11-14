@@ -107,6 +107,7 @@ public class DefaultGroup implements Group
         DocumentAccessBridge bridge = this.getBridge();
         DocumentReferenceResolver<String> resolver = this.getStringResolver();
         Logger logger = this.getLogger();
+        UsersAndGroups usersAndGroups = this.getUsersAndGroups();
 
         Set<String> usersSet = new HashSet<String>();
         Stack<DocumentReference> groupsToProcess = new Stack<DocumentReference>();
@@ -128,12 +129,11 @@ public class DefaultGroup implements Group
                         if (StringUtils.isEmpty(value)) {
                             continue;
                         }
-                        DocumentReference subGroup = resolver.resolve(value, GROUP_SPACE);
-                        if (subGroup == null) {
-                            // It's a user
-                            usersSet.add(value);
+                        DocumentReference userOrGroup = resolver.resolve(value, GROUP_SPACE);
+                        if (UsersAndGroups.USER.equals(usersAndGroups.getType(userOrGroup))) {
+                            usersSet.add(userOrGroup.toString());
                         } else {
-                            groupsToProcess.push(subGroup);
+                            groupsToProcess.push(userOrGroup);
                         }
                     }
                 }
@@ -179,6 +179,16 @@ public class DefaultGroup implements Group
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private UsersAndGroups getUsersAndGroups()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(UsersAndGroups.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
