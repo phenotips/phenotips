@@ -59,5 +59,9 @@ public interface PatientAccessHelper
 
     boolean removeCollaborator(Patient patient, Collaborator collaborator);
 
+    @Deprecated
+    /**
+    * This is not related to patient access. Use UsersAndGroups.getType(EntityReference) instead.
+    */
     String getType(EntityReference userOrGroup);
 }
