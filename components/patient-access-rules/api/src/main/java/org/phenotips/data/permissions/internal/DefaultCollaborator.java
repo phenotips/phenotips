@@ -17,9 +17,14 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.groups.Group;
 import org.phenotips.groups.internal.DefaultGroup;
 import org.phenotips.groups.internal.UsersAndGroups;
 
@@ -119,6 +124,19 @@ public class DefaultCollaborator implements Collaborator
         }
     }
 
+    @Override
+    public Collection<String> getAllUserNames()
+    {
+        Set<String> usersSet = new HashSet<String>();
+        if (this.isUser()) {
+            usersSet.add(this.getUsername());
+        } else {
+            Group group = new DefaultGroup((DocumentReference) this.getUser());
+            usersSet.addAll(group.getAllUserNames());
+        }
+        return usersSet;
+    }
+    
     private UsersAndGroups getUsersAndGroups()
     {
         try {

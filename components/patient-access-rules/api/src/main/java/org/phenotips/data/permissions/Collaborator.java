@@ -17,6 +17,8 @@
  */
 package org.phenotips.data.permissions;
 
+import java.util.Collection;
+
 import org.phenotips.Constants;
 
 import org.xwiki.model.EntityType;
@@ -73,4 +75,13 @@ public interface Collaborator
      * @return true if the user is included in collaborator
      */
     boolean isUserIncluded(User user);
+    
+    /**
+     * Returns a collection of all the users under this collaborator. If the collabrator is a user, then
+     * getAllUserNames().size()==1 and getUsername().equals(getAllUserNames().get(0)). If the collaborator is a group
+     * the collection will contain the users contained in the group and all its sub groups.
+     *
+     * @return collections of user names
+     */
+    Collection<String> getAllUserNames();
 }
