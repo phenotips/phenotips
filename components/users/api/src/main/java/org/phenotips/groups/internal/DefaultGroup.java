@@ -121,7 +121,6 @@ public class DefaultGroup implements Group
                 if (members == null) {
                     continue;
                 }
-
                 for (BaseObject member : members) {
                     if (member != null) {
                         StringProperty field = (StringProperty) member.getField("member");
@@ -149,7 +148,7 @@ public class DefaultGroup implements Group
     {
         try {
             return ComponentManagerRegistry.getContextComponentManager().getInstance(
-                DocumentReferenceResolver.class, "current");
+                DocumentReferenceResolver.TYPE_STRING, "current");
         } catch (ComponentLookupException e) {
             // Should not happen
         }
