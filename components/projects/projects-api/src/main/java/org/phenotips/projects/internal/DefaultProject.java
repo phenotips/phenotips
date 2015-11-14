@@ -36,7 +36,9 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -93,8 +95,11 @@ public class DefaultProject implements Project
     @Override
     public int getNumberOfCollaboratorsUsers()
     {
-        // TODO - this is incorrect! count user + number of users inside groups
-        return this.getCollaborators().size();
+        Set<String> usersList = new HashSet<String>();
+        for (Collaborator collaborator : this.getCollaborators()) {
+            usersList.addAll(collaborator.getAllUserNames());
+        }
+        return usersList.size();
     }
 
     @Override
