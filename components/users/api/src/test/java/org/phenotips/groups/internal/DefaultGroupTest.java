@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.inject.Provider;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -76,7 +77,8 @@ public class DefaultGroupTest
     
     @Mock
     Logger logger;
-    
+   
+    @Before
     public void setupComponentManager() throws ComponentLookupException 
     {
         MockitoAnnotations.initMocks(this);
@@ -86,7 +88,7 @@ public class DefaultGroupTest
     
         when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
         when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(bridge);
-        when(this.cm.getInstance(DocumentReferenceResolver.class, "current")).thenReturn(this.resolver);
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(this.resolver);
         when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
     }
     
@@ -131,8 +133,6 @@ public class DefaultGroupTest
     @Test
     public void isUserInGroupTest() throws ComponentLookupException, QueryException
     {
-        setupComponentManager();
-        
         DocumentReference docref = new DocumentReference("xwiki", "Groups", "Group A");
         DefaultGroup groupA = new DefaultGroup(docref);
         User u = mock(User.class);
@@ -160,8 +160,6 @@ public class DefaultGroupTest
     @Test
     public void getAllUserNamesTest() throws Exception
     {
-        setupComponentManager();
-        
          XWikiDocument groupXDocument = mock(XWikiDocument.class);
          DocumentReference groupReference = mock(DocumentReference.class);
          DefaultGroup group = new DefaultGroup(groupReference);
@@ -208,7 +206,7 @@ public class DefaultGroupTest
         when(this.mockProvider.get()).thenReturn(this.cm);
         
         when(this.cm.getInstance(DocumentAccessBridge.class)).thenThrow(new ComponentLookupException(""));
-        when(this.cm.getInstance(DocumentReferenceResolver.class, "current")).thenThrow(new ComponentLookupException(""));
+        when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(new ComponentLookupException(""));
         when(this.cm.getInstance(Logger.class)).thenThrow(new ComponentLookupException(""));
         
         DocumentReference groupReference = mock(DocumentReference.class);
