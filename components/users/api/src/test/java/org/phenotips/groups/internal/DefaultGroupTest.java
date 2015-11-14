@@ -20,15 +20,19 @@ package org.phenotips.groups.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-
+import org.slf4j.Logger;
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.QueryException;
 import org.xwiki.users.User;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Provider;
@@ -38,6 +42,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
@@ -49,6 +56,9 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultGroupTest
 {
+    /** The xObject under which members are saved. */
+    private static final DocumentReference MEMBERS_REFERENCE = new DocumentReference("xwiki", "XWiki", "XWikiGroups");
+
     @Mock
     private ComponentManager cm;
 
@@ -58,6 +68,28 @@ public class DefaultGroupTest
     @Mock
     private GroupManager groupManager;
 
+    @Mock
+    private DocumentAccessBridge bridge;
+    
+    @Mock
+    DocumentReferenceResolver<String> resolver;
+    
+    @Mock
+    Logger logger;
+    
+    public void setupComponentManager() throws ComponentLookupException 
+    {
+        MockitoAnnotations.initMocks(this);
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+    
+        when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
+        when(this.cm.getInstance(DocumentAccessBridge.class)).thenReturn(bridge);
+        when(this.cm.getInstance(DocumentReferenceResolver.class, "current")).thenReturn(this.resolver);
+        when(this.cm.getInstance(Logger.class)).thenReturn(this.logger);
+    }
+    
     /** Basic tests for {@link DefaultGroup#getReference()}. */
     @Test
     public void getReference() throws ComponentLookupException, QueryException
@@ -99,22 +131,17 @@ public class DefaultGroupTest
     @Test
     public void isUserInGroupTest() throws ComponentLookupException, QueryException
     {
-        MockitoAnnotations.initMocks(this);
-        Utils.setComponentManager(this.cm);
-        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
-        when(this.mockProvider.get()).thenReturn(this.cm);
-
+        setupComponentManager();
+        
         DocumentReference docref = new DocumentReference("xwiki", "Groups", "Group A");
         DefaultGroup groupA = new DefaultGroup(docref);
         User u = mock(User.class);
 
-        when(this.cm.getInstance(GroupManager.class)).thenReturn(this.groupManager);
-
-        when(groupManager.getGroupsForUser(u)).thenReturn(null);
+        when(this.groupManager.getGroupsForUser(u)).thenReturn(null);
         Assert.assertFalse(groupA.isUserInGroup(u));
 
         Set<Group> groups = new HashSet<Group>();
-        when(groupManager.getGroupsForUser(u)).thenReturn(groups);
+        when(this.groupManager.getGroupsForUser(u)).thenReturn(groups);
         Assert.assertFalse(groupA.isUserInGroup(u));
 
         groups.add(groupA);
@@ -133,46 +160,65 @@ public class DefaultGroupTest
     @Test
     public void getAllUserNamesTest() throws Exception
     {
-        // GroupManager groupManagerTest = this.mocker.getComponentUnderTest();
-        //
-        // XWikiDocument groupXDocument = mock(XWikiDocument.class);
-        // DocumentReference groupReference = mock(DocumentReference.class);
-        // Group group = mock(Group.class);
-        // when(group.getReference()).thenReturn(groupReference);
-        //
-        // DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        // when(bridge.getDocument(groupReference)).thenReturn(groupXDocument);
-        // when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(null);
-        // org.junit.Assert.assertTrue(groupManagerTest.getAllUserNames(group).isEmpty());
-        //
-        // DocumentReferenceResolver<String> resolver =
-        // this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
-        // List<BaseObject> membersList = new LinkedList<BaseObject>();
-        // when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(membersList);
-        // org.junit.Assert.assertTrue(groupManagerTest.getAllUserNames(group).isEmpty());
-        //
-        // BaseObject base1 = mock(BaseObject.class);
-        // StringProperty st1 = mock(StringProperty.class);
-        // when(base1.getField("member")).thenReturn(st1);
-        // when(st1.getValue()).thenReturn("");
-        // membersList.add(base1);
-        //
-        // BaseObject base2 = mock(BaseObject.class);
-        // StringProperty st2 = mock(StringProperty.class);
-        // when(base2.getField("member")).thenReturn(st2);
-        // when(st2.getValue()).thenReturn("user");
-        // when(resolver.resolve("user", GROUP_SPACE)).thenReturn(null);
-        // membersList.add(base2);
-        //
-        // BaseObject base3 = mock(BaseObject.class);
-        // StringProperty st3 = mock(StringProperty.class);
-        // when(base3.getField("member")).thenReturn(st3);
-        // when(st3.getValue()).thenReturn("group");
-        // DocumentReference subGroup = mock(DocumentReference.class);
-        // when(resolver.resolve("group", GROUP_SPACE)).thenReturn(subGroup);
-        // membersList.add(base3);
-        //
-        // org.junit.Assert.assertEquals(1, groupManagerTest.getAllUserNames(group).size());
-    }
+        setupComponentManager();
+        
+         XWikiDocument groupXDocument = mock(XWikiDocument.class);
+         DocumentReference groupReference = mock(DocumentReference.class);
+         DefaultGroup group = new DefaultGroup(groupReference);
+         when(this.bridge.getDocument(groupReference)).thenReturn(groupXDocument);
+        
+         when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(null);
+         Assert.assertTrue(group.getAllUserNames().isEmpty());
+       
+         List<BaseObject> membersList = new LinkedList<BaseObject>();
+         when(groupXDocument.getXObjects(MEMBERS_REFERENCE)).thenReturn(membersList);
+         Assert.assertTrue(group.getAllUserNames().isEmpty());
+     
+         membersList.add(null);
+         
+         BaseObject base1 = mock(BaseObject.class);
+         StringProperty st1 = mock(StringProperty.class);
+         when(base1.getField("member")).thenReturn(st1);
+         when(st1.getValue()).thenReturn("");
+         membersList.add(base1);
+       
+         BaseObject base2 = mock(BaseObject.class);
+         StringProperty st2 = mock(StringProperty.class);
+         when(base2.getField("member")).thenReturn(st2);
+         when(st2.getValue()).thenReturn("user");
+         when(resolver.resolve("user", Group.GROUP_SPACE)).thenReturn(null);
+         membersList.add(base2);
+        
+         BaseObject base3 = mock(BaseObject.class);
+         StringProperty st3 = mock(StringProperty.class);
+         when(base3.getField("member")).thenReturn(st3);
+         when(st3.getValue()).thenReturn("group");
+         DocumentReference subGroup = mock(DocumentReference.class);
+         when(resolver.resolve("group", Group.GROUP_SPACE)).thenReturn(subGroup);
+         membersList.add(base3);
 
+         Assert.assertEquals(1, group.getAllUserNames().size());
+    }
+    
+    @Test
+    public void getComponentsFailsTest() throws ComponentLookupException {
+        MockitoAnnotations.initMocks(this);
+        Utils.setComponentManager(this.cm);
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.mockProvider);
+        when(this.mockProvider.get()).thenReturn(this.cm);
+        
+        when(this.cm.getInstance(DocumentAccessBridge.class)).thenThrow(new ComponentLookupException(""));
+        when(this.cm.getInstance(DocumentReferenceResolver.class, "current")).thenThrow(new ComponentLookupException(""));
+        when(this.cm.getInstance(Logger.class)).thenThrow(new ComponentLookupException(""));
+        
+        DocumentReference groupReference = mock(DocumentReference.class);
+        DefaultGroup g = new DefaultGroup(groupReference);
+        boolean failed = false;
+        try {
+            g.getAllUserNames().isEmpty();
+        } catch(NullPointerException e) {
+            failed = true;
+        }
+        Assert.assertTrue(failed);
+    }
 }
