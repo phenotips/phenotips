@@ -129,7 +129,7 @@ public class DefaultCollaborator implements Collaborator
     {
         Set<String> usersSet = new HashSet<String>();
         if (this.isUser()) {
-            usersSet.add(this.getUsername());
+            usersSet.add(this.getUser().toString());
         } else {
             Group group = new DefaultGroup((DocumentReference) this.getUser());
             usersSet.addAll(group.getAllUserNames());
