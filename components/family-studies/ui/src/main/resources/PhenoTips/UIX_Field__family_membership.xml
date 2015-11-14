@@ -639,12 +639,19 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 (% class="clear family-study" %)(((##
 === $services.localization.render('phenotips.UIXField.family_membership.heading') ===
 {{html wiki='true' clean='false'}}##
-  &lt;div class="family-id-div"&gt;
-    &lt;a id="familyId" href="$xwiki.getURL($family, 'edit')"&gt;
-      $family.getName()
-    &lt;/a&gt;
-    &lt;/br&gt;
-  &lt;/div&gt;
+  #if ($hasFamily)
+    #set ($familyJson = $services.families.getFamilyInfo($doc.getDocumentReference().getName()))
+    #set ($hasExternalId = $familyJson.externalId &amp;&amp; "$familyJson.externalId" != '')
+    &lt;div class="family-id-div"&gt;
+      &lt;a id="familyId" href="$xwiki.getURL($family, 'edit')"&gt;
+        $family.getName()
+          #if ($hasExternalId)
+            ($familyJson.externalId)
+          #end
+      &lt;/a&gt;
+      &lt;/br&gt;
+    &lt;/div&gt;
+  #end
   #if ($xcontext.action != 'view')
     $xwiki.jsx.use('PhenoTips.UIX_Field__family_membership')
     #set ($family = $doc.getObject('PhenoTips.FamilyReference', true))##
