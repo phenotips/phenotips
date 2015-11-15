@@ -121,10 +121,10 @@
 #__hasDataToDisplay('maternal_age', $showMaternalAge)
 #__hasDataToDisplay('paternal_age', $showPaternalAge)
 #if ($showMaternalAge)
-  #__displayFormatted('2-col' 'maternal_age' '' '' '')
+  #__displayFormatted('2-col' 'maternal_age' '' 'maternal_age' '')
 #end
 #if ($showPaternalAge)
-  #__displayFormatted('2-col' 'paternal_age' '' '' '')
+  #__displayFormatted('2-col' 'paternal_age' '' 'paternal_age' '')
 #end
 ##
 #set ($class = $origClass)
