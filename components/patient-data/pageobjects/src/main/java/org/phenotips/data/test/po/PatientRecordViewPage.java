@@ -307,10 +307,10 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter > p:nth-child(2) > span.displayed-value")
     private WebElement fieldGestationAtDelivery;
 
-    @FindBy(css = ".prenatal-info.chapter > p:nth-of-type(2) > span:nth-of-type(2)")
+    @FindBy(css = ".prenatal-info.chapter .maternal_age .displayed-value")
     private WebElement fieldMaternalAgeAtEDD;
 
-    @FindBy(css = ".prenatal-info.chapter > p:nth-of-type(2) > span:nth-of-type(4)")
+    @FindBy(css = ".prenatal-info.chapter .paternal_age .displayed-value")
     private WebElement fieldPaternalAgeAtEDD;
 
     @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
