@@ -165,12 +165,12 @@
 
 #macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
 #if ($xcontext.action == 'edit' || $doc.display(${propName}) != '')
-  #set($_groupCssClass = "$!{groupCssClass}#if ($extension_required) mandatory#{end}")
+  #set($_groupCssClass = "$!{groupCssClass}#if ($xcontext.action == 'edit' &amp;&amp; $extension_required) mandatory#{end}")
   #if ($xcontext.action != 'edit')
     #if ($mode == 'half-width')
       #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
     #else
-      #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%)
+      (% class="$groupCssClass" %)(((#__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%))))
     #end
   #else
     #if ($mode == 'half-width')
