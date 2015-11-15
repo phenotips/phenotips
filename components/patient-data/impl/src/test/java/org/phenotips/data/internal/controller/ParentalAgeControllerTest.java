@@ -141,8 +141,38 @@ public class ParentalAgeControllerTest
         PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
 
         Assert.assertEquals("parentalAge", testData.getName());
-        Assert.assertTrue(testData.get(MATERNAL_AGE) == 25);
-        Assert.assertTrue(testData.get(PATERNAL_AGE) == 25);
+        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
+    }
+
+    @Test
+    public void loadMaternalAgeNonZero(){
+        BaseObject data = mock(BaseObject.class);
+        doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
+
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(MATERNAL_AGE);
+        doReturn(AGE_ZERO).when(data).getIntValue(PATERNAL_AGE);
+
+        PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
+
+        Assert.assertEquals("parentalAge", testData.getName());
+        Assert.assertTrue(testData.get(MATERNAL_AGE) == AGE_NON_ZERO);
+        Assert.assertNull(testData.get(PATERNAL_AGE));
+    }
+
+    @Test
+    public void loadPaternalAgeNonZero(){
+        BaseObject data = mock(BaseObject.class);
+        doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
+
+        doReturn(AGE_ZERO).when(data).getIntValue(MATERNAL_AGE);
+        doReturn(AGE_NON_ZERO).when(data).getIntValue(PATERNAL_AGE);
+
+        PatientData<Integer> testData = this.parentalAgeController.load(this.patient);
+
+        Assert.assertEquals("parentalAge", testData.getName());
+        Assert.assertNull(testData.get(MATERNAL_AGE));
+        Assert.assertTrue(testData.get(PATERNAL_AGE) == AGE_NON_ZERO);
     }
 
     @Test
@@ -227,10 +257,14 @@ public class ParentalAgeControllerTest
         PatientData<Integer> testPatientData =
             new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
+        JSONObject jsonTestData = new JSONObject();
+        jsonTestData.put("prenatal_perinatal_history", testData);
 
         this.parentalAgeController.writeJSON(this.patient, json);
+
         Assert.assertNotNull(json);
-        Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history"));
+        Assert.assertEquals(jsonTestData.getJSONObject("prenatal_perinatal_history"),
+                json.getJSONObject("prenatal_perinatal_history"));
     }
 
     @Test
