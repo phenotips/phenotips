@@ -184,6 +184,10 @@ DynamicPositionedGraph.prototype = {
         var genderOK = true;
         if (patientObject.hasOwnProperty("sex")) {
             var probandSex = patientObject.sex;
+            if (this.DG.GG.properties[0].gender !== "U" && probandSex === "U" && !shouldResetValues) {
+              // There was a sex specified in the pedigree, but not in the patient record: don't reset the sex
+              probandSex = this.DG.GG.properties[0].gender;
+            }
             var possibleGenders = this.getPossibleGenders(0);
             if (!possibleGenders.hasOwnProperty(probandSex) || !possibleGenders[probandSex]) {
                 probandSex = 'U';
