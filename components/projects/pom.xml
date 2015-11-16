@@ -29,7 +29,7 @@
   <packaging>pom</packaging>
   <name>PhenoTips - Projects</name>
   <modules>
-    <module>projects-ui</module>
-    <module>projects-api</module>
+    <module>ui</module>
+    <module>api</module>
   </modules>
 </project>
