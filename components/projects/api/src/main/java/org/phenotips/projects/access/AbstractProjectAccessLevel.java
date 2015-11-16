@@ -17,7 +17,6 @@
  */
 package org.phenotips.projects.access;
 
-import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
 /**
@@ -31,14 +30,4 @@ public abstract class AbstractProjectAccessLevel extends AbstractAccessLevel imp
         super(permissiveness, assignable);
     }
 
-    @Override
-    public int compareTo(AccessLevel o)
-    {
-        // Comparing AbstractProjectAccessLevel with same. AbstractProjectAccessLevel cannot be compared to
-        // AbstractAccessLevel.
-        if (o != null && o instanceof AbstractProjectAccessLevel) {
-            return super.compareTo(o);
-        }
-        return Integer.MIN_VALUE;
-    }
 }

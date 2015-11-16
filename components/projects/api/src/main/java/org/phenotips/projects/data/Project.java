@@ -18,12 +18,9 @@
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
-import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.templates.data.Template;
 
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
@@ -39,24 +36,6 @@ public interface Project
 
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Projects", EntityType.SPACE);
-
-    /** project template document. */
-    EntityReference TEMPLATE =
-        new EntityReference("ProjectTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    /**
-     * Returns the id of the project.
-     *
-     * @return id of the project
-     */
-    String getId();
-
-    /**
-     * Returns the document reference of the project.
-     *
-     * @return document reference of the project
-     */
-    DocumentReference getReference();
 
     /**
      * Returns the name of the projects.
@@ -88,15 +67,7 @@ public interface Project
     int getNumberOfCollaboratorsUsers();
 
     /**
-     * Returns the number of patients that are assigned to the project.
-     *
-     * @return number of patients that are assigned to the project.
-     */
-    int getNumberOfPatients();
-
-    /**
-     * Returns a collection project collaborators, both leaders and
-     * contributors.
+     * Returns a collection project collaborators, both leaders and contributors.
      *
      * @return a collection of collaborators
      */
@@ -124,7 +95,7 @@ public interface Project
      *
      * @return a collection of templates
      */
-    Collection<Template> getTemplates();
+    Collection<EntityReference> getTemplates();
 
     /**
      * Sets the list of templates available for the project.
@@ -134,24 +105,4 @@ public interface Project
      */
     boolean setTemplates(Collection<EntityReference> templates);
 
-    /**
-     * Returns the highest access level the current user has.
-     *
-     * @return highest access level of current user.
-     */
-    AccessLevel getCurrentUserAccessLevel();
-
-    /**
-     * Return true if the project is open for viewing by all users.
-     *
-     * @return true if the project is open for viewing by all users.
-     */
-    boolean isProjectOpenForViewing();
-
-    /**
-     * Return true if the project is open for contribution by all users.
-     *
-     * @return true if the project is open for contribution by all users.
-     */
-    boolean isProjectOpenForContribution();
 }

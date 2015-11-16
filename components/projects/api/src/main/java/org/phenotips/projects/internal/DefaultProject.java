@@ -20,25 +20,30 @@ package org.phenotips.projects.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.internal.DefaultCollaborator;
+import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.templates.data.Template;
+import org.phenotips.studies.data.Study;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -47,9 +52,11 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public class DefaultProject implements Project
 {
-    private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
+    private static final String ACCESS_KEY = "access";
 
-    private static final String OPEN_FOR_VIEWING_KEY = "openProjectForViewing";
+    private static final String COLLABORATOR_KEY = "collaborator";
+
+    private static final String TEMPLATE_KEY = "study";
 
     private String projectId;
 
@@ -60,23 +67,13 @@ public class DefaultProject implements Project
     /**
      * Basic constructor.
      *
-     * @param projectObject xwiki object of project
+     * @param projectId if of the project
      */
-    public DefaultProject(XWikiDocument projectObject) {
-        this.projectObject = projectObject;
-        this.projectReference = this.projectObject.getDocumentReference();
-        this.projectId = this.projectReference.getName();
-    }
-
-    @Override
-    public DocumentReference getReference()
+    public DefaultProject(String projectId)
     {
-        return projectReference;
-    }
-
-    @Override
-    public String getId() {
-        return this.projectId;
+        this.projectId = projectId;
+        this.projectObject = this.getProjectObject();
+        this.projectReference = this.projectObject.getDocumentReference();
     }
 
     @Override
@@ -86,7 +83,7 @@ public class DefaultProject implements Project
 
     @Override
     public String getFullName() {
-        return projectReference.toString();
+        return projectId;
     }
 
     @Override
@@ -108,161 +105,216 @@ public class DefaultProject implements Project
     @Override
     public Collection<Collaborator> getCollaborators()
     {
-        return this.getDefaultProjectHelper().getCollaborators(projectObject);
-    }
+        List<Collaborator> collaborators = new ArrayList<Collaborator>();
 
-    @Override
-    public AccessLevel getCurrentUserAccessLevel()
-    {
-        AccessLevel highestAccessLevel = null;
-        User currentUser = this.getUserManager().getCurrentUser();
-        Collection<Collaborator> collaborators = this.getCollaborators();
-        for (Collaborator c : collaborators) {
-            if (c.isUserIncluded(currentUser)) {
-                AccessLevel accessLevel = c.getAccessLevel();
-                if (highestAccessLevel == null || accessLevel.compareTo(highestAccessLevel) >= 0) {
-                    highestAccessLevel = accessLevel;
+        DocumentReference classReference =
+            this.getEntityResolver().resolve(Collaborator.CLASS_REFERENCE, projectReference);
+        Collection<BaseObject> xCollaborators = projectObject.getXObjects(classReference);
+
+        if (xCollaborators != null) {
+            for (BaseObject o : xCollaborators) {
+                if (o == null) {
+                    continue;
                 }
+                String collaboratorName = o.getStringValue(COLLABORATOR_KEY);
+                String accessName = o.getStringValue(ACCESS_KEY);
+                if (StringUtils.isBlank(collaboratorName) || StringUtils.isBlank(accessName)) {
+                    continue;
+                }
+                EntityReference userOrGroup = this.getStringResolver().resolve(collaboratorName, projectReference);
+                AccessLevel access = this.getPermissionsManager().resolveAccessLevel(accessName);
+                collaborators.add(new DefaultCollaborator(userOrGroup, access));
             }
         }
-        return highestAccessLevel;
+
+        return collaborators;
     }
 
     @Override
     public boolean setCollaborators(Collection<EntityReference> contributors, Collection<EntityReference> leaders)
     {
-        return this.getDefaultProjectHelper().setCollaborators(projectObject, contributors, leaders);
+        // Convert EntityReference lists to Collaborators
+        Collection<Collaborator> collaborators = new ArrayList<Collaborator>();
+        if (contributors != null) {
+            for (EntityReference contributorRef : contributors) {
+                collaborators.add(new DefaultCollaborator(contributorRef, this.getContributorAccessLevel()));
+            }
+        }
+        if (leaders != null) {
+            for (EntityReference leaderRef : leaders) {
+                collaborators.add(new DefaultCollaborator(leaderRef, this.getLeaderAccessLevel()));
+            }
+        }
+
+        return this.setCollaborators(collaborators);
     }
 
     @Override
     public boolean setCollaborators(Collection<Collaborator> collaborators)
     {
-        return this.getDefaultProjectHelper().setCollaborators(projectObject, collaborators);
+        DocumentReference classReference =
+            this.getEntityResolver().resolve(Collaborator.CLASS_REFERENCE, projectReference);
+        XWikiContext context = getXContext();
+
+        this.projectObject.removeXObjects(classReference);
+        try {
+            for (Collaborator collaborator : collaborators) {
+                BaseObject o = this.projectObject.newXObject(classReference, context);
+                o.setStringValue(COLLABORATOR_KEY, this.getEntitySerializer().serialize(collaborator.getUser()));
+                o.setStringValue(ACCESS_KEY, collaborator.getAccessLevel().getName());
+            }
+            context.getWiki().saveDocument(this.projectObject, "Updated collaborators", true, context);
+            return true;
+        } catch (Exception e) {
+            this.getLogger().error("Error in ProjectScriptService.setCollaborators: {}", e.getMessage(), e);
+        }
+        return false;
     }
 
     @Override
-    public Collection<Template> getTemplates()
+    public Collection<EntityReference> getTemplates()
     {
-        return this.getDefaultProjectHelper().getTemplates(projectObject);
+        List<EntityReference> templates = new ArrayList<EntityReference>();
+
+        DocumentReference classReference =
+            this.getEntityResolver().resolve(Study.CLASS_REFERENCE, projectReference);
+        Collection<BaseObject> xTemplates = this.projectObject.getXObjects(classReference);
+
+        if (xTemplates != null) {
+            for (BaseObject o : xTemplates) {
+                if (o == null) {
+                    continue;
+                }
+                String templateString = o.getStringValue(TEMPLATE_KEY);
+                if (StringUtils.isBlank(templateString)) {
+                    continue;
+                }
+                EntityReference template = this.getStringResolver().resolve(templateString);
+                templates.add(template);
+            }
+        }
+
+        return templates;
     }
 
     @Override
     public boolean setTemplates(Collection<EntityReference> templates)
     {
-        return this.getDefaultProjectHelper().setTemplates(projectObject, templates);
-    }
+        XWikiContext xContext = getXContext();
+        DocumentReference classReference =
+            this.getEntityResolver().resolve(Study.CLASS_REFERENCE, projectReference);
 
-    @Override
-    public boolean isProjectOpenForViewing() {
-        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
-        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_VIEWING_KEY);
-        return openIntValue == 1;
-    }
-
-    @Override
-    public boolean isProjectOpenForContribution() {
-        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
-        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
-        return openIntValue == 1;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof DefaultProject)) {
-            return false;
-        }
-
-        DefaultProject otherProject = (DefaultProject) obj;
-        return this.projectId.equals(otherProject.projectId);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.projectId.hashCode();
-    }
-
-    @Override
-    public int getNumberOfPatients() {
-        StringBuilder querySb = new StringBuilder();
-        querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
-        querySb.append("where patientObj.name = doc.fullName ");
-        querySb.append("and doc.fullName <> 'PhenoTips.PatientTemplate' ");
-        querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
-        querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
-        querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
-
-        Set<Project> projects = new HashSet<Project>();
-        projects.add(this);
-        querySb.append(" and ");
-        querySb.append(this.getProjectsRepository().getProjectCondition("accessObj", "accessProp", projects));
-
-        Query query = null;
-        List<String> queryResults = null;
+        this.projectObject.removeXObjects(classReference);
         try {
-            query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
-            queryResults = query.execute();
-        } catch (QueryException e) {
-            this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
+            for (EntityReference template : templates) {
+                BaseObject o = this.projectObject.newXObject(classReference, xContext);
+                o.setStringValue(TEMPLATE_KEY, this.getEntitySerializer().serialize(template));
+            }
+            xContext.getWiki().saveDocument(this.projectObject, "Updated templates", true, xContext);
+            return true;
+        } catch (Exception e) {
+            this.getLogger().error("Error in ProjectScriptService.setTempaltes: {}", e.getMessage(), e);
         }
-
-        return queryResults.size();
+        return false;
     }
 
-    @Override
-    public String toString()
+    private XWikiContext getXContext()
     {
-        return getFullName();
+        Execution execution;
+        try {
+            execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
+            return (XWikiContext) execution.getContext().getProperty("xwikicontext");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
     }
 
-    private Logger getLogger()
+    private XWikiDocument getProjectObject()
     {
+        DocumentReference reference = this.getStringResolver().resolve(this.projectId, Project.DEFAULT_DATA_SPACE);
+        try {
+            return (XWikiDocument) this.getBridge().getDocument(reference);
+        } catch (Exception ex) {
+            this.getLogger().warn("Failed to access project with id [{}]: {}", projectId, ex.getMessage(), ex);
+        }
+        return null;
+    }
+
+    private DocumentReferenceResolver<EntityReference> getEntityResolver() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                    .getInstance(DocumentReferenceResolver.TYPE_REFERENCE);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private EntityReferenceSerializer<String> getEntitySerializer() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(EntityReferenceSerializer.TYPE_STRING);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private DocumentAccessBridge getBridge() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(DocumentAccessBridge.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private PermissionsManager getPermissionsManager() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(PermissionsManager.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private DocumentReferenceResolver<String> getStringResolver() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private ProjectAccessLevel getLeaderAccessLevel() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(ProjectAccessLevel.class, "leader");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private ProjectAccessLevel getContributorAccessLevel() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(ProjectAccessLevel.class, "contributor");
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private Logger getLogger() {
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                 .getInstance(Logger.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private QueryManager getQueryManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(QueryManager.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private UserManager getUserManager()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(UserManager.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private DefaultProjectHelper getDefaultProjectHelper()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(DefaultProjectHelper.class);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private ProjectsRepository getProjectsRepository()
-    {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(ProjectsRepository.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
