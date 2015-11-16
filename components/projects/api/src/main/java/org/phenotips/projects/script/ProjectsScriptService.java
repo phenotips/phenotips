@@ -17,19 +17,15 @@
  */
 package org.phenotips.projects.script;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
+import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.projects.internal.ProjectAndTemplateBinder;
+import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectsRepository;
-import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,10 +44,8 @@ public class ProjectsScriptService implements ScriptService
     private ProjectsRepository projectsRepository;
 
     @Inject
-    private PatientRepository patientsRepository;
-
-    @Inject
-    private ProjectAndTemplateBinder ptBinder;
+    @Named("contributor")
+    private ProjectAccessLevel contributorAccessLevel;
 
     /**
      * Returns a project by an id.
@@ -60,117 +54,25 @@ public class ProjectsScriptService implements ScriptService
      */
     public Project getProjectById(String projectId)
     {
-        return this.projectsRepository.getProjectById(projectId);
+        return new DefaultProject(projectId);
     }
 
     /**
-     * @return a collection of all projects that the current user can contribute to.
-     */
-    public Collection<Project> getAllProjectsWithContributionRights()
-    {
-        return this.projectsRepository.getAllProjectsWithContributionRights();
-    }
-
-    /**
-     * @return a collection of all projects that the current user can view.
-     */
-    public Collection<Project> getAllProjectsWithViewingRights()
-    {
-        return this.projectsRepository.getAllProjectsWithViewingRights();
-    }
-
-    /**
-     * Receives a comma separated list of projects ids and returns a collection of ids of all templates associated with
-     * them. For example, if t1,t2 are associated with p1 and t2,t3 are associated with p2, the collection returned for
-     * the input "p1,p2" would contain t1,t2,t3.
+     * Returns a collection of all projects.
      *
-     * @param projects command separated project ids
-     * @return collection of templates ids.
+     * @return a collection of all projects
      */
-    public Collection<Template> getTemplatesForProjects(String projects)
-    {
-        Set<Template> templates = new HashSet<Template>();
-        for (String projectId : projects.split(",")) {
-            Project project = this.getProjectById(projectId);
-            if (project == null) {
-                continue;
-            }
-            for (Template s : project.getTemplates()) {
-                templates.add(s);
-            }
-        }
-        return templates;
+    public Collection<Project> getAllProjects() {
+        return this.projectsRepository.getAllProjects();
     }
 
     /**
-     * Returns a collection of projects assigned to a patient.
+     * Returns a collection of all projects that the current user has an ContributorAccessLevel on.
      *
-     * @param patientId id of patient to get a collection of projects from
-     * @return a collection of Projects
+     * @return a collection of all projects that the current user has an ContributorAccessLevel to.
      */
-    public Collection<Project> getProjectsForPatient(String patientId)
+    public Collection<Project> getAllProjectsAsContributor()
     {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
-        if (patient == null) {
-            return null;
-        }
-        return this.ptBinder.getProjectsForPatient(patient);
-    }
-
-    /**
-     * Assigns projects to a patient.
-     *
-     * @param projects colon-separated list of projects to assign
-     * @param patientId id of patient
-     */
-    public void setProjectsForPatient(String projects, String patientId)
-    {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
-        this.ptBinder.setProjectsForPatient(projects, patient);
-    }
-
-    /**
-     * Returns the template assigned to a patient.
-     *
-     * @param patientId id of patient to get the template from
-     * @return template
-     */
-    public Template getTemplateForPatient(String patientId)
-    {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
-        if (patient == null) {
-            return null;
-        }
-        return this.ptBinder.getTempalteForPatient(patient);
-    }
-
-    /**
-     * Assigns a template to a patient.
-     *
-     * @param templateId id of template to assign
-     * @param patientId id of patient
-     */
-    public void setTemplateForPatient(String templateId, String patientId)
-    {
-        Patient patient = this.patientsRepository.getPatientById(patientId);
-        this.ptBinder.setTemplateForPatient(templateId, patient);
-    }
-
-    /**
-     * Returns a condition for an HQL patients query that selects all patients that belong to any project in
-     * {@link projects}.
-     *
-     * @param baseObjectTable name of BaseObject in query
-     * @param propertyTable name of StringProperty in query
-     * @return HQL condition
-     */
-    public String getProjectConditionForCurrentUser(String baseObjectTable, String propertyTable)
-    {
-        Collection<Project> projects = this.getAllProjectsWithViewingRights();
-        if (projects.size() > 0) {
-            return this.projectsRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
-        } else {
-            return null;
-        }
+        return this.projectsRepository.getAllProjects(contributorAccessLevel);
     }
 }

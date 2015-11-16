@@ -21,10 +21,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -34,18 +31,13 @@ import org.xwiki.users.UserManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * @version $Id$
@@ -54,8 +46,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Singleton
 public class ProjectsRepository
 {
-    private static final String OR = " or ";
-
     @Inject
     private QueryManager qm;
 
@@ -64,20 +54,6 @@ public class ProjectsRepository
 
     @Inject
     private UserManager userManager;
-
-    @Inject
-    @Named("leader")
-    private ProjectAccessLevel leaderAccessLevel;
-
-    @Inject
-    @Named("contributor")
-    private ProjectAccessLevel contributorAccessLevel;
-
-    @Inject
-    private DocumentReferenceResolver<String> stringResolver;
-
-    @Inject
-    private DocumentAccessBridge bridge;
 
     /**
      * Returns a collection of EntityReferences of all projects.
@@ -102,75 +78,8 @@ public class ProjectsRepository
 
         List<Project> projects = new ArrayList<Project>(queryResults.size());
         for (String projectId : queryResults) {
-            Project p = this.getProjectById(projectId);
+            Project p = new DefaultProject(projectId);
             projects.add(p);
-        }
-        return projects;
-    }
-
-    /**
-     * @return a collection of all projects that the current user can contribute to.
-     */
-    public Collection<Project> getAllProjectsWithContributionRights()
-    {
-        Set<ProjectAccessLevel> accessLevels = new HashSet<>();
-        accessLevels.add(contributorAccessLevel);
-        accessLevels.add(leaderAccessLevel);
-        Collection<Project> projects = this.getAllProjects(accessLevels);
-
-        for (Project p : this.getAllProjectsOpenForContribution()) {
-            if (!projects.contains(p)) {
-                projects.add(p);
-            }
-        }
-        return projects;
-    }
-
-    /**
-     * @return a collection of all projects that the current user can view.
-     */
-    public Collection<Project> getAllProjectsWithViewingRights()
-    {
-        Collection<Project> projects = this.getAllProjectsWithContributionRights();
-
-        for (Project p : this.getAllProjectsOpenForViewing()) {
-            if (!projects.contains(p)) {
-                projects.add(p);
-            }
-        }
-        return projects;
-    }
-
-    /**
-     * Returns a collection of projects that are open for viewing by all users.
-     *
-     * @return a collection of projects that are open for viewing by all users
-     */
-    public Collection<Project> getAllProjectsOpenForViewing() {
-        Collection<Project> projects = this.getAllProjects();
-        Iterator<Project> projectIterator = projects.iterator();
-        while (projectIterator.hasNext()) {
-            Project project = projectIterator.next();
-            if (!project.isProjectOpenForViewing()) {
-                projectIterator.remove();
-            }
-        }
-        return projects;
-    }
-
-    /**
-     * Returns a collection of projects that are open for contribution by all users.
-     *
-     * @return a collection of projects that are open for contribution by all users
-     */
-    public Collection<Project> getAllProjectsOpenForContribution() {
-        Collection<Project> projects = this.getAllProjects();
-        Iterator<Project> projectIterator = projects.iterator();
-        while (projectIterator.hasNext()) {
-            Project project = projectIterator.next();
-            if (!project.isProjectOpenForContribution()) {
-                projectIterator.remove();
-            }
         }
         return projects;
     }
@@ -178,10 +87,10 @@ public class ProjectsRepository
     /**
      * Returns a collection of all projects that the current user has an {@link accessLevel} to.
      *
-     * @param accessLevels access levels required for a project
+     * @param accessLevel access level required for a project
      * @return a collection of all projects that the current user has an {@link accessLevel} to.
      */
-    public Collection<Project> getAllProjects(Collection<ProjectAccessLevel> accessLevels)
+    public Collection<Project> getAllProjects(ProjectAccessLevel accessLevel)
     {
         User currentUser = this.userManager.getCurrentUser();
 
@@ -194,7 +103,7 @@ public class ProjectsRepository
 
             Collection<Collaborator> collaborators = p.getCollaborators();
             for (Collaborator collaborator : collaborators) {
-                if (accessLevels.contains(collaborator.getAccessLevel())
+                if (collaborator.getAccessLevel().equals(accessLevel)
                     && collaborator.isUserIncluded(currentUser)) {
                     foundAccessLevel = true;
                     break;
@@ -208,61 +117,4 @@ public class ProjectsRepository
 
         return projects;
     }
-
-    /**
-     * Returns an existing project by its id. If no project is found, returns null.
-     *
-     * @param projectId id of project to return
-     * @return a project object with project.getId().equals(projectId)
-     */
-    public Project getProjectById(String projectId) {
-        DocumentReference reference = this.stringResolver.resolve(projectId, Project.DEFAULT_DATA_SPACE);
-        try {
-            XWikiDocument xDoc = (XWikiDocument) this.bridge.getDocument(reference);
-            if (xDoc != null && xDoc.getXObject(Project.CLASS_REFERENCE) != null) {
-                return new DefaultProject(xDoc);
-            }
-        } catch (Exception ex) {
-            this.logger.warn("Failed to access project with id [{}]: {}", projectId, ex.getMessage(), ex);
-        }
-        return null;
-    }
-
-    /**
-     * Returns a condition for an HQL patients query that selects all patients that belong to any project in
-     * {@link projects}. This is used, for example, in counting the number of cases for a projects (projects would
-     * contain only one project), in showing shared data for user (projects would contains all projects that current
-     * user is a contributor in).
-     *
-     * @param baseObjectTable name of BaseObject in query
-     * @param propertyTable name of StringProperty in query
-     * @param projects list of projects to show patients for
-     * @return HQL condition
-     */
-    public String getProjectCondition(String baseObjectTable, String propertyTable, Collection<Project> projects)
-    {
-        String propertyField = new StringBuffer().append("lower(").append(propertyTable).append(".value)").toString();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ").append(baseObjectTable).append(".className='PhenoTips.ProjectBindingClass' and (");
-
-        String[] likes = { "'%s;%%'", "'%%;%s'", "'%%;%s;%%'" };
-        boolean firstProject = true;
-        for (Project p : projects) {
-            String projectName = p.getFullName().toLowerCase();
-            if (firstProject) {
-                firstProject = false;
-            } else {
-                sb.append(OR);
-            }
-            for (String l : likes) {
-                sb.append(propertyField).append(" like ").append(String.format(l, projectName)).append(OR);
-            }
-            sb.append(propertyField).append(" = '").append(projectName).append("' ");
-        }
-        sb.append(") ");
-
-        return sb.toString();
-    }
-
 }
