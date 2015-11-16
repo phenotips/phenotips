@@ -159,7 +159,7 @@
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -271,7 +271,7 @@
   color: #ccc;
 }
 .pedigree-box.open {
-  background: url($xwiki.getDocument('PhenoTips.UIX_Field__pedigree').getAttachmentURL('open-pedigree-censored.jpg'));
+  background: url("$xwiki.getDocument('PhenoTips.UIX_Field__pedigree').getAttachmentURL('open-pedigree-censored.jpg')");
   background-size: 200px 200px;
   color :#636b75;
 }
