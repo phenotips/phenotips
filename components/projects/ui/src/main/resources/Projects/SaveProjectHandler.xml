@@ -71,7 +71,7 @@
     #set ($rawTempaltes = $project.getTemplates())
       #foreach ($t in $rawTempaltes)
       #set ($template = {})
-      #set ($discard = $template.put('id', $t.id))
+      #set ($discard = $template.put('id', $t.toString()))
       #set ($discard = $template.put('value', $t.name))
       #set ($discard = $templates.add($template))
     #end

@@ -50,37 +50,40 @@
 #if ("$!value" == '')
   #set ($value = '')
 #end
+#xwiki.use.jsx('PhenoTips.ProjectBindingClass')
 {{/velocity}}
 
 {{velocity}}{{html clean="false" wiki="true"}}
+#set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
+#set ($boundProject = $patientDoc.getObject('PhenoTips.ProjectBindingClass'))
+#set ($projectIds = $boundProject.getProperty('projectReference').value)
+#set ($projectIds = $projectIds.split(";"))
 #if ($mode == 'edit')
-#set ($projects = $services.projects.getAllProjectsAsContributor())
-&lt;div class="form-template-option"&gt;
-&lt;select&gt;
-&lt;option value=""/&gt;$services.localization.render('phenotips.projectBindingClass.noProjectOption')&lt;/option&gt;
-&lt;p class="xHint"&gt;$services.localization.render('phenotips.projectBindingClass.noProjectOption.hint')&lt;/p&gt;
-&lt;/div&gt;
-#foreach ($p in $projects)
-    &lt;div class="form-template-option"&gt;
-    &lt;option name="${prefix}${name}" value="${p.getName()}" /&gt;${p.getName()}&lt;/option&gt;
-    &lt;p class="xHint"&gt;$!{p.content}&lt;/p&gt;
-    &lt;/div&gt;
-#end
-&lt;/select&gt;
-#else ##$mode!='edit'
-  #if ("$!value" == '')
-    None
-  #else
-    #set ($p = $xwiki.getDocument($value))
-    #set ($config = $p.getObject('PhenoTips.ProjectClass'))
-    #set ($configTitle = '')
-    #if ("$!{p.plainTitle}" != '')
-      #set ($configTitle = "$p.plainTitle")
-    #else
-      #set ($configTitle = "${p.name}")
-    #end
-    [[${configTitle}&gt;&gt;${value}]]
-  #end
+   #set ($projects = $services.projects.getAllProjectsWithContributionRights())
+   #foreach ($p in $projects)
+      &lt;div&gt;
+      #set ($checkedString = '')
+      #if ($projectIds.contains($p.getFullName()))
+         #set ($checkedString = 'checked')
+      #else
+      #end
+      &lt;input type="checkbox" name="${p.getName()}" $!checkedString /&gt;$p.getName()
+      &lt;/div&gt;
+   #end
+#else
+   #if ("$!value" == '')
+      None
+   #else
+      #set ($p = $xwiki.getDocument($value))
+      #set ($config = $p.getObject('PhenoTips.ProjectClass'))
+      #set ($configTitle = '')
+      #if ("$!{p.plainTitle}" != '')
+         #set ($configTitle = "$p.plainTitle")
+      #else
+         #set ($configTitle = "${p.name}")
+      #end
+      [[${configTitle}&gt;&gt;${value}]]
+   #end
 #end
 {{/html}}{{/velocity}}
 </content>
@@ -121,10 +124,10 @@
   <object>
     <name>PhenoTips.ProjectBindingClass</name>
     <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>d5588258-13ad-4d41-96c0-2a81bc4c7aad</guid>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>1e123ca5-0b79-4546-8a66-6acf074cc9f8</guid>
     <class>
-      <name>XWiki.StyleSheetExtension</name>
+      <name>XWiki.JavaScriptExtension</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -158,22 +161,6 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -214,21 +201,83 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.form-template-option select{
-    width: 50%;
-}</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
+      <code>document.observe("projects:projectselection:popupcreated", function(event) {
+   new PhenoTips.widgets.SelectProject();
+});
+
+var PhenoTips = (function (PhenoTips) {
+   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+   widgets.SelectProject = Class.create({
+
+   initialize : function ()
+   {
+      _this = this;
+      _this._checkboxes = $('projectsSection').select(':input');
+      _this._registerListeners();
+
+      // This will be run when the user opens the projects/template selection pop-up for update and
+      // will narrow down the list of templates.
+      document.observe("projects:projectselection:popupupdated", function(event) {
+         _this._projectSelected();
+      });
+   },
+
+   _registerListeners : function(sectionId, documentName)
+   {
+      _this._checkboxes.map(function(item) {
+         item.observe('click', function() {
+             _this._projectSelected();
+         });
+      });
+   },
+
+   _projectSelected : function() {
+      var selected = "";
+      _this._checkboxes.map(function(item) {
+         if (item.checked) {
+            if (selected.length&gt;0) {
+               selected += ",";
+            }
+            selected += item.name;
+         }
+      });
+
+      var templatesSelect = $('templatesSelect');
+      new Ajax.Request(new XWiki.Document('StudyBindingClass', 'PhenoTips').getURL('get'), {
+         parameters : {'input' : selected},
+         onCreate : function() {
+            templatesSelect.addClassName("loading");
+         },
+         onSuccess : function(response) {
+            templatesSelect.update(response.responseText);
+         },
+         onFailure : function(response) {
+            var failureReason = response.responseText || response.statusText;
+            if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+               failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+            }
+            _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+          },
+          on0 : function (response) {
+             response.request.options.onFailure(response);
+          },
+          onComplete : function () {
+             templatesSelect.removeClassName("loading");
+          }
+        });
+   }
+   });
+   return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse/>
     </property>
     <property>
-      <use>onDemand</use>
+      <use>currentPage</use>
     </property>
   </object>
 </xwikidoc>
