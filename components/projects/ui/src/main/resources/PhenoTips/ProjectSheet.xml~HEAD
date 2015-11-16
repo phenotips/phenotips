@@ -51,6 +51,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 ## General project attributes
 ##
 #if ($xcontext.action == 'edit')
+{{html}}&lt;input type="hidden" id="editmode" value="true"/&gt;{{/html}}
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectName')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectName.hint')
@@ -60,7 +61,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
 $doc.display('openProjectForViewing') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
-$doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 
 ##
 ## Contributors section
@@ -77,6 +77,8 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
    &lt;tbody id="contributorslist"/&gt;
 &lt;/table&gt;
 {{/html}}
+
+$doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 
 ##
 ## Leaders section
@@ -110,8 +112,51 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 &lt;/table&gt;
 {{/html}}
 )))
+#else ##not 'edit' mode
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectName')&lt;/label&gt;{{/html}}
+: $!doc.title
+#if ($doc.content != '')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
+: $!escapetool.html($doc.content)
+#end
+
+#if ($doc.openProjectForViewing == 'Yes')
+{{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
+#end
+
+##
+## Contributors section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributors')&lt;/label&gt;{{/html}}
+#if ($doc.openProjectForContribution == 'Yes')
+: {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 #else
-$!doc.content
+: {{html clean="false"}}
+&lt;table id="contributorsTable"&gt;
+   &lt;tbody id="contributorslist"/&gt;
+&lt;/table&gt;
+{{/html}}
+#end
+
+##
+## Leaders section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.leaders')&lt;/label&gt;{{/html}}
+: {{html clean="false"}}
+&lt;table id="leadersTable"&gt;
+   &lt;tbody id="leaderslist"/&gt;
+&lt;/table&gt;
+{{/html}}
+
+##
+## Templates section
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.templates')&lt;/label&gt;{{/html}}
+: {{html clean="false"}}
+&lt;table id="templatesTable"&gt;
+   &lt;tbody id="templatesList"/&gt;
+&lt;/table&gt;
+{{/html}}
 #end
 {{/velocity}}</content>
   <object>
@@ -204,6 +249,23 @@ $!doc.content
       _this.form = $('inline');
       _this.ajaxService = '/bin/get/Projects/SaveProjectHandler';
 
+      var editmode = false;
+      if ($('editmode')) {
+         editmode = $('editmode').value;
+      }
+      _this.editmode = editmode;
+      if (_this.editmode) {
+         _this._initializeEditMode();
+      } else {
+         _this._initializeViewMode();
+      }
+    },
+
+    _initializeViewMode : function() {
+       this._readCollaboratorsAndTemplates();
+    },
+
+    _initializeEditMode : function() {
       $('PhenoTips.ProjectClass_0_openProjectForContribution').observe('click', function() {
          _this._openForContributionCheckboxClicked();
       });
@@ -211,16 +273,26 @@ $!doc.content
 
       _this._initializeCollaborators('leaders', true, false);
       _this._initializeCollaborators('contributors', true, true);
-      this._initializeSuggestTemplates();
+      _this._initializeSuggestTemplates();
 
-      this._readCollaboratorsAndTemplates();
+      var url = window.location.href.toLowerCase();
+      var newProject = (url.indexOf("newproject") &gt; 0);
+      if (newProject) {
+         this._addCurrentUserAsLeader();
+      } else {
+         this._readCollaboratorsAndTemplates();
+      }
 
       // Save collaborators and templates when project is saved
       document.observe("xwiki:actions:save", function(event) {
         var formData = _this.form.serialize(true);
-        var contributors = formData.contributors || [];
         var leaders = formData.leaders || [];
         var templates = formData.templates || [];
+        var contributors = formData.contributors || [];
+        if (_this.openForContribution) {
+           contributors = [];
+        }
+
         new Ajax.Request(_this.ajaxService, {
           parameters : {'projectId'    : _this.projectId,
                         'xaction'      : 'update',
@@ -283,7 +355,7 @@ $!doc.content
         script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&amp;",
         varname: "input",
         noresults: "No matching terms",
-        resultsParameter: "matchedStudies",
+        resultsParameter: "matchedTemplates",
         json: true,
         resultId: "id",
         resultValue: "textSummary",
@@ -306,40 +378,68 @@ $!doc.content
     _openForContributionCheckboxClicked : function() {
        _this.openForContribution = $('PhenoTips.ProjectClass_0_openProjectForContribution').checked;
        $('suggestcontributors').disabled=_this.openForContribution;
-       $('suggestleaders').disabled=_this.openForContribution;
+       if (_this.openForContribution) {
+          $('contributorsTable').hide();
+       } else {
+          $('contributorsTable').show();
+       }
     },
 
     _addTemplate : function (template, highlight) {
-      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
-      row.insert(new Element('td').insert(template.value)
-              .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
-      )
-      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
-      row.insert(deleteTool.wrap('td'));
-      deleteTool.observe('click', function(event) {
-         event.findElement('tr').remove();
-      });
-      $('templatesList').insert(row);
+       var list = $('templatesList');
+       if (_this._isItemInList(template.id, list)) {
+          return;
+       }
+       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+       row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
+               .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
+       )
+       if (_this.editmode) {
+          var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+          row.insert(deleteTool.wrap('td'));
+          deleteTool.observe('click', function(event) {
+             event.findElement('tr').remove();
+          });
+       }
+       list.insert(row);
+    },
+
+    _isItemInList : function(item, list) {
+      var children = list.childElements();
+      for (var i=0; i &lt; children.size(); i++) {
+         var v = children[i].down(".mainTd input").value;
+         if (v == item) {
+            return true;
+         }
+      }
+      return false;
     },
 
     _addCollaborator : function (c, highlight, collaboratorType) {
+      var list = $(collaboratorType + 'list');
+      if (_this._isItemInList(c.id, list)) {
+         return;
+      }
+ 
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
-      row.insert(new Element('td')
+      row.insert(new Element('td', {'class' : 'mainTd'})
               .insert(c.name)
               .insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}))
       )
-      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
-      row.insert(deleteTool.wrap('td'));
-      deleteTool.observe('click', function(event) {
-         if (_this.openForContribution) { //contributors-div is disabled
-            return;
-         }
-         event.findElement('tr').remove();
-      });
-      $(collaboratorType + 'list').insert(row);
+      if (_this.editmode) {
+         var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+         row.insert(deleteTool.wrap('td'));
+         deleteTool.observe('click', function(event) {
+            if (_this.openForContribution &amp;&amp; collaboratorType == 'contributors') { //contributors-div is disabled
+               return;
+            }
+            event.findElement('tr').remove();
+         });
+      }
+      list.insert(row);
     },
-
+    
     _loadCollaboratorsAndTemplates : function(contributors, leaders, templates) {
       $('contributorslist').update('');
       $('leaderslist').update('');
@@ -362,12 +462,19 @@ $!doc.content
         parameters : {'xaction'   : 'get',
                       'projectId' : _this.projectId},
         onSuccess : function(response) {
-           var contributors = response.responseJSON.contributors;
-           var leaders = response.responseJSON.leaders;
-           var templates = response.responseJSON.templates;
-           _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
+           if (!("error" in response.responseJSON)) {
+              var contributors = response.responseJSON.contributors;
+              var leaders = response.responseJSON.leaders;
+              var templates = response.responseJSON.templates;
+              _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
+           }
         }
       });
+    },
+
+    _addCurrentUserAsLeader : function() {
+       var currentUser = PhenoTips.currentUser;
+       this._addCollaborator({type: "user", name: currentUser.name, id: currentUser.id}, true, 'leaders');
     }
 
   });
@@ -492,6 +599,8 @@ display: none;
 
 #templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td {
   border-bottom: 1px solid $theme.borderColor;
+  border-left-width : 0px;
+  border-right-width: 0px;
 }
 #templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td {
   border-top: 3px solid $theme.borderColor;
@@ -514,6 +623,11 @@ display: none;
    width: 200px;
    font-size: 14px;
 }
+
+.mainTd {
+   width: 100%;
+}
+
 </code>
     </property>
     <property>

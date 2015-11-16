@@ -75,30 +75,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </openProjectForViewing>
-    <templates>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <idField/>
-      <multiSelect>1</multiSelect>
-      <name>templates</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>templates</prettyName>
-      <relationalStorage>1</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </templates>
   </class>
   <object>
     <name>PhenoTips.ProjectClass</name>
@@ -331,7 +307,8 @@
     #if ($xwiki.exists($targetDocument))
       #set ($errorMessage = "$services.localization.render('phenotips.projectClass.errorMessage.nameExists', [${request.name}])")
     #else
-      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)&amp;newProject")))
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
     #end
   #end
 #end
@@ -599,7 +576,7 @@ $xwiki.jsx.use($projectClassName)
   border-bottom: 0 none;
 }
 
-#projects-table .members, #templates-directory .patients {
+#projects-table .members, #studies-directory .patients {
   font-size: .8em;
   font-style: italic;
   opacity: .5;
@@ -754,7 +731,7 @@ $xwiki.jsx.use($projectClassName)
     </class>
     <property>
       <code>{{velocity}}
-#set ($projectsData = $services.projects.getAllProjectsWithViewingRights())
+#set ($projectsData = $services.projects.getAllProjects())
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
 #if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $projectsData.size()))
   #set ($max = $projectsData.size())
@@ -774,23 +751,20 @@ $xwiki.jsx.use('PhenoTips.ProjectClass')
   #foreach ($project in $projectsData)
     #if ($foreach.index &lt; $max)
       #set ($colUsers = $project.getNumberOfCollaboratorsUsers())
-      #set ($patientsNumber = $project.getNumberOfPatients())
       #set ($description = $project.getDescription())
       #set ($fullName = $project.getFullName())
       ##
       |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
       \\(% class="members"%)$colUsers collabortor user#if($colUsers != 1)s#end(%%)##
-      \\(% class="members"%)$patientsNumber patient#if($patientsNumber != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{$description}" != '')
           (% class="desc" %) ((($description)))
         #end
       #end
-      #set ($projectLeader = ($project.getCurrentUserAccessLevel().getName() == 'leader'))
-      #if ($xcontext.macro.params.tools == 'true' &amp;&amp; ($hasAdmin || $projectLeader))|##
+      #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|##
         (% class="tools" %) (((##
-        [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
-        [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
+        [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
+        [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
         )))
       #end\\
     #end

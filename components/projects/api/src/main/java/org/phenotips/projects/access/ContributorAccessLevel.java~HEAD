@@ -15,19 +15,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
+
 package org.phenotips.projects.access;
 
-import org.phenotips.data.permissions.internal.AbstractAccessLevel;
+import org.xwiki.component.annotation.Component;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @version $Id$
  */
-public abstract class AbstractProjectAccessLevel extends AbstractAccessLevel implements ProjectAccessLevel
+@Component
+@Named("contributor")
+@Singleton
+public class ContributorAccessLevel extends AbstractProjectAccessLevel
 {
-
-    protected AbstractProjectAccessLevel(int permissiveness, boolean assignable)
-    {
-        super(permissiveness, assignable);
+    /**
+     * Create a new ContributorAccessLevel.
+     */
+    public ContributorAccessLevel() {
+        super(1, true);
     }
 
+    @Override
+    public String getName()
+    {
+        return "contributor";
+    }
 }
