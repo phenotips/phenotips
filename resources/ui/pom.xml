@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-resources</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.1</version>
   </parent>
   <artifactId>phenotips-ui</artifactId>
   <name>PhenoTips - Application interface</name>

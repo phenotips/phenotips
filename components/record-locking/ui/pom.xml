@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-record-locking</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.1</version>
   </parent>
   <artifactId>phenotips-record-locking-ui</artifactId>
   <name>PhenoTips - Record Locking - UI - Documents providing record locking functionality</name>
