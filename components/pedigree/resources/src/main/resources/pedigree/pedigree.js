@@ -163,19 +163,19 @@ define([
             var switchTab = function(index) {
                 return function() {
                     var isActive = tabHeaders[index].hasClassName('active');
-					if (!isActive) {
-						tabs.each(function(item) {
-							item.toggleClassName("display-none");
-						});
-						tabHeaders.each(function(item) {
-							item.toggleClassName("active");	
-						});
-					}
-				}
+                    if (!isActive) {
+                        tabs.each(function(item) {
+                            item.toggleClassName("display-none");
+                        });
+                        tabHeaders.each(function(item) {
+                            item.toggleClassName("active");	
+                        });
+                    }
+                }
             }
-			tabHeaders.each(function(item, index) {
-				item.observe('click', switchTab(index))
-			});
+            tabHeaders.each(function(item, index) {
+                item.observe('click', switchTab(index))
+            });
             tabTop.insert(tabHeaders[0]).insert(tabHeaders[1]);
             mainModalDiv.insert(tabTop).insert(tabs[0]).insert(tabs[1]);
 
@@ -186,7 +186,7 @@ define([
                 dialogModal.closeDialog();
             }
 
-			var modalButton = $('action-templates');
+            var modalButton = $('action-templates');
             modalButton && modalButton.on('click', function(event) {
                 var availableHeight = document.viewport.getHeight() - 80;
                 editor.getTemplateSelector().mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
