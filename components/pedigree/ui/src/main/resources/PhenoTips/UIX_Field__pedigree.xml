@@ -376,8 +376,6 @@
   $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
   $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
 
-=== $services.localization.render('phenotips.patientRecord.pedigree.title') ===
-
   #if ("$!image" != '')
     #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
     #if ($familyInfo.warning &amp;&amp; $familyInfo.warning != "")
