@@ -3516,8 +3516,12 @@ document.observe('xwiki:dom:loaded', function()
       </xhtmlxsl>
     </class>
     <property>
-      <footer>{{velocity}}{{html clean="false"}}Page &lt;span class="page-number"&gt;&lt;/span&gt; of &lt;span class="page-total"&gt;&lt;/span&gt;
-&lt;div style="margin-top: 1em;font-size: 69.444%"&gt;$services.localization.render('phenotips.PatientSheetCode.PDFFooterDocInfo', [$xwiki.getUserName($tdoc.author, false), $!xwiki.formatDate($tdoc.date), $xwiki.getUserName($xcontext.user, false)]) &lt;br/&gt; $services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', [$xwiki.formatDate($util.date)])&lt;a href="$doc.getExternalURL()"&gt;PhenoTips&lt;/a&gt;.&lt;/div&gt;{{/html}}{{/velocity}}</footer>
+      <footer>Page (% class="page-number" %)#(%%) of (% class="page-total" %)#(%%)
+
+{{velocity}}(% style="margin-top: 1em; font-size: 70%" %)(((
+$services.localization.render('phenotips.PatientSheetCode.PDFFooterDocInfo', [$xwiki.getUserName($tdoc.author, false), $!xwiki.formatDate($tdoc.date), $xwiki.getUserName($xcontext.user, false)])
+$services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', [$xwiki.formatDate($util.date)]) [[PhenoTips&gt;&gt;$doc.getExternalURL()]].
+))){{/velocity}}</footer>
     </property>
     <property>
       <fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
