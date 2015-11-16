@@ -87,10 +87,10 @@ public class ProjectsRepository
     /**
      * Returns a collection of all projects that the current user has an {@link accessLevel} to.
      *
-     * @param accessLevel access level required for a project
+     * @param accessLevels access levels required for a project
      * @return a collection of all projects that the current user has an {@link accessLevel} to.
      */
-    public Collection<Project> getAllProjects(ProjectAccessLevel accessLevel)
+    public Collection<Project> getAllProjects(Collection<ProjectAccessLevel> accessLevels)
     {
         User currentUser = this.userManager.getCurrentUser();
 
@@ -103,7 +103,7 @@ public class ProjectsRepository
 
             Collection<Collaborator> collaborators = p.getCollaborators();
             for (Collaborator collaborator : collaborators) {
-                if (collaborator.getAccessLevel().equals(accessLevel)
+                if (accessLevels.contains(collaborator.getAccessLevel())
                     && collaborator.isUserIncluded(currentUser)) {
                     foundAccessLevel = true;
                     break;

@@ -26,6 +26,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,6 +49,10 @@ public class ProjectsScriptService implements ScriptService
     @Named("contributor")
     private ProjectAccessLevel contributorAccessLevel;
 
+    @Inject
+    @Named("leader")
+    private ProjectAccessLevel leaderAccessLevel;
+
     /**
      * Returns a project by an id.
      * @param projectId id of the project to return
@@ -67,12 +73,17 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * Returns a collection of all projects that the current user has an ContributorAccessLevel on.
+     * Returns a collection of all projects that the current user can contribute to.
      *
-     * @return a collection of all projects that the current user has an ContributorAccessLevel to.
+     * @return a collection of all projects that the current user can contribute to.
      */
     public Collection<Project> getAllProjectsAsContributor()
     {
-        return this.projectsRepository.getAllProjects(contributorAccessLevel);
+        // Both leaders and contributors can contribute to a project
+        Set<ProjectAccessLevel> accessLevels = new HashSet<>();
+        accessLevels.add(contributorAccessLevel);
+        accessLevels.add(leaderAccessLevel);
+
+        return this.projectsRepository.getAllProjects(accessLevels);
     }
 }
