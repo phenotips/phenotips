@@ -4073,6 +4073,9 @@ h1, h2, h3, h4 {
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name>Patient sheet UI</name>
     </property>
     <property>
@@ -4301,6 +4304,9 @@ h1, h2, h3, h4 {
   width: auto;
 }
 </code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>Extra data table ui</name>
@@ -4758,6 +4764,9 @@ h1, h2, h3, h4 {
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name>Phenotype details</name>
     </property>
     <property>
@@ -4878,6 +4887,9 @@ input.LV_invalid_field {
 input[type="checkbox"] + .LV_validation_message {
   float: right;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>Form Validation</name>
