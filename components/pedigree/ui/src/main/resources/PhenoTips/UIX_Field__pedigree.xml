@@ -268,6 +268,7 @@
   border-style: solid;
   border-width: 1px;
   border-color: #636b75;
+  margin-top: 10px;
   cursor: pointer;
 }
 .pedigree-box.draw {
@@ -386,9 +387,10 @@
 #if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
   $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
   $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
-
+  #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
 === $services.localization.render('phenotips.patientRecord.pedigree.title') ===
-
+  #end
+  
   #if ("$!image" != '')
     #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
     #if ($familyInfo.warning &amp;&amp; $familyInfo.warning != "")
