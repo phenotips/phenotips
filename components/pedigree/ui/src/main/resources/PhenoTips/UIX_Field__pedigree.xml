@@ -250,8 +250,6 @@
 #if ($xcontext.action == 'edit' || "$!data" != '')
   $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
 
-  === $services.localization.render('phenotips.patientRecord.pedigree.title') ===
-
   #if ($xcontext.action == 'edit')
     #if ("$!data" != '')
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
