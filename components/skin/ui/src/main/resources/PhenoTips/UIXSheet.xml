@@ -44,7 +44,7 @@
 #set ($ssx = $doc.getObject('XWiki.StyleSheetExtension'))
 {{html wiki=true}}
 ; Title
-: &lt;input type="text" name="title" value="$!doc.title"/&gt;
+: &lt;input type="text" name="title" value="$services.rendering.escape($!doc.title, $xwiki.currentContentSyntaxId)"/&gt;
 ; Description
 : &lt;textarea name="content" rows="20" cols="80"&gt;{{html wiki="false" clean="false"}}$!escapetool.html($doc.content){{/html}}&lt;/textarea&gt;
 #if ($uix)
