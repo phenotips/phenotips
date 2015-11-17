@@ -115,7 +115,7 @@
     #set ($uixDoc = $uixDocsMap.get($uix.id))
     #if ($uixDoc)
       #if ("$!{title}" == '')
-        #set ($title = $uixDoc.title)
+        #set ($title = $services.rendering.escape($uixDoc.title, $xwiki.currentContentSyntaxId))
       #end
       #set ($enabled = $uix.getParameters().get("enabled"))
       #if ("$!{enabled}" == "false" || "$!{enabled}" == "0" || "$!{enabled}" == "no")
