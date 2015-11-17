@@ -141,13 +141,6 @@
         document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
       });
     }
-
-    // Resize the actual pedigree svg image to fit in the thumbnail box
-    var pedigreeElt = document.documentElement.down('.pedigree-wrapper svg');
-    if (pedigreeElt) {
-      pedigreeElt.setAttribute('width', 200);
-      pedigreeElt.setAttribute('height', 200);
-    }
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
@@ -373,34 +366,36 @@
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
-$xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
 #set ($canEditP = $hasEdit &amp;&amp; !$isReadOnly)
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
   #set ($image = $pedigreeObj.getProperty('image').value)
 #end## pedigree obj exists
 
-$xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
+#if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
+  $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
+  $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
 
- === $services.localization.render('phenotips.patientRecord.pedigree.title') ===
+=== $services.localization.render('phenotips.patientRecord.pedigree.title') ===
 
-#if ("$!image" != '')
-  #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
-  #if ($familyInfo.warning &amp;&amp; $familyInfo.warning != "")
-    #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
-    #set ($pClass = 'open')
-    #set ($pContent = $pAction)
+  #if ("$!image" != '')
+    #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
+    #if ($familyInfo.warning &amp;&amp; $familyInfo.warning != "")
+      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
+      #set ($pClass = 'open')
+      #set ($pContent = $pAction)
+    #else
+      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
+      #set ($pClass = '')
+      #set ($pContent = $!image)
+    #end
   #else
-    #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
-    #set ($pClass = '')
-    #set ($pContent = $!image)
+    #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
+    #set ($pClass = 'draw')
+    #set ($pContent = $pAction)
   #end
-#else
-  #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
-  #set ($pClass = 'draw')
-  #set ($pContent = $pAction)
-#end
 (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div class="pedigree-box ${pClass}" title="${pAction}" #if($canEditP) id="pedigree-trigger" #end&gt;${pContent}&lt;/div&gt;{{/html}})))
+#end
 {{/velocity}}</content>
     </property>
     <property>
