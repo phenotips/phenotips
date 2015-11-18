@@ -668,8 +668,8 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
         $services.localization.render('phenotips.UIXField.family_membership.remove')
       &lt;/a&gt;##
     &lt;/div&gt;
-    &lt;input id="manageFamilyMemberUrl" type="hidden" value="$xwiki.getURL('PhenoTips.AddRemovePatientToFamily', 'get',
-      "outputSyntax=plain&amp;patientId=${escapetool.url($doc.getDocumentReference().getName())}&amp;familyId=")"&gt;
+    &lt;input id="manageFamilyMemberUrl" type="hidden" value="$xwiki.getURL('PhenoTips.FamilyPedigreeInterface', 'get',
+      "outputSyntax=plain&amp;action=addremovepatient&amp;patientId=${escapetool.url($doc.getDocumentReference().getName())}&amp;familyId=")"&gt;
   #end
 {{/html}}##
 )))##
