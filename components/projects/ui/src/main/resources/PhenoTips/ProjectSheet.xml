@@ -311,7 +311,7 @@ $!doc.content
 
     _addTemplate : function (template, highlight) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
-      row.insert(new Element('td').insert(template.value)
+      row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
               .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
       )
       var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
@@ -325,7 +325,7 @@ $!doc.content
     _addCollaborator : function (c, highlight, collaboratorType) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
-      row.insert(new Element('td')
+      row.insert(new Element('td', {'class' : 'mainTd'})
               .insert(c.name)
               .insert(new Element('input', {'type': 'hidden', 'name' : collaboratorType, 'value' : c.id}))
       )
@@ -492,6 +492,8 @@ display: none;
 
 #templatesTable tbody td, #leadersTable tbody td, #contributorsTable tbody td {
   border-bottom: 1px solid $theme.borderColor;
+  border-left-width : 0px;
+  border-right-width: 0px;
 }
 #templatesTable tfoot td, #templatesTable tfoot td, #contributorsTable tfoot td {
   border-top: 3px solid $theme.borderColor;
@@ -514,6 +516,11 @@ display: none;
    width: 200px;
    font-size: 14px;
 }
+
+.mainTd {
+   width: 100%;
+}
+
 </code>
     </property>
     <property>
