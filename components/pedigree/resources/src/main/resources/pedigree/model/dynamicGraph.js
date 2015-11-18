@@ -758,7 +758,20 @@ define([
 
             return result;
         },
-
+        
+        getPossiblePatientIDTarget: function(gender) {
+	        // check:
+	        //  1) no previous link to other patient
+	        //  2) gender matches or is unknown
+        	var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
+        	
+        	var result = this._getAllPersonsOfGenders(validGendersSet);
+        	
+        	// TODO: exclude those nodes which already have a phenotipsID link
+        	
+        	return result;
+        },
+        
         getOppositeGender: function( v )
         {
             if (!this.isPerson(v))

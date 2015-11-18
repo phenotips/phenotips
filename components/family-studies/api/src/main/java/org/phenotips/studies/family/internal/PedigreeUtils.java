@@ -68,7 +68,7 @@ public class PedigreeUtils
      * Receives a pedigree in form of a JSONObject and an SVG image to be stored in proband's family.
      *
      * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
-     *            for. If it's a proband id, the family assocaited with the patient is used. If not family is
+     *            for. If it's a proband id, the family associated with the patient is used. If not family is
      *            associated, a new one is created.
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
@@ -90,12 +90,11 @@ public class PedigreeUtils
             family = this.familyRepository.getFamilyForPatient(proband);
             if (family == null) {
                 if (!this.authorizationService.hasAccess(
-                        this.userManager.getCurrentUser(), Right.EDIT, proband.getDocument()))
+                    this.userManager.getCurrentUser(), Right.EDIT, proband.getDocument()))
                 {
                     return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(documentId);
                 }
                 family = this.familyRepository.createFamily();
-                family.addMember(proband);
             }
             return processPedigree(family, pedigree);
         }
@@ -113,9 +112,7 @@ public class PedigreeUtils
     {
         StatusResponse response;
 
-        // sometimes pedigree passes in family document name as a member
         List<String> newMembers = pedigree.extractIds();
-        newMembers.remove(family.getId());
 
         JSONResponse validityResponse = checkValidity(family, newMembers);
         if (!validityResponse.isValid()) {
@@ -130,11 +127,11 @@ public class PedigreeUtils
 
         family.setPedigree(pedigree);
 
-        List<String> members = family.getMembersIds();
+        List<String> oldMembers = family.getMembersIds();
 
         // Removed members who are no longer in the family
         List<String> patientsToRemove = new LinkedList<>();
-        patientsToRemove.addAll(members);
+        patientsToRemove.addAll(oldMembers);
         patientsToRemove.removeAll(newMembers);
         for (String patientId : patientsToRemove) {
             Patient patient = this.patientRepository.getPatientById(patientId);
@@ -144,7 +141,7 @@ public class PedigreeUtils
         // Add new members to family
         List<String> patientsToAdd = new LinkedList<>();
         patientsToAdd.addAll(newMembers);
-        patientsToAdd.removeAll(members);
+        patientsToAdd.removeAll(oldMembers);
         for (String patientId : patientsToAdd) {
             Patient patient = this.patientRepository.getPatientById(patientId);
             family.addMember(patient);
@@ -161,7 +158,7 @@ public class PedigreeUtils
 
         // Checks that current user has edit permissions on family
         if (!this.authorizationService.hasAccess(
-                this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference()))
+            this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference()))
         {
             return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
         }
