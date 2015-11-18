@@ -27,6 +27,7 @@ define([
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
         "pedigree/view/hpoLegend",
+        "pedigree/view/patientDropLegend",
         "pedigree/view/importSelector",
         "pedigree/view/cancersLegend",
         "pedigree/view/nodeMenu",
@@ -58,6 +59,7 @@ define([
         CandidateGeneLegend,
         CausalGeneLegend,
         HPOLegend,
+        PatientDropLegend,
         ImportSelector,
         CancerLegend,
         NodeMenu,
@@ -116,6 +118,7 @@ define([
             this._causalGeneLegend = new CausalGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
+            this._patientLegend = new PatientDropLegend();
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
             this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
             this._okCancelDialogue = new OkCancelDialogue();
@@ -131,7 +134,7 @@ define([
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
-            // provided function wil get execute and will load/render the rest of the pedigree.
+            // provided function will get execute and will load/render the rest of the pedigree.
             this._preferencesManager.load( function() {
                     Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
                     // set up constants which depend on preferences
@@ -469,6 +472,14 @@ define([
         getPaper: function() {
             return this.getWorkspace().getPaper();
         },
+        
+        /**
+         * @method getPatientLegend
+         * @return {Legend} Responsible for managing and displaying legend for patients that are unassigned to a family
+         */
+        getPatientLegend: function() {
+            return this._patientLegend; 
+        },
 
         /**
          * @method isReadOnlyMode
@@ -532,9 +543,9 @@ define([
          * @method hasFamily
          * @return {boolean}
          */
-        hasFamily: function() {
+        hasExistingFamily: function() {
             if (!this._familyData) return false;
-            return this._familyData.hasFamily();
+            return this._familyData.hasExistingFamily();
         },
 
         /**
@@ -606,6 +617,14 @@ define([
          */
         getExportSelector: function() {
             return this._exportSelector;
+        },
+        
+        /**
+         * @method getFamilySelector
+         * @return {FamilySelector}
+         */
+        getFamilySelector: function() {
+            return this._familyData.familySelector;
         },
 
         /**

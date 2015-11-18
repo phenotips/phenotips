@@ -1023,19 +1023,10 @@ define([
                             }
                         }
 
-                        // check if there is a family. If there is no family show a warning that a family will be created
-                        if (!editor.hasFamily() && allLinkedNodes.linkedPatients.length < 2) {
-                            processLinking("Connecting this patient requires creating a family. " +
-                                           "Do you want to create a family and add patient " + linkID + "?",
-                                           "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
-                                           "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa." +
-                                           clearPropertiesMsg);
-                        } else {
-                            processLinking("Do you want to add patient " + linkID + " to this family?",
-                                    "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
-                                    "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa."+
-                                    clearPropertiesMsg);
-                        }
+                        processLinking("Do you want to add patient " + linkID + " to this family?",
+                                "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa."+
+                                clearPropertiesMsg);
                     }
                 } else  {
                     editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',

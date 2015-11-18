@@ -694,6 +694,44 @@
   display: block;
   text-align: center;
 }
+.family-study .add-to-family-wrapper div {
+  float: left;
+}
+.family-study .add-to-family-wrapper .section {
+  margin-top: 0.2em;
+  font-weight: bold;
+}
+.family-study .add-to-family-wrapper .buttonwrapper {
+  margin-top: 0;
+  margin-right: 0;
+}
+.family-study .add-to-family-wrapper div.remove {
+  margin-left: 10px;
+}
+.family-selector ul {
+  list-style-type: none;
+  margin-bottom: 10px;
+  margin-left: 5px;
+}
+.family-selector ul li.left-aligned {
+  display: inline-block;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  margin-bottom: 5px;
+}
+.family-selector div.half-width {
+  width: 50%;
+  margin-left: 15px;
+}
+.patient-list .drop-patient {
+  display : inline-block;
+  margin-right: 20px;
+}
+.drop-patient .patient-name {
+  margin-left: 4px;
+  cursor : move;
+}
 
 .menu-box .disabled-select {
   opacity: 0.5;
@@ -793,10 +831,11 @@
   text-align: center;
   line-height: 24px;
 }
-.node-type-options .person-type-option.square {
+.person-type-option.square {
   line-height: 28px;
+  margin-bottom: 5px;
 }
-.node-type-options .person-type-option.square span {
+.person-type-option.square span, .drop-patient span.square {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -805,7 +844,7 @@
 .node-type-options .person-type-option.diamond {
   line-height: 26px;
 }
-.node-type-options .person-type-option.diamond span {
+.node-type-options .person-type-option.diamond span, .drop-patient span.diamond {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -817,7 +856,7 @@
 .node-type-options .person-type-option.circle {
   line-height: 29px;
 }
-.node-type-options .person-type-option.circle span {
+.node-type-options .person-type-option.circle span, .drop-patient span.circle {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -1086,4 +1125,22 @@
 }
 .fuzzy-date-picker .day:disabled {
   opacity: .5 !important;
+}
+.patient-list {
+  list-style-type: none;
+  margin: 10px 0 10px 9px;
+}
+.drop-patient span:first-child {
+  border-color: #636B75;
+  background-color: deepskyblue;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+#list_new, #list_unlinked {
+  padding-left: 8px;
+  padding-top: 10px;
+}
+.patient-assign-legend {
+  left: 100px;
+  top: 40px;
 }

@@ -5,7 +5,13 @@
  * @constructor
  */
 
-define(["pedigree/model/helpers"], function(Helpers){
+define([
+        "pedigree/model/helpers",
+        "pedigree/view/familySelector"
+    ], function(
+        Helpers,
+        familySelector
+    ){
     var FamilyDataLoader = Class.create( {
         initialize: function() {
             this.familyPage = null;
@@ -20,7 +26,7 @@ define(["pedigree/model/helpers"], function(Helpers){
             new Ajax.Request(familyJsonURL, {
                 method: "POST",
                 onSuccess: this._onFamilyDataReady.bind(this),
-                onComplete: callWhenReady ? callWhenReady : {},
+                onComplete: callWhenReady ? callWhenReady.bind(this) : {},
                 parameters: {"proband": probandID, "family_status": true }
             });
         },
@@ -43,7 +49,12 @@ define(["pedigree/model/helpers"], function(Helpers){
                     editor.getOkCancelDialogue().showCustomized(this.warningMessage,"Attention: This pedigree contains sensitive information.", "OK", null);
                 }
             } else {
-                console.log("[!] Error parsing family JSON");
+            	if (response.status == 200 && response.responseJSON == null && !this.isFamily()) {
+                    /* If no family and the current pedigree is not for family - display a dialogue to add this patient to an existing family */
+                    this.familySelector = new FamilySelector();
+                } else {
+                    console.log("[!] Error parsing family JSON");
+                }
             }
             console.log("Family data:  [familyPage: " + this.familyPage +
                                    "], [isFamily: " + Helpers.stringifyObject(this.isFamily()) + "], [Members:" +
@@ -54,7 +65,7 @@ define(["pedigree/model/helpers"], function(Helpers){
             return (this.familyPage == editor.getGraph().getCurrentPatientId());
         },
 
-        hasFamily: function() {
+        hasExistingFamily: function() {
             return (this.familyPage != null);
         },
 

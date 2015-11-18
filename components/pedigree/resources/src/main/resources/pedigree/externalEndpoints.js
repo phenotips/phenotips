@@ -1,3 +1,10 @@
+/**
+ * ExternalEndpointsManager provides various URLs for family-services.
+ *
+ * @class ExternalEndpointsManager
+ * @constructor
+ */
+
 define([
     ], function(
     ){
@@ -28,24 +35,32 @@ define([
         },
 
         getSavePedigreeURL: function() {
-            return this._getBaseFamilyInterfaceURL() + "&action=save&rand=" + Math.random();
+            return this._getBaseFamilyInterfaceURL() + "&action=save";
         },
 
         getFamilyInfoURL: function() {
-            return this._getBaseFamilyInterfaceURL() + "&action=familystatus&rand=" + Math.random();
+            return this._getBaseFamilyInterfaceURL() + "&action=familystatus";
         },
 
         getFamilyCheckLinkURL: function() {
-            return this._getBaseFamilyInterfaceURL() + "&action=checklink&rand=" + Math.random();
+            return this._getBaseFamilyInterfaceURL() + "&action=checklink";
         },
 
         getFamilyNewPatientURL: function() {
-            return this._getBaseFamilyInterfaceURL() + "&action=createpatient&rand=" + Math.random();
+            return this._getBaseFamilyInterfaceURL() + "&action=createpatient";
+        },
+        
+        //getFamilyEditURL: function(familyID) {
+        //	 return new XWiki.Document(familyID, 'Families').getURL('edit', 'sheet=PhenoTips.PedigreeEditor');
+        //},
+        
+        getFamilySearchURL: function() {
+            return new XWiki.Document('FamilySearch', 'PhenoTips').getURL('get', 'outputSyntax=plain');
         },
 
         _getBaseFamilyInterfaceURL: function() {
             return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
-        },
+        }
     });
     return ExternalEndpointsManager;
 });

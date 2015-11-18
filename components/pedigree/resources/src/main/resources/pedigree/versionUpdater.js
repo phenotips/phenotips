@@ -13,9 +13,9 @@ define([], function(){
                                       { "comment":    "id desanitation",
                                         "introduced": "Mar2015",
                                         "func":       "updateId"},
-                                      { "comment":    "proband link",
+                                     /* { "comment":    "proband link",
                                         "introduced": "Nov2015",
-                                        "func":       "updateNode0ProbandLink"},
+                                        "func":       "updateNode0ProbandLink"},*/
                                       { "comment":    "version info",
                                         "introduced": "Nov2015",
                                         "func":       "updateJSONVersionInfo"}
@@ -149,6 +149,7 @@ define([], function(){
         /* - assumes input is in the pre-Nov-2015 format
          * - returns null if there were no changes; returns new JSON if there was a change
          */
+        /*
         updateNode0ProbandLink: function(pedigreeJSON) {
             // check if at least one node is linked to the current patient. 
             // Iff none are, assumenode 0 is the proband and link it to the patient
@@ -218,7 +219,7 @@ define([], function(){
                 }
             }
             return JSON.stringify(data);
-        },
+        },*/
 
         updateJSONVersionInfo: function(pedigreeJSON) {
             var data = JSON.parse(pedigreeJSON);

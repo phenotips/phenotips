@@ -113,7 +113,7 @@ define([
         },
 
         _adjustWindowHeight: function() {
-            // make sure tamplates fit on the screen, but take as much space as possible
+            // make sure templates fit on the screen, but take as much space as possible
             var parentDivTotalheight = this.getParentDiv().clientHeight;
             var templateSectionHeight = this.internalDiv.clientHeight;
             var dialogueSize = parentDivTotalheight - templateSectionHeight;
