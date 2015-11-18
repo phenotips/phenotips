@@ -62,6 +62,10 @@
     <field name="visibility" type="string" indexed="true" stored="true" required="false" />
     <field name="accessLevel" type="int" indexed="true" stored="true" required="false" />
 
+    <field name="solved_genes" type="text_ws" indexed="true" stored="true" multiValued="true" />
+    <field name="candidate_genes" type="text_ws" indexed="true" stored="true" multiValued="true" />
+    <field name="rejected_genes" type="text_ws" indexed="true" stored="true" multiValued="true" />
+
     <!-- Index all fields ending in "phenotype", not storing those that start with "extended_" -->
     <!-- Solr applies the longest matching pattern, so the full "phenotype" suffix is not used -->
     <dynamicField name="*henotype" type="text_ws" indexed="true" stored="true" multiValued="true"/>
