@@ -37,11 +37,11 @@ define([
 
             //Initialize pan by dragging
             var start = function() {
+                me.background.ox = me.background.attr("x");
+                me.background.oy = me.background.attr("y");
                 if (editor.isAnyMenuVisible()) {
                     return;
                 }
-                me.background.ox = me.background.attr("x");
-                me.background.oy = me.background.attr("y");
                 //me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
                 me.background.attr({cursor: 'move'});
             };

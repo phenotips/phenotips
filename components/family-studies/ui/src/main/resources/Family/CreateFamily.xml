@@ -38,34 +38,11 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-    {{html wiki="true"}}
-      &lt;form&gt;
-
-      	{{warning}}
-            * The pedigree is shared by all members of this family.
-            * Patient records may have collaborators. Adding an existing patient to this family will grant all collaborators from that patient access to all family members' records. Also, all collaborators will be able to edit that patient's record.
-        {{/warning}}
-
-     	&lt;p class="buttonwrapper"&gt;
-     	  &lt;input type="submit" class="button" value="Confirm"&gt;
-     	&lt;p&gt;
-     	&lt;input type="hidden" value="$!{request.patient_id}" name="patient_id"&gt;
-     	&lt;input type="hidden" value="true" name="confirmation"&gt;
-      &lt;/form&gt;
-    {{/html}}
-    #if ("$!{request.confirmation}" == 'true')
-			#if ("$!{request.patient_id}" != '')
-        #set ($failureUrl = "data.${request.patient_id}")
-				#set ($family = $services.families.getOrCreateFamily($request.patient_id))
-			#else
-				#set ($family = $services.families.createFamily())
-        #set ($failureUrl = "data.WebHome")
-			#end
-	  #if ("$!{family}" != '')
-	    $response.sendRedirect($xwiki.getURL($family, 'edit'))
-	  #else
-	    $response.sendRedirect($xwiki.getURL($failureUrl, 'view'))
-	  #end
-  #end
-{{/velocity}}</content>
+#set ($family = $services.families.createFamily())
+#set ($failureUrl = "data.WebHome")
+#if ("$!{family}" != '')
+  $response.sendRedirect($xwiki.getURL($family, 'edit'))
+#else
+  $response.sendRedirect($xwiki.getURL($failureUrl, 'view'))
+#end{{/velocity}}</content>
 </xwikidoc>

@@ -207,7 +207,7 @@ public class XWikiFamilyRepository implements FamilyRepository
         Family familyForPatient = this.getFamilyForPatient(patient);
 
         if (familyForPatient != null) {
-            if (!familyForPatient.equals(family)) {
+            if (!familyForPatient.getId().equals(family.getId())) {
                 response.setStatusResponse(StatusResponse.ALREADY_HAS_FAMILY);
                 response.setMessage(patient.getId(), familyForPatient.getId());
             }

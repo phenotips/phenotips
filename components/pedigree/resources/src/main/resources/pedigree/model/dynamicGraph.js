@@ -747,7 +747,7 @@ define([
         {
             // returns all person nodes of the other gender or unknown gender (who are not already partners)
             var oppositeGender  = this.DG.GG.getOppositeGender(v);
-            var validGendersSet = (oppositeGender == 'U') ? ['M','F','U'] : [oppositeGender,'U'];
+            var validGendersSet = (oppositeGender == 'U') ? ['M','F','U','O'] : [oppositeGender,'U'];
 
             var result = this._getAllPersonsOfGenders(validGendersSet, true);
 
@@ -758,7 +758,20 @@ define([
 
             return result;
         },
-
+        
+        getPossiblePatientIDTarget: function(gender) {
+	        // check:
+	        //  1) no previous link to other patient
+	        //  2) gender matches or is unknown
+        	var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
+        	
+        	var result = this._getAllPersonsOfGenders(validGendersSet);
+        	
+        	// TODO: exclude those nodes which already have a phenotipsID link
+        	
+        	return result;
+        },
+        
         getOppositeGender: function( v )
         {
             if (!this.isPerson(v))
@@ -2417,7 +2430,7 @@ define([
             // validate input genders
             for (var i = 0; i < validGendersSet.length; i++) {
                 validGendersSet[i] = validGendersSet[i].toLowerCase();
-                if (validGendersSet[i] != 'u' && validGendersSet[i] != 'm' && validGendersSet[i] != 'f')
+                if (validGendersSet[i] != 'u' && validGendersSet[i] != 'm' && validGendersSet[i] != 'f' && validGendersSet[i] != 'o')
                     throw "Invalid gender: " + validGendersSet[i];
             }
 

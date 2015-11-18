@@ -82,36 +82,18 @@ public class FamilyScriptService implements ScriptService
      * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
      * @param patientId id of the patient to use when searching for or creating a new family
-     * @return reference to the family document. Can be {@link null}
+     * @return reference to the family document. Can be {@link null} public DocumentReference getOrCreateFamily(String
+     *         patientId) { Patient patient = this.patientRepository.getPatientById(patientId); if (patient == null) {
+     *         this.logger.error("Could not find patient with id [{}]", patientId); return null; } User currentUser =
+     *         this.userManager.getCurrentUser(); Family xwikiFamily =
+     *         this.familyRepository.getFamilyForPatient(patient); if (xwikiFamily == null) { if
+     *         (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) { return null; }
+     *         this.logger.debug("No family for patient [{}]. Creating new.", patientId); xwikiFamily =
+     *         this.familyRepository.createFamily(); xwikiFamily.addMember(patient); } else { if
+     *         (!this.authorizationService.hasAccess(currentUser, Right.VIEW, xwikiFamily.getDocumentReference()) ||
+     *         !this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) { return null; } }
+     *         return xwikiFamily.getDocumentReference(); }
      */
-    public DocumentReference getOrCreateFamily(String patientId)
-    {
-        Patient patient = this.patientRepository.getPatientById(patientId);
-        if (patient == null) {
-            this.logger.error("Could not find patient with id [{}]", patientId);
-            return null;
-        }
-
-        User currentUser = this.userManager.getCurrentUser();
-
-        Family xwikiFamily = this.familyRepository.getFamilyForPatient(patient);
-        if (xwikiFamily == null) {
-            if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
-                return null;
-            }
-
-            this.logger.debug("No family for patient [{}]. Creating new.", patientId);
-            xwikiFamily = this.familyRepository.createFamily();
-            xwikiFamily.addMember(patient);
-        } else {
-            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, xwikiFamily.getDocumentReference())
-                || !this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
-                return null;
-            }
-        }
-
-        return xwikiFamily.getDocumentReference();
-    }
 
     /**
      * Creates an empty family.
@@ -255,23 +237,6 @@ public class FamilyScriptService implements ScriptService
             return this.familyRepository.canPatientBeAddedToFamily(patientToLink, family).asVerification();
         }
 
-        // When documentId is patient's id
-        Patient patient = this.patientRepository.getPatientById(documentId);
-        if (patient == null) {
-            response.setStatusResponse(StatusResponse.INVALID_PATIENT_ID);
-            response.setMessage(documentId);
-            return response.asVerification();
-        }
-
-        family = this.familyRepository.getFamilyForPatient(patient);
-        if (family == null) {
-            // If there's no family associated with patient, it is still possible to link patientToLink
-            // if user has permissions to create a family for patient whose id is documentId
-            if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
-                response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
-                response.setMessage(patient.getId());
-            }
-        }
         return this.familyRepository.canPatientBeAddedToFamily(patientToLink, family).asVerification();
     }
 
@@ -279,7 +244,7 @@ public class FamilyScriptService implements ScriptService
      * Performs several operations on the passed in data, and eventually saves it into appropriate documents.
      *
      * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
-     *            for. If it's a proband id, the family assocaited with the patient is used. If not family is
+     *            for. If it's a proband id, the family associated with the patient is used. If not family is
      *            associated, a new one is created.
      * @param json part of the pedigree data
      * @param image svg part of the pedigree data
