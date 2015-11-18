@@ -46,12 +46,12 @@ $response.setContentType('application/json')##
   #break
 #end
 ##
-#if ("$!request.action" != "createpatient")
+#if ("$!request.action" != "createpatient" &amp;&amp; "$!request.action" != "addremovepatient" &amp;&amp; "$!request.action" != "createfamily")
   #if ("$!request.proband" == '')
     PROBAND was not specified
     #break
   #end
-  ## family member, proband or family
+## family member, proband or family
   #set ($anchorId = $request.proband)
 #end
 ##
@@ -69,8 +69,29 @@ $response.setContentType('application/json')##
   #end
 #elseif ("$!request.action" == "familystatus")
   $services.families.getFamilyInfo($anchorId)
+#elseif ("$!request.action" == "addremovepatient")
+  #set($familyId = $request.get("family_id"))
+  #set($patientId = $request.get("patient_id"))
+  ##
+  #if ("$!{request.add}" == 'true')
+    #set($response = $services.families.canPatientBeLinked($familyId, $patientId))
+    #if ("$!{response}" != '')
+      #set($json = $jsontool.parse($response))
+      #if ($json.get('validLink') != true)
+        #if ("$json.get('errorMessage')" != "")
+          $json.get('errorMessage')
+        #else
+          Unknown error has occurred
+        #end
+      #else
+        $services.families.addPatientToFamily($familyId,$patientId)
+      #end
+    #end
+  #elseif("$!{request.remove}" == true)
+    #set($discard = $services.families.removeMember($patientId))
+  #end
 #elseif ("$!request.action" == "createpatient")
-  #set ($patient = $services.patients.createNewPatient())
+  #set($patient = $services.patients.createNewPatient())
   #if ($patient)
     { "newID": "$patient.getId()" }
   #else

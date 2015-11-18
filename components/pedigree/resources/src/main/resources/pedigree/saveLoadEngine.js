@@ -106,6 +106,9 @@ define([
                                 continue;
                             }
 
+                            if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(patient)) {
+                            	continue;
+                            }
                             var nodeID = allLinkedNodes.patientToNodeMapping[patient];
 
                             // TODO: check if data is correctly cleared on import
@@ -143,48 +146,13 @@ define([
             };
 
             if (!noUndo && !editor.isReadOnlyMode()) {
+                // update to include nodes possibly added to the set of linked nodes above
                 var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-                if (allLinkedNodes.linkedPatients.length == 0) {
-                    if (editor.isFamilyPage()) {
-                        // if no nodes are linked to any patient documents, and there is only one family member
-                        // => auto-assign the only family member to the assumed proband node. This case is only
-                        //    possible when  apedigree is created form a template or imported, as any family
-                        //    pedigree on disk will always have at least one node linked to a patient
-                        //
-                        // TODO: code below assumes template proband is node with id 0 and/or imported proband is node with id 0,
-                        //       which may change in the future
-
-                        var familyMembers = editor.getCurrentFamilyPageFamilyMembers();
-
-                        // if there is only one patient we can reasonably guess that we need to link
-                        // that patient to the assumed proband node
-                        if (familyMembers.length == 1) {
-                            var probandProperties = editor.getGraph().getProperties(0);
-                            probandProperties["phenotipsId"] = familyMembers[0].id;
-                            editor.getGraph().setProperties(0, probandProperties);
-                        }
-                    }
-                    else {
-                        // similar to family page, if no node is linked to the current patient =>
-                        // link assumed proband node to current patient.
-                        var probandProperties = editor.getGraph().getProperties(editor.getGraph().getProbandId());
-                        if (!probandProperties.hasOwnProperty("phenotipsId")) {
-                            // TODO: it is currently guaranteed that a node is linked to editor.getGraph().getCurrentPatientId()
-                            //       it will be the proband. But in theory may want to check if non-proband node is linked
-                            //       to current documen, which implies some kind of data inconsistency
-                            probandProperties["phenotipsId"] = editor.getGraph().getCurrentPatientId();
-                            editor.getGraph().setProperties(editor.getGraph().getProbandId(), probandProperties);
-                        }
-                    }
-                }
-
-                // update to include nodes possibly added to the set of linked nodes above
-                allLinkedNodes = editor.getGraph().getAllPatientLinks();
-
-                var patientDataLoader = editor.getPatientDataLoader();
-
-                patientDataLoader.load(allLinkedNodes.linkedPatients, finalizeCreation);
+                // get all patients in the pedigree and those in the patient legend (those are not in pedigree but may get assigned)
+                var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
+                
+                editor.getPatientDataLoader().load(patientList, finalizeCreation);
             } else {
                 finalizeCreation(null /* do not update nodes using data loaded from PhenoTips */);
             }
@@ -269,8 +237,16 @@ define([
                 parameters: {"proband": editor.getGraph().getCurrentPatientId(), "json": jsonData, "image": svgText}
             });
         },
+        
+        load: function(response) {
+            if (response.responseJSON && response.responseJSON.hasOwnProperty("familyPage") && response.responseJSON.familyPage) {
+        		this._loadFunction();
+        	} else {
+        		document.observe("pedigree:family:assigned", this._loadFunction.bind(this));
+        	}
+        },
 
-        load: function() {
+        _loadFunction: function() {
             console.log("initiating load process");
 
             var probandID = editor.getGraph().getCurrentPatientId();
