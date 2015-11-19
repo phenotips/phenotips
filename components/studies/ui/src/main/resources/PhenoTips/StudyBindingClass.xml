@@ -93,7 +93,6 @@
 &lt;div class="form-template-option"&gt;
 &lt;select&gt;
 &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
-&lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
   #set ($s = $xwiki.getDocument($sName))
@@ -107,7 +106,6 @@
     #end
     &lt;div class="form-template-option"&gt;
       &lt;option name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference))}" /&gt;$escapetool.xml($configTitle)&lt;/option&gt;
-    &lt;p class="xHint"&gt;$!{escapetool.xml($s.content)}&lt;/p&gt;
     &lt;/div&gt;
   #end
 #end
