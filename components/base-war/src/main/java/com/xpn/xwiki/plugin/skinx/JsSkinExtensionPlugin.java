@@ -87,7 +87,8 @@ public class JsSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
     @Override
     public String getLink(String documentName, XWikiContext context)
     {
-        StringBuilder result = new StringBuilder("<script type='text/javascript' src='");
+        StringBuilder result = new StringBuilder(128);
+        result.append("<script type='text/javascript' src='");
         result.append(context.getWiki().getURL(documentName, PLUGIN_NAME,
             "language=" + sanitize(context.getLanguage()) + "&amp;hash=" + getHash(documentName, context)
                 + parametersAsQueryString(documentName, context), context));
