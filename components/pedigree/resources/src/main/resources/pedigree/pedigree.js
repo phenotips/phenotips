@@ -126,7 +126,7 @@ var PedigreeEditor = Class.create({
         });
 
         var onLeavePageFunc = function() {
-            if (editor.getActionStack().hasUnsavedChanges()) {
+            if (!editor.isReadOnlyMode() && editor.getActionStack().hasUnsavedChanges()) {
                 return "All changes will be lost when navigating away from this page.";
             }
         };

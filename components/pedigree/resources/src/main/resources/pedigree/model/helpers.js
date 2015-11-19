@@ -7,8 +7,8 @@
 // Loop types are picked based on http://jsperf.com/loops/128
 
 
-// To allow debug code to run in IE7 && IE8
-if (!window.console) { var console = {log: function() {}}; }
+// To allow debug code to run in IE7 && IE8 && IE9
+if (!window.console) { window.console = {log: function() {}}; }
 
 // For IE7 && IE8 again
 if(typeof String.prototype.trim !== 'function') {
