@@ -114,7 +114,7 @@ public class DefaultRecordSection implements RecordSection
         StringBuilder result = new StringBuilder(getName());
         result.append(" [");
         result.append(StringUtils.join(getEnabledElements(), ", "));
-        result.append("]");
+        result.append(']');
         return result.toString();
     }
 

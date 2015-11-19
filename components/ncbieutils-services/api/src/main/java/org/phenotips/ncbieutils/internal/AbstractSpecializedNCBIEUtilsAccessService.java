@@ -393,7 +393,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService implements NCBI
         if (list.size() > 0) {
             StringBuilder listBuilder = new StringBuilder();
             for (String item : list) {
-                listBuilder.append(",").append(item);
+                listBuilder.append(',').append(item);
             }
             result = listBuilder.substring(1);
         }

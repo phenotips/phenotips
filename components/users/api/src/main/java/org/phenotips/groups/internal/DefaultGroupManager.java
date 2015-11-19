@@ -97,11 +97,11 @@ public class DefaultGroupManager implements GroupManager
                 StringBuilder qs = new StringBuilder("from doc.object(XWiki.XWikiGroups) grp where grp.member in (");
                 for (int i = 0; i < nestedGroups.size(); ++i) {
                     if (i > 0) {
-                        qs.append(",");
+                        qs.append(',');
                     }
-                    qs.append("?").append(i + 1);
+                    qs.append('?').append(i + 1);
                 }
-                qs.append(")");
+                qs.append(')');
                 q = this.qm.createQuery(qs.toString(), Query.XWQL);
                 for (int i = 0; i < nestedGroups.size(); ++i) {
                     String formalGroupName =
