@@ -40,66 +40,66 @@
   <content>{{velocity}}{{html clean=false}}
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
-#if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
-  &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
-    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="hidden" name="doCreate" value="1" /&gt;
-    ##
-    #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
-      ## Is there more than one sheet option?
-      ## Check out all the groups this user is part of
-      #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
-      #if ($studiesVisibilityPreference == 'unrestricted')
-        #set ($studyClassName = 'PhenoTips.StudyClass')
-        #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
-        #set ($query = $services.query.xwql("from doc.object(${studyClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $studyTemplateName))
-        #set ($studyDocs = $xwiki.wrapDocs($query.execute()))
-        #set ($studies = $collectionstool.sortedSet)
-        #foreach ($study in $studyDocs)
-          #set ($discard = $studies.add($services.model.serialize($study.documentReference, 'default')))
-        #end
-      #else
-        #set ($toProcess = $collectionstool.queue)
-        #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-        #set ($groups = [])
-        #set ($studies = $collectionstool.sortedSet)
-        #foreach ($iteration in [0..1000])
-          #if ($toProcess.empty)
-            #break
-          #end
-          #set ($item = $toProcess.poll())
-          #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-            #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-            #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-              #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+$xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
+$xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
+#if($hasCreatePage)
+   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
+      &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+      &lt;input type="hidden" name="doCreate" value="1" /&gt;
+      ##
+      $xwiki.ssx.use('PhenoTips.ProjectBindingClass')##
+      $xwiki.jsx.use('PhenoTips.ProjectBindingClass')##
+      &lt;input type="hidden" id="numberOfProjects" value="$services.projects.getAllProjectsAsContributor().size()" /&gt;
+      ##
+      #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
+         ## Is there more than one sheet option?
+         ## Check out all the groups this user is part of
+         #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
+         #if ($studiesVisibilityPreference == 'unrestricted')
+            #set ($studyClassName = 'PhenoTips.StudyClass')
+            #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
+            #set ($query = $services.query.xwql("from doc.object(${studyClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $studyTemplateName))
+            #set ($studyDocs = $xwiki.wrapDocs($query.execute()))
+            #set ($studies = $collectionstool.sortedSet)
+            #foreach ($study in $studyDocs)
+               #set ($discard = $studies.add($services.model.serialize($study.documentReference, 'default')))
             #end
-            #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
-              #set ($discard = $toProcess.add($group.documentReference.toString()))
-              #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
-              #if ($groupObj.getProperty('studies').value.isEmpty() == false)
-                #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
-              #end
+         #else
+            #set ($toProcess = $collectionstool.queue)
+            #set ($discard = $toProcess.add($xcontext.userReference.toString()))
+            #set ($groups = [])
+            #set ($studies = $collectionstool.sortedSet)
+            #foreach ($iteration in [0..1000])
+               #if ($toProcess.empty)
+                  #break
+               #end
+               #set ($item = $toProcess.poll())
+               #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
+                  #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+                  #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+                     #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+                  #end
+                  #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
+                     #set ($discard = $toProcess.add($group.documentReference.toString()))
+                     #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
+                     #if ($groupObj.getProperty('studies').value.isEmpty() == false)
+                        #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
+                     #end
+                  #end
+               #end
             #end
-          #end
-        #end
+         #end
+         $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
+         $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
+         &lt;input type="hidden" id="numberOfTemplates" value="$studies.size()" /&gt;
       #end
-      #if ($studies.size() &gt; 0)
-        $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
-        $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
-        &lt;input type="hidden" name="studiesSheet" value="PhenoTips.StudyBindingSheet" /&gt;
+      ##
+      ## Extensions displayed before the content
+      #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
+        &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
       #end
-    #end
-    ##
-    ## Project choosing section
-    $xwiki.ssx.use('PhenoTips.ProjectBindingClass')##
-    &lt;input type="hidden" name="projectsSheet" value="PhenoTips.ProjectBindingSheet" /&gt;
-    ##
-    ## Extensions displayed before the content
-    #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
-      &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
-    #end
-    &lt;label for="create-patient-record"&gt;&lt;input type="submit" id="create-patient-record" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
-  &lt;/div&gt;&lt;/form&gt;
+      &lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;&lt;input type="submit" id="create-patient-record" title="$services.localization.render('phenotips.globalHeader.createPatient')" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
+   &lt;/div&gt;&lt;/form&gt;
 #end
 {{/html}}{{/velocity}}</content>
   <object>
@@ -182,83 +182,98 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:loaded", function(event) {
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.SelectProjectAndTemplate = Class.create({
 
-   var newPatientForm = $('patient-creation-form');
-   var studiesSectionInput = newPatientForm.down('input[name="studiesSheet"]');
-   var projectsSectionInput = newPatientForm.down('input[name="projectsSheet"]');
-   if (!newPatientForm || (!studiesSectionInput &amp;&amp; !projectsSectionInput)) {
-     return;
-   }
+    initialize : function ()
+    {
+       _this = this;
 
-   var templateSelectionForm = new Element('form', {'action' : newPatientForm.action, 'class' : 'xform'});
-   var formDataWrapper = new Element('div');
-   templateSelectionForm.insert(formDataWrapper);
+       _this.newPatientForm = $('patient-creation-form');
+       if (!_this.newPatientForm) {
+          return;
+       }
 
-   if (projectsSectionInput) {
-      if (studiesSectionInput) {
-         var hr = new Element('hr');
-         formDataWrapper.insert(hr);
-      }
-      var projectsSection = new Element('div');
-      formDataWrapper.insert(projectsSection);
-   }
-   if (studiesSectionInput) {
-      var studiesSection = new Element('div');
-      formDataWrapper.insert(studiesSection);
-   }
+       _this.numberOfProjects = parseInt($('numberOfProjects').value);
+       _this.numberOfTemplates = parseInt($('numberOfTemplates').value);
+       if (_this.numberOfProjects == 0 &amp;&amp; _this.numberOfTemplates &lt; 2) {
+          // Nothing to choose
+          return;
+       }
 
-   newPatientForm.select('input[type="hidden"]').each(function(item) {
-     if (item.name != 'sheet') {
-         formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
-     }
-   });
-   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.chooseProjectStudy.createButton')", 'class' : 'button'});
-   formDataWrapper.insert(submitButton);
-   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.chooseProjectStudy.cancelButton')", 'class' : 'button secondary'});
-   formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.chooseProjectStudy.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
-   cancelButton.observe('click', function(event) {
-     modalBox.closeDialog();
-   });
+       _this.newPatientForm.observe('submit', function (event) {
+          event.stop();
+          _this._createSelectionPopup();
+       });
+    },
 
-   var onAjaxResponse = function(section) {
-      return {
-        onCreate : function() {
-          section.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
-          modalBox.showDialog();
-        },
-        onSuccess : function(response) {
-           section.update(response.responseText);
-        },
-        onFailure : function(response) {
-          var failureReason = response.responseText || response.statusText;
-          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-             failureReason = "$services.localization.render('phenotips.chooseProjectStudy.failure.noResponse')";
+    _createSection: function(sectionId, documentName)
+    {
+       var section = new Element('div', {id : sectionId});
+       var docRef = XWiki.resource.get(documentName, XWiki.EntityType.DOCUMENT);
+       new Ajax.Request(new XWiki.Document(docRef.name, docRef.space).getURL('get'), {
+          onCreate : function() {
+             section.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
+          },
+          onSuccess : function(response) {
+             section.update(response.responseText);
+          },
+          onFailure : function(response) {
+             var failureReason = response.responseText || response.statusText;
+             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                failureReason = "$services.localization.render('phenotips.chooseProjectStudy.failure.noResponse')";
+             }
+             var failureMessage = "$services.localization.render('phenotips.chooseProjectStudy.failureMessage')";
+             _this._messages.update(new Element('div', {'class' : 'errormessage'}).update(failureMessage + ' ' + failureReason));
+          },
+          on0 : function (response) {
+             response.request.options.onFailure(response);
           }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.chooseProjectStudy.failureMessage')" + ' ' + failureReason));
-        },
-        on0 : function (response) {
-          response.request.options.onFailure(response);
-        }
-      };
-   };
+       });
+       return section;
+    },
 
-   newPatientForm.observe('submit', function (event) {
-     event.stop();
+    _createSelectionPopup: function()
+    {
+       var selectionForm = new Element('form', {'action' : _this.newPatientForm.action, 'class' : 'xform'});
+       var formDataWrapper = new Element('div');
+       selectionForm.insert(formDataWrapper);
 
-     var studiesDocRef, projectsDocRef;
-     if (studiesSectionInput) {
-        var studiesDocRef = XWiki.resource.get(studiesSectionInput.value, XWiki.EntityType.DOCUMENT);
-        new Ajax.Request(new XWiki.Document(studiesDocRef.name, studiesDocRef.space).getURL('get'), onAjaxResponse(studiesSection));
-     }
+       if (_this.numberOfProjects &gt; 0) {
+          formDataWrapper.insert(_this._createSection('projectsSection', 'PhenoTips.ProjectBindingSheet'));
+       }
 
-     if (projectsSectionInput) {
-        var projectsDocRef = XWiki.resource.get(projectsSectionInput.value, XWiki.EntityType.DOCUMENT);
-        new Ajax.Request(new XWiki.Document(projectsDocRef.name, projectsDocRef.space).getURL('get'), onAjaxResponse(projectsSection));
-     }
+       if (_this.numberOfTemplates &gt; 0) {
+          formDataWrapper.insert(_this._createSection('templatesSection', 'PhenoTips.StudyBindingSheet'));
+       }
 
-   });
+       _this.newPatientForm.select('input[type="hidden"]').each(function(item) {
+          formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
+       });
+
+       var submitText = "$services.localization.render('phenotips.chooseProjectStudy.createButton')"
+       var submitButton = new Element('input', {type : 'submit', value : submitText, 'class' : 'button'});
+       formDataWrapper.insert(submitButton);
+       var cancelText = "$services.localization.render('phenotips.chooseProjectStudy.cancelButton')";
+       var cancelButton = new Element('input', {type : 'button', value : cancelText, 'class' : 'button secondary'});
+       formDataWrapper.insert(' ').insert(cancelButton);
+       var modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
+       cancelButton.observe('click', function(event) {
+          modalBox.closeDialog();
+       });
+       modalBox.showDialog();
+
+       document.fire("xwiki:dom:updated");
+
+    }
+  });
+  return PhenoTips;
+
+}(PhenoTips || {}));
+
+document.observe("xwiki:dom:loaded", function() {
+  new PhenoTips.widgets.SelectProjectAndTemplate(document.documentElement.down('meta[name="page"]').content);
 });</code>
     </property>
     <property>
