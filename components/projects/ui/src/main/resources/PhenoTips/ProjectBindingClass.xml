@@ -194,11 +194,11 @@
     </property>
     <property>
       <code>document.observe("xwiki:dom:updated", function(event) {
-   console.log("meow");
-
-   var a = $('input:checkbox[id^="PhenoTips.ProjectBindingClass_"]');
-   $('input:checkbox[id^="PhenoTips.ProjectBindingClass_"]').map(function(item) {
-      console.log(item);
+console.log($('projectsSection').select(':input'));
+   $('projectsSection').select(':input').map(function(item) {
+      item.observe('click', function() {
+         console.log(item);
+      });
    });
 });</code>
     </property>
