@@ -82,7 +82,8 @@ public class JsSkinFileExtensionPlugin extends AbstractSkinExtensionPlugin
         boolean forceSkinAction = BooleanUtils.toBoolean((Boolean) getParameter("forceSkinAction", filename, context));
         StringBuilder result = new StringBuilder("<script type='text/javascript' src='");
         result.append(context.getWiki().getSkinFile(filename, forceSkinAction, context));
-        result.append("?v=" + sanitize(Utils.getComponent(DistributionManager.class)
+        result.append("?v=");
+        result.append(sanitize(Utils.getComponent(DistributionManager.class)
             .getDistributionExtension().getId().getVersion().getValue()));
         if (forceSkinAction) {
             result.append(parametersAsQueryString(filename, context));

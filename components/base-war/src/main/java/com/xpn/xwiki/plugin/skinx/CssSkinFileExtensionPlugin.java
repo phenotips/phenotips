@@ -73,7 +73,8 @@ public class CssSkinFileExtensionPlugin extends AbstractSkinExtensionPlugin
         boolean forceSkinAction = (Boolean) getParametersForResource(filename, context).get("forceSkinAction");
         StringBuilder result = new StringBuilder("<link rel='stylesheet' type='text/css' href='");
         result.append(context.getWiki().getSkinFile(filename, forceSkinAction, context));
-        result.append("?v=" + sanitize(Utils.getComponent(DistributionManager.class)
+        result.append("?v=");
+        result.append(sanitize(Utils.getComponent(DistributionManager.class)
             .getDistributionExtension().getId().getVersion().getValue()));
         if (forceSkinAction) {
             result.append(parametersAsQueryString(filename, context));
