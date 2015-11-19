@@ -394,7 +394,7 @@
     #set ($pClass = 'draw')
     #set ($pContent = $pAction)
   #end
-(% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div class="pedigree-box ${pClass}" title="${pAction}" #if($canEditP) id="pedigree-trigger" #end&gt;${pContent}&lt;/div&gt;{{/html}})))
+(% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div class="pedigree-box ${pClass}" title="${pAction}" id="pedigree-trigger"&gt;${pContent}&lt;/div&gt;{{/html}})))
 #end
 {{/velocity}}</content>
     </property>
