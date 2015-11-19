@@ -190,6 +190,12 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
     {
        _this = this;
 
+       projectSectionId = 'projectsSection';
+       templatesSectionId = 'templatesSection';
+       sectionCreated = {
+          projectSectionId : false,
+          templatesSectionId : false};
+
        _this.newPatientForm = $('patient-creation-form');
        if (!_this.newPatientForm) {
           return;
@@ -208,6 +214,10 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        });
     },
 
+    _areAllSectionsCreated : function() {
+       return sectionCreated[projectSectionId] &amp;&amp; sectionCreated[templatesSectionId];
+    },
+
     _createSection: function(sectionId, documentName)
     {
        var section = new Element('div', {id : sectionId});
@@ -218,6 +228,10 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           },
           onSuccess : function(response) {
              section.update(response.responseText);
+             sectionCreated[sectionId] = true;
+             if (_this._areAllSectionsCreated()) {
+                document.fire("xwiki:dom:updated");
+             }
           },
           onFailure : function(response) {
              var failureReason = response.responseText || response.statusText;
@@ -241,11 +255,11 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        selectionForm.insert(formDataWrapper);
 
        if (_this.numberOfProjects &gt; 0) {
-          formDataWrapper.insert(_this._createSection('projectsSection', 'PhenoTips.ProjectBindingSheet'));
+          formDataWrapper.insert(_this._createSection(projectSectionId, 'PhenoTips.ProjectBindingSheet'));
        }
 
        if (_this.numberOfTemplates &gt; 0) {
-          formDataWrapper.insert(_this._createSection('templatesSection', 'PhenoTips.StudyBindingSheet'));
+          formDataWrapper.insert(_this._createSection(templatesSectionId, 'PhenoTips.StudyBindingSheet'));
        }
 
        _this.newPatientForm.select('input[type="hidden"]').each(function(item) {
@@ -263,9 +277,6 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           modalBox.closeDialog();
        });
        modalBox.showDialog();
-
-       document.fire("xwiki:dom:updated");
-
     }
   });
   return PhenoTips;
