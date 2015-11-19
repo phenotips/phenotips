@@ -129,7 +129,8 @@ define([
             bbox.height = Math.ceil(_bbox.height) + 4;
             //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
 
-            var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
+
+            var svgText = image.innerHTML.replace(/xmlns(:xlink)?=".*?"/g, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
                           .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
 
             if (anonimize) {
@@ -139,17 +140,17 @@ define([
             // set display:block
             svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
             // remove invisible elements to slim down svg
-            svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+display: ?none;[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove elements with opacity==0 to slim down svg
-            svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+[" ]opacity: ?0;[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove partnership clickable circles
-            svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<circle [^<>]+pedigree-partnership-circle[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove titles of the handles
-            svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<a [^<>]*xlink:title=[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove hoverboxes
-            svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+pedigree-hoverbox[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove node shadows
-            svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+(><\/\w+|\/)>/g, "");
+            svgText = svgText.replace(/<[^<>]+pedigree-node-shadow[^<>]+([^/]><\/\w+|\/)>/g, "");
             // remove gradient definitions (only used for handles),
             // or they confuse the browser after used and discarded for print preview
             svgText = svgText.replace(/<linearGradient.*<\/linearGradient>/g, "");
