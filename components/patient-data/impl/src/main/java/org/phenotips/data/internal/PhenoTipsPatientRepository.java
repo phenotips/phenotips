@@ -198,7 +198,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
                     + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
                 .setLimit(1);
         List<Long> crtMaxIDList = q.execute();
-        if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
+        if (!crtMaxIDList.isEmpty() && crtMaxIDList.get(0) != null) {
             crtMaxID = crtMaxIDList.get(0);
         }
         crtMaxID = Math.max(crtMaxID, 0);

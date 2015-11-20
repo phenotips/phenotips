@@ -390,7 +390,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService implements NCBI
     private static String getSerializedList(List<String> list)
     {
         String result = "";
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             StringBuilder listBuilder = new StringBuilder();
             for (String item : list) {
                 listBuilder.append(',').append(item);

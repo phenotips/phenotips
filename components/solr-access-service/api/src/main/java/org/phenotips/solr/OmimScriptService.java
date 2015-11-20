@@ -152,7 +152,7 @@ public class OmimScriptService extends AbstractSolrScriptService
     {
         Map<String, String> params = new HashMap<String, String>();
         String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
-        if (nphenotypes.size() > 0) {
+        if (!nphenotypes.isEmpty()) {
             q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
         }
         q += " -nameSort:\\** -nameSort:\\+* -nameSort:\\^*";
