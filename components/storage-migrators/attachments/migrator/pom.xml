@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>storage-migrators-attachments</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-alpha-1</version>
   </parent>
   <artifactId>storage-migrators-attachments-migrator</artifactId>
   <name>PhenoTips - Storage migrators - Attachments - Generic migrator</name>

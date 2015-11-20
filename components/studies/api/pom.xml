@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>studies</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-alpha-1</version>
   </parent>
   <artifactId>phenotips-studies-api</artifactId>
   <name>PhenoTips - Studies - Java APIs</name>

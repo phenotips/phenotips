@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-components</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-alpha-1</version>
   </parent>
   <artifactId>phenotips-default-settings</artifactId>
   <name>PhenoTips - Default administrative account and default rights</name>

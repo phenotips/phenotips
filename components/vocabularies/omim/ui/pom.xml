@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-omim</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-alpha-1</version>
   </parent>
   <artifactId>vocabulary-omim-ui</artifactId>
   <name>PhenoTips - Vocabularies - Online Mendelian Inheritance in Man integration - Documents providing services</name>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>specificity-meter</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-alpha-1</version>
   </parent>
   <artifactId>specificity-meter-api</artifactId>
   <name>PhenoTips - Specificity Meter - Java APIs</name>
