@@ -15,7 +15,8 @@ define([
         "pedigree/view/ageCalc",
         "pedigree/view/childlessBehaviorVisuals",
         "pedigree/view/graphicHelpers",
-        "pedigree/view/personHoverbox"
+        "pedigree/view/personHoverbox",
+        "pedigree/view/readonlyHoverbox"
     ], function(
         PedigreeEditorParameters,
         Helpers,
@@ -23,7 +24,8 @@ define([
         AgeCalc,
         ChildlessBehaviorVisuals,
         GraphicHelpers,
-        PersonHoverbox
+        PersonHoverbox,
+        ReadOnlyHoverbox
     ){
     var PersonVisuals = Class.create(AbstractPersonVisuals, {
 

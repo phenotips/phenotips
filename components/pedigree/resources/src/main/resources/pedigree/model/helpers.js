@@ -9,12 +9,9 @@
 define ([], function(){
 
     var Helpers = {};
-    
-    // Fixes bug introduced after utilizing requirejs where the global console variable becomes undefined.
-    if (!console) { var console = window.console; }
-    
-    // To allow debug code to run in IE7 && IE8
-    if (!window.console) { var console = {log: function() {}}; }
+
+    // To allow debug code to run in IE7 && IE8 && IE9
+    if (!window.console) { window.console = {log: function() {}}; }
 
     // For IE7 && IE8 again
     if(typeof String.prototype.trim !== 'function') {

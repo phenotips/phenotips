@@ -717,22 +717,24 @@ define([
 
             //timer.printSinceLast("=== highlight: ");
 
-            // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
-            for (var nodeID in this._nodeMap) {
-                if (this._nodeMap.hasOwnProperty(nodeID)) {
-                    if (editor.getGraph().isPerson(nodeID) && !this.getNode(nodeID).getGraphics().getHoverBox().isMenuToggled()) {
-                        this.getNode(nodeID).getGraphics().getHoverBox().removeButtons();
-                        this.getNode(nodeID).getGraphics().getHoverBox().removeHandles();
+            if (!editor.isReadOnlyMode()) {
+                // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
+                for (var nodeID in this._nodeMap) {
+                    if (this._nodeMap.hasOwnProperty(nodeID)) {
+                        if (editor.getGraph().isPerson(nodeID) && !this.getNode(nodeID).getGraphics().getHoverBox().isMenuToggled()) {
+                            this.getNode(nodeID).getGraphics().getHoverBox().removeButtons();
+                            this.getNode(nodeID).getGraphics().getHoverBox().removeHandles();
+                        }
                     }
                 }
+
+                var checkNumberingEvent = { "memo": { "check": true, "noUndoRedo": true } };
+                editor.getController().handleRenumber(checkNumberingEvent);
+
+                // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
+                timer.printSinceLast("=== highlight & update handles runtime: ");
             }
 
-            var checkNumberingEvent = { "memo": { "check": true, "noUndoRedo": true } };
-            editor.getController().handleRenumber(checkNumberingEvent);
-
-            // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
-
-            timer.printSinceLast("=== highlight & update handles runtime: ");
             timer2.printSinceLast("=== Total apply changes runtime: ");
 
             } catch(err) {

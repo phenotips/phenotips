@@ -175,7 +175,7 @@ define([
             });
 
             var onLeavePageFunc = function() {
-                if (editor.getUndoRedoManager().hasUnsavedChanges()) {
+                if (!editor.isReadOnlyMode() && editor.getUndoRedoManager().hasUnsavedChanges()) {
                     return "All changes will be lost when navigating away from this page.";
                 }
             };
