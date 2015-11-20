@@ -159,7 +159,7 @@ public class OmimSourceParser
                 fieldValue.setLength(0);
                 fieldName = line.substring(FIELD_MARKER.length());
             } else {
-                fieldValue.append(line.trim()).append(" ");
+                fieldValue.append(line.trim()).append(' ');
             }
         }
 

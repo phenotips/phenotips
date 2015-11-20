@@ -360,7 +360,7 @@ public class ConversionHelpers
             foundBreakIndex = chunkEndIndex >= 0;
             chunkEndIndex += period.length();
         } else {
-            chunkEndIndex = chunkTail.lastIndexOf(" ");
+            chunkEndIndex = chunkTail.lastIndexOf(' ');
             foundBreakIndex = chunkEndIndex >= 0;
             chunkEndIndex += 1;
         }

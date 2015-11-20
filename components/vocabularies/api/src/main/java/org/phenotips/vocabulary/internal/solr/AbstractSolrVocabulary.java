@@ -280,7 +280,7 @@ public abstract class AbstractSolrVocabulary implements Vocabulary, Initializabl
             if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
                 continue;
             }
-            query.append("+");
+            query.append('+');
             query.append(ClientUtils.escapeQueryChars(field.getKey()));
             query.append(":(");
             if (Collection.class.isInstance(field.getValue())) {

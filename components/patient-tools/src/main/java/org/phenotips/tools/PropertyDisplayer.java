@@ -134,7 +134,7 @@ public class PropertyDisplayer
 
     public String display()
     {
-        StringBuilder str = new StringBuilder();
+        StringBuilder str = new StringBuilder(128);
         for (FormSection section : this.sections) {
             str.append(section.display(this.data.getMode(), this.fieldNames));
         }
