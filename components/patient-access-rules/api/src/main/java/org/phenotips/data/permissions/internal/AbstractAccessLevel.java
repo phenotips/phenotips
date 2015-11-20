@@ -87,7 +87,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
     @Override
     public int compareTo(AccessLevel o)
     {
-        if (o != null && o instanceof AbstractAccessLevel) {
+        if (o instanceof AbstractAccessLevel) {
             return this.permissiveness - ((AbstractAccessLevel) o).permissiveness;
         }
         return Integer.MIN_VALUE;
@@ -96,7 +96,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
     @Override
     public boolean equals(Object other)
     {
-        if (other == null || !(other instanceof AccessLevel)) {
+        if (!(other instanceof AccessLevel)) {
             return false;
         }
         AccessLevel otherLevel = (AccessLevel) other;

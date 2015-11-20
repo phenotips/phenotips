@@ -82,7 +82,7 @@ public class DefaultCollaborator implements Collaborator
     @Override
     public boolean equals(Object other)
     {
-        if (other == null || !(other instanceof Collaborator)) {
+        if (!(other instanceof Collaborator)) {
             return false;
         }
         Collaborator otherCollaborator = (Collaborator) other;
