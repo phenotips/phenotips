@@ -712,16 +712,19 @@ define([
                 // create once and clone for each cancer - it takes too much time to create all elements anew each time
                 // (Note1: for performace reasons also using raw HTML for options)
                 // (Note2: using span around select because IE9 does not allow setting innerHTML of <select>-s)
+                var maxAge = 100;
+                var minAge = 1;
+                var majorStepSize = 10;
                 var spanAgeProto = new Element('span');
                 var optionsHTML = '<select name="' + data.name + '" class="cancer_age_select field-no-user-select"><option value=""></option>';
-                var maxAge = 100;
-                for (var age = 1; age <= maxAge; age++) {
-                    if (age % 10 == 0 || age == 1) {
-                        optionsHTML += '<option value="before_' + age + '">before age ' + age + '</option>';
+                optionsHTML += '<option value="before_' + minAge + '">before ' + minAge + '</option>';
+                for (var age = minAge; age <= maxAge; age++) {
+                    if (age % majorStepSize == 0) {
+                        optionsHTML += '<option value="before_' + age + '">' + (age - majorStepSize + 1) + '-' + age + '</option>';
                     }
-                    optionsHTML += '<option value="' + age + '">age ' + age + '</option>';
+                    optionsHTML += '<option value="' + age + '">' + age + '</option>';
                 }
-                optionsHTML += '<option value="after_' + maxAge + '">after age ' + maxAge + '</option></select>';
+                optionsHTML += '<option value="after_' + maxAge + '">after ' + maxAge + '</option></select>';
                 spanAgeProto.innerHTML = optionsHTML;
 
                 var spanSelectProto = new Element('span');
