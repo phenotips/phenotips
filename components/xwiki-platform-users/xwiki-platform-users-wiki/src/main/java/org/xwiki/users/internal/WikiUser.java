@@ -94,10 +94,11 @@ public class WikiUser extends AbstractUser
         if (this.profileReference == null) {
             return "";
         }
-        String result = this.bridge.getProperty(this.profileReference, this.classReference, "first_name") + "";
-        result = StringUtils.trim(result) + " ";
-        result +=
-            StringUtils.trim("" + this.bridge.getProperty(this.profileReference, this.classReference, "last_name"));
+        String firstName =
+            String.valueOf(this.bridge.getProperty(this.profileReference, this.classReference, "first_name"));
+        String lastName =
+            String.valueOf(this.bridge.getProperty(this.profileReference, this.classReference, "last_name"));
+        String result = StringUtils.trim(firstName) + " " + StringUtils.trim(lastName);
         if (StringUtils.isBlank(result)) {
             result = getUsername();
         }

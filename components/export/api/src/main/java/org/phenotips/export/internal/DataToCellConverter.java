@@ -207,7 +207,7 @@ public class DataToCellConverter
             if (present.contains("meta") || present.contains("meta_code")) {
                 int mX = x;
                 Collection<? extends FeatureMetadatum> featureMetadatum = feature.getMetadata().values();
-                Boolean metaPresent = featureMetadatum.size() > 0;
+                Boolean metaPresent = !featureMetadatum.isEmpty();
                 int offset = 0;
                 for (FeatureMetadatum meta : featureMetadatum) {
                     offset = 0;
@@ -244,7 +244,7 @@ public class DataToCellConverter
             y++;
         }
         /* Creating empties */
-        if (sortedFeatures.size() == 0) {
+        if (sortedFeatures.isEmpty()) {
             // offset is included to account for the presence of both "positive" and "negative" in "present"
             int offset = bothTypes ? 1 : 0;
             Integer emptyX = 0;
@@ -392,7 +392,7 @@ public class DataToCellConverter
         if (enabledFields.remove("external_id")) {
             present.add("external_id");
         }
-        if (present.size() == 0) {
+        if (present.isEmpty()) {
             return null;
         }
         this.enabledHeaderIdsBySection.put(sectionName, present);
@@ -1035,7 +1035,7 @@ public class DataToCellConverter
             y++;
         }
         /* Creating empties */
-        if (sortedFeatures.size() == 0) {
+        if (sortedFeatures.isEmpty()) {
             for (int i = 0; i < present.size(); ++i) {
                 DataCell cell = new DataCell("", i, 0);
                 section.addCell(cell);
@@ -1117,7 +1117,7 @@ public class DataToCellConverter
             y++;
         }
         /* If there is no data, but there are headers present, create empty cells */
-        if (disorders.size() == 0) {
+        if (disorders.isEmpty()) {
             Integer x = 0;
             if (present.contains("disorder")) {
                 DataCell cell = new DataCell("", x, y);

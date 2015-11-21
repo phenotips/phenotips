@@ -71,7 +71,7 @@ public abstract class AbstractVisibility implements Visibility
     @Override
     public int compareTo(Visibility o)
     {
-        if (o != null && o instanceof AbstractVisibility) {
+        if (o instanceof AbstractVisibility) {
             return this.permissiveness - ((AbstractVisibility) o).permissiveness;
         }
         return Integer.MIN_VALUE;
@@ -80,7 +80,7 @@ public abstract class AbstractVisibility implements Visibility
     @Override
     public boolean equals(Object other)
     {
-        if (other == null || !(other instanceof Visibility)) {
+        if (!(other instanceof Visibility)) {
             return false;
         }
         Visibility otherVisibility = (Visibility) other;

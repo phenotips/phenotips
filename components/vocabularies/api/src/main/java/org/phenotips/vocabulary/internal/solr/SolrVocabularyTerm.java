@@ -269,7 +269,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof VocabularyTerm)) {
+        if (!(obj instanceof VocabularyTerm)) {
             return false;
         }
         return StringUtils.equals(getId(), ((VocabularyTerm) obj).getId());
