@@ -58,7 +58,7 @@
 #set ($projects = $services.projects.getAllProjectsAsContributor())
 #foreach ($p in $projects)
     &lt;div&gt;
-    &lt;input type="checkbox" id="${prefix}${p.getName()}" /&gt;$p.getName()
+    &lt;input type="checkbox" id="${prefix}${p.getName()}" name="${p.getName()}" /&gt;$p.getName()
     &lt;/div&gt;
 #end
 ##
@@ -194,13 +194,44 @@
     </property>
     <property>
       <code>document.observe("xwiki:dom:updated", function(event) {
-console.log($('projectsSection').select(':input'));
-   $('projectsSection').select(':input').map(function(item) {
-      item.observe('click', function() {
-         console.log(item);
+   new PhenoTips.widgets.SelectProject();
+});
+
+var PhenoTips = (function (PhenoTips) {
+   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+   widgets.SelectProject = Class.create({
+
+   initialize : function ()
+   {
+      _this = this;
+      _this._checkboxes = $('projectsSection').select(':input');
+      _this._registerListeners();
+   },
+
+   _registerListeners : function(sectionId, documentName)
+   {
+      _this._checkboxes.map(function(item) {
+         item.observe('click', function() {
+             _this._projectSelected();
+         });
       });
+   },
+
+   _projectSelected : function() {
+      var selected = "";
+      _this._checkboxes.map(function(item) {
+         if (item.checked) {
+            if (selected.length&gt;0) {
+               selected += ",";
+            }
+            selected += item.name;
+         }
+      });      
+      document.fire("xwiki:dom:update_studies", {'selected' : selected});
+   }
    });
-});</code>
+   return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name/>
