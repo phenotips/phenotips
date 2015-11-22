@@ -36,7 +36,7 @@ import org.mockito.internal.matchers.CapturingMatcher;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PacientSpecificityScriptServiceTest
+public class PatientSpecificityScriptServiceTest
 {
     @Rule
     public final MockitoComponentMockingRule<PatientSpecificityScriptService> mocker =
