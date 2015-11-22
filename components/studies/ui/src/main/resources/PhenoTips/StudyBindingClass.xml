@@ -382,59 +382,94 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:loaded", function(event) {
-   var studyAssignmentTool = $('study-assignment-config');
-   if (!studyAssignmentTool) {
-     return;
+      <code>document.observe("xwiki:dom:update_studies", function(event) {
+   selected = "";
+   if (event.memo) {
+      selected = event.memo.selected;
    }
-   var templateSelectionContainer = new Element('div');
-   var templateSelectionForm = new Element('form', {'action' : studyAssignmentTool.down('input').value, 'class' : 'xform', 'method': 'post'});
-   var formDataWrapper = new Element('div');
-   templateSelectionForm.insert(formDataWrapper);
-   formDataWrapper.insert(templateSelectionContainer);
-   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.saveButton')", 'class' : 'button'});
-   formDataWrapper.insert(submitButton);
-   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
-   formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
-   cancelButton.observe('click', function(event) {
-     modalBox.closeDialog();
-   });
-   submitButton.observe('click', function(event) {
-     if (studyAssignmentTool.hasClassName('edit')) {
-       //if in edit mode, save form first, then submit
-       event.stop();
-       var form = event.findElement('form');
-       document.fire('xwiki:actions:save', {'continue' : true, 'form' : studyAssignmentTool.up('form')});
-       document.observe('xwiki:document:saved', function () {
-          form.submit();
-       });
-     }
-   });
 
-   studyAssignmentTool.observe('click', function (event) {
-     event.stop();
-     new Ajax.Request(studyAssignmentTool.href, {
-        onCreate : function() {
-          templateSelectionContainer.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
-          modalBox.showDialog();
-        },
-        onSuccess : function(response) {
-           templateSelectionContainer.update(response.responseText);
-        },
-        onFailure : function(response) {
-          var failureReason = response.responseText || response.statusText;
-          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
-          }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
-        },
+   new Ajax.Request('/bin/get/Projects/getStudiesForProjects', {
+      parameters : {'xaction'  : 'get',
+                    'projects' : selected},
+      onCreate : function() {
+       //  this.fld.addClassName("loading");
+      },
+      onSuccess : function(response) {
+//           templateSelectionContainer.update(response.responseText);
+          var i =1;
+          i = 2;
+      },
+      onFailure : function(response) {
+    //     var failureReason = response.responseText || response.statusText;
+    //      if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+    //         failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+    //      }
+    //      _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+       },
         on0 : function (response) {
-          response.request.options.onFailure(response);
-        }
+     //     response.request.options.onFailure(response);
+        },
+       onComplete : function () {
+     //       this.fld.removeClassName("loading");
+
+       }
      });
-   });
-});</code>
+
+});
+
+//document.observe("xwiki:dom:loaded", function(event) {
+//   var studyAssignmentTool = $('study-assignment-config');
+//   if (!studyAssignmentTool) {
+//     return;
+//   }
+//   var templateSelectionContainer = new Element('div');
+//   var templateSelectionForm = new Element('form', {'action' : studyAssignmentTool.down('input').value, 'class' : 'xform', 'method': 'post'});
+//   var formDataWrapper = new Element('div');
+//   templateSelectionForm.insert(formDataWrapper);
+//   formDataWrapper.insert(templateSelectionContainer);
+//   var submitButton = new Element('input', {type : 'submit', value : "$services.localization.render('phenotips.studyBindingClass.saveButton')", 'class' : 'button'});
+//   formDataWrapper.insert(submitButton);
+//   var cancelButton = new Element('input', {type : 'button', value : "$services.localization.render('phenotips.studyBindingClass.cancelButton')", 'class' : 'button secondary'});
+//   formDataWrapper.insert(' ').insert(cancelButton);
+//   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': "$services.localization.render('phenotips.studyBindingClass.popupTitle')", 'verticalPosition': 'top', 'removeOnClose': false});
+//   cancelButton.observe('click', function(event) {
+//     modalBox.closeDialog();
+//   });
+//   submitButton.observe('click', function(event) {
+//     if (studyAssignmentTool.hasClassName('edit')) {
+//       //if in edit mode, save form first, then submit
+//       event.stop();
+//       var form = event.findElement('form');
+//       document.fire('xwiki:actions:save', {'continue' : true, 'form' : studyAssignmentTool.up('form')});
+//       document.observe('xwiki:document:saved', function () {
+//          form.submit();
+//       });
+//     }
+//   });
+//
+//   studyAssignmentTool.observe('click', function (event) {
+//     event.stop();
+//     new Ajax.Request(studyAssignmentTool.href, {
+//        onCreate : function() {
+//          templateSelectionContainer.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
+//          modalBox.showDialog();
+//        },
+//        onSuccess : function(response) {
+//           templateSelectionContainer.update(response.responseText);
+//        },
+//        onFailure : function(response) {
+//          var failureReason = response.responseText || response.statusText;
+//          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+//             failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
+//          }
+//          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
+//       },
+//        on0 : function (response) {
+//          response.request.options.onFailure(response);
+//        }
+//     });
+//   });
+//});</code>
     </property>
     <property>
       <name/>
