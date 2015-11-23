@@ -130,16 +130,18 @@
     <property>
       <code>(function() {
   var init = function() {
+
     // Save before opening the pedigree
-    var pedigreeTrigger = $("pedigree-trigger");
+    // TODO: check if there is anything to save
+    var pedigreeTrigger = $$('.pedigree-edit-trigger');
     if (pedigreeTrigger) {
-      pedigreeTrigger.observe("click", function(event) {
+       pedigreeTrigger.invoke('observe', 'click', function(event) {
         if ($('inline')) { //if edit mode
           event.stop();
           document.observe("xwiki:document:saved", function () {
             window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
           });
-          document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
+          document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline')});
         } else {
           window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
         }
@@ -152,6 +154,187 @@
       pedigreeElt.setAttribute('width', 200);
       pedigreeElt.setAttribute('height', 200);
     }
+
+    // Delete Pedigree functionality for Patient Form
+    if (XWiki.currentDocument.space == 'data') {
+
+      var pedigreeDelete = $("pedigree-delete");
+      if (pedigreeDelete) {
+        pedigreeDelete.observe("click", function(event) {
+          event.stop();
+          new XWiki.widgets.ConfirmationBox(
+            {
+              onYes : function() {
+                if ($('inline')) { //if edit mode, save before proceed
+                  document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline'), 'confirmed' : true});
+                  document.observe("xwiki:document:saved", function () {
+                    onDeleteConfirm();
+                  });
+                } else {
+                  onDeleteConfirm();
+                }
+              },
+              onNo : function() { }
+            },
+            { confirmationText: "$services.localization.render('phenotips.patientRecord.pedigree.deleteWarning')", showCancelButton: true }
+          );
+        });
+      }
+
+      var onDeleteConfirm = function() {
+        var baseUrl = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
+    
+        var familyID = $('familyId').innerHTML;
+        var url = baseUrl + '&amp;action=familyinfo&amp;document_id=' + familyID;
+    
+        new Ajax.Request(url, {
+          method: "POST",
+          onSuccess: onFamilyDataReady.bind(this)
+        });
+      }
+
+      var onFamilyDataReady = function (response) {
+        var baseUrl = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
+
+        if (response.responseJSON) {
+          var familyMembers = response.responseJSON.family.hasOwnProperty("familyMembers") ? response.responseJSON.family.familyMembers: [];
+            if (familyMembers.length &gt; 1) {
+              // remove patient from family
+              var parameters = {"action": "removepatient", "patient_id": XWiki.currentDocument.page};
+            } else {
+              // delete pedigree and family
+              var parameters = {"action": "deletefamily", "removemembers": false, "family_id": response.responseJSON.family.id};
+            }
+
+            new Ajax.Request(baseUrl, {
+              method: "POST",
+              parameters: parameters,
+              onSuccess: function(response) {
+                if (response) {
+                var pedigreeThumnail = $('pedigree-thumbnail');
+                  pedigreeThumnail.title = "$services.localization.render('phenotips.patientRecord.pedigree.draw')";
+                  pedigreeThumnail.innerHTML = pedigreeThumnail.title;
+                  pedigreeThumnail.addClassName('draw');
+                  $('familyId').up().hide();
+                  $('pedigree-buttons').hide();
+                } else {
+                  //??? do something?
+                }
+              }
+            });
+        }
+      }
+    }
+
+    // Delete Family functionality for Family Page
+    if (XWiki.currentDocument.space == "Families") {
+
+      var baseUrl = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
+
+      // check if the user has delete rights to delete family and/or ALL patients - canDeleteFamily(familyId, deleteAllMembers)
+      // if not - do not display delete option/options
+
+      new Ajax.Request(baseUrl, {
+              method: "POST",
+              parameters: {'action': 'candeletefamily', 'family_id' : XWiki.currentDocument.page, 'deleteallmembers' : false},
+              onSuccess: function(response) {
+                if (response) {
+                  onCanDeleteReady(response, null); 
+                } else {
+                  onCanDeleteReady(null, null); 
+                }
+              }
+      });
+
+      new Ajax.Request(baseUrl, {
+              method: "POST",
+              parameters: {'action': 'candeletefamily', 'family_id' : XWiki.currentDocument.page, 'deleteallmembers' : true},
+              onSuccess: function(response) {
+                if (response) {
+                  onCanDeleteReady(null, response);
+                } else {
+                  onCanDeleteReady(null, null);
+                }
+              }
+      });
+
+      var onCanDeleteReady = function(candeleteFamily, canDeleteMembers) {
+
+        if (candeleteFamily == null &amp;&amp; canDeleteMembers == null) {
+          return;
+        }
+
+        if (candeleteFamily) {
+          this.candeleteFamily = candeleteFamily;
+        }
+
+        if (canDeleteMembers) {
+          this.canDeleteMembers = canDeleteMembers;
+        }
+
+        if (this.candeleteFamily != null &amp;&amp; this.canDeleteMembers != null) {
+
+          var actionMenu = $('tmMoreActions').down('.submenu.hidden');
+
+          var linkDeleteFP = new Element('span', {'class' : 'submenuitem'}).insert(new Element('a', {'id' : 'deleteFP'}).insert("Unlink all members"));
+          var linkDeleteFM = new Element('span', {'class' : 'submenuitem'}).insert(new Element('a', {'id' : 'deleteFM'}).insert("Delete Family and Members"));
+
+          var deleteEls = [];
+          if (this.candeleteFamily) {
+            actionMenu.insert(linkDeleteFP);
+            deleteEls.push($('deleteFP'));
+          }
+          if (this.canDeleteMembers) {
+            actionMenu.insert(linkDeleteFM);
+            deleteEls.push($('deleteFM'));
+          }
+
+          deleteEls.invoke('observe', 'click', function(event) {
+            var deleteMembers = event.element().id == 'deleteFM';
+
+            var membersArray = $$('#members .fieldset p');
+
+            var familyID = XWiki.currentDocument.page;
+
+            var membersString = ' ';
+
+            if (membersArray.length &gt; 0){
+              membersArray.forEach(function(member) {
+              membersString += member.innerHTML + '<br/>';
+              });
+            }
+
+            var confText = (deleteMembers) ? "$services.localization.render('phenotips.patientRecord.pedigree.deleteFMWarning')" : "$services.localization.render('phenotips.patientRecord.pedigree.deleteFPWarning')";
+            confText = "<b>" + confText + "</b><div style='margin-left: 30px; margin-right: 30px; text-align: left'><br/>" + membersString + "</div>";
+
+            new XWiki.widgets.ConfirmationBox(
+                    {
+                      onYes : function() { onDeleteFamilyConfirm(deleteMembers); },
+                      onNo : function() { }
+                    },
+                    { confirmationText: confText, showCancelButton: false }
+            );
+          });
+
+        }
+
+        var onDeleteFamilyConfirm = function(deleteMembers) {
+          var baseUrl = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
+          var familyID = XWiki.currentDocument.page;
+          var parameters = {"action": "deletefamily", "removemembers": deleteMembers, "family_id": familyID};
+          new Ajax.Request(baseUrl, {
+            method: "POST",
+            parameters: parameters,
+            onSuccess: function(response) {
+              if (response) {
+                window.self.location = window.self.location.origin;
+              }
+            }
+          });
+        }
+      }
+    }
+
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
@@ -288,7 +471,54 @@
 .pedigree-box.draw:hover, .pedigree-box.open:hover {
   color: #2173AF;
 }
-</code>
+.pedigree-button {
+  display: inherit !important;
+}
+.pedigree-button.p-edit, .pedigree-button.p-print, .pedigree-button.p-delete {
+  margin: 5px 5px 0 5px;
+}
+.pedigree-button.p-export {
+  margin: 5px 0 0 5px;
+}
+.pedigree-buttons {
+  display: inline-block;
+  vertical-align: top;
+  padding-top: 5px;
+  max-width: 40px;
+}
+.pedigree-button li {
+  list-style-type: none;
+  padding: .2em 1.3em;
+  cursor: default;
+  line-height: 16px;
+  min-height: 16px;
+}
+.pedigree-button ul {
+  background: none repeat scroll 0 0 #0272a6;
+  border-radius: 0 0 .8em .8em;
+  box-shadow: 0 1px 1px #e8e8e8;
+  margin: 0 0 0 0.1em;
+  padding-bottom: .3em;
+  position: absolute;
+  z-index: 1000;
+  background-color: #E1E1E1;
+  background-image: linear-gradient(to bottom, #FFFFFF 0%, #E1E1E1 100%);
+  border-color: #E1E1E1;
+  border-radius: 3px 3px 3px 3px;
+  color: #4D5860;
+  text-shadow: 0 1px 0 #FFFFFF;
+}
+.p-export ul {
+  display:none;
+}
+.p-export ul:hover, .p-export:hover ul {
+  display:block;
+}
+.action-download.download-pedegree:after{
+  content: '\25BC';
+  font-size: .8em;
+  margin-left: .5em;
+}</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -394,12 +624,21 @@
 
 #if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
   $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
+  $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+  $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
   #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
-=== $services.localization.render('phenotips.patientRecord.pedigree.title') ===
+    #set ($docIdRequest = 'fid=')
+=== {{translation key="phenotips.patientRecord.pedigree.title"/}} ===
+  #else
+    #set ($docIdRequest = 'id=')
   #end
-
+  
   #if ("$!image" != '')
+    #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
+    #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
+    #set ($pPrint = "$services.localization.render('phenotips.patientRecord.pedigree.print')")
+    #set ($pDownload = "$services.localization.render('phenotips.patientRecord.pedigree.download')")
     #if ("$family.getWarningMessage()" != "")
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
       #set ($pClass = 'open')
@@ -414,7 +653,34 @@
     #set ($pClass = 'draw')
     #set ($pContent = $pAction)
   #end
-(% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div class="pedigree-box ${pClass}" title="${pAction}" id="pedigree-trigger"&gt;${pContent}&lt;/div&gt;{{/html}})))
+  (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
+ 
+  #if ("$!image" != '')
+    &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
+    #if($canEditP)
+      &lt;div class="buttonwrapper pedigree-button p-edit"&gt;
+        &lt;a class="action-edit fa fa-pencil edit-pedegree button secondary pedigree-edit-trigger" href="#" title="${pAction}"&gt;&lt;/a&gt;
+      &lt;/div&gt;
+      #if(!$doc.getObject('PhenoTips.FamilyClass'))
+      &lt;div class="buttonwrapper pedigree-button p-delete"&gt;
+        &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="$doc.getURL('objectremove', 'classname=${pedigreeObj.xWikiClass.name}&amp;classid=${pedigreeObj.number}&amp;form_token=$!{services.csrf.getToken()}')" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
+      &lt;/div&gt;
+      #end
+    #end
+    ##&lt;div class="buttonwrapper pedigree-button p-print"&gt;
+    ##  &lt;a class="action-print fa fa-print print-pedegree button secondary" href="#" title="${pPrint}"&gt;&lt;/a&gt;
+    ##&lt;/div&gt;
+    &lt;div class="pedigree-button p-export"&gt;
+      &lt;span class="buttonwrapper"&gt;&lt;a class="action-download fa fa-download download-pedegree button secondary" id="pedigree-export-button" href="#" title="${pDownload}"&gt;&lt;/a&gt;&lt;/span&gt;
+      &lt;ul id="pedigree-export-buttons"&gt;
+        &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()&amp;format=raster")' target="_blank"&gt;Image (PNG)&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()")' target="_blank"&gt;Scalable image (SVG)&lt;/a&gt;&lt;/li&gt;
+        ##&lt;li&gt;&lt;a href="#" target="_blank"&gt;PDF&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+  #end
+  {{/html}})))
 #end
 {{/velocity}}</content>
     </property>
