@@ -394,15 +394,16 @@ public class XWikiFamily implements Family
             for (Patient patient : getMembers()) {
                 removeMember(patient);
                 if (deleteAllMembers) {
-                    XWikiFamily.patientRepository.deletePatient(patient.getId());
-                    return false;
+                    if (!XWikiFamily.patientRepository.deletePatient(patient.getId())) {
+                        return false;
+                    }
                 }
             }
             xwiki.deleteDocument(xwiki.getDocument(this.familyDocument, context), context);
-            return true;
         } catch (XWikiException ex) {
             this.logger.error("Failed to delete family document [{}]: {}", getId(), ex.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 }
