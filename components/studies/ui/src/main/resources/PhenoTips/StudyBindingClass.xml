@@ -388,7 +388,7 @@
       selected = event.memo.selected;
    }
 
-   new Ajax.Request('/bin/get/Projects/getStudiesForProjects', {
+   new Ajax.Request("$xwiki.getURL('Projects.getStudiesForProjects', 'get', 'outputSyntax=plain')", {
       parameters : {'xaction'  : 'get',
                     'projects' : selected},
       onCreate : function() {
