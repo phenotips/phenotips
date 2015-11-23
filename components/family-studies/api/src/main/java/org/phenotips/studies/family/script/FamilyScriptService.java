@@ -171,6 +171,36 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
+     * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
+     *
+     * @param patientId of the patient to delete
+     * @return true if patient was removed. false if not, for example, if the patient is not associated with a family
+     */
+    public boolean removeMember(String patientId)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+
+        Patient patient = this.patientRepository.getPatientById(patientId);
+        if (patient == null) {
+            return false;
+        }
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
+            return false;
+        }
+
+        Family family = this.familyRepository.getFamilyForPatient(patient);
+        if (family == null) {
+            return false;
+        }
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, family.getDocumentReference())) {
+            return false;
+        }
+
+        family.removeMember(patient);
+        return true;
+    }
+
+    /**
      * Delete family, modifying the both the family and patient records to reflect the change.
      *
      * @param familyId of the family to delete
@@ -197,7 +227,7 @@ public class FamilyScriptService implements ScriptService
      * @param deleteAllMembers indicator whether to check delete permisions on all family member documents as well
      * @return true if successful
      */
-    boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
+    public boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
     {
         User currentUser = this.userManager.getCurrentUser();
 

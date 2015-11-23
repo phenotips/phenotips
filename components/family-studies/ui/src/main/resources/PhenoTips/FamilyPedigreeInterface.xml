@@ -41,6 +41,10 @@
 $response.setContentType('application/json')##
 {{html wiki="false" clean="false"}}
 ##
+## List of actions:
+## { familyinfo, createpatient,  checklink, save, removepatient, deletefamily, candeletefamily }
+##
+##
 #if ("$!request.action" == '')
   Action was not specified
   #break
@@ -74,6 +78,17 @@ $response.setContentType('application/json')##
   #else
     JSON was not specified for action SAVE
   #end
+#elseif ("$!request.action" == "removepatient")
+  #set($patientId = $request.get("patient_id"))
+  #set($discard = $services.families.removeMember($patientId))
+#elseif ("$!request.action" == "deletefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($removemembers = $request.get("removemembers"))
+  $services.families.deleteFamily($familyId, $removemembers))
+#elseif ("$!request.action" == "candeletefamily")
+  #set($familyId = $request.get("family_id"))
+  #set($deleteallmembers = $request.get("deleteallmembers"))
+  $services.families.canDeleteFamily($familyId, $deleteallmembers)
 #else
   Unknown action
 #end{{/velocity}}</content>
