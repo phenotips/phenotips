@@ -146,7 +146,14 @@ public class PatientRecordTest extends AbstractTest
     }
 
     @Test
+    public void ObstetricHistoryTest(){
+        this.patientEdit.expandPrenatalAndPerinatalHistory();
+
+    }
+
+    @Test
     public void parentalAgeTest(){
+        this.patientEdit.expandPrenatalAndPerinatalHistory();
         this.patientEdit.setMaternalAgeAtEDD("25");
         this.patientEdit.setPaternalAgeAtEDD("27");
 

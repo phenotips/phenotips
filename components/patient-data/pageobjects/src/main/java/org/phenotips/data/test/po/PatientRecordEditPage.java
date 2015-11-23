@@ -55,6 +55,27 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "HPrenatalandperinatalhistory")
     private WebElement prenatalAndPerinatalHistorySectionHeading;
 
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__gravida")
+    private WebElement pregnancyHistoryGravida;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__para")
+    private WebElement pregnancyHistoryPara;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__term")
+    private WebElement pregnancyHistoryTerm;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__preterm")
+    private WebElement pregnancyHistoryPreTerm;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__sab")
+    private WebElement pregnancyHistorySab;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__tab")
+    private WebElement pregnancyHistoryTab;
+
+    @FindBy(id = "PhenoTips.ParentalInformationClass_0_pregnancy_history__births")
+    private WebElement pregnancyHistoryLiveBirths;
+
     @FindBy(id = "PhenoTips.PatientClass_0_family_history")
     private WebElement familyHealthConditions;
 
@@ -802,6 +823,69 @@ public class PatientRecordEditPage extends InlinePage
     public void setPaternalAgeAtEDD(String years){
         this.paternalAgeAtEDD.clear();
         this.paternalAgeAtEDD.sendKeys(years);
+    }
+
+    /**
+     * Sets the gravida field in obstetric history
+     * @param gravida
+     */
+    public void setObstetricHistoryGravida(String gravida){
+        this.pregnancyHistoryGravida.clear();
+        this.pregnancyHistoryGravida.sendKeys(gravida);
+    }
+
+    /**
+     * Sets the para field in obstetric history
+     * @param para
+     */
+    public void setObstetricHistoryPara(String para){
+        this.pregnancyHistoryPara.clear();
+        this.pregnancyHistoryPara.sendKeys(para);
+    }
+
+    /**
+     * Sets the term field in obstetric history
+     * @param term
+     */
+    public void setObstetricHistoryTerm(String term){
+        this.pregnancyHistoryTerm.clear();
+        this.pregnancyHistoryTerm.sendKeys(term);
+    }
+
+    /**
+     * Sets the preterm field in obstetric history
+     * @param preTerm
+     */
+    public void setObstetricHistoryPreTerm(String preTerm){
+        this.pregnancyHistoryPreTerm.clear();
+        this.pregnancyHistoryPreTerm.sendKeys(preTerm);
+    }
+
+    /**
+     * Sets the sab field in obstetric history
+     * @param sab
+     */
+    public void setObstetricHistorySab(String sab){
+        this.pregnancyHistorySab.clear();
+        this.pregnancyHistorySab.sendKeys(sab);
+    }
+
+    /**
+     * Sets the tab field in obstetric history
+     * @param tab
+     */
+    public void setObstetricHistoryTab(String tab){
+        this.pregnancyHistoryTab.clear();
+        this.pregnancyHistoryTab.sendKeys(tab);
+    }
+
+    /**
+     * Sets the live births field in obstetric history
+     * @param liveBirths
+     */
+    public void setObstetricHistoryLiveBirths(String liveBirths){
+        this.pregnancyHistoryLiveBirths.clear();
+        this.pregnancyHistoryLiveBirths.sendKeys(liveBirths);
     }
 
     /**
