@@ -132,7 +132,7 @@
   var init = function() {
     // Save before opening the pedigree
     var pedigreeTrigger = $("pedigree-trigger");
-    if (pedigreeTrigger &amp;&amp; XWiki.contextaction == "edit") {
+    if (pedigreeTrigger) {
       pedigreeTrigger.observe("click", function(event) {
         event.stop();
         document.observe("xwiki:document:saved", function () {
