@@ -30,6 +30,7 @@ import org.xwiki.script.service.ScriptService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -191,18 +192,16 @@ public class ConversionHelpers
 
             /* Each section can have several HPO ids (categories) attached to it. */
             for (String category : mapping.get(section)) {
-                Set<Feature> toRemove = new HashSet<Feature>();
-                for (Feature feature : features) {
+                Iterator<Feature> iter = features.iterator();
+                while (iter.hasNext()) {
+                    Feature feature = iter.next();
                     if (getCategoriesFromOntology(feature.getId()).contains(category)
                         || StringUtils.equals(feature.getId(), category))
                     {
                         this.sectionFeatureTree.put(feature.getId(), section);
                         sortedFeatures.add(feature);
-                        toRemove.add(feature);
+                        iter.remove();
                     }
-                }
-                for (Feature feature : toRemove) {
-                    features.remove(feature);
                 }
             }
         }
