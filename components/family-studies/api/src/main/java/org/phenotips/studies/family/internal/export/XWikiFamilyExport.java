@@ -79,7 +79,7 @@ public class XWikiFamilyExport
 
     private static final String INPUT_PARAMETER = "input";
 
-    private static final String INPUT_FORMAT = "%s%%";
+    private static final String INPUT_FORMAT = "%%%s%%";
 
     /** Runs queries for finding families. */
     @Inject
