@@ -121,6 +121,9 @@
       </reports>
     </class>
     <property>
+      <external_id></external_id>
+    </property>
+    <property>
       <identifier/>
     </property>
     <property>
