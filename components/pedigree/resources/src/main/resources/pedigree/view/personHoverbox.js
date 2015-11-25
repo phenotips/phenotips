@@ -126,9 +126,12 @@ define([
 
             this.generateMenuBtn();
 
-            // proband can't be removed
-            if (!this.getNode().isProband())
+            // proband can't be removed, and the only remaining node can't be removed
+            if (!this.getNode().isProband()
+                && !editor.getGraph().getMaxNodeId() == 0
+                && this.getNode().getPhenotipsPatientId() != editor.getGraph().getCurrentPatientId()) {
                 this.generateDeleteBtn();
+            }
         },
 
         /**
@@ -171,15 +174,36 @@ define([
          */
         toggleMenu: function(isMenuToggled) {
             if (this._justClosedMenu) return;
-            //console.log("toggle menu: current = " + this._isMenuToggled);
+            _this = this;
             this._isMenuToggled = isMenuToggled;
-            if(isMenuToggled) {
-                this.getNode().getGraphics().unmark();
-                var optBBox = this.getBoxOnHover().getBBox();
-                var x = optBBox.x2;
-                var y = optBBox.y;
-                var position = editor.getWorkspace().canvasToDiv(x+5, y);
-                editor.getNodeMenu().show(this.getNode(), position.x, position.y);
+
+            // do not display menu if current user has no view permission for this patient
+            if (!editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasView) {
+                var allowUnhighlightNode = function() {
+                    _this._isMenuToggled = false;
+                    _this.animateHideHoverZone();
+                }
+                editor.getOkCancelDialogue().showError("Can't see patient details because you do not have view rights for this patient",
+                                                       "Can't view this patient", "OK", allowUnhighlightNode);
+                return;
+            }
+
+            var displayMenu = function() {
+                if(isMenuToggled) {
+                    _this.getNode().getGraphics().unmark();
+                    var optBBox = _this.getBoxOnHover().getBBox();
+                    var x = optBBox.x2;
+                    var y = optBBox.y;
+                    var position = editor.getWorkspace().canvasToDiv(x+5, y);
+                    editor.getNodeMenu().show(_this.getNode(), position.x, position.y);
+                }
+            }
+
+            if (!editor.getPatientAccessPermissions(this.getNode().getPhenotipsPatientId()).hasEdit) {
+                editor.getOkCancelDialogue().showError("You do not have edit rights for this patient - displaying patient summary in view-only mode",
+                                                       "Can't edit this patient", "OK", displayMenu);
+            } else {
+                displayMenu();
             }
         },
 
@@ -206,7 +230,7 @@ define([
          */
         animateDrawHoverZone: function($super) {
             this._hidden = false;
-            if(!this.isMenuToggled()){
+            if (!this.isMenuToggled()) {
                 var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
                 if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
                     editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();

@@ -32,7 +32,6 @@ define([
 
         initialize: function($super, x, y, id, properties) {
             //var timer = new Helpers.Timer();
-            this._isProband = (id == 0);
             !this._type && (this._type = "Person");
             this._setDefault();
             var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U";
@@ -95,7 +94,15 @@ define([
          * @return {Boolean}
          */
         isProband: function() {
-            return this._isProband;
+            return (this.getID() == editor.getGraph().getProbandId());
+        },
+
+        /**
+         * Redraws gender shape with or without proband indicators
+         */
+        redrawProbandStatus: function() {
+            this.getGraphics().setGenderGraphics();
+            this.getGraphics().getHoverBox().regenerateButtons();
         },
 
         /**
@@ -111,6 +118,17 @@ define([
         },
 
         /**
+         * Returns the URL of the PhenoTips patient represented by this node.
+         *
+         * @method getPhenotipsPatientURL
+         * @return {String}
+         */
+        getPhenotipsPatientURL: function()
+        {
+            return new XWiki.Document(this.getPhenotipsPatientId()).getURL();
+        },
+
+        /**
          * Replaces (or sets) the id of the PhenoTips patient represented by this node
          * with the given id, and updates the label.
          *
@@ -121,7 +139,15 @@ define([
          */
         setPhenotipsPatientId: function(phenotipsId)
         {
+            if (phenotipsId == this._phenotipsId) {
+                return;
+            }
+
             this._phenotipsId = phenotipsId;
+
+            this.getGraphics().setGenderGraphics();
+            this.getGraphics().getHoverBox().regenerateButtons();
+            this.getGraphics().updateLinkLabel();
         },
 
         /**
@@ -361,6 +387,9 @@ define([
          * @param {String} newStatus "alive", "deceased", "stillborn", "unborn", "aborted" or "miscarriage"
          */
         setLifeStatus: function(newStatus) {
+            if (newStatus == this._lifeStatus) {
+                return;
+            }
             if(this._isValidLifeStatus(newStatus)) {
                 var oldStatus = this._lifeStatus;
 
@@ -374,6 +403,9 @@ define([
                     this.setBirthDate("");
                     this.setAdopted("");
                     this.setChildlessStatus(null);
+                }
+                if (this.isProband()) {
+                    this.getGraphics().setGenderGraphics();
                 }
                 this.getGraphics().updateLifeStatusShapes(oldStatus);
                 this.getGraphics().getHoverBox().regenerateHandles();
@@ -1114,11 +1146,21 @@ define([
                 hpo_positive:  {value : hpoTerms, disabled: this.isProband() },
                 nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
                 cancers:       {value : this.getCancers() },
-                phenotipsid:   {value : this.getPhenotipsPatientId() }
+                phenotipsid:   {value : this.getPhenotipsPatientId() },
+                setproband:    {value : "allow", inactive: this.isProband() }
             };
 
             var extensionParameters = { "menuData": menuData, "node": this };
             menuData = editor.getExtensionManager().callExtensions("personGetNodeMenuData", extensionParameters).extendedData.menuData;
+
+            // Disable input fields iff current user does not have edit permissions for this patient
+            if (!editor.getPatientAccessPermissions(this.getPhenotipsPatientId()).hasEdit) {
+                for (prop in summary) {
+                    if (summary.hasOwnProperty(prop)) {
+                        summary[prop].disabled = true;
+                    }
+                }
+            }
 
             return menuData;
         },
@@ -1131,7 +1173,12 @@ define([
          * @return {Object} with all node properties
          */
         getProperties: function($super) {
-            // note: properties equivalent to default are not set
+            // note1: once new properties are added need to update
+            //        getNodePropertiesNotStoredInPatientProfile() as well
+            //
+            //
+            // note2: properties equivalent to default are not set
+
             var info = $super();
             if (this.getPhenotipsPatientId() != "")
                 info['phenotipsId'] = this.getPhenotipsPatientId();
@@ -1208,6 +1255,20 @@ define([
          },
 
          /**
+          * These properties are related to pedigree structure, but not to PhenoTips patient.
+          *
+          * Used to decide whichproperties to keep when the link to PhenoTips patient is removed
+          */
+         getPatientIndependentProperties: function() {
+             // TODO: review the set of properties retained
+             return  { "gender"        : this.getGender(),
+                       "adoptedStatus" : this.getAdopted(),
+                       "twinGroup"     : this._twinGroup,
+                       "monozygotic"   : this._monozygotic,
+                       "nodeNumber"    : this.getPedNumber() };
+         },
+
+         /**
           * Applies the properties found in info to this node.
           *
           * @method assignProperties
@@ -1215,39 +1276,86 @@ define([
           * @return {Boolean} True if info was successfully assigned
           */
          assignProperties: function($super, info) {
-            this._setDefault();
-
             if($super(info)) {
-                if(info.phenotipsId && this.getPhenotipsPatientId() != info.phenotipsId) {
-                    this.setPhenotipsPatientId(info.phenotipsId);
+                // setGenderGraphics() and drawLabels() methods may be slow yet may be
+                // called myultiple times while properties are set as part of property update procedure.
+                // (e.g. setFirstname(), setComments(), etc. set labels, and setAdopted() calls setGenderGraphics.
+                // This speedup disables the methods while initial properties are set and it is later execute once after
+                // all properties have been set and labels have been generated
+                this._speedup_NOREDRAW = true;
+                this._speedup_NEEDTOCALL = {};
+
+                if(info.phenotipsId) {
+                    if (this.getPhenotipsPatientId() != info.phenotipsId) {
+                        this.setPhenotipsPatientId(info.phenotipsId);
+                    }
+                } else {
+                    this.setPhenotipsPatientId("");
                 }
-                if(info.fName && this.getFirstName() != info.fName) {
-                    this.setFirstName(info.fName);
+
+                if(info.fName) {
+                    if (this.getFirstName() != info.fName) {
+                        this.setFirstName(info.fName);
+                    }
+                } else {
+                    this.setFirstName("");
                 }
-                if(info.lName && this.getLastName() != info.lName) {
-                    this.setLastName(info.lName);
+                if(info.lName) {
+                    if (this.getLastName() != info.lName) {
+                        this.setLastName(info.lName);
+                    }
+                } else {
+                    this.setLastName("");
                 }
-                if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
-                    this.setLastNameAtBirth(info.lNameAtB);
+                if(info.lNameAtB) {
+                    if (this.getLastNameAtBirth() != info.lNameAtB) {
+                        this.setLastNameAtBirth(info.lNameAtB);
+                    }
+                } else {
+                    this.setLastNameAtBirth("");
                 }
-                if (info.externalID && this.getExternalID() != info.externalID) {
-                    this.setExternalID(info.externalID);
+                if (info.externalID) {
+                    if (this.getExternalID() != info.externalID) {
+                        this.setExternalID(info.externalID);
+                    }
+                } else {
+                    this.setExternalID("");
                 }
-                if(info.dob && this.getBirthDate() != info.dob) {
-                    this.setBirthDate(info.dob);
+                if(info.dob) {
+                    if (this.getBirthDate() != info.dob) {
+                        this.setBirthDate(info.dob);
+                    }
+                } else {
+                    this.setBirthDate(null);
+                }
+                if(info.dod) {
+                    if (this.getDeathDate() != info.dod) {
+                        this.setDeathDate(info.dod);
+                    }
+                } else {
+                    this.setDeathDate(null);
                 }
                 if(info.disorders) {
                     this.setDisorders(info.disorders);
+                } else {
+                    this.setDisorders([]);
                 }
                 if(info.cancers) {
                     this.setCancers(info.cancers);
+                } else {
+                    this.setCancers({});
                 }
                 if(info.hpoTerms) {
                     this.setHPO(info.hpoTerms);
+                } else {
+                    this.setHPO([]);
                 }
                 if(info.ethnicities) {
                     this.setEthnicities(info.ethnicities);
+                } else {
+                    this.setEthnicities([]);
                 }
+<<<<<<< HEAD
                 this._genes = {};
                 if(info.genes) {
                     // genes: [ {gene: 'JADE3', status: 'candidate', comments: 'abc'},
@@ -1261,42 +1369,96 @@ define([
                     // to set genes from the full format, so ned ot manually call redraw
                     // TODO: fix, make nodeMenu accept full format
                     this.getGraphics().updateDisorderShapes();
+=======
+                if(info.candidateGenes) {
+                    this.setGenes(info.candidateGenes);
+                } else {
+                    this.setGenes([]);
+>>>>>>> PT-1548: Pedigree editor changes to enable family-studies
                 }
-                if(info.hasOwnProperty("adoptedStatus") && this.getAdopted() != info.adoptedStatus) {
-                    this.setAdopted(info.adoptedStatus);
+                if(info.hasOwnProperty("adoptedStatus")) {
+                    if (this.getAdopted() != info.adoptedStatus) {
+                        this.setAdopted(info.adoptedStatus);
+                    }
+                } else {
+                    this.setAdopted("");
                 }
-                if(info.hasOwnProperty("lifeStatus") && this.getLifeStatus() != info.lifeStatus) {
-                    this.setLifeStatus(info.lifeStatus);
+                if(info.hasOwnProperty("lifeStatus")) {
+                    if (this.getLifeStatus() != info.lifeStatus) {
+                        this.setLifeStatus(info.lifeStatus);
+                    }
+                } else {
+                    this.setLifeStatus('alive');
                 }
-                if(info.dod && this.getDeathDate() != info.dod) {
-                    this.setDeathDate(info.dod);
+                if(info.gestationAge) {
+                    if (this.getGestationAge() != info.gestationAge) {
+                        this.setGestationAge(info.gestationAge);
+                    }
+                } else {
+                    this.setGestationAge("");
                 }
-                if(info.gestationAge && this.getGestationAge() != info.gestationAge) {
-                    this.setGestationAge(info.gestationAge);
+                if(info.childlessStatus) {
+                    if (this.getChildlessStatus() != info.childlessStatus) {
+                        this.setChildlessStatus(info.childlessStatus);
+                    }
+                } else {
+                    this.setChildlessStatus(null);
                 }
-                if(info.childlessStatus && this.getChildlessStatus() != info.childlessStatus) {
-                    this.setChildlessStatus(info.childlessStatus);
+                if(info.childlessReason) {
+                    if (this.getChildlessReason() != info.childlessReason) {
+                        this.setChildlessReason(info.childlessReason);
+                    }
+                } else {
+                    this.setChildlessReason("");
                 }
-                if(info.childlessReason && this.getChildlessReason() != info.childlessReason) {
-                    this.setChildlessReason(info.childlessReason);
+                if(info.hasOwnProperty("twinGroup")) {
+                    if (this._twinGroup != info.twinGroup) {
+                        this.setTwinGroup(info.twinGroup);
+                    }
+                } else {
+                    this.setTwinGroup(null);
                 }
-                if(info.hasOwnProperty("twinGroup") && this._twinGroup != info.twinGroup) {
-                    this.setTwinGroup(info.twinGroup);
+                if(info.hasOwnProperty("monozygotic")) {
+                    if (this._monozygotic != info.monozygotic) {
+                        this.setMonozygotic(info.monozygotic);
+                    }
+                } else {
+                    this.setMonozygotic(false);
                 }
-                if(info.hasOwnProperty("monozygotic") && this._monozygotic != info.monozygotic) {
-                    this.setMonozygotic(info.monozygotic);
+                if(info.hasOwnProperty("evaluated")) {
+                    if (this._evaluated != info.evaluated) {
+                        this.setEvaluated(info.evaluated);
+                    }
+                } else {
+                    this.setEvaluated(false);
                 }
-                if(info.hasOwnProperty("evaluated") && this._evaluated != info.evaluated) {
-                    this.setEvaluated(info.evaluated);
+                if(info.hasOwnProperty("carrierStatus")) {
+                    if (this._carrierStatus != info.carrierStatus) {
+                        this.setCarrierStatus(info.carrierStatus);
+                    }
+                } else {
+                    this.setCarrierStatus("");
                 }
-                if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
-                    this.setCarrierStatus(info.carrierStatus);
+                if (info.hasOwnProperty("nodeNumber")) {
+                    if (this.getPedNumber() != info.nodeNumber) {
+                        this.setPedNumber(info.nodeNumber);
+                    }
+                } else {
+                    this.setPedNumber("");
                 }
-                if (info.hasOwnProperty("nodeNumber") && this.getPedNumber() != info.nodeNumber) {
-                    this.setPedNumber(info.nodeNumber);
+                if (info.hasOwnProperty("lostContact")) {
+                    if (this.getLostContact() != info.lostContact) {
+                        this.setLostContact(info.lostContact);
+                    }
+                } else {
+                    this.setLostContact(false);
                 }
-                if (info.hasOwnProperty("lostContact") && this.getLostContact() != info.lostContact) {
-                    this.setLostContact(info.lostContact);
+
+                this._speedup_NOREDRAW = false;
+                for (var method in this._speedup_NEEDTOCALL) {
+                    if (this._speedup_NEEDTOCALL.hasOwnProperty(method)) {
+                        this.getGraphics()[method]();
+                    }
                 }
 
                 var extensionParameters = { "modelData": info, "node": this };
