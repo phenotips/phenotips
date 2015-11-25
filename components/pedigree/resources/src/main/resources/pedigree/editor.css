@@ -316,7 +316,7 @@
 }
 .menu-box .tabs dd.active {
   box-shadow: none;
-  background-color: #E1E1E1;
+  background-color: #D9D9D9;
 }
 .menu-box .tabs dd:not(.active) {
   box-shadow: none;
@@ -333,7 +333,7 @@
   box-shadow: none;
 }
 .menu-box .tabs dd:not(.active):hover, .tabs .tab-title:hover {
-  background-color: #D1D1D1;
+  background-color: #CFCFCF;
   cursor:pointer;
 }
 .menu-box .tabs dd > a, .tabs .tab-title > a {
@@ -391,9 +391,6 @@
 }
 .menu-box .field-box {
   padding: .5em 0;
-}
-.menu-box .field-phenotipsid {
-  padding: .8em 0;
 }
 .menu-box .field-box input[type=text] {
   width: 99%;
@@ -543,6 +540,9 @@
 .field-cancers {
   margin-bottom: 5px;
 }
+.menu-box .field-phenotipsid {
+  padding: .8em 0;
+}
 .menu-box .field-first_name {
   width: 48%;
   float: left;
@@ -627,6 +627,36 @@
 .menu-box .field-childlessSelect {
   padding: 0.5em 0 0.5em;
 }
+.menu-box .patient-link-container {
+  margin-top: 4px;
+}
+.menu-box a.patient-link-url {
+}
+.menu-box .suggest-patients {
+  width: 64% !important;
+}
+
+.menu-box .patient-link-remove:hover {
+  background: #E6CE85;
+}
+.menu-box .patient-create-button {
+  margin-top: 3px !important;
+  font-size: 14px !important;  /* make sure button size is the same and does not grow with different font sizes and break the layout */
+}
+.menu-box .patient-create-button:hover {
+  background: #B1C2E2;
+}
+.menu-box .patient-generic-button {
+  float: none !important;
+  font-weight: initial;
+}
+.menu-box .unintrusive-button {
+  background: #e0e0e0;
+}
+.menu-box .menu-fullWidthbutton {
+  display: block;
+  text-align: center;
+}
 
 .menu-box .disabled-select {
   opacity: 0.5;
@@ -637,6 +667,8 @@
 }
 
 .menu-box .patient-menu-button {
+  margin-right: 5px;
+  margin-top: -2px;
   border-radius: 2px;
   box-shadow: 0px 1px 1px #999;
   background: #D5D5D5;
@@ -651,6 +683,12 @@
   margin-top: 10px;
   float: left !important;
   text-align: center;
+}
+.menu-box .patient-create-button {
+  float: right;
+}
+.menu-box .patient-link-remove {
+  float: right;
 }
 
 /* ===========================================
@@ -684,6 +722,13 @@
   border-bottom-width: 0;
   top: auto;
   bottom: -8px;
+}
+.pedigree-nodePatientTextLink {
+  cursor: pointer;
+  fill: #00498A;
+}
+.pedigree-nodePatientTextLink:hover {
+  text-decoration: underline;
 }
 .node-type-options {
   position: relative;
@@ -986,4 +1031,13 @@
 .fuzzy-date-picker .year .decade {
   font-weight: bold;
   /*text-indent: 0;*/
+}
+.fuzzy-date-picker .year:disabled {
+  opacity: .5 !important;
+}
+.fuzzy-date-picker .month:disabled {
+  opacity: .5 !important;
+}
+.fuzzy-date-picker .day:disabled {
+  opacity: .5 !important;
 }

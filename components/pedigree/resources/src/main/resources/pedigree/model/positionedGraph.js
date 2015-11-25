@@ -566,7 +566,8 @@ define([
                     var otherParent = (parents[0] == v) ? parents[1] : parents[0];
 
                     // Note: can't ignore nodes which are parentless and are connected to only one partner,
-                    //       but are not on the same rank with the partner
+                    //       but are not on the same rank with the partner. Ow they are dropped and the long edge
+                    //       hangs with no input node and is not traversed/assigned an order when doing the ordering pass
                     if (this.ranks[v] != this.ranks[otherParent]) {
                         continue;
                     }
@@ -2927,6 +2928,9 @@ define([
                         var comments = personProperties.comments.replace(/^\s+|\s+$/g,'');
                         // count number of new lines
                         numLabelLines += ((comments.match(/\n/g) || []).length + 1);
+                    }
+                    if (this.GG.properties[person].hasOwnProperty("phenotipsId")) {
+                        numLabelLines++;
                     }
                     var dob = personProperties.hasOwnProperty("dob") ? new PedigreeDate(personProperties.dob) : null;
                     var dod = personProperties.hasOwnProperty("dod") ? new PedigreeDate(personProperties.dod) : null;

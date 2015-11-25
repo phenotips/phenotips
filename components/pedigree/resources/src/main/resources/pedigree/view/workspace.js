@@ -348,7 +348,7 @@ define([
             var _this = this;
             this.__controls = new Element('div', {'class' : 'view-controls'});
             // Pan controls
-            this.__pan = new Element('div', {'class' : 'view-controls-pan', title : 'Pan'});
+            this.__pan = new Element('div', {'class' : 'view-controls-pan field-no-user-select', title : 'Pan'});
             this.__controls.insert(this.__pan);
             ['up', 'right', 'down', 'left', 'home'].each(function (direction) {
                 var faIconClass = (direction == 'home') ? "fa-user" : "fa-arrow-" + direction;
@@ -374,13 +374,13 @@ define([
             });
             // Zoom controls
             var trackLength = 200;
-            this.__zoom = new Element('div', {'class' : 'view-controls-zoom', title : 'Zoom'});
+            this.__zoom = new Element('div', {'class' : 'view-controls-zoom field-no-user-select', title : 'Zoom'});
             this.__controls.insert(this.__zoom);
-            this.__zoom.track  = new Element('div', {'class' : 'zoom-track'});
-            this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-            this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in fa fa-fw fa-search-plus', title : 'Zoom in'});
-            this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out fa fa-fw fa-search-minus', title : 'Zoom out'});
-            this.__zoom.label  = new Element('div', {'class' : 'zoom-crt-value'});
+            this.__zoom.track  = new Element('div', {'class' : 'field-no-user-select zoom-track'});
+            this.__zoom.handle = new Element('div', {'class' : 'field-no-user-select zoom-handle', title : 'Drag to zoom'});
+            this.__zoom['in']  = new Element('div', {'class' : 'field-no-user-select zoom-button zoom-in fa fa-fw fa-search-plus', title : 'Zoom in'});
+            this.__zoom['out'] = new Element('div', {'class' : 'field-no-user-select zoom-button zoom-out fa fa-fw fa-search-minus', title : 'Zoom out'});
+            this.__zoom.label  = new Element('div', {'class' : 'field-no-user-select zoom-crt-value'});
             this.__zoom.insert(this.__zoom['in']);
             this.__zoom.insert(this.__zoom.track);
             this.__zoom.track.insert(this.__zoom.handle);
@@ -584,6 +584,9 @@ define([
          * @param {Number} nodeID The id of the node
          */
         centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
+            if (nodeID < 0) {  // proband for a family
+                nodeID = 0;
+            }
             var node = editor.getNode(nodeID);
             if(node) {
                 var x = node.getX(),
