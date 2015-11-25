@@ -439,6 +439,12 @@
   margin: 0.75em 0 0.5em 0;
   display: block;
 }
+.import-file-button {
+  margin-top: 4px !important;
+}
+.import-file-button-wrapper {
+  margin-left: -410px;
+}
 .import-block-bottom {
   margin: 1.2em 0 0.5em 0;
 }
