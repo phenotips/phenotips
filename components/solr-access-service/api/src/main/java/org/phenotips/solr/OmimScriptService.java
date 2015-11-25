@@ -159,8 +159,8 @@ public class OmimScriptService extends AbstractSolrScriptService
         params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
         params.put(CommonParams.ROWS, "100");
         params.put(CommonParams.START, "0");
-        params.put(CommonParams.DEBUG_QUERY, Boolean.toString(true));
-        params.put(CommonParams.EXPLAIN_STRUCT, Boolean.toString(true));
+        params.put(CommonParams.DEBUG_QUERY, "true");
+        params.put(CommonParams.EXPLAIN_STRUCT, "true");
 
         return new MapSolrParams(params);
     }
