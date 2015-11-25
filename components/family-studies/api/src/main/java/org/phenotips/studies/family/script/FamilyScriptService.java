@@ -32,6 +32,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,6 +75,9 @@ public class FamilyScriptService implements ScriptService
     @Inject
     private AuthorizationService authorizationService;
 
+    @Inject
+    private UserManager userManager;
+
     /**
      * Either creates a new family, or gets the existing one if a patient belongs to a family.
      *
@@ -87,9 +92,11 @@ public class FamilyScriptService implements ScriptService
             return null;
         }
 
+        User currentUser = this.userManager.getCurrentUser();
+
         Family xwikiFamily = this.familyRepository.getFamilyForPatient(patient);
         if (xwikiFamily == null) {
-            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
                 return null;
             }
 
@@ -97,8 +104,8 @@ public class FamilyScriptService implements ScriptService
             xwikiFamily = this.familyRepository.createFamily();
             xwikiFamily.addMember(patient);
         } else {
-            if (!this.authorizationService.hasAccess(Right.VIEW, xwikiFamily.getDocumentReference())
-                || !this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, xwikiFamily.getDocumentReference())
+                || !this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
                 return null;
             }
         }
@@ -130,8 +137,9 @@ public class FamilyScriptService implements ScriptService
         if (family == null) {
             return null;
         }
-        if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())
-            || !this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+        User currentUser = this.userManager.getCurrentUser();
+        if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())
+            || !this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
             return null;
         }
         return family.getDocumentReference();
@@ -148,9 +156,11 @@ public class FamilyScriptService implements ScriptService
     {
         Family family = null;
 
+        User currentUser = this.userManager.getCurrentUser();
+
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
-            if (!this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
                 return null;
             }
             // id belonged to a patient. Get patient's family
@@ -164,7 +174,7 @@ public class FamilyScriptService implements ScriptService
             this.logger.debug("Can't get family info for [{}].", id);
             return new JSONObject(true);
         }
-        if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())) {
+        if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())) {
             return null;
         }
 
@@ -181,9 +191,10 @@ public class FamilyScriptService implements ScriptService
     public Pedigree getPedigree(String id)
     {
         Family family = null;
+        User currentUser = this.userManager.getCurrentUser();
         Patient patient = this.patientRepository.getPatientById(id);
         if (patient != null) {
-            if (!this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument())) {
                 return null;
             }
             family = this.familyRepository.getFamilyForPatient(patient);
@@ -192,7 +203,7 @@ public class FamilyScriptService implements ScriptService
         }
 
         if (family != null) {
-            if (!this.authorizationService.hasAccess(Right.VIEW, family.getDocumentReference())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.VIEW, family.getDocumentReference())) {
                 return null;
             }
             Pedigree pedigree = family.getPedigree();
@@ -223,9 +234,11 @@ public class FamilyScriptService implements ScriptService
     {
         JSONResponse response = new JSONResponse(StatusResponse.OK);
 
+        User currentUser = this.userManager.getCurrentUser();
+
         Patient patientToLink = this.patientRepository.getPatientById(patientToLinkId);
         // Checking user has edit permissions on the patient to link to the family
-        if (!this.authorizationService.hasAccess(Right.EDIT, patientToLink.getDocument())) {
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patientToLink.getDocument())) {
             response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
             response.setMessage(patientToLinkId);
             return response.asVerification();
@@ -234,7 +247,7 @@ public class FamilyScriptService implements ScriptService
         // When documentId is a family's id
         Family family = this.familyRepository.getFamilyById(documentId);
         if (family != null) {
-            if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, family.getDocumentReference())) {
                 response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
                 return response.asVerification();
             }
@@ -254,7 +267,7 @@ public class FamilyScriptService implements ScriptService
         if (family == null) {
             // If there's no family associated with patient, it is still possible to link patientToLink
             // if user has permissions to create a family for patient whose id is documentId
-            if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
                 response.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT);
                 response.setMessage(patient.getId());
             }
@@ -289,12 +302,14 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean removeMember(String patientId)
     {
+        User currentUser = this.userManager.getCurrentUser();
+
         Patient patient = this.patientRepository.getPatientById(patientId);
         if (patient == null) {
             this.logger.error(COULD_NOT_RETRIEVE_PATIENT_ERROR_MESSAGE, patientId);
             return false;
         }
-        if (!this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
             return false;
         }
 
@@ -303,7 +318,7 @@ public class FamilyScriptService implements ScriptService
             this.logger.error("Could not retrieve family for patient [{}]. Cannot remove patient.", patientId);
             return false;
         }
-        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())) {
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, family.getDocumentReference())) {
             return false;
         }
 
@@ -338,8 +353,9 @@ public class FamilyScriptService implements ScriptService
             return false;
         }
 
-        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference())
-            || !this.authorizationService.hasAccess(Right.EDIT, patient.getDocument())) {
+        User currentUser = this.userManager.getCurrentUser();
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, family.getDocumentReference())
+            || !this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
             return false;
         }
 
