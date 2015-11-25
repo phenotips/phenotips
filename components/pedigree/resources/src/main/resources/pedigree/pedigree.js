@@ -7,11 +7,13 @@
  * @constructor
  */
 define([
+        "pedigree/externalEndpoints",
         "pedigree/undoRedoManager",
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
         "pedigree/preferencesManager",
-        "pedigree/probandDataLoader",
+        "pedigree/familyDataLoader",
+        "pedigree/patientDataLoader",
         "pedigree/saveLoadEngine",
         "pedigree/versionUpdater",
         "pedigree/view",
@@ -32,11 +34,13 @@ define([
         "pedigree/view/printDialog"
     ],
     function(
+        ExternalEndpointsManager,
         UndoRedoManager,
         Controller,
         PedigreeEditorParameters,
         PreferencesManager,
-        ProbandDataLoader,
+        FamilyDataLoader,
+        PatientDataLoader,
         SaveLoadEngine,
         VersionUpdater,
         View,
@@ -59,8 +63,12 @@ define([
 
     var PedigreeEditor = Class.create({
         initialize: function() {
+            this.INTERNALJSON_VERSION = "1.0";
+
             //this.DEBUG_MODE = true;
             window.editor = this;
+
+            this._externalEndpointManager = new ExternalEndpointsManager();
 
             // Available options:
             //
@@ -109,8 +117,12 @@ define([
             this._saveLoadIndicator = new SaveLoadIndicator();
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
-            this._probandData = new ProbandDataLoader();
+            this._familyData = new FamilyDataLoader();
+            this._patientDataLoader = new PatientDataLoader();
 
+            // load global pedigree preferences before a specific pedigree is loaded, since
+            // preferences may affect the way it is rendered. Once preferences are loaded the
+            // provided function wil get execute and will load/render the rest of the pedigree.
             this._preferencesManager.load( function() {
                     // set up constants which depend on preferences
                     if (editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")) {
@@ -119,8 +131,8 @@ define([
                         Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
                     }
 
-                    // load proband data and load the graph after proband data is available
-                    this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+                    // load family page info and load the pedigree after that data is loaded
+                    this._familyData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
@@ -224,11 +236,36 @@ define([
         },
 
         /**
+         * Returns the version of the internal JSON represenations which will be saved to PhenpoTips patient record
+         */
+        getInternalJSONVersion: function() {
+            return this.INTERNALJSON_VERSION;
+        },
+
+        /**
+         * Returns a class managing external connections for pedigree editor, e.g. load/save URLs etc.
+         *
+         * @method getPreferencesManager
+         * @return {ExternalAPIs}
+         */
+        getExternalEndpoint: function() {
+            return this._externalEndpointManager;
+        },
+
+        /**
          * @method getPreferencesManager
          * @return {PreferencesManager}
          */
         getPreferencesManager: function() {
             return this._preferencesManager;
+        },
+
+        /**
+         * @method getPatientDataLoader
+         * @return {PatientDataLoader}
+         */
+        getPatientDataLoader: function() {
+            return this._patientDataLoader;
         },
 
         /**
@@ -409,11 +446,78 @@ define([
         },
 
         /**
-         * @method getProbandDataFromPhenotips
-         * @return {firstName: "...", lastName: "..."}
+         * True iff current pedigree belongs toa family page, not a patient
+         * @method isFamilyPage
+         * @return {boolean}
          */
-        getProbandDataFromPhenotips: function() {
-            return this._probandData.probandData;
+        isFamilyPage: function() {
+            if (!this._familyData) return false;
+            return this._familyData.isFamily();
+        },
+
+        /**
+         * True iff current patient is part of an existing family
+         * @method hasFamily
+         * @return {boolean}
+         */
+        hasFamily: function() {
+            if (!this._familyData) return false;
+            return this._familyData.hasFamily();
+        },
+
+        /**
+         * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
+         * were part of this patient's family at the time pedigree was last reloaded (on open or when reload was pressed)
+         * @method getCurrentFamilyPageFamilyMembers
+         * @return {Object}
+         */
+        getCurrentFamilyPageFamilyMembers: function() {
+            return this._familyData.getAllFamilyMembersList();
+        },
+
+        /**
+         * Returns iff the given patient is a member of the current family
+         */
+        isFamilyMember: function(patientID) {
+            if (this._familyData && this._familyData.isFamilyMember(patientID)) {
+                return true;
+            }
+            return false;
+        },
+
+        /**
+         * Returns permission object which as "hasEdit" and "hasView" fields.
+         * @method getPatientAccessPermissions
+         * @return {Object}
+         */
+        getPatientAccessPermissions: function(patientID) {
+            var permissions = (this._familyData && this._familyData.isFamilyMember(patientID))
+                              ? this._familyData.getPatientAccessPermissions(patientID) : null;
+            if (permissions == null) {
+                permissions = { "hasEdit": true, "hasView": true };
+            }
+            return permissions;
+        },
+
+        /**
+         * True iff the pedigree contains sensitive data
+         * @method hasWarningMessage
+         * @return {boolean}
+         */
+        hasWarningMessage: function() {
+            if (!this._familyData) {
+                return false;
+            }
+            return this._familyData.hasWarningMessage();
+        },
+
+        /**
+         * Returns the warning message to display
+         * @method getWarningMessage
+         * @returns {String}
+         */
+        getWarningMessage: function() {
+            return this.hasWarningMessage() ? this._familyData.getWarningMesage() : null;
         },
 
         /**
@@ -455,9 +559,13 @@ define([
          * @method isAnyMenuVisible
          */
         isAnyMenuVisible: function() {
-            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
-                return;
+            if (this.isReadOnlyMode()) {
+                return false;
             }
+            if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
+                return true;
+            }
+            return false;
         },
 
         /**
@@ -478,13 +586,13 @@ define([
                     'type'  : 'hidden',
                     'tab': 'Personal'
                 },
-                /*{
-                    'name' : 'phenotipsid',
-                    'label' : 'Phenotips Patient Link',
-                    'type' : 'text', //phenotipsid-picker',
+                {
+                    'name'  : 'phenotipsid',
+                    'label' : 'Patient Record',
+                    'type'  : 'phenotipsid-picker',
                     'tab' : 'Personal',
-                    'function' : 'setPhenotipsPatientId'
-                },*/
+                    'function' : 'trySetPhenotipsPatientId'
+                },
                 {
                     'name' : 'gender',
                     'label' : 'Gender',
@@ -523,7 +631,7 @@ define([
                 },
                 {
                     'name' : 'external_id',
-                    'label': 'External ID',
+                    'label': 'Identifier',
                     'type' : 'text',
                     'tab': 'Personal',
                     'function' : 'setExternalID',
@@ -711,7 +819,15 @@ define([
                     'tab': 'Cancers',
                     'rows' : 2,
                     'function' : 'setComments'
-                }
+                },
+                {
+                    'name' : 'setproband',
+                    'label' : 'Set this person to be the proband node',
+                    'type' : 'button',
+                    'tab' : 'Clinical',
+                    'buttoncss' : 'unintrusive-button menu-fullWidthbutton',
+                    'function' : 'assignProband'
+                },
             ];
 
             function isDisabled(field) {

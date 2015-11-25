@@ -16,6 +16,8 @@ define([
     {
         this.DG = drawGraph;
 
+        this._probandId = 0;  // assume 0 unless explicitly set (to simplify migration from older pedigrees - TODO: check. Maybe set to -1 by default)
+
         this._heuristics = new Heuristics( drawGraph );  // heuristics & helper methods separated into a separate class
 
         this._heuristics.improvePositioning();
@@ -31,6 +33,45 @@ define([
     }
 
     DynamicPositionedGraph.prototype = {
+
+        setProbandId: function(id)
+        {
+            this._probandId = id;
+        },
+
+        getProbandId: function()
+        {
+            return this._probandId;
+        },
+
+        getAllPatientLinks: function()
+        {
+            var linkedPatientsList = { "linkedPatients": [], "patientToNodeMapping": {} };
+
+            for (var i = 0 ; i <= this.getMaxNodeId(); i++) {
+                if (this.isPerson(i)) {
+                    if (this.getProperties(i).hasOwnProperty("phenotipsId")) {
+                        linkedPatientsList.linkedPatients.push( this.getProperties(i).phenotipsId );
+                        linkedPatientsList.patientToNodeMapping[this.getProperties(i).phenotipsId] = i;
+                    }
+                }
+            }
+            return linkedPatientsList;
+        },
+
+        getCurrentPatientId: function()
+        {
+            return XWiki.currentDocument.page;
+        },
+
+        getCurrentPatientNodeID: function()
+        {
+            var allLinkedNodes = this.getAllPatientLinks();
+            if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(this.getCurrentPatientId())) {
+                return null;
+            }
+            return allLinkedNodes.patientToNodeMapping[this.getCurrentPatientId()];
+        },
 
         isValidID: function( id )
         {
@@ -160,9 +201,37 @@ define([
             this.DG.GG.properties[id] = newSetOfProperties;
         },
 
-        // returns false if this gender is incompatible with this pedigree; true otherwise
-        setProbandData: function( patientObject )
+        getNodePropertiesNotStoredInPatientProfile: function(id)
         {
+            var allProperties = this.getProperties(id);
+
+            if (allProperties === undefined) {
+                return {};
+            }
+
+            // TODO: review. The first one to review is "lifeStatus" which will be added to PhenoTips soon
+            var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
+                                   'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
+                                   'carrierStatus', 'lostContact', 'nodeNumber', 'lifeStatus' ];
+
+            var result = {};
+            for (var i = 0; i < keepProperties.length; i++) {
+                if (allProperties.hasOwnProperty(keepProperties[i])) {
+                    result[keepProperties[i]] = allProperties[keepProperties[i]];
+                }
+            }
+            return result;
+        },
+
+        // returns false if gender as given in JSON is incompatible with this pedigree; true otherwise
+        setNodeDataFromPhenotipsJSON: function( id, patientObject )
+        {
+            if (patientObject === null) {
+                return true;
+            }
+
+            this.DG.GG.properties[id] = {"phenotipsId": patientObject.id };
+
             // Note: we can't blank all patient properties here, since some are pedigree-specific
             // and not available in patient document and should be preserved in saved pedigree JSON
 
@@ -181,47 +250,47 @@ define([
 
             if (patientObject.hasOwnProperty("patient_name")) {
                 if (patientObject.patient_name.hasOwnProperty("first_name")) {
-                    this.DG.GG.properties[0].fName = patientObject.patient_name.first_name;
+                    this.DG.GG.properties[id].fName = patientObject.patient_name.first_name;
                 } else {
-                    this.DG.GG.properties[0].fName = "";
+                    this.DG.GG.properties[id].fName = "";
                 }
                 if (patientObject.patient_name.hasOwnProperty("last_name")) {
-                    this.DG.GG.properties[0].lName = patientObject.patient_name.last_name;
+                    this.DG.GG.properties[id].lName = patientObject.patient_name.last_name;
                 } else {
-                    this.DG.GG.properties[0].lName = "";
+                    this.DG.GG.properties[id].lName = "";
                 }
             }
 
             var genderOK = true;
             if (patientObject.hasOwnProperty("sex")) {
                 var probandSex = patientObject.sex;
-                var possibleGenders = this.getPossibleGenders(0);
+                var possibleGenders = this.getPossibleGenders(id);
                 if (!possibleGenders.hasOwnProperty(probandSex) || !possibleGenders[probandSex]) {
                     probandSex = 'U';
                     genderOK = false;
                 }
-                this.DG.GG.properties[0].gender = probandSex;
+                this.DG.GG.properties[id].gender = probandSex;
             }
 
             if (patientObject.hasOwnProperty("date_of_birth")) {
                 var birthDate = new PedigreeDate(patientObject.date_of_birth);
-                this.DG.GG.properties[0].dob = birthDate.getSimpleObject();
+                this.DG.GG.properties[id].dob = birthDate.getSimpleObject();
             } else {
-                delete this.DG.GG.properties[0].dob;
+                delete this.DG.GG.properties[id].dob;
             }
             if (patientObject.hasOwnProperty("date_of_death")) {
                 var deathDate = new PedigreeDate(patientObject.date_of_death);
-                this.DG.GG.properties[0].dod = deathDate.getSimpleObject();
+                this.DG.GG.properties[id].dod = deathDate.getSimpleObject();
             } else {
-                delete this.DG.GG.properties[0].dod;
+                delete this.DG.GG.properties[id].dod;
             }
             if (patientObject.hasOwnProperty("life_status")) {
                 var lifeStatus = patientObject["life_status"];
                 if (lifeStatus == "deceased" || lifeStatus == "alive") {
-                    this.DG.GG.properties[0].lifeStatus = lifeStatus;
+                    this.DG.GG.properties[id].lifeStatus = lifeStatus;
                 }
             } else {
-                delete this.DG.GG.properties[0].lifeStatus;
+                delete this.DG.GG.properties[id].lifeStatus;
             }
 
             if (patientObject.hasOwnProperty("ethnicity")) {
@@ -234,14 +303,14 @@ define([
                     ethnicities = ethnicities.concat(patientObject.ethnicity.paternal_ethnicity.slice(0));
                 }
                 if (ethnicities.length > 0) {
-                    this.DG.GG.properties[0].ethnicities = Helpers.filterUnique(ethnicities);
+                    this.DG.GG.properties[id].ethnicities = Helpers.filterUnique(ethnicities);
                 }
             }
 
             if (patientObject.hasOwnProperty("external_id")) {
-                this.DG.GG.properties[0].externalID = patientObject.external_id;
+                this.DG.GG.properties[id].externalID = patientObject.external_id;
             } else {
-                delete this.DG.GG.properties[0].externalID;
+                delete this.DG.GG.properties[id].externalID;
             }
 
             var hpoTerms = [];
@@ -264,9 +333,9 @@ define([
                 }
             }
             if (hpoTerms.length > 0) {
-                this.DG.GG.properties[0].hpoTerms = hpoTerms;
+                this.DG.GG.properties[id].hpoTerms = hpoTerms;
             } else {
-                delete this.DG.GG.properties[0].hpoTerms;
+                delete this.DG.GG.properties[id].hpoTerms;
             }
 
             var disorders = [];
@@ -280,9 +349,9 @@ define([
                 }
             }
             if (disorders.length > 0) {
-                this.DG.GG.properties[0].disorders = disorders;
+                this.DG.GG.properties[id].disorders = disorders;
             } else {
-                delete this.DG.GG.properties[0].disorders;
+                delete this.DG.GG.properties[id].disorders;
             }
 
             var genes = [];
@@ -293,9 +362,18 @@ define([
                 }
             }
             if (genes.length > 0) {
-                this.DG.GG.properties[0].candidateGenes = genes;
+                this.DG.GG.properties[id].candidateGenes = genes;
             } else {
-                delete this.DG.GG.properties[0].candidateGenes;
+                delete this.DG.GG.properties[id].candidateGenes;
+            }
+
+            // pedigree-specific properties (may be added by pedigree controller)
+            if (patientObject.hasOwnProperty("pedigreeProperties")) {
+                for (var prop in patientObject.pedigreeProperties) {
+                    if (patientObject.pedigreeProperties.hasOwnProperty(prop)) {
+                        this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
+                    }
+                }
             }
 
             return genderOK;
@@ -446,22 +524,22 @@ define([
         isChildOfProband: function( v )
         {
             var parents = this.DG.GG.getParents(v);
-            if (Helpers.arrayContains(parents,0)) return true;
+            if (Helpers.arrayContains(parents,this.getProbandId())) return true;
             return false;
         },
 
         isSiblingOfProband: function( v )
         {
             var siblings = this.DG.GG.getAllSiblingsOf(v);
-            if (Helpers.arrayContains(siblings,0)) return true;
+            if (Helpers.arrayContains(siblings,this.getProbandId())) return true;
             return false;
         },
 
         isPartnershipRelatedToProband: function( v )
         {
             var parents = this.DG.GG.getParents(v);
-            if (Helpers.arrayContains(parents, 0)) return true;
-            if (v == this.DG.GG.getProducingRelationship(0))
+            if (Helpers.arrayContains(parents, this.getProbandId())) return true;
+            if (v == this.DG.GG.getProducingRelationship(this.getProbandId()))
             {
                 return true;
             }
@@ -471,7 +549,11 @@ define([
         // returns true iff node v is either a sibling, a child or a parent of proband node
         isRelatedToProband: function( v )
         {
-            var probandRelatedRels = this.getAllRelatedRelationships(0);
+            if (this.getProbandId() < 0) {
+                return false;
+            }
+
+            var probandRelatedRels = this.getAllRelatedRelationships(this.getProbandId());
             for (var i = 0; i < probandRelatedRels.length; i++) {
                 var rel = probandRelatedRels[i];
 
@@ -726,7 +808,24 @@ define([
             var connected = {};
 
             var queue = new Queue();
-            queue.push( 0 );
+
+            if (this.getProbandId() >= 0) {
+                // proband is the node which is guaranteed to stay,
+                // so need to find all nodes no longer connected to it - they will become the set of nodes to be removed
+                queue.push( this.getProbandId() );
+            } else {
+                // TODO: review
+                // we don't know which nodes the user wants to keep. For now, just use the node
+                // with the smallest ID that is not being explicitly removed, and only keep nodes
+                // connected to this smallest-id-node (e.g. will pick node with ID=0 in most cases,
+                // effectively acting as before for old pedigrees)
+                for (var i = 0; i < this.DG.GG.getNumVertices(); i++) {
+                    if (i != v && this.isPerson(i) && !this.isPlaceholder(i)) {
+                        queue.push( i );
+                        break;
+                    }
+                }
+            }
 
             while ( queue.size() > 0 ) {
                 var next = parseInt(queue.pop());
@@ -1440,25 +1539,34 @@ define([
 
         clearAll: function()
         {
-            var removedNodes = this._getAllNodes(1);  // all nodes from 1 and up
+            var removedNodes = this._getAllNodes();
 
             var emptyGraph = (this.DG.GG.getNumVertices() == 0);
 
-            var node0properties = emptyGraph ? {} : this.getProperties(0);
+            if (isFamilyPage) {
+                // keep the proband, if any
+                var remainingNodeProperties = (emptyGraph || (this.getProbandId() < 0)) ? {} : this.getProperties(this.getProbandId());
+                var probandID = 0;
+            } else {
+                // keep the node linked to the current patient; if it was not the proband will have no proband
+                var currentNodeId = this.getCurrentPatientNodeID();
+                var remainingNodeProperties = (emptyGraph || (currentNodeId == null)) ? {} : this.getProperties(currentNodeId);
+            }
 
             // it is easier to create abrand new graph transferirng node 0 propertie sthna to remove on-by-one
             // each time updating ranks, orders, etc
 
             var baseGraph = PedigreeImport.initFromPhenotipsInternal(this._onlyProbandGraph);
 
-            this._recreateUsingBaseGraph(baseGraph);
+            this._recreateUsingBaseGraph(baseGraph, 0 /* mark the only remaining node as proband */);
 
-            this.setProperties(0, node0properties);
+            this.setProperties(0, remainingNodeProperties);
 
-            if (emptyGraph)
+            if (emptyGraph) {
                 return {"new": [0], "makevisible": [0]};
+            }
 
-            return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
+            return {"removed": removedNodes, "new": [0], "makevisible": [0]};
         },
 
         redrawAll: function (removedBeforeRedrawList, animateList, newList, ranksBefore)
@@ -1477,11 +1585,11 @@ define([
                     oldRanks.splice(i, 1);
             }
 
-            if (!this._recreateUsingBaseGraph(baseGraph, oldRanks)) return {};  // no changes
+            if (!this._recreateUsingBaseGraph(baseGraph, this.getProbandId(), oldRanks)) return {};  // no changes
 
             var movedNodes = this._getAllNodes();
 
-            var probandReRankSize = (ranksBefore[0] - this.DG.ranks[0]);
+            var probandReRankSize = (ranksBefore[this.getProbandId()] - this.DG.ranks[this.getProbandId()]);
             var reRankedDiffFrom0 = []
             var reRanked          = [];
             for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
@@ -1554,9 +1662,11 @@ define([
             // note: when saving positioned graph, need to save the version of the graph which has virtual edge pieces
             output["GG"] = this.DG.GG.serialize();
 
-            output["ranks"]     = this.DG.ranks;
-            output["order"]     = this.DG.order.serialize();
-            output["positions"] = this.DG.positions;
+            output["ranks"]         = this.DG.ranks;
+            output["order"]         = this.DG.order.serialize();
+            output["positions"]     = this.DG.positions;
+            output["probandNodeID"] = this.getProbandId();
+            output["JSON_version"]  = editor.getInternalJSONVersion();
 
             // note: everything else can be recomputed based on the information above
 
@@ -1568,6 +1678,11 @@ define([
 
         fromJSONObject: function (jsonData)
         {
+            if (!jsonData.hasOwnProperty("JSON_version") || jsonData["JSON_version"] != editor.getInternalJSONVersion()) {
+                alert("Can not initialize from a JSON: unsupported version of pedigree JSON format");
+                return {};
+            }
+
             var removedNodes = this._getAllNodes();
 
             //console.log("Got serialization object: " + Helpers.stringifyObject(jsonData));
@@ -1588,6 +1703,8 @@ define([
 
             var newNodes = this._getAllNodes();
 
+            this._probandId = jsonData.hasOwnProperty("probandNodeID") ? jsonData["probandNodeID"] : -1;
+
             return {"new": newNodes, "removed": removedNodes};
         },
 
@@ -1597,24 +1714,30 @@ define([
 
             //this._debugPrintAll("before");
 
-            if (importType == "ped") {
-                var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated, importOptions.externalIdMark);
-                if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
-            } else if (importType == "BOADICEA") {
-                var baseGraph = PedigreeImport.initFromBOADICEA(importString, importOptions.externalIdMark);
-                if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
-            } else if (importType == "gedcom") {
-                var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated, importOptions.externalIdMark);
-                if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
-            } else if (importType == "simpleJSON") {
-                var baseGraph = PedigreeImport.initFromSimpleJSON(importString);
-                if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
-            }  else if (importType == "phenotipsJSON") {
+            var importData = null;
 
+            if (importType == "ped") {
+                importData = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated, importOptions.externalIdMark);
+            } else if (importType == "BOADICEA") {
+                importData = PedigreeImport.initFromBOADICEA(importString, importOptions.externalIdMark);
+            } else if (importType == "gedcom") {
+                importData = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated, importOptions.externalIdMark);
+            } else if (importType == "simpleJSON") {
+                importData = PedigreeImport.initFromSimpleJSON(importString);
+            }  else if (importType == "phenotipsJSON") {
                 // TODO
             }
-
             //this._debugPrintAll("after");
+
+            if (importData == null
+                || !importData.hasOwnProperty("baseGraph")
+                || !importData.hasOwnProperty("probandNodeID")) {
+                return null;  // no changes
+            }
+
+            if (!this._recreateUsingBaseGraph(importData.baseGraph, importData.probandNodeID)) {
+                return null;  // no changes
+            }
 
             var newNodes = this._getAllNodes();
 
@@ -1632,7 +1755,7 @@ define([
 
         // suggestedRanks: when provided, attempt to use the suggested rank for all nodes,
         //                 in order to keep the new layout as close as possible to the previous layout
-        _recreateUsingBaseGraph: function (baseGraph, suggestedRanks)
+        _recreateUsingBaseGraph: function (baseGraph, probandNodeID, suggestedRanks)
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
@@ -1644,11 +1767,14 @@ define([
                                                  false,
                                                  suggestedRanks );
             } catch (e) {
+                console.log("ERROR re-creating graph: " + e);
                 return false;
             }
 
             this.DG          = newDG;
             this._heuristics = new Heuristics( this.DG );
+
+            this._probandId = probandNodeID;
 
             //this._debugPrintAll("before improvement");
             this._heuristics.improvePositioning();
@@ -2663,7 +2789,7 @@ define([
         {
             var timer = new Helpers.Timer();
 
-            //console.log("pre-fix orders: " + Helpers.stringifyObject(this.DG.order.order[2]));
+            //console.log("pre-fix orders: " + Helpers.stringifyObject(this.DG.order));
             //var xcoord = new XCoord(this.DG.positions, this.DG);
             //this.DG.displayGraph(xcoord.xcoord, "pre-fix");
 

@@ -19,7 +19,7 @@ define([
             var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
             this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector, verticalPosition: "top"});
             isStartupTemplateSelector && this.show();
-            new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
+            new Ajax.Request(new XWiki.Document('WebHome', 'data').getRestURL('objects/PhenoTips.PedigreeClass/'), {
                 method: 'GET',
                 onSuccess: this._onTemplateListAvailable.bind(this)
             });
@@ -95,7 +95,8 @@ define([
             //console.log("observe onTemplateSelected");
             this.dialog.close();
             if (pictureBox.type == 'internal') {
-                editor.getSaveLoadEngine().createGraphFromSerializedData(pictureBox.pedigreeData, false /* add to undo stack */, true /*center around 0*/);
+                var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(pictureBox.pedigreeData);
+                editor.getSaveLoadEngine().createGraphFromSerializedData(updatedJSONData, false /* add to undo stack */, true /*center around 0*/);
             } else if (pictureBox.type == 'simpleJSON') {
                 editor.getSaveLoadEngine().createGraphFromImportData(pictureBox.pedigreeData, 'simpleJSON', {}, false /* add to undo stack */, true /*center around 0*/);
             }

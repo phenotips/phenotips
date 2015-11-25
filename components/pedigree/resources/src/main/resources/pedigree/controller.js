@@ -7,9 +7,11 @@
 
 // TODO: undo/redo in all handlers
 define([
-        "pedigree/model/helpers"
+        "pedigree/model/helpers",
+        "pedigree/saveLoadEngine",
     ], function(
-        Helpers
+        Helpers,
+        SaveLoadEngine
     ){
     var Controller = Class.create({
         initialize: function() {
@@ -142,8 +144,10 @@ define([
         handleClearGraph: function(event)
         {
             console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
-            var changeSet = editor.getGraph().clearAll();
+            var changeSet = editor.getGraph().clearAll(editor.isFamilyPage());
             editor.getView().applyChanges(changeSet, true);
+
+            editor.getView().unmarkAll();
 
             editor.getWorkspace().centerAroundNode(0, false);
 
@@ -229,9 +233,31 @@ define([
                 }
             }
 
-            // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
-            editor.getOkCancelDialogue().show( 'All highlighted nodes will be removed. Do you want to proceed?',
-                                               'Delete nodes?', removeSelected, unhighlightSelected );
+            // disallow removal of the node linked to the current patient
+            for (var i = 0; i < disconnectedList.length; i++) {
+                if (editor.getGraph().isPerson(disconnectedList[i])) {
+                    var node = editor.getNode(disconnectedList[i]);
+                    if (node.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                        editor.getOkCancelDialogue().showError("<br>Can't remove this node because the current patient would have to be removed as well.<br><br>" +
+                                "<font style='font-size:95%'>(a pedigree can't have disconnected components; " +
+                                "removing this node would<br>cause all highlighted individuals to be disconnected from the<br>" +
+                                "proband and thus all of them would have to be removed)</font>",
+                                "Can't remove", "OK", unhighlightSelected);
+                        return;
+                    }
+                }
+            }
+
+            if (!editor.isFamilyPage()) {
+                // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
+                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
+                                                   '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so all nodes no longer<br>connected to the proband have to be removed as well)</font>',
+                                                   'Delete nodes?', removeSelected, unhighlightSelected );
+            } else {
+                editor.getOkCancelDialogue().show( '<br>All highlighted nodes will be removed. Do you want to proceed?<br><br>' +
+                        '<br><font style="font-size:95%">(all persons in a pedigree should be connected, so one of the disconnected sets of nodes has to be removed)</font>',
+                        'Delete nodes?', removeSelected, unhighlightSelected );
+            }
         },
 
         handleSetProperty: function(event)
@@ -242,6 +268,17 @@ define([
             var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": Helpers.cloneObject(event.memo.properties)}};
 
             var node    = editor.getView().getNode(nodeID);
+
+            if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
+                // UI should forbid any changes from happenig in this case, but do a final check before applying any edits
+                var updateMenuWithDiscardedChanges = function() {
+                    editor.getNodeMenu().update();
+                }
+                editor.getOkCancelDialogue().showError("Can't save changes - you do not have edit rights for this patient",
+                                                       "Can't save changes", "OK", updateMenuWithDiscardedChanges);
+                return;
+            }
+
             var changed = false;
 
             var twinUpdate = undefined;
@@ -418,6 +455,7 @@ define([
                 }
             }
 
+            // sync underlying graph with visual node representation's properties
             var allProperties = node.getProperties();
             editor.getGraph().setProperties( nodeID, allProperties );
 
@@ -448,13 +486,13 @@ define([
 
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             //console.log("Undo event: " + Helpers.stringifyObject(undoEvent));
-            if (!event.memo.noUndoRedo && changedValue)
+            if (!event.memo.noUndoRedo && changedValue) {
                 editor.getUndoRedoManager().addState( event, undoEvent );
+            }
         },
 
         handleModification: function(event)
         {
-            try {
             console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             var nodeID        = event.memo.nodeID;
             var modifications = event.memo.modifications;
@@ -463,7 +501,7 @@ define([
 
             //var allProperties = node.getProperties();
 
-            for (modificationType in modifications)
+            for (modificationType in modifications) {
                 if (modifications.hasOwnProperty(modificationType)) {
                     var modValue = modifications[modificationType];
 
@@ -478,18 +516,133 @@ define([
                             editor.getView().applyChanges(changeSet, true);
                         }
                         node.assignProperties(editor.getGraph().getProperties(nodeID));
-                    }
 
+                        if (!event.memo.noUndoRedo) {
+                            editor.getUndoRedoManager().addState( event );
+                        }
+                    }
+                    else
+                    if (modificationType == "assignProband") {
+
+                        var oldProbandID = editor.getGraph().getProbandId();
+
+                        editor.getGraph().setProbandId(nodeID);
+
+                        editor.getNode(nodeID).redrawProbandStatus();
+                        if (oldProbandID >= 0) {
+                            editor.getNode(oldProbandID).redrawProbandStatus();
+                        }
+
+                        editor.getNodeMenu().update();
+
+                        if (!event.memo.noUndoRedo) {
+                            editor.getUndoRedoManager().addState( event );
+                        }
+                    }
+                    else
+                    if (modificationType == "trySetPhenotipsPatientId") {
+
+                        var setLink = function(clearOldData, loadPatientProperties) {
+
+                            event.memo.clearOldData = clearOldData;
+
+                            // load node properties from the linked patient's phenotips document
+
+                            var onDataReady = function(loadedPatientData) {
+                                // check if the value used is equal is already linked to some other node.
+                                // If it is, unlink and, optionally, clean that node's properties
+                                var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+                                if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(modValue)) {
+                                    var oldRepresentingNodeID = allLinkedNodes.patientToNodeMapping[modValue];
+
+                                    var oldNode = editor.getView().getNode(oldRepresentingNodeID);
+                                    oldNode.setPhenotipsPatientId("");
+                                    if (clearOldData) {
+                                        var oldProperties = oldNode.getPatientIndependentProperties();
+                                    } else {
+                                        var oldProperties = oldNode.getProperties();
+                                    }
+                                    editor.getGraph().setProperties( oldRepresentingNodeID, oldProperties );
+                                    var changeSet = {"removed": [oldRepresentingNodeID], "new": [oldRepresentingNodeID]};
+                                    editor.getView().applyChanges(changeSet, true);
+                                }
+
+                                // TODO: a very similar piece of code is used in saveLoadEngine.js, see _finalizeCreateGraph();
+                                //       check if some refactoring/reusing is posible
+                                if (loadedPatientData !== null && loadedPatientData.hasOwnProperty(modValue)) {
+
+                                    var patientJSONObject = loadedPatientData[modValue];
+
+                                    // TODO: review which properties to keep (likley all that are not saved in a patient profile?)
+                                    //       for now save twin/monozygothic/adopted statuses, or pedigree may get inconsistent
+                                    patientJSONObject.pedigreeProperties = node.getPatientIndependentProperties();
+                                    delete patientJSONObject.pedigreeProperties.gender; // this one is loaded from the patient
+
+                                    var genderOk = editor.getGraph().setNodeDataFromPhenotipsJSON( nodeID, patientJSONObject);
+                                    if (!genderOk && !event.memo.noUndoRedo) {
+                                        alert("Gender defined in Phenotips for patient " + modValue + " is incompatible with this pedigree. Setting pedigree node gender to 'Unknown'");
+                                    }
+
+                                    // update visual node's properties using data in graph model which was just loaded from phenotips
+                                    node.assignProperties(editor.getGraph().getProperties(nodeID));
+                                } else if (modValue == "") {
+                                    if (clearOldData) {
+                                        // preserve gender and some other pedigree-specific properties which
+                                        // were manually set and were not loaded from a node
+                                        var clearedProperties = node.getPatientIndependentProperties();
+                                        editor.getGraph().setProperties(nodeID, clearedProperties);
+                                        node.assignProperties(clearedProperties);
+                                    } else {
+                                        node.setPhenotipsPatientId("");
+                                        editor.getGraph().setProperties( nodeID, node.getProperties() );
+                                    }
+                                } else {
+                                    // not clearing data and no loaded data
+                                    node.setPhenotipsPatientId(modValue);
+                                    editor.getGraph().setProperties( nodeID, node.getProperties() );
+                                }
+
+                                var changeSet = editor.getGraph().updateYPositioning();
+                                editor.getView().applyChanges(changeSet, true);
+
+                                editor.getNodeMenu().update();
+
+                                if (!event.memo.noUndoRedo) {
+                                    editor.getUndoRedoManager().addState( event, null /* no easy undo event */);
+                                }
+                            }
+
+                            if (modValue != "") {
+                                if (loadPatientProperties) {
+                                    var patientDataLoader = editor.getPatientDataLoader();
+
+                                    // load data for only one patient with ID=="modValue", the one a node was just linked to
+                                    patientDataLoader.load([modValue], onDataReady);
+                                } else {
+                                    onDataReady(null);
+                                }
+                            } else {
+                                onDataReady(null);
+                            }
+                        }
+
+                        if (!event.memo.noUndoRedo) {
+                            var loadPatientProperties = true;
+                            if (event.memo.hasOwnProperty("details")
+                                && event.memo.details.hasOwnProperty("loadPatientProperties")) {
+                                loadPatientProperties = event.memo.details.loadPatientProperties;
+                            }
+                            Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties);
+                        } else {
+                            // if this is a redo event skip all the warnings
+                            setLink(event.memo.clearOldData);
+                        }
+                    }
+                    else
                     if (modificationType == "makePlaceholder") {
                         // TODO
                     }
                 }
-
-            if (!event.memo.noUndoRedo)
-                editor.getUndoRedoManager().addState( event );
-
-            } catch(err) {
-                console.log("err: " + err);
             }
         },
 
@@ -793,5 +946,101 @@ define([
             }
         }
     }
+
+    Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties)
+    {
+        var onCancelAssignPatient = function() {
+            // clear link input field in node menu
+            editor.getNodeMenu().update();
+        }
+
+        if (loadPatientProperties) {
+            var processLinkCallback = function(clearParameter) {
+                callbackOnValid(clearParameter, true);
+            }
+        } else {
+            var processLinkCallback = function(clearParameter) {
+                callbackOnValid(clearParameter, false);
+            }
+        }
+
+        if (linkID == "") {
+            var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
+            editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this individual and patient record " + oldLinkID + "?</b>" +
+                    "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that, unless you link the patient record to another individual in this pedigree, " +
+                    "the patient will be removed from this family. " +
+                    "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
+                    'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
+            return;
+        }
+
+        var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+        if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+            var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
+            editor.getView().unmarkAll();
+            editor.getView().markNode(currentLinkedNodeID);
+            var onCancel = function() {
+                editor.getView().unmarkAll();
+                onCancelAssignPatient();
+            }
+            editor.getOkCancelDialogue().showWithCheckbox("<br>Patient record " + linkID + " is already linked to a different individual node in this pedigree. "+
+                                                   "Do you want to link the patient record to this individual instead? "+
+                                                   "If you do, the node currently representing the patient will no longer be linked to it.<br><br>",
+                                                   "Re-link patient " + linkID + " to this node?",
+                                                   'Clear data from the pedigree node currently linked to this patient', true,
+                                                   "OK", processLinkCallback, "Cancel", onCancel );
+            return;
+        }
+
+        var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
+        new Ajax.Request(familyServiceURL, {
+            method: 'POST',
+            onSuccess: function(response) {
+                if (response.responseJSON) {
+                    if (!response.responseJSON.validLink) {
+                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
+                                "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
+                    } else {
+                        if (loadPatientProperties) {
+                            var clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
+                        } else {
+                            var clearPropertiesMsg = "";
+                        }
+
+                        var processLinking = function(topMessage, notesMessage) {
+                            var alreadyWasInFamily = editor.isFamilyMember(linkID);
+                            if (!alreadyWasInFamily) {
+                                editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
+                                        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                        notesMessage +  "</div><br>",
+                                        "Add patient to the family", "Confirm", processLinkCallback, "Cancel", onCancelAssignPatient);
+                            } else {
+                                processLinkCallback();
+                            }
+                        }
+
+                        // check if there is a family. If there is no family show a warning that a family will be created
+                        if (!editor.hasFamily() && allLinkedNodes.linkedPatients.length < 2) {
+                            processLinking("Connecting this patient requires creating a family. " +
+                                           "Do you want to create a family and add patient " + linkID + "?",
+                                           "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                           "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa." +
+                                           clearPropertiesMsg);
+                        } else {
+                            processLinking("Do you want to add patient " + linkID + " to this family?",
+                                    "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                    "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa."+
+                                    clearPropertiesMsg);
+                        }
+                    }
+                } else  {
+                    editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',
+                            'Error verifying patient link', "OK", onCancelAssignPatient );
+                }
+            },
+            parameters: {"proband": editor.getGraph().getCurrentPatientId(), "link_to_id": linkID }
+        });
+    }
+
     return Controller;
 });
