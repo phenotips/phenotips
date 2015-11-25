@@ -90,7 +90,7 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
     static {
         Map<String, String> options = new HashMap<>();
-        options.put("lowercaseOperators", Boolean.toString(false));
+        options.put("lowercaseOperators", "false");
         options.put("defType", "edismax");
         COMMON_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
 
@@ -109,20 +109,20 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
 
         options = new HashMap<>();
         options.putAll(COMMON_SEARCH_OPTIONS);
-        options.put(spellcheck, Boolean.toString(false));
+        options.put(spellcheck, "false");
         options.put(DisMaxParams.QF, "symbol^50 symbolStub^25 alt_id^20 alt_idStub^10");
         IDENTIFIER_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
 
         options = new HashMap<>();
         options.putAll(COMMON_SEARCH_OPTIONS);
-        options.put(spellcheck, Boolean.toString(false));
+        options.put(spellcheck, "false");
         options.putAll(DISMAX_SEARCH_OPTIONS);
         TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
 
         options = new HashMap<>();
         options.putAll(COMMON_SEARCH_OPTIONS);
-        options.put(spellcheck, Boolean.toString(true));
-        options.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        options.put(spellcheck, "true");
+        options.put(SpellingParams.SPELLCHECK_COLLATE, "true");
         options.put(SpellingParams.SPELLCHECK_COUNT, "100");
         options.put(SpellingParams.SPELLCHECK_MAX_COLLATION_TRIES, "3");
         options.putAll(DISMAX_SEARCH_OPTIONS);

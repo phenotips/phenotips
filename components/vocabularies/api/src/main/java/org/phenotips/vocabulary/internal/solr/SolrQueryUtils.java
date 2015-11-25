@@ -107,8 +107,8 @@ public final class SolrQueryUtils
             }
         }
         if (newParams.get(SPELLCHECK) == null) {
-            newParams.set(SPELLCHECK, Boolean.toString(true));
-            newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+            newParams.set(SPELLCHECK, "true");
+            newParams.set(SpellingParams.SPELLCHECK_COLLATE, "true");
         }
         return newParams;
     }

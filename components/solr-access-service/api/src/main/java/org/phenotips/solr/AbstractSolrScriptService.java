@@ -429,8 +429,8 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
         if (StringUtils.isNotBlank(sort)) {
             result.put(CommonParams.SORT, sort);
         }
-        result.put("spellcheck", Boolean.toString(true));
-        result.put(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        result.put("spellcheck", "true");
+        result.put(SpellingParams.SPELLCHECK_COLLATE, "true");
         return result;
     }
 
