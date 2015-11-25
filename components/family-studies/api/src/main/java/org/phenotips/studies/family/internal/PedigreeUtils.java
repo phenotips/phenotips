@@ -29,6 +29,7 @@ import org.phenotips.studies.family.response.StatusResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.UserManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,9 @@ public class PedigreeUtils
     private AuthorizationService authorizationService;
 
     @Inject
+    private UserManager userManager;
+
+    @Inject
     private JsonAdapter jsonAdapter;
 
     /**
@@ -85,7 +89,9 @@ public class PedigreeUtils
         if (proband != null) {
             family = this.familyRepository.getFamilyForPatient(proband);
             if (family == null) {
-                if (!this.authorizationService.hasAccess(Right.EDIT, proband.getDocument())) {
+                if (!this.authorizationService.hasAccess(
+                        this.userManager.getCurrentUser(), Right.EDIT, proband.getDocument()))
+                {
                     return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(documentId);
                 }
                 family = this.familyRepository.createFamily();
@@ -154,7 +160,8 @@ public class PedigreeUtils
         JSONResponse jsonResponse = new JSONResponse();
 
         // Checks that current user has edit permissions on family
-        if (!this.authorizationService.hasAccess(Right.EDIT, family.getDocumentReference()))
+        if (!this.authorizationService.hasAccess(
+                this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference()))
         {
             return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
         }
