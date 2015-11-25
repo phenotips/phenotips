@@ -636,8 +636,9 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 #set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
 #if ($xcontext.action != 'view' || $hasFamily)
 ##
+
+
 (% class="clear family-study" %)(((##
-=== $services.localization.render('phenotips.UIXField.family_membership.heading') ===
 {{html wiki='true' clean='false'}}##
   &lt;div class="family-id-div"&gt;
     &lt;a id="familyId" href="$xwiki.getURL($family, 'edit')"&gt;
