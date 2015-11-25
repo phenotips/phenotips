@@ -313,9 +313,6 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter .paternal_age .displayed-value")
     private WebElement fieldPaternalAgeAtEDD;
 
-    @FindBy(css = ".pregnancy_history > p:nth-of-type(2) > ")
-    private WebElement fieldPregnancyHistoryGravida;
-
     @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
     private WebElement fieldConceptionAfterFertility;
 
