@@ -30,6 +30,8 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
@@ -48,7 +50,6 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -98,6 +99,9 @@ public class XWikiFamilyExport
     private AuthorizationService authorizationService;
 
     @Inject
+    private UserManager userManager;
+
+    @Inject
     private RecordConfigurationManager configuration;
 
     @Inject
@@ -127,7 +131,7 @@ public class XWikiFamilyExport
      * @param family family
      * @return JSON object with family information
      */
-    public JSON toJSON(Family family)
+    public JSONObject toJSON(Family family)
     {
         JSONObject familyJSON = new JSONObject();
         familyJSON.put("familyPage", family.getId());
@@ -165,9 +169,12 @@ public class XWikiFamilyExport
         patientJSON.put(URL, url);
 
         // add permissions information
+        User currentUser = this.userManager.getCurrentUser();
         JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit", this.authorizationService.hasAccess(Right.EDIT, patient.getDocument()));
-        permissionJSON.put("hasView", this.authorizationService.hasAccess(Right.VIEW, patient.getDocument()));
+        permissionJSON.put("hasEdit",
+                           this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument()));
+        permissionJSON.put("hasView",
+                           this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument()));
         patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
@@ -193,7 +200,9 @@ public class XWikiFamilyExport
             }
 
             Right right = Right.toRight(requiredPermissions);
-            if (!this.authorizationService.hasAccess(right, family.getDocumentReference())) {
+            if (!this.authorizationService.hasAccess(
+                    this.userManager.getCurrentUser(), right, family.getDocumentReference()))
+            {
                 continue;
             }
 
@@ -228,7 +237,7 @@ public class XWikiFamilyExport
             }
 
             Right right = Right.toRight(requiredPermissions);
-            if (!this.authorizationService.hasAccess(right, patient.getDocument())) {
+            if (!this.authorizationService.hasAccess(this.userManager.getCurrentUser(), right, patient.getDocument())) {
                 continue;
             }
 
@@ -315,7 +324,7 @@ public class XWikiFamilyExport
         PatientData<String> links = patient.getData("medicalreports");
         Map<String, String> mapOfLinks = new HashMap<>();
 
-        if (this.authorizationService.hasAccess(Right.VIEW, patient.getDocument())) {
+        if (this.authorizationService.hasAccess(this.userManager.getCurrentUser(), Right.VIEW, patient.getDocument())) {
             if (links != null) {
                 Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
                 while (iterator.hasNext()) {
