@@ -372,7 +372,7 @@ define([
 
         PedigreeImport.validateBaseGraph(newG);
 
-        return newG;
+        return {"baseGraph": newG, "probandNodeID": 0};
     }
 
 
@@ -618,7 +618,7 @@ define([
 
         PedigreeImport.validateBaseGraph(newG);
 
-        return newG;
+        return {"baseGraph": newG, "probandNodeID": 0};
     }
 
     /* ===============================================================================================
@@ -731,6 +731,8 @@ define([
            throw "Unable to import pedigree: input is empty";
        }
 
+       var probandID = null;
+
        var newG = new BaseGraph();
 
        var nameToID            = {};
@@ -791,6 +793,9 @@ define([
                    if (property == "mother" || property == "father")  // those are processed on the second pass
                        continue;
 
+                   if (property == "proband" && probandID === null) {
+                       probandID = pedigreeID;
+                   }
                    if (property == "sex") {
                        var genderString = value.toLowerCase();
                        if( genderString == "female" || genderString == "f")
@@ -962,7 +967,11 @@ define([
 
        PedigreeImport.validateBaseGraph(newG);
 
-       return newG;
+       if (probandID === null) {
+           probandID = 0; // default to 0 if not defined explicitly
+       }
+
+       return {"baseGraph": newG, "probandNodeID": probandID};
     }
 
 
@@ -1340,7 +1349,7 @@ define([
 
        PedigreeImport.validateBaseGraph(newG);
 
-       return newG;
+       return {"baseGraph": newG, "probandNodeID": 0};
     }
 
 

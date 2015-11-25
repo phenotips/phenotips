@@ -27,13 +27,13 @@ define([
                 'type'  : 'hidden',
                 'tab': 'Personal'
             },
-            /*{
+            {
                 'name' : 'phenotipsid',
-                'label' : 'Phenotips Patient Link',
-                'type' : 'text', //phenotipsid-picker',
+                'label' : 'Patient Record',
+                'type' : 'phenotipsid-picker',
                 'tab' : 'Personal',
-                'function' : 'setPhenotipsPatientId'
-            },*/
+                'function' : 'trySetPhenotipsPatientId'
+            },
             {
                 'name' : 'gender',
                 'label' : 'Gender',
@@ -72,7 +72,7 @@ define([
             },
             {
                 'name' : 'external_id',
-                'label': 'External ID',
+                'label': 'Identifier',
                 'type' : 'text',
                 'tab': 'Personal',
                 'function' : 'setExternalID',
@@ -260,6 +260,14 @@ define([
                 'tab': 'Cancers',
                 'rows' : 2,
                 'function' : 'setComments'
+            },
+            {
+                'name' : 'setproband',
+                'label' : 'Set this person to be the proband node',
+                'type' : 'button',
+                'tab' : 'Clinical',
+                'buttoncss' : 'unintrusive-button menu-fullWidthbutton',
+                'function' : 'assignProband'
             }
         ];
 

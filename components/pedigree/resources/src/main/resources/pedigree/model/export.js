@@ -80,6 +80,11 @@ define([
                  }
              }
          }
+
+         if (editor.getGraph().getProbandId() == i) {
+             person["proband"] = true;
+         }
+
          exportObj.push(person);
      }
 
@@ -248,7 +253,7 @@ define([
 
          var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : id;
 
-         var proband = (i == 0) ? "1" : "0";
+         var proband = (i == editor.getGraph().getProbandId()) ? "1" : "0";
 
          output += familyID + "\t" + name + "\t" + proband + "\t" + id + "\t";
 
