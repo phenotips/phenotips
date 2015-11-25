@@ -166,7 +166,7 @@ public class JsonAdapterImpl implements JsonAdapter
             for (Object termIdObj : externalTerms) {
                 VocabularyTerm term = hpoService.getTerm(termIdObj.toString());
                 if (term != null) {
-                    JSONObject termJson = JSONObject.fromObject(term.toJson());
+                    JSONObject termJson = JSONObject.fromObject(term.toJSON());
                     termJson.put("observed", "yes");
                     termJson.put("type", "phenotype");
                     internalTerms.add(termJson);
@@ -189,7 +189,7 @@ public class JsonAdapterImpl implements JsonAdapter
             for (Object termIdObj : externalTerms) {
                 VocabularyTerm term = omimService.getTerm(termIdObj.toString());
                 if (term != null) {
-                    internalTerms.add(term.toJson());
+                    internalTerms.add(term.toJSON());
                 }
             }
         }
