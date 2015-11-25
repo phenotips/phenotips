@@ -35,7 +35,7 @@ define([
                   this._legendInfo.insert({'top': this.closeButton});
                   this._legendInfo.hide();
               }
-              var legendContainer = new Element('div', {'class': 'legend-container', 'id': 'legend-container'}).insert(this._legendInfo);
+              var legendContainer = new Element('div', {'class': 'legend-container field-no-user-select', 'id': 'legend-container'}).insert(this._legendInfo);
               editor.getWorkspace().getWorkArea().insert(legendContainer);
             } else {
               if (!editor.isReadOnlyMode()) {

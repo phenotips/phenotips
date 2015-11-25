@@ -164,6 +164,9 @@ define([
         _combinableEvents: function ( event1, event2 ) {
             if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
                 return false;
+            if (!event1.memo.hasOwnProperty("properties") || !event2.memo.hasOwnProperty("properties")) {
+                return false;
+            }
             if (event1.memo.properties.hasOwnProperty("setFirstName") &&
                 event2.memo.properties.hasOwnProperty("setFirstName") )
                 return true;
