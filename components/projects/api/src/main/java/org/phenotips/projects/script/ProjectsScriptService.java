@@ -23,11 +23,13 @@ import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectsRepository;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -85,5 +87,29 @@ public class ProjectsScriptService implements ScriptService
         accessLevels.add(leaderAccessLevel);
 
         return this.projectsRepository.getAllProjects(accessLevels);
+    }
+
+    /**
+     * Receives a comma separated list of projects ids and returns a collection of ids of all templates associated with
+     * them. For example, if t1,t2 are associated with p1 and t2,t3 are associated with p2, the collection returned for
+     * the input "p1,p2" would contain t1,t2,t3.
+     *
+     * @param projects command separated project ids
+     * @return collection of templates ids.
+     */
+    public Collection<String> getTemplatesForProjects(String projects)
+    {
+        Set<String> templates = new TreeSet<String>();
+        for (String projectId : projects.split(",")) {
+            Project project = this.getProjectById(projectId);
+            if (project == null) {
+                continue;
+            }
+            for (EntityReference template : project.getTemplates()) {
+                String templateId = template.getName();
+                templates.add(templateId);
+            }
+        }
+        return templates;
     }
 }
