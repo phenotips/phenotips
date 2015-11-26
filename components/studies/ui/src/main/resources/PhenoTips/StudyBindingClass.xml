@@ -107,7 +107,6 @@
     #end
   #end
 #end
-{{html clean="false" wiki="false"}}
 &lt;div class="form-template-option"&gt;
 &lt;select&gt;
 &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
@@ -143,8 +142,7 @@
     [[${configTitle}&gt;&gt;${value}]]
   #end
 #end
-{{/velocity}}
-</content>
+{{/html}}{{/velocity}}</content>
   <class>
     <name>PhenoTips.StudyBindingClass</name>
     <customClass/>
@@ -401,42 +399,7 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:update_studies", function(event) {
-   selected = "";
-   if (event.memo) {
-      selected = event.memo.selected;
-   }
-
-   new Ajax.Request("$xwiki.getURL('Projects.getStudiesForProjects', 'get', 'outputSyntax=plain')", {
-      parameters : {'xaction'  : 'get',
-                    'projects' : selected},
-      onCreate : function() {
-       //  this.fld.addClassName("loading");
-      },
-      onSuccess : function(response) {
-//           templateSelectionContainer.update(response.responseText);
-          var i =1;
-          i = 2;
-      },
-      onFailure : function(response) {
-    //     var failureReason = response.responseText || response.statusText;
-    //      if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-    //         failureReason = "$services.localization.render('phenotips.studyBindingClass.failure.noResponse')";
-    //      }
-    //      _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
-       },
-        on0 : function (response) {
-     //     response.request.options.onFailure(response);
-        },
-       onComplete : function () {
-     //       this.fld.removeClassName("loading");
-
-       }
-     });
-
-});
-
-//document.observe("xwiki:dom:loaded", function(event) {
+      <code>//document.observe("xwiki:dom:loaded", function(event) {
 //   var studyAssignmentTool = $('study-assignment-config');
 //   if (!studyAssignmentTool) {
 //     return;
