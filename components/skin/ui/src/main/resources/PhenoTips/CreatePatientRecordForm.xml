@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1442436659000</date>
-  <contentUpdateDate>1442431648000</contentUpdateDate>
+  <date>1448474235000</date>
+  <contentUpdateDate>1448318337000</contentUpdateDate>
   <version>1.1</version>
   <title>Form for creating new patient records</title>
   <comment/>
@@ -188,29 +188,28 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     initialize : function ()
     {
-       _this = this;
-
+       __this = this;
        projectSectionId = 'projectsSection';
        templatesSectionId = 'templatesSection';
        sectionCreated = {
           projectSectionId : false,
           templatesSectionId : false};
 
-       _this.newPatientForm = $('patient-creation-form');
-       if (!_this.newPatientForm) {
+       __this.newPatientForm = $('patient-creation-form');
+       if (!__this.newPatientForm) {
           return;
        }
 
-       _this.numberOfProjects = parseInt($('numberOfProjects').value);
-       _this.numberOfTemplates = parseInt($('numberOfTemplates').value);
-       if (_this.numberOfProjects == 0 &amp;&amp; _this.numberOfTemplates &lt; 2) {
+       __this.numberOfProjects = parseInt($('numberOfProjects').value);
+       __this.numberOfTemplates = parseInt($('numberOfTemplates').value);
+       if (__this.numberOfProjects == 0 &amp;&amp; __this.numberOfTemplates &lt; 2) {
           // Nothing to choose
           return;
        }
 
-       _this.newPatientForm.observe('submit', function (event) {
+       __this.newPatientForm.observe('submit', function (event) {
           event.stop();
-          _this._createSelectionPopup();
+          __this._createSelectionPopup();
        });
     },
 
@@ -229,7 +228,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           onSuccess : function(response) {
              section.update(response.responseText);
              sectionCreated[sectionId] = true;
-             if (_this._areAllSectionsCreated()) {
+             if (__this._areAllSectionsCreated()) {
                 document.fire("xwiki:dom:updated");
              }
           },
@@ -239,7 +238,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
                 failureReason = "$services.localization.render('phenotips.chooseProjectStudy.failure.noResponse')";
              }
              var failureMessage = "$services.localization.render('phenotips.chooseProjectStudy.failureMessage')";
-             _this._messages.update(new Element('div', {'class' : 'errormessage'}).update(failureMessage + ' ' + failureReason));
+             __this._messages.update(new Element('div', {'class' : 'errormessage'}).update(failureMessage + ' ' + failureReason));
           },
           on0 : function (response) {
              response.request.options.onFailure(response);
@@ -250,21 +249,23 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _createSelectionPopup: function()
     {
-       var selectionForm = new Element('form', {'action' : _this.newPatientForm.action, 'class' : 'xform'});
+       var selectionForm = new Element('form', {'action' : __this.newPatientForm.action, 'class' : 'xform'});
        var formDataWrapper = new Element('div');
        selectionForm.insert(formDataWrapper);
 
-       if (_this.numberOfProjects &gt; 0) {
-          formDataWrapper.insert(_this._createSection(projectSectionId, 'PhenoTips.ProjectBindingSheet'));
+       if (__this.numberOfProjects &gt; 0) {
+          formDataWrapper.insert(__this._createSection(projectSectionId, 'PhenoTips.ProjectBindingSheet'));
        }
 
-       if (_this.numberOfTemplates &gt; 0) {
-          formDataWrapper.insert(_this._createSection(templatesSectionId, 'PhenoTips.StudyBindingSheet'));
+       if (__this.numberOfTemplates &gt; 0) {
+          formDataWrapper.insert(__this._createSection(templatesSectionId, 'PhenoTips.StudyBindingSheet'));
        }
 
-       _this.newPatientForm.select('input[type="hidden"]').each(function(item) {
+       __this.newPatientForm.select('input[type="hidden"]').each(function(item) {
           formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
        });
+
+       formDataWrapper.insert(new Element('p'));
 
        var submitText = "$services.localization.render('phenotips.chooseProjectStudy.createButton')"
        var submitButton = new Element('input', {type : 'submit', value : submitText, 'class' : 'button'});
@@ -284,7 +285,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 }(PhenoTips || {}));
 
 document.observe("xwiki:dom:loaded", function() {
-  new PhenoTips.widgets.SelectProjectAndTemplate(document.documentElement.down('meta[name="page"]').content);
+  new PhenoTips.widgets.SelectProjectAndTemplate();
 });</code>
     </property>
     <property>
