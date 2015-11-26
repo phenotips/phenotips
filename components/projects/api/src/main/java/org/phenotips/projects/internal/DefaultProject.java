@@ -83,7 +83,7 @@ public class DefaultProject implements Project
 
     @Override
     public String getFullName() {
-        return projectId;
+        return projectReference.toString();
     }
 
     @Override
@@ -244,7 +244,7 @@ public class DefaultProject implements Project
     private DocumentReferenceResolver<EntityReference> getEntityResolver() {
         try {
             return ComponentManagerRegistry.getContextComponentManager()
-                    .getInstance(DocumentReferenceResolver.TYPE_REFERENCE);
+                .getInstance(DocumentReferenceResolver.TYPE_REFERENCE);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
