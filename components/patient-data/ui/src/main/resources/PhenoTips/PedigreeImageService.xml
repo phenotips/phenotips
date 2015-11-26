@@ -90,11 +90,11 @@
     #if (!$pedigree.endsWith('&lt;/svg&gt;'))
       #set ($pedigree = $pedigree.concat('&lt;/svg&gt;'))
     #end
-    #set ($pedigreeDocRoot = $services.xml.parse($pedigree).getDocumentElement())
-    #set ($width = $mathtool.toInteger($pedigreeDocRoot.getAttribute('width')))
-    #set ($height = $mathtool.toInteger($pedigreeDocRoot.getAttribute('height')))
-    #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigree, $height, $width))
-    $response.sendRedirect($pedigreeRasterUrl)
+    #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($pedigree, $patient.document))
+    #if ("$!request.getParameter('force-download')" == '1')
+      #set ($discard = $pedigreeRasterUrl.getParameters().put('force-download', '1'))
+    #end
+    $response.sendRedirect($pedigreeRasterUrl.serialize())
   #else
     $response.setContentType('image/svg+xml')##
     $pedigree

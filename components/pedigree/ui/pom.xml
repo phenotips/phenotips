@@ -49,6 +49,12 @@
     -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-svg</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-widgets-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
