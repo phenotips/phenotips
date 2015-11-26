@@ -63,5 +63,6 @@
     <module>proxy-authentication</module>
     <module>record-locking</module>
     <module>xwiki-translation-manager</module>
+    <module>xwiki-platform-svg</module>
   </modules>
 </project>
