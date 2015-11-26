@@ -26,7 +26,8 @@ define([
                                    "Gastric": "#9aac8c",   // (?) greenish
                                    "Lung": "#008080",      // teal
                                    "Brain": "#F5DEB3",     // (?) wheat
-                                   "Oesophagus": "#BC8F8F" // (?) rosybrown
+                                   "Oesophagus": "#BC8F8F", // (?) rosybrown
+                                   "Thyroid": "#FFFF00"     // yellow
                                  };
             this._cancerLabels = { "Breast": "Breast cancer",
                                    "Ovarian": "Ovarian cancer",
@@ -40,6 +41,7 @@ define([
                                    "Lung": "Lung cancer",
                                    "Brain": "Brain cancer",
                                    "Oesophagus": "Oesophagus cancer",
+                                   "Thyroid": "Thyroid cancer"
                                  };
             $super('Cancers', true);
         },
