@@ -58,7 +58,7 @@
 #set ($projects = $services.projects.getAllProjectsAsContributor())
 #foreach ($p in $projects)
     &lt;div&gt;
-    &lt;input type="checkbox" id="${prefix}${p.getName()}" name="${prefix}${p.getName()}" /&gt;$p.getName()
+    &lt;input type="checkbox" id="${prefix}${p.getName()}" name="${p.getName()}" /&gt;$p.getName()
     &lt;/div&gt;
 #end
 ##
