@@ -124,9 +124,9 @@ var Workspace = Class.create({
         bbox.height = Math.ceil(_bbox.height) + 4;
         //console.log("BBOX: x:" + bbox.x + " y:" + bbox.y + " width: " + bbox.width + " height: " + bbox.height + "\n");
 
-
         var svgText = image.innerHTML.replace(/xmlns(:xlink)?=".*?"/g, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
-                  .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+                          .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) +
+                          "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\"");
 
         if (anonimize) {
             editor.getView().setAnonimizeStatus(false);
