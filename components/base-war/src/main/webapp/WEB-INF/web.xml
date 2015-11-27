@@ -32,6 +32,12 @@
     <param-value>org.xwiki.rest.internal.XWikiRestletJaxRsApplication</param-value>
   </context-param>
 
+  <!-- Shorter URLs: this gets rid of /bin/ from URLs. -->
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+  </filter>
+
   <!-- Filter in charge of deciding whether to call the ResourceReferenceHandler Servlet (currently used to handle new
        Resource Types registered as Components) or instead to continue with the rest of the filters and mappings below.
        In the future, the goal is to move more and more Resource handling using the ResourceReferenceHandler Servlet and
@@ -122,6 +128,14 @@
       <param-value>*</param-value>
     </init-param>
   </filter>
+
+  <!-- All URLs must be considered for rewriting, the filter has its own configuration for deciding which URLs to process -->
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
 
   <!-- The Routing Fitler decides how to route all requests and thus must be mapped to handle all incoming requests -->
   <filter-mapping>
