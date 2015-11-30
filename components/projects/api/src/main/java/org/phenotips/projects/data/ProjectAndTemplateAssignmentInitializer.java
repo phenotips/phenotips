@@ -1,3 +1,20 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
@@ -29,16 +46,17 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
 
+/**
+ * Initializes the patient with selected project(s) and template.
+ *
+ * @version $Id$
+ */
 @Component(roles = { PatientRecordInitializer.class })
 @Named("projectAndTemplate")
 @Singleton
 public class ProjectAndTemplateAssignmentInitializer implements PatientRecordInitializer
 {
-    /** The XClass used to store collaborators in the patient record. */
-    private EntityReference PROJECT_BINDING_REFERENCE = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
-    private String PROJECT_BINDING_FIELD = "projectReference";
+    private static final String PROJECT_BINDING_FIELD = "projectReference";
 
     private static final String PROJECT_PREFIX = "PhenoTips.ProjectBindingClass_";
 
@@ -46,14 +64,18 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
 
     private static final String PROJECT_SELECTED = "on";
 
+    /** The XClass used to store collaborators in the patient record. */
+    private EntityReference projectBindingReference = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     @Inject
     private Execution execution;
 
     @Inject
-    DocumentAccessBridge bridge;
+    private DocumentAccessBridge bridge;
 
     @Inject
-    Logger logger;
+    private Logger logger;
 
     @Override
     public void initialize(Patient patient)
@@ -94,7 +116,7 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
 
         try {
             String projects = StringUtils.join(projectsToAssign, ";");
-            BaseObject projectBindingObject = patientDoc.newXObject(PROJECT_BINDING_REFERENCE, xContext);
+            BaseObject projectBindingObject = patientDoc.newXObject(projectBindingReference, xContext);
             projectBindingObject.setStringValue(PROJECT_BINDING_FIELD, projects);
         } catch (XWikiException e) {
             this.logger.error("Failed to bind a project to patient. Patient: {}", patientRef.getName(), e.getMessage());
