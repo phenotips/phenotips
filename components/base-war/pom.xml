@@ -144,7 +144,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.35</version>
+      <version>5.1.37</version>
     </dependency>
     <!-- Logging framework -->
     <dependency>
