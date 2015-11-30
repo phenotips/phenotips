@@ -249,7 +249,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _createSelectionPopup: function()
     {
-       var selectionForm = new Element('form', {'action' : __this.newPatientForm.action, 'class' : 'xform'});
+       var selectionForm = new Element('form', {id: 'selectPTForm', 'action' : __this.newPatientForm.action, 'class' : 'xform'});
        var formDataWrapper = new Element('div');
        selectionForm.insert(formDataWrapper);
 
@@ -265,6 +265,9 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
        });
 
+       formDataWrapper.insert(new Element('input', {name: 'projectsSelected', id: 'projectsSelected', type : 'hidden'}));
+       formDataWrapper.insert(new Element('input', {name: 'templateSelected', id: 'templateSelected', type : 'hidden'}));
+
        formDataWrapper.insert(new Element('p'));
 
        var submitText = "$services.localization.render('phenotips.chooseProjectStudy.createButton')"
@@ -274,10 +277,39 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        var cancelButton = new Element('input', {type : 'button', value : cancelText, 'class' : 'button secondary'});
        formDataWrapper.insert(' ').insert(cancelButton);
        var modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
+       submitButton.observe('click', function(event) {
+          event.stop();
+          __this._submitForm();
+       });
        cancelButton.observe('click', function(event) {
           modalBox.closeDialog();
        });
        modalBox.showDialog();
+    },
+
+    _submitForm : function() {
+       // Find selected project
+       var projectsSelected = '';
+       $('projectsSection').select(":input").map(function(item) {
+          if (item.checked) {
+             if (projectsSelected.length&gt;0) {
+                projectsSelected += ",";
+             }
+             projectsSelected += item.name;
+          }
+       });
+       $('projectsSelected').value = projectsSelected;
+
+       // Find selected template
+       var templateSelected = '';
+       var templates = $('templatesSelect').select("option").map(function(item) {
+          if (item.selected) {
+             templateSelected = item.value;
+          }
+       });
+       $('templateSelected').value = templateSelected;
+
+       $('selectPTForm').submit();
     }
   });
   return PhenoTips;
