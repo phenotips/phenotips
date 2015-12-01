@@ -145,14 +145,11 @@ define([
         {
             console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             var changeSet = editor.getGraph().clearAll(editor.isFamilyPage());
-            editor.getView().applyChanges(changeSet, true);
+
+            var noUndoRedo = event.memo ? ( event.memo.hasOwnProperty("noUndoRedo") ? event.memo.noUndoRedo : false ) : false;
+            editor.getSaveLoadEngine()._finalizeCreateGraph(changeSet, noUndoRedo, true);
 
             editor.getView().unmarkAll();
-
-            editor.getWorkspace().centerAroundNode(0, false);
-
-            if (!event.memo.noUndoRedo)
-                editor.getUndoRedoManager().addState( event );
         },
 
         handleRemove: function(event)

@@ -6,11 +6,9 @@
  */
 
 define([
-        "pedigree/model/helpers",
-        "pedigree/view/templateSelector"
+        "pedigree/model/helpers"
     ], function(
-        Helpers,
-        TemplateSelector
+        Helpers
     ){
     var SaveLoadEngine = Class.create( {
 
@@ -50,8 +48,12 @@ define([
             {
                 console.log("ERROR loading pedigree: " + err);
                 alert("Error loading pedigree");
-                document.fire("pedigree:graph:clear");
                 document.fire("pedigree:load:finish");
+
+                // if there is no pedigree and import was used to initialize a pedigree need to display the import dialogue again
+                if (!editor.pedigreeExists()) {
+                    this.showInitializeDialogue();
+                }
                 return;
             }
 
@@ -72,8 +74,12 @@ define([
             {
                 console.log("ERROR importing pedigree: " + err);
                 alert("Error importing pedigree: " + err);
-                document.fire("pedigree:graph:clear");
                 document.fire("pedigree:load:finish");
+
+                // if there is no pedigree and import was used to initialize a pedigree need to display the import dialogue again
+                if (!editor.pedigreeExists()) {
+                    this.showInitializeDialogue(true /* go to import tab */);
+                }
                 return;
             }
 
@@ -151,15 +157,17 @@ define([
 
                         var familyMembers = editor.getCurrentFamilyPageFamilyMembers();
 
-                        if (familyMembers.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
+                        // if there is only one patient we can reasonably guess that we need to link
+                        // that patient to the assumed proband node
+                        if (familyMembers.length == 1) {
                             var probandProperties = editor.getGraph().getProperties(0);
                             probandProperties["phenotipsId"] = familyMembers[0].id;
                             editor.getGraph().setProperties(0, probandProperties);
                         }
                     }
                     else {
-                        // similar to family page, if no node is linked to the current patient link assumed proband node
-                        // to current patient.
+                        // similar to family page, if no node is linked to the current patient =>
+                        // link assumed proband node to current patient.
                         var probandProperties = editor.getGraph().getProperties(editor.getGraph().getProbandId());
                         if (!probandProperties.hasOwnProperty("phenotipsId")) {
                             // TODO: it is currently guaranteed that a node is linked to editor.getGraph().getCurrentPatientId()
@@ -276,23 +284,34 @@ define([
                 onSuccess: function (response) {
                     //console.log("Data from LOAD: >>" + response.responseText + "<<");
                     if (response.responseJSON) {
-                        console.log("[LOAD] recived JSON: " + Helpers.stringifyObject(response.responseJSON));
+                        console.log("[LOAD] received JSON: " + Helpers.stringifyObject(response.responseJSON));
 
-                        var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
+                        try {
+                            var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
 
-                        var addSaveEventOnceLoaded = function() {
-                            // since we just loaded data from disk data in memory is equivalent to data on disk
-                            editor.getUndoRedoManager().addSaveEvent();
+                            var addSaveEventOnceLoaded = function() {
+                                // since we just loaded data from disk data in memory is equivalent to data on disk
+                                editor.getUndoRedoManager().addSaveEvent();
+                            }
+
+                            this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
+                        } catch (error) {
+                            console.log("[LOAD] error parsing pedigree JSON");
+                            this.showInitializeDialogue();
                         }
-
-                        // FIXME: it seems like load will generate saveEvent + undoEvent in undoredo stack
-
-                        this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
                     } else {
-                        new TemplateSelector(true);
+                        this.showInitializeDialogue();
                     }
                 }.bind(this)
             })
+        },
+
+        showInitializeDialogue: function(showImportTab) {
+            document.fire("pedigree:load:finish");
+            editor.getTemplateImportSelector().show(showImportTab ? 1 : 0, false,
+                "No pedigree is currently defined. Please select a template to start a pedigree, or import an existing pedigree",
+                "box infomessage"
+                );
         }
     });
 
