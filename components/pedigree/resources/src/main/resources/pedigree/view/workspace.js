@@ -49,6 +49,13 @@ define([
                 var deltax = me.viewBoxX - dx/me.zoomCoefficient;
                 var deltay = me.viewBoxY - dy/me.zoomCoefficient;
 
+                if (isNaN(deltax)) {
+                    deltax = 0;
+                }
+                if (isNaN(deltay)) {
+                    deltay = 0;
+                }
+
                 me.getPaper().setViewBox(deltax, deltay, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
                 me.background.ox = deltax;
                 me.background.oy = deltay;
