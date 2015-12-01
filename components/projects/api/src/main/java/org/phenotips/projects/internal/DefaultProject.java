@@ -24,7 +24,6 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.studies.data.Study;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -46,6 +45,7 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.ListProperty;
 
 /**
  * @version $Id$
@@ -56,7 +56,7 @@ public class DefaultProject implements Project
 
     private static final String COLLABORATOR_KEY = "collaborator";
 
-    private static final String TEMPLATE_KEY = "study";
+    private static final String TEMPLATE_FIELD_NAME = "templates";
 
     private String projectId;
 
@@ -174,18 +174,19 @@ public class DefaultProject implements Project
     @Override
     public Collection<EntityReference> getTemplates()
     {
+        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        ListProperty templatesXList = null;
+        try {
+            templatesXList = (ListProperty) xObject.get(TEMPLATE_FIELD_NAME);
+        } catch (Exception e) {
+            this.getLogger().error("Error reading property {} from project {}.",
+                TEMPLATE_FIELD_NAME, this.projectId, e.getMessage());
+        }
+        List<String> templatesList = templatesXList.getList();
+
         List<EntityReference> templates = new ArrayList<EntityReference>();
-
-        DocumentReference classReference =
-            this.getEntityResolver().resolve(Study.CLASS_REFERENCE, projectReference);
-        Collection<BaseObject> xTemplates = this.projectObject.getXObjects(classReference);
-
-        if (xTemplates != null) {
-            for (BaseObject o : xTemplates) {
-                if (o == null) {
-                    continue;
-                }
-                String templateString = o.getStringValue(TEMPLATE_KEY);
+        if (templatesList != null) {
+            for (String templateString : templatesList) {
                 if (StringUtils.isBlank(templateString)) {
                     continue;
                 }
@@ -201,15 +202,14 @@ public class DefaultProject implements Project
     public boolean setTemplates(Collection<EntityReference> templates)
     {
         XWikiContext xContext = getXContext();
-        DocumentReference classReference =
-            this.getEntityResolver().resolve(Study.CLASS_REFERENCE, projectReference);
+        List<String> templatesList = new ArrayList<String>();
+        for (EntityReference template : templates) {
+            templatesList.add(template.toString());
+        }
 
-        this.projectObject.removeXObjects(classReference);
         try {
-            for (EntityReference template : templates) {
-                BaseObject o = this.projectObject.newXObject(classReference, xContext);
-                o.setStringValue(TEMPLATE_KEY, this.getEntitySerializer().serialize(template));
-            }
+            BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+            xObject.set(TEMPLATE_FIELD_NAME, templatesList, xContext);
             xContext.getWiki().saveDocument(this.projectObject, "Updated templates", true, xContext);
             return true;
         } catch (Exception e) {
