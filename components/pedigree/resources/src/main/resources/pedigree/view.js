@@ -686,7 +686,7 @@ define([
             for (var i = 0; i < newPersons.length; i++) {
                 var newPerson = this.addNode(newPersons[i]);
                 if (markNew) {
-                    this.markNode(nextHighlight);
+                    this.markNode(newPerson.getID());
                 }
             }
 
