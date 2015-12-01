@@ -250,31 +250,27 @@ define([
                 }];
             } else {
                 menuItems = [{
-                    name : 'input',
-                    items: [
-                        { key : 'templates', label : 'Templates', icon : 'copy'},
-                        { key : 'import',    label : 'Import', icon : 'upload'}
-                    ]
-                  }, {
                     name : 'edit',
                     items: [
                         { key : 'undo',   label : 'Undo', icon : 'undo'},
                         { key : 'redo',   label : 'Redo', icon : 'repeat'},
-                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
-                        //{ key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
-                        { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
+                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap'}
                     ]
                   }, {
                     name : 'print',
                     items: [
                         { key : 'print',  label : 'Print', icon : 'print'},
                     ]
+                  },{
+                      name : 'more',
+                      items: [
+                          { key : 'more', label : 'More...', icon : 'caret-down', callback: hideShowSubmenu} //sort-desc
+                    ]
                   }, {
                     name : 'output',
                     items: [
                         { key : 'save',      label : 'Save', icon : 'check'},
                         { key : 'export',    label : 'Export', icon : 'download'},
-                        //{ key : 'print',     label : 'Print', icon : 'print'},
                         { key : 'close',     label : 'Close', icon : 'sign-out'}
                     ]
                 }];
@@ -290,7 +286,9 @@ define([
                   }, {
                     name : 'other',
                     items: [
-                        { key : 'clear',  label : 'Clear', icon : 'times-circle'},
+                        //{ key : 'clear',  label : 'Clear', icon : 'times-circle'},
+                        { key : 'templates', label : 'Templates', icon : 'copy'},
+                        { key : 'import',    label : 'Import', icon : 'upload'}
                     ]
                   }];
             }

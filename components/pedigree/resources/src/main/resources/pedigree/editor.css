@@ -427,6 +427,7 @@
 .import-selector {
   display: inline-block;
   padding: 15px !important;
+  padding-bottom: 5px !important;
   background-color: #eee;
 }
 .import-upload {

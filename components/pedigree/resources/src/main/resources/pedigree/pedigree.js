@@ -31,6 +31,7 @@ define([
         "pedigree/view/okCancelDialogue",
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
+        "pedigree/view/tabbedSelector",
         "pedigree/view/printDialog"
     ],
     function(
@@ -58,6 +59,7 @@ define([
         OkCancelDialogue,
         SaveLoadIndicator,
         TemplateSelector,
+        TabbedSelector,
         PrintDialog
 ){
 
@@ -113,7 +115,6 @@ define([
             this._view = new View();
 
             this._actionStack = new UndoRedoManager();
-            this._templateSelector = new TemplateSelector();
             this._saveLoadIndicator = new SaveLoadIndicator();
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
@@ -131,6 +132,11 @@ define([
                         Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
                     }
 
+                    var _importSelector = new ImportSelector();
+                    var _templateSelector = new TemplateSelector();
+                    this._templateImportSelector = new TabbedSelector("Select a pedigree template or import a pedigree",
+                                                                      [_templateSelector, _importSelector]);
+
                     // load family page info and load the pedigree after that data is loaded
                     this._familyData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
@@ -138,7 +144,6 @@ define([
                     this._nodeMenu = this.generateNodeMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
-                    this._importSelector = new ImportSelector();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
                 }.bind(this) );
@@ -169,13 +174,14 @@ define([
                 editor.getSaveLoadEngine().save();
             });
 
+            var replacePedigreeWarning = "Existing pedigree will be replaced by the selected one";
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {
-                editor.getTemplateSelector().show();
+                editor.getTemplateImportSelector().show(0 /* tab 0 - templates */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var importButton = $('action-import');
             importButton && importButton.on("click", function(event) {
-                editor.getImportSelector().show();
+                editor.getTemplateImportSelector().show(1 /* tab1 - import */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
             });
             var exportButton = $('action-export');
             exportButton && exportButton.on("click", function(event) {
@@ -266,6 +272,15 @@ define([
          */
         getPatientDataLoader: function() {
             return this._patientDataLoader;
+        },
+
+        /**
+         * Returns false if pedigree is not defined
+         *
+         * @method pedigreeExists
+         */
+        pedigreeExists: function() {
+            return this.getGraph().getMaxNodeId() >= 0;
         },
 
         /**
@@ -521,19 +536,11 @@ define([
         },
 
         /**
-         * @method getTemplateSelector
+         * @method getTemplateImportSelector
          * @return {TemplateSelector}
          */
-        getTemplateSelector: function() {
-            return this._templateSelector
-        },
-
-        /**
-         * @method getImportSelector
-         * @return {ImportSelector}
-         */
-        getImportSelector: function() {
-            return this._importSelector
+        getTemplateImportSelector: function() {
+            return this._templateImportSelector;
         },
 
         /**
@@ -541,7 +548,7 @@ define([
          * @return {ExportSelector}
          */
         getExportSelector: function() {
-            return this._exportSelector
+            return this._exportSelector;
         },
 
         /**
