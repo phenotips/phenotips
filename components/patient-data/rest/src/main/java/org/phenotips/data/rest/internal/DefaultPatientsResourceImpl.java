@@ -20,6 +20,7 @@ package org.phenotips.data.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.rest.DomainObjectFactory;
+import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.PatientsResource;
 import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.Link;
@@ -105,7 +106,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             patient.updateFromJSON(jsonInput);
 
             URI targetURI =
-                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(PatientsResource.class).build(patient.getId());
+                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(PatientResource.class).build(patient.getId());
             ResponseBuilder response = Response.created(targetURI);
             return response.build();
         } catch (Exception ex) {
