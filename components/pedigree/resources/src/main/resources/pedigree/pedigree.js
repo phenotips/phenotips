@@ -19,7 +19,6 @@ var PedigreeEditor = Class.create({
         //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
         //  dateEditFormat:               {"YMD"|"DMY"|"MY"}  - defines order of fields in the date picker; default "YMD"
         //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
-        //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
         //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
         //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
         //  probandIsSyncedWithPatient:   {true|false}   - disallow editing of proband and synchronize with patient record; default: "true"
@@ -29,7 +28,6 @@ var PedigreeEditor = Class.create({
                                                  dateDisplayFormat: "YMD",
                                                  dateEditFormat: "YMD",
                                                  displayCancerLabels: true,
-                                                 useGradientOnNodes: false,
                                                  drawNodeShadows: true,
                                                  disabledFields: [],
                                                  probandIsSyncedWithPatient: true },
@@ -63,12 +61,7 @@ var PedigreeEditor = Class.create({
         this._probandData = new ProbandDataLoader();
 
         this._preferencesManager.load( function() {
-                // set up constants which depend on preferences
-                if (editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")) {
-                    copyProperties(PedigreeEditor.styles.gradient, PedigreeEditor.attributes);
-                } else {
-                    copyProperties(PedigreeEditor.styles.blackAndWhite, PedigreeEditor.attributes);
-                }
+                copyProperties(PedigreeEditor.styles.blackAndWhite, PedigreeEditor.attributes);
 
                 // load proband data and load the graph after proband data is available
                 this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
@@ -882,13 +875,6 @@ PedigreeEditor.styles = {
         nodeShapeOther:  {fill: "#ffffff", stroke: "#222222"},
         nodeShapeDiag:   {fill: "#ffffff", stroke: "#222222"},
         nodeShapeAborted:{fill: "#ffffff", stroke: "#222222"}
-    },
-    "gradient": {
-        nodeShapeFemale: {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
-        nodeShapeMale:   {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#696969"},
-        nodeShapeOther:  {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-        nodeShapeDiag:   {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-        nodeShapeAborted:{fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"}
     }
 };
 
@@ -920,11 +906,11 @@ PedigreeEditor.attributes = {
     uncertainShape:      {'font-size': '45px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
     uncertainSmallShape: {'font-size': '30px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
     evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
-    nodeShapeFemale: PedigreeEditor.styles.gradient.nodeShapeFemale,
-    nodeShapeMale:   PedigreeEditor.styles.gradient.nodeShapeMale,
-    nodeShapeOther:  PedigreeEditor.styles.gradient.nodeShapeOther,
-    nodeShapeDiag:   PedigreeEditor.styles.gradient.nodeShapeDiag,
-    nodeShapeAborted:PedigreeEditor.styles.gradient.nodeShapeAborted,
+    nodeShapeFemale: PedigreeEditor.styles.blackAndWhite.nodeShapeFemale,
+    nodeShapeMale:   PedigreeEditor.styles.blackAndWhite.nodeShapeMale,
+    nodeShapeOther:  PedigreeEditor.styles.blackAndWhite.nodeShapeOther,
+    nodeShapeDiag:   PedigreeEditor.styles.blackAndWhite.nodeShapeDiag,
+    nodeShapeAborted:PedigreeEditor.styles.blackAndWhite.nodeShapeAborted,
     nodeShapeMenuOn:         {fill: "#000", stroke: "none", "fill-opacity": 0.1},
     nodeShapeMenuOff:        {fill: "#000", stroke: "none", "fill-opacity": 0},
     nodeShapeMenuOnPartner:  {fill: "#000", stroke: "none", "fill-opacity": 0.1},

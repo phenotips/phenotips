@@ -1324,20 +1324,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </propagateFatherLastName>
-      <uiGradientNodes>
-        <customDisplay/>
-        <defaultValue>0</defaultValue>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>uiGradientNodes</name>
-        <number>3</number>
-        <prettyName>Apply color gradient to pedigree nodes</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </uiGradientNodes>
     </class>
     <property>
       <dateDisplayFormat>MDY</dateDisplayFormat>
