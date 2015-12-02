@@ -289,7 +289,7 @@ define([
                 }
             }
             else {
-                var disorderAngle = (360/colors.length).round();
+                var disorderAngle = (360/colors.length);
                 delta = (360/(colors.length))/2;
                 if (colors.length == 1 && (this.getNode().getGender() == 'U' || this.getNode().getGender() == 'O'))
                     delta -= 45; // since this will be rotated by shape transform later
