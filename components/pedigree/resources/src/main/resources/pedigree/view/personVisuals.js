@@ -279,8 +279,7 @@ define([
                         corner = ["L", this.getX(), this.getY()-height];
                     }
                     var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
-                    color = editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")
-                            ? gradient(colors[k], 70) : colors[k];
+                    color = colors[k];
                     disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                     x1 = x2;
                     y1 = y2;
@@ -300,8 +299,7 @@ define([
                     radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
 
                 for(var i = 0; i < colors.length; i++) {
-                    color = editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")
-                            ? gradient(colors[i], (i * disorderAngle)+delta) : colors[i];
+                    color = colors[i];
                     disorderShapes.push(GraphicHelpers.sector(editor.getPaper(), this.getX(), this.getY(), radius,
                                         this.getNode().getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
                 }

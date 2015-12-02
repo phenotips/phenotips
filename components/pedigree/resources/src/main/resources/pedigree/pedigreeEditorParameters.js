@@ -9,13 +9,6 @@ define([], function(){
             nodeShapeOther:  {fill: "#ffffff", stroke: "#222222"},
             nodeShapeDiag:   {fill: "#ffffff", stroke: "#222222"},
             nodeShapeAborted:{fill: "#ffffff", stroke: "#222222"}
-        },
-        "gradient": {
-            nodeShapeFemale: {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"},
-            nodeShapeMale:   {fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#696969"},
-            nodeShapeOther:  {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-            nodeShapeDiag:   {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-            nodeShapeAborted:{fill: "0-#ffffff:0-#B8B8B8:100",  stroke: "#595959"}
         }
     };
 
@@ -46,11 +39,11 @@ define([], function(){
         uncertainShape:      {'font-size': '45px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         uncertainSmallShape: {'font-size': '30px', 'font-family': 'Arial', 'fill': '#696969', 'font-weight': 'bold'},
         evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
-        nodeShapeFemale: PedigreeEditorParameters.styles.gradient.nodeShapeFemale,
-        nodeShapeMale:   PedigreeEditorParameters.styles.gradient.nodeShapeMale,
-        nodeShapeOther:  PedigreeEditorParameters.styles.gradient.nodeShapeOther,
-        nodeShapeDiag:   PedigreeEditorParameters.styles.gradient.nodeShapeDiag,
-        nodeShapeAborted:PedigreeEditorParameters.styles.gradient.nodeShapeAborted,
+        nodeShapeFemale: PedigreeEditorParameters.styles.blackAndWhite.nodeShapeFemale,
+        nodeShapeMale:   PedigreeEditorParameters.styles.blackAndWhite.nodeShapeMale,
+        nodeShapeOther:  PedigreeEditorParameters.styles.blackAndWhite.nodeShapeOther,
+        nodeShapeDiag:   PedigreeEditorParameters.styles.blackAndWhite.nodeShapeDiag,
+        nodeShapeAborted:PedigreeEditorParameters.styles.blackAndWhite.nodeShapeAborted,
         nodeShapeMenuOn:         {fill: "#000", stroke: "none", "fill-opacity": 0.1},
         nodeShapeMenuOff:        {fill: "#000", stroke: "none", "fill-opacity": 0},
         nodeShapeMenuOnPartner:  {fill: "#000", stroke: "none", "fill-opacity": 0.1},
