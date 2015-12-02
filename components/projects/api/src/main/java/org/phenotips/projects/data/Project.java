@@ -21,6 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.data.permissions.Collaborator;
 
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
@@ -36,6 +37,17 @@ public interface Project
 
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Projects", EntityType.SPACE);
+
+    /** project template document. */
+    EntityReference TEMPLATE =
+        new EntityReference("ProjectTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    /**
+     * Returns the document reference of the project.
+     *
+     * @return document reference of the project
+     */
+    DocumentReference getReference();
 
     /**
      * Returns the name of the projects.
