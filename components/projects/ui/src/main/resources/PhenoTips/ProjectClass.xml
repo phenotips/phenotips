@@ -331,8 +331,12 @@
     #if ($xwiki.exists($targetDocument))
       #set ($errorMessage = "$services.localization.render('phenotips.projectClass.errorMessage.nameExists', [${request.name}])")
     #else
-      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
-      #break
+      #set ($project = $services.projects.createNewProject($request.name.trim()))
+      #if ($project)
+         #set ($projectDocument = $project.getReference())
+         $response.sendRedirect($xwiki.getURL($projectDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)")))
+         #break
+      #end
     #end
   #end
 #end
