@@ -247,8 +247,7 @@ define([
                 menuItems = [{
                     name : 'input',
                     items: [
-                        { key : 'templates', label : 'Templates', icon : 'copy'},
-                        { key : 'import',    label : 'Import', icon : 'upload'}
+                        { key : 'templates', label : 'Templates/Import', icon : 'copy'}
                     ]
                   }, {
                     name : 'edit',

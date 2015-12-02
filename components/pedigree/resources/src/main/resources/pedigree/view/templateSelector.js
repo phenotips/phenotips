@@ -2,8 +2,6 @@
  * The UI Element for browsing and selecting pre-defined Pedigree templates
  *
  * @class TemplateSelector
- * @constructor
- * @param {Boolean} isStartupTemplateSelector Set to True if no pedigree has been loaded yet
  */
 define([
         "pedigree/model/helpers"
@@ -12,27 +10,13 @@ define([
     ){
     var TemplateSelector = Class.create( {
 
-        initialize: function(isStartupTemplateSelector) {
-            this._isStartupTemplateSelector = isStartupTemplateSelector;
+        initialize: function() {
             this.mainDiv = new Element('div', {'class': 'template-picture-container'});
             this.mainDiv.update("Loading list of templates...");
-            var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
-            this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector, verticalPosition: "top"});
-            isStartupTemplateSelector && this.show();
             new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
                 method: 'GET',
                 onSuccess: this._onTemplateListAvailable.bind(this)
             });
-        },
-
-        /**
-         * Returns True if this template selector is the one displayed on startup
-         *
-         * @method isStartupTemplateSelector
-         * @return {Boolean}
-         */
-        isStartupTemplateSelector: function() {
-            return this._isStartupTemplateSelector;
         },
 
         /**
@@ -92,8 +76,7 @@ define([
          * @private
          */
         _onTemplateSelected: function(event, pictureBox) {
-            //console.log("observe onTemplateSelected");
-            this.dialog.close();
+            $$('.pedigree-import-chooser .msdialog-close')[0].click();
             if (pictureBox.type == 'internal') {
                 editor.getSaveLoadEngine().createGraphFromSerializedData(pictureBox.pedigreeData, false /* add to undo stack */, true /*center around 0*/);
             } else if (pictureBox.type == 'simpleJSON') {
@@ -101,25 +84,6 @@ define([
             }
         },
 
-        /**
-         * Displays the template selector
-         *
-         * @method show
-         */
-        show: function() {
-            var availableHeight = document.viewport.getHeight() - 80;
-            this.mainDiv.setStyle({'max-height': availableHeight + 'px', 'overflow-y': 'auto'});
-            this.dialog.show();
-        },
-
-        /**
-         * Removes the the template selector
-         *
-         * @method hide
-         */
-        hide: function() {
-            this.dialog.closeDialog();
-        }
     });
 
 

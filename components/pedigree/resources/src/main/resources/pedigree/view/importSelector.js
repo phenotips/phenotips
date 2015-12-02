@@ -11,11 +11,11 @@ define([], function(){
             
             var _this = this;
             
-            var mainDiv = new Element('div', {'class': 'import-selector'});
+            this.mainDiv = new Element('div', {'class': 'import-selector'});
                             
             var promptImport = new Element('div', {'class': 'import-section'}).update("Import data:");
             this.importValue = new Element("textarea", {"id": "import", "value": "", "class": "import-textarea"});
-            mainDiv.insert(promptImport).insert(this.importValue);
+            this.mainDiv.insert(promptImport).insert(this.importValue);
             
             if (!!window.FileReader && !!window.FileList) {
                 // only show the upload link if browser supports FileReader/DOM File API
@@ -34,7 +34,7 @@ define([], function(){
                     var fileElem = document.getElementById("pedigreeInputFile");
                     fileElem.click();
                 })
-                mainDiv.insert(uploadFileSelector).insert(uploadButton);
+                this.mainDiv.insert(uploadFileSelector).insert(uploadButton);
             }
             
             var _addTypeOption = function (checked, labelText, value) {
@@ -59,7 +59,7 @@ define([], function(){
             var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
             dataSection2.insert(promptType).insert(typeListElement);
-            mainDiv.insert(dataSection2);
+            this.mainDiv.insert(dataSection2);
 
             var _addConfigOption = function (checked, labelText, value) {
                 var optionWrapper = new Element('tr');
@@ -86,26 +86,24 @@ define([], function(){
             var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
             var dataSection3 = new Element('div', {'class': 'import-block'});        
             dataSection3.insert(promptConfig).insert(configListElement);
-            mainDiv.insert(dataSection3);
+            this.mainDiv.insert(dataSection3);
 
             //TODO: [x] auto-combine multiple unaffected children when the number of children is greater than [5]
 
             var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
             buttons.insert(new Element('input', {type: 'button', name : 'import', 'value': 'Import', 'class' : 'button', 'id': 'import_button'}).wrap('span', {'class' : 'buttonwrapper'}));
             buttons.insert(new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
-            mainDiv.insert(buttons);
+            this.mainDiv.insert(buttons);
 
             var cancelButton = buttons.down('input[name="cancel"]');
             cancelButton.observe('click', function(event) {
-                _this.hide();
+            	$$('.pedigree-import-chooser .msdialog-close')[0].click();
             })
             var importButton = buttons.down('input[name="import"]');
             importButton.observe('click', function(event) {
                 _this._onImportStarted();
             })
 
-            var closeShortcut = ['Esc'];
-            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree import", displayCloseButton: true});
         },
 
         /*
@@ -165,7 +163,7 @@ define([], function(){
             var importValue = this.importValue.value;
             console.log("Importing:\n" + importValue);
             
-            this.hide();
+            $$('.pedigree-import-chooser .msdialog-close')[0].click();
             
             if (!importValue || importValue == "") {
                 alert("Nothing to import!");
@@ -186,25 +184,6 @@ define([], function(){
             
             editor.getSaveLoadEngine().createGraphFromImportData(importValue, importType, importOptions,
                                                                  false /* add to undo stack */, true /*center around 0*/);
-        },
-
-        /**
-         * Displays the template selector
-         *
-         * @method show
-         */
-        show: function() {
-            this.dialog.show();
-        },
-
-        /**
-         * Removes the the template selector
-         *
-         * @method hide
-         */
-        hide: function() {
-            this.importValue.value = "";
-            this.dialog.closeDialog();
         }
     });
     return ImportSelector;
