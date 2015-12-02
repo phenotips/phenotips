@@ -77,6 +77,12 @@ public class DefaultProject implements Project
     }
 
     @Override
+    public DocumentReference getReference()
+    {
+        return projectReference;
+    }
+
+    @Override
     public String getName() {
         return this.projectReference.getName();
     }
