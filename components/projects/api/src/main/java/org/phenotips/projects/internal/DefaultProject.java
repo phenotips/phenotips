@@ -35,6 +35,7 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -116,6 +117,9 @@ public class DefaultProject implements Project
         DocumentReference classReference =
             this.getEntityResolver().resolve(Collaborator.CLASS_REFERENCE, projectReference);
         Collection<BaseObject> xCollaborators = projectObject.getXObjects(classReference);
+        if (xCollaborators == null) {
+            return Collections.emptyList();
+        }
 
         if (xCollaborators != null) {
             for (BaseObject o : xCollaborators) {
@@ -181,6 +185,10 @@ public class DefaultProject implements Project
     public Collection<EntityReference> getTemplates()
     {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        if (xObject == null) {
+            return Collections.emptyList();
+        }
+
         ListProperty templatesXList = null;
         try {
             templatesXList = (ListProperty) xObject.get(TEMPLATE_FIELD_NAME);
