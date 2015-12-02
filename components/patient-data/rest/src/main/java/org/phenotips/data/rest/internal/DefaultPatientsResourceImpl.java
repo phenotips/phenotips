@@ -104,8 +104,8 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             Patient patient = this.repository.createNewPatient();
             patient.updateFromJSON(jsonInput);
 
-            URI targetURI =
-                UriBuilder.fromUri(this.uriInfo.getBaseUri()).path(PatientsResource.class).build(patient.getId());
+            UriBuilder targetUriBuilder = UriBuilder.fromUri(this.uriInfo.getBaseUri());
+            URI targetURI = targetUriBuilder.path(PatientsResource.class).path(patient.getId()).build();
             ResponseBuilder response = Response.created(targetURI);
             return response.build();
         } catch (Exception ex) {
