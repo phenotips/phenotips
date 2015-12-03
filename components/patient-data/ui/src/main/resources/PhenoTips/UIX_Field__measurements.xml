@@ -499,24 +499,24 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
 #end##
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
-  #set ($orderedMeasurements = $configObj.getProperty('ordering').value)
-  #foreach ($measurement in $orderedMeasurements)
-    #set ($handler = $services.measurements.get($measurement))
-    #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
-         &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
-      #set($name = $handler.getName())
-      #if ($handler.isDoubleSided())
-        #set($vals = {})
-        #set($discard = $vals.put("r", $measurementSet.get("${name}-r")))
-        #set($discard = $vals.put("l", $measurementSet.get("${name}-l")))
-      #elseif ($measurementSet.get($name))
-        #set($vals = $measurementSet.get($name))
-      #else
-        #set($vals = {})
-      #end
-      #measurement($handler $vals $proto)
+#set ($orderedMeasurements = $configObj.getProperty('ordering').value)
+#foreach ($measurement in $orderedMeasurements)
+  #set ($handler = $services.measurements.get($measurement))
+  #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
+       &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
+    #set($name = $handler.getName())
+    #if ($handler.isDoubleSided())
+      #set($vals = {})
+      #set($discard = $vals.put("r", $measurementSet.get("${name}-r")))
+      #set($discard = $vals.put("l", $measurementSet.get("${name}-l")))
+    #elseif ($measurementSet.get($name))
+      #set($vals = $measurementSet.get($name))
+    #else
+      #set($vals = {})
     #end
+    #measurement($handler $vals $proto)
   #end
+#end
 #end##
 ##
 #macro (measurementSet $set)
