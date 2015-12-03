@@ -403,6 +403,8 @@ div.birthdate {
 
 {{include reference="PhenoTips.ChartServiceMacros" /}}
 
+{{include reference="PhenoTips.UtilityMacros" /}}
+
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
@@ -487,26 +489,6 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__measurements')##
   &lt;span class="pctl#if ("$!val" != "") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$eval#end&lt;/span&gt;
   {{/html}}
 )))
-#end##
-##
-## Source: http://extensions.xwiki.org/xwiki/bin/view/Extension/Sort+a+list+of+XWiki+objects
-#macro (sortXWikiObjectsList $inputObjects $propertyName $outputObjects)
-  #set ($objectsMap = {})
-  #foreach ($object in $inputObjects)
-    #set ($key = $object.getProperty($propertyName).value)
-    #set ($sameKeyObjects = $objectsMap.get($key))
-    #if (!$sameKeyObjects)
-      #set ($sameKeyObjects = [])
-      #set ($discard = $objectsMap.put($key, $sameKeyObjects))
-    #end
-    #set ($discard = $sameKeyObjects.add($object))
-  #end
-  #foreach ($key in $sorttool.sort($objectsMap.keySet()))
-    #set ($sameKeyObjects = $objectsMap.get($key))
-    #foreach ($sameKeyObject in $sameKeyObjects)
-      #set ($discard = $outputObjects.add($sameKeyObject))
-    #end
-  #end
 #end##
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
