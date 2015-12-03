@@ -1148,10 +1148,10 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** ----
 * (% class="xDropdown" %)#__icon("cog") $services.localization.render('phenotips.contentTopMenu.moreActionsMenu')
 #if ($xcontext.action != 'view' || $viewer != 'content')
-** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="__blank"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode')&gt;&gt;$doc.fullName|| title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.viewMode.title')" target="_blank"]]
 #end
 #if ($isAdvancedUser &amp;&amp; $xcontext.action != 'view' || $viewer != 'history')
-** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="__blank" title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
+** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history')&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="_blank" title="$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.history.title')"]]
 #end
 #if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
   #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
