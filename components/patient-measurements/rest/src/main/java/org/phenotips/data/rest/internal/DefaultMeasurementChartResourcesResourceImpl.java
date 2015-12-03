@@ -55,15 +55,11 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
     @Inject
     private DocumentAccessBridge bridge;
 
-    /** The set of chart resource objects corresponding to this request. */
-    private List<ChartResource> charts;
-
     @Override
     public Response getChartResources(String json)
     {
         JSONObject reqObj = JSONObject.fromObject(json);
-        this.generateChartResources(reqObj);
-        return this.getResponse();
+        return this.getResponse(this.generateChartResources(reqObj));
     }
 
     /**
@@ -73,11 +69,11 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
      * @param reqObj the JSON request object
      * @throws WebApplicationException if an age cannot be parsed
      */
-    private void generateChartResources(JSONObject reqObj) throws WebApplicationException
+    private List<ChartResource> generateChartResources(JSONObject reqObj) throws WebApplicationException
     {
         String sex = reqObj.getString("sex");
         JSONArray measurementSets = reqObj.getJSONArray("measurementSets");
-        this.charts = new LinkedList<>();
+        List<ChartResource> charts = new LinkedList<>();
         for (Map.Entry<String, MeasurementHandler> entry : this.handlers.entrySet()) {
             for (MeasurementsChartConfiguration config : entry.getValue().getChartsConfigurations()) {
                 ChartResource chart = null;
@@ -106,7 +102,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                 }
 
                 if (chart != null) {
-                    this.charts.add(chart);
+                    charts.add(chart);
                 }
             }
         }
@@ -117,10 +113,10 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
      *
      * @return the response
      */
-    private Response getResponse()
+    private Response getResponse(List<ChartResource> charts)
     {
         JSONArray chartsJson = new JSONArray();
-        for (ChartResource chart : this.charts) {
+        for (ChartResource chart : charts) {
             JSONObject chartJson = new JSONObject();
             chartJson.accumulate("title", chart.getChartConfig().getChartTitle());
             chartJson.accumulate("url", chart.toString());
