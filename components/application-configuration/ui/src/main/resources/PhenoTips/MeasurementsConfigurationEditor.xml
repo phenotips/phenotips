@@ -57,7 +57,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 ##
 #macro(measurementTool $name $icon $hint $url $attrs)&lt;a href="$url" title="$!{hint}" class="extension-tool ${name}" $!{attrs}&gt;&lt;i class="fa fa-${icon}"&gt;&lt;/i&gt;&lt;/a&gt;#end
 ##
-#macro(measurementTools $meas)
+#macro(measurementTools)
 {{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
 #measurementTool('move' 'arrows' "$services.localization.render('phenotips.formDesigner.moveExtension')" '#')
 &lt;/div&gt;{{/html}}
@@ -226,7 +226,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 
     _syncDefaultValues: function() {
       this._element.select('.extension-maquette').each((function(el) {
-        el.down('input[name$=default]').disabled = !!!el.up('#default');
+        el.down('input[name$=default]').disabled = !el.up('#default');
       }).bind(this));
     },
 
