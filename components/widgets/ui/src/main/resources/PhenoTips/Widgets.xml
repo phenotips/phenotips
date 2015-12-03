@@ -5019,7 +5019,7 @@ document.observe("xwiki:dom:loaded", function() {
       return (text || "").match(this.regexp);
     },
     getValue : function(text) {
-      if ((text || "").match(this.regexp)) {
+      if (this.match(text)) {
         var result = 0;
         var _this = this;
         var item;
@@ -5035,7 +5035,7 @@ document.observe("xwiki:dom:loaded", function() {
       }
     },
     format : function(text) {
-      if ((text || "").match(this.regexp)) {
+      if (this.match(text)) {
         var result = text;
         var _this = this;
         ['y', 'm', 'w', 'd'].each(function(unit) {
