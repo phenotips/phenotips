@@ -134,108 +134,99 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>#measurements .list-actions {
-  width: auto;
-  clear: both;
-}
-#charts-new {
-  padding: 15px; padding-left: 190px;
-  height: 100%;
+      <code>#charts-new {
   box-sizing: border-box;
-  float: right; width: 48%;
+  float: right;
+  height: 100%;
+  padding: 15px;
+  padding-left: 190px;
   position: relative;
+  width: 48%;
+}
+#charts-new .chart-thumbs {
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+  width: 180px;
+}
+#charts-new .chart-thumbs &gt; div.selected {
+  border-color: #666;
+}
+#charts-new .chart-thumbs &gt; div.selected &gt; span {
+  font-weight: bold;
+}
+#charts-new .chart-thumbs &gt; div {
+  background-color: white;
+  border: 1px solid #aaa;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+#charts-new .chart-thumbs &gt; div &gt; span {
+  display: block;
+  padding-bottom: 5px;
+  text-align: center;
+}
+#charts-new .chart-thumbs img {
+  display: block;
+  margin: 0 auto;
+  width: 100px;
+}
+#charts-new img.main {
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
 }
 #charts-new .sets {
+  left: 0;
+  position: absolute;
+  top: 0;
   width: 120px;
-  position: absolute; top: 0; left: 0;
+}
+#charts-new .sets &gt; div.selected::after {
+  content: ' &gt;';
 }
 #charts-new .sets &gt; div {
   cursor: pointer;
   padding: 10px;
 }
-#charts-new .sets &gt; div.selected::after {
-  content: ' &gt;';
-}
-#charts-new .chart-thumbs {
-  width: 180px;
-  padding: 20px;
-  position: absolute; top: 0; left: 0;
-  overflow-y: scroll; overflow-x: hidden;
-  height: 100%;
-  box-sizing: border-box;
-  background-color: #FFFFFF;
-  border: 1px solid #FFFFFF;
-  border-radius: 4px;
-  box-shadow: 0 1px 8px #DDDDDD inset;
-}
-#charts-new .chart-thumbs img {
-  width: 100px;
-  display: block;
-  margin: 0 auto;
-}
-#charts-new .chart-thumbs &gt; div {
-  border: 1px solid #aaa;
-  margin-bottom: 20px;
-  cursor: pointer;
-  background-color: white;
-  padding: 10px;
-}
-#charts-new .chart-thumbs &gt; div &gt; span {
-  text-align: center;
-  display: block;
-  padding-bottom: 5px;
-}
-#charts-new .chart-thumbs &gt; div.selected &gt; span {
-  font-weight: bold;
-}
-#charts-new .chart-thumbs &gt; div.selected {
-  border-color: #666;
-}
-#charts-new img.main {
-  max-width: 100%;
-  max-height: 100%;
-  padding: 0;
-}
 #measurements-container {
-  position: relative;
   clear: both;
+  position: relative;
 }
 #measurements {
-  width: 485px;
   float: left;
+  width: 485px;
 }
 .measurement {
-  padding: 0.2em 0;
   clear: both;
   overflow: auto;
+  padding: 0.2em 0;
+}
+#measurements .list-actions {
+  clear: both;
+  width: auto;
 }
 .measurement &gt; * {
   float: left;
 }
-.measurement-set .delete {
-  float: right;
-  margin-left: 15px;
-}
 .measurement-row {
   clear: both;
 }
-.measurement-row &gt; label,
-.measurement-row &gt; span,
-.measurement-row &gt; div,
-.measurement-row span.val
- {
-  display: block;
-  float: left;
-  min-height: 1px;
-  line-height: 20px;
-}
-.measurement-row input {
-  width: auto; margin: 0 3px;
-}
-.measurement-row span.val {
-  margin: 0 6px;
-  width: 40px;
+.measurement-row span.side-label {
+  font-size: 80%;
+  font-weight: bold;
   text-align: right;
+  width: 15px;
 }
 .measurement-row span.val.empty {
   text-align: center;
@@ -244,21 +235,33 @@
 .measurement-row div.imperial {
   width: 120px;
 }
-.viewbody .measurement-set label {
-  width: auto;
-}
-.measurement-row span.side-label {
-  width: 15px;
-  font-size: 80%;
-  font-weight: bold;
-  text-align: right;
-}
 .measurement-row span.unit {
   width: 60px;
 }
 .measurement-row span.pctl {
-  width: 120px;
   font-size: 80%;
+  width: 120px;
+}
+.measurement-row span.val {
+  margin: 0 6px;
+  text-align: right;
+  width: 40px;
+}
+.measurement-row &gt; label,
+.measurement-row &gt; span,
+.measurement-row &gt; div,
+.measurement-row span.val {
+  display: block;
+  float: left;
+  line-height: 20px;
+  min-height: 1px;
+}
+.measurement-row input {
+  margin: 0 3px;
+  width: auto;
+}
+.viewbody .measurement-set label {
+  width: auto;
 }
 .editbody .measurement-row &gt; label,
 .viewbody .measurement-row &gt; label {
@@ -280,28 +283,32 @@
 }
 .measurement-set {
   border: 1px dotted #aaa;
-  padding: 10px;
-  float: left;
   clear: both;
-  overflow: auto;
+  float: left;
   margin: 5px;
+  overflow: auto;
+  padding: 10px;
   position: relative;
+}
+.measurement-set .measurements {
+  border-top: 1px dotted #aaa;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.measurement-set input {
+  width: auto;
+}
+.measurement-set .delete {
+  float: right;
+  margin-left: 15px;
 }
 .measurement-set .age {
   float: right;
 }
 .measurement-set .age span {
   display: inline-block;
-  width: 85px;
   text-align: right;
-}
-.measurement-set input {
-  width: auto;
-}
-.measurement-set .measurements {
-  border-top: 1px dotted #aaa;
-  padding-top: 8px;
-  margin-top: 8px;
+  width: 85px;
 }
 .new-measurement-select {
   width: 190px;
