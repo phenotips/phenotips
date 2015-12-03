@@ -210,6 +210,8 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        __this.newPatientForm.observe('submit', function (event) {
           event.stop();
           __this._createSelectionPopup();
+          __this.modalBox.showDialog();
+          __this._updateSelectionPopup();
        });
     },
 
@@ -217,9 +219,8 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        return sectionCreated[projectSectionId] &amp;&amp; sectionCreated[templatesSectionId];
     },
 
-    _createSection: function(sectionId, documentName)
+    _createSection: function(section, documentName)
     {
-       var section = new Element('div', {id : sectionId});
        var docRef = XWiki.resource.get(documentName, XWiki.EntityType.DOCUMENT);
        new Ajax.Request(new XWiki.Document(docRef.name, docRef.space).getURL('get'), {
           onCreate : function() {
@@ -227,9 +228,9 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           },
           onSuccess : function(response) {
              section.update(response.responseText);
-             sectionCreated[sectionId] = true;
+             sectionCreated[section.id] = true;
              if (__this._areAllSectionsCreated()) {
-                document.fire("xwiki:dom:updated");
+                document.fire("projects:projectselection:popupcreated");
              }
           },
           onFailure : function(response) {
@@ -244,22 +245,23 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
              response.request.options.onFailure(response);
           }
        });
-       return section;
     },
 
     _createSelectionPopup: function()
     {
-       var selectionForm = new Element('form', {id: 'selectPTForm', 'action' : __this.newPatientForm.action, 'class' : 'xform'});
-       var formDataWrapper = new Element('div');
+       var selectionForm = $('selectPTForm');
+       if (selectionForm != null) {
+          return;
+       }
+
+       selectionForm = new Element('form', {id: 'selectPTForm', 'action' : __this.newPatientForm.action, 'class' : 'xform'});
+       var formDataWrapper = new Element('div', {id: 'formDataWrapper'});
        selectionForm.insert(formDataWrapper);
 
-       if (__this.numberOfProjects &gt; 0) {
-          formDataWrapper.insert(__this._createSection(projectSectionId, 'PhenoTips.ProjectBindingSheet'));
-       }
-
-       if (__this.numberOfTemplates &gt; 0) {
-          formDataWrapper.insert(__this._createSection(templatesSectionId, 'PhenoTips.StudyBindingSheet'));
-       }
+       var projectsSection = new Element('div', {id : projectSectionId});
+       formDataWrapper.insert(projectsSection);
+       var templatesSection = new Element('div', {id : templatesSectionId});
+       formDataWrapper.insert(templatesSection);
 
        __this.newPatientForm.select('input[type="hidden"]').each(function(item) {
           formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
@@ -276,15 +278,31 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        var cancelText = "$services.localization.render('phenotips.chooseProjectStudy.cancelButton')";
        var cancelButton = new Element('input', {type : 'button', value : cancelText, 'class' : 'button secondary'});
        formDataWrapper.insert(' ').insert(cancelButton);
-       var modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
+       __this.modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
        submitButton.observe('click', function(event) {
           event.stop();
           __this._submitForm();
        });
        cancelButton.observe('click', function(event) {
-          modalBox.closeDialog();
+          __this.modalBox.closeDialog();
        });
-       modalBox.showDialog();
+    },
+
+    _updateSelectionPopup : function() {
+       var formDataWrapper = $('formDataWrapper');
+       if (formDataWrapper == null) {
+          return;
+       }
+
+       if (__this.numberOfProjects &gt; 0) {
+          var projectsSection = $(projectSectionId);
+          formDataWrapper.insert(__this._createSection(projectsSection, 'PhenoTips.ProjectBindingSheet'));
+       }
+
+       if (__this.numberOfTemplates &gt; 0) {
+          var templatesSection = $(templatesSectionId);
+          formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.StudyBindingSheet'));
+       }
     },
 
     _submitForm : function() {
