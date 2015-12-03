@@ -27,6 +27,7 @@ define([
             this.viewBoxX = 0;
             this.viewBoxY = 0;
             this.zoomCoefficient = 1;
+            this.disablePan = false;
 
             this.background = this.getPaper().rect(0,0, this.width, this.height).attr({fill: 'blue', stroke: 'none', opacity: 0}).toBack();
             this.background.node.setAttribute("class", "panning-background");
@@ -37,15 +38,20 @@ define([
 
             //Initialize pan by dragging
             var start = function() {
-                if (editor.isAnyMenuVisible()) {
-                    return;
-                }
                 me.background.ox = me.background.attr("x");
                 me.background.oy = me.background.attr("y");
+                if (editor.isAnyMenuVisible()) {
+                    me.disablePan = true;
+                    return;
+                }
                 //me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
                 me.background.attr({cursor: 'move'});
             };
             var move = function(dx, dy) {
+                if (editor.isAnyMenuVisible() || me.disablePan) {
+                    me.disablePan = true;
+                    return;
+                }
                 var deltax = me.viewBoxX - dx/me.zoomCoefficient;
                 var deltay = me.viewBoxY - dy/me.zoomCoefficient;
 
@@ -58,6 +64,7 @@ define([
                 me.viewBoxX = me.background.ox;
                 me.viewBoxY = me.background.oy;
                 me.background.attr({cursor: 'default'});
+                me.disablePan = false;
             };
             me.background.drag(move, start, end);
 

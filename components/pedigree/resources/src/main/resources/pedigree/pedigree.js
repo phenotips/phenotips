@@ -69,7 +69,6 @@ define([
             //  propagateFatherLastName:      {true|false}   - auto-propagate father's last name or not; default: "true"
             //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
             //  dateEditFormat:               {"YMD"|"DMY"|"MY"}  - defines order of fields in the date picker; default "YMD"
-            //  useGradientOnNodes:           {true|false}   - plan white node background or gradient grey node background
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
@@ -78,7 +77,6 @@ define([
                                                      propagateFatherLastName: true,
                                                      dateDisplayFormat: "YMD",
                                                      dateEditFormat: "YMD",
-                                                     useGradientOnNodes: false,
                                                      drawNodeShadows: true,
                                                      disabledFields: [],
                                                      displayCancerLabels: true },
@@ -112,12 +110,7 @@ define([
             this._probandData = new ProbandDataLoader();
 
             this._preferencesManager.load( function() {
-                    // set up constants which depend on preferences
-                    if (editor.getPreferencesManager().getConfigurationOption("useGradientOnNodes")) {
-                        Helpers.copyProperties(PedigreeEditorParameters.styles.gradient, PedigreeEditorParameters.attributes);
-                    } else {
-                        Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
-                    }
+                    Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
 
                     // load proband data and load the graph after proband data is available
                     this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
