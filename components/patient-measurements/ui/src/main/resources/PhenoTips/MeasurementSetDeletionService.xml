@@ -38,29 +38,29 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-    {{html clean="false"}}
-    #if ($xcontext.action == 'get')
-    #set ($docName = $request.document)
-    #set ($age = $request.age)
-    $response.setContentType('application/json')
-    #if ("$!docName" == "" || "$!age" == "")
+{{html clean="false"}}
+#if ($xcontext.action == 'get')
+  #set ($docName = $request.document)
+  #set ($age = $request.age)
+  $response.setContentType('application/json')
+  #if ("$!docName" == "" || "$!age" == "")
     $jsontool.serialize({"error": "Empty age or document name"})
     $response.setStatus(400)
     #break
-    #end
-    #set ($thatDoc = $xwiki.getDocument($docName))
-    #if (!$thatDoc)
+  #end
+  #set ($thatDoc = $xwiki.getDocument($docName))
+  #if (!$thatDoc)
     $jsontool.serialize({"error": "Cannot load requested document"})
     $response.setStatus(400)
     #break
-    #end
-    #set ($objs = $thatDoc.getObjects("PhenoTips.MeasurementClass", "age", $age))
-    #foreach($obj in $objs)
+  #end
+  #set ($objs = $thatDoc.getObjects("PhenoTips.MeasurementClass", "age", $age))
+  #foreach($obj in $objs)
     #set ($discard = $thatDoc.removeObject($obj))
-    #end
-    #set ($discard = $thatDoc.save("Removed measurement set"))
-    $response.setStatus(200)
-    #end##
-    {{/html}}
-    {{/velocity}}</content>
+  #end
+  #set ($discard = $thatDoc.save("Removed measurement set"))
+  $response.setStatus(200)
+#end##
+{{/html}}
+{{/velocity}}</content>
 </xwikidoc>
