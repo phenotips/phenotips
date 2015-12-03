@@ -39,8 +39,9 @@ define(["pedigree/model/helpers"], function(Helpers){
 
                 this.warningMessage = response.responseJSON.hasOwnProperty("warning") ? response.responseJSON.warning : "";
                 /* Will display a warning if there is a warning message */
-                // TODO: update warning display
-                // new Warning();
+                if (this.hasWarningMessage()) {
+                    editor.getOkCancelDialogue().showCustomized(this.warningMessage,"Attention: This pedigree contains sensitive information.", "OK", null);
+                }
             } else {
                 console.log("[!] Error parsing family JSON");
             }
