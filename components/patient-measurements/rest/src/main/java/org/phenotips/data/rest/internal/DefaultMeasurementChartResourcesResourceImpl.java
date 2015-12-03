@@ -106,6 +106,8 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                 }
             }
         }
+
+        return charts;
     }
 
     /**
