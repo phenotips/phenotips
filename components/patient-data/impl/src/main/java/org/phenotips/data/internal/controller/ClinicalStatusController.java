@@ -53,6 +53,8 @@ public class ClinicalStatusController implements PatientDataController<String>
 
     private static final String FIELD_NAME = UNAFFECTED;
 
+    private static final String AFFECTED = "AFFECTED";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -70,7 +72,6 @@ public class ClinicalStatusController implements PatientDataController<String>
     @Override
     public PatientData<String> load(Patient patient)
     {
-        String affected = "affected";
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
@@ -79,7 +80,7 @@ public class ClinicalStatusController implements PatientDataController<String>
             }
             int isNormal = data.getIntValue(UNAFFECTED);
             if (isNormal == 0) {
-                return new SimpleValuePatientData<String>(getName(), affected);
+                return new SimpleValuePatientData<String>(getName(), AFFECTED);
             } else if (isNormal == 1) {
                 return new SimpleValuePatientData<String>(getName(), UNAFFECTED);
             }
