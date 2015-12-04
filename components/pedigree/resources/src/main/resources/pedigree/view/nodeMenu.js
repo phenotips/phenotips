@@ -156,7 +156,7 @@ define([
             this.form.select('.fuzzy-date').each(function(item) {
                 if (!item.__datePicker) {
                     var inputMode = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
-                    item.__datePicker = new DatePicker(item, inputMode);
+                    item.__datePicker = new DatePicker(item, {inputFormat: inputMode, decadesEnabled : true});
                 }
             });
             // disease
@@ -1060,63 +1060,9 @@ define([
                     value = {"decade": "", "year": "", "month": "", "day": ""};
                 }
 
-                var year  = "";
-                var month = "";
-                var day   = "";
-                // there is no separate "decade" selector, need to handle the case of decade only separately
-                if (value.decade && !value.year) {
-                    year = value.decade;
-                } else {
-                    if (value.year) {
-                        year = value.year.toString();
-                    }
-                }
-
-                var dateEditFormat = editor.getPreferencesManager().getConfigurationOption("dateEditFormat");
-                var dmyInputMode = (dateEditFormat == "DMY" || dateEditFormat == "MY");
-                if ((dmyInputMode || value.year) && value.month) {
-                    month = value.month.toString();
-                }
-                if ((dmyInputMode || (value.year && value.month)) && value.day) {
-                    day = value.day.toString();
-                }
-
-                var updated = false;
-                var yearSelect = container.down('select.year');
-                if (yearSelect) {
-                    var option = yearSelect.down('option[value=' + year + ']');
-                    if (!option) {
-                        option = new Element("option", {"value": year}).update(year.toString());
-                        yearSelect.insert(option);
-                    }
-                    if (option && !option.selected) {
-                        option.selected = true;
-                        updated = true;
-                    }
-                }
-                var monthSelect = container.down('select.month');
-                if (monthSelect) {
-                    var option = monthSelect.down('option[value=' + month + ']');
-                    if (option && !option.selected) {
-                        option.selected = true;
-                        updated = true;
-                    }
-                }
-                var daySelect = container.down('select.day');
-                if (daySelect) {
-                    var option = daySelect.down('option[value=' + day + ']');
-                    if (option && !option.selected) {
-                        option.selected = true;
-                        updated = true;
-                    }
-                }
-                // TODO: replace the code above with an even request to change year-month-date
-                if (updated) {
-                    var updateElement = container.down('.fuzzy-date-picker');
-                    if (updateElement) {
-                        Event.fire(updateElement, 'datepicker:date:changed');
-                    }
-                }
+                var input = container.down("input.fuzzy-date");
+                input.setValue(JSON.stringify(value));
+                input.fire("datepicker:date:updated");
             },
             'disease-picker' : function (container, values) {
                 var _this = this;

@@ -967,26 +967,13 @@
 .fuzzy-date-picker select {
   font-family: Arial,Verdana,sans-serif;
 }
-.fuzzy-date-picker .year {
-  font-size: 14px;
-  max-width: 68px;
+.fuzzy-date-picker input[type=text].invalid {
+  border: 1px solid #c33;
 }
-.fuzzy-date-picker .month {
-  font-size: 14px;
-  max-width: 48px;
+.fuzzy-date-picker input[type=text].text {
+  width: 3em;
+  text-align: center;
 }
-.fuzzy-date-picker .day {
-  font-size: 14px;
-  max-width: 48px;
-}
-.fuzzy-date-picker .empty {
-  font-size: .7em;
-  opacity: .5;
-}
-.fuzzy-date-picker .year option {
-  /*text-indent: 1em;*/
-}
-.fuzzy-date-picker .year .decade {
-  font-weight: bold;
-  /*text-indent: 0;*/
+.fuzzy-date-picker input[name=year].text {
+  width: 5em;
 }
