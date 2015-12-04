@@ -599,7 +599,7 @@ DynamicPositionedGraph.prototype = {
 
         for (var i = 0; i < partners.length; i++) {
             var partnerGender = this.getGender(partners[i]);
-            if (partnerGender != "U") {
+            if (partnerGender != "U" && partnerGender != "O") {
                 possible[partnerGender] = false;
             }
         }
@@ -656,7 +656,7 @@ DynamicPositionedGraph.prototype = {
     {
         // returns all person nodes of the other gender or unknown gender (who are not already partners)
         var oppositeGender  = this.DG.GG.getOppositeGender(v);
-        var validGendersSet = (oppositeGender == 'U') ? ['M','F','U'] : [oppositeGender,'U'];
+        var validGendersSet = (oppositeGender == 'U') ? ['M','F','U','O'] : [oppositeGender,'U','O'];
 
         var result = this._getAllPersonsOfGenders(validGendersSet, true);
 
@@ -2282,8 +2282,10 @@ DynamicPositionedGraph.prototype = {
         // validate input genders
         for (var i = 0; i < validGendersSet.length; i++) {
             validGendersSet[i] = validGendersSet[i].toLowerCase();
-            if (validGendersSet[i] != 'u' && validGendersSet[i] != 'm' && validGendersSet[i] != 'f')
-                throw "Invalid gender: " + validGendersSet[i];
+            if (validGendersSet[i] != 'u' && validGendersSet[i] != 'm' && validGendersSet[i] != 'f' && validGendersSet[i] != 'o') {
+                console.log("ERROR: Invalid gender: " + validGendersSet[i]);
+                return [];
+            }
         }
 
          var result = [];
