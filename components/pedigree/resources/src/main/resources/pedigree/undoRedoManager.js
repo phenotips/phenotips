@@ -20,7 +20,7 @@ define([
         hasUnsavedChanges: function() {
             var state = this._getCurrentState();
             if (state == null) {
-                return true;
+                return false;
             }
             if (this._savedState == state.serializedState) {
                 return false;
