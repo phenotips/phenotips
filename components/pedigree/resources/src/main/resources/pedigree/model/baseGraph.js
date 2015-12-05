@@ -616,10 +616,10 @@ define([
             if (this.getGender(v) == "U") {
                 return "U";
             }
-            else if(this.getGender(v) == "O") {
+            else if (this.getGender(v) == "O") {
                 return "U";
             }
-            else if(this.getGender(v) == "M") {
+            else if (this.getGender(v) == "M") {
                 return "F";
             }
             else {
