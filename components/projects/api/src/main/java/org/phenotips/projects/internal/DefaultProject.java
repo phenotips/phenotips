@@ -196,8 +196,11 @@ public class DefaultProject implements Project
             this.getLogger().error("Error reading property {} from project {}.",
                 TEMPLATE_FIELD_NAME, this.projectId, e.getMessage());
         }
-        List<String> templatesList = templatesXList.getList();
+        if (templatesXList == null) {
+            return Collections.emptyList();
+        }
 
+        List<String> templatesList = templatesXList.getList();
         List<EntityReference> templates = new ArrayList<EntityReference>();
         if (templatesList != null) {
             for (String templateString : templatesList) {
