@@ -60,7 +60,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
 $doc.display('openProjectForViewing') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
-$doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 
 ##
 ## Contributors section
@@ -77,6 +76,8 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
    &lt;tbody id="contributorslist"/&gt;
 &lt;/table&gt;
 {{/html}}
+
+$doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 
 ##
 ## Leaders section
@@ -218,9 +219,13 @@ $!doc.content
       // Save collaborators and templates when project is saved
       document.observe("xwiki:actions:save", function(event) {
         var formData = _this.form.serialize(true);
-        var contributors = formData.contributors || [];
         var leaders = formData.leaders || [];
         var templates = formData.templates || [];
+        var contributors = formData.contributors || [];
+        if (_this.openForContribution) {
+           contributors = [];
+        }
+
         new Ajax.Request(_this.ajaxService, {
           parameters : {'projectId'    : _this.projectId,
                         'xaction'      : 'update',
@@ -306,7 +311,11 @@ $!doc.content
     _openForContributionCheckboxClicked : function() {
        _this.openForContribution = $('PhenoTips.ProjectClass_0_openProjectForContribution').checked;
        $('suggestcontributors').disabled=_this.openForContribution;
-       $('suggestleaders').disabled=_this.openForContribution;
+       if (_this.openForContribution) {
+          $('contributorsTable').hide();
+       } else {
+          $('contributorsTable').show();
+       }
     },
 
     _addTemplate : function (template, highlight) {
