@@ -204,8 +204,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             for (Object geneJsonUncast : genesJson) {
                 JSONObject geneJson = JSONObject.fromObject(geneJsonUncast);
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
-                for (String property : getProperties()) {
-                    // todo. it makes no sense to have no gene name, but to have comments, which can occur
+                for (String property : this.getProperties()) {
                     if (geneJson.has(property)) {
                         String field = geneJson.getString(property);
                         if (field != null) {
@@ -213,7 +212,9 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                         }
                     }
                 }
-                allGenes.add(singleGene);
+                if (!singleGene.isEmpty()) {
+                    allGenes.add(singleGene);
+                }
             }
 
             if (allGenes.isEmpty()) {
@@ -236,8 +237,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            // todo. does not check for existing genes
-            PatientData<Map<String, String>> genes = patient.getData(getName());
+            PatientData<Map<String, String>> genes = patient.getData(this.getName());
             if (!genes.isIndexed()) {
                 return;
             }
@@ -245,17 +245,20 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             Iterator<Map<String, String>> iterator = genes.iterator();
             while (iterator.hasNext()) {
-                Map<String, String> gene = iterator.next();
-                BaseObject xwikiObject = doc.newXObject(GENE_CLASS_REFERENCE, context);
+                try {
+                    Map<String, String> gene = iterator.next();
+                    BaseObject xwikiObject = doc.newXObject(GENE_CLASS_REFERENCE, context);
 
-                for (String property : this.getProperties()) {
-                    String value = gene.get(property);
-                    if (value != null) {
-                        xwikiObject.set(property, value, context);
+                    for (String property : this.getProperties()) {
+                        String value = gene.get(property);
+                        if (value != null) {
+                            xwikiObject.set(property, value, context);
+                        }
                     }
+                    xwikiObject.set("type", "molecular", context);
+                } catch (Exception e) {
+                    this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
                 }
-                // todo. this is deprecated in the new version, but without this setting the gene section breaks
-                xwikiObject.set("type", "molecular", context);
             }
 
             context.getWiki().saveDocument(doc, "Updated genes from JSON", true, context);
