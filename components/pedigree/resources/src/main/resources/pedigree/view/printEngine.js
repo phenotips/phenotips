@@ -78,7 +78,11 @@ define([
                 patientInfoHeight = 30;
                 var proband = editor.getNode(0);
                 if (options.anonimize || (!proband.getFirstName() && !proband.getLastName())) {
-                    patientInfoHTML = "Patient " + XWiki.currentDocument.page;
+                    if (XWiki.currentDocument.space == 'data') {
+                        patientInfoHTML = "Patient " + XWiki.currentDocument.page;
+                    } else {
+                        patientInfoHTML = "Family " + XWiki.currentDocument.page;
+                    }
                 } else {
                     // TODO: update to correct proband/family when fmaly studies are merged in
                     var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
