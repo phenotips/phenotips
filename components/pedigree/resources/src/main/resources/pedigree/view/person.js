@@ -125,7 +125,7 @@ define([
          */
         getPhenotipsPatientURL: function()
         {
-            return new XWiki.Document(this.getPhenotipsPatientId()).getURL();
+            return new XWiki.Document(this.getPhenotipsPatientId(), 'data').getURL();
         },
 
         /**
