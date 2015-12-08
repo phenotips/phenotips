@@ -27,6 +27,7 @@ define([
             this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
             this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
             this._legendInfo.insert({'top': this.closeButton});
+            this._legendInfo.hide();
 
             this.legendContainer = new Element('div', {'class' : 'patient-assign-legend legend-container', id: 'patient-assign'}).insert(this._legendInfo);
             this.legendContainer.hide();
@@ -80,6 +81,10 @@ define([
          **/
         addCase: function(patientID, type, gender, name, externalID) {
             if (!this._notLinkedPatients.hasOwnProperty(patientID)) {
+            	
+            	!editor.getPreferencesManager().getConfigurationOption("hideDraggingHint") &&
+                this._legendInfo && this._legendInfo.show();
+            	
                 this._notLinkedPatients[patientID] = {"type" : type, "phenotipsID": patientID, "gender": gender, "name":  name, "externalID": externalID};
                 var listElement = this._generateElement(this._notLinkedPatients[patientID]);
                 if (type == 'new') {
