@@ -1009,11 +1009,14 @@ define([
 
                         var processLinking = function(topMessage, notesMessage) {
                             var alreadyWasInFamily = editor.isFamilyMember(linkID);
-                            if (!alreadyWasInFamily) {
+                            if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConcentDialog")) {
                                 editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
                                         "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                                         notesMessage +  "</div><br>",
-                                        "Add patient to the family", "Confirm", processLinkCallback, "Cancel", onCancelAssignPatient);
+                                        "Add patient to the family", 
+                                        "Confirm", processLinkCallback, 
+                                        "Cancel", onCancelAssignPatient, 
+                                        "Do not show again", function() { editor.getPreferencesManager().setConfigurationOption("user", "hideShareConcentDialog", true); processLinkCallback();});
                             } else {
                                 processLinkCallback();
                             }
