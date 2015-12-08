@@ -1280,7 +1280,7 @@ define([
                     suggestContainer.show();
                 } else {
                     suggestContainer.hide();
-                    link.href = new XWiki.Document(value).getURL();
+                    link.href = new XWiki.Document(value, 'data').getURL();
                     link.innerHTML = value;
                     linkContainer.show();
                     if (_this.targetNode.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
