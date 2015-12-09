@@ -22,18 +22,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>patient-measurements</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-measurements</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient measurements</name>
-
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-    <module>rest</module>
-    <module>resources</module>
-  </modules>
+  <artifactId>patient-measurements-resources</artifactId>
+  <name>PhenoTips - Patient measurements - JS and CSS Resources</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.bringking</groupId>
+        <artifactId>requirejs-maven-plugin</artifactId>
+        <version>2.0.4</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
