@@ -32,6 +32,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -235,6 +237,23 @@ public class DefaultProject implements Project
         return false;
     }
 
+    @Override
+    public AccessLevel getCurrentUserAccessLevel()
+    {
+        AccessLevel highestAccessLevel = null;
+        User currentUser = this.getUserManager().getCurrentUser();
+        Collection<Collaborator> collaborators = this.getCollaborators();
+        for (Collaborator c : collaborators) {
+            if (c.isUserIncluded(currentUser)) {
+                AccessLevel accessLevel = c.getAccessLevel();
+                if (accessLevel.compareTo(highestAccessLevel) >= 0) {
+                    highestAccessLevel = accessLevel;
+                }
+            }
+        }
+        return highestAccessLevel;
+    }
+
     private XWikiContext getXContext()
     {
         Execution execution;
@@ -332,6 +351,17 @@ public class DefaultProject implements Project
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                 .getInstance(Logger.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private UserManager getUserManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(UserManager.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
