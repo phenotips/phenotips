@@ -18,6 +18,7 @@
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 
 import org.xwiki.model.EntityType;
@@ -116,5 +117,12 @@ public interface Project
      * @return true if successful
      */
     boolean setTemplates(Collection<EntityReference> templates);
+
+    /**
+     * Returns the highest access level the current user has.
+     *
+     * @return highest access level of current user.
+     */
+    AccessLevel getCurrentUserAccessLevel();
 
 }
