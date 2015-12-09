@@ -17,16 +17,11 @@
  */
 package org.phenotips.projects.internal;
 
-import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.context.Execution;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
@@ -47,11 +42,6 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-
 /**
  * @version $Id$
  */
@@ -59,8 +49,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Singleton
 public class ProjectsRepository
 {
-    private static final String ERROR_CREATING_NEW_PROJECT_MESSAGE = "Error creating a new project with id {}";
-
     @Inject
     private QueryManager qm;
 
@@ -139,60 +127,5 @@ public class ProjectsRepository
         }
 
         return projects;
-    }
-
-    /**
-     * Creates a new project. Sets current user as a leader in the project.
-     *
-     * @param projectId id of the new project
-     * @return the new project, if successful
-     */
-    public Project createNewProject(String projectId)
-    {
-        XWikiContext xContext = getXContext();
-        XWiki wiki = xContext.getWiki();
-
-        EntityReference projectRef = new EntityReference(projectId, EntityType.DOCUMENT, Project.DEFAULT_DATA_SPACE);
-        XWikiDocument projectDoc = null;
-        try {
-            projectDoc = wiki.getDocument(projectRef, xContext);
-        } catch (XWikiException e) {
-            this.logger.error(ERROR_CREATING_NEW_PROJECT_MESSAGE, projectId, e.getMessage());
-            return null;
-        }
-        if (!projectDoc.isNew()) {
-            return null;
-        }
-
-        try {
-            projectDoc.readFromTemplate(this.entityResolver.resolve(Project.TEMPLATE), xContext);
-        } catch (XWikiException e) {
-            this.logger.error(ERROR_CREATING_NEW_PROJECT_MESSAGE, projectId, e.getMessage());
-            return null;
-        }
-
-        User currentUser = this.userManager.getCurrentUser();
-        projectDoc.setCreatorReference(currentUser.getProfileDocument());
-
-        // Set current user as a leader in the project
-        DefaultProject project = new DefaultProject(projectId);
-        Collection<Collaborator> collaborators = new ArrayList<Collaborator>();
-        collaborators.add(new DefaultCollaborator(currentUser.getProfileDocument(), leaderAccessLevel));
-        project.setCollaborators(collaborators);
-
-        return project;
-    }
-
-    private XWikiContext getXContext()
-    {
-        Execution execution = null;
-        try {
-            execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
-        } catch (ComponentLookupException ex) {
-            // Should not happen
-            return null;
-        }
-        XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
-        return context;
     }
 }
