@@ -214,7 +214,13 @@ $!doc.content
       _this._initializeCollaborators('contributors', true, true);
       this._initializeSuggestTemplates();
 
-      this._readCollaboratorsAndTemplates();
+      var url = window.location.href.toLowerCase();
+      var newProject = (url.indexOf("newproject") > 0);
+      if (newProject) {
+         this._addCurrentUserAsLeader();
+      } else {
+         this._readCollaboratorsAndTemplates();
+      }
 
       // Save collaborators and templates when project is saved
       document.observe("xwiki:actions:save", function(event) {
@@ -371,12 +377,19 @@ $!doc.content
         parameters : {'xaction'   : 'get',
                       'projectId' : _this.projectId},
         onSuccess : function(response) {
-           var contributors = response.responseJSON.contributors;
-           var leaders = response.responseJSON.leaders;
-           var templates = response.responseJSON.templates;
-           _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
+           if (!("error" in response.responseJSON)) {
+              var contributors = response.responseJSON.contributors;
+              var leaders = response.responseJSON.leaders;
+              var templates = response.responseJSON.templates;
+              _this._loadCollaboratorsAndTemplates(contributors, leaders, templates);
+           }
         }
       });
+    },
+
+    _addCurrentUserAsLeader : function() {
+       var currentUser = PhenoTips.currentUser;
+       this._addCollaborator({type: "user", name: currentUser.name, id: currentUser.id}, true, 'leaders');
     }
 
   });

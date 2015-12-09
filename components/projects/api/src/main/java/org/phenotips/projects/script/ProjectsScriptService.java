@@ -112,15 +112,4 @@ public class ProjectsScriptService implements ScriptService
         }
         return templates;
     }
-
-    /**
-     * Creates a new project.
-     *
-     * @param projectId the id of the new project
-     * @return the new project
-     */
-    public Project createNewProject(String projectId)
-    {
-        return this.projectsRepository.createNewProject(projectId);
-    }
 }
