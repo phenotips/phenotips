@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -203,45 +204,65 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     public Collection<VocabularyTerm> getAssociatedTerms(Double standardDeviation)
     {
         ResourceBundle configuration = ResourceBundle.getBundle("measurementsAssociatedTerms");
-        List<VocabularyTerm> terms = new ArrayList<>();
+        List<String> configKeys;
 
-        if (null == standardDeviation || standardDeviation <= -3) {
-            addResolvedTermsToList(configuration, this.getName(), "extremeBelowNormal", terms);
+        if (standardDeviation != null) {
+            configKeys = new LinkedList<>();
+
+            if (standardDeviation <= -3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_EXTREME_BELOW_NORMAL));
+            }
+            if (standardDeviation <= -2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_BELOW_NORMAL));
+            }
+            if (standardDeviation >= 2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_ABOVE_NORMAL));
+            }
+            if (standardDeviation >= 3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_EXTREME_ABOVE_NORMAL));
+            }
+        } else {
+            configKeys = new LinkedList<>(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.values());
         }
-        if (null == standardDeviation || standardDeviation <= -2) {
-            addResolvedTermsToList(configuration, this.getName(), "belowNormal", terms);
-        }
-        if (null == standardDeviation || standardDeviation >= 2) {
-            addResolvedTermsToList(configuration, this.getName(), "aboveNormal", terms);
-        }
-        if (null == standardDeviation || standardDeviation >= 3) {
-            addResolvedTermsToList(configuration, this.getName(), "extremeAboveNormal", terms);
+
+        List<VocabularyTerm> terms = new ArrayList<>();
+        for (String key : configKeys) {
+            terms.addAll(getResolvedTermsForConfigKey(configuration, this.getName(), key));
         }
 
         return terms;
     }
 
     /**
-     * Convenience method to add present, resolvable vocabulary terms for a given measurement to the given list.
+     * Convenience method to get present, resolvable vocabulary terms for a given measurement and fuzzy value.
      *
      * @param config the configuration resource bundle
      * @param measurement the name of the measurement
      * @param key the fuzzy value name key to check, e.g. "aboveNormal"
-     * @param list the list to which present and resolvable terms should be added
+     * @return the set of resolved vocabulary terms
+     *         an empty list if no resolvable terms are present
      */
-    private void addResolvedTermsToList(ResourceBundle config, String measurement, String key,
-                                        List<VocabularyTerm> list)
+    private List<VocabularyTerm> getResolvedTermsForConfigKey(ResourceBundle config, String measurement, String key)
     {
+        List<VocabularyTerm> terms = new LinkedList<>();
+
         String configKey = "measurements." + measurement + '.' + key;
+
         if (config.containsKey(configKey)) {
             String[] termStrs = config.getString(configKey).split(";");
             for (String termStr : termStrs) {
                 VocabularyTerm term = vocabularyManager.resolveTerm(termStr);
                 if (term != null) {
-                    list.add(term);
+                    terms.add(term);
                 }
             }
         }
+
+        return terms;
     }
 
     /**
