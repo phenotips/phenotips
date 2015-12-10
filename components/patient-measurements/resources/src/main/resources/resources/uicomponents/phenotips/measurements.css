@@ -124,11 +124,11 @@
   margin: 0 3px;
   width: auto;
 }
-.viewbody .measurement-set label {
+.viewbody .clinical-info .measurement-set label {
   width: auto;
 }
 .editbody .measurement-row > label,
-.viewbody .measurement-row > label {
+.viewbody .clinical-info .measurement-row > label {
   width: 180px;
 }
 .normal {
