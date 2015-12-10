@@ -37,7 +37,7 @@ public abstract class AbstractProjectAccessLevel extends AbstractAccessLevel imp
         // Comparing AbstractProjectAccessLevel with same. AbstractProjectAccessLevel cannot be compared to
         // AbstractAccessLevel.
         if (o != null && o instanceof AbstractProjectAccessLevel) {
-            return this.compareTo(o);
+            return super.compareTo(o);
         }
         return Integer.MIN_VALUE;
     }
