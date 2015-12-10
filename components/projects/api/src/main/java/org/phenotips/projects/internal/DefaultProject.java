@@ -246,7 +246,7 @@ public class DefaultProject implements Project
         for (Collaborator c : collaborators) {
             if (c.isUserIncluded(currentUser)) {
                 AccessLevel accessLevel = c.getAccessLevel();
-                if (accessLevel.compareTo(highestAccessLevel) >= 0) {
+                if (highestAccessLevel == null || accessLevel.compareTo(highestAccessLevel) >= 0) {
                     highestAccessLevel = accessLevel;
                 }
             }
