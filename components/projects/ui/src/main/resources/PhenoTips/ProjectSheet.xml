@@ -152,7 +152,7 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 ## Templates section
 ##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.templates')&lt;/label&gt;{{/html}}
-{{html clean="false"}}
+: {{html clean="false"}}
 &lt;table id="templatesTable"&gt;
    &lt;tbody id="templatesList"/&gt;
 &lt;/table&gt;
@@ -386,16 +386,18 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
     },
 
     _addTemplate : function (template, highlight) {
-      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
-      row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
-              .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
-      )
-      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
-      row.insert(deleteTool.wrap('td'));
-      deleteTool.observe('click', function(event) {
-         event.findElement('tr').remove();
-      });
-      $('templatesList').insert(row);
+       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+       row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
+               .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
+       )
+       if (_this.editmode) {
+          var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
+          row.insert(deleteTool.wrap('td'));
+          deleteTool.observe('click', function(event) {
+             event.findElement('tr').remove();
+          });
+       }
+       $('templatesList').insert(row);
     },
 
     _addCollaborator : function (c, highlight, collaboratorType) {
