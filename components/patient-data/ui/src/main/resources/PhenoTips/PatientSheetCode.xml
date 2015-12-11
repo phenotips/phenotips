@@ -2639,25 +2639,21 @@ document.observe('xwiki:dom:loaded', function()
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
-    // The event is sent for NA, Yes and No checkboxes, in this order, with partial results along the way.
-    // If we want to check the final state of the value, we only take the No checkbox into account.
-    if (event.memo.type == 'no') {
-      var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
-      var noSelected = event.memo.enable;
-      if (yesSelected || noSelected) {
-        if (!obj) {
-          obj = {'key' : key, 'text' : text};
-          cache.all[key] = obj;
-        } else {
-          obj.hidden = false;
-        }
-        obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
-        cache.displayed[key] = true;
+    var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
+    var noSelected = event.memo.element.up('.yes-no-picker').down('.no input').checked;
+    if (yesSelected || noSelected) {
+      if (!obj) {
+        obj = {'key' : key, 'text' : text};
+        cache.all[key] = obj;
       } else {
-        if (obj) {
-          obj.hidden = true;
-          delete cache.displayed[key];
-        }
+        obj.hidden = false;
+      }
+      obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
+      cache.displayed[key] = true;
+    } else {
+      if (obj) {
+        obj.hidden = true;
+        delete cache.displayed[key];
       }
     }
     updateDefaultSearchTerms();
