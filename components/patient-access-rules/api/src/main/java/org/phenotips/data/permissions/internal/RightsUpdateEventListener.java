@@ -221,13 +221,14 @@ public class RightsUpdateEventListener extends AbstractEventListener
         setRights(right, "groups", "XWiki.XWikiAllGroup");
     }
 
-    private void updateOwnerRights(Map<String, BaseObject> rightsObjects, Map<String, Map<String, String>> oldRights, XWikiDocument doc)
+    private void updateOwnerRights(Map<String, BaseObject> rightsObjects, Map<String, Map<String, String>> oldRights,
+        XWikiDocument doc)
     {
         String ownerPermissions = "view,edit,delete";
         DocumentReference owner = getOwner(doc);
         BaseObject right = rightsObjects.get(ownerPermissions);
         if (owner == null) {
-            setRights(right, USERS, "");
+            setRights(right, USERS, "XWiki.XWikiGuest");
         } else if (isUser(owner)) {
             setRights(right, USERS, owner.toString());
         } else if (isGroup(owner)) {
