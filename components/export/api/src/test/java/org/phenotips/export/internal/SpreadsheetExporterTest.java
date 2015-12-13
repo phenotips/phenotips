@@ -34,8 +34,8 @@ import org.mockito.InOrder;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyShort;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -63,9 +63,9 @@ public class SpreadsheetExporterTest
         OutputStream stream = mock(OutputStream.class);
 
         spy.export(null, null, stream);
-        verify(spy, times(0)).processMainSheet(anySet(), anyList());
+        verify(spy, times(0)).processMainSheet(anySetOf(String.class), anyListOf(Patient.class));
         spy.export(new String[1], null, null);
-        verify(spy, times(0)).processMainSheet(anySet(), anyList());
+        verify(spy, times(0)).processMainSheet(anySetOf(String.class), anyListOf(Patient.class));
     }
 
     @Test(expected = Exception.class)
@@ -78,7 +78,7 @@ public class SpreadsheetExporterTest
 
         doThrow(Exception.class).when(workbook).write(stream);
         when(spy.createNewWorkbook()).thenReturn(workbook);
-        doNothing().when(spy).processMainSheet(anySet(), anyList());
+        doNothing().when(spy).processMainSheet(anySetOf(String.class), anyListOf(Patient.class));
 
         List<Patient> list = new LinkedList<>();
         spy.export(new String[0], list, stream);
@@ -94,7 +94,7 @@ public class SpreadsheetExporterTest
         Workbook workbook = mock(Workbook.class);
 
         when(spy.createNewWorkbook()).thenReturn(workbook);
-        doNothing().when(spy).processMainSheet(anySet(), anyList());
+        doNothing().when(spy).processMainSheet(anySetOf(String.class), anyListOf(Patient.class));
 
         List<Patient> list = new LinkedList<>();
         spy.export(new String[0], list, stream);
@@ -113,11 +113,11 @@ public class SpreadsheetExporterTest
 
         spy.wBook = workbook;
         doReturn(sheet).when(workbook).createSheet(anyString());
-        doReturn(assembler).when(spy).runAssembler(anySet(), anyList());
+        doReturn(assembler).when(spy).runAssembler(anySetOf(String.class), anyListOf(Patient.class));
         doNothing().when(spy).commit(any(DataSection.class), any(Sheet.class));
         doNothing().when(spy).freezeHeader(anyShort(), any(Sheet.class));
 
-        spy.processMainSheet(anySet(), anyList());
+        spy.processMainSheet(anySetOf(String.class), anyListOf(Patient.class));
 
         Assert.assertTrue(exporter.sheets.containsValue(sheet));
         verify(spy, atLeastOnce()).commit(any(DataSection.class), any(Sheet.class));

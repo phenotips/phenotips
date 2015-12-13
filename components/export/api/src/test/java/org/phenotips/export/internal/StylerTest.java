@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -105,9 +105,9 @@ public class StylerTest
 
         Styler.extendStyleHorizontally(section, styleLeft, styleRight);
 
-        verify(cellLeft, atMost(0)).addStyles(anySet());
-        verify(cellMiddle, atMost(0)).addStyles(anySet());
-        verify(cellRightSpy, times(1)).addStyles(anySet());
+        verify(cellLeft, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellMiddle, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellRightSpy, times(1)).addStyles(anySetOf(StyleOption.class));
         Assert.assertTrue(cellRightSpy.getStyles().contains(styleRight));
         verify(section, times(1)).addCell(any(DataCell.class));
     }
@@ -134,9 +134,9 @@ public class StylerTest
 
         Styler.extendStyleHorizontally(section, styleLeft, styleRight);
 
-        verify(cellLeft, atMost(0)).addStyles(anySet());
-        verify(cellMiddle, atMost(0)).addStyles(anySet());
-        verify(cellRight, times(0)).addStyles(anySet());
+        verify(cellLeft, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellMiddle, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellRight, times(0)).addStyles(anySetOf(StyleOption.class));
         verify(section, times(0)).addCell(any(DataCell.class));
     }
 
@@ -165,9 +165,9 @@ public class StylerTest
 
         Styler.extendStyleVertically(section, styleTop, styleBottom);
 
-        verify(cellTopSpy, times(1)).addStyles(anySet());
-        verify(cellMiddle, times(1)).addStyles(anySet());
-        verify(cellBottomSpy, times(1)).addStyles(anySet());
+        verify(cellTopSpy, times(1)).addStyles(anySetOf(StyleOption.class));
+        verify(cellMiddle, times(1)).addStyles(anySetOf(StyleOption.class));
+        verify(cellBottomSpy, times(1)).addStyles(anySetOf(StyleOption.class));
         Assert.assertTrue(cellBottomSpy.getStyles().contains(styleBottom));
         Assert.assertTrue(cellTopSpy.getStyles().contains(styleBottom));
         verify(section, times(1)).addCell(any(DataCell.class));
@@ -197,9 +197,9 @@ public class StylerTest
 
         Styler.extendStyleVertically(section, styleTop, styleBottom);
 
-        verify(cellTopSpy, atMost(0)).addStyles(anySet());
-        verify(cellMiddle, atMost(0)).addStyles(anySet());
-        verify(cellBottomSpy, atMost(0)).addStyles(anySet());
+        verify(cellTopSpy, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellMiddle, atMost(0)).addStyles(anySetOf(StyleOption.class));
+        verify(cellBottomSpy, atMost(0)).addStyles(anySetOf(StyleOption.class));
         verify(section, times(0)).addCell(any(DataCell.class));
     }
 
