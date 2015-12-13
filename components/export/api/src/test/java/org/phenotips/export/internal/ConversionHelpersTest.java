@@ -93,8 +93,8 @@ public class ConversionHelpersTest
     }
 
     /**
-     * If {@link org.phenotips.export.internal.ConversionHelpers#positive} and {@link
-     * org.phenotips.export.internal.ConversionHelpers#negative} have not been set up, this should fail.
+     * If {@link org.phenotips.export.internal.ConversionHelpers#positive} and
+     * {@link org.phenotips.export.internal.ConversionHelpers#negative} have not been set up, this should fail.
      */
     @Test(expected = NullPointerException.class)
     public void sortFeaturesSimpleNotSetup()

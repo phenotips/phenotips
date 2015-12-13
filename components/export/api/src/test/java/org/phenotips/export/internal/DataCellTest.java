@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class DataCellTest
 {
@@ -36,7 +36,7 @@ public class DataCellTest
 
         cell.addStyle(StyleOption.FEATURE_SEPARATOR);
         Collection<DataCell> generated = cell.generateMergedCells();
-        Assert.assertEquals((long) 1, generated.size());
+        Assert.assertEquals(1, generated.size());
         for (DataCell generatedCell : generated) {
             Assert.assertTrue(generatedCell.isChild());
             Assert.assertTrue(generatedCell.getStyles().contains(StyleOption.FEATURE_SEPARATOR));

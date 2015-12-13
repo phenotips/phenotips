@@ -203,8 +203,10 @@ public class StylerTest
         verify(section, times(0)).addCell(any(DataCell.class));
     }
 
-    /* The style method could have much more thorough testing, but in reality it is useless. No matter how many
-    * test there are, it is not possible to test if the spreadsheet has the correct appearance. */
+    /*
+     * The style method could have much more thorough testing, but in reality it is useless. No matter how many test
+     * there are, it is not possible to test if the spreadsheet has the correct appearance.
+     */
     @Test
     public void styleNoStyles()
     {

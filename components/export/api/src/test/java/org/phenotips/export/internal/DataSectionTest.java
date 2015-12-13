@@ -20,10 +20,10 @@ package org.phenotips.export.internal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DataSectionTest
@@ -69,9 +69,11 @@ public class DataSectionTest
         Assert.assertThat(section.getCellList().contains(cellOne), is(true));
         Assert.assertThat(section.getCellList().contains(cellTwo), is(true));
 
-        /* One cell should overwrite another cell silently, since it could happen routinely, and is up to the
-        assemblers and converters to make sure that it all cells are positioned correctly. However, the cell that was
-         added last should be present in the matrix.*/
+        /*
+         * One cell should overwrite another cell silently, since it could happen routinely, and is up to the assemblers
+         * and converters to make sure that it all cells are positioned correctly. However, the cell that was added last
+         * should be present in the matrix.
+         */
         DataCell cellThree = mock(DataCell.class);
         when(cellThree.getX()).thenReturn(xTwo);
         when(cellThree.getY()).thenReturn(yTwo);
@@ -94,12 +96,14 @@ public class DataSectionTest
     }
 
     @Test(expected = Exception.class)
-    public void emptyMerge() throws Exception {
+    public void emptyMerge() throws Exception
+    {
         (new DataSection()).mergeX();
     }
 
     @Test
-    public void merge() throws Exception {
+    public void merge() throws Exception
+    {
         Integer xOne = 2;
         Integer yOne = 3;
         Integer origin = 0;
@@ -121,7 +125,8 @@ public class DataSectionTest
     }
 
     @Test
-    public void empty() throws Exception {
+    public void empty() throws Exception
+    {
         (new DataSection()).finalizeToMatrix();
     }
 }
