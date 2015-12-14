@@ -20,6 +20,8 @@ package org.phenotips.groups.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
+import org.phenotips.studies.data.Study;
+import org.phenotips.studies.internal.DefaultStudy;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -27,8 +29,10 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.users.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -142,6 +146,28 @@ public class DefaultGroup implements Group
             logger.error("Error getting users for {}", groupReference.getName(), e.getMessage());
         }
         return usersSet;
+    }
+
+    @Override
+    public Collection<Study> getStudies()
+    {
+        DocumentAccessBridge bridge = this.getBridge();
+        XWikiDocument groupDocument = null;
+        try {
+            groupDocument = (XWikiDocument) bridge.getDocument(this.reference);
+        } catch (Exception e) {
+            this.getLogger().error("Error reading current group {}", this.reference, e.getMessage());
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<String> studiesList = groupDocument.getListValue("studies");
+        List<Study> studies = new ArrayList<Study>();
+        for (String id : studiesList) {
+            studies.add(new DefaultStudy(id));
+        }
+
+        return studies;
     }
 
     private DocumentReferenceResolver<String> getStringResolver()
