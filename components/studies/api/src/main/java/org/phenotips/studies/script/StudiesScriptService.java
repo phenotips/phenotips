@@ -17,23 +17,14 @@
  */
 package org.phenotips.studies.script;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
-import org.xwiki.script.service.ScriptService;
+import org.phenotips.studies.internal.StudiesRepository;
 
-import java.util.Collections;
-import java.util.List;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.script.service.ScriptService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.slf4j.Logger;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -44,15 +35,8 @@ import net.sf.json.JSONObject;
 @Singleton
 public class StudiesScriptService implements ScriptService
 {
-    private static final String INPUT_PARAMETER = "input";
-
-    private static final String MATCHED_STUDIES = "matchedStudies";
-
     @Inject
-    private QueryManager qm;
-
-    @Inject
-    private Logger logger;
+    private StudiesRepository studiesRepository;
 
     /**
      * Returns a JSON object with a list of studies, all with ids that fit a search criterion.
@@ -63,37 +47,7 @@ public class StudiesScriptService implements ScriptService
      */
     public String searchStudies(String input, int resultsLimit)
     {
-        StringBuilder querySb = new StringBuilder();
-        querySb.append(" from  doc.object(PhenoTips.StudyClass) as s ");
-        querySb.append(" where lower(doc.name) like :").append(StudiesScriptService.INPUT_PARAMETER);
-        querySb.append(" and   doc.fullName <> 'PhenoTips.StudyTemplate'");
-
-        String formattedInput = String.format("%s%%", input);
-
-        Query query = null;
-        List<String> queryResults = null;
-        try {
-            query = this.qm.createQuery(querySb.toString(), Query.XWQL);
-            query.setLimit(resultsLimit);
-            query.bindValue(StudiesScriptService.INPUT_PARAMETER, formattedInput);
-            queryResults = query.execute();
-        } catch (QueryException e) {
-            this.logger.error("Error while performing studies query: [{}] ", e.getMessage());
-        }
-        Collections.sort(queryResults, String.CASE_INSENSITIVE_ORDER);
-
-        JSONArray studiesArray = new JSONArray();
-        if (queryResults != null) {
-            for (String queryResult : queryResults) {
-                JSONObject studyJson = new JSONObject();
-                studyJson.put("id", queryResult);
-                studyJson.put("textSummary", queryResult.split("\\.")[1]);
-                studiesArray.add(studyJson);
-            }
-        }
-
-        JSONObject result = new JSONObject();
-        result.put(MATCHED_STUDIES, studiesArray);
-        return result.toString();
+        return studiesRepository.searchStudies(input, resultsLimit);
     }
+
 }
