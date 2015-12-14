@@ -17,10 +17,13 @@
  */
 package org.phenotips.studies.script;
 
+import org.phenotips.studies.data.Study;
 import org.phenotips.studies.internal.StudiesRepository;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,5 +51,18 @@ public class StudiesScriptService implements ScriptService
     public String searchStudies(String input, int resultsLimit)
     {
         return studiesRepository.searchStudies(input, resultsLimit);
+    }
+
+    /**
+     * Returns a collection of studies that are available for the user. The list is compiled based on the system
+     * property of studies visibility. If studies are unrestricted, all studies will be returned. If the studies are
+     * available based on group visibility, then only studies for which the current user has permission will be
+     * returned.
+     *
+     * @return a collection of studies
+     */
+    public Collection<Study> getAllStudiesForUser()
+    {
+        return studiesRepository.getAllStudiesForUser();
     }
 }

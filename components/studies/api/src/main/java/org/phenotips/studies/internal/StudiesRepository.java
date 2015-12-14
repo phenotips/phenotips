@@ -17,21 +17,34 @@
  */
 package org.phenotips.studies.internal;
 
+import org.phenotips.groups.Group;
+import org.phenotips.groups.GroupManager;
 import org.phenotips.studies.data.Study;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -47,11 +60,57 @@ public class StudiesRepository
 
     private static final String MATCHED_STUDIES = "matchedStudies";
 
+    private static final String UNRESTRICTED_STUDIES_ACCESS = "unrestricted";
     @Inject
     private QueryManager qm;
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private Execution execution;
+
+    @Inject
+    private UserManager userManager;
+
+    @Inject
+    private GroupManager groupManager;
+
+    /**
+     * Returns a JSON object with a /** Returns a collection of studies that are available for the user. The list is
+     * compiled based on the system property of studies visibility. If studies are unrestricted, all studies will be
+     * returned. If the studies are available based on group visibility, then only studies for which the current user
+     * has permission will be returned.
+     *
+     * @return a collection of studies
+     */
+    public List<Study> getAllStudiesForUser()
+    {
+        List<Study> studiesList = null;
+        if (this.isStudyAccessUnrestricted()) {
+            studiesList = this.queryStudies(null, -1);
+        } else {
+            studiesList = new ArrayList<Study>();
+            User currentUser = this.userManager.getCurrentUser();
+            for (Group group : this.groupManager.getGroupsForUser(currentUser)) {
+                for (Study study : group.getStudies()) {
+                    if (!studiesList.contains(study)) {
+                        studiesList.add(study);
+                    }
+                }
+            }
+        }
+
+        Collections.sort(studiesList, new Comparator<Study>()
+            {
+                @Override
+                public int compare(Study o1, Study o2)
+                {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+        return studiesList;
+    }
 
     /**
      * Returns a JSON object with a list of studies, all with ids that fit a search criterion. If the search criterion
@@ -78,6 +137,39 @@ public class StudiesRepository
         JSONObject result = new JSONObject();
         result.put(MATCHED_STUDIES, studiesArray);
         return result.toString();
+    }
+
+    /**
+     * @return true is access to study is unrestricted (and not by group subscription).
+     */
+    public boolean isStudyAccessUnrestricted()
+    {
+        return UNRESTRICTED_STUDIES_ACCESS.equals(this.getStudiesSubmissionPreference());
+    }
+
+    /**
+     * @return value of study submission preference property
+     */
+    public String getStudiesSubmissionPreference()
+    {
+        XWikiContext xContext = this.getXContext();
+        XWiki xwiki = xContext.getWiki();
+        XWikiDocument prefsDoc = null;
+        String objectsSpace = "XWiki";
+        try {
+            DocumentReference prefsref = new DocumentReference(xContext.getWikiId(), objectsSpace, "XWikiPreferences");
+            prefsDoc = xwiki.getDocument(prefsref, xContext);
+        } catch (XWikiException e) {
+            this.logger.error("Error reading studies submission preferences.", e.getMessage());
+            return null;
+        }
+        DocumentReference confRef = new DocumentReference(xContext.getWikiId(), objectsSpace, "ConfigurationClass");
+        BaseObject result = prefsDoc.getXObject(confRef, "property", "study-visibility-option");
+        if (result != null) {
+            return result.getStringValue("value");
+        } else {
+            return null;
+        }
     }
 
     private List<Study> queryStudies(String input, int resultsLimit)
@@ -113,7 +205,12 @@ public class StudiesRepository
                 studies.add(s);
             }
         }
-        return Collections.unmodifiableList(studies);
+        return studies;
+    }
+
+    private XWikiContext getXContext()
+    {
+        return (XWikiContext) this.execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
     }
 
 }
