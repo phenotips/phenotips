@@ -18,6 +18,7 @@
 package org.phenotips.groups;
 
 import org.phenotips.Constants;
+import org.phenotips.studies.data.Study;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -66,4 +67,9 @@ public interface Group
      * @return collections of user names
      */
     Collection<String> getAllUserNames();
+
+    /**
+     * @return a collection of studies in which the group is involved.
+     */
+    Collection<Study> getStudies();
 }
