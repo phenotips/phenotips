@@ -1,1 +1,3 @@
 org.phenotips.studies.internal.StudyRecordConfigurationModule
+org.phenotips.studies.script.StudiesScriptService
+org.phenotips.studies.internal.StudiesRepository
