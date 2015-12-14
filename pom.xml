@@ -139,7 +139,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.3-SNAPSHOT</phenotips.version>
-    <phenotips.version.previous>1.2-rc-1</phenotips.version.previous>
+    <phenotips.version.previous>1.2</phenotips.version.previous>
     <xwiki.version>7.1.3</xwiki.version>
     <slf4j.version>1.7.13</slf4j.version>
     <buildtools.version>1.3</buildtools.version>
