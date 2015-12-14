@@ -20,6 +20,7 @@ package org.phenotips.studies.data;
 import org.phenotips.Constants;
 
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 /**
@@ -30,4 +31,27 @@ public interface Study
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("StudyClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
+
+    /** The default space where patient data is stored. */
+    EntityReference DEFAULT_DATA_SPACE = new EntityReference("Studies", EntityType.SPACE);
+
+    /**
+     * @return id of study. e.g. Study.t1
+     */
+    String getId();
+
+    /**
+     * @return name of study. e.g. t1
+     */
+    String getName();
+
+    /**
+     * @return title of study
+     */
+    String getTitle();
+
+    /**
+     * @return reference of study document
+     */
+    DocumentReference getDocumentReference();
 }
