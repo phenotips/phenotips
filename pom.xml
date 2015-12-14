@@ -602,6 +602,12 @@
               <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
             </difference>
             <difference>
+              <className>org/phenotips/groups/Group</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection getStudies()</method>
+              <justification>To get a list of studies in which the group is involved.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/PatientData</className>
               <differenceType>7012</differenceType>
               <method>int size()</method>
