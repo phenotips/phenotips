@@ -120,4 +120,20 @@ public class DefaultStudy implements Study
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof DefaultStudy)) {
+            return false;
+        }
+        DefaultStudy other = (DefaultStudy) obj;
+        return this.getId().equals(other.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.getId().hashCode();
+    }
 }
