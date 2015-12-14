@@ -17,11 +17,14 @@
  */
 package org.phenotips.studies.internal;
 
+import org.phenotips.studies.data.Study;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +39,7 @@ import net.sf.json.JSONObject;
 /**
  * @version $Id$
  */
-@Component
+@Component(roles = { StudiesRepository.class })
 @Singleton
 public class StudiesRepository
 {
@@ -51,7 +54,8 @@ public class StudiesRepository
     private Logger logger;
 
     /**
-     * Returns a JSON object with a list of studies, all with ids that fit a search criterion.
+     * Returns a JSON object with a list of studies, all with ids that fit a search criterion. If the search criterion
+     * is null, it is ignored.
      *
      * @param input the beginning of the study id
      * @param resultsLimit maximal length of list
@@ -59,31 +63,14 @@ public class StudiesRepository
      */
     public String searchStudies(String input, int resultsLimit)
     {
-        StringBuilder querySb = new StringBuilder();
-        querySb.append(" from  doc.object(PhenoTips.StudyClass) as s ");
-        querySb.append(" where lower(doc.name) like :").append(StudiesRepository.INPUT_PARAMETER);
-        querySb.append(" and   doc.fullName <> 'PhenoTips.StudyTemplate'");
-
-        String formattedInput = String.format("%s%%", input);
-
-        Query query = null;
-        List<String> queryResults = null;
-        try {
-            query = this.qm.createQuery(querySb.toString(), Query.XWQL);
-            query.setLimit(resultsLimit);
-            query.bindValue(StudiesRepository.INPUT_PARAMETER, formattedInput);
-            queryResults = query.execute();
-        } catch (QueryException e) {
-            this.logger.error("Error while performing studies query: [{}] ", e.getMessage());
-        }
-        Collections.sort(queryResults, String.CASE_INSENSITIVE_ORDER);
+        List<Study> studies = this.queryStudies(input, resultsLimit);
 
         JSONArray studiesArray = new JSONArray();
-        if (queryResults != null) {
-            for (String queryResult : queryResults) {
+        if (studies != null) {
+            for (Study study : studies) {
                 JSONObject studyJson = new JSONObject();
-                studyJson.put("id", queryResult);
-                studyJson.put("textSummary", queryResult.split("\\.")[1]);
+                studyJson.put("id", study.getId());
+                studyJson.put("textSummary", study.getName());
                 studiesArray.add(studyJson);
             }
         }
@@ -91,6 +78,42 @@ public class StudiesRepository
         JSONObject result = new JSONObject();
         result.put(MATCHED_STUDIES, studiesArray);
         return result.toString();
+    }
+
+    private List<Study> queryStudies(String input, int resultsLimit)
+    {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append(" from  doc.object(PhenoTips.StudyClass) as s ");
+        querySb.append(" where doc.fullName <> 'PhenoTips.StudyTemplate'");
+        if (input != null) {
+            querySb.append(" and lower(doc.name) like :").append(StudiesRepository.INPUT_PARAMETER);
+        }
+
+        Query query = null;
+        List<String> queryResults = null;
+        try {
+            query = this.qm.createQuery(querySb.toString(), Query.XWQL);
+            if (resultsLimit > 0) {
+                query.setLimit(resultsLimit);
+            }
+            if (input != null) {
+                String formattedInput = String.format("%s%%", input);
+                query.bindValue(StudiesRepository.INPUT_PARAMETER, formattedInput);
+            }
+            queryResults = query.execute();
+        } catch (QueryException e) {
+            this.logger.error("Error while performing studies query: [{}] ", e.getMessage());
+        }
+        Collections.sort(queryResults, String.CASE_INSENSITIVE_ORDER);
+
+        List<Study> studies = new ArrayList<Study>();
+        if (queryResults != null) {
+            for (String queryResult : queryResults) {
+                Study s = new DefaultStudy(queryResult);
+                studies.add(s);
+            }
+        }
+        return Collections.unmodifiableList(studies);
     }
 
 }

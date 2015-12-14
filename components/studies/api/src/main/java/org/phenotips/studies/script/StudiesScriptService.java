@@ -49,5 +49,4 @@ public class StudiesScriptService implements ScriptService
     {
         return studiesRepository.searchStudies(input, resultsLimit);
     }
-
 }
