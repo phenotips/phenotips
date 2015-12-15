@@ -20,6 +20,7 @@ package org.phenotips.projects.data;
 import org.phenotips.Constants;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.studies.data.Study;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -108,7 +109,7 @@ public interface Project
      *
      * @return a collection of templates
      */
-    Collection<EntityReference> getTemplates();
+    Collection<Study> getTemplates();
 
     /**
      * Sets the list of templates available for the project.
