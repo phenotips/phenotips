@@ -520,6 +520,16 @@
             <difference>
               <className>org/phenotips/measurements/MeasurementHandler</className>
               <differenceType>7012</differenceType>
+              <method>java.lang.String getName()</method>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getUnit()</method>
+            </difference>
+            <difference>
+              <className>org/phenotips/measurements/MeasurementHandler</className>
+              <differenceType>7012</differenceType>
               <method>java.util.Collection getAssociatedTerms(java.lang.Double)</method>
               <justification>Smart phenotype terms should be available on the backend.</justification>
             </difference>
