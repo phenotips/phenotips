@@ -34,6 +34,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
  */
 public class DefaultStudy implements Study
 {
+    private static final String XWIKI_STRING = "xwiki:";
+
     private String studyId;
 
     private XWikiDocument studyObject;
@@ -47,7 +49,7 @@ public class DefaultStudy implements Study
      */
     public DefaultStudy(String studyId)
     {
-        this.studyId = studyId;
+        this.studyId = this.removeXwikiFromString(studyId);
         this.studyObject = this.getStudyObject();
         this.studyReference = this.studyObject.getDocumentReference();
     }
@@ -67,8 +69,7 @@ public class DefaultStudy implements Study
     @Override
     public String getTitle()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.studyObject.getTitle();
     }
 
     @Override
@@ -136,4 +137,13 @@ public class DefaultStudy implements Study
     {
         return this.getId().hashCode();
     }
+
+    private String removeXwikiFromString(String id) {
+        if (id.startsWith(DefaultStudy.XWIKI_STRING)) {
+            return id.substring(DefaultStudy.XWIKI_STRING.length());
+        } else {
+            return id;
+        }
+    }
+
 }
