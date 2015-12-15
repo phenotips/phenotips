@@ -53,41 +53,7 @@
 {{html clean="false" wiki="true"}}
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
-      #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
-      #if ($studiesVisibilityPreference == 'unrestricted')
-         #set ($studyClassName = 'PhenoTips.StudyClass')
-         #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
-         #set ($query = $services.query.xwql("from doc.object(${studyClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $studyTemplateName))
-         #set ($studyDocs = $xwiki.wrapDocs($query.execute()))
-         #set ($studies = $collectionstool.sortedSet)
-         #foreach ($study in $studyDocs)
-            #set ($discard = $studies.add($services.model.serialize($study.documentReference, 'default')))
-         #end
-      #else
-         #set ($toProcess = $collectionstool.queue)
-         #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-         #set ($groups = [])
-         #set ($studies = $collectionstool.sortedSet)
-         #foreach ($iteration in [0..1000])
-            #if ($toProcess.empty)
-               #break
-            #end
-            #set ($item = $toProcess.poll())
-            #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-               #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-               #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-                  #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
-               #end
-               #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
-                  #set ($discard = $toProcess.add($group.documentReference.toString()))
-                  #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
-                  #if ($groupObj.getProperty('studies').value.isEmpty() == false)
-                     #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
-                  #end
-               #end
-            #end
-         #end
-      #end
+      #set ($studies = $services.studies.getAllStudiesForUser())
    #else
       #set ($studies = $services.projects.getTemplatesForProjects($request.input))
    #end
@@ -95,38 +61,16 @@
       &lt;div class="form-template-option"&gt;
          &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
       &lt;/div&gt;
-   #foreach ($sName in $studies)
-      #set ($s = $xwiki.getDocument($sName))
-      #set ($config = $s.getObject('PhenoTips.StudyClass'))
-      #set ($configTitle = '')
-      #if ("$!{s.plainTitle}" != '')
-         #set ($configTitle = "$s.plainTitle")
-      #else
-         #set ($configTitle = "${s.name}")
+   #foreach ($s in $studies)
+      #set ($configTitle = $s.getTitle())
+      #if ($configTitle == '')
+         #set ($configTitle = $s.getName())
       #end
-    #end
-  #end
-#end
-&lt;div class="form-template-option"&gt;
-&lt;select&gt;
-&lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
-&lt;/div&gt;
-#foreach ($sName in $studies)
-  #set ($s = $xwiki.getDocument($sName))
-  #if (!$s.isNew())
-    #set ($config = $s.getObject('PhenoTips.StudyClass'))
-    #set ($configTitle = '')
-    #if ("$!{s.plainTitle}" != '')
-      #set ($configTitle = "$s.plainTitle")
-    #else
-      #set ($configTitle = "${s.name}")
-    #end
-    &lt;div class="form-template-option"&gt;
-      &lt;option name="${prefix}${name}" value="${s.documentReference}" /&gt;$configTitle&lt;/option&gt;
-    &lt;/div&gt;
-  #end
-#end
-&lt;/select&gt;
+      &lt;div class="form-template-option"&gt;
+         &lt;option name="${prefix}${name}" value="${s.getDocumentReference()}" /&gt;$configTitle&lt;/option&gt;
+      &lt;/div&gt;
+   #end
+   &lt;/select&gt;
 #else
   #if ("$!value" == '')
     None
@@ -666,44 +610,13 @@
 #end
 #set ($sheetName = 'PhenoTips.StudyBindingSheet')
 #set ($className = 'PhenoTips.StudyBindingClass')
-$xwiki.jsx.use('PhenoTips.Widgets')##
-$xwiki.jsx.use($className)##
-$xwiki.ssx.use($className)##
-#set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
-#if ($studiesVisibilityPreference == 'unrestricted')
-  #set ($studyClassName = 'PhenoTips.StudyClass')
-  #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
-  #set ($query = $services.query.xwql("from doc.object(${studyClassName}) as std where doc.fullName &lt;&gt; :template").bindValue('template', $studyTemplateName))
-  #set ($studyDocs = $xwiki.wrapDocs($query.execute()))
-  #set ($studies = $collectionstool.sortedSet)
-  #foreach ($study in $studyDocs)
-    #set ($discard = $studies.add($services.model.serialize($study.documentReference, 'default')))
-  #end
-#else
-  #set ($toProcess = $collectionstool.queue)
-  #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-  #set ($groups = [])
-  #set ($studies = $collectionstool.sortedSet)
-  #foreach ($iteration in [0..1000])
-    #if ($toProcess.empty)
-      #break
-    #end
-    #set ($item = $toProcess.poll())
-    #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-        #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
-      #end
-      #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
-        #set ($discard = $toProcess.add($group.documentReference.toString()))
-        #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
-        #if ($groupObj.getProperty('studies').value.isEmpty() == false)
-          #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
-        #end
-      #end
-    #end
-  #end
-#end
+$xwiki.jsx.use('PhenoTips.Widgets')
+$xwiki.jsx.use($className)
+$xwiki.ssx.use($className)
+{{/velocity}}
+
+{{velocity}}
+#set ($studies = $services.studies.getAllStudiesForUser())
 #if ($studies.size() &gt; 0)
   #set ($studyConfig = $doc.getObject($className, true))
   #set ($value = $studyConfig.getProperty('studyReference').value)
