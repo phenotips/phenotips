@@ -21,15 +21,14 @@ import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectsRepository;
+import org.phenotips.studies.data.Study;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -97,17 +96,16 @@ public class ProjectsScriptService implements ScriptService
      * @param projects command separated project ids
      * @return collection of templates ids.
      */
-    public Collection<String> getTemplatesForProjects(String projects)
+    public Collection<Study> getTemplatesForProjects(String projects)
     {
-        Set<String> templates = new TreeSet<String>();
+        Set<Study> templates = new HashSet<Study>();
         for (String projectId : projects.split(",")) {
             Project project = this.getProjectById(projectId);
             if (project == null) {
                 continue;
             }
-            for (EntityReference template : project.getTemplates()) {
-                String templateId = template.getName();
-                templates.add(templateId);
+            for (Study s : project.getTemplates()) {
+                templates.add(s);
             }
         }
         return templates;
