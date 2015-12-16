@@ -313,6 +313,27 @@ public class PatientRecordViewPage extends ViewPage
     @FindBy(css = ".prenatal-info.chapter .paternal_age .displayed-value")
     private WebElement fieldPaternalAgeAtEDD;
 
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(1)")
+    private WebElement fieldPregnancyHistoryGravida;
+
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(2)")
+    private WebElement fieldPregnancyHistoryPara;
+
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(3)")
+    private WebElement fieldPregnancyHistoryTerm;
+
+    @FindBy(css =".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(4)")
+    private WebElement fieldPregnancyHistoryPreTerm;
+
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(5)")
+    private WebElement fieldPregnancyHistorySab;
+
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(6)")
+    private WebElement fieldPregnancyHistoryTab;
+
+    @FindBy(css = ".prenatal-info.chapter > table > tbody > tr:nth-child(2) > td:nth-child(7)")
+    private WebElement fieldPregnancyHistoryLiveBirths;
+
     @FindBy(css = ".assistedReproduction_fertilityMeds > div > label")
     private WebElement fieldConceptionAfterFertility;
 
@@ -359,6 +380,20 @@ public class PatientRecordViewPage extends ViewPage
                 return this.fieldMaternalAgeAtEDD.getText();
             case "fieldPaternalAgeAtEDD":
                 return this.fieldPaternalAgeAtEDD.getText();
+            case "fieldPregnancyHistoryGravida":
+                return this.fieldPregnancyHistoryGravida.getText();
+            case "fieldPregnancyHistoryPara":
+                return this.fieldPregnancyHistoryPara.getText();
+            case "fieldPregnancyHistoryTerm":
+                return this.fieldPregnancyHistoryTerm.getText();
+            case "fieldPregnancyHistoryPreTerm":
+                return this.fieldPregnancyHistoryPreTerm.getText();
+            case "fieldPregnancyHistorySab":
+                return this.fieldPregnancyHistorySab.getText();
+            case "fieldPregnancyHistoryTab":
+                return this.fieldPregnancyHistoryTab.getText();
+            case "fieldPregnancyHistoryLiveBirths":
+                return this.fieldPregnancyHistoryLiveBirths.getText();
             case "fieldFirstAssistedReproduction":
                 return this.fieldFirstGlobalInheritence.getText();
             case "fieldSecondAssistedReproduction":

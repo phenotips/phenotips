@@ -146,7 +146,32 @@ public class PatientRecordTest extends AbstractTest
     }
 
     @Test
+    public void ObstetricHistoryTest(){
+        this.patientEdit.expandPrenatalAndPerinatalHistory();
+        this.patientEdit.setObstetricHistoryGravida("1");
+        this.patientEdit.setObstetricHistoryPara("2");
+        this.patientEdit.setObstetricHistoryTerm("3");
+        this.patientEdit.setObstetricHistoryPreTerm("4");
+        this.patientEdit.setObstetricHistorySab("5");
+        this.patientEdit.setObstetricHistoryTab("6");
+        this.patientEdit.setObstetricHistoryLiveBirths("7");
+
+        PatientRecordViewPage patientView  = this.patientEdit.clickSaveAndView();
+
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryGravida"), "1");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryPara"), "2");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryTerm"), "3");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryPreTerm"), "4");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistorySab"), "5");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryTab"), "6");
+        Assert.assertEquals(patientView.getPrenatalAndPerinatalHistorySummary("fieldPregnancyHistoryLiveBirths"), "7");
+
+
+    }
+
+    @Test
     public void parentalAgeTest(){
+        this.patientEdit.expandPrenatalAndPerinatalHistory();
         this.patientEdit.setMaternalAgeAtEDD("25");
         this.patientEdit.setPaternalAgeAtEDD("27");
 
