@@ -380,6 +380,20 @@ public class PatientRecordViewPage extends ViewPage
                 return this.fieldMaternalAgeAtEDD.getText();
             case "fieldPaternalAgeAtEDD":
                 return this.fieldPaternalAgeAtEDD.getText();
+            case "fieldPregnancyHistoryGravida":
+                return this.fieldPregnancyHistoryGravida.getText();
+            case "fieldPregnancyHistoryPara":
+                return this.fieldPregnancyHistoryPara.getText();
+            case "fieldPregnancyHistoryTerm":
+                return this.fieldPregnancyHistoryTerm.getText();
+            case "fieldPregnancyHistoryPreTerm":
+                return this.fieldPregnancyHistoryPreTerm.getText();
+            case "fieldPregnancyHistorySab":
+                return this.fieldPregnancyHistorySab.getText();
+            case "fieldPregnancyHistoryTab":
+                return this.fieldPregnancyHistoryTab.getText();
+            case "fieldPregnancyHistoryLiveBirths":
+                return this.fieldPregnancyHistoryLiveBirths.getText();
             case "fieldFirstAssistedReproduction":
                 return this.fieldFirstGlobalInheritence.getText();
             case "fieldSecondAssistedReproduction":
