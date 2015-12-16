@@ -417,19 +417,19 @@ $!value
     </property>
     <property>
       <enabled>
-        <value>weight</value>
         <value>height</value>
+        <value>weight</value>
         <value>bmi</value>
-        <value>sitting</value>
         <value>hc</value>
-        <value>philtrum</value>
-        <value>ear</value>
+        <value>sitting</value>
         <value>ocd</value>
         <value>icd</value>
-        <value>pfl</value>
         <value>ipd</value>
-        <value>hand</value>
+        <value>pfl</value>
+        <value>ear</value>
+        <value>philtrum</value>
         <value>palm</value>
+        <value>hand</value>
         <value>foot</value>
       </enabled>
     </property>
@@ -439,19 +439,19 @@ $!value
     <property>
       <ordering>
         <value>height</value>
+        <value>weight</value>
         <value>bmi</value>
         <value>hc</value>
-        <value>philtrum</value>
-        <value>ear</value>
-        <value>pfl</value>
         <value>sitting</value>
-        <value>palm</value>
         <value>ocd</value>
-        <value>weight</value>
         <value>icd</value>
-        <value>foot</value>
         <value>ipd</value>
+        <value>pfl</value>
+        <value>ear</value>
+        <value>philtrum</value>
+        <value>palm</value>
         <value>hand</value>
+        <value>foot</value>
       </ordering>
     </property>
   </object>
