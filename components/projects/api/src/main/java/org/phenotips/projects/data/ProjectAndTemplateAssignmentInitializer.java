@@ -112,6 +112,10 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
 
     private void assignProjects(String projectsSelected, XWikiDocument patientDoc)
     {
+        if (StringUtils.isEmpty(projectsSelected)) {
+            return;
+        }
+
         List<String> projectsList = new ArrayList<String>();
         for (String projectId : projectsSelected.split(",")) {
             Project p = new DefaultProject(projectId);
@@ -130,6 +134,10 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
 
     private void assignTemplate(String templateSelected, XWikiDocument patientDoc)
     {
+        if (StringUtils.isEmpty(templateSelected)) {
+            return;
+        }
+
         try {
             XWikiContext xContext = getXContext();
             BaseObject templateBindingObject = patientDoc.newXObject(templateBindingReference, xContext);
