@@ -276,7 +276,7 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
       _this._initializeSuggestTemplates();
 
       var url = window.location.href.toLowerCase();
-      var newProject = (url.indexOf("newproject") > 0);
+      var newProject = (url.indexOf("newproject") &gt; 0);
       if (newProject) {
          this._addCurrentUserAsLeader();
       } else {
