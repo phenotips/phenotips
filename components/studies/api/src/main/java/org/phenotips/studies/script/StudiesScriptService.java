@@ -18,6 +18,7 @@
 package org.phenotips.studies.script;
 
 import org.phenotips.studies.data.Study;
+import org.phenotips.studies.internal.DefaultStudy;
 import org.phenotips.studies.internal.StudiesRepository;
 
 import org.xwiki.component.annotation.Component;
@@ -64,5 +65,14 @@ public class StudiesScriptService implements ScriptService
     public Collection<Study> getAllStudiesForUser()
     {
         return studiesRepository.getAllStudiesForUser();
+    }
+
+    /**
+     * @param studyId id of study to get
+     * @return a study
+     */
+    public Study getStudyById(String studyId)
+    {
+        return new DefaultStudy(studyId);
     }
 }
