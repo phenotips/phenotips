@@ -165,7 +165,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
        __this.numberOfProjects = parseInt($('numberOfProjects').value);
        __this.numberOfTemplates = parseInt($('numberOfTemplates').value);
-       if (__this.numberOfProjects == 0 &amp;&amp; __this.numberOfTemplates &lt; 2) {
+       if (__this.numberOfProjects == 0 &amp;&amp; __this.numberOfTemplates == 0) {
           // Nothing to choose
           return;
        }
@@ -176,6 +176,8 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           __this.modalBox.showDialog();
           __this._updateSelectionPopup();
        });
+
+       __this._initializeStudyReassignmentTool();
     },
 
     _areAllSectionsCreated : function() {
@@ -214,6 +216,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
     {
        var selectionForm = $('selectPTForm');
        if (selectionForm != null) {
+          // Form already exists
           return;
        }
 
@@ -291,6 +294,20 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        $('templateSelected').value = templateSelected;
 
        $('selectPTForm').submit();
+    },
+
+    _initializeStudyReassignmentTool: function() {
+       var studyAssignmentTool = $('study-assignment-config');
+       if (!studyAssignmentTool) {
+         return;
+       }
+
+       studyAssignmentTool.observe('click', function (event) {
+          event.stop();
+          __this._createSelectionPopup();
+          __this.modalBox.showDialog();
+          __this._updateSelectionPopup();
+       });
     }
   });
   return PhenoTips;
@@ -309,6 +326,257 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
     <property>
       <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.CreatePatientRecordForm</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b50a6d81-350e-4568-b991-950098cf98b1</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.tp-assignment-config {
+  width: 48%;
+  float: left;
+}
+.tp-assignment-config a.button {
+  cursor: text;
+  font-size: 1em;
+  font-weight: normal;
+  text-transform: none;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.CreatePatientRecordForm</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>48f24db0-ad94-47de-8a15-dac5af1f369c</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity output=false}}
+$xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')
+$xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
+{{/velocity}}
+
+{{velocity}}
+(% class="tp-assignment-config" %)
+#set ($projects = $services.projects.getAllProjectsAsContributor())
+#if ($xcontext.action != 'export' &amp;&amp; $projects.size() &gt; 0)
+Projects: ##
+  #set ($boundProject = $doc.getObject('PhenoTips.ProjectBindingClass'))
+  #set ($projectIds = $boundProject.getProperty('projectReference').value)
+  #if ("$!projectIds" == '') 
+(% class="hint" %)None(%%)
+  #else
+    #set ($projectIds = $projectIds.split(";"))
+    #set ($projectsString = '')
+    #foreach ($projectId in $projectIds)
+      #set ($project = $services.projects.getProjectById($projectId)) 
+      #set ($projectsString = "${projectsString}(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${project.getName()}&gt;&gt;${projectId}||rel='__blank' class='button secondary']](%%)")
+      #if ($foreach.count&lt;$projectIds.size())
+         #set ($projectsString = "${projectsString}##")
+      #end
+    #end
+    $projectsString
+  #end
+#end
+#set ($templates = $services.studies.getAllStudiesForUser())
+#if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
+Study: ##
+  #set ($boundTemplate = $doc.getObject('PhenoTips.TemplateBindingClass'))
+  #set ($templateId = $boundTemplate.getProperty('templateReference').value)
+  #if ("$!templateId" == '') 
+(% class="hint" %)None(%%)
+  #else
+    #set ($template = $services.studies.getStudyById($templateId)) 
+(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${template.getName()}&gt;&gt;${templateId}||rel='__blank' class='button secondary']](%%)
+  #end
+#end
+#set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
+(% class='buttonwrapper' %)##
+[[ {{icon name="edit" title="$services.localization.render('phenotips.studyBindingClass.changeStudyButton.title')" /}}##
+{{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}##
+&gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]]
+(%%)
+(%%)
+##</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.ProjectTemplateBinding</name>
+    </property>
+    <property>
+      <parameters>order=1</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
     </property>
   </object>
 </xwikidoc>
