@@ -167,7 +167,7 @@ public class UsersAndGroups
         for (String userName : queryResult)
         {
             User user = this.userManager.getUser(userName);
-            JSONObject o = createObject(user.getProfileDocument().toString(), user.getUsername(), USER);
+            JSONObject o = createObject(userName, user.getUsername(), USER);
             resultArray.add(o);
         }
     }

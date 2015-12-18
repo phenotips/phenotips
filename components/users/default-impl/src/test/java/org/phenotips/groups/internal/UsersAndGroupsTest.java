@@ -91,7 +91,7 @@ public class UsersAndGroupsTest
         String input = "a";
 
         String userName = "Admin";
-        String userFullName = "XWiki:XWiki.Admin";
+        String userFullName = "XWiki.Admin";
 
         JSONArray resultsArray = new JSONArray();
         List<String> usersList = new LinkedList<String>();
@@ -109,12 +109,8 @@ public class UsersAndGroupsTest
         QueryManager qm = this.mocker.getInstance(QueryManager.class);
         when(qm.createQuery(usersQueryString, Query.XWQL)).thenReturn(q);
 
-        DocumentReference d = mock(DocumentReference.class);
-        when(d.toString()).thenReturn("XWiki:XWiki.Admin");
-
         User u = mock(User.class);
         when(u.getUsername()).thenReturn(userName);
-        when(u.getProfileDocument()).thenReturn(d);
 
         UserManager um = this.mocker.getInstance(UserManager.class);
         when(um.getUser(userFullName)).thenReturn(u);
@@ -171,7 +167,7 @@ public class UsersAndGroupsTest
         String input = "a";
 
         String userName = "Admin";
-        String userFullName = "XWiki:XWiki.Admin";
+        String userFullName = "XWiki.Admin";
 
         JSONArray resultsArray = new JSONArray();
         List<String> usersList = new LinkedList<String>();
@@ -188,12 +184,8 @@ public class UsersAndGroupsTest
         QueryManager qm = this.mocker.getInstance(QueryManager.class);
         when(qm.createQuery(usersQueryString, Query.XWQL)).thenReturn(q);
 
-        DocumentReference d = mock(DocumentReference.class);
-        when(d.toString()).thenReturn("XWiki:XWiki.Admin");
-
         User u = mock(User.class);
         when(u.getUsername()).thenReturn(userName);
-        when(u.getProfileDocument()).thenReturn(d);
 
         UserManager um = this.mocker.getInstance(UserManager.class);
         when(um.getUser(userFullName)).thenReturn(u);
