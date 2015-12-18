@@ -560,6 +560,8 @@
               <differenceType>7012</differenceType>
               <method>org.phenotips.configuration.RecordConfiguration getConfiguration(java.lang.String)</method>
               <justification>New API methods needed for making the configuration more extensible.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/vocabulary/Vocabulary</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getSupportedCategories()</method>
@@ -590,22 +592,10 @@
               <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/groups/Group</className>
-              <differenceType>7012</differenceType>
-              <method>java.util.Collection getStudies()</method>
-              <justification>To get a list of studies in which the group is involved.</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/data/PatientData</className>
               <differenceType>7012</differenceType>
               <method>int size()</method>
               <justification>The size() method should have been included from the start, since any collection should have it.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientData</className>
-              <differenceType>7004</differenceType>
-              <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(org.phenotips.data.Patient, java.util.Set, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
               <className>org/phenotips/data/push/PushPatientService</className>
@@ -636,6 +626,22 @@
               <differenceType>7012</differenceType>
               <method>java.util.Collection getAllUserNames()</method>
               <justification>To returned a (recursive) list of users in a group. Currently used only in projects.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/groups/Group</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection getStudies()</method>
+              <justification>To get a list of studies in which the group is involved.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/groups/internal/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Implementation moved to module users-default-impl.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/groups/script/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Implementation moved to module users-default-impl.</justification>
             </difference>
           </ignored>
           <excludes>
