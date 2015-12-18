@@ -77,15 +77,15 @@ public class StudiesRepository
     private GroupManager groupManager;
 
     /**
-     * Returns a JSON object with a /** Returns a collection of studies that are available for the user. The list is
-     * compiled based on the system property of studies visibility. If studies are unrestricted, all studies will be
-     * returned. If the studies are available based on group visibility, then only studies for which the current user
-     * has permission will be returned.
+     * Returns a JSON object with a /** Returns a collection of studies that are
+     * available for the user. The list is compiled based on the system property
+     * of studies visibility. If studies are unrestricted, all studies will be
+     * returned. If the studies are available based on group visibility, then
+     * only studies for which the current user has permission will be returned.
      *
      * @return a collection of studies
      */
-    public List<Study> getAllStudiesForUser()
-    {
+    public List<Study> getAllStudiesForUser() {
         List<Study> studiesList = null;
         if (this.isStudyAccessUnrestricted()) {
             studiesList = this.queryStudies(null, -1);
@@ -101,23 +101,23 @@ public class StudiesRepository
             }
         }
 
-        Collections.sort(studiesList, new Comparator<Study>()
-            {
-                @Override
-                public int compare(Study o1, Study o2)
-                {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
+        Collections.sort(studiesList, new Comparator<Study>() {
+            @Override
+            public int compare(Study o1, Study o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return studiesList;
     }
 
     /**
-     * Returns a JSON object with a list of studies, all with ids that fit a search criterion. If the search criterion
-     * is null, it is ignored.
+     * Returns a JSON object with a list of studies, all with ids that fit a
+     * search criterion. If the search criterion is null, it is ignored.
      *
-     * @param input the beginning of the study id
-     * @param resultsLimit maximal length of list
+     * @param input
+     *            the beginning of the study id
+     * @param resultsLimit
+     *            maximal length of list
      * @return JSON object with a list of studies
      */
     public String searchStudies(String input, int resultsLimit)

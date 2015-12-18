@@ -33,5 +33,6 @@
     <module>api</module>
     <module>migrations</module>
     <module>ui</module>
+    <module>default-impl</module>
   </modules>
 </project>

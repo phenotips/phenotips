@@ -27,12 +27,7 @@
   </parent>
   <artifactId>phenotips-studies-api</artifactId>
   <name>PhenoTips - Studies - Java APIs</name>
-    <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+  <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
