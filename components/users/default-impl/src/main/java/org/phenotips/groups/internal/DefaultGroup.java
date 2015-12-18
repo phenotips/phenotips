@@ -20,8 +20,8 @@ package org.phenotips.groups.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
+import org.phenotips.studies.data.Study;
+import org.phenotips.studies.internal.DefaultStudy;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -149,7 +149,7 @@ public class DefaultGroup implements Group
     }
 
     @Override
-    public Collection<Template> getTemplates()
+    public Collection<Study> getStudies()
     {
         DocumentAccessBridge bridge = this.getBridge();
         XWikiDocument groupDocument = null;
@@ -161,13 +161,13 @@ public class DefaultGroup implements Group
         }
 
         @SuppressWarnings("unchecked")
-        List<String> templatesList = groupDocument.getListValue("studies");
-        List<Template> templates = new ArrayList<Template>();
-        for (String id : templatesList) {
-            templates.add(new DefaultTemplate(id));
+        List<String> studiesList = groupDocument.getListValue("studies");
+        List<Study> studies = new ArrayList<Study>();
+        for (String id : studiesList) {
+            studies.add(new DefaultStudy(id));
         }
 
-        return templates;
+        return studies;
     }
 
     private DocumentReferenceResolver<String> getStringResolver()

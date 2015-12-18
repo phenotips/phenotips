@@ -258,7 +258,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.5</version>
+        <version>4.4.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -562,7 +562,6 @@
               <justification>New API methods needed for making the configuration more extensible.</justification>
             </difference>
             <difference>
-<<<<<<< HEAD
               <className>org/phenotips/vocabulary/Vocabulary</className>
               <differenceType>7012</differenceType>
               <method>java.util.Collection getSupportedCategories()</method>
@@ -575,20 +574,6 @@
               <justification>Adding support for vocabulary categories</justification>
             </difference>
             <difference>
-              <className>org/phenotips/data/receive/ReceivePatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.json.JSONObject getPatientState()</method>
-              <justification>Added a new endpoint on the receiving side in patient push module</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-=======
->>>>>>> 964aeb1... issue-1987-projects
               <className>org/phenotips/groups/Group</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserInGroup(org.xwiki.users.User)</method>
@@ -601,33 +586,6 @@
               <justification>The size() method should have been included from the start, since any collection should have it.</justification>
             </difference>
             <difference>
-<<<<<<< HEAD
-              <className>org/phenotips/groups/GroupManager</className>
-              <differenceType>7012</differenceType>
-              <method>boolean isUserInGroup(org.xwiki.users.User, org.phenotips.groups.Group)</method>
-              <justification>Moved the method here from DefaultReceivePatientData so it can be used in other places.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/*</className>
-              <differenceType>4001</differenceType>
-              <to>org/phenotips/data/OntologyProperty</to>
-              <justification>Renamed OntologyProperty to VocabularyProperty.</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-=======
->>>>>>> 964aeb1... issue-1987-projects
               <className>org/phenotips/data/permissions/Collaborator</className>
               <differenceType>7012</differenceType>
               <method>boolean isUserIncluded(org.xwiki.users.User)</method>
