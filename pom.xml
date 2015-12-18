@@ -478,6 +478,16 @@
               <justification>Switched from net.sf.json to org.json.</justification>
             </difference>
             <difference>
+              <className>org/phenotips/groups/internal/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Implementation moved to module users-default-impl.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/groups/script/**</className>
+              <differenceType>8001</differenceType>
+              <justification>Implementation moved to module users-default-impl.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/push/**</className>
               <differenceType>7006</differenceType>
               <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>

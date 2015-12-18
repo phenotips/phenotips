@@ -96,6 +96,10 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>users-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>users-default-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
