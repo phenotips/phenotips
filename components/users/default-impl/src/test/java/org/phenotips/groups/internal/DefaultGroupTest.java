@@ -20,7 +20,8 @@ package org.phenotips.groups.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-import org.phenotips.templates.data.Template;
+import org.phenotips.studies.data.Study;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -165,38 +166,38 @@ public class DefaultGroupTest
     }
 
     @Test
-    public void getTemplatesTest() throws Exception
+    public void getStudiesTest() throws Exception
     {
         XWikiDocument groupXDocument = mock(XWikiDocument.class);
         DocumentReference groupReference = mock(DocumentReference.class);
         DefaultGroup group = new DefaultGroup(groupReference);
         when(this.bridge.getDocument(groupReference)).thenReturn(groupXDocument);
 
-        // No templates
-        List<String> templatesIdsList = new ArrayList<String>();
-        when(groupXDocument.getListValue("studies")).thenReturn(templatesIdsList);
-        Assert.assertEquals(group.getTemplates().size(), 0);
+        // No studies
+        List<String> studiesIdsList = new ArrayList<String>();
+        when(groupXDocument.getListValue("studies")).thenReturn(studiesIdsList);
+        Assert.assertEquals(group.getStudies().size(), 0);
 
         // With 2 studies
         String id = "studies.t1";
-        templatesIdsList.add(id);
-        DocumentReference templateRef = mock(DocumentReference.class);
-        XWikiDocument templateXDocument = mock(XWikiDocument.class);
-        when(this.resolver.resolve(id, Template.DEFAULT_DATA_SPACE)).thenReturn(templateRef);
-        when(this.bridge.getDocument(templateRef)).thenReturn(templateXDocument);
-        when(templateXDocument.getDocumentReference()).thenReturn(templateRef);
-        when(groupXDocument.getListValue("studies")).thenReturn(templatesIdsList);
-        Collection<Template> template = group.getTemplates();
-        Assert.assertEquals(template.size(), 1);
+        studiesIdsList.add(id);
+        DocumentReference studyRef = mock(DocumentReference.class);
+        XWikiDocument studyXDocumnet = mock(XWikiDocument.class);
+        when(this.resolver.resolve(id, Study.DEFAULT_DATA_SPACE)).thenReturn(studyRef);
+        when(this.bridge.getDocument(studyRef)).thenReturn(studyXDocumnet);
+        when(studyXDocumnet.getDocumentReference()).thenReturn(studyRef);
+        when(groupXDocument.getListValue("studies")).thenReturn(studiesIdsList);
+        Collection<Study> studies = group.getStudies();
+        Assert.assertEquals(studies.size(), 1);
     }
 
     @Test
-    public void getTemplatesFailsTest() throws Exception
+    public void getStudiesFailsTest() throws Exception
     {
         DocumentReference groupReference = mock(DocumentReference.class);
         DefaultGroup group = new DefaultGroup(groupReference);
         when(this.bridge.getDocument(groupReference)).thenThrow(new Exception(""));
-        Assert.assertNull(group.getTemplates());
+        Assert.assertNull(group.getStudies());
     }
 
     @Test
