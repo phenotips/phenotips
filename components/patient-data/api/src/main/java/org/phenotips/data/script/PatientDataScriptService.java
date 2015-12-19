@@ -20,14 +20,8 @@ package org.phenotips.data.script;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.security.authorization.AuthorizationManager;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
 import javax.inject.Inject;
@@ -46,22 +40,10 @@ import javax.inject.Singleton;
 @Singleton
 public class PatientDataScriptService implements ScriptService
 {
-    /** Used for checking access rights. */
-    @Inject
-    private AuthorizationManager access;
-
-    /** Used for obtaining the current user. */
-    @Inject
-    private DocumentAccessBridge bridge;
-
     /** Wrapped trusted API, doing the actual work. */
     @Inject
+    @Named("secure")
     private PatientRepository internalService;
-
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
-    @Inject
-    @Named("current")
-    private EntityReferenceResolver<EntityReference> currentResolver;
 
     /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
@@ -72,12 +54,11 @@ public class PatientDataScriptService implements ScriptService
      */
     public Patient getPatientById(String id)
     {
-        Patient patient = this.internalService.getPatientById(id);
-        if (patient != null
-            && this.access.hasAccess(Right.VIEW, this.bridge.getCurrentUserReference(), patient.getDocument())) {
-            return patient;
+        try {
+            return this.internalService.getPatientById(id);
+        } catch (SecurityException ex) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -90,12 +71,11 @@ public class PatientDataScriptService implements ScriptService
      */
     public Patient getPatientByExternalId(String externalId)
     {
-        Patient patient = this.internalService.getPatientByExternalId(externalId);
-        if (patient != null
-            && this.access.hasAccess(Right.VIEW, this.bridge.getCurrentUserReference(), patient.getDocument())) {
-            return patient;
+        try {
+            return this.internalService.getPatientByExternalId(externalId);
+        } catch (SecurityException ex) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -106,10 +86,10 @@ public class PatientDataScriptService implements ScriptService
      */
     public Patient createNewPatient()
     {
-        if (this.access.hasAccess(Right.EDIT, this.bridge.getCurrentUserReference(),
-            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+        try {
             return this.internalService.createNewPatient();
+        } catch (SecurityException ex) {
+            return null;
         }
-        return null;
     }
 }
