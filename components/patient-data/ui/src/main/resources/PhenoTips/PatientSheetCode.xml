@@ -1015,8 +1015,8 @@ document.observe('xwiki:dom:loaded', function()
       document.observe('mousedown', function(event) {
         if (!event.findElement('.suggestItems') &amp;&amp; !event.findElement('.dialog-ontology-browser')) {
           $$('.suggestItems').each(function(item) {
-            if (item.__targetField._suggest) {
-              item.__targetField._suggest.clearSuggestions();
+            if (item.__targetField &amp;&amp; (item.__targetField._suggest || item.__targetField._suggestWidget)) {
+              (item.__targetField._suggest || item.__targetField._suggestWidget).clearSuggestions();
              }
           });
         }
