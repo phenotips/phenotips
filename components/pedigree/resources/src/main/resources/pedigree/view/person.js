@@ -971,12 +971,13 @@ define([
             var onceAlive = editor.getGraph().hasRelationships(this.getID());
             var inactiveStates = onceAlive ? ['unborn','aborted','miscarriage','stillborn'] : false;
             var disabledStates = false;
-            if (this.isProband()) {
-                disabledStates = ['alive','deceased','unborn','aborted','miscarriage','stillborn']; // all possible
+            // disallow states not suported by PhenoTips
+            if (this.getPhenotipsPatientId() != "") {
+                disabledStates = ['unborn','aborted','miscarriage','stillborn'];
                 Helpers.removeFirstOccurrenceByValue(disabledStates,this.getLifeStatus())
             }
 
-            var disabledGenders = this.isProband() ? [] : false;
+            var disabledGenders = false;
             var inactiveGenders = false;
             var genderSet = editor.getGraph().getPossibleGenders(this.getID());
             for (gender in genderSet) {
@@ -985,9 +986,6 @@ define([
                         if (!inactiveGenders)
                             inactiveGenders = [];
                         inactiveGenders.push(gender);
-                    }
-                    if (this.isProband() && gender != this.getGender()) {
-                        disabledGenders.push(gender);
                     }
             }
 
@@ -1045,19 +1043,19 @@ define([
 
             var summary = {
                 identifier:    {value : this.getID()},
-                first_name:    {value : this.getFirstName(), disabled: this.isProband()},
-                last_name:     {value : this.getLastName(), disabled: this.isProband()},
+                first_name:    {value : this.getFirstName(), disabled: false},
+                last_name:     {value : this.getLastName(), disabled: false},
                 last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
-                external_id:   {value : this.getExternalID(), disabled: this.isProband()},
+                external_id:   {value : this.getExternalID(), disabled: false},
                 gender:        {value : this.getGender(), inactive: inactiveGenders, disabled: disabledGenders},
-                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: this.isProband()},
+                date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus(), disabled: false},
                 carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
-                disorders:     {value : disorders, disabled: this.isProband()},
+                disorders:     {value : disorders, disabled: false},
                 ethnicity:     {value : this.getEthnicities()},
-                candidate_genes: {value : this.getGenes(), disabled: this.isProband()},
+                candidate_genes: {value : this.getGenes(), disabled: false},
                 adopted:       {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:         {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
-                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: this.isProband()},
+                date_of_death: {value : this.getDeathDate(), inactive: this.isFetus(), disabled: false},
                 commentsClinical:{value : this.getComments(), inactive: false},
                 commentsPersonal:{value : this.getComments(), inactive: false},  // so far the same set of comments is displayed on all tabs
                 commentsCancers: {value : this.getComments(), inactive: false},
@@ -1067,7 +1065,7 @@ define([
                 placeholder:   {value : false, inactive: true },
                 monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
                 evaluated:     {value : this.getEvaluated() },
-                hpo_positive:  {value : hpoTerms, disabled: this.isProband() },
+                hpo_positive:  {value : hpoTerms, disabled: false },
                 nocontact:     {value : this.getLostContact(), inactive: inactiveLostContact },
                 cancers:       {value : this.getCancers() },
                 phenotipsid:   {value : this.getPhenotipsPatientId() },
