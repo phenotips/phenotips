@@ -107,6 +107,8 @@ $xwiki.jsfx.use('uicomponents/pedigree/controller.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/undoRedo.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{/velocity}}
 
 {{html}}
