@@ -11,7 +11,7 @@ define([], function(){
             var me = this;
             var mainDiv = new Element('div', {'class': 'load-status-container'});
             this._isHidden = true;
-            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, false, {extraClassName: "loading-indicator", displayCloseButton: false});
+            this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {'close': {'method': null, 'keys': []} }, {extraClassName: "loading-indicator", displayCloseButton: false});
             document.observe("pedigree:load:start", function(event) {
                 if(me._isHidden) {
                     me.show();

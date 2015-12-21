@@ -142,10 +142,10 @@ define([
             if (phenotipsId == this._phenotipsId) {
                 return;
             }
-            
+
             if (this._phenotipsId != "") {
                 // fire patient this._phenotipsId is no longer in family
-                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "name":  this._firstName + " "+ this._lastName, "externalID": this._externalID};
+                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "firstName":  this._firstName, "lastName": this._lastName, "externalID": this._externalID};
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
@@ -927,6 +927,7 @@ define([
             var extensionParameters = { "node": this };
             editor.getExtensionManager().callExtensions("personNodeRemoved", extensionParameters);
 
+            this.setPhenotipsPatientId("");
             this.setDisorders([]);  // remove disorders form the legend
             this.setHPO([]);
             this.setGenes([]);

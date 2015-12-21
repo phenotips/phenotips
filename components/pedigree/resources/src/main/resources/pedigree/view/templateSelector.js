@@ -113,12 +113,16 @@ define([
         },
 
         _adjustWindowHeight: function() {
-            // make sure templates fit on the screen, but take as much space as possible
-            var parentDivTotalheight = this.getParentDiv().clientHeight;
-            var templateSectionHeight = this.internalDiv.clientHeight;
-            var dialogueSize = parentDivTotalheight - templateSectionHeight;
-            var availableHeight = document.viewport.getHeight() - dialogueSize - 10;
-            this.internalDiv.setStyle({'max-height': availableHeight + 'px'});
+            var parentDiv = this.getParentDiv();
+            // if window is resized before templates are first initialized, there will be no parent div
+            if (parentDiv) {
+                // make sure templates fit on the screen, but take as much space as possible
+                var parentDivTotalheight = parentDiv.clientHeight;
+                var templateSectionHeight = this.internalDiv.clientHeight;
+                var dialogueSize = parentDivTotalheight - templateSectionHeight;
+                var availableHeight = document.viewport.getHeight() - dialogueSize - 10;
+                this.internalDiv.setStyle({'max-height': availableHeight + 'px'});
+            }
         }
     });
 

@@ -46,56 +46,33 @@ $response.setContentType('application/json')##
   #break
 #end
 ##
-#if ("$!request.action" != "createpatient" &amp;&amp; "$!request.action" != "addremovepatient" &amp;&amp; "$!request.action" != "createfamily")
-  #if ("$!request.proband" == '')
-    PROBAND was not specified
+#if ("$!request.action" == "familyinfo")
+  #if ("$!request.document_id" == '')
+    DOCUMENT_ID (patient or family) was not specified
     #break
   #end
-## family member, proband or family
-  #set ($anchorId = $request.proband)
-#end
-##
-#if ("$!request.action" == "save")
-  #if ("$!request.json" != '')
-    $services.families.processPedigree($anchorId, $request.json, $request.image)
-  #else
-    JSON was not specified for action SAVE
-  #end
-#elseif ("$!request.action" == "checklink")
-  #if ("$!request.link_to_id" != '')
-    $services.families.canPatientBeLinked($anchorId, $request.link_to_id)
-  #else
-    LINK_TO_ID was not specified for action CHECKLINK
-  #end
-#elseif ("$!request.action" == "familystatus")
-  $services.families.getFamilyInfo($anchorId)
-#elseif ("$!request.action" == "addremovepatient")
-  #set($familyId = $request.get("family_id"))
-  #set($patientId = $request.get("patient_id"))
-  ##
-  #if ("$!{request.add}" == 'true')
-    #set($response = $services.families.canPatientBeLinked($familyId, $patientId))
-    #if ("$!{response}" != '')
-      #set($json = $jsontool.parse($response))
-      #if ($json.get('validLink') != true)
-        #if ("$json.get('errorMessage')" != "")
-          $json.get('errorMessage')
-        #else
-          Unknown error has occurred
-        #end
-      #else
-        $services.families.addPatientToFamily($familyId,$patientId)
-      #end
-    #end
-  #elseif("$!{request.remove}" == true)
-    #set($discard = $services.families.removeMember($patientId))
-  #end
+  $services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON()
+  ##$jsontool.serialize($services.pedigrees.getFamilyAndPedigree($request.document_id).toJSON())
 #elseif ("$!request.action" == "createpatient")
   #set($patient = $services.patients.createNewPatient())
   #if ($patient)
     { "newID": "$patient.getId()" }
   #else
     { "newID": null }
+  #end
+#elseif ("$!request.action" == "checklink")
+  #if ("$!request.patient_to_link_id" != '')
+    $services.pedigrees.canPatientBeLinked($request.family_id, $request.patient_to_link_id).toJSON()
+    ##$jsontool.serialize($services.pedigrees.canPatientBeLinked($request.family_id, $request.patient_to_link_id).toJSON())
+  #else
+    PATIENT_TO_LINK_ID was not specified for action CHECKLINK
+  #end
+#elseif ("$!request.action" == "save")
+  #if ("$!request.json" != '')
+    $services.pedigrees.savePedigree($request.family_id, $request.json, $request.image).toJSON()
+    ##$jsontool.serialize($services.pedigrees.savePedigree($request.family_id, $request.json, $request.image).toJSON())
+  #else
+    JSON was not specified for action SAVE
   #end
 #else
   Unknown action
