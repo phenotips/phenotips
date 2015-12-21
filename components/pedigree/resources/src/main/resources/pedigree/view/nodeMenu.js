@@ -39,6 +39,7 @@ define([
     NodeMenu = Class.create({
         initialize : function(data, tabs, otherCSSClass) {
             //console.log("nodeMenu initialize");
+            this._USE_INSTEAD_OF_EMPTY = "___";
             this._justOpened = false;
             this.canvas = editor.getWorkspace().canvas || $('body');
             var cssClass = 'menu-box';
@@ -499,9 +500,10 @@ define([
                     if (v.hasOwnProperty("columnshiftPX")) {
                         radioLabel.setStyle({"marginLeft": "" + v.columnshiftPX + "px"});
                     }
-                    var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
+                    var useValue = (v.actual == "") ? _this._USE_INSTEAD_OF_EMPTY : v.actual;
+                    var radioButton = new Element('input', {type: 'radio', name: data.name, value: useValue});
                     radioLabel.insert({'top': radioButton});
-                    radioButton._getValue = function() { return [this.value]; }.bind(radioButton);
+                    radioButton._getValue = function() { return [(this.value == _this._USE_INSTEAD_OF_EMPTY ? "" : this.value)]; }.bind(radioButton);
                     values.insert(radioLabel);
                     _this._attachFieldEventListeners(radioButton, ['click']);
                     _this._attachDependencyBehavior(radioButton, data);
@@ -1079,7 +1081,8 @@ define([
 
         _setFieldValue : {
             'radio' : function (container, value) {
-                var target = container.down('input[type=radio][value=' + value + ']');
+                var useValue = (value == "") ? this._USE_INSTEAD_OF_EMPTY : value;
+                var target = container.down('input[type=radio][value=' + useValue + ']');
                 if (target) {
                     target.checked = true;
                 }
@@ -1269,7 +1272,7 @@ define([
 
                     var statusSelect = container.down('select[id="cancer_status_' + cancerName + '"]');
                     var ageSelect    = container.down('select[id="cancer_age_' + cancerName + '"]');
-                    var notesInput  = container.down('"#cancer_notes_' + cancerName + '"');
+                    var notesInput  = container.down('#cancer_notes_' + cancerName);
                     var enableNotesIcon = container.down("label[for=" + notesInput.id + "]");
 
                     if (!statusSelect) {
