@@ -139,4 +139,12 @@ public interface Family
      * access on p, x has edit access of the family.
      */
     void updatePermissions();
+
+    /**
+    * Deletes the family.
+    *
+    * @param deleteAllMembers if true, also removes all member patients documents
+    * @return true if successful
+    */
+    boolean deleteFamily(boolean deleteAllMembers);
 }
