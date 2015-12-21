@@ -46,10 +46,11 @@
   #set($obj = $doc.getObject('PhenoTips.FamilyClass'))
   #set($class = $obj.xWikiClass)
   #set($discard = $doc.use($obj))
-  #set($familyInfo = $services.families.getFamilyInfo($doc.getName()))
+  ## TODO: refactor, remove javascript and JSON passing
+  #set($familyInfo = $services.pedigrees.getFamilyAndPedigree($doc.getName()).toJSON())
   ##
   ## This is where all information about a family is inserted.
-  {{html clean='false'}}&lt;div id="family-info-json" class="hidden"&gt;$familyInfo&lt;/div&gt;{{/html}}
+  {{html clean='false'}}&lt;div id="family-info-json" class="hidden"&gt;$familyInfo.family&lt;/div&gt;{{/html}}
 
   #__hasDataToDisplay('external_id', $showExternalId)
   #if($showExternalId)

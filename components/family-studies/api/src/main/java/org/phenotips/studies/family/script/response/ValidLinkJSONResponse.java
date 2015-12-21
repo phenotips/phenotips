@@ -15,37 +15,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family;
+package org.phenotips.studies.family.script.response;
 
-import org.phenotips.data.Patient;
-
-import org.xwiki.component.annotation.Role;
+import net.sf.json.JSONObject;
 
 /**
- * Utility methods for manipulating families.
+ * JSON Response to client. Formats information from StatusResponse.
  *
  * @version $Id$
- * @since 1.2RC1
  */
-@Role
-public interface FamilyRepository
+public class ValidLinkJSONResponse extends AbstractJSONResponse
 {
     /**
-     * @param patient whose family the function return
-     * @return family for which family.isMember(patient) is true
+     * Default constructor, takes no parameters.
      */
-    Family getFamilyForPatient(Patient patient);
+    public ValidLinkJSONResponse() {
+    }
 
-    /**
-     * @param id of family to return
-     * @return family for which family.getId().equals(id) is true
-     */
-    Family getFamilyById(String id);
+    @Override
+    public JSONObject toJSON() {
+        JSONObject response = new JSONObject();
+        response.put("validLink", true);
+        return response;
+    }
 
-    /**
-     * Creates a new empty family.
-     *
-     * @return new Family object
-     */
-    Family createFamily();
+    @Override
+    public boolean isErrorResponse() {
+        return false;
+    }
 }

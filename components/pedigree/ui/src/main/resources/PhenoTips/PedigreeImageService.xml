@@ -60,7 +60,7 @@
   {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPatient')"}
   #break
 #end
-#set ($pedigree = $services.families.getPedigree($patient.getId()))
+#set ($pedigree = $services.families.getPedigreeForPatient($patient.getId()))
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
@@ -75,7 +75,7 @@
 
   #break
 #else
-  #set ($pedigree = $pedigree.getImage())
+  #set ($pedigree = $pedigree.getImage($patient.getId()))
   #if (!$pedigree)
     $response.setStatus(404)##
     $response.setContentType('application/json')##

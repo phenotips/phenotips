@@ -1,6 +1,7 @@
 org.phenotips.studies.family.script.FamilyScriptService
+org.phenotips.studies.family.script.PedigreeScriptService
 org.phenotips.studies.family.internal.PedigreeUtils
-org.phenotips.studies.family.internal.JsonAdapterImpl
+org.phenotips.studies.family.internal.PedigreeProcessorImpl
 org.phenotips.studies.family.listener.PermissionsChangeListener
 org.phenotips.studies.family.internal.XWikiFamilyRepository
 org.phenotips.studies.family.internal.XWikiFamilyPermissions
