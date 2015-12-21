@@ -82,6 +82,14 @@ public class XWikiFamilyExport
 
     private static final String INPUT_FORMAT = "%%%s%%";
 
+    private static final String FAMILY_ID = ID;
+
+    private static final String FAMILY_EXTERNAL_ID = "externalId";
+
+    private static final String FAMILY_WARNING = "warning";
+
+    private static final String FAMILY_MEMBERS = "familyMembers";
+
     /** Runs queries for finding families. */
     @Inject
     private QueryManager qm;
@@ -134,16 +142,16 @@ public class XWikiFamilyExport
     public JSONObject toJSON(Family family)
     {
         JSONObject familyJSON = new JSONObject();
-        familyJSON.put("familyPage", family.getId());
-        familyJSON.put("externalId", family.getExternalId());
-        familyJSON.put("warning", family.getWarningMessage());
+        familyJSON.put(FAMILY_ID, family.getId());
+        familyJSON.put(FAMILY_EXTERNAL_ID, family.getExternalId());
+        familyJSON.put(FAMILY_WARNING, family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
         for (Patient patient : family.getMembers()) {
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.add(patientJSON);
         }
-        familyJSON.put("familyMembers", patientsJSONArray);
+        familyJSON.put(FAMILY_MEMBERS, patientsJSONArray);
 
         return familyJSON;
     }

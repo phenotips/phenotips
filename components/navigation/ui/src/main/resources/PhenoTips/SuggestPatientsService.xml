@@ -108,7 +108,7 @@
       #if ($request.markFamilyAssociation)
         #set ($family = $services.families.getFamilyForPatient($phenotipsId))
         #if ($family)
-          #set ($familyId = $family.getName())
+          #set ($familyId = $family.getId())
           #set ($description = "${description}, in family $familyId")
         #end
       #end

@@ -39,10 +39,10 @@
   <hidden>false</hidden>
   <content>{{velocity}}
 #set ($family = $services.families.createFamily())
-#set ($failureUrl = "data.WebHome")
 #if ("$!{family}" != '')
-  $response.sendRedirect($xwiki.getURL($family, 'edit'))
+  $response.sendRedirect($xwiki.getURL($family.getDocumentReference(), 'edit'))
 #else
+  #set ($failureUrl = "data.WebHome")
   $response.sendRedirect($xwiki.getURL($failureUrl, 'view'))
 #end{{/velocity}}</content>
 </xwikidoc>

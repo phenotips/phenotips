@@ -17,8 +17,6 @@
  */
 package org.phenotips.studies.family;
 
-import org.phenotips.data.Patient;
-
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -35,13 +33,6 @@ public interface Pedigree
     String IMAGE = "image";
 
     /**
-     * Checks if pedigree contains data.
-     *
-     * @return true if pedigree is empty
-     */
-    boolean isEmpty();
-
-    /**
      * Getter for data which holds all of a pedigree's JSON.
      *
      * @return could be null
@@ -49,25 +40,13 @@ public interface Pedigree
     JSONObject getData();
 
     /**
-     * Setter for 'data' which holds all of a pedigree's JSON.
-     *
-     * @param data the JSON data
-     */
-    void setData(JSONObject data);
-
-    /**
      * Getter for `image` string (SVG).
      *
+     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient.
+     *        May be null, in which case no patient would be highlighed as current.
      * @return can not be null
      */
-    String getImage();
-
-    /**
-     * Setter for 'image' string (SVG).
-     *
-     * @param image SVG image
-     */
-    void setImage(String image);
+    String getImage(String highlightCurrentPatientId);
 
     /**
      * Extracts and returns all PhenoTips patient ids.
@@ -83,12 +62,4 @@ public interface Pedigree
      * @return non-null and non-empty patient properties in JSON objects.
      */
     List<JSONObject> extractPatientJSONProperties();
-
-    /**
-     * Highlight proband in pedigree's image.
-     *
-     * @param proband of the family
-     */
-    void highlightProband(Patient proband);
-
 }
