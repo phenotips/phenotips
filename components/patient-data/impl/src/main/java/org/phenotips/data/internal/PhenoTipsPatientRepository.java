@@ -33,7 +33,11 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -148,7 +152,26 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
     }
 
     @Override
-    protected long getLastUsedId()
+    public boolean deletePatient(String id)
+    {
+        Patient patient = this.getPatientById(id);
+        if (patient == null) {
+            this.logger.warn("Can't delete patient record with id [{}], no such patient", id);
+            return false;
+        }
+        XWikiContext context = this.xcontextProvider.get();
+        XWiki xwiki = context.getWiki();
+        try {
+            xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
+            return true;
+        } catch (XWikiException ex) {
+            this.logger.error("Failed to delete patient record [{}]: {}", id, ex.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    private long getLastUsedId()
     {
         long crtMaxID = 0;
         try {
