@@ -44,7 +44,9 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -138,7 +140,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
             // FIXME Take these from the configuration
             String prefix = "P";
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            XWikiContext context = getXContext();
             long id = getLastUsedId();
             DocumentReference newDoc;
             do {
@@ -189,6 +191,25 @@ public class PhenoTipsPatientRepository implements PatientRepository
         return createNewPatient(this.bridge.getCurrentUserReference());
     }
 
+    @Override
+    public boolean deletePatient(String id)
+    {
+        Patient patient = this.getPatientById(id);
+        if (patient == null) {
+            this.logger.warn("Can't delete patient record with id [{}], no such patient", id);
+            return false;
+        }
+        XWikiContext context = getXContext();
+        XWiki xwiki = context.getWiki();
+        try {
+            xwiki.deleteDocument(xwiki.getDocument(patient.getDocument(), context), context);
+            return true;
+        } catch (XWikiException ex) {
+            this.logger.error("Failed to delete patient record [{}]: {}", id, ex.getMessage());
+        }
+        return false;
+    }
+
     private long getLastUsedId() throws QueryException
     {
         long crtMaxID = 0;
@@ -203,5 +224,11 @@ public class PhenoTipsPatientRepository implements PatientRepository
         }
         crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
+    }
+
+    private XWikiContext getXContext()
+    {
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+        return context;
     }
 }

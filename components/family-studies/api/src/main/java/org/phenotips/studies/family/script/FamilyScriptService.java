@@ -28,6 +28,7 @@ import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
@@ -167,5 +168,54 @@ public class FamilyScriptService implements ScriptService
     public String searchFamilies(String input, int resultsLimit, String requiredPermissions, boolean returnAsJSON)
     {
         return this.familyExport.searchFamilies(input, resultsLimit, requiredPermissions, returnAsJSON);
+    }
+
+    /**
+     * Delete family, modifying the both the family and patient records to reflect the change.
+     *
+     * @param familyId of the family to delete
+     * @param deleteAllMembers indicator whether to delete all family member documents as well
+     * @return true if successful
+     */
+    public boolean deleteFamily(String familyId, boolean deleteAllMembers)
+    {
+        if (!canDeleteFamily(familyId, deleteAllMembers)) {
+            return false;
+        }
+        Family family = this.familyRepository.getFamilyById(familyId);
+        if (family == null) {
+            // should not happen if canDeleteFamily(), but check for consistency and in case of race conditions
+            return false;
+        }
+        return family.deleteFamily(deleteAllMembers);
+    }
+
+    /**
+     * Checks if the current user can delete the family (or the family and all the members).
+     *
+     * @param familyId of the family to delete
+     * @param deleteAllMembers indicator whether to check delete permisions on all family member documents as well
+     * @return true if successful
+     */
+    boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+
+        Family family = this.familyRepository.getFamilyById(familyId);
+        if (family == null) {
+            return false;
+        }
+        if (!this.authorizationService.hasAccess(currentUser, Right.DELETE, family.getDocumentReference())) {
+            return false;
+        }
+        if (deleteAllMembers) {
+            // check permissions
+            for (Patient patient : family.getMembers()) {
+                if (!this.authorizationService.hasAccess(currentUser, Right.DELETE, patient.getDocument())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

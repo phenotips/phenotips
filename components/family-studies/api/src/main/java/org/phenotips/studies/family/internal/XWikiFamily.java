@@ -384,4 +384,25 @@ public class XWikiFamily implements Family
     {
         XWikiFamily.familyPermissions.updatePermissions(this, this.familyDocument);
     }
+
+    @Override
+    public synchronized boolean deleteFamily(boolean deleteAllMembers)
+    {
+        XWikiContext context = getXContext();
+        XWiki xwiki = context.getWiki();
+        try {
+            for (Patient patient : getMembers()) {
+                removeMember(patient);
+                if (deleteAllMembers) {
+                    XWikiFamily.patientRepository.deletePatient(patient.getId());
+                    return false;
+                }
+            }
+            xwiki.deleteDocument(xwiki.getDocument(this.familyDocument, context), context);
+            return true;
+        } catch (XWikiException ex) {
+            this.logger.error("Failed to delete family document [{}]: {}", getId(), ex.getMessage());
+        }
+        return false;
+    }
 }
