@@ -27,7 +27,7 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 /**
  * @version $Id$
@@ -90,7 +90,7 @@ public interface Family
      *
      * @return JSON with info about the family, each member and the current user's permissions.
      */
-    JSON toJSON();
+    JSONObject toJSON();
 
     /**
      * Retrieves medical reports for all family members.
@@ -100,7 +100,7 @@ public interface Family
     Map<String, Map<String, String>> getMedicalReports();
 
     /**
-     * @return external id
+     * @return external id. Returns "" if id is not defined.
      */
     String getExternalId();
 

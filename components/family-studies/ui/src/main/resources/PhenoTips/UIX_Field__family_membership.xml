@@ -111,22 +111,19 @@
       <content>{{velocity}}
 $xwiki.ssx.use('PhenoTips.UIX_Field__family_membership')
 #set ($family = $services.families.getFamilyForPatient($doc.getDocumentReference().getName()))
-#set ($hasFamily = $family &amp;&amp; "$family.getProperty('reference').value" != '')
+#set ($hasFamily = $family &amp;&amp; "$family.getId()" != '')
 #if ($hasFamily)
 ##
 
 
 (% class="clear family-study" %)(((##
 {{html wiki='true' clean='false'}}##
-  #set ($familyJson = $services.families.getFamilyInfo($doc.getDocumentReference().getName()))
-  #set ($hasExternalId = $familyJson.externalId &amp;&amp; "$familyJson.externalId" != '')
   &lt;div class="family-id-div"&gt;
-    &lt;a id="familyId" href="$xwiki.getURL($family, 'edit')"&gt;
-      $family.getName()
-        #if ($hasExternalId)
-          ($familyJson.externalId)
-        #end
-    &lt;/a&gt;
+    &lt;a id="familyId" href="$xwiki.getURL($family.getDocumentReference(), 'edit')"&gt;##
+      $family.getId()##
+        #if ("$family.getExternalId()" != '')##
+          &amp;nbsp;($family.getExternalId())##
+        #end&lt;/a&gt;
     &lt;/br&gt;
   &lt;/div&gt;
 {{/html}}##

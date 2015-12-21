@@ -22,15 +22,26 @@ import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.JsonAdapter;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.response.JSONResponse;
-import org.phenotips.studies.family.response.StatusResponse;
+import org.phenotips.studies.family.PedigreeProcessor;
+import org.phenotips.studies.family.script.JSONResponse;
+import org.phenotips.studies.family.script.response.AlreadyHasFamilyResponse;
+import org.phenotips.studies.family.script.response.FamilyInfoJSONResponse;
+import org.phenotips.studies.family.script.response.InternalErrorResponse;
+import org.phenotips.studies.family.script.response.InvalidFamilyIdResponse;
+import org.phenotips.studies.family.script.response.InvalidPatientIdResponse;
+import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnFamilyResponse;
+import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnPatientResponse;
+import org.phenotips.studies.family.script.response.OKJSONResponse;
+import org.phenotips.studies.family.script.response.PatientContainedMultipleTimesInPedigreeResponse;
+import org.phenotips.studies.family.script.response.ValidLinkJSONResponse;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,45 +73,58 @@ public class PedigreeUtils
     private UserManager userManager;
 
     @Inject
-    private JsonAdapter jsonAdapter;
+    private PedigreeProcessor pedigreeConverter;
+
+    /**
+     * Checks if a patient can be linked to a family. The id of the patient to link is patientItLinkId.
+     *
+     * @param family a valid family object
+     * @param patientToLinkId id of a patient to link to family
+     * @param useCurrentUser if true, permission checks for the current user are performed
+     * @return JSONResponse see {@link JSONResponse}
+     */
+    public JSONResponse canPatientBeAddedToFamily(Family family, String patientToLinkId, boolean useCurrentUser)
+    {
+        Patient patient = this.patientRepository.getPatientById(patientToLinkId);
+        if (patient == null) {
+            return new InvalidPatientIdResponse(patientToLinkId);
+        }
+        if (useCurrentUser
+            && !this.authorizationService.hasAccess(
+                    this.userManager.getCurrentUser(), Right.EDIT, patient.getDocument())) {
+            return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(patientToLinkId), Right.EDIT);
+        }
+        Family familyForLinkedPatient = familyRepository.getFamilyForPatient(patient);
+        if (familyForLinkedPatient != null) {
+            if (family == null || !familyForLinkedPatient.getId().equals(family.getId())) {
+                return new AlreadyHasFamilyResponse(patientToLinkId, familyForLinkedPatient.getId());
+            }
+        }
+        return new ValidLinkJSONResponse();
+    }
 
     /**
      * Receives a pedigree in form of a JSONObject and an SVG image to be stored in proband's family.
      *
-     * @param documentId an id of a family or of a proband. Used to get a handle of the family to process the pedigree
-     *            for. If it's a proband id, the family associated with the patient is used. If not family is
-     *            associated, a new one is created.
+     * @param familyId phenotips family id
      * @param json (data) part of the pedigree JSON
      * @param image svg part of the pedigree JSON
+     * @param useCurrentUser if true, checks will be made to make sure current user has enough permissions
      * @return {@link JSONResponse} with one of many possible statuses
      */
-    public JSONResponse processPedigree(String documentId, JSONObject json, String image)
+    public JSONResponse savePedigree(String familyId, JSONObject json, String image, boolean useCurrentUser)
     {
         Pedigree pedigree = new DefaultPedigree(json, image);
-
-        // checking if documentId is family's id
-        Family family = this.familyRepository.getFamilyById(documentId);
+        // saving into a new family
+        if (familyId == null || familyId.length() == 0) {
+            return processPedigree(this.familyRepository.createFamily(), pedigree, useCurrentUser);
+        }
+        // saving into existing family
+        Family family = this.familyRepository.getFamilyById(familyId);
         if (family != null) {
-            return processPedigree(family, pedigree);
+            return processPedigree(family, pedigree, useCurrentUser);
         }
-
-        // checking if documentId is patient's id
-        Patient proband = this.patientRepository.getPatientById(documentId);
-        if (proband != null) {
-            family = this.familyRepository.getFamilyForPatient(proband);
-            if (family == null) {
-                if (!this.authorizationService.hasAccess(
-                    this.userManager.getCurrentUser(), Right.EDIT, proband.getDocument()))
-                {
-                    return new JSONResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_PATIENT).setMessage(documentId);
-                }
-                family = this.familyRepository.createFamily();
-            }
-            return processPedigree(family, pedigree);
-        }
-
-        // documentId is not family's or patient's.
-        return new JSONResponse(StatusResponse.INVALID_PATIENT_ID).setMessage(documentId);
+        return new InvalidFamilyIdResponse();
     }
 
     /*
@@ -108,21 +132,19 @@ public class PedigreeUtils
      * @param pedigree not null
      * @return
      */
-    private JSONResponse processPedigree(Family family, Pedigree pedigree)
+    private synchronized JSONResponse processPedigree(Family family, Pedigree pedigree, boolean useCurrentUser)
     {
-        StatusResponse response;
-
         List<String> newMembers = pedigree.extractIds();
 
-        JSONResponse validityResponse = checkValidity(family, newMembers);
-        if (!validityResponse.isValid()) {
-            return validityResponse;
+        JSONResponse validity = checkValidity(family, newMembers, useCurrentUser);
+        if (validity.isErrorResponse()) {
+            return validity;
         }
 
         // Update patient data from pedigree's JSON
-        response = this.updatePatientsFromJson(pedigree);
-        if (!response.isValid()) {
-            return new JSONResponse(response);
+        JSONResponse result = this.updatePatientsFromJson(pedigree, useCurrentUser);
+        if (result.isErrorResponse()) {
+            return result;
         }
 
         family.setPedigree(pedigree);
@@ -149,75 +171,77 @@ public class PedigreeUtils
 
         family.updatePermissions();
 
-        return new JSONResponse(StatusResponse.OK);
+        return new FamilyInfoJSONResponse(family);
     }
 
-    private JSONResponse checkValidity(Family family, List<String> newMembers)
+    private JSONResponse checkValidity(Family family, List<String> newMembers, boolean useCurrentUser)
     {
-        JSONResponse jsonResponse = new JSONResponse();
-
         // Checks that current user has edit permissions on family
-        if (!this.authorizationService.hasAccess(
+        if (useCurrentUser && !this.authorizationService.hasAccess(
             this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference()))
         {
-            return jsonResponse.setStatusResponse(StatusResponse.INSUFFICIENT_PERMISSIONS_ON_FAMILY);
+            return new NotEnoughPermissionsOnFamilyResponse();
         }
 
+        // TODO: do we care?
         // Edge case - empty list of new members
-        if (newMembers.size() < 1) {
-            return jsonResponse.setStatusResponse(StatusResponse.FAMILY_HAS_NO_MEMBERS);
-        }
+        //if (newMembers.size() < 1) {
+        //    return ...
+        //}
 
-        if (this.containsDuplicates(newMembers)) {
-            return jsonResponse.setStatusResponse(StatusResponse.DUPLICATE_PATIENT);
+        String duplicateID = this.findDuplicate(newMembers);
+        if (duplicateID != null) {
+            return new PatientContainedMultipleTimesInPedigreeResponse(duplicateID);
         }
 
         // Check if every member of updatedMembers can be added to the family
         if (newMembers != null) {
             for (String patientId : newMembers) {
-                Patient patient = this.patientRepository.getPatientById(patientId);
-                JSONResponse response = this.familyRepository.canPatientBeAddedToFamily(patient, family);
-                if (!response.isValid()) {
-                    return jsonResponse;
+                JSONResponse response = canPatientBeAddedToFamily(family, patientId, useCurrentUser);
+                if (response.isErrorResponse()) {
+                    return response;
                 }
             }
         }
-
-        jsonResponse.setStatusResponse(StatusResponse.OK);
-        return jsonResponse;
+        return new OKJSONResponse();
     }
 
-    private StatusResponse updatePatientsFromJson(Pedigree pedigree)
+    private JSONResponse updatePatientsFromJson(Pedigree pedigree, boolean useCurrentUser)
     {
+        User currentUser = this.userManager.getCurrentUser();
         String idKey = "id";
         try {
-            List<JSONObject> patientsJson = this.jsonAdapter.convert(pedigree);
+            List<JSONObject> patientsJson = this.pedigreeConverter.convert(pedigree);
 
             for (JSONObject singlePatient : patientsJson) {
                 if (singlePatient.containsKey(idKey)) {
                     Patient patient = this.patientRepository.getPatientById(singlePatient.getString(idKey));
+                    if (useCurrentUser
+                        && !this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {
+                        // skip patients the current user does not have edit rights for
+                        continue;
+                    }
                     patient.updateFromJSON(singlePatient);
                 }
             }
         } catch (Exception ex) {
-            return StatusResponse.UNKNOWN_ERROR;
+            return new InternalErrorResponse(ex.getMessage());
         }
-
-        return StatusResponse.OK;
+        return new OKJSONResponse();
     }
 
-    private boolean containsDuplicates(List<String> updatedMembers)
+    private String findDuplicate(List<String> updatedMembers)
     {
         List<String> duplicationCheck = new LinkedList<>();
         duplicationCheck.addAll(updatedMembers);
         for (String member : updatedMembers) {
             duplicationCheck.remove(member);
             if (duplicationCheck.contains(member)) {
-                return true;
+                return member;
             }
         }
 
-        return false;
+        return null;
     }
 
 }

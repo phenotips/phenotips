@@ -202,7 +202,7 @@ public final class SvgUpdater
      * @return svg with the style for current patient applied to the node with id `currentUserId` and proband style
      *         retained
      */
-    public static String setPatientStylesInSvg(String svg, String patientId)
+    public static String setCurrentPatientStylesInSvg(String svg, String patientId)
     {
         List<SvgElementHolder> links =
             SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());

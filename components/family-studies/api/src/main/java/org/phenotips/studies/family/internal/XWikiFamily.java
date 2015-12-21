@@ -49,7 +49,6 @@ import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 /**
@@ -252,7 +251,7 @@ public class XWikiFamily implements Family
     }
 
     @Override
-    public JSON toJSON()
+    public JSONObject toJSON()
     {
         return XWikiFamily.familyExport.toJSON(this);
     }
@@ -273,7 +272,7 @@ public class XWikiFamily implements Family
     {
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         StringProperty externalId = null;
-        String externalIdString = null;
+        String externalIdString = "";
         try {
             externalId = (StringProperty) familyObject.get("external_id");
             if (externalId != null) {
@@ -339,9 +338,7 @@ public class XWikiFamily implements Family
     @Override
     public Pedigree getPedigree()
     {
-        Pedigree pedigree = new DefaultPedigree();
         BaseObject pedigreeObj = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
-
         if (pedigreeObj != null) {
             BaseStringProperty data = null;
             BaseStringProperty image = null;
@@ -349,18 +346,17 @@ public class XWikiFamily implements Family
             try {
                 data = (BaseStringProperty) pedigreeObj.get(Pedigree.DATA);
                 image = (BaseStringProperty) pedigreeObj.get(Pedigree.IMAGE);
+
+                if (StringUtils.isNotBlank(data.toText())) {
+                    return new DefaultPedigree(JSONObject.fromObject(data.toText()), image.toText());
+                }
             } catch (XWikiException e) {
                 this.logger.error("Error reading data from pedigree. {}", e.getMessage());
-                return null;
-            }
-
-            if (StringUtils.isNotBlank(data.toText())) {
-                pedigree.setData(JSONObject.fromObject(data.toText()));
-                pedigree.setImage(image.toText());
+            } catch (IllegalArgumentException e) {
+                this.logger.error("Incorrect pedigree data. {}", e.getMessage());
             }
         }
-
-        return pedigree;
+        return null;
     }
 
     @Override
@@ -370,7 +366,7 @@ public class XWikiFamily implements Family
         XWiki wiki = context.getWiki();
 
         BaseObject pedigreeObject = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
-        pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(), context);
+        pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(null), context);
         pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 
         try {

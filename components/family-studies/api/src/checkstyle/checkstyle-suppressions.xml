@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -14,38 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
- */
-package org.phenotips.studies.family;
+-->
 
-import org.phenotips.data.Patient;
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
-import org.xwiki.component.annotation.Role;
-
-/**
- * Utility methods for manipulating families.
- *
- * @version $Id$
- * @since 1.2RC1
- */
-@Role
-public interface FamilyRepository
-{
-    /**
-     * @param patient whose family the function return
-     * @return family for which family.isMember(patient) is true
-     */
-    Family getFamilyForPatient(Patient patient);
-
-    /**
-     * @param id of family to return
-     * @return family for which family.getId().equals(id) is true
-     */
-    Family getFamilyById(String id);
-
-    /**
-     * Creates a new empty family.
-     *
-     * @return new Family object
-     */
-    Family createFamily();
-}
+<suppressions>
+  <suppress checks="ClassDataAbstractionCoupling" files="PedigreeUtils.java"/>
+  <suppress checks="ClassFanOutComplexityCheck" files="PedigreeUtils.java"/>
+</suppressions>

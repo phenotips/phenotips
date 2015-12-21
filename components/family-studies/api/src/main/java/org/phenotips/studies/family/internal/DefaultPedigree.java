@@ -17,7 +17,6 @@
  */
 package org.phenotips.studies.family.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.studies.family.Pedigree;
 
 import java.util.LinkedList;
@@ -41,14 +40,6 @@ public class DefaultPedigree implements Pedigree
     private String image = "";
 
     /**
-     * Create a new empty default pedigree.
-     */
-    public DefaultPedigree()
-    {
-
-    }
-
-    /**
      * Create a new default pedigree with data and image.
      *
      * @param data pedigree data
@@ -56,14 +47,11 @@ public class DefaultPedigree implements Pedigree
      */
     public DefaultPedigree(JSONObject data, String image)
     {
-        this.setData(data);
-        this.setImage(image);
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return this.data == null || this.data.isEmpty();
+        if (data == null || data.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        this.data = data;
+        this.image = image;
     }
 
     @Override
@@ -73,21 +61,9 @@ public class DefaultPedigree implements Pedigree
     }
 
     @Override
-    public void setData(JSONObject data)
+    public String getImage(String highlightCurrentPatientId)
     {
-        this.data = data;
-    }
-
-    @Override
-    public String getImage()
-    {
-        return this.image;
-    }
-
-    @Override
-    public void setImage(String image)
-    {
-        this.image = image;
+        return SvgUpdater.setCurrentPatientStylesInSvg(this.image, highlightCurrentPatientId);
     }
 
     @Override
@@ -119,13 +95,4 @@ public class DefaultPedigree implements Pedigree
         }
         return extractedObjects;
     }
-
-    @Override
-    public void highlightProband(Patient proband)
-    {
-        if (this.image != null) {
-            this.image = SvgUpdater.setPatientStylesInSvg(this.image, proband.getId());
-        }
-    }
-
 }
