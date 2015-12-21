@@ -188,6 +188,10 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
     {
        var docRef = XWiki.resource.get(documentName, XWiki.EntityType.DOCUMENT);
        new Ajax.Request(new XWiki.Document(docRef.name, docRef.space).getURL('get'), {
+          parameters: {
+             patientSpace : XWiki.currentDocument.space,
+             patientId : XWiki.currentDocument.page
+          },
           onCreate : function() {
              section.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
           },
