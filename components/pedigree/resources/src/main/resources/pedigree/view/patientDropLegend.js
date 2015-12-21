@@ -21,15 +21,15 @@ define([
             this._notLinkedPatients  = {};
 
             this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
-                    new Element('div', {'class' : 'infomessage'}).insert(
-                      "You can drag and drop all items from the list(s) below onto individuals in the pedigree to mark them as affected.")
+                    new Element('div', {'class' : 'infomessage no-word-wrap'}).insert(
+                      "You can drag and drop patients onto individuals in the pedigree")
                  );
             this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
             this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
             this._legendInfo.insert({'top': this.closeButton});
             this._legendInfo.hide();
 
-            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend legend-container', id: 'patient-assign'}).insert(this._legendInfo);
+            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend', id: 'patient-assign'}).insert(this._legendInfo);
             this.legendContainer.hide();
 
             this._list_new = new Element('ul', {'class' : 'patient-list new'});
@@ -43,22 +43,21 @@ define([
             lg_box.insert(this._list_unlinked);
             this.legendContainer.insert(lg_box);
 
-            var workArea = editor.getWorkspace().getWorkArea();
-            var parent = editor.getWorkspace().getWorkArea().up();
-            parent.insertBefore(this.legendContainer, workArea);
-        	$('list_new').hide();
-        	$('list_unlinked').hide();
+            editor.getWorkspace().getWorkArea().insert(this.legendContainer);
+            $('list_new').hide();
+            $('list_unlinked').hide();
 
-            Droppables.add(editor.getWorkspace().canvas, {accept: 'drop-patient', onDrop: this._onDropWrapper.bind(this)});
+            Droppables.add(editor.getWorkspace().canvas, {accept:  'drop-patient',
+                                                          onDrop:  this._onDropWrapper.bind(this),
+                                                          onHover: this._onHoverWrapper.bind(this)});
 
             //add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
-            	if ( event.memo.phenotipsID == this.assignNewPatientId) {
-            		this.addCase(event.memo.phenotipsID, 'new', event.memo.gender, event.memo.name, event.memo.externalID);
-            		
-            	} else {
-            		this.addCase(event.memo.phenotipsID, 'unlinked', event.memo.gender, event.memo.name, event.memo.externalID);
-            	}
+                if ( event.memo.phenotipsID == this.assignNewPatientId) {
+                    this.addCase(event.memo.phenotipsID, 'new', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
+                } else {
+                    this.addCase(event.memo.phenotipsID, 'unlinked', event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
+                }
             }.bind(this));
             //remove patient from a legend on link patient to node event
             document.observe('pedigree:patient:linked', function (event){
@@ -68,10 +67,20 @@ define([
                 }
             }.bind(this));
         },
-        
+
         hideDragHint: function() {
             editor.getPreferencesManager().setConfigurationOption("user", "hideDraggingHint", true);
             this._legendInfo.hide();
+        },
+
+        hide: function() {
+            this.legendContainer.hide();
+        },
+
+        show: function() {
+            if (!this._hasPatients()) {
+                this.legendContainer.show();
+            }
         },
 
         /**
@@ -79,12 +88,21 @@ define([
          *
          * @method addCase
          **/
-        addCase: function(patientID, type, gender, name, externalID) {
+        addCase: function(patientID, type, gender, firstName, lastName, externalID) {
+
             if (!this._notLinkedPatients.hasOwnProperty(patientID)) {
-            	
-            	!editor.getPreferencesManager().getConfigurationOption("hideDraggingHint") &&
-                this._legendInfo && this._legendInfo.show();
-            	
+                // if data about this patient is not available need ot load it
+                if (gender === undefined) {
+                    this._loadPatientInfoAndAddToLegend(patientID, type);
+                    return;
+                }
+
+                var name = firstName + " " + lastName;
+
+                if (!editor.getPreferencesManager().getConfigurationOption("hideDraggingHint")) {
+                    this._legendInfo && this._legendInfo.show();
+                }
+
                 this._notLinkedPatients[patientID] = {"type" : type, "phenotipsID": patientID, "gender": gender, "name":  name, "externalID": externalID};
                 var listElement = this._generateElement(this._notLinkedPatients[patientID]);
                 if (type == 'new') {
@@ -97,10 +115,30 @@ define([
                     this._list_unlinked.insert(listElement);
                     $('list_unlinked').show();
                 }
-
-                this.legendContainer.show();
-
             }
+
+            // show legend in any case when addCase() is invoked
+            this.legendContainer.show();
+        },
+
+        _loadPatientInfoAndAddToLegend: function(patientID, type) {
+            var _this = this;
+
+            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL([patientID]);
+
+            new Ajax.Request(patientDataJsonURL, {
+                method: "GET",
+                onSuccess: function (response) {
+                    if (response.responseJSON) {
+                      var patient = response.responseJSON[patientID];
+                      var firstName = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("first_name")
+                                      ? patient.patient_name.first_name.trim() : "";
+                      var lastName  = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("last_name")
+                                      ? patient.patient_name.last_name.trim() : "";
+                      _this.addCase(patientID, type, patient.sex, firstName, lastName, patient.external_id);
+                    }
+                }
+            });
         },
 
         /**
@@ -110,13 +148,13 @@ define([
          * @return {patientList} List of patients in the legend
          */
         getListOfPatientsInTheLegend: function() {
-        	var patientList = [];
-        	for (var patient in this._notLinkedPatients) {
-        		if (this._notLinkedPatients.hasOwnProperty(patient)) {
-        			patientList.push(patient);
-        		}
-        	}
-        	return patientList;
+          var patientList = [];
+          for (var patient in this._notLinkedPatients) {
+            if (this._notLinkedPatients.hasOwnProperty(patient)) {
+              patientList.push(patient);
+            }
+          }
+          return patientList;
         },
 
         /**
@@ -134,16 +172,27 @@ define([
             if (patientElement.gender == "U" || patientElement.gender == "O"){
                  shape = 'diamond';
             }
-            
+
             var p_label = patientElement.phenotipsID;
-            if (patientElement.name && patientElement.name != ' ') {
-                p_label+= ", " + patientElement.name;
+            var hasName       = patientElement.name && patientElement.name != ' ';
+            var hasExternalID = patientElement.externalID && patientElement.externalID != ' ';
+            if (hasName || hasExternalID) {
+                p_label += " (";
+                if (hasName) {
+                    var displayName = patientElement.name;
+                    if (displayName.length > 25) {
+                        // to make sure patient legend is not too wide
+                        displayName = displayName.substring(0, 24) + "...";
+                    }
+                    p_label+= "name: " + displayName;
+                }
+                if (hasExternalID) {
+                    p_label += (hasName ? ", " : "") + "identifier: " + patientElement.externalID;
+                }
+                p_label += ")";
             }
-            if (patientElement.externalID && patientElement.externalID != ' ') {
-                p_label += ", " + patientElement.externalID;
-            }
-    
-            var item = new Element('li', {'class' : 'abnormality drop-patient', 'id' : patientElement.phenotipsID}).insert(new Element('span', {'class' : shape})).insert(new Element('span', {'class' : 'patient-name'}).update(p_label));
+
+            var item = new Element('li', {'class' : 'abnormality drop-patient', 'id' : patientElement.phenotipsID}).insert(new Element('span', {'class' : shape})).insert(new Element('span', {'class' : 'patient-name no-word-wrap'}).update(p_label));
             item.insert(new Element('input', {'type' : 'hidden', 'value' : patientElement.phenotipsID}));
             var _this = this;
             Element.observe(item, 'mouseover', function() {
@@ -176,35 +225,56 @@ define([
         },
 
         _highlightDropTargets: function(patient, isOn) {
-            if (isOn) {
-            	editor.getView()._currentHoveredNode = 1;
-            	this.validTargets = editor.getGraph().getPossiblePatientIDTarget(patient.gender);
-	            this.hoverModeZones = editor.getPaper().set();            
-	            var me = this;
-	            this.validTargets.each(function(nodeID) {
-	                var node = editor.getNode(nodeID);
-	                node.getGraphics().grow();
-	
-	                var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
-	                hoverModeZone.hover(
-	                    function() {
-	                        node.getGraphics().getHoverBox().setHighlighted(true);
-	                    },
-	                    function() {
-	                        node.getGraphics().getHoverBox().setHighlighted(false);
-	                    });
-	                me.hoverModeZones.push(hoverModeZone);
-	            });
+            if (editor.getView().getCurrentDraggable() != null) {
+                return;
+            }
+            //console.log("null");
+            this.validTargets = editor.getGraph().getPossiblePatientIDTarget(patient.gender);
+            this.validTargets.forEach(function(nodeID) {
+                var node = editor.getNode(nodeID);
+                if (node) {
+                    if (isOn) {
+                        node.getGraphics().highlight();
+                    } else {
+                        node.getGraphics().unHighlight()
+                    }
+                }
+            });
+        },
+
+        /**
+         * Callback for moving around/hovering an object from the legend over nodes. Converts canvas coordinates
+         * to nodeID and calls the actual drop holder once the grunt UI work is done.
+         *
+         * @method _onHoverWrapper
+         * @param {HTMLElement} [label]
+         * @param {HTMLElement} [target]
+         * @param {int} [the percentage of overlapping]
+         * @private
+         */
+        _onHoverWrapper: function(label, target, overlap, event) {
+            if (editor.isReadOnlyMode()) {
+                return;
+            }
+            editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
+            var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
+            var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
+            var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
+            if (node) {
+                node.getGraphics().getHoverBox().animateHideHoverZone();
+                node.getGraphics().getHoverBox().setHighlighted(true);
+                this._previousHighightedNode = node;
             } else {
-            	editor.getView()._currentHoveredNode = null;
-            	this.hoverModeZones.remove();
-            	this.validTargets.each(function(nodeID) {
-            		var node = editor.getNode(nodeID)
-                    node.getGraphics().shrink();
-                    node.getGraphics().getHoverBox().setHighlighted(false);
-            	});
+                this._unhighlightAfterDrag();
             }
         },
+
+        _unhighlightAfterDrag: function() {
+            if (this._previousHighightedNode) {
+                this._previousHighightedNode.getGraphics().getHoverBox().setHighlighted(false);
+                this._previousHighightedNode = null;
+             }
+         },
 
         /**
          * Callback for dragging an object from the legend onto nodes. Converts canvas coordinates
@@ -220,18 +290,25 @@ define([
             if (editor.isReadOnlyMode()) {
                 return;
             }
-            
+
+            editor.getView().setCurrentDraggable(null);
+
             var id = label.select('input')[0].value;
             var patient = this._notLinkedPatients[id];
-            
+
             this._highlightDropTargets(patient, false);
-            
+            this._unhighlightAfterDrag();
+
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             if (node) {
                 if (node.getGender() != this._getGender(event.element()) && node.getGender() != 'U' && this._getGender(event.element()) != 'U') {
-                	editor.getOkCancelDialogue().showCustomized(this.warningMessage,"You can not assign the patient to a different gender.", "OK", null);
+                  editor.getOkCancelDialogue().showCustomized("Can not drag the patient to a different gender","Can't assign", "OK", null);
+                    return;
+                }
+                if (node.getPhenotipsPatientId() != "") {
+                    editor.getOkCancelDialogue().showCustomized("This individual is already linked to another patient","Can't assign", "OK", null);
                     return;
                 }
 
@@ -277,18 +354,25 @@ define([
         _deletePatientElement: function(patientId, type) {
             $(patientId).remove();
             delete this._notLinkedPatients[patientId];
-            //hide legend if empty
-            if (!this.legendContainer.down('li')) {
+            // hide legend if empty
+            if (!this._hasPatients()) {
                 this.legendContainer.hide();
-            } else {
-                if (!this._list_new.down('li')) {
-                	$('list_new').hide();
-                }
-                
-                if (!this._list_unlinked.down('li')) {
-                	$('list_unlinked').hide();
-                }
             }
+            // independently, hide new section, if empty
+            if (!this._list_new.down('li')) {
+              $('list_new').hide();
+            }
+            // independently, hide unlinked section, if empty
+            if (!this._list_unlinked.down('li')) {
+              $('list_unlinked').hide();
+            }
+        },
+
+        _hasPatients: function() {
+            if (!this.legendContainer.down('li')) {
+                return false;
+            }
+            return true;
         }
 
     });

@@ -1,4 +1,4 @@
-/* 
+/*
  * VersionUpdater is responsible for updating pedigree JSON represenatation to the current version.
  */
 define([], function(){
@@ -151,7 +151,7 @@ define([], function(){
          */
         /*
         updateNode0ProbandLink: function(pedigreeJSON) {
-            // check if at least one node is linked to the current patient. 
+            // check if at least one node is linked to the current patient.
             // Iff none are, assumenode 0 is the proband and link it to the patient
 
             var data = JSON.parse(pedigreeJSON);

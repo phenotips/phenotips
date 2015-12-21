@@ -73,6 +73,10 @@ define([
             return allLinkedNodes.patientToNodeMapping[this.getCurrentPatientId()];
         },
 
+        getPhenotipsLinkID: function( id ) {
+            return this.getProperties(id).hasOwnProperty("phenotipsId") ? this.getProperties(id).phenotipsId : "";
+        },
+
         isValidID: function( id )
         {
           if (id < 0 || id > this.DG.GG.getMaxRealVertexId())
@@ -758,20 +762,26 @@ define([
 
             return result;
         },
-        
+
         getPossiblePatientIDTarget: function(gender) {
-	        // check:
-	        //  1) no previous link to other patient
-	        //  2) gender matches or is unknown
-        	var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
-        	
-        	var result = this._getAllPersonsOfGenders(validGendersSet);
-        	
-        	// TODO: exclude those nodes which already have a phenotipsID link
-        	
-        	return result;
+            // Valid targets:
+            //  1) not currently linked to other patients
+            //  2) gender matches or is unknown
+
+            var validGendersSet = (gender == 'U') ? ['M','F','U','O'] : [gender,'U'];
+            var nodesWithValidGender = this._getAllPersonsOfGenders(validGendersSet);
+
+            var result = [];
+            // exclude those nodes which already have a phenotipsID link
+            for (var i = 0; i < nodesWithValidGender.length; i++) {
+                if (this.getPhenotipsLinkID(nodesWithValidGender[i]) == "") {
+                    result.push(nodesWithValidGender[i]);
+                }
+            }
+
+            return result;
         },
-        
+
         getOppositeGender: function( v )
         {
             if (!this.isPerson(v))
