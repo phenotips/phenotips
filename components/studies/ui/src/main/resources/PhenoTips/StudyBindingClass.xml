@@ -51,6 +51,9 @@
   #set ($value = '')
 #end
 {{html clean="false" wiki="true"}}
+#set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
+#set ($boundTemplate = $patientDoc.getObject('PhenoTips.TemplateBindingClass'))
+#set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
       #set ($studies = $services.studies.getAllStudiesForUser())
@@ -65,6 +68,10 @@
       #set ($configTitle = $s.getTitle())
       #if ($configTitle == '')
          #set ($configTitle = $s.getName())
+      #end
+      #set ($selectedString = '')
+      #if ($s.getDocumentReference() == $boundTemplate)
+         #set ($selectedString = 'selected')
       #end
       &lt;div class="form-template-option"&gt;
          &lt;option name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference))}" /&gt;$escapetool.xml($configTitle)&lt;/option&gt;
