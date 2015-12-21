@@ -27,14 +27,16 @@ define([
         "pedigree/pedigreeDate",
         "pedigree/model/helpers",
         "pedigree/view/datepicker",
-        "pedigree/view/graphicHelpers"
+        "pedigree/view/graphicHelpers",
+        "pedigree/view/ageCalc",
     ], function(
         Disorder,
         HPOTerm,
         PedigreeDate,
         Helpers,
         DatePicker,
-        GraphicHelpers
+        GraphicHelpers,
+        AgeCalc
     ){
     NodeMenu = Class.create({
         initialize : function(data, tabs, otherCSSClass) {
@@ -938,7 +940,10 @@ define([
                         cancersUIElements[i].age.enable();
                         var birthDate = _this.targetNode.getBirthDate();
                         if (birthDate) {
-                            var age = getAge(birthDate, _this.targetNode.getDeathDate(), true);
+                            var age = AgeCalc.getAge(birthDate, _this.targetNode.getDeathDate(), true);
+                            if (age < 1) {
+                                age = "before_1";
+                            }
                             cancersUIElements[i].age.value = age;
                         }
                     }
