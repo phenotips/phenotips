@@ -12,6 +12,11 @@ define(["pedigree/model/helpers"], function(Helpers){
         },
 
         load: function(patientList, dataProcessorWhenReady) {
+            if (patientList.length == 0) {
+                dataProcessorWhenReady(this._patientData);
+                document.fire("pedigree:load:finish");
+                return;
+            }
             var _this = this;
             var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL(patientList);
             document.fire("pedigree:load:start");

@@ -139,10 +139,10 @@ define([
             if (phenotipsId == this._phenotipsId) {
                 return;
             }
-            
+
             if (this._phenotipsId != "") {
                 // fire patient this._phenotipsId is no longer in family
-                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "name":  this._firstName + " "+ this._lastName, "externalID": this._externalID};
+                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "firstName":  this._firstName, "lastName": this._lastName, "externalID": this._externalID};
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
@@ -284,7 +284,7 @@ define([
          * @method setMonozygotic
          */
         setMonozygotic: function(monozygotic) {
-            if (monozygotic == this._monozygotic) return; 
+            if (monozygotic == this._monozygotic) return;
             this._monozygotic = monozygotic;
         },
 
@@ -304,7 +304,7 @@ define([
          * @method setEvaluated
          */
         setEvaluated: function(evaluationStatus) {
-            if (evaluationStatus == this._evaluated) return; 
+            if (evaluationStatus == this._evaluated) return;
             this._evaluated = evaluationStatus;
             this.getGraphics().updateEvaluationLabel();
         },
@@ -346,7 +346,7 @@ define([
          * (a twin group is all the twins from a given pregnancy)
          *
          * @method setTwinGroup
-         */    
+         */
         setTwinGroup: function(groupId) {
             this._twinGroup = groupId;
         },
@@ -554,7 +554,7 @@ define([
          *
          * @method setCarrier
          * @param status One of {'', 'carrier', 'affected', 'presymptomatic', 'uncertain'}
-         */    
+         */
         setCarrierStatus: function(status) {
             var numDisorders = this.getDisorders().length;
 
@@ -630,7 +630,7 @@ define([
          * @return {Array} List of disorder IDs.
          */
         getDisorders: function() {
-            //console.log("Get disorders: " + Helpers.stringifyObject(this._disorders)); 
+            //console.log("Get disorders: " + Helpers.stringifyObject(this._disorders));
             return this._disorders;
         },
 
@@ -674,7 +674,7 @@ define([
          * Removes disorder from the list of this node's disorders and updates the Legend.
          *
          * @method removeDisorder
-         * @param {Number} disorderID id of the disorder to be removed 
+         * @param {Number} disorderID id of the disorder to be removed
          */
         removeDisorder: function(disorderID) {
             if(this.hasDisorder(disorderID)) {
@@ -701,7 +701,7 @@ define([
             }
             for(var i = 0; i < disorders.length; i++) {
                 this.addDisorder( disorders[i] );
-            }        
+            }
             this.getGraphics().updateDisorderShapes();
             this.setCarrierStatus(); // update carrier status
         },
@@ -921,6 +921,7 @@ define([
          * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
          */
         remove: function($super) {
+            this.setPhenotipsPatientId("");
             this.setDisorders([]);  // remove disorders form the legend
             this.setHPO([]);
             this.setGenes([]);
@@ -1087,7 +1088,7 @@ define([
 
         /**
          * Returns an object containing all the properties of this node
-         * except id, x, y & type 
+         * except id, x, y & type
          *
          * @method getProperties
          * @return {Object} in the form

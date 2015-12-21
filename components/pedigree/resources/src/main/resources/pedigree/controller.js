@@ -1029,7 +1029,7 @@ define([
                             'Error verifying patient link', "OK", onCancelAssignPatient );
                 }
             },
-            parameters: {"proband": editor.getGraph().getCurrentPatientId(), "link_to_id": linkID }
+            parameters: {"family_id": editor.getFamilyData().getFamilyId(), "patient_to_link_id": linkID }
         });
     }
 

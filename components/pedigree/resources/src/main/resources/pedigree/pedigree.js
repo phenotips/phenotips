@@ -12,7 +12,7 @@ define([
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
         "pedigree/preferencesManager",
-        "pedigree/familyDataLoader",
+        "pedigree/familyData",
         "pedigree/patientDataLoader",
         "pedigree/saveLoadEngine",
         "pedigree/versionUpdater",
@@ -33,7 +33,8 @@ define([
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
         "pedigree/view/tabbedSelector",
-        "pedigree/view/printDialog"
+        "pedigree/view/printDialog",
+        "pedigree/view/familySelector",
     ],
     function(
         ExternalEndpointsManager,
@@ -41,7 +42,7 @@ define([
         Controller,
         PedigreeEditorParameters,
         PreferencesManager,
-        FamilyDataLoader,
+        FamilyData,
         PatientDataLoader,
         SaveLoadEngine,
         VersionUpdater,
@@ -62,7 +63,8 @@ define([
         SaveLoadIndicator,
         TemplateSelector,
         TabbedSelector,
-        PrintDialog
+        PrintDialog,
+        FamilySelector
 ){
 
     var PedigreeEditor = Class.create({
@@ -119,7 +121,8 @@ define([
             this._saveLoadIndicator = new SaveLoadIndicator();
             this._versionUpdater = new VersionUpdater();
             this._saveLoadEngine = new SaveLoadEngine();
-            this._familyData = new FamilyDataLoader();
+            this._familyData = new FamilyData();
+            this._familySelector = new FamilySelector();
             this._patientDataLoader = new PatientDataLoader();
 
             // load global pedigree preferences before a specific pedigree is loaded, since
@@ -133,15 +136,16 @@ define([
                     this._templateImportSelector = new TabbedSelector("Select a pedigree template or import a pedigree",
                                                                       [_templateSelector, _importSelector]);
 
-                    // load family page info and load the pedigree after that data is loaded
-                    this._familyData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
-
                     // generate various dialogues after preferences have been loaded
                     this._nodeMenu = this.generateNodeMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
+
+                    // finally, load the pedigree
+                    var documentId = editor.getGraph().getCurrentPatientId();
+                    this._saveLoadEngine.load(documentId);
                 }.bind(this) );
 
             this._controller = new Controller();
@@ -165,11 +169,6 @@ define([
                 document.fire("pedigree:graph:clear");
             });
 
-            var saveButton = $('action-save');
-            saveButton && saveButton.on("click", function(event) {
-                editor.getSaveLoadEngine().save();
-            });
-
             var replacePedigreeWarning = "Existing pedigree will be replaced by the selected one";
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {
@@ -186,6 +185,11 @@ define([
             var printButton = $('action-print');
             printButton && printButton.on("click", function(event) {
                 editor.getPrintDialog().show();
+            });
+
+            var saveButton = $('action-save');
+            saveButton && saveButton.on("click", function(event) {
+                editor.getSaveLoadEngine().save();
             });
 
             var onLeavePageFunc = function() {
@@ -408,13 +412,13 @@ define([
         getPaper: function() {
             return this.getWorkspace().getPaper();
         },
-        
+
         /**
          * @method getPatientLegend
          * @return {Legend} Responsible for managing and displaying legend for patients that are unassigned to a family
          */
         getPatientLegend: function() {
-            return this._patientLegend; 
+            return this._patientLegend;
         },
 
         /**
@@ -465,43 +469,44 @@ define([
         },
 
         /**
+         * @method getFamilySelector
+         * @return {FamilySelector}
+         */
+        getFamilySelector: function() {
+            return this._familySelector;
+        },
+
+        /**
+         * @return {FamilyData} containign information about the current family, as of last load.
+         */
+        getFamilyData: function() {
+            return this._familyData;
+        },
+
+        /**
          * True iff current pedigree belongs toa family page, not a patient
          * @method isFamilyPage
          * @return {boolean}
          */
         isFamilyPage: function() {
-            if (!this._familyData) return false;
-            return this._familyData.isFamily();
-        },
-
-        /**
-         * True iff current patient is part of an existing family
-         * @method hasFamily
-         * @return {boolean}
-         */
-        hasExistingFamily: function() {
-            if (!this._familyData) return false;
-            return this._familyData.hasExistingFamily();
+            return this.getFamilyData().isFamilyPage();
         },
 
         /**
          * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
-         * were part of this patient's family at the time pedigree was last reloaded (on open or when reload was pressed)
-         * @method getCurrentFamilyPageFamilyMembers
+         * were part of this patient's family at the time pedigree was last (re-)loaded
+         * @method getFamilyMembersBeforeChanges
          * @return {Object}
          */
-        getCurrentFamilyPageFamilyMembers: function() {
-            return this._familyData.getAllFamilyMembersList();
+        getFamilyMembersBeforeChanges: function() {
+            return this.getFamilyData().getAllFamilyMembersList();
         },
 
         /**
          * Returns iff the given patient is a member of the current family
          */
         isFamilyMember: function(patientID) {
-            if (this._familyData && this._familyData.isFamilyMember(patientID)) {
-                return true;
-            }
-            return false;
+            return this.getFamilyData().isFamilyMember(patientID);
         },
 
         /**
@@ -510,33 +515,12 @@ define([
          * @return {Object}
          */
         getPatientAccessPermissions: function(patientID) {
-            var permissions = (this._familyData && this._familyData.isFamilyMember(patientID))
-                              ? this._familyData.getPatientAccessPermissions(patientID) : null;
+            var permissions = (this.getFamilyData().isFamilyMember(patientID))
+                              ? this.getFamilyData().getPatientAccessPermissions(patientID) : null;
             if (permissions == null) {
                 permissions = { "hasEdit": true, "hasView": true };
             }
             return permissions;
-        },
-
-        /**
-         * True iff the pedigree contains sensitive data
-         * @method hasWarningMessage
-         * @return {boolean}
-         */
-        hasWarningMessage: function() {
-            if (!this._familyData) {
-                return false;
-            }
-            return this._familyData.hasWarningMessage();
-        },
-
-        /**
-         * Returns the warning message to display
-         * @method getWarningMessage
-         * @returns {String}
-         */
-        getWarningMessage: function() {
-            return this.hasWarningMessage() ? this._familyData.getWarningMesage() : null;
         },
 
         /**
@@ -553,14 +537,6 @@ define([
          */
         getExportSelector: function() {
             return this._exportSelector;
-        },
-        
-        /**
-         * @method getFamilySelector
-         * @return {FamilySelector}
-         */
-        getFamilySelector: function() {
-            return this._familyData.familySelector;
         },
 
         /**
