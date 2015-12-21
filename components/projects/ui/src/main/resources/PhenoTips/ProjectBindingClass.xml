@@ -54,28 +54,36 @@
 {{/velocity}}
 
 {{velocity}}{{html clean="false" wiki="true"}}
+#set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
+#set ($boundProject = $patientDoc.getObject('PhenoTips.ProjectBindingClass'))
+#set ($projectIds = $boundProject.getProperty('projectReference').value)
+#set ($projectIds = $projectIds.split(";"))
 #if ($mode == 'edit')
-#set ($projects = $services.projects.getAllProjectsAsContributor())
-#foreach ($p in $projects)
-    &lt;div&gt;
-    &lt;input type="checkbox" name="${p.getName()}" /&gt;$p.getName()
-    &lt;/div&gt;
-#end
-##
-#else ##$mode!='edit'
-  #if ("$!value" == '')
-    None
-  #else
-    #set ($p = $xwiki.getDocument($value))
-    #set ($config = $p.getObject('PhenoTips.ProjectClass'))
-    #set ($configTitle = '')
-    #if ("$!{p.plainTitle}" != '')
-      #set ($configTitle = "$p.plainTitle")
-    #else
-      #set ($configTitle = "${p.name}")
-    #end
-    [[${configTitle}&gt;&gt;${value}]]
-  #end
+   #set ($projects = $services.projects.getAllProjectsAsContributor())
+   #foreach ($p in $projects)
+      &lt;div&gt;
+      #set ($checkedString = '')
+      #if ($projectIds.contains($p.getFullName()))
+         #set ($checkedString = 'checked')
+      #else
+      #end
+      &lt;input type="checkbox" name="${p.getName()}" $!checkedString /&gt;$p.getName()
+      &lt;/div&gt;
+   #end
+#else
+   #if ("$!value" == '')
+      None
+   #else
+      #set ($p = $xwiki.getDocument($value))
+      #set ($config = $p.getObject('PhenoTips.ProjectClass'))
+      #set ($configTitle = '')
+      #if ("$!{p.plainTitle}" != '')
+         #set ($configTitle = "$p.plainTitle")
+      #else
+         #set ($configTitle = "${p.name}")
+      #end
+      [[${configTitle}&gt;&gt;${value}]]
+   #end
 #end
 {{/html}}{{/velocity}}
 </content>
