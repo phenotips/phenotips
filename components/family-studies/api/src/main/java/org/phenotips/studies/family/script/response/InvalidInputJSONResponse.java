@@ -15,37 +15,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family;
+package org.phenotips.studies.family.script.response;
 
-import org.phenotips.data.Patient;
-
-import org.xwiki.component.annotation.Role;
+import net.sf.json.JSONObject;
 
 /**
- * Utility methods for manipulating families.
+ * JSON Response to client. Formats information from StatusResponse.
  *
  * @version $Id$
- * @since 1.2RC1
  */
-@Role
-public interface FamilyRepository
+public class InvalidInputJSONResponse extends AbstractJSONResponse
 {
     /**
-     * @param patient whose family the function return
-     * @return family for which family.isMember(patient) is true
-     */
-    Family getFamilyForPatient(Patient patient);
-
-    /**
-     * @param id of family to return
-     * @return family for which family.getId().equals(id) is true
-     */
-    Family getFamilyById(String id);
-
-    /**
-     * Creates a new empty family.
+     * Default constructor, takes no parameters.
      *
-     * @return new Family object
+     * @param json The string which is not a vlaid input json.
      */
-    Family createFamily();
+    public InvalidInputJSONResponse(String json) {
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.INVALID_INPUT_JSON));
+    }
+
+    @Override
+    public boolean isErrorResponse() {
+        return true;
+    }
 }

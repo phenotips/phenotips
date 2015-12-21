@@ -379,9 +379,17 @@
 
 {{velocity}}
 #set ($canEditP = $hasEdit &amp;&amp; !$isReadOnly)
-#set ($pedigreeObj = $services.families.getPedigree($doc.getName()))
+##
+#if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
+  #set ($pedigreeObj = $services.families.getPedigreeForFamily($doc.getName()))
+  #set ($family = $services.families.getFamilyById($doc.getName()))
+#else
+  #set ($pedigreeObj = $services.families.getPedigreeForPatient($doc.getName()))
+  #set ($family = $services.families.getFamilyForPatient($doc.getName()))
+#end
+##
 #if ($pedigreeObj)
-  #set ($image = $pedigreeObj.getImage())
+  #set ($image = $pedigreeObj.getImage($doc.getName()))
 #end## pedigree obj exists
 
 #if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
@@ -390,10 +398,9 @@
   #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
 === $services.localization.render('phenotips.patientRecord.pedigree.title') ===
   #end
-  
+
   #if ("$!image" != '')
-    #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
-    #if ($familyInfo.warning &amp;&amp; $familyInfo.warning != "")
+    #if ("$family.getWarningMessage()" != "")
       #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
       #set ($pClass = 'open')
       #set ($pContent = $pAction)

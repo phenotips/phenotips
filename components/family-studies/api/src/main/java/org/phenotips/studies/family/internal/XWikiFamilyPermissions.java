@@ -179,6 +179,8 @@ public class XWikiFamilyPermissions
      * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
      * access on p, x has edit access of the family.
      *
+     * The user who is the owner of the family always has access to the family.
+     *
      * @param family to update permissions
      * @param familyDocument document of family to update permissions
      */
@@ -213,6 +215,10 @@ public class XWikiFamilyPermissions
             usersUnion.addAll(patientRights.get(0));
             groupsUnion.addAll(patientRights.get(1));
         }
+
+        // add users and.or group who is the current owner of the family
+        usersUnion.add(familyDocument.getCreatorReference().toString());
+
         rightsObject.set(RIGHTS_USERS_FIELD, setToString(usersUnion), context);
         rightsObject.set(RIGHTS_GROUPS_FIELD, setToString(groupsUnion), context);
         rightsObject.set(ALLOW, 1, context);

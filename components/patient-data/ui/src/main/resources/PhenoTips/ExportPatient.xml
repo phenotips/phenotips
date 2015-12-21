@@ -49,37 +49,22 @@ $!response.setContentType('application/json')##
 #end
 #if ("$!request.id" == '' &amp;&amp; "$!request.eid" != '')
   $response.setStatus(404)
-  {"error" : "Identifier is not specified."}
+  {"error" : "Patient identifier is not specified."}
   #break
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
-  #set ($pedigree = $services.families.getPedigree($request.id))
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
 #end
 #if ("$!patient.id" == '')
-  #set ($family = $services.families.getFamilyInfo($request.id))
-#end
-#if ($family == 'null')
   $response.setStatus(404)
-  {"error" : "Identifier not found."}
+  {"error" : "Patient not found."}
   #break
 #end
-#if ("$!{request.data}" == 'pedigree')
-  #set ($pedigree = $services.families.getPedigree($request.id))
-  #if ($pedigree)
-    $pedigree.getData()
-  #else
-    Pedigree is not found.
-  #end
-#else
-  #if ($patient)
-    $jsontool.serialize($patient.toJSON())
-  #else
-    Patient is not found.
-  #end
-#end
+##
+$jsontool.serialize($patient.toJSON())
+##
 #if ("$!{request.outputSyntax}" == 'plain')
   {{/content}}
 #else
