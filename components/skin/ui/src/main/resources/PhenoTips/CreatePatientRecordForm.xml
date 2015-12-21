@@ -177,7 +177,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           __this._updateSelectionPopup();
        });
 
-       __this._initializeStudyReassignmentTool();
+       __this._initializeProjectTemplateReassignmentTool();
     },
 
     _areAllSectionsCreated : function() {
@@ -296,7 +296,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        $('selectPTForm').submit();
     },
 
-    _initializeStudyReassignmentTool: function() {
+    _initializeProjectTemplateReassignmentTool: function() {
        var studyAssignmentTool = $('study-assignment-config');
        if (!studyAssignmentTool) {
          return;
