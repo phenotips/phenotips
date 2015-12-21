@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>StudyBindingClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822126000</creationDate>
+  <parent>PhenoTips.StudyClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1442523313000</date>
+  <contentUpdateDate>1442523313000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#if ("$!mode" == '' || "$!mode" == 'get')
+  #set ($mode = 'edit')
+#end
+#if ("$!name" == '')
+  #set ($name = 'studyReference')
+#end
+#if ("$!prefix" == '')
+  #set ($prefix = 'PhenoTips.StudyBindingClass_')
+#end
+#if ("$!value" == '')
+  #set ($value = '')
+#end
+{{html clean="false" wiki="true"}}
+#set ($patientDoc = $xwiki.getDocument($request.patientSpace,$request.patientId))
+#set ($boundTemplate = $patientDoc.getObject('PhenoTips.TemplateBindingClass'))
+#set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
+#if ($mode == 'edit')
+   #if ("$!request.input" == '')
+      #set ($studies = $services.studies.getAllStudiesForUser())
+   #else
+      #set ($studies = $services.projects.getTemplatesForProjects($request.input))
+   #end
+   &lt;select id="templatesSelect"&gt;
+      &lt;div class="form-template-option"&gt;
+         &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
+      &lt;/div&gt;
+   #foreach ($s in $studies)
+      #set ($configTitle = $s.getTitle())
+      #if ($configTitle == '')
+         #set ($configTitle = $s.getName())
+      #end
+      #set ($selectedString = '')
+      #if ($s.getDocumentReference() == $boundTemplate)
+         #set ($selectedString = 'selected')
+      #end
+      &lt;div class="form-template-option"&gt;
+         &lt;option name="${prefix}${name}" value="${s.getDocumentReference()}" $!selectedString /&gt;$configTitle&lt;/option&gt;
+      &lt;/div&gt;
+   #end
+   &lt;/select&gt;
+#else
+  #if ("$!value" == '')
+    None
+  #else
+    #set ($s = $xwiki.getDocument($value))
+    #set ($config = $s.getObject('PhenoTips.StudyClass'))
+    #set ($configTitle = '')
+    #if ("$!{s.plainTitle}" != '')
+      #set ($configTitle = "$s.plainTitle")
+    #else
+      #set ($configTitle = "${s.name}")
+    #end
+    [[${configTitle}&gt;&gt;${value}]]
+  #end
+#end
+{{/html}}{{/velocity}}</content>
+  <class>
+    <name>PhenoTips.StudyBindingClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <studyReference>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{include reference="PhenoTips.StudyBindingClass" /}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>studyReference</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Configuration to use</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </studyReference>
+  </class>
+</xwikidoc>
