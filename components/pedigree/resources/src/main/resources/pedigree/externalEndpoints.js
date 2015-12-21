@@ -10,10 +10,14 @@ define([
     ){
     var ExternalEndpointsManager = Class.create({
         initialize: function() {
-            // TODO: cache new XWiki.Document('ExportPatient', 'PhenoTips')? Speed vs memory usage?
+            this.exportMultiplePatients = new XWiki.Document('ExportMultiplePatients', 'PhenoTips');
+
+            this.familyPedigreeInterface = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
+
+            this.familySearch = new XWiki.Document('FamilySearch', 'PhenoTips');
 
             // TODO: IE caches AJAX requests, so adding a random part to "load" URL to break that cache;
-            //       investigate if this is still the case with new caching policy in phenotips
+            //       investigate if this is still the case with new caching policy in PhenoTips
         },
 
         getLoadPatientDataJSONURL: function(patientList) {
@@ -24,14 +28,11 @@ define([
               }
               pList += patientList[i];
             }
-            return new XWiki.Document('ExportMultiplePatients', 'PhenoTips').getURL('get', 'idlist='+pList) +
-                "&rand=" + Math.random();
+            return this.exportMultiplePatients.getURL('get', 'idlist='+pList) + "&rand=" + Math.random();
         },
 
-        getLoadPatientPedigreeJSONURL: function(patientID) {
-            return new XWiki.Document('ExportPatient', 'PhenoTips').getURL('get', 'id='+patientID)
-                + "&data=pedigree"
-                + "&rand=" + Math.random();
+        getFamilySearchURL: function() {
+            return this.familySearch.getURL('get', 'outputSyntax=plain&rand='+ Math.random());
         },
 
         getSavePedigreeURL: function() {
@@ -39,7 +40,7 @@ define([
         },
 
         getFamilyInfoURL: function() {
-            return this._getBaseFamilyInterfaceURL() + "&action=familystatus";
+            return this._getBaseFamilyInterfaceURL() + "&action=familyinfo";
         },
 
         getFamilyCheckLinkURL: function() {
@@ -49,17 +50,9 @@ define([
         getFamilyNewPatientURL: function() {
             return this._getBaseFamilyInterfaceURL() + "&action=createpatient";
         },
-        
-        //getFamilyEditURL: function(familyID) {
-        //	 return new XWiki.Document(familyID, 'Families').getURL('edit', 'sheet=PhenoTips.PedigreeEditor');
-        //},
-        
-        getFamilySearchURL: function() {
-            return new XWiki.Document('FamilySearch', 'PhenoTips').getURL('get', 'outputSyntax=plain');
-        },
 
         _getBaseFamilyInterfaceURL: function() {
-            return new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips').getURL('get', 'rand='+ Math.random());
+            return this.familyPedigreeInterface.getURL('get', 'rand='+ Math.random());
         }
     });
     return ExternalEndpointsManager;

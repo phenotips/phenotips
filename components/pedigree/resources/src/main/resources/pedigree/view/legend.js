@@ -61,7 +61,9 @@ define([
             });
 
             if (allowDrop) {
-                Droppables.add(editor.getWorkspace().canvas, {accept: 'drop-'+this._getPrefix(), onDrop: this._onDropWrapper.bind(this), onHover: this._onHoverWrapper.bind(this)});
+                Droppables.add(editor.getWorkspace().canvas, {accept:  'drop-'+this._getPrefix(),
+                                                              onDrop:  this._onDropWrapper.bind(this),
+                                                              onHover: this._onHoverWrapper.bind(this)});
             }
         },
 
@@ -356,10 +358,6 @@ define([
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             if (node) {
-                if (node.isProband()) {
-                    // TODO: fix this once family-studies are merged in
-                    return;
-                }
                 node.getGraphics().getHoverBox().animateHideHoverZone();
                 node.getGraphics().getHoverBox().setHighlighted(true);
                 this._previousHighightedNode = node;

@@ -107,7 +107,7 @@ define([
                             }
 
                             if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(patient)) {
-                            	continue;
+                              continue;
                             }
                             var nodeID = allLinkedNodes.patientToNodeMapping[patient];
 
@@ -151,14 +151,14 @@ define([
 
                 // get all patients in the pedigree and those in the patient legend (those are not in pedigree but may get assigned)
                 var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
-                
+
                 editor.getPatientDataLoader().load(patientList, finalizeCreation);
             } else {
                 finalizeCreation(null /* do not update nodes using data loaded from PhenoTips */);
             }
         },
 
-        save: function() {
+        save: function(ignoreWarnings) {
             if (this._saveInProgress) {
                 return;   // Don't send parallel save requests
             }
@@ -166,6 +166,50 @@ define([
             editor.getView().unmarkAll();
 
             var me = this;
+
+            if (!editor.isFamilyPage()) {
+                // we can save any kind of pedigree to a family page, but we want to
+                //  1) disallow save if a new family has to be created and current patient is not part of it
+                //  2) warn if the current patient is no longer a member of the family
+                //  3) warn if the last patient has been unlinked form the family
+
+                var currentPatientId = editor.getGraph().getCurrentPatientId();
+
+                var patientLinks = editor.getGraph().getAllPatientLinks();
+
+                // 1. No current family yet
+                if (editor.getFamilyData().getFamilyId() === null) {
+                    if (!patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)) {
+                        editor.getOkCancelDialogue().showError(
+                            "Can't save and create a family - current patient is not assigned to a node in pedigree and will not have a pedigree as a result.",
+                            "Can't save pedigree", "OK", undefined );
+                        return;
+                    }
+                } else if (!ignoreWarnings) {
+                    var saveFunc = function() {
+                        me.save(true); // ignore warnings
+                    }
+
+                    // 3.
+                    if (patientLinks.linkedPatients.length == 0) {
+                        editor.getOkCancelDialogue().showCustomized(
+                            "All patients have been unlinked form the pedigree and thus removed form the family and will no longer have a pedigree.<br><br>"+
+                            "Do you want to save this pedigree and make a family with no members?",
+                            "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
+                        return;
+                    }
+
+                    // 2.
+                    if (!patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)) {
+                        editor.getOkCancelDialogue().showCustomized(
+                            "Current patient has been unlinked from the pedigree and will no longer be part of the family and will have no pedigree.<br><br>" +
+                            "Save pedigree?",
+                            "Save pedigree?", "OK", saveFunc, "Cancel", undefined);
+                        return;
+                    }
+                }
+            }
+
             me._notSaved = true;
 
             var jsonData = this.serialize();
@@ -247,6 +291,7 @@ define([
                         } else {
                             me._notSaved = false;
                             editor.getUndoRedoManager().addSaveEvent();
+                            editor.getFamilyData().updateFromJSON(response.responseJSON.family);
                             savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
                         }
                     } else  {
@@ -255,55 +300,74 @@ define([
                                 'Error saving pedigree', "OK", undefined );
                     }
                 },
-                parameters: {"proband": editor.getGraph().getCurrentPatientId(), "json": jsonData, "image": svgText}
+                parameters: {"family_id": editor.getFamilyData().getFamilyId(), "json": jsonData, "image": svgText}
             });
         },
-        
-        load: function(response) {
-            if (response.responseJSON && response.responseJSON.hasOwnProperty("familyPage") && response.responseJSON.familyPage) {
-        		this._loadFunction();
-        	} else {
-        		document.observe("pedigree:family:assigned", this._loadFunction.bind(this));
-        	}
-        },
 
-        _loadFunction: function() {
-            console.log("initiating load process");
-
-            var probandID = editor.getGraph().getCurrentPatientId();
-            var pedigreeJsonURL = editor.getExternalEndpoint().getLoadPatientPedigreeJSONURL(probandID);
-
-            new Ajax.Request(pedigreeJsonURL, {
-                method: 'GET',
+        load: function(familyOrPatientId) {
+            console.log("Initiating load process...");
+            var familyJsonURL = editor.getExternalEndpoint().getFamilyInfoURL();
+            var loaded = false;
+            var _this = this;
+            new Ajax.Request(familyJsonURL, {
+                method: "POST",
                 onCreate: function() {
                     document.fire("pedigree:load:start");
                 },
-                onSuccess: function (response) {
-                    //console.log("Data from LOAD: >>" + response.responseText + "<<");
+                onSuccess: function(response) {
                     if (response.responseJSON) {
-                        console.log("[LOAD] received JSON: " + Helpers.stringifyObject(response.responseJSON));
-
-                        try {
-                            var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(response.responseText);
-
-                            var addSaveEventOnceLoaded = function() {
-                                // since we just loaded data from disk data in memory is equivalent to data on disk
-                                editor.getUndoRedoManager().addSaveEvent();
-                            }
-
-                            this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
-                        } catch (error) {
-                            console.log("[LOAD] error parsing pedigree JSON");
-                            this.showInitializeDialogue();
+                        if (!response.responseJSON.hasOwnProperty("error")) {
+                            loaded = true;
+                            _this._loadFromFamilyInfoJSON(response.responseJSON);
+                        } else {
+                            console.log("[LOAD] received family info JSON with an error: " + Helpers.stringifyObject(response.responseJSON));
                         }
                     } else {
-                        this.showInitializeDialogue();
+                        console.log("[LOAD] no family info JSON received");
                     }
-                }.bind(this)
-            })
+                },
+                onComplete: function() {
+                    if (!loaded) {
+                        editor.getFamilySelector().show();
+                    }
+                },
+                parameters: {"document_id": familyOrPatientId }
+            });
         },
 
-        showInitializeDialogue: function(showImportTab) {
+        _loadFromFamilyInfoJSON: function(responseJSON) {
+            if (responseJSON) {
+                console.log("[LOAD] received JSON: " + Helpers.stringifyObject(responseJSON));
+                console.log("[LOAD] Family: " + Helpers.stringifyObject(responseJSON.family));
+                console.log("[LOAD] Pedigree: " + Helpers.stringifyObject(responseJSON.pedigree));
+
+                editor.getFamilyData().updateFromJSON(responseJSON.family);
+
+                // display a warning if there is "sensitive information" associated with the family
+                if (editor.getFamilyData().hasWarningMessage()) {
+                    editor.getOkCancelDialogue().showCustomized(editor.getFamilyData().getWarningMessage(),"Attention: This pedigree contains sensitive information.", "OK", null);
+                }
+
+                try {
+                    var updatedJSONData = editor.getVersionUpdater().updateToCurrentVersion(JSON.stringify(responseJSON.pedigree));
+
+                    var addSaveEventOnceLoaded = function() {
+                        // since we just loaded data from disk data in memory is equivalent to data on disk
+                        editor.getUndoRedoManager().addSaveEvent();
+                    }
+
+                    this.createGraphFromSerializedData(updatedJSONData, false, true, addSaveEventOnceLoaded);
+                } catch (error) {
+                    console.log("[LOAD] error parsing pedigree JSON");
+                    this.initializeNewPedigree();
+                }
+            } else {
+                console.log("[LOAD] no pedigree defined, need to initialize from a template or import");
+                this.initializeNewPedigree();
+            }
+        },
+
+        initializeNewPedigree: function(showImportTab) {
             document.fire("pedigree:load:finish");
             editor.getTemplateImportSelector().show(showImportTab ? 1 : 0, false,
                 "No pedigree is currently defined. Please select a template to start a pedigree, or import an existing pedigree",

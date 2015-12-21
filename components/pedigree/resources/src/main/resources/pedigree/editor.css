@@ -724,14 +724,6 @@
   width: 50%;
   margin-left: 15px;
 }
-.patient-list .drop-patient {
-  display : inline-block;
-  margin-right: 20px;
-}
-.drop-patient .patient-name {
-  margin-left: 4px;
-  cursor : move;
-}
 
 .menu-box .disabled-select {
   opacity: 0.5;
@@ -1126,15 +1118,29 @@
 .fuzzy-date-picker .day:disabled {
   opacity: .5 !important;
 }
+
 .patient-list {
   list-style-type: none;
   margin: 10px 0 10px 9px;
 }
 .drop-patient span:first-child {
   border-color: #636B75;
-  background-color: deepskyblue;
+  background-color: #99aadd;
   margin-right: 3px;
   vertical-align: middle;
+}
+.patient-list .drop-patient {
+  display : inline-block;
+  margin-right: 20px;
+}
+.drop-patient .patient-name {
+  margin-left: 4px;
+}
+.no-word-wrap {
+  white-space: nowrap;
+}
+.abnormality.drop-patient {
+  cursor: move;
 }
 #list_new, #list_unlinked {
   padding-left: 8px;
@@ -1142,5 +1148,9 @@
 }
 .patient-assign-legend {
   left: 100px;
-  top: 40px;
+  top: 10px;
+  position: absolute;
+  z-index: 10000;
+  min-width: 200px;
+  max-width: 550px;
 }
