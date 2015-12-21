@@ -244,9 +244,9 @@ var PhenoTips = (function (PhenoTips) {
             }
             _this._messages.update(new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.studyBindingClass.failureMessage')" + ' ' + failureReason));
           },
-           on0 : function (response) {
-              response.request.options.onFailure(response);
-           },
+          on0 : function (response) {
+             response.request.options.onFailure(response);
+          },
           onComplete : function () {
              templatesSelect.removeClassName("loading");
           }
