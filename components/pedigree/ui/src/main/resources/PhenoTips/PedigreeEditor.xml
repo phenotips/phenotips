@@ -47,6 +47,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/requireConfigs/runtimeConfig.js', true)##
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #if ($request.getParameter('minify') == 'false')
   $xwiki.jsfx.use('uicomponents/pedigree/pedigreeApp.js', true)##
 #else
