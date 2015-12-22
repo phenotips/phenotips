@@ -37,8 +37,9 @@ public interface PedigreeProcessor
      * by the internal PhenoTips patient data model. This is a static method, but cannot be declared as such, given the
      * necessity of injections.
      *
-     * @param pedigree a valid pedigree object. If not valid, null is returned.
-     * @return list of JSON objects, each containing patient data of a single patient. Returns null if pedigree is null.
+     * @param pedigree a valid pedigree object.
+     * @return list of JSON objects, each containing patient data of a single patient.
+     * Returns an empty list if pedigree is null.
      */
     List<JSONObject> convert(Pedigree pedigree);
 }

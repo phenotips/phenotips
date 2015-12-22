@@ -50,6 +50,6 @@ public class AlreadyHasFamilyResponse extends AbstractJSONResponse
 
     @Override
     public boolean isErrorResponse() {
-        return false;
+        return true;
     }
 }

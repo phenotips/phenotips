@@ -67,32 +67,33 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     /**
      * Returns a list of Phenotips JSONs for each patient found in pedigree.
      *
-     * @param pedigree a valid Pedigree object.
+     * @param pedigree a Pedigree object
+     * @return a list of patient JSONs. if pedigree is not valid returns an empty list.
      */
     @Override
     public List<JSONObject> convert(Pedigree pedigree)
     {
-        if (pedigree == null) {
-            return null;
-        }
-
-        JSONObject data = pedigree.getData();
-
-        String versionKey = "JSON_version";
-        if (data.containsKey(versionKey)
-            && !StringUtils.equalsIgnoreCase(data.getString(versionKey), "1.0"))
-        {
-            this.logger.warn("The version of the pedigree JSON differs from the expected.");
-        }
-
         List<JSONObject> convertedPatients = new LinkedList<>();
-        List<JSONObject> patientJson = pedigree.extractPatientJSONProperties();
 
-        DateFormat useDateFormat = this.getDateFormat();
+        if (pedigree != null) {
+            JSONObject data = pedigree.getData();
 
-        for (JSONObject singlePatient : patientJson) {
-            convertedPatients.add(patientJsonToObject(singlePatient, useDateFormat));
+            String versionKey = "JSON_version";
+            if (data.containsKey(versionKey)
+                && !StringUtils.equalsIgnoreCase(data.getString(versionKey), "1.0"))
+            {
+                this.logger.warn("The version of the pedigree JSON differs from the expected.");
+            }
+
+            List<JSONObject> patientJson = pedigree.extractPatientJSONProperties();
+
+            DateFormat useDateFormat = this.getDateFormat();
+
+            for (JSONObject singlePatient : patientJson) {
+                convertedPatients.add(patientJsonToObject(singlePatient, useDateFormat));
+            }
         }
+
         return convertedPatients;
     }
 
