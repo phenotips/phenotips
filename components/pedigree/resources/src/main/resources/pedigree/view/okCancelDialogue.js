@@ -44,7 +44,8 @@ define([], function(){
        */
       showWithCheckbox: function(message, title, checkboxText, defaultState, okButtonText, onOKFunction, cancelButtonText, onCancelFunction) {
           // add checkbox
-          var message = message + '<br><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' + checkboxText;
+          var message = message + '<br><input ' + (defaultState ? 'checked ' : '') + 'type="checkbox" id ="okcancelcheckbox" value="checked">' +
+                                  '<label class="field-no-user-select" for="okcancelcheckbox">' + checkboxText + '</label>';
           var onOK = function() {
               // read checkbox state & clal original onOK with the state as the parameter
               var checkbox = $$('input[type=checkbox][id="okcancelcheckbox"]');
@@ -82,7 +83,7 @@ define([], function(){
           this._configButton(2, button3title, on3Function, bottomRight);
           this._promptBody.update(message);
           this.dialog.show();
-          this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show() 
+          this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
       },
 
       /**
@@ -111,9 +112,9 @@ define([], function(){
               this._onButtonActions[buttonID] = actionFunction;
           }
           if (bottomRightButton) {
-              this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"}); 
+              this._buttons[buttonID].setStyle({"marginLeft": "-200px", "marginRight": "10px", "float": "right"});
           } else {
-              this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"}); 
+              this._buttons[buttonID].setStyle({"marginLeft": "0px", "marginRight": "0px", "float": "none"});
           }
       }
   });
