@@ -264,9 +264,9 @@ define([
             var properties = event.memo.properties;
             var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": Helpers.cloneObject(event.memo.properties)}};
 
-            var node    = editor.getView().getNode(nodeID);
+            var node = editor.getView().getNode(nodeID);
 
-            if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
+            if (editor.getGraph().isPerson(nodeID) && !editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
                 // UI should forbid any changes from happenig in this case, but do a final check before applying any edits
                 var updateMenuWithDiscardedChanges = function() {
                     editor.getNodeMenu().update();
