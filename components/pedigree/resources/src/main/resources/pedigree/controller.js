@@ -972,8 +972,7 @@ define([
             var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
             editor.getOkCancelDialogue().showWithCheckbox("<br><b>Do you want to remove the link between this individual and patient record " + oldLinkID + "?</b>" +
                     "<br><br><div style='margin-left: 40px; margin-right: 20px; text-align: left'>Note that, unless you link the patient record to another individual in this pedigree, " +
-                    "the patient will be removed from this family. " +
-                    "The patient will keep a copy of this pedigree but it will no longer be shared with the family.</div>",
+                    "the patient will be removed from this family and will no longer have a pedigree.</div>",
                     'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
             return;
         }
@@ -1011,16 +1010,22 @@ define([
                             var clearPropertiesMsg = "";
                         }
 
+                        var setDoNotShow = function(checkBoxStatus) {
+                            if (checkBoxStatus) {
+                                editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
+                            }
+                        };
+
                         var processLinking = function(topMessage, notesMessage) {
                             var alreadyWasInFamily = editor.isFamilyMember(linkID);
-                            if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConcentDialog")) {
-                                editor.getOkCancelDialogue().showCustomized("<br><b>" + topMessage + "</b><br><br><br>" +
+                            if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                                editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br><br><br>" +
                                         "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                                        notesMessage +  "</div><br>",
-                                        "Add patient to the family", 
-                                        "Confirm", processLinkCallback, 
-                                        "Cancel", onCancelAssignPatient, 
-                                        "Do not show again", function() { editor.getPreferencesManager().setConfigurationOption("user", "hideShareConcentDialog", true); processLinkCallback();});
+                                        notesMessage +  "</div>",
+                                        "Add patient to the family?",
+                                        "Do not show this warning again<br>", false,
+                                        "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processLinkCallback() },
+                                        "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); onCancelAssignPatient() });
                             } else {
                                 processLinkCallback();
                             }
@@ -1028,7 +1033,7 @@ define([
 
                         processLinking("Do you want to add patient " + linkID + " to this family?",
                                 "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
-                                "2) Adding a patient to a family will automatically grant users who can view or modify that patient's record the same level of access to all family members' patient records, and vice versa."+
+                                "2) Adding a patient to a family will automatically grant users who can modify that patient's record the same level of access to the family page."+
                                 clearPropertiesMsg);
                     }
                 } else  {
