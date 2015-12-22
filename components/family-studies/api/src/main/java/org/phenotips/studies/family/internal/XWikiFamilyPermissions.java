@@ -211,7 +211,10 @@ public class XWikiFamilyPermissions
                     patient.getId(), e.getMessage());
                 continue;
             }
+
+            // TODO: what about users who have VIEW but not EDIT rights?
             List<Set<String>> patientRights = this.getEntitiesWithEditAccess(patientDoc);
+
             usersUnion.addAll(patientRights.get(0));
             groupsUnion.addAll(patientRights.get(1));
         }
