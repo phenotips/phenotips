@@ -20,8 +20,6 @@ package org.phenotips.projects.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.projects.data.Project;
-import org.phenotips.templates.data.Template;
-import org.phenotips.templates.internal.DefaultTemplate;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -30,7 +28,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -58,8 +55,6 @@ public class ProjectAndTemplateBinder
 
     private static final String TEMPLATE_BINDING_FIELD = "templateReference";
 
-    private static final String PROJECTS_SEPARATOR = ";";
-
     /** The XClass used to store collaborators in the patient record. */
     private EntityReference projectBindingReference = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
@@ -68,6 +63,7 @@ public class ProjectAndTemplateBinder
     private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** Provides access to the current execution context. */
     @Inject
     private Provider<XWikiContext> contextProvider;
 
@@ -77,51 +73,34 @@ public class ProjectAndTemplateBinder
     @Inject
     private Logger logger;
 
-    @Inject
-    private ProjectsRepository projectsRepository;
-
     /**
      * Assigns project(s) to a patient.
      *
      * @param projectsSelected project(s) to assign
      * @param patient patient to assign the template to
      */
-    public void setProjectsForPatient(String projectsSelected, Patient patient)
+    public void assignProjects(String projectsSelected, Patient patient)
     {
-        List<String> projectsList = new ArrayList<String>();
-        if (!StringUtils.isEmpty(projectsSelected)) {
-            for (String projectId : projectsSelected.split(",")) {
-                Project p = this.projectsRepository.getProjectById(projectId);
-                projectsList.add(p.getFullName());
-            }
+        if (StringUtils.isEmpty(projectsSelected)) {
+            return;
         }
-        String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
 
-        setPropertyForPatient(patient, this.projectBindingReference, PROJECT_BINDING_FIELD, projects);
-    }
-
-    /**
-     * Returns a collection of projects assigned to a patient.
-     *
-     * @param patient to get a collection of projects from
-     * @return a collection of Projects
-     */
-    public Collection<Project> getProjectsForPatient(Patient patient)
-    {
-        List<Project> projects = new ArrayList<Project>();
         XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
 
-        BaseObject projectBindingObject = patientXDoc.getXObject(projectBindingReference);
-        if (projectBindingObject != null) {
-            String projectsString = projectBindingObject.getStringValue(PROJECT_BINDING_FIELD);
-            if (projectsString != null) {
-                for (String projectId : projectsString.split(PROJECTS_SEPARATOR)) {
-                    Project project = this.projectsRepository.getProjectById(projectId);
-                    projects.add(project);
-                }
-            }
+        List<String> projectsList = new ArrayList<String>();
+        for (String projectId : projectsSelected.split(",")) {
+            Project p = new DefaultProject(projectId);
+            projectsList.add(p.getFullName());
         }
-        return projects;
+        try {
+            XWikiContext xContext = this.contextProvider.get();
+            String projects = StringUtils.join(projectsList, ";");
+            BaseObject projectBindingObject = patientXDoc.newXObject(projectBindingReference, xContext);
+            projectBindingObject.setStringValue(PROJECT_BINDING_FIELD, projects);
+        } catch (XWikiException e) {
+            this.logger.error("Failed to bind projects to patient. Patient: {}",
+                patientXDoc.getDocumentReference().getName(), e.getMessage());
+        }
     }
 
     /**
@@ -130,64 +109,20 @@ public class ProjectAndTemplateBinder
      * @param templateSelected template to assign
      * @param patient patient to assign the template to
      */
-    public void setTemplateForPatient(String templateSelected, Patient patient)
+    public void assignTemplate(String templateSelected, Patient patient)
     {
-        setPropertyForPatient(patient, this.templateBindingReference, TEMPLATE_BINDING_FIELD, templateSelected);
-    }
-
-    /**
-     * Returns the template assigned to a patient.
-     *
-     * @param patient to get the template from
-     * @return template
-     */
-    public Template getTempalteForPatient(Patient patient)
-    {
-        Template template = null;
-        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
-
-        BaseObject templateBindingObject = patientXDoc.getXObject(templateBindingReference);
-        if (templateBindingObject != null) {
-            String templateId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
-            if (templateId != null) {
-                template = new DefaultTemplate(templateId);
-            }
+        if (StringUtils.isEmpty(templateSelected)) {
+            return;
         }
-        return template;
 
-    }
-
-    /*
-     * For patient {@patient}, sets the field {@link bindingField} of xobject {@link bindingReference} to be {@link
-     * value}. The functions handles either creation, update or removal of the xobject.
-     */
-    private void setPropertyForPatient(Patient patient,
-        EntityReference bindingReference, String bindingField, String value)
-    {
-        XWikiContext xContext = this.contextProvider.get();
         XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
-        BaseObject bindingObject = patientXDoc.getXObject(bindingReference);
-
-        if (StringUtils.isEmpty(value) && bindingObject != null) {
-            patientXDoc.removeXObject(bindingObject);
-        } else if (!StringUtils.isEmpty(value)) {
-            if (bindingObject == null) {
-                try {
-                    bindingObject =
-                        patientXDoc.newXObject(bindingReference, xContext);
-                } catch (XWikiException e) {
-                    this.logger.error("Failed to create a new xobject for binding {} for patient {}.",
-                        patientXDoc.getDocumentReference().getName(), bindingReference.getName(), e.getMessage());
-                }
-            }
-            bindingObject.setStringValue(bindingField, value);
-        }
 
         try {
-            String description = "Updated " + bindingReference.getName() + " binding";
-            xContext.getWiki().saveDocument(patientXDoc, description, true, xContext);
+            XWikiContext xContext = this.contextProvider.get();
+            BaseObject templateBindingObject = patientXDoc.newXObject(templateBindingReference, xContext);
+            templateBindingObject.setStringValue(TEMPLATE_BINDING_FIELD, templateSelected);
         } catch (XWikiException e) {
-            this.logger.error("Failed to save patient {}",
+            this.logger.error("Failed to bind a template to patient. Patient: {}",
                 patientXDoc.getDocumentReference().getName(), e.getMessage());
         }
     }
