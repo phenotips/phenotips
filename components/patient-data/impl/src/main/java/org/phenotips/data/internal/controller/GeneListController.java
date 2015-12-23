@@ -193,8 +193,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public PatientData<Map<String, String>> readJSON(JSONObject json)
     {
-        Object testGeneJson = json.get(this.getJsonPropertyName());
-        if (testGeneJson == null) {
+        if (!json.has(getJsonPropertyName())) {
             return null;
         }
 
@@ -232,14 +231,14 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     public void save(Patient patient)
     {
         try {
-            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            if (doc == null) {
-                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
-            }
-
             PatientData<Map<String, String>> genes = patient.getData(this.getName());
             if (!genes.isIndexed()) {
                 return;
+            }
+
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            if (doc == null) {
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
             XWikiContext context = this.xcontextProvider.get();
