@@ -242,6 +242,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             }
 
             XWikiContext context = this.xcontextProvider.get();
+            doc.removeXObjects(GENE_CLASS_REFERENCE);
             Iterator<Map<String, String>> iterator = genes.iterator();
             while (iterator.hasNext()) {
                 try {
