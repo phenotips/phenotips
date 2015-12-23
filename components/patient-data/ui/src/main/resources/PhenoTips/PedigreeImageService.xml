@@ -46,21 +46,32 @@
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($isPatient = true)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #set ($isPatient = true)
+#elseif ("$!request.fid" != '')
+  #set ($family = $services.families.getFamilyById($request.fid))
+  #set ($isPatient = false)
 #end
 #if ("$!{request.outputSyntax}" == 'plain')
   {{content syntax="plain/1.0"}}
 #else
   {{html wiki="false" clean="false"}}
 #end
-#if (!$patient)
+#if (!$patient &amp;&amp; $isPatient || !$family &amp;&amp; !$isPatient)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
-  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noPatient')"}
+  {"error" : "$services.localization.render('phenotips.PedigreeImageService.noDocument')"}
   #break
 #end
-#set ($pedigree = $services.families.getPedigreeForPatient($patient.getId()))
+#if ($isPatient)
+  #set ($objId = $patient.getId())
+  #set ($pedigree = $services.families.getPedigreeForPatient($objId))
+#else
+  #set ($objId = $family.getId())
+  #set ($pedigree = $services.families.getPedigreeForFamily($objId))
+#end
 #if (!$pedigree)
   $response.setStatus(404)##
   $response.setContentType('application/json')##
@@ -75,7 +86,7 @@
 
   #break
 #else
-  #set ($pedigree = $pedigree.getImage($patient.getId()))
+  #set ($pedigree = $pedigree.getImage($objId))
   #if (!$pedigree)
     $response.setStatus(404)##
     $response.setContentType('application/json')##
