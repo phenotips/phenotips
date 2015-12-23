@@ -43,7 +43,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')##
 $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 #if($hasCreatePage)
-   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
+   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreateAndUpdatePatientRecord')" method="post"&gt;&lt;div&gt;
       &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
       &lt;input type="hidden" name="doCreate" value="1" /&gt;
       ##
