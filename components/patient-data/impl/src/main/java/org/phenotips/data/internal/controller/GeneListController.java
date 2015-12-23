@@ -24,7 +24,6 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
@@ -39,6 +38,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +84,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     /** Provides access to the current execution context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> xcontextProvider;
 
     @Override
     public String getName()
@@ -242,7 +242,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 return;
             }
 
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            XWikiContext context = this.xcontextProvider.get();
             Iterator<Map<String, String>> iterator = genes.iterator();
             while (iterator.hasNext()) {
                 try {
