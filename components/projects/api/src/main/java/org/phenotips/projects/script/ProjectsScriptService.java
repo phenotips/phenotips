@@ -17,9 +17,12 @@
  */
 package org.phenotips.projects.script;
 
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.DefaultProject;
+import org.phenotips.projects.internal.ProjectAndTemplateBinder;
 import org.phenotips.projects.internal.ProjectsRepository;
 import org.phenotips.studies.data.Study;
 
@@ -47,12 +50,18 @@ public class ProjectsScriptService implements ScriptService
     private ProjectsRepository projectsRepository;
 
     @Inject
+    private PatientRepository patientsRepository;
+
+    @Inject
     @Named("contributor")
     private ProjectAccessLevel contributorAccessLevel;
 
     @Inject
     @Named("leader")
     private ProjectAccessLevel leaderAccessLevel;
+
+    @Inject
+    private ProjectAndTemplateBinder ptBinder;
 
     /**
      * Returns a project by an id.
@@ -109,5 +118,35 @@ public class ProjectsScriptService implements ScriptService
             }
         }
         return templates;
+    }
+
+    /**
+     * Returns a collection of projects assigned to a patient.
+     *
+     * @param patientId id of patient to get a collection of projects from
+     * @return a collection of Projects
+     */
+    public Collection<Project> getProjectsForPatient(String patientId)
+    {
+        Patient patient = this.patientsRepository.getPatientById(patientId);
+        if (patient == null) {
+            return null;
+        }
+        return this.ptBinder.getProjectsForPatient(patient);
+    }
+
+    /**
+     * Returns the template assigned to a patient.
+     *
+     * @param patientId id of patient to get the template from
+     * @return Study
+     */
+    public Study getTemplateForPatient(String patientId)
+    {
+        Patient patient = this.patientsRepository.getPatientById(patientId);
+        if (patient == null) {
+            return null;
+        }
+        return this.ptBinder.getTempalteForPatient(patient);
     }
 }
