@@ -57,7 +57,6 @@
     <module>storage-migrators</module>
     <module>ncbieutils-services</module>
     <module>specificity-meter</module>
-    <module>medsavant-client</module>
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>proxy-authentication</module>
