@@ -15,26 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.projects.data;
+package org.phenotips.projects.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRecordInitializer;
-import org.phenotips.projects.internal.DefaultProject;
+import org.phenotips.projects.data.Project;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,25 +41,19 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.web.XWikiRequest;
 
 /**
- * Initializes the patient with selected project(s) and template.
+ * Binds template and projects to a patient and retrieves them.
  *
  * @version $Id$
  */
-@Component(roles = { PatientRecordInitializer.class })
-@Named("projectAndTemplate")
+@Component(roles = { ProjectAndTemplateBinder.class })
 @Singleton
-public class ProjectAndTemplateAssignmentInitializer implements PatientRecordInitializer
+public class ProjectAndTemplateBinder
 {
     private static final String PROJECT_BINDING_FIELD = "projectReference";
 
     private static final String TEMPLATE_BINDING_FIELD = "templateReference";
-
-    private static final String PROJECTS_SELECTED_KEY = "projectsSelected";
-
-    private static final String TEMPLATE_SELECTED_KEY = "templateSelected";
 
     /** The XClass used to store collaborators in the patient record. */
     private EntityReference projectBindingReference = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
@@ -72,8 +63,9 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
     private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** Provides access to the current execution context. */
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> contextProvider;
 
     @Inject
     private DocumentAccessBridge bridge;
@@ -81,40 +73,19 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
     @Inject
     private Logger logger;
 
-    @Override
-    public void initialize(Patient patient)
-    {
-        DocumentReference patientRef = patient.getDocument();
-        XWikiDocument patientDoc;
-        try {
-            patientDoc = (XWikiDocument) this.bridge.getDocument(patientRef);
-        } catch (Exception e) {
-            this.logger.error("Could not read patient document for patient {}", patientRef.getName(), e.getMessage());
-            return;
-        }
-
-        XWikiContext xContext = getXContext();
-        XWikiRequest request = xContext.getRequest();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-
-        // Projects selected
-        String[] projectsSelectedValue = parameterMap.get(PROJECTS_SELECTED_KEY);
-        if (projectsSelectedValue != null && projectsSelectedValue.length == 1) {
-            this.assignProjects(projectsSelectedValue[0], patientDoc);
-        }
-
-        // Template selected
-        String[] templateSelected = parameterMap.get(TEMPLATE_SELECTED_KEY);
-        if (templateSelected != null && templateSelected.length == 1) {
-            this.assignTemplate(templateSelected[0], patientDoc);
-        }
-    }
-
-    private void assignProjects(String projectsSelected, XWikiDocument patientDoc)
+    /**
+     * Assigns project(s) to a patient.
+     *
+     * @param projectsSelected project(s) to assign
+     * @param patient patient to assign the template to
+     */
+    public void assignProjects(String projectsSelected, Patient patient)
     {
         if (StringUtils.isEmpty(projectsSelected)) {
             return;
         }
+
+        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
 
         List<String> projectsList = new ArrayList<String>();
         for (String projectId : projectsSelected.split(",")) {
@@ -122,34 +93,50 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
             projectsList.add(p.getFullName());
         }
         try {
-            XWikiContext xContext = getXContext();
+            XWikiContext xContext = this.contextProvider.get();
             String projects = StringUtils.join(projectsList, ";");
-            BaseObject projectBindingObject = patientDoc.newXObject(projectBindingReference, xContext);
+            BaseObject projectBindingObject = patientXDoc.newXObject(projectBindingReference, xContext);
             projectBindingObject.setStringValue(PROJECT_BINDING_FIELD, projects);
         } catch (XWikiException e) {
             this.logger.error("Failed to bind projects to patient. Patient: {}",
-                patientDoc.getDocumentReference().getName(), e.getMessage());
+                patientXDoc.getDocumentReference().getName(), e.getMessage());
         }
     }
 
-    private void assignTemplate(String templateSelected, XWikiDocument patientDoc)
+    /**
+     * Assigns a template to a patient.
+     *
+     * @param templateSelected template to assign
+     * @param patient patient to assign the template to
+     */
+    public void assignTemplate(String templateSelected, Patient patient)
     {
         if (StringUtils.isEmpty(templateSelected)) {
             return;
         }
 
+        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
+
         try {
-            XWikiContext xContext = getXContext();
-            BaseObject templateBindingObject = patientDoc.newXObject(templateBindingReference, xContext);
+            XWikiContext xContext = this.contextProvider.get();
+            BaseObject templateBindingObject = patientXDoc.newXObject(templateBindingReference, xContext);
             templateBindingObject.setStringValue(TEMPLATE_BINDING_FIELD, templateSelected);
         } catch (XWikiException e) {
             this.logger.error("Failed to bind a template to patient. Patient: {}",
-                patientDoc.getDocumentReference().getName(), e.getMessage());
+                patientXDoc.getDocumentReference().getName(), e.getMessage());
         }
     }
 
-    private XWikiContext getXContext()
+    private XWikiDocument getPatientXWikiDocument(Patient patient)
     {
-        return (XWikiContext) this.execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
+        DocumentReference patientRef = patient.getDocument();
+        XWikiDocument patientXDoc;
+        try {
+            patientXDoc = (XWikiDocument) this.bridge.getDocument(patientRef);
+        } catch (Exception e) {
+            this.logger.error("Could not read patient document for patient {}", patientRef.getName(), e.getMessage());
+            return null;
+        }
+        return patientXDoc;
     }
 }
