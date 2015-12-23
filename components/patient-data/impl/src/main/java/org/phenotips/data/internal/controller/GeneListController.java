@@ -232,7 +232,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     {
         try {
             PatientData<Map<String, String>> genes = patient.getData(this.getName());
-            if (!genes.isIndexed()) {
+            if (genes == null || !genes.isIndexed()) {
                 return;
             }
 
