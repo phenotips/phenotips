@@ -20,6 +20,8 @@ package org.phenotips.projects.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.projects.data.Project;
+import org.phenotips.studies.data.Study;
+import org.phenotips.studies.internal.DefaultStudy;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -28,6 +30,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,6 +57,8 @@ public class ProjectAndTemplateBinder
     private static final String PROJECT_BINDING_FIELD = "projectReference";
 
     private static final String TEMPLATE_BINDING_FIELD = "templateReference";
+
+    private static final String PROJECTS_SEPARATOR = ";";
 
     /** The XClass used to store collaborators in the patient record. */
     private EntityReference projectBindingReference = new EntityReference("ProjectBindingClass", EntityType.DOCUMENT,
@@ -94,13 +99,36 @@ public class ProjectAndTemplateBinder
         }
         try {
             XWikiContext xContext = this.contextProvider.get();
-            String projects = StringUtils.join(projectsList, ";");
+            String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
             BaseObject projectBindingObject = patientXDoc.newXObject(projectBindingReference, xContext);
             projectBindingObject.setStringValue(PROJECT_BINDING_FIELD, projects);
         } catch (XWikiException e) {
             this.logger.error("Failed to bind projects to patient. Patient: {}",
                 patientXDoc.getDocumentReference().getName(), e.getMessage());
         }
+    }
+
+    /**
+     * Returns a collection of projects assigned to a patient.
+     *
+     * @param patient to get a collection of projects from
+     * @return a collection of Projects
+     */
+    public Collection<Project> getProjectsForPatient(Patient patient)
+    {
+        List<Project> projects = new ArrayList<Project>();
+        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
+
+        BaseObject projectBindingObject = patientXDoc.getXObject(projectBindingReference);
+        if (projectBindingObject != null) {
+            String projectsString = projectBindingObject.getStringValue(PROJECT_BINDING_FIELD);
+            if (projectsString != null) {
+                for (String projectId : projectsString.split(PROJECTS_SEPARATOR)) {
+                    projects.add(new DefaultProject(projectId));
+                }
+            }
+        }
+        return projects;
     }
 
     /**
@@ -125,6 +153,28 @@ public class ProjectAndTemplateBinder
             this.logger.error("Failed to bind a template to patient. Patient: {}",
                 patientXDoc.getDocumentReference().getName(), e.getMessage());
         }
+    }
+
+    /**
+     * Returns the template assigned to a patient.
+     *
+     * @param patient to get the template from
+     * @return Study
+     */
+    public Study getTempalteForPatient(Patient patient)
+    {
+        Study study = null;
+        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
+
+        BaseObject templateBindingObject = patientXDoc.getXObject(templateBindingReference);
+        if (templateBindingObject != null) {
+            String studyId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
+            if (studyId != null) {
+                study = new DefaultStudy(studyId);
+            }
+        }
+        return study;
+
     }
 
     private XWikiDocument getPatientXWikiDocument(Patient patient)
