@@ -532,17 +532,14 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 #set ($projects = $services.projects.getAllProjectsAsContributor())
 #if ($xcontext.action != 'export' &amp;&amp; $projects.size() &gt; 0)
 Projects: ##
-  #set ($boundProject = $doc.getObject('PhenoTips.ProjectBindingClass'))
-  #set ($projectIds = $boundProject.getProperty('projectReference').value)
-  #if ("$!projectIds" == '') 
+  #set ($projects = $services.projects.getProjectForPatient($doc.getName()))
+  #if ($projects == '' || $projects.size() == 0)
 (% class="hint" %)None(%%)
   #else
-    #set ($projectIds = $projectIds.split(";"))
     #set ($projectsString = '')
-    #foreach ($projectId in $projectIds)
-      #set ($project = $services.projects.getProjectById($projectId)) 
-      #set ($projectsString = "${projectsString}(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${project.getName()}&gt;&gt;${projectId}||rel='__blank' class='button secondary']](%%)")
-      #if ($foreach.count&lt;$projectIds.size())
+    #foreach ($project in $projects)
+      #set ($projectsString = "${projectsString}(% class='buttonwrapper' %)[[{{icon name='copy' /}} $project.getName()&gt;&gt;$project.getFullName()||rel='__blank' class='button secondary']](%%)")
+      #if ($foreach.count&lt;$projects.size())
          #set ($projectsString = "${projectsString}##")
       #end
     #end
@@ -552,13 +549,11 @@ Projects: ##
 #set ($templates = $services.studies.getAllStudiesForUser())
 #if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
 Study: ##
-  #set ($boundTemplate = $doc.getObject('PhenoTips.TemplateBindingClass'))
-  #set ($templateId = $boundTemplate.getProperty('templateReference').value)
-  #if ("$!templateId" == '') 
+  #set ($template = $services.projects.getTemplateForPatient($doc.getName()))
+  #if ("$!template" == '')
 (% class="hint" %)None(%%)
   #else
-    #set ($template = $services.studies.getStudyById($templateId)) 
-(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${template.getName()}&gt;&gt;${templateId}||rel='__blank' class='button secondary']](%%)
+(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${template.getName()}&gt;&gt;$template.getId()||rel='__blank' class='button secondary']](%%)
   #end
 #end
 #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
