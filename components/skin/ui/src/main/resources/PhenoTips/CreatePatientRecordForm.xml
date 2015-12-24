@@ -172,12 +172,19 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
        __this.newPatientForm.observe('submit', function (event) {
           event.stop();
+          __this._currentMode = __this._MODES.CREATE;
           __this._createSelectionPopup();
           __this.modalBox.showDialog();
-          __this._updateSelectionPopup();
+          __this._updateProjectTemplateSelectionSection();
+          __this._updatePopupByMode();
        });
 
        __this._initializeProjectTemplateReassignmentTool();
+    },
+
+    _MODES : {
+       CREATE : 1, // for creating a new patient
+       UPDATE : 2  // for updating template or projects for existing patient
     },
 
     _areAllSectionsCreated : function() {
@@ -186,12 +193,15 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _createSection: function(section, documentName)
     {
+       var parameters = {};
+       if (__this._currentMode == __this._MODES.UPDATE) {
+          parameters.patientSpace = XWiki.currentDocument.space;
+          parameters.patientId    = XWiki.currentDocument.page;
+       }
+
        var docRef = XWiki.resource.get(documentName, XWiki.EntityType.DOCUMENT);
        new Ajax.Request(new XWiki.Document(docRef.name, docRef.space).getURL('get'), {
-          parameters: {
-             patientSpace : XWiki.currentDocument.space,
-             patientId : XWiki.currentDocument.page
-          },
+          parameters: parameters,
           onCreate : function() {
              section.update('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;');
           },
@@ -242,65 +252,90 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
        formDataWrapper.insert(new Element('p'));
 
-       var submitText = "$services.localization.render('phenotips.chooseProjectStudy.createButton')"
-       var submitButton = new Element('input', {type : 'submit', value : submitText, 'class' : 'button'});
+       var submitButton = new Element('input', {id : 'submitButton', type : 'submit', 'class' : 'button'});
        formDataWrapper.insert(submitButton);
        var cancelText = "$services.localization.render('phenotips.chooseProjectStudy.cancelButton')";
-       var cancelButton = new Element('input', {type : 'button', value : cancelText, 'class' : 'button secondary'});
+       var cancelButton = new Element('input', {id : 'cancelButton', type : 'button', value : cancelText, 'class' : 'button secondary'});
        formDataWrapper.insert(' ').insert(cancelButton);
        __this.modalBox = new PhenoTips.widgets.ModalPopup(selectionForm, false, {'verticalPosition': 'top', 'removeOnClose': false});
-       submitButton.observe('click', function(event) {
-          event.stop();
-          __this._submitForm();
-       });
        cancelButton.observe('click', function(event) {
           __this.modalBox.closeDialog();
        });
     },
 
-    _updateSelectionPopup : function() {
+    _updateProjectTemplateSelectionSection : function() {
        var formDataWrapper = $('formDataWrapper');
        if (formDataWrapper == null) {
           return;
        }
 
-       if (__this.numberOfProjects &gt; 0) {
+       if (__this.numberOfProjects > 0) {
           var projectsSection = $(projectSectionId);
           formDataWrapper.insert(__this._createSection(projectsSection, 'PhenoTips.ProjectBindingSheet'));
        }
 
-       if (__this.numberOfTemplates &gt; 0) {
+       if (__this.numberOfTemplates > 0) {
           var templatesSection = $(templatesSectionId);
           formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.StudyBindingSheet'));
        }
     },
 
-    _submitForm : function() {
-       // Find selected project
+    _updatePopupByMode : function() {
+       var submitText;
+       var submitFunction;
+       if (__this._currentMode == __this._MODES.CREATE) {
+          submitText =  "$services.localization.render('phenotips.chooseProjectStudy.createButton')";
+          submitFunction = __this._submitCreateForm;
+       }
+       else if (__this._currentMode == __this._MODES.UPDATE) {
+          submitText =  "$services.localization.render('phenotips.chooseProjectStudy.saveButton')";
+          submitFunction = __this._updateProjectTemplateSelection;
+       }
+       else {
+          return;
+       }
+
+       var submitButton = $('submitButton');
+       submitButton.value = submitText;
+       submitButton.stopObserving('click');
+       submitButton.observe('click', submitFunction);
+    },
+
+    _getProjectTemplateSelection : function() {
        var projectsSelected = '';
        $('projectsSection').select(":input").map(function(item) {
           if (item.checked) {
-             if (projectsSelected.length&gt;0) {
+             if (projectsSelected.length>0) {
                 projectsSelected += ",";
              }
              projectsSelected += item.name;
           }
        });
-       $('projectsSelected').value = projectsSelected;
 
-       // Find selected template
        var templateSelected = '';
        var templates = $('templatesSelect').select("option").map(function(item) {
           if (item.selected) {
              templateSelected = item.value;
           }
        });
-       $('templateSelected').value = templateSelected;
 
+       return {projectsSelected : projectsSelected,
+               templateSelected : templateSelected};
+    },
+
+    _submitCreateForm : function(event) {
+       event.stop();
+       var selection = __this._getProjectTemplateSelection();
+       $('projectsSelected').value = selection.projectsSelected;
+       $('templateSelected').value = selection.templateSelected;
        $('selectPTForm').submit();
     },
 
-    _initializeProjectTemplateReassignmentTool: function() {
+    _updateProjectTemplateSelection : function(event) {
+       event.stop();
+    },
+
+    _initializeProjectTemplateReassignmentTool : function() {
        var studyAssignmentTool = $('study-assignment-config');
        if (!studyAssignmentTool) {
          return;
@@ -308,9 +343,11 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
        studyAssignmentTool.observe('click', function (event) {
           event.stop();
+          __this._currentMode = __this._MODES.UPDATE;
           __this._createSelectionPopup();
           __this.modalBox.showDialog();
-          __this._updateSelectionPopup();
+          __this._updateProjectTemplateSelectionSection();
+          __this._updatePopupByMode();
        });
     }
   });
@@ -532,7 +569,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 #set ($projects = $services.projects.getAllProjectsAsContributor())
 #if ($xcontext.action != 'export' &amp;&amp; $projects.size() &gt; 0)
 Projects: ##
-  #set ($projects = $services.projects.getProjectForPatient($doc.getName()))
+  #set ($projects = $services.projects.getProjectsForPatient($doc.getName()))
   #if ($projects == '' || $projects.size() == 0)
 (% class="hint" %)None(%%)
   #else
