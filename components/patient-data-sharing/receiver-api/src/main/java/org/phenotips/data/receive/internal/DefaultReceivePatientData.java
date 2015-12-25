@@ -27,9 +27,9 @@ import org.phenotips.data.receive.ReceivePatientData;
 import org.phenotips.data.securestorage.LocalLoginToken;
 import org.phenotips.data.securestorage.SecureStorageManager;
 import org.phenotips.data.shareprotocol.ShareProtocol;
-import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -39,9 +39,9 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
-import org.xwiki.security.authorization.Right;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -349,7 +349,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected String getRemoteServerName(BaseObject serverConfig, XWikiRequest request)
     {
         if (serverConfig == null) {
-            return request.getRemoteAddr();  // default for non-configured servers
+            return request.getRemoteAddr(); // default for non-configured servers
         }
         return serverConfig.getStringValue(SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME);
     }
@@ -357,7 +357,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected long getUserTokenLifetime(BaseObject serverConfig)
     {
         if (serverConfig == null) {
-            return DEFAULT_USER_TOKEN_LIFETIME;  // default for non-configured servers
+            return DEFAULT_USER_TOKEN_LIFETIME; // default for non-configured servers
         }
         return serverConfig.getLongValue(SERVER_CONFIG_USER_TOKEN_EXPIRE_PROPERTY_NAME);
     }
@@ -400,7 +400,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     return generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS);
                 }
 
-                String serverName  = getRemoteServerName(serverConfig, request);
+                String serverName = getRemoteServerName(serverConfig, request);
                 long tokenLifeTime = getUserTokenLifetime(serverConfig);
 
                 TokenStatus tokenStatus = checkUserToken(userName, serverName, token, tokenLifeTime);
@@ -476,8 +476,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     this.permisionManager.getPatientAccess(affectedPatient).setOwner(group.getReference());
                     this.permisionManager.getPatientAccess(affectedPatient).addCollaborator(user.getProfileDocument(),
                         this.permisionManager.resolveAccessLevel("manage"));
-                }
-                else {
+                } else {
                     this.permisionManager.getPatientAccess(affectedPatient).setOwner(user.getProfileDocument());
                 }
 
@@ -498,7 +497,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             // store separately from the patient object
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
             String sourceServerName = getRemoteServerName(serverConfig, request);
-            String patientGUID      = getPatientGUID(affectedPatient);
+            String patientGUID = getPatientGUID(affectedPatient);
             this.storageManager.storePatientSourceServerInfo(patientGUID, sourceServerName);
 
             return generateSuccessfulResponseWithPatientIDs(affectedPatient, context);
@@ -603,7 +602,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     {
         try {
             Query q = this.queryManager.createQuery("from doc.object(PhenoTips.PatientClass) as o where o.guid = :guid",
-                    Query.XWQL).bindValue("guid", guid);
+                Query.XWQL).bindValue("guid", guid);
 
             List<String> results = q.<String>execute();
 
@@ -629,7 +628,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 return true;
             }
 
-            boolean hasEditRights = this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT, patient.getDocument());
+            boolean hasEditRights =
+                this.authService.hasAccess(this.userManager.getUser(userName), Right.EDIT, patient.getDocument());
             if (hasEditRights) {
                 return true;
             }
@@ -660,8 +660,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
         try {
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
+                xwiki.getDocument(new DocumentReference(context.getWikiId(), "XWiki", "XWikiPreferences"), context);
+            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getWikiId(), Constants.CODE_SPACE,
                 "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, serverIP);
 
             if (result != null) {
@@ -670,7 +670,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             // failed to find by IP - look up by hostname
             String domainName = InetAddress.getByName(serverIP).getHostName();
-            return prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
+            return prefsDoc.getXObject(new DocumentReference(context.getWikiId(), Constants.CODE_SPACE,
                 "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
         } catch (Exception ex) {
             this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
@@ -689,8 +689,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
         try {
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
+                xwiki.getDocument(new DocumentReference(context.getWikiId(), "XWiki", "XWikiPreferences"), context);
+            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getWikiId(), Constants.CODE_SPACE,
                 "ReceivePatientSettings"));
 
             if (result != null) {

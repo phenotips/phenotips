@@ -92,9 +92,9 @@ public class DefaultPushServerResponse implements PushServerResponse
     public boolean isLoginFailed_knownReason()
     {
         return (isLoginFailed_UnauthorizedServer() ||
-                isLoginFailed_IncorrectCredentials() ||
-                isLoginFailed_TokensNotSuported() ||
-                isLoginFailed_UserTokenExpired());
+            isLoginFailed_IncorrectCredentials() ||
+            isLoginFailed_TokensNotSuported() ||
+            isLoginFailed_UserTokenExpired());
     }
 
     @Override
