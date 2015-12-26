@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -125,8 +124,8 @@ public class GeneListControllerTest
         List<String> result =
             ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getProperties();
 
-        Assert.assertThat(result, Matchers.hasItem(GENE_KEY));
-        Assert.assertThat(result, Matchers.hasItem(COMMENTS_KEY));
+        Assert.assertTrue(result.contains(GENE_KEY));
+        Assert.assertTrue(result.contains(COMMENTS_KEY));
         Assert.assertEquals(2, result.size());
     }
 
