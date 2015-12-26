@@ -104,7 +104,7 @@ public class DefaultPatientsResourceImplTest
 
     private URI uri;
 
-    private DefaultPatientsResourceImpl patientsResource;
+    private PatientsResource patientsResource;
 
     private XWikiContext context;
 
@@ -124,7 +124,7 @@ public class DefaultPatientsResourceImplTest
         this.repository = this.mocker.getInstance(PatientRepository.class);
         this.users = this.mocker.getInstance(UserManager.class);
         this.access = this.mocker.getInstance(AuthorizationManager.class);
-        this.patientsResource = (DefaultPatientsResourceImpl) this.mocker.getComponentUnderTest();
+        this.patientsResource = this.mocker.getComponentUnderTest();
         this.logger = this.mocker.getMockedLogger();
         this.queries = this.mocker.getInstance(QueryManager.class);
         this.uri = new URI("http://uri");
@@ -147,7 +147,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(false).when(this.access).hasAccess(eq(Right.EDIT), any(DocumentReference.class),
             any(EntityReference.class));
         try {
-            Response response = this.patientsResource.addPatient("");
+            this.patientsResource.addPatient("");
         } catch (WebApplicationException ex) {
             exception = ex;
         }
@@ -198,7 +198,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(new ArrayList<Object[]>()).when(query).execute();
-        Patients result = this.patientsResource.listPatients(0, 30, null, "asc");
+        this.patientsResource.listPatients(0, 30, null, "asc");
         verify(this.queries).createQuery(
             "select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
@@ -213,7 +213,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(new ArrayList<Object[]>()).when(query).execute();
-        Patients result = this.patientsResource.listPatients(0, 30, "id", null);
+        this.patientsResource.listPatients(0, 30, "id", null);
         verify(this.queries).createQuery(
             "select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
@@ -228,7 +228,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(this.queries).createQuery(anyString(), anyString());
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doReturn(new ArrayList<Object[]>()).when(query).execute();
-        Patients result = this.patientsResource.listPatients(0, 30, "eid", "desc");
+        this.patientsResource.listPatients(0, 30, "eid", "desc");
         verify(this.queries).createQuery(
             "select doc.fullName, p.external_id, doc.creator, doc.creationDate, doc.version, doc.author, doc.date"
                 + " from Document doc, doc.object(PhenoTips.PatientClass) p where doc.name <> :t order by "
@@ -338,7 +338,7 @@ public class DefaultPatientsResourceImplTest
         doReturn(query).when(query).bindValue(anyString(), anyString());
         doThrow(queryException).when(query).execute();
         try {
-            Patients result = this.patientsResource.listPatients(0, 30, "id", "asc");
+            this.patientsResource.listPatients(0, 30, "id", "asc");
         } catch (WebApplicationException ex) {
             exception = ex;
         }

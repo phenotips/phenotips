@@ -22,7 +22,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.IllegalFieldValueException;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -37,7 +36,6 @@ public class DateTimeAdapterTest
 
     private String validDateString;
 
-
     @Before
     public void setUp() throws Exception
     {
@@ -46,7 +44,7 @@ public class DateTimeAdapterTest
         this.validDateString = "2015-01-01T12:00:00.000Z";
     }
 
-    //-------------------------Marshal Tests-------------------------
+    // -------------------------Marshal Tests-------------------------
 
     @Test
     public void marshalReturnsCorrectString()
@@ -60,7 +58,7 @@ public class DateTimeAdapterTest
         Assert.assertNull(this.adapter.marshal(null));
     }
 
-    //-------------------------UnMarshal Tests-------------------------
+    // -------------------------UnMarshal Tests-------------------------
 
     @Test
     public void unMarshalReturnsCorrectDateTime()
@@ -86,7 +84,7 @@ public class DateTimeAdapterTest
         Assert.assertNull(this.adapter.unmarshal(null));
     }
 
-    //-------------------------Reflexivity Test-------------------------
+    // -------------------------Reflexivity Test-------------------------
 
     @Test
     public void testReflexivity()
