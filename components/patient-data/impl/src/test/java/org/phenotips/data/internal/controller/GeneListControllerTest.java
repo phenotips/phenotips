@@ -67,7 +67,6 @@ public class GeneListControllerTest
     public MockitoComponentMockingRule<PatientDataController<Map<String, String>>> mocker =
         new MockitoComponentMockingRule<PatientDataController<Map<String, String>>>(GeneListController.class);
 
-    @Mock
     private DocumentAccessBridge documentAccessBridge;
 
     @Mock
