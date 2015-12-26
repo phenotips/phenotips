@@ -21,6 +21,7 @@ import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -30,18 +31,28 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -55,6 +66,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the {@link GeneListController} Component, only the overridden methods from {@link AbstractComplexController}
@@ -370,6 +382,120 @@ public class GeneListControllerTest
         item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
         Assert.assertEquals("GENE", item.get(GENE_KEY));
         Assert.assertEquals(1, item.size());
+    }
+
+    @Test
+    public void readWithNullJsonDoesNothing() throws ComponentLookupException
+    {
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(null));
+    }
+
+    @Test
+    public void readWithNoDataDoesNothing() throws ComponentLookupException
+    {
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(new JSONObject()));
+    }
+
+    @Test
+    public void readWithWrongDataDoesNothing() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        json.put(CONTROLLER_NAME, "No");
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+    }
+
+    @Test
+    public void readWithEmptyDataDoesNothing() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        json.put(CONTROLLER_NAME, new JSONArray());
+        Assert.assertNull(this.mocker.getComponentUnderTest().readJSON(json));
+    }
+
+    @Test
+    public void readWorksCorrectly() throws ComponentLookupException
+    {
+        JSONArray data = new JSONArray();
+        JSONObject item = new JSONObject();
+        item.put("gene", "GENE1");
+        item.put("comments", "Notes1");
+        data.add(item);
+        item = new JSONObject();
+        item.put("gene", "GENE2");
+        data.add(item);
+        JSONObject json = new JSONObject();
+        json.put(CONTROLLER_NAME, data);
+        PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertTrue(result.isIndexed());
+        Iterator<Map<String, String>> it = result.iterator();
+        Map<String, String> gene = it.next();
+        Assert.assertEquals("GENE1", gene.get("gene"));
+        Assert.assertEquals("Notes1", gene.get("comments"));
+        gene = it.next();
+        Assert.assertEquals("GENE2", gene.get("gene"));
+        Assert.assertFalse(gene.containsKey("comments"));
+    }
+
+    @Test
+    public void saveWithNoDataDoesNothing() throws ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().save(this.patient);
+        Mockito.verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithWrongTypeOfDataDoesNothing() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME)).thenReturn(new SimpleValuePatientData<Object>("a", "b"));
+        this.mocker.getComponentUnderTest().save(this.patient);
+        Mockito.verifyZeroInteractions(this.doc);
+    }
+
+    @Test
+    public void saveWithEmptyDataClearsGenes() throws ComponentLookupException
+    {
+        when(this.patient.getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
+        Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        XWikiContext context = xcontextProvider.get();
+        when(context.getWiki()).thenReturn(mock(XWiki.class));
+        this.mocker.getComponentUnderTest().save(this.patient);
+        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+
+        Mockito.verifyNoMoreInteractions(this.doc);
+    }
+
+    @Test
+    public void saveUpdatesGenes() throws ComponentLookupException, XWikiException
+    {
+        List<Map<String, String>> data = new LinkedList<>();
+        Map<String, String> item = new HashMap<>();
+        item.put("gene", "GENE1");
+        item.put("comments", "Notes1");
+        data.add(item);
+        item = new HashMap<>();
+        item.put("gene", "GENE2");
+        data.add(item);
+        when(this.patient.<Map<String, String>>getData(CONTROLLER_NAME))
+            .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, data));
+
+        Provider<XWikiContext> xcontextProvider = this.mocker.getInstance(XWikiContext.TYPE_PROVIDER);
+        XWikiContext context = xcontextProvider.get();
+        when(context.getWiki()).thenReturn(mock(XWiki.class));
+
+        BaseObject o1 = mock(BaseObject.class);
+        BaseObject o2 = mock(BaseObject.class);
+        when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, context)).thenReturn(o1, o2);
+
+        this.mocker.getComponentUnderTest().save(this.patient);
+
+        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(o1).set("gene", "GENE1", context);
+        verify(o1).set("comments", "Notes1", context);
+        verify(o2).set("gene", "GENE2", context);
+        verify(o2, Mockito.never()).set(Matchers.eq("comments"), anyString(), Matchers.eq(context));
     }
 
     // ----------------------------------------Private methods----------------------------------------

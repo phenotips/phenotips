@@ -64,7 +64,7 @@ import net.sf.json.JSONObject;
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
     /** The XClass used for storing gene data. */
-    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+    public static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String GENES_STRING = "genes";
@@ -193,15 +193,15 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public PatientData<Map<String, String>> readJSON(JSONObject json)
     {
-        if (!json.has(getJsonPropertyName())) {
+        if (json == null || !json.has(getJsonPropertyName())) {
             return null;
         }
 
         try {
             JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
-            for (Object geneJsonUncast : genesJson) {
-                JSONObject geneJson = JSONObject.fromObject(geneJsonUncast);
+            for (int i = 0; i < genesJson.size(); ++i) {
+                JSONObject geneJson = genesJson.getJSONObject(i);
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : this.getProperties()) {
                     if (geneJson.has(property)) {
