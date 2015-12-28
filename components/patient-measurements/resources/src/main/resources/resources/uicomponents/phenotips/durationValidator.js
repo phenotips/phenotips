@@ -8,7 +8,7 @@ var PhenoTips = (function(PhenoTips) {
       m : 'months',
       w : 'weeks',
       d : 'days',
-      n : '([1-9][0-9]*)',
+      n : '([0-9]*)',
       s : '\\s*'
     },
     initialize : function(element) {
