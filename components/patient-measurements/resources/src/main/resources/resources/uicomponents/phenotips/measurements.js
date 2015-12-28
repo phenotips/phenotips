@@ -671,7 +671,7 @@ var PhenoTips = (function(PhenoTips) {
         if (!suggestWidget) {
            return null;
         }
-        searchURL = this.solarService + "?q=" + id;
+        searchURL = new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "q=" + id);
         new Ajax.Request(searchURL, {
           method: 'get',
           onSuccess: function(transport) {
