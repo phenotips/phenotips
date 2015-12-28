@@ -193,7 +193,7 @@ var PhenoTips = (function(PhenoTips) {
       infoEl.addClassName('infomessage');
       infoEl.innerHTML = "$services.localization.render('phenotips.patientSheet.measurements.chartPlaceholderMsg')";
 
-      var url = XWiki.contextPath+"/bin/get/PhenoTips/ChartService?a=12.0&weight=10.0&standalone=1&n=weight&s=M&f=svg";
+      var url = new XWiki.Document("ChartService", "PhenoTips").getURL('get', 'a=-1&weight=1&standalone=1&n=weight&s=M&f=svg');
       var mainChartEl = new Element('a');
       mainChartEl.setAttribute('href', url.replace("&f=svg", ""));
       mainChartEl.setAttribute('target', "_blank");
@@ -442,9 +442,9 @@ var PhenoTips = (function(PhenoTips) {
       }).bind(this);
 
       if (this._ageEl.value.length) {
-        var url = XWiki.contextPath+"/bin/get/PhenoTips/MeasurementSetDeletionService";
-        url += "?document="+XWiki.Document.currentSpace+"."+XWiki.Document.currentPage;
-        url += "&age="+this._ageEl.value;
+        var qs = "document="+XWiki.Document.currentSpace+"."+XWiki.Document.currentPage;
+        qs += "&age="+this._ageEl.value;
+        var url = new XWiki.Document("MeasurementSetDeletionService", "PhenoTips").getURL('get', qs);
         new XWiki.widgets.ConfirmedAjaxRequest(url, {
           onCreate : function() {
             deleteTrigger.disabled = true;
