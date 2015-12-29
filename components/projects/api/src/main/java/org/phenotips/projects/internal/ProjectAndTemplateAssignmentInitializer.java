@@ -49,7 +49,6 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
     @Inject
     private ProjectAndTemplateBinder ptBinder;
 
-    /** Provides access to the current execution context. */
     @Inject
     private Provider<XWikiContext> contextProvider;
 
