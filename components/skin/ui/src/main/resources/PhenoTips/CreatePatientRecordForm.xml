@@ -290,6 +290,9 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        else if (__this._currentMode == __this._MODES.UPDATE) {
           submitText =  "$services.localization.render('phenotips.chooseProjectStudy.saveButton')";
           submitFunction = __this._updateProjectTemplateSelection;
+
+          // Simulate project checkboxes clicking
+          document.fire("projects:projectselection:popupupdated");
        }
        else {
           return;
