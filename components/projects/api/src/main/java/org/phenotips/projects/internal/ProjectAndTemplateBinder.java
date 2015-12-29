@@ -83,7 +83,7 @@ public class ProjectAndTemplateBinder
      * @param projectsSelected project(s) to assign
      * @param patient patient to assign the template to
      */
-    public void assignProjects(String projectsSelected, Patient patient)
+    public void setProjectsForPatient(String projectsSelected, Patient patient)
     {
         if (StringUtils.isEmpty(projectsSelected)) {
             return;
@@ -136,7 +136,7 @@ public class ProjectAndTemplateBinder
      * @param templateSelected template to assign
      * @param patient patient to assign the template to
      */
-    public void assignTemplate(String templateSelected, Patient patient)
+    public void setTemplateForPatient(String templateSelected, Patient patient)
     {
         if (StringUtils.isEmpty(templateSelected)) {
             return;
