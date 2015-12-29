@@ -62,13 +62,13 @@ public class ProjectAndTemplateAssignmentInitializer implements PatientRecordIni
         // Projects selected
         String[] projectsSelectedValue = parameterMap.get(PROJECTS_SELECTED_KEY);
         if (projectsSelectedValue != null && projectsSelectedValue.length == 1) {
-            this.ptBinder.assignProjects(projectsSelectedValue[0], patient);
+            this.ptBinder.setProjectsForPatient(projectsSelectedValue[0], patient);
         }
 
         // Template selected
         String[] templateSelected = parameterMap.get(TEMPLATE_SELECTED_KEY);
         if (templateSelected != null && templateSelected.length == 1) {
-            this.ptBinder.assignTemplate(templateSelected[0], patient);
+            this.ptBinder.setTemplateForPatient(templateSelected[0], patient);
         }
     }
 }
