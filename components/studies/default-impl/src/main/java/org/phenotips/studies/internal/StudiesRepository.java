@@ -22,7 +22,6 @@ import org.phenotips.groups.GroupManager;
 import org.phenotips.studies.data.Study;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -36,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class StudiesRepository
     private Logger logger;
 
     @Inject
-    private Execution execution;
+    private Provider<XWikiContext> contextProvider;
 
     @Inject
     private UserManager userManager;
@@ -152,7 +152,7 @@ public class StudiesRepository
      */
     public String getStudiesSubmissionPreference()
     {
-        XWikiContext xContext = this.getXContext();
+        XWikiContext xContext = this.contextProvider.get();
         XWiki xwiki = xContext.getWiki();
         XWikiDocument prefsDoc = null;
         String objectsSpace = "XWiki";
@@ -207,10 +207,4 @@ public class StudiesRepository
         }
         return studies;
     }
-
-    private XWikiContext getXContext()
-    {
-        return (XWikiContext) this.execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
-    }
-
 }

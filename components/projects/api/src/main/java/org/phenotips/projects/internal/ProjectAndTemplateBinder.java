@@ -68,7 +68,6 @@ public class ProjectAndTemplateBinder
     private EntityReference templateBindingReference = new EntityReference("TemplateBindingClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
-    /** Provides access to the current execution context. */
     @Inject
     private Provider<XWikiContext> contextProvider;
 
