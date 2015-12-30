@@ -610,9 +610,8 @@ var PhenoTips = (function(PhenoTips) {
         el.addClassName(values['fuzzy-value']);
 
         displayStr = values.percentile;
-        displayStr += this._getOrdinalSuffix(values.percentile);
-        displayStr += ' pctl'; // TODO: translate
-        displayStr += ' (' + values.stddev.toFixed(2) + 'SD)'; // TODO: translate
+        displayStr += '%ile';
+        displayStr += ' (' + values.stddev.toFixed(2) + 'SD)';
       }
 
       el.innerText = displayStr;
@@ -691,22 +690,6 @@ var PhenoTips = (function(PhenoTips) {
       } else {
         return existingElement;
       }
-    },
-
-    // Credit: http://stackoverflow.com/a/13627586
-    _getOrdinalSuffix: function(i) {
-      var j = i % 10,
-          k = i % 100;
-      if (j == 1 && k != 11) {
-          return "st";
-      }
-      if (j == 2 && k != 12) {
-          return "nd";
-      }
-      if (j == 3 && k != 13) {
-          return "rd";
-      }
-      return "th";
     },
 
     measurementTypeToAssocTerms:
