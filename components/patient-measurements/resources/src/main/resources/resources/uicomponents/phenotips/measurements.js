@@ -345,6 +345,7 @@ var PhenoTips = (function(PhenoTips) {
       this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
       this._deleteHandler = this._deleteHandler.bind(this);
       this.getObject = this.getObject.bind(this);
+      this.destroy = this.destroy.bind(this);
 
       // Init rows
       this._rows = [];
@@ -498,6 +499,10 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     destroy: function() {
+      this._rows.each(function(row) {
+        row.destroy();
+      });
+
       this._globalDobEl.stopObserving('xwiki:date:changed', this._globalDobChangeHandler);
     },
 
@@ -536,6 +541,9 @@ var PhenoTips = (function(PhenoTips) {
       if (XWiki.contextaction == 'edit') {
         // DOM shortcuts
         this._valueEl = this.el.select('[name$=value]')[0];
+
+        // Init array for smart phenotype terms triggered by this row
+        this._curSelectedTerms = [];
 
         // Initialize using existing values
         this.fetchAndRenderPercentileSd();
@@ -591,6 +599,7 @@ var PhenoTips = (function(PhenoTips) {
         });
       } else {
         this._renderPercentileSd(pctlEl, null);
+        this._selectAssocPhenotypes([]);
       }
     },
 
@@ -618,16 +627,32 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     _selectAssocPhenotypes: function(terms) {
-      var allTerms = this.measurementTypeToAssocTerms[this.getMeasurementType()];
-      if (allTerms && allTerms.length) {
-        allTerms.each((function(term) {
-          this._unselectMeasurementTerm(findFormElementForPhenotype(term));
-        }).bind(this));
-      }
+      var toRemove = this._curSelectedTerms.filter(function(n) {
+        return terms.indexOf(n) == -1
+      });
+      var toAdd = terms.filter((function(n) {
+        return this._curSelectedTerms.indexOf(n) == -1
+      }).bind(this));
 
-      terms.each((function(term) {
+      this._curSelectedTerms = terms;
+
+      toRemove.each((function(term) {
+        var elt = findFormElementForPhenotype(term);
+        elt.store('refCount', elt.retrieve('refCount') - 1);
+
+        if (elt.retrieve('refCount') < 1) {
+          this._unselectMeasurementTerm(elt);
+        }
+      }).bind(this));
+
+      toAdd.each((function(term) {
         var targetEl = this._selectFormElementForPhenotype(term);
-        this._selectMeasurementTerm(targetEl);
+        var refCount = targetEl.retrieve('refCount') || 0;
+        targetEl.store('refCount', refCount + 1);
+
+        if (refCount == 0) {
+          this._selectMeasurementTerm(targetEl);
+        }
       }).bind(this));
     },
 
@@ -692,21 +717,9 @@ var PhenoTips = (function(PhenoTips) {
       }
     },
 
-    measurementTypeToAssocTerms:
-    #set ($handlers = $services.measurements.getAvailableMeasurementHandlers())
-    #set ($map = {})
-    #foreach ($handler in $handlers)
-      #set ($assocTerms = $handler.getAssociatedTerms(null))
-      #set ($assocTermStrings = [])
-      #foreach ($term in $assocTerms)
-        #set ($discard = $assocTermStrings.add($term.getId()))
-      #end
-      #set ($discard = $map.put($handler.getName(), $assocTermStrings))
-    #end
-    $jsontool.serialize($map)
-    ,
-
     destroy: function() {
+      this._selectAssocPhenotypes([]);
+
       $$('input[name$=gender]').each((function(el) {
         el.stopObserving('click', this._genderChangeHandler);
       }).bind(this));
