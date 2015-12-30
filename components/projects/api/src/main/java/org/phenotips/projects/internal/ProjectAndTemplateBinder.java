@@ -86,9 +86,11 @@ public class ProjectAndTemplateBinder
     public void setProjectsForPatient(String projectsSelected, Patient patient)
     {
         List<String> projectsList = new ArrayList<String>();
-        for (String projectId : projectsSelected.split(",")) {
-            Project p = new DefaultProject(projectId);
-            projectsList.add(p.getFullName());
+        if (!StringUtils.isEmpty(projectsSelected)) {
+            for (String projectId : projectsSelected.split(",")) {
+                Project p = new DefaultProject(projectId);
+                projectsList.add(p.getFullName());
+            }
         }
         String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
 
