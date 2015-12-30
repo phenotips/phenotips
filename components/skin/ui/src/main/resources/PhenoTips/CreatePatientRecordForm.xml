@@ -336,6 +336,39 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _updateProjectTemplateSelection : function(event) {
        event.stop();
+       var trigger = event.findElement();
+       var selection = __this._getProjectTemplateSelection();
+
+       new Ajax.Request(__this.newPatientForm.action, {
+          parameters: { patientId: XWiki.currentDocument.page,
+                        projects : selection.projectsSelected,
+                        template : selection.templateSelected
+                      },
+          method: 'PUT',
+          onCreate: function() {
+             trigger.disabled = true;
+             trigger.addClassName('loading');
+          },
+          onSuccess: function(response) {
+             __this._refreshExtensions();
+             __this.modalBox.closeDialog();
+          },
+          onFailure : function(response) {
+             var failureReason = response.responseText || response.statusText;
+             if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                failureReason = "$services.localization.render('phenotips.chooseProjectStudy.failure.noResponse')";
+             }
+             var failureMessage = "$services.localization.render('phenotips.chooseProjectStudy.failureMessage')";
+             __this._messages.update(new Element('div', {'class' : 'errormessage'}).update(failureMessage + ' ' + failureReason));
+          },
+          on0 : function (response) {
+             response.request.options.onFailure(response);
+          },
+          onComplete: function(response) {
+            trigger.removeClassName('loading');
+            trigger.disabled = false;
+          }
+       });
     },
 
     _initializeProjectTemplateReassignmentTool : function() {
@@ -351,6 +384,15 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           __this.modalBox.showDialog();
           __this._updateProjectTemplateSelectionSection();
           __this._updatePopupByMode();
+       });
+    },
+
+    _refreshExtensions: function() {
+       new Ajax.Request(XWiki.currentDocument.getURL('get', 'sheet=PhenoTips.ProjectAssignmentSheet'), {
+          onSuccess: function(response) {
+             $('before-patient-data').replace(response.responseText);
+             __this._initializeProjectTemplateReassignmentTool();
+          }
        });
     }
   });

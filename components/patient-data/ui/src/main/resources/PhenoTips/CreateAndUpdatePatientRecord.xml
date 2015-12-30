@@ -66,6 +66,9 @@
     ## CSRF protection
     $response.sendRedirect("$!{services.csrf.getResubmissionURL()}")
   #end
+#elseif ($request.method == 'POST')
+  #set ($discard = $services.projects.setTemplateForPatient($request.template,$request.patientId))
+  #set ($discard = $services.projects.setProjectsForPatient($request.projects,$request.patientId))
 #end
 {{/velocity}}</content>
 </xwikidoc>
