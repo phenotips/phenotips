@@ -575,7 +575,7 @@ var PhenoTips = (function(PhenoTips) {
       };
       // Normalize sex for the purposes of measurements, assuming other == male
       if (fetchParams.sex.length && fetchParams.sex.toLowerCase() != 'f') {
-        fetchParams.sex == 'm';
+        fetchParams.sex = 'm';
       }
 
       if (this._valueEl.value.length && fetchParams.sex.length && fetchParams.age.length && fetchParams.sex.length) {
