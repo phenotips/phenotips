@@ -136,6 +136,18 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
+     * Assigns projects to a patient.
+     *
+     * @param projects colon-separated list of projects to assign
+     * @param patientId id of patient
+     */
+    public void setProjectsForPatient(String projects, String patientId)
+    {
+        Patient patient = this.patientsRepository.getPatientById(patientId);
+        this.ptBinder.setProjectsForPatient(projects, patient);
+    }
+
+    /**
      * Returns the template assigned to a patient.
      *
      * @param patientId id of patient to get the template from
@@ -148,5 +160,17 @@ public class ProjectsScriptService implements ScriptService
             return null;
         }
         return this.ptBinder.getTempalteForPatient(patient);
+    }
+
+    /**
+     * Assigns a template to a patient.
+     *
+     * @param templateId id of template to assign
+     * @param patientId id of patient
+     */
+    public void setTemplateForPatient(String templateId, String patientId)
+    {
+        Patient patient = this.patientsRepository.getPatientById(patientId);
+        this.ptBinder.setTemplateForPatient(templateId, patient);
     }
 }
