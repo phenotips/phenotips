@@ -85,26 +85,14 @@ public class ProjectAndTemplateBinder
      */
     public void setProjectsForPatient(String projectsSelected, Patient patient)
     {
-        if (StringUtils.isEmpty(projectsSelected)) {
-            return;
-        }
-
-        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
-
         List<String> projectsList = new ArrayList<String>();
         for (String projectId : projectsSelected.split(",")) {
             Project p = new DefaultProject(projectId);
             projectsList.add(p.getFullName());
         }
-        try {
-            XWikiContext xContext = this.contextProvider.get();
-            String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
-            BaseObject projectBindingObject = patientXDoc.newXObject(projectBindingReference, xContext);
-            projectBindingObject.setStringValue(PROJECT_BINDING_FIELD, projects);
-        } catch (XWikiException e) {
-            this.logger.error("Failed to bind projects to patient. Patient: {}",
-                patientXDoc.getDocumentReference().getName(), e.getMessage());
-        }
+        String projects = StringUtils.join(projectsList, PROJECTS_SEPARATOR);
+
+        setPropertyForPatient(patient, this.projectBindingReference, PROJECT_BINDING_FIELD, projects);
     }
 
     /**
@@ -138,20 +126,7 @@ public class ProjectAndTemplateBinder
      */
     public void setTemplateForPatient(String templateSelected, Patient patient)
     {
-        if (StringUtils.isEmpty(templateSelected)) {
-            return;
-        }
-
-        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
-
-        try {
-            XWikiContext xContext = this.contextProvider.get();
-            BaseObject templateBindingObject = patientXDoc.newXObject(templateBindingReference, xContext);
-            templateBindingObject.setStringValue(TEMPLATE_BINDING_FIELD, templateSelected);
-        } catch (XWikiException e) {
-            this.logger.error("Failed to bind a template to patient. Patient: {}",
-                patientXDoc.getDocumentReference().getName(), e.getMessage());
-        }
+        setPropertyForPatient(patient, this.templateBindingReference, TEMPLATE_BINDING_FIELD, templateSelected);
     }
 
     /**
@@ -174,6 +149,41 @@ public class ProjectAndTemplateBinder
         }
         return study;
 
+    }
+
+    /*
+     * For patient {@patient}, sets the field {@link bindingField} of xobject {@link bindingReference} to be {@link
+     * value}. The functions handles either creation, update or removal of the xobject.
+     */
+    private void setPropertyForPatient(Patient patient,
+        EntityReference bindingReference, String bindingField, String value)
+    {
+        XWikiContext xContext = this.contextProvider.get();
+        XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
+        BaseObject bindingObject = patientXDoc.getXObject(bindingReference);
+
+        if (StringUtils.isEmpty(value) && bindingObject != null) {
+            patientXDoc.removeXObject(bindingObject);
+        } else if (!StringUtils.isEmpty(value)) {
+            if (bindingObject == null) {
+                try {
+                    bindingObject =
+                        patientXDoc.newXObject(bindingReference, xContext);
+                } catch (XWikiException e) {
+                    this.logger.error("Failed to create a new xobject for binding {} for patient {}.",
+                        patientXDoc.getDocumentReference().getName(), bindingReference.getName(), e.getMessage());
+                }
+            }
+            bindingObject.setStringValue(bindingField, value);
+        }
+
+        try {
+            String description = "Updated " + bindingReference.getName() + " binding";
+            xContext.getWiki().saveDocument(patientXDoc, description, true, xContext);
+        } catch (XWikiException e) {
+            this.logger.error("Failed to save patient {}",
+                patientXDoc.getDocumentReference().getName(), e.getMessage());
+        }
     }
 
     private XWikiDocument getPatientXWikiDocument(Patient patient)
