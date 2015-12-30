@@ -146,12 +146,11 @@
   display: none;
 }
 .measurement-set {
-  border: 1px dotted #aaa;
   clear: both;
   float: left;
   margin: 5px;
   overflow: auto;
-  padding: 10px;
+  padding: 1.5em 0;
   position: relative;
 }
 .measurement-set .measurements {
