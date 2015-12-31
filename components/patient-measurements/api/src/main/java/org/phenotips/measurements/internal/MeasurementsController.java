@@ -83,7 +83,7 @@ public class MeasurementsController implements PatientDataController<Measurement
 
     private static final String SD = "sd";
 
-    private static final String PERCENTILE = "precentile";
+    private static final String PERCENTILE = "percentile";
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
