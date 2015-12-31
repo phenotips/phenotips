@@ -60,7 +60,7 @@ import net.sf.json.JSONObject;
  * Handles the patient's measurements.
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.3M1
  */
 @Component(roles = { PatientDataController.class })
 @Named("measurements")
