@@ -160,7 +160,7 @@ var PhenoTips = (function(PhenoTips) {
         Event.observe(window, 'resize', this._setChartsWidth);
       } else {
         // Event handlers
-        $$('.measurement-info.chapter')[0].observe('chapter:show', (function() {
+        var resetSticky = function() {
           if (!this._stickyBox) {
             this._setChartsWidth();
             this._initStickyBox();
@@ -169,7 +169,11 @@ var PhenoTips = (function(PhenoTips) {
             this._setChartsWidth();
             this._stickyBox.resetPosition();
           }
-        }).bind(this));
+        };
+        resetSticky = resetSticky.bind(this);
+        $$('.measurement-info.chapter')[0].observe('chapter:show', resetSticky);
+        $('measurements').observe('measurementSet:delete', resetSticky);
+
         ['change', 'age:change', 'measurementSet:delete'].each((function(ev) {
           $('measurements').observe(ev, this._updateCharts);
         }).bind(this));
@@ -436,10 +440,11 @@ var PhenoTips = (function(PhenoTips) {
       if (deleteTrigger.disabled) {
         return;
       }
-      this.el.fire('measurementSet:delete');
+      
       var removeElement = (function() {
         this.destroy();
         this.el.remove();
+        $('measurements').fire('measurementSet:delete');
       }).bind(this);
 
       if (this._ageEl.value.length) {
