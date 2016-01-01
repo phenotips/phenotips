@@ -50,19 +50,6 @@
   max-width: 100%;
   padding: 0;
 }
-#charts-new .sets {
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 120px;
-}
-#charts-new .sets > div.selected::after {
-  content: ' >';
-}
-#charts-new .sets > div {
-  cursor: pointer;
-  padding: 10px;
-}
 #measurements-container {
   clear: both;
   position: relative;
