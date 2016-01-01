@@ -24,9 +24,11 @@
 }
 #charts-new .chart-thumbs > div.selected {
   border-color: #666;
+  border-width: 2px;
+  padding: 9px;
 }
 #charts-new .chart-thumbs > div.selected > span {
-  font-weight: bold;
+  color: black;
 }
 #charts-new .chart-thumbs > div {
   background-color: white;
