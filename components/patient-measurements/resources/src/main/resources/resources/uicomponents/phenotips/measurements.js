@@ -444,6 +444,7 @@ var PhenoTips = (function(PhenoTips) {
       var removeElement = (function() {
         this.destroy();
         this.el.remove();
+        this.parent._sets.splice(this.parent._sets.indexOf(this), 1);
         $('measurements').fire('measurementSet:delete');
       }).bind(this);
 
