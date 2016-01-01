@@ -230,9 +230,11 @@ var PhenoTips = (function(PhenoTips) {
           shouldSend = true;
         }
       }
-      shouldSend &= !!post.sex;
 
       if (shouldSend) {
+        if (post.sex.toLowerCase() != 'f') {
+          post.sex = 'm';
+        }
         var ajx = new Ajax.Request(XWiki.contextPath+"/rest/measurements/chart-resources", {
           method: 'post',
           postBody: JSON.stringify(post),
@@ -588,7 +590,7 @@ var PhenoTips = (function(PhenoTips) {
         'sex': ($$('[name$=gender]:checked')[0] || {value:''}).value,
       };
       // Normalize sex for the purposes of measurements, assuming other == male
-      if (fetchParams.sex.length && fetchParams.sex.toLowerCase() != 'f') {
+      if (fetchParams.sex.toLowerCase() != 'f') {
         fetchParams.sex = 'm';
       }
 
