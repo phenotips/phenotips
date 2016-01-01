@@ -176,14 +176,9 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService implements NCBI
             NodeList nodes = response.getElementsByTagName("CorrectedQuery");
             if (nodes.getLength() > 0) {
                 String result = nodes.item(0).getTextContent();
-                if (result == null) {
-                    result = "";
-                } else {
-                    result.trim();
-                }
-                return (!"".equals(result)) ? result : query;
+                result = StringUtils.trim(result);
+                return StringUtils.isNotEmpty(result) ? result : query;
             }
-
         } catch (Exception ex) {
             this.logger.error("Error while trying to retrieve corrected query for " + query + " "
                 + ex.getClass().getName() + " " + ex.getMessage(), ex);
