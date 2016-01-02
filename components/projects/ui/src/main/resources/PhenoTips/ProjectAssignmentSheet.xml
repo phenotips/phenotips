@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content>{{velocity}}
 ## Extensions displayed before the content
-(% class="before-patient-data" %)(((
+(% id="before-patient-data" class="before-patient-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
   #set ($hasExtensionsBefore = true)
   #set ($extension_disabled = ($e.getParameters().get('disabled') == 'true'))
