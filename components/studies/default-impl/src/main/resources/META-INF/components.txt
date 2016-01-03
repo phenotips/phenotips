@@ -1,2 +1,0 @@
-org.phenotips.templates.script.TemplatesScriptService
-org.phenotips.templates.internal.TemplatesRepository

@@ -23,9 +23,9 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>templates</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>templates-default-impl</artifactId>
+  <artifactId>phenotips-templates-default-impl</artifactId>
   <name>PhenoTips - Templates - Default implementaion</name>
   <dependencies>
     <dependency>
@@ -99,12 +99,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>templates-api</artifactId>
+      <artifactId>phenotips-templates-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
