@@ -18,15 +18,15 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>studies</artifactId>
+    <artifactId>templates</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-studies-default-impl</artifactId>
-  <name>PhenoTips - Studies - Default implementaion</name>
+  <artifactId>phenotips-templates-api</artifactId>
+  <name>PhenoTips - Templates - Java APIs</name>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -90,16 +90,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabularies-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>users-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-studies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
