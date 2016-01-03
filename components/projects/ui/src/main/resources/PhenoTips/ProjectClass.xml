@@ -599,7 +599,7 @@ $xwiki.jsx.use($projectClassName)
   border-bottom: 0 none;
 }
 
-#projects-table .members, #studies-directory .patients {
+#projects-table .members, #templates-directory .patients {
   font-size: .8em;
   font-style: italic;
   opacity: .5;
