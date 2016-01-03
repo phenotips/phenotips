@@ -46,14 +46,14 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyName')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyName.hint')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.templateSheet.templateName')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.templateSheet.templateName.hint')
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyDescription')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyDescription.hint')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.templateSheet.templateDescription')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.templateSheet.templateDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
-(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.studySheet.formConfigButton')&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||class="button" id="patientConfigurationLink"]]
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} $services.localization.render('phenotips.templateSheet.formConfigButton')&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||class="button" id="patientConfigurationLink"]]
 
 )))
 #else
@@ -61,9 +61,9 @@ $!doc.content
 #if ($xcontext.action == 'view')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
-  {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$filterVal' /}})))"},
-  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.studySheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
-  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+  {'id' : 'members', 'name' : "$services.localization.render('phenotips.templateSheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'cases',   'name' : "$services.localization.render('phenotips.templateSheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.templateSheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
 ])
 #set ($menu = [])
 #set ($contents = {})
