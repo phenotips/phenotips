@@ -683,7 +683,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-studies-api</artifactId>
+      <artifactId>phenotips-templates-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
