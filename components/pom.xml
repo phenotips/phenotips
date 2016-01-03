@@ -53,8 +53,8 @@
     <module>patient-data-sharing</module>
     <module>patient-measurements</module>
     <module>xwiki-platform-users</module>
-    <module>studies</module>
     <module>projects</module>
+    <module>templates</module>
     <module>users</module>
     <module>user-profile-ui</module>
     <module>application-configuration</module>
