@@ -355,7 +355,7 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
         script: "$xwiki.getURL('Studies.StudiesSearch', 'get', 'outputSyntax=plain')" + "&amp;",
         varname: "input",
         noresults: "No matching terms",
-        resultsParameter: "matchedStudies",
+        resultsParameter: "matchedTemplates",
         json: true,
         resultId: "id",
         resultValue: "textSummary",

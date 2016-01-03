@@ -53,7 +53,7 @@
 ## -----------------------------------
 #if ($input != '')
   #set ($discard = $response.setContentType('application/json'))
-  $services.studies.searchStudies($input, $nb)
+  $services.templates.searchTemplates($input, $nb)
 #end
 {{/velocity}}</content>
 </xwikidoc>
