@@ -20,8 +20,8 @@ package org.phenotips.projects.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.projects.data.Project;
-import org.phenotips.studies.data.Study;
-import org.phenotips.studies.internal.DefaultStudy;
+import org.phenotips.templates.data.Template;
+import org.phenotips.templates.internal.DefaultTemplate;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -135,21 +135,21 @@ public class ProjectAndTemplateBinder
      * Returns the template assigned to a patient.
      *
      * @param patient to get the template from
-     * @return Study
+     * @return template
      */
-    public Study getTempalteForPatient(Patient patient)
+    public Template getTempalteForPatient(Patient patient)
     {
-        Study study = null;
+        Template template = null;
         XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
 
         BaseObject templateBindingObject = patientXDoc.getXObject(templateBindingReference);
         if (templateBindingObject != null) {
-            String studyId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
-            if (studyId != null) {
-                study = new DefaultStudy(studyId);
+            String templateId = templateBindingObject.getStringValue(TEMPLATE_BINDING_FIELD);
+            if (templateId != null) {
+                template = new DefaultTemplate(templateId);
             }
         }
-        return study;
+        return template;
 
     }
 

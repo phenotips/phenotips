@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.internal;
+package org.phenotips.templates.internal;
 
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-import org.phenotips.studies.data.Study;
+import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -52,15 +52,15 @@ import net.sf.json.JSONObject;
 /**
  * @version $Id$
  */
-@Component(roles = { StudiesRepository.class })
+@Component(roles = { TemplatesRepository.class })
 @Singleton
-public class StudiesRepository
+public class TemplatesRepository
 {
     private static final String INPUT_PARAMETER = "input";
 
-    private static final String MATCHED_STUDIES = "matchedStudies";
+    private static final String MATCHED_TEMPLATES = "matchedTemplates";
 
-    private static final String UNRESTRICTED_STUDIES_ACCESS = "unrestricted";
+    private static final String UNRESTRICTED_TEMPLATES_ACCESS = "unrestricted";
     @Inject
     private QueryManager qm;
 
@@ -77,80 +77,78 @@ public class StudiesRepository
     private GroupManager groupManager;
 
     /**
-     * Returns a JSON object with a /** Returns a collection of studies that are
-     * available for the user. The list is compiled based on the system property
-     * of studies visibility. If studies are unrestricted, all studies will be
-     * returned. If the studies are available based on group visibility, then
-     * only studies for which the current user has permission will be returned.
+     * Returns a collection of templates that are available for the user. The
+     * list is compiled based on the system property of templates visibility. If
+     * templates are unrestricted, all templates will be returned. If the
+     * templates are available based on group visibility, then only templates
+     * for which the current user has permission will be returned.
      *
-     * @return a collection of studies
+     * @return a collection of templates
      */
-    public List<Study> getAllStudiesForUser() {
-        List<Study> studiesList = null;
-        if (this.isStudyAccessUnrestricted()) {
-            studiesList = this.queryStudies(null, -1);
+    public List<Template> getAllTemplatesForUser() {
+        List<Template> templatesList = null;
+        if (this.isTemplatesAccessUnrestricted()) {
+            templatesList = this.queryTemplates(null, -1);
         } else {
-            studiesList = new ArrayList<Study>();
+            templatesList = new ArrayList<Template>();
             User currentUser = this.userManager.getCurrentUser();
             for (Group group : this.groupManager.getGroupsForUser(currentUser)) {
-                for (Study study : group.getStudies()) {
-                    if (!studiesList.contains(study)) {
-                        studiesList.add(study);
+                for (Template templates : group.getTemplates()) {
+                    if (!templatesList.contains(templates)) {
+                        templatesList.add(templates);
                     }
                 }
             }
         }
 
-        Collections.sort(studiesList, new Comparator<Study>() {
+        Collections.sort(templatesList, new Comparator<Template>() {
             @Override
-            public int compare(Study o1, Study o2) {
+            public int compare(Template o1, Template o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        return studiesList;
+        return templatesList;
     }
 
     /**
-     * Returns a JSON object with a list of studies, all with ids that fit a
+     * Returns a JSON object with a list of templates, all with ids that fit a
      * search criterion. If the search criterion is null, it is ignored.
      *
-     * @param input
-     *            the beginning of the study id
-     * @param resultsLimit
-     *            maximal length of list
-     * @return JSON object with a list of studies
+     * @param input the beginning of the template id
+     * @param resultsLimit maximal length of list
+     * @return JSON object with a list of templates
      */
-    public String searchStudies(String input, int resultsLimit)
+    public String searchTemplates(String input, int resultsLimit)
     {
-        List<Study> studies = this.queryStudies(input, resultsLimit);
+        List<Template> templates = this.queryTemplates(input, resultsLimit);
 
-        JSONArray studiesArray = new JSONArray();
-        if (studies != null) {
-            for (Study study : studies) {
-                JSONObject studyJson = new JSONObject();
-                studyJson.put("id", study.getId());
-                studyJson.put("textSummary", study.getName());
-                studiesArray.add(studyJson);
+        JSONArray templatesArray = new JSONArray();
+        if (templates != null) {
+            for (Template template : templates) {
+                JSONObject templateJson = new JSONObject();
+                templateJson.put("id", template.getId());
+                templateJson.put("textSummary", template.getName());
+                templatesArray.add(templateJson);
             }
         }
 
         JSONObject result = new JSONObject();
-        result.put(MATCHED_STUDIES, studiesArray);
+        result.put(MATCHED_TEMPLATES, templatesArray);
         return result.toString();
     }
 
     /**
-     * @return true is access to study is unrestricted (and not by group subscription).
+     * @return true is access to templates is unrestricted (and not by group subscription).
      */
-    public boolean isStudyAccessUnrestricted()
+    public boolean isTemplatesAccessUnrestricted()
     {
-        return UNRESTRICTED_STUDIES_ACCESS.equals(this.getStudiesSubmissionPreference());
+        return UNRESTRICTED_TEMPLATES_ACCESS.equals(this.getTemplatesSubmissionPreference());
     }
 
     /**
-     * @return value of study submission preference property
+     * @return value of templates submission preference property
      */
-    public String getStudiesSubmissionPreference()
+    public String getTemplatesSubmissionPreference()
     {
         XWikiContext xContext = this.contextProvider.get();
         XWiki xwiki = xContext.getWiki();
@@ -160,7 +158,7 @@ public class StudiesRepository
             DocumentReference prefsref = new DocumentReference(xContext.getWikiId(), objectsSpace, "XWikiPreferences");
             prefsDoc = xwiki.getDocument(prefsref, xContext);
         } catch (XWikiException e) {
-            this.logger.error("Error reading studies submission preferences.", e.getMessage());
+            this.logger.error("Error reading templates submission preferences.", e.getMessage());
             return null;
         }
         DocumentReference confRef = new DocumentReference(xContext.getWikiId(), objectsSpace, "ConfigurationClass");
@@ -172,13 +170,13 @@ public class StudiesRepository
         }
     }
 
-    private List<Study> queryStudies(String input, int resultsLimit)
+    private List<Template> queryTemplates(String input, int resultsLimit)
     {
         StringBuilder querySb = new StringBuilder();
         querySb.append(" from  doc.object(PhenoTips.StudyClass) as s ");
         querySb.append(" where doc.fullName <> 'PhenoTips.StudyTemplate'");
         if (input != null) {
-            querySb.append(" and lower(doc.name) like :").append(StudiesRepository.INPUT_PARAMETER);
+            querySb.append(" and lower(doc.name) like :").append(TemplatesRepository.INPUT_PARAMETER);
         }
 
         Query query = null;
@@ -190,21 +188,21 @@ public class StudiesRepository
             }
             if (input != null) {
                 String formattedInput = String.format("%s%%", input);
-                query.bindValue(StudiesRepository.INPUT_PARAMETER, formattedInput);
+                query.bindValue(TemplatesRepository.INPUT_PARAMETER, formattedInput);
             }
             queryResults = query.execute();
         } catch (QueryException e) {
-            this.logger.error("Error while performing studies query: [{}] ", e.getMessage());
+            this.logger.error("Error while performing templates query: [{}] ", e.getMessage());
         }
         Collections.sort(queryResults, String.CASE_INSENSITIVE_ORDER);
 
-        List<Study> studies = new ArrayList<Study>();
+        List<Template> templates = new ArrayList<Template>();
         if (queryResults != null) {
             for (String queryResult : queryResults) {
-                Study s = new DefaultStudy(queryResult);
-                studies.add(s);
+                Template t = new DefaultTemplate(queryResult);
+                templates.add(t);
             }
         }
-        return studies;
+        return templates;
     }
 }

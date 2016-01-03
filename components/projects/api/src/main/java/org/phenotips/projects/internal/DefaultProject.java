@@ -24,8 +24,8 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.internal.DefaultCollaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.studies.data.Study;
-import org.phenotips.studies.internal.DefaultStudy;
+import org.phenotips.templates.data.Template;
+import org.phenotips.templates.internal.DefaultTemplate;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -186,7 +186,7 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public Collection<Study> getTemplates()
+    public Collection<Template> getTemplates()
     {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
         if (xObject == null) {
@@ -205,13 +205,13 @@ public class DefaultProject implements Project
         }
 
         List<String> templatesList = templatesXList.getList();
-        List<Study> templates = new ArrayList<Study>();
+        List<Template> templates = new ArrayList<Template>();
         if (templatesList != null) {
             for (String templateString : templatesList) {
                 if (StringUtils.isBlank(templateString)) {
                     continue;
                 }
-                Study s = new DefaultStudy(templateString);
+                Template s = new DefaultTemplate(templateString);
                 templates.add(s);
             }
         }

@@ -1,2 +1,2 @@
-org.phenotips.studies.script.StudiesScriptService
-org.phenotips.studies.internal.StudiesRepository
+org.phenotips.templates.script.TemplatesScriptService
+org.phenotips.templates.internal.TemplatesRepository

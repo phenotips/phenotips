@@ -24,7 +24,7 @@ import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
 import org.phenotips.projects.internal.ProjectsRepository;
-import org.phenotips.studies.data.Study;
+import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -105,15 +105,15 @@ public class ProjectsScriptService implements ScriptService
      * @param projects command separated project ids
      * @return collection of templates ids.
      */
-    public Collection<Study> getTemplatesForProjects(String projects)
+    public Collection<Template> getTemplatesForProjects(String projects)
     {
-        Set<Study> templates = new HashSet<Study>();
+        Set<Template> templates = new HashSet<Template>();
         for (String projectId : projects.split(",")) {
             Project project = this.getProjectById(projectId);
             if (project == null) {
                 continue;
             }
-            for (Study s : project.getTemplates()) {
+            for (Template s : project.getTemplates()) {
                 templates.add(s);
             }
         }
@@ -151,9 +151,9 @@ public class ProjectsScriptService implements ScriptService
      * Returns the template assigned to a patient.
      *
      * @param patientId id of patient to get the template from
-     * @return Study
+     * @return template
      */
-    public Study getTemplateForPatient(String patientId)
+    public Template getTemplateForPatient(String patientId)
     {
         Patient patient = this.patientsRepository.getPatientById(patientId);
         if (patient == null) {

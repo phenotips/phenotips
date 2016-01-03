@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.data;
+package org.phenotips.templates.data;
 
 import org.phenotips.Constants;
 
@@ -26,7 +26,7 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * @version $Id$
  */
-public interface Study
+public interface Template
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("StudyClass", EntityType.DOCUMENT,
@@ -36,22 +36,22 @@ public interface Study
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("Studies", EntityType.SPACE);
 
     /**
-     * @return id of study. e.g. Study.t1
+     * @return id of template. e.g. Study.t1.
      */
     String getId();
 
     /**
-     * @return name of study. e.g. t1
+     * @return name of template. e.g. t1
      */
     String getName();
 
     /**
-     * @return title of study
+     * @return title of template
      */
     String getTitle();
 
     /**
-     * @return reference of study document
+     * @return reference of template document
      */
     DocumentReference getDocumentReference();
 }
