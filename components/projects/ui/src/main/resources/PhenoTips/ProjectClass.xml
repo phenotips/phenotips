@@ -787,8 +787,8 @@ $xwiki.jsx.use('PhenoTips.ProjectClass')
       #set ($projectLeader = ($project.getCurrentUserAccessLevel().getName() == 'leader'))
       #if ($xcontext.macro.params.tools == 'true' &amp;&amp; ($hasAdmin || $projectLeader))|##
         (% class="tools" %) (((##
-        [[{{icon name="pencil" title="$services.localization.render('phenotips.studyClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
-        [[{{icon name="times" title="$services.localization.render('phenotips.studyClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
+        [[{{icon name="pencil" title="$services.localization.render('phenotips.templateClass.edit')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'edit')||class="tool edit"]]##
+        [[{{icon name="times" title="$services.localization.render('phenotips.templateClass.delete')"/}}&gt;&gt;path:$xwiki.getURL($fullName, 'delete')||class="tool delete"]]##
         )))
       #end\\
     #end
