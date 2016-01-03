@@ -54,7 +54,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
          $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
          $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
-         &lt;input type="hidden" id="numberOfTemplates" value="$services.studies.getAllStudiesForUser().size()" /&gt;
+         &lt;input type="hidden" id="numberOfTemplates" value="$services.templates.getAllTemplatesForUser().size()" /&gt;
       #end
       ##
       ## Extensions displayed before the content
@@ -628,7 +628,7 @@ Projects: ##
     $projectsString
   #end
 #end
-#set ($templates = $services.studies.getAllStudiesForUser())
+#set ($templates = $services.templates.getAllTemplatesForUser())
 #if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
 Study: ##
   #set ($template = $services.projects.getTemplateForPatient($doc.getName()))
