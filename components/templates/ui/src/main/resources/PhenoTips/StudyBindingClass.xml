@@ -62,7 +62,7 @@
    #end
    &lt;select id="templatesSelect"&gt;
       &lt;div class="form-template-option"&gt;
-         &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/option&gt;
+         &lt;option name="${prefix}${name}" value="" /&gt;$services.localization.render('phenotips.templateBindingClass.noTemplateOption')&lt;/option&gt;
       &lt;/div&gt;
    #foreach ($s in $studies)
       #set ($configTitle = $s.getTitle())
