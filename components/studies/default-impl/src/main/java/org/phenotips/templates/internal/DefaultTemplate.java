@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.internal;
+package org.phenotips.templates.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.studies.data.Study;
+import org.phenotips.templates.data.Template;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -32,59 +32,59 @@ import com.xpn.xwiki.doc.XWikiDocument;
 /**
  * @version $Id$
  */
-public class DefaultStudy implements Study
+public class DefaultTemplate implements Template
 {
     private static final String XWIKI_STRING = "xwiki:";
 
-    private String studyId;
+    private String templateId;
 
-    private XWikiDocument studyObject;
+    private XWikiDocument templateObject;
 
-    private DocumentReference studyReference;
+    private DocumentReference templateReference;
 
     /**
-     * Create a study.
+     * Create a template.
      *
-     * @param studyId id of study
+     * @param templateId id of template
      */
-    public DefaultStudy(String studyId)
+    public DefaultTemplate(String templateId)
     {
-        this.studyId = this.removeXwikiFromString(studyId);
-        this.studyObject = this.getStudyObject();
-        this.studyReference = this.studyObject.getDocumentReference();
+        this.templateId = this.removeXwikiFromString(templateId);
+        this.templateObject = this.getTemplateObject();
+        this.templateReference = this.templateObject.getDocumentReference();
     }
 
     @Override
     public String getId()
     {
-        return this.studyId;
+        return this.templateId;
     }
 
     @Override
     public String getName()
     {
-        return this.studyId.split("\\.")[1];
+        return this.templateId.split("\\.")[1];
     }
 
     @Override
     public String getTitle()
     {
-        return this.studyObject.getTitle();
+        return this.templateObject.getTitle();
     }
 
     @Override
     public DocumentReference getDocumentReference()
     {
-        return this.studyReference;
+        return this.templateReference;
     }
 
-    private XWikiDocument getStudyObject()
+    private XWikiDocument getTemplateObject()
     {
-        DocumentReference reference = this.getStringResolver().resolve(this.studyId, Study.DEFAULT_DATA_SPACE);
+        DocumentReference reference = this.getStringResolver().resolve(this.templateId, Template.DEFAULT_DATA_SPACE);
         try {
             return (XWikiDocument) this.getBridge().getDocument(reference);
         } catch (Exception ex) {
-            this.getLogger().warn("Failed to access project with id [{}]: {}", studyId, ex.getMessage(), ex);
+            this.getLogger().warn("Failed to access project with id [{}]: {}", templateId, ex.getMessage(), ex);
         }
         return null;
     }
@@ -125,10 +125,10 @@ public class DefaultStudy implements Study
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof DefaultStudy)) {
+        if (!(obj instanceof DefaultTemplate)) {
             return false;
         }
-        DefaultStudy other = (DefaultStudy) obj;
+        DefaultTemplate other = (DefaultTemplate) obj;
         return this.getId().equals(other.getId());
     }
 
@@ -139,8 +139,8 @@ public class DefaultStudy implements Study
     }
 
     private String removeXwikiFromString(String id) {
-        if (id.startsWith(DefaultStudy.XWIKI_STRING)) {
-            return id.substring(DefaultStudy.XWIKI_STRING.length());
+        if (id.startsWith(DefaultTemplate.XWIKI_STRING)) {
+            return id.substring(DefaultTemplate.XWIKI_STRING.length());
         } else {
             return id;
         }
