@@ -63,8 +63,8 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 : (% class="xHint" %)$services.localization.render('phenotips.groups.publicInfoHint')
 : $doc.display('public_sections')
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.studies')&lt;/label&gt;{{/html}}
-: (% class="xHint" %)$services.localization.render('phenotips.groups.studiesHint')
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.Templates')&lt;/label&gt;{{/html}}
+: (% class="xHint" %)$services.localization.render('phenotips.groups.TemplatesHint')
 : $doc.display('studies')
 #end
 
@@ -95,7 +95,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   #set ($discard = $sections.add({'id' : 'sharedCases', 'name' : "$services.localization.render('phenotips.groups.menu.sharedCases')", 'icon' : 'share-square', 'content' : '{{include reference="PhenoTips.GroupSharedCases"/}}'}))
 #end
 #if ($xwiki.exists('PhenoTips.StudyClass'))
-  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='${services.rendering.escape($doc.fullName, $doc.syntax)}' /}})))"}))
+  #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.Templates')",  'icon' : 'copy',        'content' : "((({{phenotips-studies filterby='group' filterval='$doc.fullName' /}})))"}))
 #end
 #set ($menu = [])
 #set ($contents = {})

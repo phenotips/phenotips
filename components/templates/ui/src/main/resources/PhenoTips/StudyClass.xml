@@ -369,15 +369,15 @@
 #end
 #set ($studyClassName = 'PhenoTips.StudyClass')
 #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
-#set ($studiesHome = 'Studies.WebHome')
+#set ($templatesHome = 'Studies.WebHome')
 
 {{html}}
 &lt;form id="study-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
   &lt;input type="hidden" name="doCreate" value="1" /&gt;
   &lt;input type="hidden" name="classTemplate" value="$studyTemplateName" /&gt;
-  &lt;input type="hidden" name="space" value="$xwiki.getDocument(${studiesHome}).space" /&gt;
-  &lt;input type="hidden" name="parent" value="${studiesHome}" /&gt;
+  &lt;input type="hidden" name="space" value="$xwiki.getDocument(${templatesHome}).space" /&gt;
+  &lt;input type="hidden" name="parent" value="${templatesHome}" /&gt;
   &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;$services.localization.render('phenotips.templateClass.newTemplate.label') &lt;input type="text" name="name" placeholder="$services.localization.render('phenotips.templateClass.newTemplate.placeHolder')" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="$services.localization.render('phenotips.templateClass.newTemplate.submit')"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
@@ -1067,7 +1067,7 @@
       <code>{{velocity output="false"}}
 #set ($studyClassName = 'PhenoTips.StudyClass')
 #set ($studyTemplateName = 'PhenoTips.StudyTemplate')
-#set ($studiesHome = 'Studies.WebHome')
+#set ($templatesHome = 'Studies.WebHome')
 #set ($orders = {
   'name' : 'asc',
   'members' : 'desc',
