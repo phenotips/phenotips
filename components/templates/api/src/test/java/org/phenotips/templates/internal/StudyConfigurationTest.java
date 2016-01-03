@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.internal;
+package org.phenotips.templates.internal;
+
+import org.phenotips.templates.internal.StudyConfiguration;
 
 import org.xwiki.component.manager.ComponentLookupException;
 

@@ -25,10 +25,9 @@
     <artifactId>phenotips-components</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>studies</artifactId>
+  <artifactId>templates</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Studies</name>
-
+  <name>PhenoTips - Templates</name>
   <modules>
     <module>api</module>
     <module>migrations</module>
