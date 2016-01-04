@@ -372,12 +372,12 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
     },
 
     _initializeProjectTemplateReassignmentTool : function() {
-       var studyAssignmentTool = $('study-assignment-config');
-       if (!studyAssignmentTool) {
+       var ptAssignmentTool = $('pt-assignment-config');
+       if (!ptAssignmentTool) {
          return;
        }
 
-       studyAssignmentTool.observe('click', function (event) {
+       ptAssignmentTool.observe('click', function (event) {
           event.stop();
           __this._currentMode = __this._MODES.UPDATE;
           __this._createSelectionPopup();
@@ -630,7 +630,7 @@ Projects: ##
 #end
 #set ($templates = $services.templates.getAllTemplatesForUser())
 #if ($xcontext.action != 'export' &amp;&amp; $templates.size() &gt; 0)
-Study: ##
+Template: ##
   #set ($template = $services.projects.getTemplateForPatient($doc.getName()))
   #if ("$!template" == '')
 (% class="hint" %)None(%%)
@@ -642,7 +642,7 @@ Study: ##
 (% class='buttonwrapper' %)##
 [[ {{icon name="edit" title="$services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title')" /}}##
 {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}##
-&gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]]
+&gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="pt-assignment-config" class="$xcontext.action"]]
 (%%)
 (%%)
 ##</content>
