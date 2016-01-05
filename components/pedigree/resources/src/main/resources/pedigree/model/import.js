@@ -37,7 +37,7 @@ define([
         for (var v = 0; v < inputG.length; v++) {
 
             if (!inputG[v].hasOwnProperty("name") && !inputG[v].hasOwnProperty("id"))
-                throw "Invalid inpiut: a node without id and without name";
+                throw "Invalid input: a node without id and without name";
 
             var type = BaseGraph.TYPE.PERSON;
             if ( inputG[v].hasOwnProperty('relationship') || inputG[v].hasOwnProperty('rel') ) {
