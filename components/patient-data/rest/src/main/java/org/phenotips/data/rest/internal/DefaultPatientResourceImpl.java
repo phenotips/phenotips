@@ -40,7 +40,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -94,7 +93,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         JSONObject json = patient.toJSON();
         JSONObject link = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href",
             this.uriInfo.getRequestUri().toString());
-        json.accumulate("links", link);
+        json.append("links", link);
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
