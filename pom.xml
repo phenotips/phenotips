@@ -306,6 +306,17 @@
         <version>2.48.2</version>
         <scope>test</scope>
       </dependency>
+      <!-- Use a more recent version of Jackson, the latest compatible with the version of restlet in use -->
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
