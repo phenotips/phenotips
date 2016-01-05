@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,8 +43,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -139,7 +138,7 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -153,7 +152,7 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -166,7 +165,7 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -182,7 +181,7 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -239,7 +238,7 @@ public class APGARControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test(expected = UnsupportedOperationException.class)

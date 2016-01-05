@@ -39,12 +39,11 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the two APGAR scores.
@@ -120,10 +119,10 @@ public class APGARController implements PatientDataController<Integer>
             return;
         }
 
-        JSONObject container = json.getJSONObject(DATA_NAME);
-        if (container == null || container.isNullObject()) {
+        JSONObject container = json.optJSONObject(DATA_NAME);
+        if (container == null) {
             json.put(DATA_NAME, new JSONObject());
-            container = json.getJSONObject(DATA_NAME);
+            container = json.optJSONObject(DATA_NAME);
         }
         while (iterator.hasNext()) {
             Entry<String, Integer> item = iterator.next();

@@ -40,13 +40,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link PatientResource} using XWiki's support for REST resources.
@@ -114,7 +114,7 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
             this.logger.debug("Edit access denied to user [{}] on patient record [{}]", currentUser, id);
             throw new WebApplicationException(Status.FORBIDDEN);
         }
-        JSONObject jsonInput = JSONObject.fromObject(json);
+        JSONObject jsonInput = new JSONObject(json);
         String idFromJson = jsonInput.optString("id");
         if (StringUtils.isNotBlank(idFromJson) && !patient.getId().equals(idFromJson)) {
             // JSON for a different patient, bail out

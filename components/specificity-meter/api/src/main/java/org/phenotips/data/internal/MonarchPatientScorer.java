@@ -52,10 +52,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Patient scorer that uses the remote service offered by the MONARCH initiative.
@@ -135,7 +133,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
                     if (!f.isPresent()) {
                         featureObj.put("isPresent", false);
                     }
-                    features.add(featureObj);
+                    features.put(featureObj);
                 }
             }
             data.put("features", features);
@@ -146,7 +144,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);
             response = this.client.execute(method);
-            JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
+            JSONObject score = new JSONObject(IOUtils.toString(response.getEntity().getContent()));
             specificity = new PatientSpecificity(score.getDouble("scaled_score"), now(), SCORER_NAME);
             this.cache.set(key, specificity);
             return specificity.getScore();

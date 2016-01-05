@@ -41,14 +41,13 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patients rejected genes.
@@ -175,11 +174,11 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
 
                 if (StringUtils.isBlank(item.get(COMMENTS_KEY))
                     || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                        && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
                     item.remove(COMMENTS_KEY);
                 }
 
-                container.add(item);
+                container.put(item);
             }
         }
     }

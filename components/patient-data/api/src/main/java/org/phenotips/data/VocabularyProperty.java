@@ -19,7 +19,7 @@ package org.phenotips.data;
 
 import org.xwiki.stability.Unstable;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a specific {@link Patient patient} feature value, represented as a term from a vocabulary.

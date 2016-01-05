@@ -20,7 +20,7 @@ package org.phenotips.data.push.internal;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.shareprotocol.ShareProtocol;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 public class DefaultPushServerGetPatientIDResponse extends DefaultPushServerResponse implements
     PushServerGetPatientIDResponse

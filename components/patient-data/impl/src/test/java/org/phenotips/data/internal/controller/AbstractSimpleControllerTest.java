@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,8 +48,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -254,7 +253,7 @@ public class AbstractSimpleControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -266,7 +265,7 @@ public class AbstractSimpleControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -278,7 +277,7 @@ public class AbstractSimpleControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -291,7 +290,7 @@ public class AbstractSimpleControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -361,7 +360,7 @@ public class AbstractSimpleControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum3", container.get(PROPERTY_3));
-        Assert.assertNull(container.get(PROPERTY_2));
+        Assert.assertFalse(container.has(PROPERTY_2));
     }
 
     @Test
@@ -407,7 +406,7 @@ public class AbstractSimpleControllerTest
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals("datum1", container.get(PROPERTY_1));
         Assert.assertEquals("datum3", container.get(PROPERTY_3));
-        Assert.assertNull(container.get(PROPERTY_2));
+        Assert.assertFalse(container.has(PROPERTY_2));
 
         selectedFields.clear();
         selectedFields.add(PROPERTY_2);

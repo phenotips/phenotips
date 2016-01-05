@@ -37,6 +37,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +47,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where feature data is represented by properties in
@@ -172,7 +171,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
         if (json.has(CATEGORIES_JSON_KEY_NAME)) {
             List<String> categoriesList = new ArrayList<>();
             JSONArray jsonCategories = json.getJSONArray(CATEGORIES_JSON_KEY_NAME);
-            for (int i = 0; i < jsonCategories.size(); ++i) {
+            for (int i = 0; i < jsonCategories.length(); ++i) {
                 categoriesList.add(jsonCategories.getJSONObject(i).getString(ID_JSON_KEY_NAME));
             }
             this.categories = Collections.unmodifiableList(categoriesList);
@@ -218,17 +217,17 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
     public JSONObject toJSON()
     {
         JSONObject result = super.toJSON();
-        result.element(TYPE_JSON_KEY_NAME, getType());
-        result.element(OBSERVED_JSON_KEY_NAME, (this.present ? JSON_PRESENTSTATUS_YES : JSON_PRESENTSTATUS_NO));
+        result.put(TYPE_JSON_KEY_NAME, getType());
+        result.put(OBSERVED_JSON_KEY_NAME, (this.present ? JSON_PRESENTSTATUS_YES : JSON_PRESENTSTATUS_NO));
         if (!this.metadata.isEmpty()) {
             JSONArray metadataList = new JSONArray();
             for (FeatureMetadatum metadatum : this.metadata.values()) {
-                metadataList.add(metadatum.toJSON());
+                metadataList.put(metadatum.toJSON());
             }
-            result.element(METADATA_JSON_KEY_NAME, metadataList);
+            result.put(METADATA_JSON_KEY_NAME, metadataList);
         }
         if (StringUtils.isNotBlank(this.notes)) {
-            result.element(NOTES_JSON_KEY_NAME, this.notes);
+            result.put(NOTES_JSON_KEY_NAME, this.notes);
         }
         if (!this.categories.isEmpty()) {
             JSONArray categoriesList = new JSONArray();
@@ -241,13 +240,13 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
                         JSONObject categoryObject = new JSONObject();
                         categoryObject.put(ID_JSON_KEY_NAME, term.getId());
                         categoryObject.put(NAME_JSON_KEY_NAME, term.getName());
-                        categoriesList.add(categoryObject);
+                        categoriesList.put(categoryObject);
                     }
                 }
             } catch (ComponentLookupException ex) {
                 // Shouldn't happen
             }
-            result.element(CATEGORIES_JSON_KEY_NAME, categoriesList);
+            result.put(CATEGORIES_JSON_KEY_NAME, categoriesList);
         }
         return result;
     }

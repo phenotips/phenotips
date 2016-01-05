@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,8 +57,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -252,13 +251,13 @@ public class VersionsControllerTest
 
         // if selectedFieldNames is not Null, version information will be added iff selectedFieldNames
         // contains the enablingFieldName
-        json.clear();
+        json = new JSONObject();
         selectedFieldNames.clear();
         selectedFieldNames.add("other_field_name");
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFieldNames);
 
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test

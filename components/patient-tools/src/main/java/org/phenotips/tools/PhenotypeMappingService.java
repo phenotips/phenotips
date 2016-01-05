@@ -40,6 +40,8 @@ import org.xwiki.velocity.XWikiVelocityException;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,9 +52,9 @@ import javax.inject.Singleton;
 import org.apache.commons.io.output.NullWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONObject;
 
 /**
  * Provides access to the phenotype mappings configured for the current space. The field mappings are defined as a JSON
@@ -214,7 +216,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
                 if (mappingContent.startsWith("{{velocity")) {
                     result = parseVelocityMapping(mappingDoc).get(mappingName);
                 } else {
-                    result = JSONObject.fromObject(mappingContent).get(mappingName);
+                    result = parseJSONMapping(mappingContent).get(mappingName);
                 }
             } catch (Exception ex) {
                 this.logger.warn("Failed to access mapping: {}", ex.getMessage());
@@ -242,6 +244,43 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
             this.logger.error("Failed to parse mapping document [{}]", mappingDoc, ex);
         }
         return null;
+    }
+
+    private Map<String, Object> parseJSONMapping(String mappingContent)
+    {
+        JSONObject json = new JSONObject(mappingContent);
+        return convertJSONObject(json);
+    }
+
+    private Map<String, Object> convertJSONObject(JSONObject json)
+    {
+        Map<String, Object> result = new LinkedHashMap<>();
+        for (String key : json.keySet()) {
+            Object value = json.get(key);
+            if (value instanceof JSONObject) {
+                result.put(key, convertJSONObject((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                result.put(key, convertJSONArray((JSONArray) value));
+            } else {
+                result.put(key, value);
+            }
+        }
+        return result;
+    }
+
+    private List<Object> convertJSONArray(JSONArray json)
+    {
+        List<Object> result = new LinkedList<>();
+        for (Object value : json) {
+            if (value instanceof JSONObject) {
+                result.add(convertJSONObject((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                result.add(convertJSONArray((JSONArray) value));
+            } else {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     /**

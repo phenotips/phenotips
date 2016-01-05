@@ -32,6 +32,8 @@ import javax.inject.Provider;
 
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,9 +47,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -271,7 +270,7 @@ public class MedicationControllerTest
         setupSampleData();
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, Collections.singleton("nothing"));
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -280,7 +279,7 @@ public class MedicationControllerTest
         when(this.patient.getData(MedicationController.DATA_NAME)).thenReturn(null);
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -290,7 +289,7 @@ public class MedicationControllerTest
             new DictionaryPatientData<>(MedicationController.DATA_NAME, Collections.<String, Medication>emptyMap()));
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -300,7 +299,7 @@ public class MedicationControllerTest
             .thenReturn(new IndexedPatientData<>(MedicationController.DATA_NAME, Collections.emptyList()));
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -310,7 +309,7 @@ public class MedicationControllerTest
             new IndexedPatientData<>(MedicationController.DATA_NAME, Collections.<Medication>singletonList(null)));
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -321,7 +320,7 @@ public class MedicationControllerTest
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json,
             Collections.singleton(MedicationController.DATA_NAME));
         JSONArray output = json.getJSONArray(MedicationController.DATA_NAME);
-        Assert.assertEquals(2, output.size());
+        Assert.assertEquals(2, output.length());
 
         JSONObject o1 = output.getJSONObject(0);
         Assert.assertEquals("n", o1.get(Medication.NAME));
@@ -334,11 +333,11 @@ public class MedicationControllerTest
 
         JSONObject o2 = output.getJSONObject(1);
         Assert.assertEquals("n2", o2.get(Medication.NAME));
-        Assert.assertFalse(o2.containsKey(Medication.GENERIC_NAME));
-        Assert.assertFalse(o2.containsKey(Medication.DOSE));
-        Assert.assertFalse(o2.containsKey(Medication.FREQUENCY));
-        Assert.assertFalse(o2.containsKey(Medication.DURATION));
-        Assert.assertFalse(o2.containsKey(Medication.EFFECT));
+        Assert.assertFalse(o2.has(Medication.GENERIC_NAME));
+        Assert.assertFalse(o2.has(Medication.DOSE));
+        Assert.assertFalse(o2.has(Medication.FREQUENCY));
+        Assert.assertFalse(o2.has(Medication.DURATION));
+        Assert.assertFalse(o2.has(Medication.EFFECT));
         Assert.assertEquals("note2", o2.get(Medication.NOTES));
     }
 

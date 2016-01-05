@@ -46,6 +46,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,9 +61,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
-import net.sf.json.JSONObject;
-
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.Matchers.any;
@@ -169,7 +168,6 @@ public class DefaultPatientResourceImplTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void getPatientNormalBehaviour()
     {
         doReturn(true).when(this.access).hasAccess(Right.VIEW, this.userProfileDocument, this.patientDocument);
@@ -178,9 +176,18 @@ public class DefaultPatientResourceImplTest
         Response response = this.patientResource.getPatient(this.id);
 
         Assert.assertTrue(response.getEntity() instanceof JSONObject);
-        Map<String, Map<String, String>> json = (Map<String, Map<String, String>>) response.getEntity();
-        Assert.assertThat(json, hasValue(hasEntry("rel", Relations.SELF)));
-        Assert.assertThat(json, hasValue(hasEntry("href", this.uriString)));
+        JSONObject json = (JSONObject) response.getEntity();
+        Assert.assertTrue(json.has("links"));
+        JSONArray links = json.getJSONArray("links");
+        JSONObject selfLink = null;
+        for (int i = 0; i < links.length(); ++i) {
+            JSONObject link = links.getJSONObject(i);
+            if (Relations.SELF.equals(link.getString("rel"))) {
+                selfLink = link;
+            }
+        }
+        Assert.assertNotNull(selfLink);
+        Assert.assertEquals(this.uriString, selfLink.getString("href"));
         Map<String, List<Object>> actualMap = response.getMetadata();
         Assert.assertThat(actualMap, hasValue(hasItem(MediaType.APPLICATION_JSON_TYPE)));
         Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());

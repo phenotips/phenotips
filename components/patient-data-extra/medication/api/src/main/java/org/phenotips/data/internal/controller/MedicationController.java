@@ -37,14 +37,13 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.joda.time.MutablePeriod;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's medication records.
@@ -175,9 +174,9 @@ public class MedicationController implements PatientDataController<Medication>
             if (datum == null) {
                 continue;
             }
-            result.add(datum.toJSON());
+            result.put(datum.toJSON());
         }
-        if (!result.isEmpty()) {
+        if (result.length() > 0) {
             json.put(DATA_NAME, result);
         }
     }
@@ -185,15 +184,15 @@ public class MedicationController implements PatientDataController<Medication>
     @Override
     public PatientData<Medication> readJSON(JSONObject json)
     {
-        if (json == null || json.isEmpty()) {
+        if (json == null || json.length() == 0) {
             return null;
         }
         JSONArray data = json.optJSONArray(DATA_NAME);
-        if (data == null || data.isEmpty()) {
+        if (data == null || data.length() == 0) {
             return null;
         }
         List<Medication> result = new LinkedList<>();
-        for (int i = 0; i < data.size(); ++i) {
+        for (int i = 0; i < data.length(); ++i) {
             JSONObject datum = data.getJSONObject(i);
             result.add(new Medication(datum));
         }

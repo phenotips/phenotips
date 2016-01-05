@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class DefaultPushServerConfigurationResponse extends DefaultPushServerResponse implements
     PushServerConfigurationResponse

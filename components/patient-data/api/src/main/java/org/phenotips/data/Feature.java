@@ -21,7 +21,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Map;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a specific feature recorded for a {@link Patient patient}.

@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,8 +50,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -146,7 +145,8 @@ public class ParentalAgeControllerTest
     }
 
     @Test
-    public void loadMaternalAgeNonZero(){
+    public void loadMaternalAgeNonZero()
+    {
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
@@ -161,7 +161,8 @@ public class ParentalAgeControllerTest
     }
 
     @Test
-    public void loadPaternalAgeNonZero(){
+    public void loadPaternalAgeNonZero()
+    {
         BaseObject data = mock(BaseObject.class);
         doReturn(data).when(this.doc).getXObject(any(EntityReference.class));
 
@@ -244,7 +245,7 @@ public class ParentalAgeControllerTest
     {
         JSONObject json = new JSONObject();
         this.parentalAgeController.writeJSON(this.patient, json, null);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -263,8 +264,8 @@ public class ParentalAgeControllerTest
         this.parentalAgeController.writeJSON(this.patient, json);
 
         Assert.assertNotNull(json);
-        Assert.assertEquals(jsonTestData.getJSONObject("prenatal_perinatal_history"),
-                json.getJSONObject("prenatal_perinatal_history"));
+        Assert.assertTrue(jsonTestData.getJSONObject("prenatal_perinatal_history").similar(
+            json.getJSONObject("prenatal_perinatal_history")));
     }
 
     @Test
@@ -275,7 +276,7 @@ public class ParentalAgeControllerTest
         fieldList.add("test field");
 
         this.parentalAgeController.writeJSON(this.patient, json, fieldList);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -290,7 +291,7 @@ public class ParentalAgeControllerTest
     public void readJSONObjectWithNoData()
     {
         JSONObject json = new JSONObject();
-        json.put("prenatal_perinatal_history", null);
+        json.put("prenatal_perinatal_history", (Object) null);
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
         Assert.assertNull(readData);
     }

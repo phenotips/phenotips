@@ -59,13 +59,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.params.CommonParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 /**
  * Provides access to the HUGO Gene Nomenclature Committee's GeneNames nomenclature. The prefix is {@code HGNC}.
@@ -164,9 +161,9 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() == 1) {
+                if (docs.length() == 1) {
                     result = new JSONOntologyTerm(docs.getJSONObject(0), this);
                     this.cache.set(id, result);
                 } else {
@@ -208,9 +205,9 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                if (docs.size() >= 1) {
+                if (docs.length() >= 1) {
                     List<VocabularyTerm> result = new LinkedList<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
@@ -218,7 +215,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
                         && StringUtils.isNumeric(queryOptions.get(CommonParams.START))) {
                         start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
                     }
-                    int end = docs.size();
+                    int end = docs.length();
                     if (queryOptions.containsKey(CommonParams.ROWS)
                         && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS))) {
                         end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
@@ -267,9 +264,9 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
             method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
-                return docs.size();
+                return docs.length();
             } catch (IOException | JSONException ex) {
                 this.logger.warn("Failed to count matching gene names: {}", ex.getMessage());
             }
@@ -318,7 +315,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     public long size()
     {
         JSONObject info = getInfo();
-        return info.isNullObject() ? -1 : info.getLong("numDoc");
+        return info == null ? -1 : info.getLong("numDoc");
     }
 
     @Override
@@ -339,7 +336,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
     public String getVersion()
     {
         JSONObject info = getInfo();
-        return info.isNullObject() ? "" : info.getString("lastModified");
+        return info == null ? "" : info.getString("lastModified");
     }
 
     private JSONObject getInfo()
@@ -352,13 +349,13 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+            JSONObject responseJSON = new JSONObject(response);
             this.infoCache.set("", responseJSON);
             return responseJSON;
         } catch (IOException | JSONException ex) {
             this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
         }
-        return new JSONObject(true);
+        return null;
     }
 
     /**
@@ -508,7 +505,7 @@ public class RemoteGeneNomenclature implements Vocabulary, Initializable
         }
 
         @Override
-        public JSON toJSON()
+        public JSONObject toJSON()
         {
             JSONObject json = new JSONObject();
             json.put("id", this.getId());

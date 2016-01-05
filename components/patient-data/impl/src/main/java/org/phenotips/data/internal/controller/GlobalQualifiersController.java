@@ -41,15 +41,14 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's global qualifiers, such as global age of onset.
@@ -136,7 +135,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                     JSONObject element = new JSONObject();
                     element.put("id", term.getId());
                     element.put("label", term.getName());
-                    elements.add(element);
+                    elements.put(element);
                 }
                 json.put(datum.getKey(), elements);
             }

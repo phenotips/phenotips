@@ -35,13 +35,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Base class for handling a collection of simple string values.
@@ -128,16 +127,16 @@ public abstract class AbstractSimpleController implements PatientDataController<
         }
 
         Iterator<Entry<String, String>> dataIterator = data.dictionaryIterator();
-        JSONObject container = json.getJSONObject(getJsonPropertyName());
+        JSONObject container = json.optJSONObject(getJsonPropertyName());
 
         while (dataIterator.hasNext()) {
             Entry<String, String> datum = dataIterator.next();
             String key = datum.getKey();
             if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
-                if (container == null || container.isNullObject()) {
+                if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
-                    container = json.getJSONObject(getJsonPropertyName());
+                    container = json.optJSONObject(getJsonPropertyName());
                 }
                 container.put(key, datum.getValue());
             }
@@ -147,7 +146,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        if (!json.containsKey(this.getJsonPropertyName())) {
+        if (!json.has(this.getJsonPropertyName())) {
             // no data supported by this controller is present in provided JSON
             return null;
         }

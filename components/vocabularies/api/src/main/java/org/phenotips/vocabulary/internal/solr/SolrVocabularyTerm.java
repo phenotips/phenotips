@@ -31,10 +31,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Implementation for {@link VocabularyTerm} based on an indexed Solr document.
@@ -231,7 +229,7 @@ public class SolrVocabularyTerm implements VocabularyTerm
     }
 
     @Override
-    public JSON toJSON()
+    public JSONObject toJSON()
     {
         JSONObject json = new JSONObject();
 
@@ -249,7 +247,9 @@ public class SolrVocabularyTerm implements VocabularyTerm
     {
         if (toAdd instanceof Collection) {
             JSONArray array = new JSONArray();
-            array.addAll(Collection.class.cast(toAdd));
+            for (Object item : Collection.class.cast(toAdd)) {
+                array.put(item);
+            }
             json.put(name, array);
         } else {
             json.put(name, toAdd);

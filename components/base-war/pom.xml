@@ -113,6 +113,11 @@
       <artifactId>commons-lang3</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- Depend on the XWiki platform WAR to get all web resources. -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>

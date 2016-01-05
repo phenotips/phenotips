@@ -40,13 +40,12 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the parent's age at the estimated date of delivery.
@@ -160,7 +159,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
             }
             result.put(entry.getKey(), entry.getValue());
         }
-        if (!result.isEmpty()) {
+        if (result.length() > 0) {
             json.put(getJsonPropertyName(), result);
         }
     }
@@ -168,17 +167,17 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public PatientData<Integer> readJSON(JSONObject json)
     {
-        if (json == null || json.isEmpty()) {
+        if (json == null || json.length() == 0) {
             return null;
         }
         JSONObject data = json.optJSONObject(getJsonPropertyName());
-        if (data == null || data.isEmpty()) {
+        if (data == null || data.length() == 0) {
             return null;
         }
         Map<String, Integer> result = new LinkedHashMap<>();
 
         for (String property : getProperties()) {
-            if (data.containsKey(property)) {
+            if (data.has(property)) {
                 int age = data.getInt(property);
                 result.put(property, age);
             }

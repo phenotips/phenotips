@@ -41,6 +41,8 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,9 +58,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -254,7 +253,7 @@ public class GeneListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -270,7 +269,7 @@ public class GeneListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -286,7 +285,7 @@ public class GeneListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
     }
 
     @Test
@@ -312,11 +311,10 @@ public class GeneListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        Assert.assertTrue(json.getJSONArray(CONTROLLER_NAME).isEmpty());
+        Assert.assertEquals(0, json.getJSONArray(CONTROLLER_NAME).length());
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void writeJSONAddsContainerWithAllValuesWhenSelectedFieldsNull() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
@@ -334,12 +332,10 @@ public class GeneListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("geneName", item.get(GENE_KEY));
+        Assert.assertEquals("geneName", json.getJSONArray(CONTROLLER_NAME).getJSONObject(0).get(GENE_KEY));
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void writeJSONAddsContainerWithOnlySelectedFields() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
@@ -360,9 +356,9 @@ public class GeneListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("GENE", item.get(GENE_KEY));
-        Assert.assertEquals("Comment", item.get(COMMENTS_KEY));
+        JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
+        Assert.assertEquals("GENE", result.get(GENE_KEY));
+        Assert.assertEquals("Comment", result.get(COMMENTS_KEY));
 
         json = new JSONObject();
         internalList = new LinkedList<>();
@@ -379,9 +375,9 @@ public class GeneListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("GENE", item.get(GENE_KEY));
-        Assert.assertEquals(1, item.size());
+        result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
+        Assert.assertEquals("GENE", result.get(GENE_KEY));
+        Assert.assertEquals(1, result.length());
     }
 
     @Test
@@ -419,10 +415,10 @@ public class GeneListControllerTest
         JSONObject item = new JSONObject();
         item.put("gene", "GENE1");
         item.put("comments", "Notes1");
-        data.add(item);
+        data.put(item);
         item = new JSONObject();
         item.put("gene", "GENE2");
-        data.add(item);
+        data.put(item);
         JSONObject json = new JSONObject();
         json.put(CONTROLLER_NAME, data);
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().readJSON(json);

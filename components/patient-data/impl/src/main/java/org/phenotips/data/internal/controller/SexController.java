@@ -33,13 +33,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's date of birth and the exam date.
@@ -143,7 +142,7 @@ public class SexController implements PatientDataController<String>
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        if (!json.containsKey(DATA_NAME)) {
+        if (!json.has(DATA_NAME)) {
             // no supported data in provided JSON
             return null;
         }

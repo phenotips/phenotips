@@ -21,7 +21,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Set;
 
-import net.sf.json.JSON;
+import org.json.JSONObject;
 
 /**
  * A term from a {@link Vocabulary}. A few common properties are available as explicit individual methods, and any
@@ -134,5 +134,5 @@ public interface VocabularyTerm
      * </pre>
      * @since 1.1-rc1
      */
-    JSON toJSON();
+    JSONObject toJSON();
 }

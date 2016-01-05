@@ -51,6 +51,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,10 +65,9 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
-import net.sf.json.JSONObject;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
@@ -185,7 +185,7 @@ public class DefaultPatientByExternalIdResourceImplTest
         JSONObject links = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href", "uri");
         JSONObject json = new JSONObject().accumulate("links", links);
 
-        assertEquals(json, response.getEntity());
+        assertTrue(json.similar(response.getEntity()));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 

@@ -41,13 +41,12 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the obstetric history of the mother.
@@ -170,37 +169,31 @@ public class ObstetricHistoryController implements PatientDataController<Integer
             Map.Entry<String, Integer> entry = entries.next();
             result.put(entry.getKey(), entry.getValue());
         }
-        if (!result.isEmpty()) {
-            JSONObject container = json;
-            for (String path : StringUtils.split(getJsonPropertyName(), '.')) {
-                JSONObject parent = container;
-                container = parent.optJSONObject(path);
-                if (container == null) {
-                    parent.put(path, new JSONObject());
-                    container = parent.optJSONObject(path);
-                }
+        if (result.length() > 0) {
+            JSONObject container = findContainer(json);
+            for (String key : result.keySet()) {
+                container.put(key, result.get(key));
             }
-            container.putAll(result);
         }
     }
 
     @Override
     public PatientData<Integer> readJSON(JSONObject json)
     {
-        if (json == null || json.isEmpty()) {
+        if (json == null || json.length() == 0) {
             return null;
         }
         JSONObject data = json;
         for (String path : StringUtils.split(getJsonPropertyName(), '.')) {
             data = data.optJSONObject(path);
-            if (data == null || data.isEmpty()) {
+            if (data == null || data.length() == 0) {
                 return null;
             }
         }
         Map<String, Integer> result = new LinkedHashMap<>();
 
         for (String property : getProperties()) {
-            if (data.containsKey(property)) {
+            if (data.has(property)) {
                 int age = data.getInt(property);
                 result.put(property, age);
             }
@@ -221,5 +214,19 @@ public class ObstetricHistoryController implements PatientDataController<Integer
     private String getJsonPropertyName()
     {
         return "prenatal_perinatal_history." + getName();
+    }
+
+    private JSONObject findContainer(JSONObject json)
+    {
+        JSONObject container = json;
+        for (String path : StringUtils.split(getJsonPropertyName(), '.')) {
+            JSONObject parent = container;
+            container = parent.optJSONObject(path);
+            if (container == null) {
+                parent.put(path, new JSONObject());
+                container = parent.optJSONObject(path);
+            }
+        }
+        return container;
     }
 }

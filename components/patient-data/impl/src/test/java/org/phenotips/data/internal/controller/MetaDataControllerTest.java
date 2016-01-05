@@ -39,6 +39,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,8 +48,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -194,7 +193,7 @@ public class MetaDataControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -207,7 +206,7 @@ public class MetaDataControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -254,8 +253,8 @@ public class MetaDataControllerTest
 
         Assert.assertEquals(this.documentReference.getName(), json.get(DOCUMENT_NAME_STRING));
         Assert.assertEquals(this.authorReference.getName(), json.get(AUTHOR_STRING));
-        Assert.assertNull(json.get(DATE));
-        Assert.assertNull(json.get(DATE_STRING));
+        Assert.assertFalse(json.has(DATE));
+        Assert.assertFalse(json.has(DATE_STRING));
     }
 
     @Test

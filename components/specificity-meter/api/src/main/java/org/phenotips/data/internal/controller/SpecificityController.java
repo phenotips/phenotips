@@ -32,7 +32,6 @@ import org.xwiki.stability.Unstable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -44,9 +43,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.sf.json.processors.JsonValueProcessor;
+import org.json.JSONObject;
 
 /**
  * Exposes the patient profile specificity.
@@ -67,33 +64,13 @@ public class SpecificityController implements PatientDataController<Object>, Ini
     @Inject
     private PatientSpecificityService service;
 
-    /** Special JSON configuration that formats {@code Date}s using the ISO8601 format. */
-    private JsonConfig jsonConfig = new JsonConfig();
+    private DateFormat isoDateFormat;
 
     @Override
     public void initialize() throws InitializationException
     {
-        this.jsonConfig.registerJsonValueProcessor(Date.class, new JsonValueProcessor()
-        {
-            private DateFormat format;
-
-            {
-                this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
-                this.format.setTimeZone(TimeZone.getTimeZone("UTC"));
-            }
-
-            @Override
-            public Object processObjectValue(String key, Object value, JsonConfig jsonConfig)
-            {
-                return processArrayValue(value, jsonConfig);
-            }
-
-            @Override
-            public Object processArrayValue(Object value, JsonConfig jsonConfig)
-            {
-                return this.format.format(value);
-            }
-        });
+        this.isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
+        this.isoDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -103,7 +80,7 @@ public class SpecificityController implements PatientDataController<Object>, Ini
         if (spec != null) {
             Map<String, Object> data = new LinkedHashMap<String, Object>();
             data.put("score", spec.getScore());
-            data.put("date", spec.getComputationDate());
+            data.put("date", this.isoDateFormat.format(spec.getComputationDate()));
             data.put("server", spec.getComputingMethod());
             return new DictionaryPatientData<Object>(NAME, data);
         }
@@ -136,7 +113,7 @@ public class SpecificityController implements PatientDataController<Object>, Ini
                 Iterator<Entry<String, Object>> data = specificity.dictionaryIterator();
                 while (data.hasNext()) {
                     Entry<String, Object> datum = data.next();
-                    result.element(datum.getKey(), datum.getValue(), this.jsonConfig);
+                    result.put(datum.getKey(), datum.getValue());
                 }
                 json.put(NAME, result);
             }

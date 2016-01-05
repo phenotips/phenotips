@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 import javax.inject.Singleton;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * @version $Id$

@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,8 +52,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -312,7 +311,7 @@ public class DatesControllerTest
 
         Assert.assertEquals(this.dateFormat.format(birthDate),
             json.get(DatesController.PATIENT_DATEOFBIRTH_FIELDNAME));
-        Assert.assertNull(json.get(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
+        Assert.assertFalse(json.has(DatesController.PATIENT_DATEOFDEATH_FIELDNAME));
         Assert.assertEquals(this.dateFormat.format(examDate),
             json.get(DatesController.PATIENT_EXAMDATE_FIELDNAME));
     }

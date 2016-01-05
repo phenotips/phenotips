@@ -42,15 +42,14 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patients genes.
@@ -181,11 +180,11 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
                 if (StringUtils.isBlank(item.get(COMMENTS_KEY))
                     || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                        && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
                     item.remove(COMMENTS_KEY);
                 }
 
-                container.add(item);
+                container.put(item);
             }
         }
     }
@@ -200,7 +199,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         try {
             JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
-            for (int i = 0; i < genesJson.size(); ++i) {
+            for (int i = 0; i < genesJson.length(); ++i) {
                 JSONObject geneJson = genesJson.getJSONObject(i);
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : this.getProperties()) {

@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Locale;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a {@link Patient patient} {@link Feature feature} property (meta-feature).

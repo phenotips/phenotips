@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 import java.util.Collection;
 import java.util.Set;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a patient.

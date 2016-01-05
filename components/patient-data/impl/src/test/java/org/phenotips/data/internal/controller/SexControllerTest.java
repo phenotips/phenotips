@@ -32,6 +32,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,8 +46,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -248,7 +247,7 @@ public class SexControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -260,7 +259,7 @@ public class SexControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -273,7 +272,7 @@ public class SexControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(DATA_NAME));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test

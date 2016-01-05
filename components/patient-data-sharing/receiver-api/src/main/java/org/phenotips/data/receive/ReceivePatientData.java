@@ -21,7 +21,7 @@ package org.phenotips.data.receive;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * API that allows receiving patient data from a remote PhenoTips instance.
