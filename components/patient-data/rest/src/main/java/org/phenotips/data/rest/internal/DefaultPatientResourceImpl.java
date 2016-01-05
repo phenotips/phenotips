@@ -46,6 +46,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -94,7 +95,13 @@ public class DefaultPatientResourceImpl extends XWikiResource implements Patient
         JSONObject json = patient.toJSON();
         JSONObject link = new JSONObject().accumulate("rel", Relations.SELF).accumulate("href",
             this.uriInfo.getRequestUri().toString());
-        json.accumulate("links", link);
+        final String key = "links";
+        JSONArray links = json.optJSONArray(key);
+        if (links == null) {
+            json.put(key, new JSONArray());
+            links = json.optJSONArray(key);
+        }
+        links.add(link);
         return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
