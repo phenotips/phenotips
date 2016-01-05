@@ -385,6 +385,42 @@
               <method>java.lang.String getName()</method>
               <justification>New methods for better vocabulary identification.</justification>
             </difference>
+
+            <difference>
+              <className>**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.* toJSON(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/Patient</className>
+              <differenceType>7005</differenceType>
+              <method>void updateFromJSON(net.sf.json.JSONObject)</method>
+              <to>void updateFromJSON(org.json.JSONObject)</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/*</className>
+              <differenceType>7005</differenceType>
+              <method>*</method>
+              <to>*</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/receive/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject *(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
