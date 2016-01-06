@@ -29,8 +29,8 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822215000</date>
-  <contentUpdateDate>1401822215000</contentUpdateDate>
+  <date>1440017702000</date>
+  <contentUpdateDate>1440017667000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -3077,12 +3077,14 @@ return PhenoTips;
         }
         this.resetPosition();
       }
+      this._prevWidth = '';
     },
 
     resetPosition : function() {
       if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
         return;
       }
+     
       this.stickyElement.style.height = '';
       this.stickyElement.style.overflow = '';
       this.stickyElement.fire('size:changed');
@@ -3126,6 +3128,7 @@ return PhenoTips;
       if (this.stickyElement.style.position != 'fixed') {
         this.stickyElement.addClassName('sticky');
         this.stickyElement.style.left = this.boxLeft + 'px';
+        this._prevWidth = this.stickyElement.style.width;
         this.stickyElement.style.width = (this.boxWidth) + 'px';
         this.stickyElement.style.top = this.options.offsetTop + 'px';
         this.stickyElement.style.right = '';
@@ -3154,7 +3157,7 @@ return PhenoTips;
         this.stickyElement.style.top = '';
         this.stickyElement.style.left = '';
         this.stickyElement.style.right = '';
-        this.stickyElement.style.width = '';
+        this.stickyElement.style.width = this._prevWidth;
       }
     },
     isFixed: function() {
@@ -3538,262 +3541,6 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
     <property>
       <name>Controlled visibility groups</name>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>PhenoTips.Widgets</name>
-    <number>9</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>ce0e1cc4-d0b1-4bf0-9815-444160042fd0</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var PhenoTips = (function (PhenoTips) {
-  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
-  widgets.UnitConverter = Class.create({
-
-     CONVERSION_META : {
-        'weight': {
-           'imperial_units' : ['lb', 'oz'],
-           'metric_unit' : 'kg',
-           'inter_unit_scale' : 16,
-           'inter_system_scale' : 0.0283495
-        },
-        'length': {
-           'imperial_units' : ['ft', 'in'],
-           'metric_unit' : 'cm',
-           'inter_unit_scale' : 12,
-           'inter_system_scale' : 2.54
-        }
-     },
-
-     DEFAULT_UNIT_SYSTEM : 'metric',
-
-     initialize : function (container, selector, triggerInsertionElt, triggerInsertionPosition, system) {
-       this._selector = selector;
-       this._container = container || document.documentElement;
-       if (!this._selector || !triggerInsertionElt) {return;}
-
-       this.crtUnitSystem = system || this.DEFAULT_UNIT_SYSTEM;
-
-       this.initializeElements = this.initializeElements.bind(this);
-       this.attachConverter = this.attachConverter.bind(this);
-
-       this.generateTrigger(triggerInsertionElt, triggerInsertionPosition || 'bottom');
-
-       this.initializeElements();
-       var _this = this;
-       document.observe('xwiki:dom:updated', function(event) {
-         if (event.memo &amp;&amp; event.memo.elements) {
-           event.memo.elements.each(_this.initializeElements.bind(_this));
-         }
-       });
-     },
-
-     generateTrigger : function(atElement, position) {
-       this._trigger = new Element('select', {"class" : "unit-system-selector"});
-
-       var optionMetric = new Element('option', {
-                value : 'metric',
-         }).update('Metric units (' + this.CONVERSION_META.weight.metric_unit + ', ' + this.CONVERSION_META.length.metric_unit + ')');
-       if (this.crtUnitSystem == 'metric') {
-          optionMetric.selected = 'selected';
-       }
-       var optionImperial = new Element('option', {
-                value : 'imperial',
-         }).update('Imperial units (' + this.CONVERSION_META.weight.imperial_units.join(' / ') + ', ' + this.CONVERSION_META.length.imperial_units.join(' / ') + ')');
-       if (this.crtUnitSystem == 'imperial') {
-          optionImperial.selected = 'selected';
-       }
-       this._trigger.insert(optionMetric).insert(optionImperial);
-
-       insertionInfo = {};
-       insertionInfo[position] = this._trigger;
-       atElement.insert(insertionInfo);
-
-       var _this = this;
-       this._trigger.observe('change', function(event) {
-         _this.crtUnitSystem = _this._trigger.options[_this._trigger.selectedIndex].value;
-         _this.switchUnits(_this.crtUnitSystem);
-       });
-     },
-
-     initializeElements : function(element) {
-       container = element || this._container;
-        if (container.__unitSwitcher || (!container.up('.measurements') &amp;&amp; !container.hasClassName('measurements'))) {
-         return;
-       }
-       container.__unitSwitcher = this;
-       container.select(this._selector).each(this.attachConverter);
-       this.switchUnits(this.crtUnitSystem, container);
-     },
-
-     switchUnits : function(type, element) {
-       container = element || this._container;
-       container.select('.unit-conversion-values .unit-type').each(function(item) {
-          if (item.hasClassName(type)) {
-            item.show();
-          } else {
-            item.hide();
-          }
-       });
-     },
-
-     attachConverter : function(element) {
-       if (element.tagName.toLowerCase() != 'input' || element.type != 'text') {
-         return;
-       }
-       var unitElt = element.next('.unit');
-       var converterElement = new Element('div', {'class' : 'unit-conversion-values'});
-       var imperialUnits;
-       var type = (element.up('.weight')) ? 'weight' : 'length';
-
-       converterElement.addClassName(type);
-       converterElement._meta = this.CONVERSION_META[type];
-
-       var values = this.metricToImperial(converterElement._meta, parseFloat(element.value) || 0);
-
-       var metricZone = element.up('.metric');
-       if (!metricZone) {
-         metricZone = new Element('div', {'class' : 'unit-type metric'});
-         metricZone.insert(element).insert(unitElt || converterElement._meta.metric_unit);
-         element.insert({after: converterElement});
-       } else {
-         metricZone.addClassName('unit-type');
-         metricZone.insert({after: converterElement});
-       }
-       var imperialZone = new Element('div', {'class' : 'unit-type imperial'});
-       converterElement.insert(metricZone).insert(imperialZone);
-
-       converterElement._meta.imperial_units.each(function (unit) {
-         imperialZone.insert(new Element('label').insert(new Element('input', {'style' : 'width: auto', 'name' : unit, type: 'text', size : 3, value : (values[unit] || '')})).insert(unit));
-       });
-
-       this.enableSyncValues(converterElement);
-     },
-
-     enableSyncValues : function (element) {
-       var _this = this;
-       element.select('.imperial input').invoke('observe', 'change', function(event) {_this.syncMetricWithImperial(element);});
-       element.select('.metric input').invoke('observe', 'change', function(event) {_this.syncImperialWithMetric(element);});
-     },
-
-     syncMetricWithImperial : function (element) {
-        var metricInput =  element.down('.metric input');
-        metricInput.value  = this.imperialToMetric(element._meta,
-                                                      parseFloat(element.down('.imperial input[name="' + element._meta.imperial_units[0] + '"]').value) || 0,
-                                                      parseFloat(element.down('.imperial input[name="' + element._meta.imperial_units[1] + '"]').value) || 0
-                                                ) || '';
-        Event.fire(metricInput, 'phenotips:measurement-updated');
-     },
-
-     syncImperialWithMetric : function (element) {
-        var imperialValues = this.metricToImperial(element._meta, parseFloat(element.down('.metric input').value) || 0);
-        element._meta.imperial_units.each(function (unit) {
-          element.down('.imperial input[name="' + unit + '"]').value = imperialValues[unit] || '';
-        });
-     },
-
-     metricToImperial : function (conversionMeta, value) {
-        var result = {};
-        var lowerUnitValue = value / conversionMeta.inter_system_scale;
-        var higherUnitValue = Math.floor (lowerUnitValue / conversionMeta.inter_unit_scale);
-        lowerUnitValue = lowerUnitValue - higherUnitValue * conversionMeta.inter_unit_scale;
-        if (lowerUnitValue) {
-          lowerUnitValue = lowerUnitValue.toFixed(2);
-        }
-        result[conversionMeta.imperial_units[0]] = higherUnitValue;
-        result[conversionMeta.imperial_units[1]] = lowerUnitValue;
-        return result;
-     },
-
-     imperialToMetric : function (conversionMeta, higherUnitValue, lowerUnitValue) {
-        return ((conversionMeta.inter_unit_scale * higherUnitValue + lowerUnitValue) * conversionMeta.inter_system_scale).toFixed(2);
-     }
-  });
-  return PhenoTips;
-}(PhenoTips || {}));</code>
-    </property>
-    <property>
-      <name>Switcher between metric and imperial units for measurements</name>
     </property>
     <property>
       <parse>0</parse>
@@ -6161,7 +5908,7 @@ input.xwiki-free-multiselect-value {
     </property>
     <property>
       <code>.unit-system-selector {
-  float: right;
+  float: left;
   padding: 3px 3px 0;
   border-radius: 3px;
 }</code>

@@ -19,6 +19,9 @@ package org.phenotips.measurements.internal;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -37,6 +40,28 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
     public String getName()
     {
         return "bmi";
+    }
+
+    @Override
+    public String getUnit()
+    {
+        return "kg/m^2";
+    }
+
+    @Override
+    public boolean isComputed()
+    {
+        return true;
+    }
+
+    @Override
+    public List<String> getComputationDependencies()
+    {
+        List<String> deps = new ArrayList<String>();
+        deps.add("weight");
+        deps.add("height");
+
+        return deps;
     }
 
     /**

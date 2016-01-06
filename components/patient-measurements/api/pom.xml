@@ -29,7 +29,7 @@
   <name>PhenoTips - Patient measurements - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.86</coverage.instructionRatio>
+    <coverage.instructionRatio>0.72</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -75,6 +75,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>vocabularies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

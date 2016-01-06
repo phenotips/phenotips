@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>MeasurementsConfigurationClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1438355127000</creationDate>
+  <parent>XWiki.XWikiClasses</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1444419733000</date>
+  <contentUpdateDate>1444419733000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content/>
+  <class>
+    <name>PhenoTips.MeasurementsConfigurationClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <default>
+      <cache>0</cache>
+      <customDisplay>{{velocity}}
+#foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
+  {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}"&gt;&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /&gt; ${measurement.name}&lt;/label&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>1</multiSelect>
+      <name>default</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>default</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </default>
+    <enableImperialUnitSystem>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <name>enableImperialUnitSystem</name>
+      <number>4</number>
+      <prettyName>enableImperialUnitSystem</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </enableImperialUnitSystem>
+    <enabled>
+      <cache>0</cache>
+      <customDisplay>{{velocity}}
+#foreach ($measurement in $services.measurements.getAvailableMeasurementHandlers())
+  {{html clean="false"}}&lt;label for="$prefix$name${measurement.name}"&gt;&lt;input id="$prefix$name${measurement.name}" type="checkbox" name="$prefix$name" value="${measurement.name}" #if($value.contains(${measurement.name}))checked #end /&gt; ${measurement.name}&lt;/label&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>1</multiSelect>
+      <name>enabled</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>enabled</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values/>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </enabled>
+    <measurementUnitSystem>
+      <cache>0</cache>
+      <customDisplay>{{velocity}}
+#if ($value != 'imperial')#set ($value = 'metric')#end
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
+&lt;br/&gt;
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>radio</displayType>
+      <multiSelect>0</multiSelect>
+      <name>measurementUnitSystem</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>measurementUnitSystem</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>metric=Metric|imperial=Imperial</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </measurementUnitSystem>
+    <ordering>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>checkbox</displayType>
+      <multiSelect>1</multiSelect>
+      <name>ordering</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>ordering</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>weight|height|bmi|sitting|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </ordering>
+  </class>
+</xwikidoc>

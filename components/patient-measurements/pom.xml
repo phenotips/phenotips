@@ -33,5 +33,7 @@
     <module>api</module>
     <module>migrations</module>
     <module>ui</module>
+    <module>rest</module>
+    <module>resources</module>
   </modules>
 </project>

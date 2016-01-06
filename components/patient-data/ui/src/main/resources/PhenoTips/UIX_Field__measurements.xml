@@ -25,12 +25,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822214000</creationDate>
+  <creationDate>1438375530000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822214000</date>
-  <contentUpdateDate>1401822214000</contentUpdateDate>
+  <date>1445283416000</date>
+  <contentUpdateDate>1444676396000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.measurements')</title>
   <comment/>
@@ -42,7 +42,7 @@
     <name>PhenoTips.UIX_Field__measurements</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>0fbed218-0ed3-40b1-bd6c-678b864f31ae</guid>
+    <guid>94890c92-cbdb-49ff-a9b6-813b7f949992</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -100,7 +100,7 @@
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -108,51 +108,253 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.TabelarDataMacros" /}}
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{include reference="PhenoTips.ChartServiceMacros" /}}
+
+{{include reference="PhenoTips.UtilityMacros" /}}
 
 {{velocity}}
-#set ($targetClassName = 'PhenoTips.MeasurementsClass')
-#if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-  $xwiki.jsx.use('XWiki.DateTimePicker')##
-  #if ($config &amp;&amp; "$!{config.getProperty('enableImperialUnitSystem').value}" == '1')
-    #set ($measurementUnitInfo = "enable-unit-switch $!{config.getProperty('measurementUnitSystem').value}")
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssfx.use('uicomponents/phenotips/measurements.css')##
+$xwiki.jsfx.use('uicomponents/phenotips/measurements.js', true)##
+$xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
+$xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
+#set ($measurementClassId = $doc.getObjectNumbers('PhenoTips.MeasurementClass'))##
+#set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())##
+#set ($itemDoc = $xwiki.getDocument($objs.get(0)))##
+#set ($configObj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))##
+#macro (measurement $handler $vals $proto)
+#if (!$vals.isEmpty() || $xcontext.action == 'edit')
+  #if ($handler.isDoubleSided())
+    #if ($xcontext.action == 'edit' || $vals.get('l') || $vals.get('r'))
+      (% class="measurement"%)(((
+        #set ($needToShowName = true)
+        #if ($vals.get('l')) 
+          #measurementRow($handler true 'l' $vals.get('l') $proto)
+          #set ($needToShowName = false)
+        #elseif ($xcontext.action == 'edit')
+          #measurementRow($handler true 'l' "" $proto)
+          #set ($needToShowName = false)
+        #end
+        #if ($vals.get('r')) 
+          #measurementRow($handler $needToShowName 'r' $vals.get('r') $proto)
+        #elseif ($xcontext.action == 'edit')
+          #measurementRow($handler $needToShowName 'r' "" $proto)
+        #end
+      )))
+    #end
+  #else
+    #if ($xcontext.action == 'edit' || $vals)
+      (% class="measurement"%)(((
+        #measurementRow($handler true '' $vals $proto)
+      )))
+    #end
+  #end
+#end
+#end##
+##
+#macro (measurementRow $handler $displayName $side $obj $proto)
+#set ($name = $handler.getName())
+#set ($unit = $handler.getUnit())
+(% class="measurement-row $name#if ($handler.getComputationDependencies().size()) computed#end"%)(((
+  #if ($proto)
+    #set ($disabled = ' disabled="disabled"')
+    #set ($id = '[id]')
+    #set ($val = '')
+  #else
+    #set ($disabled = '')
+    #if ($obj.isEmpty())
+      #set ($id = $measurementClassId)
+      #set ($measurementClassId = $measurementClassId + 1)
+      #set ($val = '')
+    #else
+      #set ($id = $obj.getNumber())
+      #set ($val = $obj.getProperty('value').value)
+      #set ($ageMonths = $services.measurements.convertAgeStrToNumMonths($obj.getProperty('age').value))
+      #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+      #set ($percentile = $handler.valueToPercentile($male, $ageMonths, $val))
+      #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
+      #set ($eval = "${percentile}#if($percentile&lt;=20 &amp;&amp; $percentile&gt;=4)th#elseif($percentile%10==1)st#elseif($percentile%10==2)nd#elseif($percentile%10==3)rd#{else}th#end pctl (#if ($sd &gt;= 0)+#end${sd}SD)")
+    #end
+  #end
+  {{html clean="false" wiki="false"}}
+  &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
+  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.getComputationDependencies().size())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputedMsg')"&gt;&lt;/span&gt;#end&lt;/span&gt;
+  &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
+  &lt;div class="metric"&gt;
+    #if ($xcontext.action == 'edit')
+      #if ($handler.getComputationDependencies().size())
+        &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+        &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+      #else
+        &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+      #end
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
+      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
+    #else
+      &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+    #end
+    &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;span class="pctl#if ("$!val" != "") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$eval#end&lt;/span&gt;
+  {{/html}}
+)))
+#end##
+##
+#macro (measurements $showDefault $showEnabled $measurementSet $proto)
+#set ($orderedMeasurements = $configObj.getProperty('ordering').value)
+#foreach ($measurement in $orderedMeasurements)
+  #set ($handler = $services.measurements.get($measurement))
+  #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
+       &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
+    #set($name = $handler.getName())
+    #if ($handler.isDoubleSided())
+      #set($vals = {})
+      #set($discard = $vals.put("r", $measurementSet.get("${name}-r")))
+      #set($discard = $vals.put("l", $measurementSet.get("${name}-l")))
+    #elseif ($measurementSet.get($name))
+      #set($vals = $measurementSet.get($name))
+    #else
+      #set($vals = {})
+    #end
+    #measurement($handler $vals $proto)
+  #end
+#end
+#end##
+##
+#macro (measurementSet $set)
+#if ("$!set" == "")
+  #set ($proto = true)
+#else
+  #set ($proto = false)
+#end
+#set ($age = $set.get("age"))
+#set ($date = $set.get("date"))
+#set ($dateFormatted = $datetool.format('dd/MM/yyyy', $date))
+(% class="measurement-set#if ($proto) proto#end"%)(((
+  {{html clean="false" wiki="false"}}
+  &lt;label for="date"&gt;Date:&lt;/label&gt;
+  #if ($xcontext.action == 'edit')
+    &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
+  #else
+    &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
+  #end
+  #if ($xcontext.action == 'edit')
+    &lt;a class="delete" href="#" title="Delete this measurement set"&gt;✖&lt;/a&gt;
+  #end
+  {{/html}}
+  (% class="age"%)(((
+    {{html clean="false" wiki="false"}}
+    &lt;label for=""&gt;Age:&lt;/label&gt;
+    #if ($xcontext.action == 'edit')
+      &lt;input class="pt-duration measurement-age" type="text" placeholder="e.g. 1y5m2w" value="$!age"&gt;
+    #else
+      &lt;span&gt;$!age&lt;/span&gt;
+    #end
+    {{/html}}
+  )))
+  (% class="measurements"%)(((
+    #measurements(true true $set $proto)
+    #if ($xcontext.action == 'edit')
+      {{html clean="false" wiki="false"}}
+      &lt;div class="expand-buttons"&gt;
+        &lt;span class="buttonwrapper show"&gt;
+          &lt;button type="button" class="tool button secondary"&gt;
+            &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+            $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
+          &lt;/button&gt;
+        &lt;/span&gt;
+        &lt;span class="buttonwrapper hide"&gt;
+          &lt;button type="button" class="tool button secondary"&gt;
+            &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+            $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
+          &lt;/button&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      {{/html}}
+      (% class="expanded-measurements "%)(((
+        #measurements(false true $set $proto)
+      )))
+    #else
+      #measurements(false true $set $proto)
+    #end
+  )))
+)))
+#end##
+##
+#if ($xcontext.action == 'edit' || $doc.getObject('PhenoTips.MeasurementClass'))##
+##
+#set ($sortedMeasurementObjs = [])
+#sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
+##
+#set ($measurementSets = {})
+#foreach ($obj in $sortedMeasurementObjs)
+  #set ($type = $obj.getProperty('type').value)
+  #set ($side = $obj.getProperty('side').value)
+  #set ($val = $obj.getProperty('value').value)
+  #set ($age = $obj.getProperty('age').value)
+  #set ($date = $obj.getProperty('date').value)
+  ##
+  #if ("$!val" != "" &amp;&amp; ("$!age" != "" || "$!date" != ""))
+    #if (!$measurementSets.get("$age"))
+      #set ($discard = $measurementSets.put("$age", {}))
+      #set ($discard = $measurementSets.get("$age").put("date", $obj.getProperty('date').value))
+      #set ($discard = $measurementSets.get("$age").put("age", $obj.getProperty('age').value))
+    #end
+    #if ("$!side" != "")
+      #set ($discard = $measurementSets.get("$age").put("${type}-${side}", $obj))
+    #else
+      #set ($discard = $measurementSets.get("$age").put("$type", $obj))
+    #end
+  #end
+#end
+(% id="measurements-container"%)(((
+  #if ($configObj &amp;&amp; "$!{configObj.getProperty('enableImperialUnitSystem').value}" == '1')
+    #set ($measurementUnitInfo = "enable-unit-switch $!{configObj.getProperty('measurementUnitSystem').value}")
   #else
     #set ($measurementUnitInfo = '')
   #end
-
-  #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action, 'cssClass' : "measurements full $!{measurementUnitInfo}"})
-#elseif ($doc.getObject($targetClassName))
-  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
-    (% class="extradata-list" %)
-    ##
-    ## Sort dataObjects
-    #set ($sortedDataObjects = [])
-    #foreach ($o in $dataObjects)
-       #set ($discard = $sortedDataObjects.add({
-           'age' : $o.getValue('age'),
-           'date' : $o.getValue('date'),
-           'obj' : $o
-       }))
+  (% id="measurements" class="$!measurementUnitInfo"%)(((
+    #if ($xcontext.action == 'edit')
+      #measurementSet()
     #end
-    #set ($sortedDataObjects = $sorttool.sort($sortedDataObjects, ['age:asc', 'date:asc']))
-    ##
-    #foreach ($obj in $sortedDataObjects )
-      #set ($o = $obj.obj)
-      #foreach($prop in $dataClass.properties)
-        #if ($prop.name == 'date' || $prop.name == 'age')
-          |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
-        #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-          |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
-        #end
-      #end
-    #end## foreach object
-    ##
-  #end## if dataclass
+    #foreach ($measurementSet in $measurementSets)
+      #measurementSet($measurementSet)
+    #end
+    #if ($xcontext.action == 'edit')
+      (% class="list-actions"%)(((
+        {{html clean="false" wiki="false"}}
+        &lt;span class="buttonwrapper"&gt;
+          &lt;label class="create-button-label"&gt;+&lt;/label&gt;
+          &lt;a class="add-data-button" id="btn_add-measurement-set" href="#"&gt;New measurement set&lt;/a&gt;
+        &lt;/span&gt;
+        {{/html}}
+      )))
+    #end
+  )))
+  #if ($xcontext.action == 'edit')
+    (% id="charts-new"%)(((
+      (% class="chart-thumbs"%)(((
+      )))
+    )))
+    (% class="clear"%)((()))
+  #end
+  (% id="measurementclass-max-id" data-value="$measurementClassId"%)((()))
+  #if ($xcontext.action == 'view')
+    (% id="measurements-gender" data-value="$doc.getObject('PhenoTips.PatientClass').getProperty('gender').value"%)((()))
+  #end
+)))
+(% class="clear"%)((()))
+#if ($xcontext.action == 'view')
+  #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementClass', 'obj': $doc.getObject('PhenoTips.PatientClass'), 'link': true, 'useNewMeasurementClass' : true})
+  (% id="charts"%)(((
+    #_measurementCharts($chartOptions)
+  )))
 #end
-{{/velocity}}</content>
+##
+#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.measurement-info</extensionPointId>
@@ -164,7 +366,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.measurements')
 enabled=true
 required=
-order=2
+order=4
 fields=
 privacy_level=3</parameters>
     </property>

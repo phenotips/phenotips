@@ -20,6 +20,8 @@ package org.phenotips.measurements.internal;
 import org.phenotips.measurements.MeasurementHandler;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
+import org.phenotips.vocabulary.VocabularyManager;
+import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -30,7 +32,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
@@ -91,6 +96,10 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     @Inject
     private MeasurementsChartConfigurationsFactory settingsFactory;
 
+    /** Used to resolve vocabulary terms for associated phenotypes. */
+    @Inject
+    private VocabularyManager vocabularyManager;
+
     /**
      * Table storing the LMS triplets for each month of the normal development of boys corresponding to this measurement
      * type.
@@ -112,6 +121,25 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      * @return a simple name, all lowercase keyword
      */
     public abstract String getName();
+
+    /**
+     * Get the unit, for display purposes only, of this specific kind of measurement.
+     *
+     * @return the abbreviated unit, e.g. cm, kg
+     *         for unitless measurements, null
+     */
+    public abstract String getUnit();
+
+    /**
+     * Get a list of computation dependencies for this measurement. (relevant only for computed measurements)
+     *
+     * @return if this is a computed measurement, a list of computation dependencies for this measurement
+     *         otherwise, null
+     */
+    public List<String> getComputationDependencies()
+    {
+        return null;
+    }
 
     @Override
     public int valueToPercentile(boolean male, float ageInMonths, double value)
@@ -154,6 +182,12 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     @Override
+    public boolean isComputed()
+    {
+        return false;
+    }
+
+    @Override
     public List<MeasurementsChartConfiguration> getChartsConfigurations()
     {
         return this.chartConfigurations;
@@ -164,6 +198,71 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     {
         readData();
         this.chartConfigurations = this.settingsFactory.loadConfigurationsForMeasurementType(getName());
+    }
+
+    @Override
+    public Collection<VocabularyTerm> getAssociatedTerms(Double standardDeviation)
+    {
+        ResourceBundle configuration = ResourceBundle.getBundle("measurementsAssociatedTerms");
+        List<String> configKeys;
+
+        if (standardDeviation != null) {
+            configKeys = new LinkedList<>();
+
+            if (standardDeviation <= -3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_EXTREME_BELOW_NORMAL));
+            }
+            if (standardDeviation <= -2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_BELOW_NORMAL));
+            }
+            if (standardDeviation >= 2) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_ABOVE_NORMAL));
+            }
+            if (standardDeviation >= 3) {
+                configKeys.add(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.get(
+                        MeasurementUtils.VALUE_EXTREME_ABOVE_NORMAL));
+            }
+        } else {
+            configKeys = new LinkedList<>(MeasurementUtils.FUZZY_VALUE_TO_CONFIG_KEY.values());
+        }
+
+        List<VocabularyTerm> terms = new ArrayList<>();
+        for (String key : configKeys) {
+            terms.addAll(getResolvedTermsForConfigKey(configuration, this.getName(), key));
+        }
+
+        return terms;
+    }
+
+    /**
+     * Convenience method to get present, resolvable vocabulary terms for a given measurement and fuzzy value.
+     *
+     * @param config the configuration resource bundle
+     * @param measurement the name of the measurement
+     * @param key the fuzzy value name key to check, e.g. "aboveNormal"
+     * @return the set of resolved vocabulary terms
+     *         an empty list if no resolvable terms are present
+     */
+    private List<VocabularyTerm> getResolvedTermsForConfigKey(ResourceBundle config, String measurement, String key)
+    {
+        List<VocabularyTerm> terms = new LinkedList<>();
+
+        String configKey = "measurements." + measurement + '.' + key;
+
+        if (config.containsKey(configKey)) {
+            String[] termStrs = config.getString(configKey).split(";");
+            for (String termStr : termStrs) {
+                VocabularyTerm term = vocabularyManager.resolveTerm(termStr);
+                if (term != null) {
+                    terms.add(term);
+                }
+            }
+        }
+
+        return terms;
     }
 
     /**

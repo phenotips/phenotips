@@ -29,8 +29,8 @@
   <parent>PhenoTips.ChartService</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822209000</date>
-  <contentUpdateDate>1401822209000</contentUpdateDate>
+  <date>1443644699000</date>
+  <contentUpdateDate>1443644699000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -77,6 +77,25 @@
       #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
         #_updateMeasurements($measurements.get($measurementName) $o $measurementName $age)
       #end
+    #end
+  #end
+  #set ($sex = $obj.getProperty('gender').value != 'F')
+#end
+#macro (_buildMeasurementsFromNewObjects $targetClassName $obj)
+  #if (!$obj.getProperty('date_of_birth').value)
+    #break
+  #end
+  #foreach ($o in $doc.getObjects($targetClassName))
+    #set ($age = $services.measurements.convertAgeStrToNumMonths($o.getProperty('age').value))
+    #set ($measurementName = $o.getProperty('type').value)
+    #if ($age &gt;= 0 &amp;&amp; "$!{o.getProperty('value').value}" != '')
+      #if (!($ageLimits.get($measurementName).min &lt;= $age))
+        #set ($ageLimits.get($measurementName).min = $age)
+      #end
+      #if (!($ageLimits.get($measurementName).max &gt;= $age))
+        #set ($ageLimits.get($measurementName).max = $age)
+      #end
+      #set ($discard = $measurements.get($measurementName).add({'a': $age, 'x' : $o.getProperty('value').value}))
     #end
   #end
   #set ($sex = $obj.getProperty('gender').value != 'F')
@@ -171,6 +190,9 @@ $format##
         $response.sendRedirect($src)
       #elseif($doc != $service || $xcontext.action != 'get')
         $response.sendRedirect($service.getURL('get', $queryString))
+      #elseif($options.format == 'svg')
+        $response.setContentType('image/svg+xml')
+        $svg
       #else
         $response.setContentType('text/html')
         ((($svg)))
@@ -197,7 +219,9 @@ $format##
 ## ---------------------------------------------------------
 ## Decide which method to use for building measurement data
 ## ---------------------------------------------------------
-#if ($options.targetClassName &amp;&amp; $options.obj)
+#if ($options.targetClassName &amp;&amp; $options.obj &amp;&amp; $options.useNewMeasurementClass)
+  #_buildMeasurementsFromNewObjects($options.targetClassName $options.obj)
+#elseif ($options.targetClassName &amp;&amp; $options.obj)
   #_buildMeasurementsFromObjects($options.targetClassName $options.obj)
 #else
   #_buildMeasurementsFromRequest()
