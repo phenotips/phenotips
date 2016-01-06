@@ -34,7 +34,9 @@ import org.xwiki.configuration.ConfigurationSource;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -45,10 +47,11 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -130,8 +133,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             JSONArray features = new JSONArray();
             for (Feature f : patient.getFeatures()) {
                 if (StringUtils.isNotEmpty(f.getId())) {
-                    JSONObject featureObj = new JSONObject();
-                    featureObj.put("id", f.getId());
+                    JSONObject featureObj = JSONObject.fromObject(Collections.singletonMap("id", f.getId()));
                     if (!f.isPresent()) {
                         featureObj.put("isPresent", false);
                     }
@@ -140,9 +142,9 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             }
             data.put("features", features);
 
-            HttpGet method =
-                new HttpGet(new URIBuilder(scorerURL).addParameter("annotation_profile",
-                    data.toString()).build());
+            HttpPost method = new HttpPost(this.scorerURL);
+            method.setEntity(new StringEntity("annotation_profile=" + URLEncoder.encode(data.toString(), "UTF-8"),
+                Consts.UTF_8));
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);
             response = this.client.execute(method);
