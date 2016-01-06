@@ -386,6 +386,10 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
     },
 
     _addTemplate : function (template, highlight) {
+       var list = $('templatesList');
+       if (_this._isItemInList(template.id, list)) {
+          return;
+       }
        var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
        row.insert(new Element('td', {'class' : 'mainTd'}).insert(template.value)
                .insert(new Element('input', {'type': 'hidden', 'name' : 'templates', 'value' : template.id}))
@@ -397,10 +401,26 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
              event.findElement('tr').remove();
           });
        }
-       $('templatesList').insert(row);
+       list.insert(row);
+    },
+
+    _isItemInList : function(item, list) {
+      var children = list.childElements();
+      for (var i=0; i &lt; children.size(); i++) {
+         var v = children[i].down(".mainTd input").value;
+         if (v == item) {
+            return true;
+         }
+      }
+      return false;
     },
 
     _addCollaborator : function (c, highlight, collaboratorType) {
+      var list = $(collaboratorType + 'list');
+      if (_this._isItemInList(c.id, list)) {
+         return;
+      }
+ 
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td', {'class' : 'mainTd'})
@@ -417,9 +437,9 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
             event.findElement('tr').remove();
          });
       }
-      $(collaboratorType + 'list').insert(row);
+      list.insert(row);
     },
-
+    
     _loadCollaboratorsAndTemplates : function(contributors, leaders, templates) {
       $('contributorslist').update('');
       $('leaderslist').update('');
