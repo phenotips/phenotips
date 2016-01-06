@@ -95,4 +95,28 @@ public class DefaultPedigree implements Pedigree
         }
         return extractedObjects;
     }
+
+    @Override
+    public void removeLink(String linkedPatientId)
+    {
+        // update SVG
+        this.image = SvgUpdater.removeLink(this.image, linkedPatientId);
+
+        // update JSON
+        removeLinkFromPedigreeJSON(linkedPatientId);
+    }
+
+    /*
+     * Removes all links to the given PhenoTips patient form the pedigree JSON.
+     */
+    private void removeLinkFromPedigreeJSON(String linkedPatientId)
+    {
+        List<JSONObject> patientProperties = this.extractPatientJSONProperties();
+        for (JSONObject properties : patientProperties) {
+            Object patientLink = properties.get(DefaultPedigree.PATIENT_LINK_JSON_KEY);
+            if (patientLink != null && StringUtils.equalsIgnoreCase(patientLink.toString(), linkedPatientId)) {
+                properties.remove(DefaultPedigree.PATIENT_LINK_JSON_KEY);
+            }
+        }
+    }
 }
