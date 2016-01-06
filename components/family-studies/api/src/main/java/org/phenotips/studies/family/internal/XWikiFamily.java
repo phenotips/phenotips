@@ -143,6 +143,13 @@ public class XWikiFamily implements Family
     @Override
     public synchronized boolean addMember(Patient patient)
     {
+        if (patient == null) {
+            this.logger.error("Can not add NULL patient to family [{}]", this.getId());
+            return false;
+        }
+
+        String patientId = patient.getId();
+
         XWikiContext context = getXContext();
         XWiki wiki = context.getWiki();
         DocumentReference patientReference = patient.getDocument();
@@ -150,8 +157,8 @@ public class XWikiFamily implements Family
         try {
             patientDocument = wiki.getDocument(patientReference, context);
         } catch (XWikiException e) {
-            this.logger.error("Could not add patient [{}] to family. Error getting patient document: {}",
-                patient.getId(), e.getMessage());
+            this.logger.error("Could not add patient [{}] to family. Error getting patient document: [{}]",
+                patientId, e.getMessage());
             return false;
         }
         String patientAsString = patientReference.getName();
@@ -161,7 +168,7 @@ public class XWikiFamily implements Family
         if (!members.contains(patientAsString)) {
             members.add(patientAsString);
         } else {
-            this.logger.info("Patient [{}] already a member of family [{}]. Not adding", patientAsString, getId());
+            this.logger.info("Patient [{}] already a member of the same family, not adding", patientId);
             return false;
         }
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
@@ -172,18 +179,15 @@ public class XWikiFamily implements Family
         try {
             XWikiFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
         } catch (XWikiException e) {
-            this.logger.error("Could not add patient [{}] to family. Error setting family reference: {}",
-                patient.getId(), e.getMessage());
+            this.logger.error("Could not add patient [{}] to family. Error setting family reference: [{}]",
+                patientId, e.getMessage());
             return false;
         }
 
         this.updatePermissions();
 
-        try {
-            wiki.saveDocument(this.familyDocument, context);
-            wiki.saveDocument(patientDocument, context);
-        } catch (XWikiException e) {
-            this.logger.error("Could not save family/patient after adding: {}", e.getMessage());
+        if (!savePatientDocument(patientDocument, "added to family " + this.getId(), "adding to a family", context)
+            || !saveFamilyDocument("added " + patientId + " to the family", "adding patient " + patientId, context)) {
             return false;
         }
 
@@ -193,6 +197,10 @@ public class XWikiFamily implements Family
     @Override
     public synchronized boolean removeMember(Patient patient)
     {
+        if (patient == null) {
+            return false;
+        }
+
         String patientId = patient.getId();
 
         XWikiContext context = getXContext();
@@ -218,7 +226,7 @@ public class XWikiFamily implements Family
         String patientAsString = patient.getDocument().getName();
         if (!members.contains(patientAsString)) {
             this.logger.error("Patient has family reference but family doesn't have patient as member. "
-                + "patientId: [{}], familyId: [{}]", patientId, getId());
+                + "patientId: [{}], familyId: [{}]", patientId, this.getId());
         } else {
             members.remove(patientAsString);
         }
@@ -227,15 +235,47 @@ public class XWikiFamily implements Family
 
         this.updatePermissions();
 
-        try {
-            wiki.saveDocument(patientDocument, context);
-            wiki.saveDocument(this.familyDocument, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving patient document after removing family. "
-                + "patient id: [{}], error: [{}]", patientId, e.getMessage());
+        // Remove patient from the pedigree
+        Pedigree pedigree = getPedigree();
+        if (pedigree != null) {
+            pedigree.removeLink(patientId);
+            if (!setPedigreeObject(pedigree, false)) {
+                this.logger.error("Could not remove patient [{}] from pedigree for family [{}]",
+                        patientId, this.getId());
+                return false;
+            }
+        }
+
+        if (!savePatientDocument(patientDocument, "removed from family", "removing from family", context)
+            || !saveFamilyDocument("removed " + patientId + " from the family", "removing a family member", context)) {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean savePatientDocument(XWikiDocument patientDocument, String documentHistoryComment,
+            String logActionDescription, XWikiContext context)
+    {
+        try {
+            context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
+        } catch (XWikiException e) {
+            this.logger.error("Error saving patient [{}] document after {}: [{}]",
+                patientDocument.getId(), logActionDescription, e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean saveFamilyDocument(String documentHistoryComment, String logActionDescription, XWikiContext context)
+    {
+        try {
+            context.getWiki().saveDocument(this.familyDocument, documentHistoryComment, context);
+        } catch (XWikiException e) {
+            this.logger.error("Error saving family [{}] document after {}: [{}]",
+                this.getId(), logActionDescription, e.getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -362,6 +402,16 @@ public class XWikiFamily implements Family
     @Override
     public boolean setPedigree(Pedigree pedigree)
     {
+        return setPedigreeObject(pedigree, true);
+    }
+
+    private boolean setPedigreeObject(Pedigree pedigree, boolean saveXwikiDocument)
+    {
+        if (pedigree == null) {
+            this.logger.error("Can not set NULL pedigree for family [{}]", this.getId());
+            return false;
+        }
+
         XWikiContext context = getXContext();
         XWiki wiki = context.getWiki();
 
@@ -369,11 +419,13 @@ public class XWikiFamily implements Family
         pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(null), context);
         pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 
-        try {
-            wiki.saveDocument(this.familyDocument, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving pedigree: {}", e.getMessage());
-            return false;
+        if (saveXwikiDocument) {
+            try {
+                wiki.saveDocument(this.familyDocument, "updated pedigree", context);
+            } catch (XWikiException e) {
+                this.logger.error("Error saving pedigree for family [{}]: {}", this.getId(), e.getMessage());
+                return false;
+            }
         }
 
         return true;
@@ -401,7 +453,7 @@ public class XWikiFamily implements Family
             }
             xwiki.deleteDocument(xwiki.getDocument(this.familyDocument, context), context);
         } catch (XWikiException ex) {
-            this.logger.error("Failed to delete family document [{}]: {}", getId(), ex.getMessage());
+            this.logger.error("Failed to delete family document [{}]: {}", this.getId(), ex.getMessage());
             return false;
         }
         return true;

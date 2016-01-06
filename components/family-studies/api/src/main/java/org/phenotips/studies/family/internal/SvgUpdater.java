@@ -18,11 +18,9 @@
 package org.phenotips.studies.family.internal;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,120 +36,123 @@ public final class SvgUpdater
 
     private static final String STROKE_ATTR_TOKEN = "stroke-width=\"";
 
+    /**
+     * The number of pixels to shift text when a link is removed.
+     */
+    private static final int SVG_LINK_HEIGHT_IN_PIXELS = 22;
+
     private SvgUpdater()
     {
     }
 
-    private static List<SvgElementHolder> findAndParseAllElements(String svg, List<SvgElementHolder> elementList,
-        SvgElementParser parser)
+    /**
+     * Removes an HTML link and label for the given patient from the SVG.
+     *
+     * @param svg can not be null
+     * @param removePatientId id of the link to be removed
+     * @return SVG with `<a></a>` corresponding to patient record cut out
+     */
+    public static String removeLink(String svg, String removePatientId)
     {
-        String remainingSvg = svg;
-        int potentialStart;
-        // the index of the opening tag, so that we know which closing tag to look for
-        int selectedTag;
-        int offsetFromSvgStart = 0;
-        int testStart = 0;
-        while (testStart != -1) {
-            potentialStart = remainingSvg.length();
-            selectedTag = 0;
-            int tagIndex = 0;
-            for (String tagOpen : parser.getSvgTagOpen()) {
-                testStart = remainingSvg.indexOf(tagOpen);
-                if (testStart != -1 && testStart <= potentialStart) {
-                    potentialStart = testStart;
-                    selectedTag = tagIndex;
-                }
-                tagIndex++;
-            }
+        List<SvgElementHolder> links = SvgUpdater.findAndParseAllElements(svg, new SvgLinkParser(removePatientId));
+        String svgWithNoLink = SvgUpdater.applyActionToSvg(svg, links.iterator(), new SvgRemoveAction());
 
-            int potentialEnd = remainingSvg.indexOf(parser.getSvgTagClosed().get(selectedTag));
-            if (potentialEnd != -1) {
-                int nextSubstringStart = potentialEnd + parser.getSvgTagClosed().get(selectedTag).length();
-                parser.iterativeAdd(potentialStart, svg, offsetFromSvgStart, nextSubstringStart, elementList);
-                remainingSvg = remainingSvg.substring(nextSubstringStart);
-                offsetFromSvgStart += nextSubstringStart;
-            } else {
-                // todo. Maybe throw an error if end is not found.
-                break;
+        Iterable<SvgElementHolder> labels = SvgUpdater.findAndParseAllElements(svgWithNoLink, new SvgTextParser(links));
+        // shift up labels below the link after removing the link
+        labels = SvgUpdater.shiftSvgElements(labels, -SvgUpdater.SVG_LINK_HEIGHT_IN_PIXELS);
+        String updatedSvg = SvgUpdater.applyActionToSvg(svgWithNoLink, labels.iterator(), new SvgUpdateAction());
+
+        return updatedSvg;
+    }
+
+    private static List<SvgElementHolder> findAndParseAllElements(String svg, SvgElementParser parser)
+    {
+        List<SvgElementHolder> elementList = new LinkedList<SvgElementHolder>();
+
+        try {
+            String remainingSvg = svg;
+            int potentialStart;
+            // the index of the opening tag, so that we know which closing tag to look for
+            int selectedTag;
+            int offsetFromSvgStart = 0;
+            int testStart = 0;
+            while (testStart != -1) {
+                potentialStart = remainingSvg.length();
+                selectedTag = 0;
+                int tagIndex = 0;
+                for (String tagOpen : parser.getSvgTagOpen()) {
+                    testStart = remainingSvg.indexOf(tagOpen);
+                    if (testStart != -1 && testStart <= potentialStart) {
+                        potentialStart = testStart;
+                        selectedTag = tagIndex;
+                    }
+                    tagIndex++;
+                }
+
+                int potentialEnd = remainingSvg.indexOf(parser.getSvgTagClosed().get(selectedTag));
+                if (potentialEnd != -1) {
+                    int nextSubstringStart = potentialEnd + parser.getSvgTagClosed().get(selectedTag).length();
+                    parser.iterativeAdd(potentialStart, svg, offsetFromSvgStart, nextSubstringStart, elementList);
+                    remainingSvg = remainingSvg.substring(nextSubstringStart);
+                    offsetFromSvgStart += nextSubstringStart;
+                } else {
+                    // TODO: throw an error if end is not found?
+                    break;
+                }
             }
+        } catch (Exception ex) {
+            // TODO: throw?
         }
         return elementList;
     }
 
-    private static String parsePatientIdFromLink(SvgElementHolder link) throws Exception
+    private static SvgElementHolder findProbandShape(Iterable<SvgElementHolder> elements)
     {
-        String token = "href=\"/bin/data/";
-        int idStart = link.content.indexOf(token) + token.length();
-        return link.content.substring(idStart, idStart + PATIENT_ID_LENGTH);
-    }
-
-    /**
-     * Gets a node id from any string (usually SVG id or class attributes).
-     *
-     * @return -1 if {@link SvgElementHolder#nodeIdTokenStart} is -1 or if fails to find a numeric node id. Otherwise
-     *         returns the node id
-     */
-    private static int parseNodeIdFromElement(SvgElementHolder element, String tokenStartString)
-    {
-        if (element.nodeIdTokenStart != -1) {
-            String nodeIdString = "";
-            int readingPosition = element.nodeIdTokenStart + tokenStartString.length();
-            Character idChar = element.content.charAt(readingPosition);
-            while (Character.isDigit(idChar)) {
-                nodeIdString += idChar;
-                readingPosition++;
-                idChar = element.content.charAt(readingPosition);
-            }
-            if (StringUtils.isNotBlank(nodeIdString)) {
-                return Integer.parseInt(nodeIdString);
-            } else {
-                return -1;
+        for (SvgElementHolder shape : elements) {
+            if (shape.belongsToProband) {
+                return shape;
             }
         }
-        return -1;
+        return null;
     }
 
-    /**
-     * @param removeCurrent inverts this filter
-     */
-    private static List<SvgElementHolder> filterByCurrentPatient(List<SvgElementHolder> links, String patientId,
-        boolean removeCurrent)
+    private static SvgElementHolder findShapeWithNodeId(Iterable<SvgElementHolder> elements, String nodeId)
     {
-        Iterator<SvgElementHolder> iterator = links.iterator();
-        while (iterator.hasNext()) {
-            SvgElementHolder holder = iterator.next();
-            if (removeCurrent) {
-                if (StringUtils.equalsIgnoreCase(holder.patientId, patientId)) {
-                    iterator.remove();
-                }
-            } else {
-                if (!StringUtils.equalsIgnoreCase(holder.patientId, patientId)) {
-                    iterator.remove();
-                }
+        for (SvgElementHolder shape : elements) {
+            if (shape.nodeId.equalsIgnoreCase(nodeId)) {
+                return shape;
             }
         }
-        return links;
+        return null;
     }
 
-    private static Iterable<SvgElementHolder> filterByProbandStatus(Iterable<SvgElementHolder> elements)
+    private static Iterable<SvgElementHolder> shiftSvgElements(Iterable<SvgElementHolder> elements, int shiftBy)
     {
-        Iterator<SvgElementHolder> iterator = elements.iterator();
-        while (iterator.hasNext()) {
-            if (!iterator.next().belongsToProband) {
-                iterator.remove();
+        for (SvgElementHolder element : elements) {
+            int startYPosition = element.content.indexOf(" y=\"");
+            if (startYPosition != -1) {
+                // accounting for length of ` y="`
+                startYPosition += 4;
+                int endYPosition = element.content.indexOf('"', startYPosition + 1);
+                String yPositionString = element.content.substring(startYPosition, endYPosition);
+                double yPosition = Double.parseDouble(yPositionString);
+
+                Double newYPosition = yPosition + shiftBy;
+                element.content = element.content.substring(0, startYPosition) + newYPosition.toString()
+                    + element.content.substring(endYPosition);
             }
         }
         return elements;
     }
 
     /**
-     * Concatenates parts of the svg that are not links to patient records.
+     * Replaces parts of SVG that are stored in the provided element list with the appropriately modified parts.
      *
      * @param elements must be a deterministic iterator, returning links in order that they occur in the svg
      * @param svg must not be null
      * @return modified svg
      */
-    private static String applyActionToSvg(Iterator<SvgElementHolder> elements, SvgAction action, String svg)
+    private static String applyActionToSvg(String svg, Iterator<SvgElementHolder> elements, SvgAction action)
     {
         String parsedSvg = "";
         int splitHead = 0;
@@ -167,34 +168,6 @@ public final class SvgUpdater
     }
 
     /**
-     * Takes two {@link Iterable}, removes all elements from one that are not present in the other. Element equality is
-     * determined by {@link SvgElementHolder}s `nodeId`.
-     *
-     * @param toSynchronize from which elements will be removed
-     * @param authority the authority that decides which elements should be removed
-     * @return toSynchronize
-     */
-    private static Iterable<SvgElementHolder> synchronizeOnNodeIds(Iterable<SvgElementHolder> toSynchronize,
-        Iterable<SvgElementHolder> authority)
-    {
-        Iterator<SvgElementHolder> toSynchronizeIterator = toSynchronize.iterator();
-        while (toSynchronizeIterator.hasNext()) {
-            SvgElementHolder s = toSynchronizeIterator.next();
-            boolean remove = true;
-            for (SvgElementHolder a : authority) {
-                if (a.nodeId == s.nodeId) {
-                    remove = false;
-                    break;
-                }
-            }
-            if (remove) {
-                toSynchronizeIterator.remove();
-            }
-        }
-        return toSynchronize;
-    }
-
-    /**
      * Processes the SVG to visually mark a patient with current patient style.
      *
      * @param svg can not be null
@@ -204,37 +177,30 @@ public final class SvgUpdater
      */
     public static String setCurrentPatientStylesInSvg(String svg, String patientId)
     {
-        List<SvgElementHolder> links =
-            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgLinkParser());
-        List<SvgElementHolder> nodeShapes =
-            SvgUpdater.findAndParseAllElements(svg, new LinkedList<SvgElementHolder>(), new SvgNodeShapeParser());
+        List<SvgElementHolder> nodeShapes = SvgUpdater.findAndParseAllElements(svg, new SvgNodeShapeParser());
 
-        // would be appropriate to rename these to currentPatientLinks
-        links = SvgUpdater.filterByCurrentPatient(links, patientId, false);
         // not ideal, but will likely work fine for a long time - removing stroke from every shape
         SvgUpdater.removeStrokeWidth(nodeShapes);
 
-        Iterable<SvgElementHolder> probandShape = SvgUpdater.filterByProbandStatus(copyIntoSetIterable(nodeShapes));
-        probandShape = addProbandStyle(probandShape);
-        // can only be 0 or 1
-        Iterable<SvgElementHolder> currentPatientShape =
-            SvgUpdater.synchronizeOnNodeIds(copyIntoSetIterable(nodeShapes), links);
-        currentPatientShape = addCurrentPatientStyle(currentPatientShape);
+        SvgElementHolder probandShape = SvgUpdater.findProbandShape(nodeShapes);
+        if (probandShape != null) {
+            addProbandStyle(probandShape);
+        }
 
-        String updatedSvg = SvgUpdater.applyActionToSvg(nodeShapes.iterator(), new SvgUpdateAction(), svg);
+        List<SvgElementHolder> links = SvgUpdater.findAndParseAllElements(svg, new SvgLinkParser(patientId));
+        if (links.size() == 1) {
+            // TODO: not sure what to do if more than one link to the same patient ID
+            SvgElementHolder currentShape = SvgUpdater.findShapeWithNodeId(nodeShapes, links.get(0).nodeId);
+            if (currentShape != null) {
+                addCurrentPatientStyle(currentShape);
+            }
+        }
+
+        String updatedSvg = SvgUpdater.applyActionToSvg(svg, nodeShapes.iterator(), new SvgUpdateAction());
         return updatedSvg;
     }
 
-    private static <T> Iterable<T> copyIntoSetIterable(Iterable<T> toCopy)
-    {
-        Set<T> copyInto = new HashSet<>();
-        for (T toCopyElem : toCopy) {
-            copyInto.add(toCopyElem);
-        }
-        return copyInto;
-    }
-
-    private static Iterable<SvgElementHolder> removeStrokeWidth(Iterable<SvgElementHolder> shapes)
+    private static void removeStrokeWidth(Iterable<SvgElementHolder> shapes)
     {
         for (SvgElementHolder shape : shapes) {
             int styleStart = shape.content.indexOf(STROKE_ATTR_TOKEN);
@@ -244,32 +210,25 @@ public final class SvgUpdater
                 shape.content = shape.content.substring(0, styleStart) + shape.content.substring(styleEnd + 1);
             }
         }
-        return shapes;
     }
 
     /**
      * @param probandShapes usually will be only one, or none
      */
-    private static Iterable<SvgElementHolder> addProbandStyle(Iterable<SvgElementHolder> probandShapes)
+    private static void addProbandStyle(SvgElementHolder probandShape)
     {
-        for (SvgElementHolder shape : probandShapes) {
-            SvgUpdater.insertStrokeWidth(shape, 2);
-        }
-        return probandShapes;
+        SvgUpdater.setStrokeWidth(probandShape, 2);
     }
 
     /**
      * @param currentPatientShapes usually will be only one, or none
      */
-    private static Iterable<SvgElementHolder> addCurrentPatientStyle(Iterable<SvgElementHolder> currentPatientShapes)
+    private static void addCurrentPatientStyle(SvgElementHolder currentPatientShape)
     {
-        for (SvgElementHolder shape : currentPatientShapes) {
-            SvgUpdater.insertStrokeWidth(shape, 5);
-        }
-        return currentPatientShapes;
+        SvgUpdater.setStrokeWidth(currentPatientShape, 5);
     }
 
-    private static SvgElementHolder insertStrokeWidth(SvgElementHolder element, double width)
+    private static SvgElementHolder setStrokeWidth(SvgElementHolder element, double width)
     {
         if (element.content.contains(STROKE_ATTR_TOKEN)) {
             int tokenStart = element.content.indexOf(STROKE_ATTR_TOKEN);
@@ -299,7 +258,7 @@ public final class SvgUpdater
 
         private String patientId = "";
 
-        private int nodeId;
+        private String nodeId = "";
 
         /**
          * Could be false even if it does. Must be synchronized with elements that automatically have this property
@@ -310,6 +269,13 @@ public final class SvgUpdater
 
     private static class SvgLinkParser extends AbstractSvgElementParser
     {
+        private String filterPatientId;
+
+        SvgLinkParser(String patientId)
+        {
+            this.filterPatientId = patientId;
+        }
+
         @Override
         public List<String> getSvgTagOpen()
         {
@@ -339,13 +305,30 @@ public final class SvgUpdater
         }
 
         @Override
+        public boolean testHolder(SvgElementHolder holder)
+        {
+            if (filterPatientId == null) {
+                return true;
+            }
+            return filterPatientId.equalsIgnoreCase(holder.patientId);
+        }
+
+        @Override
         protected void performAdditionalOperations(SvgElementHolder holder)
         {
             try {
-                holder.patientId = SvgUpdater.parsePatientIdFromLink(holder);
+                holder.patientId = parsePatientIdFromLink(holder);
             } catch (Exception ex) {
                 // can't do anything
             }
+        }
+
+        private String parsePatientIdFromLink(SvgElementHolder link)
+        {
+            String token = "href=\"/bin/data/";
+            int idStart = link.content.indexOf(token) + token.length();
+            // TODO: use regexp with no fixed length set, e.g. "(P\d+)"
+            return link.content.substring(idStart, idStart + PATIENT_ID_LENGTH);
         }
     }
 
@@ -382,9 +365,73 @@ public final class SvgUpdater
         }
 
         @Override
+        public boolean testHolder(SvgElementHolder holder)
+        {
+            return true;
+        }
+
+        @Override
         protected void performAdditionalOperations(SvgElementHolder holder)
         {
             holder.belongsToProband = holder.content.contains("isProband=\"true\"");
+        }
+    }
+
+    private static class SvgTextParser extends AbstractSvgElementParser
+    {
+        private List<SvgElementHolder> filterByNodeId;
+
+        SvgTextParser(List<SvgElementHolder> nodeList)
+        {
+            this.filterByNodeId = nodeList;
+        }
+
+        @Override
+        public List<String> getSvgTagOpen()
+        {
+            List<String> list = new LinkedList<>();
+            Collections.addAll(list, "<text");
+            return list;
+        }
+
+        @Override
+        public List<String> getSvgTagClosed()
+        {
+            List<String> list = new LinkedList<>();
+            Collections.addAll(list, "</text>");
+            return list;
+        }
+
+        @Override
+        protected String getNodeIdTokenStartString()
+        {
+            return PEDIGREE_NODE_ID;
+        }
+
+        @Override
+        public boolean test(String testPiece)
+        {
+            return testPiece.contains(PEDIGREE_NODE_ID);
+        }
+
+        @Override
+        public boolean testHolder(SvgElementHolder holder)
+        {
+            if (this.filterByNodeId == null) {
+                return true;
+            }
+            for (SvgElementHolder element : this.filterByNodeId) {
+                if (holder.nodeId.equalsIgnoreCase(element.nodeId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected void performAdditionalOperations(SvgElementHolder holder)
+        {
+            // the pedigree no longer puts the node id into the class name (??)
         }
     }
 
@@ -403,6 +450,9 @@ public final class SvgUpdater
         @Override
         public abstract boolean test(String testPiece);
 
+        @Override
+        public abstract boolean testHolder(SvgElementHolder holder);
+
         protected abstract void performAdditionalOperations(SvgElementHolder holder);
 
         @Override
@@ -415,7 +465,9 @@ public final class SvgUpdater
             if (this.test(content)) {
                 SvgElementHolder holder = this.createBasicHolder(absoluteStart, absoluteEnd, content);
                 this.performAdditionalOperations(holder);
-                elementList.add(holder);
+                if (this.testHolder(holder)) {
+                    elementList.add(holder);
+                }
             }
         }
 
@@ -426,8 +478,32 @@ public final class SvgUpdater
             holder.endPosition = end;
             holder.content = content;
             holder.nodeIdTokenStart = content.indexOf(this.getNodeIdTokenStartString());
-            holder.nodeId = SvgUpdater.parseNodeIdFromElement(holder, this.getNodeIdTokenStartString());
+            holder.nodeId = parseNodeIdFromElement(holder, this.getNodeIdTokenStartString());
             return holder;
+        }
+
+        /**
+         * Gets a node id from any string (usually SVG id or class attributes).
+         *
+         * @return -1 if {@link SvgElementHolder#nodeIdTokenStart} is -1 or if fails to find a numeric node id. Otherwise
+         *         returns the node id
+         */
+        private String parseNodeIdFromElement(SvgElementHolder element, String tokenStartString)
+        {
+            if (element.nodeIdTokenStart != -1) {
+                String nodeIdString = "";
+                int readingPosition = element.nodeIdTokenStart + tokenStartString.length();
+                Character idChar = element.content.charAt(readingPosition);
+                while (Character.isDigit(idChar)) {
+                    nodeIdString += idChar;
+                    readingPosition++;
+                    idChar = element.content.charAt(readingPosition);
+                }
+                if (StringUtils.isNotBlank(nodeIdString)) {
+                    return nodeIdString;
+                }
+            }
+            return null;
         }
     }
 
@@ -439,6 +515,8 @@ public final class SvgUpdater
 
         boolean test(String testPiece);
 
+        boolean testHolder(SvgElementHolder holder);
+
         void iterativeAdd(int start, String svg, int offset, int nextSubstringStart,
             List<SvgElementHolder> elementList);
     }
@@ -449,6 +527,15 @@ public final class SvgUpdater
         public String getReplacement(SvgElementHolder holder)
         {
             return holder.content;
+        }
+    }
+
+    private static class SvgRemoveAction implements SvgAction
+    {
+        @Override
+        public String getReplacement(SvgElementHolder holder)
+        {
+            return "";
         }
     }
 
