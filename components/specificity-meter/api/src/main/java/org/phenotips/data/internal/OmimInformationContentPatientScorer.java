@@ -132,7 +132,11 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
         int i = 0;
 
         while (ic == 0 && ++i < 5) {
-            Set<VocabularyTerm> parents = this.hpo.getTerm(toSearch).getParents();
+            VocabularyTerm term = this.hpo.getTerm(toSearch);
+            if (term == null) {
+                break;
+            }
+            Set<VocabularyTerm> parents = term.getParents();
             if (parents.isEmpty()) {
                 break;
             }
