@@ -62,4 +62,11 @@ public interface Pedigree
      * @return non-null and non-empty patient properties in JSON objects.
      */
     List<JSONObject> extractPatientJSONProperties();
+
+    /**
+     * Remove a link to a PhenoTips patient from the pedigree (the pedigree node stays).
+     *
+     * @param linkedPatientId id of the linked patient to be removed
+     */
+    void removeLink(String linkedPatientId);
 }
