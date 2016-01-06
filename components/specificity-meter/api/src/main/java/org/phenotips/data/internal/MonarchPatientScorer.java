@@ -53,6 +53,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 /**
  * Patient scorer that uses the remote service offered by the MONARCH initiative.
@@ -66,6 +67,9 @@ import org.json.JSONObject;
 public class MonarchPatientScorer implements PatientScorer, Initializable
 {
     private static final String SCORER_NAME = "monarchinitiative.org";
+
+    @Inject
+    private Logger logger;
 
     @Inject
     @Named("xwikiproperties")
@@ -149,6 +153,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             return specificity.getScore();
         } catch (Exception ex) {
             // Just return failure below
+            this.logger.error("Failed to compute specificity score for patient [{}] using the monarch server [{}]: {}",
+                patient.getDocument(), this.scorerURL, ex.getMessage());
         } finally {
             if (response != null) {
                 try {
