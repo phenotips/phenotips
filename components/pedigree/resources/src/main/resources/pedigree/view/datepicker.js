@@ -26,6 +26,7 @@ define([], function(){
       this.element.observe("focus", this.onFocus.bind(this));
       this.element.observe("blur", this.onBlur.bind(this));
       this.element.observe("keydown", this.onKeyDown.bind(this));
+      this.element.observe("keyup", this.onKeyUp.bind(this));
     },
     getValue : function() {
       return this.element.value;
@@ -62,7 +63,7 @@ define([], function(){
     onBlur : function(e) {
       this.onValueSelected(e);
     },
-    onValueSelected : function(e) {
+    onValueSelected : function() {
       this.element.fire("datepicker:date:changed");
     },
     onKeyDown : function(e) {
@@ -70,6 +71,10 @@ define([], function(){
       if (charCode == 9) {
         this.onValueSelected(e);
       }
+    },
+    onKeyUp: function(e) {
+      //if the input is valid on keyUp the input will consider the date selected before the user tabs away
+      this.validate() && this.onValueSelected();
     },
     onKeyPress : function(e, regexp, maxLength, padZeros) {
       var charCode = e.charCode || e.keyCode;
@@ -121,7 +126,10 @@ define([], function(){
       return this.isValid;
     },
     formatValue : function(value) {return value;},
-    refreshAvailableValues : function() {}
+    refreshAvailableValues : function() {
+      //stub
+      console.warn('DatePicker input does not implement refreshAvailableValues()');
+    }
   });
 
   /**
