@@ -76,7 +76,10 @@ define([], function(){
       //if the input is valid on keyUp the input will consider the date selected before the user tabs away
       this.validate() && this.onValueSelected();
     },
+<<<<<<< HEAD
 
+=======
+>>>>>>> PT-2274: Date is now saved before blur
     onKeyPress : function(e, regexp, maxLength, padZeros) {
       var charCode = e.charCode || e.keyCode;
       var character = String.fromCharCode(charCode);
@@ -127,7 +130,10 @@ define([], function(){
       return this.isValid;
     },
     formatValue : function(value) {return value;},
+<<<<<<< HEAD
 
+=======
+>>>>>>> PT-2274: Date is now saved before blur
     refreshAvailableValues : function() {
       //stub
       console.warn('DatePicker input does not implement refreshAvailableValues()');
