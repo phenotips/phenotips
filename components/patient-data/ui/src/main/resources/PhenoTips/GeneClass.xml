@@ -68,8 +68,8 @@
       <customDisplay/>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
-      <multiSelect>0</multiSelect>
-      <name>Strategy</name>
+      <multiSelect>1</multiSelect>
+      <name>strategy</name>
       <number>4</number>
       <picker>0</picker>
       <prettyName>Strategy</prettyName>
