@@ -1,3 +1,4 @@
+#template('colorThemeInit.vm') 
 .extradata-list th.gene-t-header-gene {
   width: 15%;
 }
