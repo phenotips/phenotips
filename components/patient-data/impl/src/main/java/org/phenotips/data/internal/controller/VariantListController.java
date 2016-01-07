@@ -27,6 +27,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,11 +40,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -119,8 +122,30 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String SANGER_KEY = "sanger";
 
+    private static final List<String> ZYGOSITY_VALUES = Arrays.asList("heterozygous", "homozygous", "hemizygous");
+
+    private static final List<String> EFFECT_VALUES = Arrays.asList("missense", "nonsense", "insertion_in_frame",
+        "insertion_frameshift", "deletion_in_frame", "deletion_frameshift", "indel_in_frame", "indel_frameshift",
+        "duplication", "repeat_expansion", "synonymous", "other");
+
+    private static final List<String> INTERPRETATION_VALUES = Arrays.asList("pathogenic", "likely_pathogenic",
+        "variant_u_s", "likely_benign", "benign");
+
+    private static final List<String> INHERITANCE_VALUES = Arrays.asList("denovo_germline", "denovo_s_mosaicism",
+        "maternal", "paternal", "unknown");
+
+    private static final List<String> EVIDENCE_VALUES = Arrays.asList("rare", "predicted", "reported");
+
+    private static final List<String> SEGREGATION_VALUES = Arrays.asList("segregates", "not_segregates");
+
+    private static final List<String> SANGER_VALUES = Arrays.asList("positive", "negative");
+
     @Inject
     private Logger logger;
+
+    /** Provides access to the current execution context. */
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
 
     @Override
     public String getName()
@@ -165,7 +190,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
             List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
             for (BaseObject variantObject : variantXWikiObjects) {
-                if (variantObject == null || variantObject.getFieldList().size() == 0) {
+                if (variantObject == null || variantObject.getFieldList().isEmpty()) {
                     continue;
                 }
                 Map<String, String> singleVariant = new LinkedHashMap<String, String>();
@@ -178,7 +203,11 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 }
                 allVariants.add(singleVariant);
             }
-            return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
+            if (allVariants.isEmpty()) {
+                return null;
+            } else {
+                return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
+            }
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen "
                 + "error has occurred during controller loading ", e.getMessage());
@@ -193,7 +222,6 @@ public class VariantListController extends AbstractComplexController<Map<String,
             if (fields == null || fields.getList().size() == 0) {
                 return null;
             }
-            // return ListClass.getStringFromList(fields.getList(), ListClass.DEFAULT_SEPARATOR);
             return fields.getTextValue();
 
         } else {
@@ -211,7 +239,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
         for (String property : keys) {
             if (StringUtils.isBlank(item.get(property))
                 || (selectedFieldNames != null
-                    && !selectedFieldNames.contains(enablingProperties.get(property)))) {
+                && !selectedFieldNames.contains(enablingProperties.get(property)))) {
                 item.remove(property);
             }
         }
@@ -261,6 +289,127 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 removeKeys(item, keys, enablingPropertiesMap, selectedFieldNames);
                 container.add(item);
             }
+        }
+    }
+
+    @Override
+    public PatientData<Map<String, String>> readJSON(JSONObject json)
+    {
+        if (json == null || !json.has(getJsonPropertyName())) {
+            return null;
+        }
+
+        List<String> enumValueKeys =
+            Arrays.asList(ZYGOSITY_KEY, EFFECT_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, SEGREGATION_KEY,
+                SANGER_KEY);
+
+        Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
+        enumValues.put(ZYGOSITY_KEY, ZYGOSITY_VALUES);
+        enumValues.put(EFFECT_KEY, EFFECT_VALUES);
+        enumValues.put(INTERPRETATION_KEY, INTERPRETATION_VALUES);
+        enumValues.put(INHERITANCE_KEY, INHERITANCE_VALUES);
+        enumValues.put(EVIDENCE_KEY, EVIDENCE_VALUES);
+        enumValues.put(SEGREGATION_KEY, SEGREGATION_VALUES);
+        enumValues.put(SANGER_KEY, SANGER_VALUES);
+
+        try {
+            JSONArray variantsJson = json.getJSONArray(this.getJsonPropertyName());
+            List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
+            List<String> variantSymbols = new ArrayList<String>();
+            for (int i = 0; i < variantsJson.size(); ++i) {
+                JSONObject variantJson = variantsJson.getJSONObject(i);
+
+                // discard it if variant cDNA is not present in the geneJson, or is whitespace, empty or duplicate
+                if (!variantJson.has(VARIANT_KEY) || StringUtils.isBlank(variantJson.getString(VARIANT_KEY))
+                    || variantSymbols.contains(variantJson.getString(VARIANT_KEY))) {
+                    continue;
+                }
+
+                Map<String, String> singleVariant = parseVariantJson(variantJson, enumValues, enumValueKeys);
+                if (singleVariant.isEmpty()) {
+                    continue;
+                }
+
+                allVariants.add(singleVariant);
+                variantSymbols.add(variantJson.getString(VARIANT_KEY));
+            }
+
+            if (allVariants.isEmpty()) {
+                return null;
+            } else {
+                return new IndexedPatientData<Map<String, String>>(getName(), allVariants);
+            }
+        } catch (Exception e) {
+            this.logger.error("Could not load variants from JSON", e.getMessage());
+        }
+        return null;
+    }
+
+    private Map<String, String> parseVariantJson(JSONObject variantJson, Map<String, List<String>> enumValues,
+        List<String> enumValueKeys)
+    {
+        Map<String, String> singleVariant = new LinkedHashMap<String, String>();
+        for (String property : this.getProperties()) {
+            if (variantJson.has(property) && !StringUtils.isBlank(variantJson.getString(property))) {
+
+                String field = variantJson.getString(property);
+
+                if (enumValueKeys.contains(property)) {
+                    if (enumValues.get(property).contains(field.toLowerCase())) {
+                        singleVariant.put(property, field);
+                    }
+                } else if (EVIDENCE_KEY.equals(property)) {
+                    String evidenceField = "";
+                    for (String value : field.split("\\|")) {
+                        if (enumValues.get(property).contains(value)) {
+                            evidenceField += "|" + value;
+                        }
+                    }
+                    singleVariant.put(property, evidenceField);
+                } else {
+                    singleVariant.put(property, field);
+                }
+            }
+        }
+        return singleVariant;
+    }
+
+    @Override
+    public void save(Patient patient)
+    {
+        try {
+            PatientData<Map<String, String>> variants = patient.getData(this.getName());
+            if (variants == null || !variants.isIndexed()) {
+                return;
+            }
+
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            if (doc == null) {
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+            }
+
+            XWikiContext context = this.xcontextProvider.get();
+            doc.removeXObjects(VARIANT_CLASS_REFERENCE);
+            Iterator<Map<String, String>> iterator = variants.iterator();
+            while (iterator.hasNext()) {
+                try {
+                    Map<String, String> variant = iterator.next();
+                    BaseObject xwikiObject = doc.newXObject(VARIANT_CLASS_REFERENCE, context);
+
+                    for (String property : this.getProperties()) {
+                        String value = variant.get(property);
+                        if (value != null) {
+                            xwikiObject.set(property, value, context);
+                        }
+                    }
+                } catch (Exception e) {
+                    this.logger.error("Failed to save a specific variant: [{}]", e.getMessage());
+                }
+            }
+
+            context.getWiki().saveDocument(doc, "Updated variants from JSON", true, context);
+        } catch (Exception e) {
+            this.logger.error("Failed to save variants: [{}]", e.getMessage());
         }
     }
 }

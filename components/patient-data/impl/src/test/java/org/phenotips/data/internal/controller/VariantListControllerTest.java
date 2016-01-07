@@ -230,7 +230,7 @@ public class VariantListControllerTest
     }
 
     @Test
-    public void loadIgnoresNullFields() throws ComponentLookupException
+    public void loadReturnsNullWhenFields() throws ComponentLookupException
     {
         BaseObject obj = mock(BaseObject.class);
         doReturn(null).when(obj).getField(anyString());
@@ -238,7 +238,7 @@ public class VariantListControllerTest
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertNull(result.get(0));
+        Assert.assertNull(result);
     }
 
     @Test
@@ -256,7 +256,7 @@ public class VariantListControllerTest
     public void checkLoadParsingOfInterpretationKey() throws ComponentLookupException
     {
         addVariantFields(INTERPRETATION_KEY, new String[] {
-            "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s" });
+        "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -312,8 +312,8 @@ public class VariantListControllerTest
     public void checkLoadParsingOfEffectKey() throws ComponentLookupException
     {
         addVariantFields(EFFECT_KEY, new String[] {
-            "insertion_in_frame", "insertion_frameshift", "deletion_in_frame", "deletion_frameshift", "indel_in_frame",
-            "indel_frameshift", "repeat_expansion", "synonymous" });
+        "insertion_in_frame", "insertion_frameshift", "deletion_in_frame", "deletion_frameshift", "indel_in_frame",
+        "indel_frameshift", "repeat_expansion", "synonymous" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -579,7 +579,7 @@ public class VariantListControllerTest
                 doReturn(values).when(obj).getFieldList();
                 doReturn(values).when(property).getList();
                 doReturn(ListClass.getStringFromList(values, ListClass.DEFAULT_SEPARATOR)).when(property)
-                .getTextValue();
+                    .getTextValue();
                 this.variantXWikiObjects.add(obj);
             }
         } else {
