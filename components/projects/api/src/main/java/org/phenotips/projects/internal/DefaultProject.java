@@ -63,6 +63,10 @@ public class DefaultProject implements Project
 
     private static final String TEMPLATE_FIELD_NAME = "templates";
 
+    private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
+
+    private static final String OPEN_FOR_VIEWING_KEY = "openProjectForViewing";
+
     private String projectId;
 
     private XWikiDocument projectObject;
@@ -368,5 +372,19 @@ public class DefaultProject implements Project
             // Should not happen
         }
         return null;
+    }
+
+    @Override
+    public boolean isProjectOpenForViewing() {
+        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_VIEWING_KEY);
+        return openIntValue == 1;
+    }
+
+    @Override
+    public boolean isProjectOpenForContribution() {
+        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
+        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
+        return openIntValue == 1;
     }
 }
