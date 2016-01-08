@@ -87,7 +87,7 @@ public class ProjectsScriptService implements ScriptService
      *
      * @return a collection of all projects that the current user can contribute to.
      */
-    public Collection<Project> getAllProjectsAsContributor()
+    public Collection<Project> getAllProjectsWithContributionRights()
     {
         // Both leaders and contributors can contribute to a project
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
