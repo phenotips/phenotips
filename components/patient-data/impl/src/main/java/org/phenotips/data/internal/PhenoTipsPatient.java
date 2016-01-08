@@ -285,7 +285,10 @@ public class PhenoTipsPatient implements Patient
             if (StringUtils.isBlank(phenotype.getId())) {
                 continue;
             }
-            featuresJSON.put(phenotype.toJSON());
+            JSONObject featureJSON = phenotype.toJSON();
+            if (featureJSON != null) {
+                featuresJSON.put(featureJSON);
+            }
         }
         return featuresJSON;
     }
@@ -297,7 +300,10 @@ public class PhenoTipsPatient implements Patient
             if (StringUtils.isNotBlank(phenotype.getId())) {
                 continue;
             }
-            featuresJSON.put(phenotype.toJSON());
+            JSONObject featureJSON = phenotype.toJSON();
+            if (featureJSON != null) {
+                featuresJSON.put(featureJSON);
+            }
         }
         return featuresJSON;
     }
@@ -307,7 +313,10 @@ public class PhenoTipsPatient implements Patient
     {
         JSONArray diseasesJSON = new JSONArray();
         for (Disorder disease : this.disorders) {
-            diseasesJSON.put(disease.toJSON());
+            JSONObject diseaseJSON = disease.toJSON();
+            if (diseaseJSON != null) {
+                diseasesJSON.put(diseaseJSON);
+            }
         }
         return diseasesJSON;
     }
