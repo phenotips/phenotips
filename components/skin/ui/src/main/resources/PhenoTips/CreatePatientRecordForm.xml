@@ -49,7 +49,7 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
       ##
       $xwiki.ssx.use('PhenoTips.ProjectBindingClass')##
       $xwiki.jsx.use('PhenoTips.ProjectBindingClass')##
-      &lt;input type="hidden" id="numberOfProjects" value="$services.projects.getAllProjectsAsContributor().size()" /&gt;
+      &lt;input type="hidden" id="numberOfProjects" value="$services.projects.getAllProjectsWithContributionRights().size()" /&gt;
       ##
       #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
          $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
@@ -611,7 +611,7 @@ $xwiki.ssx.use('PhenoTips.CreatePatientRecordForm')
 
 {{velocity}}
 (% class="tp-assignment-config" %)
-#set ($projects = $services.projects.getAllProjectsAsContributor())
+#set ($projects = $services.projects.getAllProjectsWithContributionRights())
 #if ($xcontext.action != 'export' &amp;&amp; $projects.size() &gt; 0)
 Projects: ##
   #set ($projects = $services.projects.getProjectsForPatient($doc.getName()))

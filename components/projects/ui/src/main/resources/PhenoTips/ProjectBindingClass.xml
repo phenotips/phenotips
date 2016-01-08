@@ -59,7 +59,7 @@
 #set ($projectIds = $boundProject.getProperty('projectReference').value)
 #set ($projectIds = $projectIds.split(";"))
 #if ($mode == 'edit')
-   #set ($projects = $services.projects.getAllProjectsAsContributor())
+   #set ($projects = $services.projects.getAllProjectsWithContributionRights())
    #foreach ($p in $projects)
       &lt;div&gt;
       #set ($checkedString = '')
