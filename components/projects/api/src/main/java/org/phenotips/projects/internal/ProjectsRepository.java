@@ -96,6 +96,40 @@ public class ProjectsRepository
     }
 
     /**
+     * Returns a collection of projects that are open for viewing by all users.
+     *
+     * @return a collection of projects that are open for viewing by all users
+     */
+    public Collection<Project> getAllProjectsOpenForViewing() {
+        Collection<Project> projects = this.getAllProjects();
+        Iterator<Project> projectIterator = projects.iterator();
+        while (projectIterator.hasNext()) {
+            Project project = projectIterator.next();
+            if (!project.isProjectOpenForViewing()) {
+                projectIterator.remove();
+            }
+        }
+        return projects;
+    }
+
+    /**
+     * Returns a collection of projects that are open for contribution by all users.
+     *
+     * @return a collection of projects that are open for contribution by all users
+     */
+    public Collection<Project> getAllProjectsOpenForContribution() {
+        Collection<Project> projects = this.getAllProjects();
+        Iterator<Project> projectIterator = projects.iterator();
+        while (projectIterator.hasNext()) {
+            Project project = projectIterator.next();
+            if (!project.isProjectOpenForContribution()) {
+                projectIterator.remove();
+            }
+        }
+        return projects;
+    }
+
+    /**
      * Returns a collection of all projects that the current user has an {@link accessLevel} to.
      *
      * @param accessLevels access levels required for a project
