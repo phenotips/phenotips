@@ -387,4 +387,19 @@ public class DefaultProject implements Project
         int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);
         return openIntValue == 1;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DefaultProject)) {
+            return false;
+        }
+
+        DefaultProject otherProject = (DefaultProject) obj;
+        return this.projectId.equals(otherProject.projectId);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.projectId.hashCode();
+    }
 }
