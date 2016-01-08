@@ -89,12 +89,34 @@ public class ProjectsScriptService implements ScriptService
      */
     public Collection<Project> getAllProjectsWithContributionRights()
     {
-        // Both leaders and contributors can contribute to a project
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
         accessLevels.add(contributorAccessLevel);
         accessLevels.add(leaderAccessLevel);
+        Collection<Project> projects = this.projectsRepository.getAllProjects(accessLevels);
 
-        return this.projectsRepository.getAllProjects(accessLevels);
+        for (Project p : this.projectsRepository.getAllProjectsOpenForContribution()) {
+            if (!projects.contains(p)) {
+                projects.add(p);
+            }
+        }
+        return projects;
+    }
+
+    /**
+     * Returns a collection of all projects that the current user can view.
+     *
+     * @return a collection of all projects that the current user can view.
+     */
+    public Collection<Project> getAllProjectsWithViewingRights()
+    {
+        Collection<Project> projects = this.getAllProjectsWithContributionRights();
+
+        for (Project p : this.projectsRepository.getAllProjectsOpenForViewing()) {
+            if (!projects.contains(p)) {
+                projects.add(p);
+            }
+        }
+        return projects;
     }
 
     /**
