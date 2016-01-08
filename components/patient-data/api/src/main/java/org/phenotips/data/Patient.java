@@ -117,7 +117,7 @@ public interface Patient
      * }
      * </pre>
      *
-     * @return the patient data, using the json-lib classes
+     * @return the patient data, using the org.json classes
      */
     JSONObject toJSON();
 
@@ -126,7 +126,7 @@ public interface Patient
      *
      * @param onlyFieldNames list of fields which should be included in the resulting JSON. All available fields will be
      *            included if null (in which case this method is equivalent to {@link #toJSON()})
-     * @return selected sub-set of patient data, using the json-lib classes
+     * @return selected sub-set of patient data, using the org.json classes
      */
     JSONObject toJSON(Collection<String> onlyFieldNames);
 

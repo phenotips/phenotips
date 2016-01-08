@@ -56,7 +56,7 @@ public interface VocabularyProperty
      * }
      * </pre>
      *
-     * @return the data about this value, using the json-lib classes
+     * @return the data about this value, using the org.json classes
      */
     JSONObject toJSON();
 }

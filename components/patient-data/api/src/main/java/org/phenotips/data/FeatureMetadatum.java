@@ -109,7 +109,7 @@ public interface FeatureMetadatum extends VocabularyProperty
      * }
      * </pre>
      *
-     * @return the meta-feature data, using the json-lib classes
+     * @return the meta-feature data, using the org.json classes
      */
     @Override
     JSONObject toJSON();
