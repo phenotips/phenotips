@@ -244,48 +244,42 @@ var PhenoTips = (function(PhenoTips) {
           onFailure: function (response) {}
         });
       } else {
-        this._chartResourcesResponseHandler({responseJSON: {charts: {}}});
+        this._chartResourcesResponseHandler({responseJSON: {charts: []}});
       }
     },
 
     _chartResourcesResponseHandler: function(resp) {
       var charts = resp.responseJSON.charts;
 
-      // Delete charts that are no longer present
-      this.el.select('.chart-thumbs > div').each((function(el) {
-        for (var i = 0; i < charts.length; i++) {
-          if (charts[i].url == el.down('img').src) {
-            return;
-          }
-        }
-        if (this._mainImgEl && this._mainImgEl.down('img').src == el.down('img').src) {
-          this._mainImgEl.remove(); this._mainImgEl = undefined;
-        }
-        el.remove();
-      }).bind(this));
+      // Remember the currently selected chart before we reset
+      var selectedThumbEl = this.el.down('.chart-thumbs > div.selected');
+      var selectedChartTitle = selectedThumbEl && selectedThumbEl.down('span').innerHTML;
+      // Reset thumbnails
+      this.el.select('.chart-thumbs > div').invoke('remove');
+      var infoEl = this.el.down('.infomessage');
+      if (infoEl && charts.length) {
+        infoEl.remove();
+      } else if (!infoEl && !charts.length && this._mainImgEl) {
+        this._mainImgEl.remove();
+        this._mainImgEl = undefined;
+      }
+      
+      var firstThumb, notYetSelected = true;
+      for (var i = 0; i < charts.length; i++) {
+        var thumbEl = this._addThumb(charts[i]);
 
-      // Add new charts
-      var els = this.el.select('.chart-thumbs > div');
-      var i = 0; j = 0;
-      while (i < charts.length) {
-        if (els && j < els.length && charts[i].url == els[j].down('img').src) {
-          j++;
-        } else {
-          var below = (els && j < els.length) ? els[j] : undefined;
-
-          var infoEl = this.el.down('.infomessage');
-          if (infoEl) {
-            infoEl.remove();
-            this._mainImgEl.remove();
-            this._mainImgEl = undefined;
-          }
-
-          var thumbEl = this._addThumb(charts[i], below);
-          if (!this._mainImgEl) {
-            this.selectChart(thumbEl);
-          }
+        if (!firstThumb) {
+          firstThumb = thumbEl;
         }
-        i++;
+
+        if (charts[i].title == selectedChartTitle) {
+          this.selectChart(thumbEl);
+          notYetSelected = false;
+        }
+      }
+
+      if (firstThumb && notYetSelected) {
+        this.selectChart(firstThumb);
       }
     },
 
@@ -318,18 +312,24 @@ var PhenoTips = (function(PhenoTips) {
 
       var url = thumbEl.down('img').src;
 
-      var mainChartEl = new Element('a');
+      if (this._mainImgEl) {
+        var mainChartEl = this._mainImgEl;
+        var mainChartImgEl = mainChartEl.down('img');
+      } else {
+        var mainChartEl = new Element('a');
+        mainChartEl.setAttribute('target', "_blank");
+
+        var mainChartImgEl = new Element('img');
+        mainChartImgEl.addClassName('main');
+        mainChartEl.insert(mainChartImgEl);
+      }
       mainChartEl.setAttribute('href', url.replace("&f=svg", ""));
-      mainChartEl.setAttribute('target', "_blank");
-
-      var mainChartImgEl = new Element('img');
       mainChartImgEl.setAttribute('src', url);
-      mainChartImgEl.addClassName('main');
-      mainChartEl.insert(mainChartImgEl);
 
-      this._mainImgEl && this._mainImgEl.remove();
-      this.el.insert({bottom: mainChartEl});
-      this._mainImgEl = mainChartEl;
+      if (!this._mainImgEl) {
+        this.el.insert({bottom: mainChartEl});
+        this._mainImgEl = mainChartEl;
+      }
     },
   });
 
@@ -742,7 +742,7 @@ var PhenoTips = (function(PhenoTips) {
       this._getDependentMeasurementField = this._getDependentMeasurementField.bind(this);
 
       if (XWiki.contextaction == 'edit') {
-      	this._displayEl = this.el.down('span.val');
+        this._displayEl = this.el.down('span.val');
 
         // Init field
         this._valueEl.readOnly = true;
