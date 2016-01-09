@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-chebi</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.3</version>
   </parent>
   <artifactId>vocabulary-chebi-api</artifactId>
   <name>PhenoTips - Vocabularies - Chemical Entities of Biological Interest integration - APIs</name>
