@@ -76,9 +76,4 @@ public class PrenatalPhenotypeController extends AbstractComplexController<List<
         return this.hpoCodes;
     }
 
-    @Override
-    protected boolean isCodeFieldsOnly()
-    {
-        return true;
-    }
 }
