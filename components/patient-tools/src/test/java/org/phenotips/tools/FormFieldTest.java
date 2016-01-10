@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -42,9 +43,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -340,7 +338,7 @@ public class FormFieldTest
         }
 
         @Override
-        public JSON toJSON()
+        public JSONObject toJSON()
         {
             JSONObject json = new JSONObject();
             json.put("id", this.getId());

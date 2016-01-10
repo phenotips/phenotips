@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * API that allows pushing patient data to a remote PhenoTips instance (plus helper methods useful for displaying push

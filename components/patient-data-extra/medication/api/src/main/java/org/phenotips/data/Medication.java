@@ -26,10 +26,9 @@ import org.xwiki.stability.Unstable;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.sf.json.JSONObject;
 
 /**
  * Information about the medication taken by a patient.

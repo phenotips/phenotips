@@ -51,6 +51,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,8 +61,6 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;

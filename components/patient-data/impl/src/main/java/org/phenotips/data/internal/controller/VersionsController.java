@@ -41,12 +41,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Exposes the version of the ontologies used for creating the patient record, as well as the current PhenoTips version.

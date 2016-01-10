@@ -31,12 +31,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Has only one field corresponding to whether the patient is affected, normal, or pre-symptomatic.
@@ -97,12 +96,12 @@ public class ClinicalStatusController implements PatientDataController<String>
         if (data == null) {
             return;
         }
-        JSONObject container = json.getJSONObject(getName());
+        JSONObject container = json.optJSONObject(getName());
 
-        if (container == null || container.isNullObject()) {
+        if (container == null) {
             // put() is placed here because we want to create the property iff at least one field is set/enabled
             json.put(getName(), new JSONObject());
-            container = json.getJSONObject(getName());
+            container = json.optJSONObject(getName());
         }
         container.put(data.getName(), data.getValue());
     }

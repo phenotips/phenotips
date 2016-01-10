@@ -48,6 +48,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -55,9 +56,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 /**
  * Default implementation for the {@link PushPatientData} component.
@@ -215,7 +213,7 @@ public class DefaultPushPatientData implements PushPatientData
                     return null;
                 }
 
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
 
                 return new DefaultPushServerConfigurationResponse(responseJSON);
             }
@@ -267,7 +265,7 @@ public class DefaultPushPatientData implements PushPatientData
 
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
                 this.logger.trace("RESPONSE FROM SERVER: {}", response);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
 
                 return new DefaultPushServerSendPatientResponse(responseJSON);
             }
@@ -305,7 +303,7 @@ public class DefaultPushPatientData implements PushPatientData
 
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
                 this.logger.trace("RESPONSE FROM SERVER: {}", response);
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
 
                 return new DefaultPushServerGetPatientIDResponse(responseJSON);
             }

@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * A wrapper around PushPatientData which deals with saving and retrieval of remote user names and tokens and provides

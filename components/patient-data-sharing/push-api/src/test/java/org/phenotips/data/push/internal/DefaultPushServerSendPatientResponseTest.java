@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.push.internal;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,50 +37,45 @@ public class DefaultPushServerSendPatientResponseTest
     @Test
     public void isActionFailed_incorrectGroupVerifiesTrueKey()
     {
-        pushResponse.response.accumulate("incorrect_user_group", true);
-        Assert.assertTrue(pushResponse.isActionFailed_incorrectGroup());
-        pushResponse.response.clear();
-        pushResponse.response.accumulate("incorrect_user_group", false);
-        Assert.assertFalse(pushResponse.isActionFailed_incorrectGroup());
+        this.pushResponse.response.put("incorrect_user_group", true);
+        Assert.assertTrue(this.pushResponse.isActionFailed_incorrectGroup());
+        this.pushResponse.response.put("incorrect_user_group", false);
+        Assert.assertFalse(this.pushResponse.isActionFailed_incorrectGroup());
     }
 
     @Test
     public void isActionFailed_UpdateDisabledVerifiesTrueKey()
     {
-        this.pushResponse.response.accumulate("updates_disabled", true);
+        this.pushResponse.response.put("updates_disabled", true);
         Assert.assertTrue(this.pushResponse.isActionFailed_UpdatesDisabled());
-        pushResponse.response.clear();
-        this.pushResponse.response.accumulate("updates_disabled", false);
+        this.pushResponse.response.put("updates_disabled", false);
         Assert.assertFalse(this.pushResponse.isActionFailed_IncorrectGUID());
     }
 
     @Test
     public void isActionFailed_IncorrectGUIDVerifiesTrueKey()
     {
-        this.pushResponse.response.accumulate("incorrect_guid", true);
+        this.pushResponse.response.put("incorrect_guid", true);
         Assert.assertTrue(this.pushResponse.isActionFailed_IncorrectGUID());
-        pushResponse.response.clear();
-        this.pushResponse.response.accumulate("incorrect_guid", false);
+        this.pushResponse.response.put("incorrect_guid", false);
         Assert.assertFalse(this.pushResponse.isActionFailed_IncorrectGUID());
     }
 
     @Test
     public void isActionFailed_GUIDAccessDeniedVerifiesTrueKey()
     {
-        this.pushResponse.response.accumulate("guid_access_denied", true);
+        this.pushResponse.response.put("guid_access_denied", true);
         Assert.assertTrue(this.pushResponse.isActionFailed_GUIDAccessDenied());
-        this.pushResponse.response.clear();
-        this.pushResponse.response.accumulate("guid_access_denied", false);
+        this.pushResponse.response.put("guid_access_denied", false);
         Assert.assertFalse(this.pushResponse.isActionFailed_GUIDAccessDenied());
     }
 
     @Test
     public void isActionFailed_knownReasonVerifiesTrueKey()
     {
-        this.pushResponse.response.accumulate("guid_access_denied", true);
+        this.pushResponse.response.put("guid_access_denied", true);
         Assert.assertTrue(this.pushResponse.isActionFailed_knownReason());
-        this.pushResponse.response.clear();
-        this.pushResponse.response.accumulate("guid_access_denied", false);
+        this.pushResponse.response.put("guid_access_denied", false);
         Assert.assertFalse(this.pushResponse.isActionFailed_knownReason());
     }
 }

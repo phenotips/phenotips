@@ -38,14 +38,13 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Base class for handling data in different types of objects (String, List, etc) and preserving the object type. Has
@@ -113,15 +112,15 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         if (iterator == null || !iterator.hasNext()) {
             return;
         }
-        JSONObject container = json.getJSONObject(getJsonPropertyName());
+        JSONObject container = json.optJSONObject(getJsonPropertyName());
 
         while (iterator.hasNext()) {
             Map.Entry<String, T> item = iterator.next();
             if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
-                if (container == null || container.isNullObject()) {
+                if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
-                    container = json.getJSONObject(getJsonPropertyName());
+                    container = json.optJSONObject(getJsonPropertyName());
                 }
                 String itemKey = item.getKey();
                 container.put(itemKey, format(itemKey, item.getValue()));
@@ -192,7 +191,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             } else {
                 term = new QuickVocabularyProperty(code.toString());
             }
-            labeledList.add(term.toJSON());
+            labeledList.put(term.toJSON());
         }
         return labeledList;
     }

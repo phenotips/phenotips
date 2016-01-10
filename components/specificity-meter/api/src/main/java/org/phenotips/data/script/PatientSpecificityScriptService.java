@@ -40,7 +40,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * A service that computes the patient specificity, a score estimating how "good" a patient record is.

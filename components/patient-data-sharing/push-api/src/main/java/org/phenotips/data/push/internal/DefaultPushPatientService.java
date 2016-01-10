@@ -48,15 +48,14 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for the {@link PushPatientData} component.
@@ -212,7 +211,7 @@ public class DefaultPushPatientService implements PushPatientService
         Set<String> fieldSet = null;
         try {
             if (listOfStrings != null) {
-                JSONArray fields = JSONArray.fromObject(listOfStrings);
+                JSONArray fields = new JSONArray(listOfStrings);
                 if (fields != null) {
                     fieldSet = new TreeSet<String>();
                     for (Object field : fields) {

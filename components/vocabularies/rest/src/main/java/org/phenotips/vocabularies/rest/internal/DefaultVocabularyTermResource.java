@@ -35,8 +35,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Default implementation of the {@link VocabularyTermResource}.
@@ -83,7 +82,7 @@ public class DefaultVocabularyTermResource extends XWikiResource implements Voca
 
     private JSONObject createTermRepresentation(VocabularyTerm term)
     {
-        JSONObject rep = JSONObject.fromObject(term.toJSON());
+        JSONObject rep = term.toJSON();
         // decorate with links
         JSONObject links = new JSONObject();
         links.accumulate(Relations.SELF, this.uriInfo.getRequestUri().toString());

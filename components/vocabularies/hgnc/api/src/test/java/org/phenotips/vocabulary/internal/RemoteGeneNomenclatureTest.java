@@ -49,6 +49,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,8 +59,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.matchers.CapturingMatcher;
-
-import net.sf.json.JSONArray;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -134,7 +133,11 @@ public class RemoteGeneNomenclatureTest
         Assert.assertEquals("BRCA1", result.get("symbol"));
         Assert.assertEquals("breast cancer 1, early onset", result.getName());
         JSONArray aliases = (JSONArray) result.get("alias_symbol");
-        Assert.assertArrayEquals(new String[] { "RNF53", "BRCC1", "PPP1R53" }, aliases.toArray());
+        String[] expected = new String[] { "RNF53", "BRCC1", "PPP1R53" };
+        Assert.assertEquals(expected.length, aliases.length());
+        for (int i = 0; i < expected.length; ++i) {
+            Assert.assertEquals(expected[i], aliases.get(i));
+        }
         verify(this.cache).set("BRCA1", result);
     }
 
@@ -154,7 +157,11 @@ public class RemoteGeneNomenclatureTest
         Assert.assertEquals("BRCA1", result.get("symbol"));
         Assert.assertEquals("breast cancer 1, early onset", result.getName());
         JSONArray aliases = (JSONArray) result.get("alias_symbol");
-        Assert.assertArrayEquals(new String[] { "RNF53", "BRCC1", "PPP1R53" }, aliases.toArray());
+        String[] expected = new String[] { "RNF53", "BRCC1", "PPP1R53" };
+        Assert.assertEquals(expected.length, aliases.length());
+        for (int i = 0; i < expected.length; ++i) {
+            Assert.assertEquals(expected[i], aliases.get(i));
+        }
         verify(this.cache).set("BRCA1", result);
     }
 

@@ -18,7 +18,7 @@
 package org.phenotips.data.push.internal;
 
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

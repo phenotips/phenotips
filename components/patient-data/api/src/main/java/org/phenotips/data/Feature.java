@@ -21,7 +21,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Map;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a specific feature recorded for a {@link Patient patient}.
@@ -78,7 +78,7 @@ public interface Feature extends VocabularyProperty
      * }
      * </pre>
      *
-     * @return the feature data, using the json-lib classes
+     * @return the feature data, using the org.json classes
      */
     @Override
     JSONObject toJSON();

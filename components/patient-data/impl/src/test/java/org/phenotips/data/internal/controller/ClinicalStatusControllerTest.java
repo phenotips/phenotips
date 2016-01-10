@@ -30,6 +30,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,8 +40,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.doReturn;
 
@@ -132,7 +131,7 @@ public class ClinicalStatusControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test
@@ -145,7 +144,7 @@ public class ClinicalStatusControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertTrue(json.getJSONObject(DATA_NAME) == null || json.getJSONObject(DATA_NAME).isNullObject());
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test

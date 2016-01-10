@@ -91,6 +91,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rest-server</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${xwiki.version}</version>
@@ -111,6 +117,11 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- Depend on the XWiki platform WAR to get all web resources. -->

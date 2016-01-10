@@ -43,13 +43,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's date of birth and the exam date.

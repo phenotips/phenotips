@@ -20,7 +20,7 @@ package org.phenotips.data.push.internal;
 import org.phenotips.data.push.PushServerResponse;
 import org.phenotips.data.shareprotocol.ShareProtocol;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 public class DefaultPushServerResponse implements PushServerResponse
 {
@@ -35,28 +35,28 @@ public class DefaultPushServerResponse implements PushServerResponse
     public static JSONObject generateIncorrectCredentialsJSON()
     {
         JSONObject response = new JSONObject();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED, true);
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS, true);
         return response;
     }
 
     public static JSONObject generateActionFailedJSON()
     {
         JSONObject response = new JSONObject();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED, true);
         return response;
     }
 
     protected boolean hasKeySetToTrue(String key)
     {
-        return this.response.containsKey(key) && this.response.getBoolean(key);
+        return this.response.has(key) && this.response.getBoolean(key);
     }
 
     protected String valueOrNull(String key)
     {
-        if (!this.response.containsKey(key)) {
+        if (!this.response.has(key)) {
             return null;
         }
 
@@ -73,7 +73,7 @@ public class DefaultPushServerResponse implements PushServerResponse
     public boolean isIncorrectProtocolVersion()
     {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED) ||
-            !this.response.containsKey(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
+            !this.response.has(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
     }
 
     @Override

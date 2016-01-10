@@ -27,8 +27,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where data is represented by properties in objects of
@@ -121,10 +120,10 @@ public abstract class AbstractPhenoTipsVocabularyProperty implements VocabularyP
     {
         JSONObject result = new JSONObject();
         if (StringUtils.isNotEmpty(this.getId())) {
-            result.element(ID_JSON_KEY_NAME, getId());
+            result.put(ID_JSON_KEY_NAME, getId());
         }
         if (StringUtils.isNotEmpty(this.getName())) {
-            result.element(NAME_JSON_KEY_NAME, getName());
+            result.put(NAME_JSON_KEY_NAME, getName());
         }
         return result;
     }

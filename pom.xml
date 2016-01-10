@@ -208,14 +208,18 @@
       </dependency>
       <!-- JSON serialization and deserialization -->
       <dependency>
-        <groupId>net.sf.json-lib</groupId>
-        <artifactId>json-lib</artifactId>
-        <classifier>jdk15</classifier>
-        <version>2.4</version>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20151123</version>
+      </dependency>
+      <dependency>
+        <groupId>org.restlet.jse</groupId>
+        <artifactId>org.restlet.ext.jaxrs</artifactId>
+        <version>2.0.14</version>
         <exclusions>
           <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.restlet.jse</groupId>
+            <artifactId>org.restlet.lib.org.json</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -302,6 +306,17 @@
         <version>2.48.2</version>
         <scope>test</scope>
       </dependency>
+      <!-- Use a more recent version of Jackson, the latest compatible with the version of restlet in use -->
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -369,6 +384,42 @@
               <differenceType>7012</differenceType>
               <method>java.lang.String getName()</method>
               <justification>New methods for better vocabulary identification.</justification>
+            </difference>
+
+            <difference>
+              <className>**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.* toJSON(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/Patient</className>
+              <differenceType>7005</differenceType>
+              <method>void updateFromJSON(net.sf.json.JSONObject)</method>
+              <to>void updateFromJSON(org.json.JSONObject)</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/*</className>
+              <differenceType>7005</differenceType>
+              <method>*</method>
+              <to>*</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject getLocalPatientJSON(java.lang.String, java.lang.String)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/receive/**</className>
+              <differenceType>7006</differenceType>
+              <method>net.sf.json.JSONObject *(*)</method>
+              <to>org.json.JSONObject</to>
+              <justification>Switched from net.sf.json to org.json.</justification>
             </difference>
           </ignored>
           <excludes>

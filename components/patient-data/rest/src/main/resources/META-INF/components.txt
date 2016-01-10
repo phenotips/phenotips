@@ -1,4 +1,5 @@
 org.phenotips.data.rest.internal.ConfigureISODatesInJson
+org.phenotips.data.rest.internal.ConfigureJsonMapper
 org.phenotips.data.rest.internal.DefaultDomainObjectFactory
 org.phenotips.data.rest.internal.DefaultPatientByExternalIdResourceImpl
 org.phenotips.data.rest.internal.DefaultPatientResourceImpl

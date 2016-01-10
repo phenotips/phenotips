@@ -22,7 +22,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * <p>

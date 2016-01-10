@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,8 +49,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -243,7 +242,8 @@ public class ObstetricHistoryControllerTest
 
         this.obstetricHistoryController.writeJSON(this.patient, json);
         Assert.assertNotNull(json);
-        Assert.assertEquals(testData, json.getJSONObject("prenatal_perinatal_history").get("obstetric-history"));
+        Assert.assertTrue(new JSONObject(testData).similar(
+            json.getJSONObject("prenatal_perinatal_history").get("obstetric-history")));
     }
 
     @Test
@@ -254,7 +254,7 @@ public class ObstetricHistoryControllerTest
         fieldList.add("test field");
 
         this.obstetricHistoryController.writeJSON(this.patient, json, fieldList);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class ObstetricHistoryControllerTest
         JSONObject json = new JSONObject();
 
         this.obstetricHistoryController.writeJSON(this.patient, json, null);
-        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -305,7 +305,9 @@ public class ObstetricHistoryControllerTest
                 container = parent.optJSONObject(path);
             }
         }
-        container.putAll(obstetricData);
+        for (String key : obstetricData.keySet()) {
+            container.put(key, obstetricData.get(key));
+        }
 
         PatientData<Integer> patientData = this.obstetricHistoryController.readJSON(json);
         Assert.assertEquals("obstetric-history", patientData.getName());

@@ -37,13 +37,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's date of birth and the exam date.
@@ -144,7 +143,7 @@ public class IdentifiersController implements PatientDataController<String>
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        if (!json.containsKey(EXTERNAL_IDENTIFIER_PROPERTY_NAME)) {
+        if (!json.has(EXTERNAL_IDENTIFIER_PROPERTY_NAME)) {
             // no data supported by this controller is present in provided JSON
             return null;
         }

@@ -44,6 +44,8 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -51,9 +53,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.StringListProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles the patients gene variants.
@@ -287,7 +286,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
             if (!StringUtils.isBlank(item.get(VARIANT_KEY))) {
                 removeKeys(item, keys, enablingPropertiesMap, selectedFieldNames);
-                container.add(item);
+                container.put(item);
             }
         }
     }
@@ -316,7 +315,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
             JSONArray variantsJson = json.getJSONArray(this.getJsonPropertyName());
             List<Map<String, String>> allVariants = new LinkedList<Map<String, String>>();
             List<String> variantSymbols = new ArrayList<String>();
-            for (int i = 0; i < variantsJson.size(); ++i) {
+            for (int i = 0; i < variantsJson.length(); ++i) {
                 JSONObject variantJson = variantsJson.getJSONObject(i);
 
                 // discard it if variant cDNA is not present in the geneJson, or is whitespace, empty or duplicate

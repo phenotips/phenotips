@@ -54,6 +54,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -61,9 +63,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for the {@link ReceivePatientData} component.
@@ -185,9 +184,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject generateFailedLoginResponse(String jsonKeyToSet)
     {
         JSONObject response = generateFailureResponse();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED, true);
         if (jsonKeyToSet != null) {
-            response.element(jsonKeyToSet, true);
+            response.put(jsonKeyToSet, true);
         }
         return response;
     }
@@ -201,7 +200,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     {
         JSONObject response = generateFailedLoginResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS);
         if (jsonKeyToSet != null) {
-            response.element(jsonKeyToSet, true);
+            response.put(jsonKeyToSet, true);
         }
         return response;
     }
@@ -214,9 +213,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject generateFailedActionResponse(String jsonKeyToSet)
     {
         JSONObject response = generateFailureResponse();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED, true);
         if (jsonKeyToSet != null) {
-            response.element(jsonKeyToSet, true);
+            response.put(jsonKeyToSet, true);
         }
         return response;
     }
@@ -258,9 +257,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
             String id = patient.getDocument().getName();
 
             JSONObject response = generateSuccessfulResponse();
-            response.element(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTGUID, guid);
-            response.element(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTID, id);
-            response.element(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTURL, url);
+            response.put(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTGUID, guid);
+            response.put(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTID, id);
+            response.put(ShareProtocol.SERVER_JSON_PUSH_KEY_NAME_PATIENTURL, url);
             return response;
         } catch (Exception ex) {
             this.logger.error("Failed to get patient GUID/ID/URL: [{}] {}", ex.getMessage(), ex);
@@ -271,21 +270,21 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject generateSuccessfulResponse()
     {
         JSONObject response = generateEmptyResponse();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, true);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, true);
         return response;
     }
 
     protected JSONObject generateFailureResponse()
     {
         JSONObject response = generateEmptyResponse();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_SUCCESS, false);
         return response;
     }
 
     protected JSONObject generateEmptyResponse()
     {
         JSONObject response = new JSONObject();
-        response.element(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, ShareProtocol.JSON_RESPONSE_PROTOCOL_VERSION);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER, ShareProtocol.JSON_RESPONSE_PROTOCOL_VERSION);
         return response;
     }
 
@@ -330,8 +329,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
             return TokenStatus.INVALID;
         }
 
-        //this.logger.debug("Expected token for user [{}]: [{}] aged [{}] out of [{}]",
-        //                 userName, storedToken.getLoginToken(), storedToken.getTokenAgeInDays(), tokenLifeTimeInDays);
+        // this.logger.debug("Expected token for user [{}]: [{}] aged [{}] out of [{}]",
+        // userName, storedToken.getLoginToken(), storedToken.getTokenAgeInDays(), tokenLifeTimeInDays);
 
         if (!token.equals(storedToken.getLoginToken())) {
             this.logger.warn("Stored token does not match provided token");
@@ -488,7 +487,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 this.logger.warn("Created new patient successfully");
             }
 
-            JSONObject patientData = JSONObject.fromObject(patientJSON);
+            JSONObject patientData = new JSONObject(patientJSON);
 
             affectedPatient.updateFromJSON(patientData);
 
@@ -525,16 +524,16 @@ public class DefaultReceivePatientData implements ReceivePatientData
             Set<Group> userGroups = this.groupManager.getGroupsForUser(this.userManager.getUser(userName));
             JSONArray groupList = new JSONArray();
             for (Group g : userGroups) {
-                groupList.add(g.getReference().getName());
+                groupList.put(g.getReference().getName());
             }
 
             List<String> acceptedFields =
                 this.configurationManager.getActiveConfiguration().getEnabledNonIdentifiableFieldNames();
 
             JSONObject response = generateSuccessfulResponse();
-            response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
-            response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
-            response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
+            response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
+            response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
+            response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {
@@ -551,7 +550,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
                 this.storageManager.storeLocalLoginToken(userName, serverName, token);
 
-                response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN, token);
+                response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN, token);
             }
             return response;
 

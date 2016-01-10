@@ -38,6 +38,8 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,9 +52,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.web.Utils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -172,14 +171,14 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals("Some comments", json.getString("notes"));
 
         JSONArray qualifiers = json.getJSONArray("qualifiers");
-        Assert.assertEquals(1, qualifiers.size());
+        Assert.assertEquals(1, qualifiers.length());
         JSONObject pop = qualifiers.getJSONObject(0);
         Assert.assertEquals("HP:0003678", pop.getString("id"));
         Assert.assertEquals("Rapidly progressive", pop.getString("label"));
         Assert.assertEquals("pace_of_progression", pop.getString("type"));
 
         JSONArray jsonCategories = json.getJSONArray("categories");
-        Assert.assertEquals(2, jsonCategories.size());
+        Assert.assertEquals(2, jsonCategories.length());
         JSONObject categ = jsonCategories.getJSONObject(0);
         Assert.assertEquals("HP:0012211", categ.getString("id"));
         Assert.assertEquals("Abnormal renal physiology", categ.getString("label"));
@@ -253,14 +252,14 @@ public class PhenoTipsFeatureTest
         Assert.assertEquals("Some comments", json.getString("notes"));
 
         JSONArray qualifiers = json.getJSONArray("qualifiers");
-        Assert.assertEquals(1, qualifiers.size());
+        Assert.assertEquals(1, qualifiers.length());
         JSONObject pop = qualifiers.getJSONObject(0);
         Assert.assertEquals("HP:0003678", pop.getString("id"));
         Assert.assertEquals("Rapidly progressive", pop.getString("label"));
         Assert.assertEquals("pace_of_progression", pop.getString("type"));
 
         JSONArray jsonCategories = json.getJSONArray("categories");
-        Assert.assertEquals(2, jsonCategories.size());
+        Assert.assertEquals(2, jsonCategories.length());
         JSONObject categ = jsonCategories.getJSONObject(0);
         Assert.assertEquals("HP:0012211", categ.getString("id"));
         Assert.assertEquals("Abnormal renal physiology", categ.getString("label"));
@@ -518,7 +517,7 @@ public class PhenoTipsFeatureTest
 
         JSONObject json = new PhenoTipsFeature(doc, prop, "HP:0000100").toJSON();
         JSONArray jsonCategories = json.getJSONArray("categories");
-        Assert.assertEquals(2, jsonCategories.size());
+        Assert.assertEquals(2, jsonCategories.length());
     }
 
     @Test

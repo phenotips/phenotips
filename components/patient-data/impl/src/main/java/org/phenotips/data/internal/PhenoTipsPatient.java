@@ -42,6 +42,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +53,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 import com.xpn.xwiki.objects.ListProperty;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where patient data is represented by properties in
@@ -286,7 +285,10 @@ public class PhenoTipsPatient implements Patient
             if (StringUtils.isBlank(phenotype.getId())) {
                 continue;
             }
-            featuresJSON.add(phenotype.toJSON());
+            JSONObject featureJSON = phenotype.toJSON();
+            if (featureJSON != null) {
+                featuresJSON.put(featureJSON);
+            }
         }
         return featuresJSON;
     }
@@ -298,7 +300,10 @@ public class PhenoTipsPatient implements Patient
             if (StringUtils.isNotBlank(phenotype.getId())) {
                 continue;
             }
-            featuresJSON.add(phenotype.toJSON());
+            JSONObject featureJSON = phenotype.toJSON();
+            if (featureJSON != null) {
+                featuresJSON.put(featureJSON);
+            }
         }
         return featuresJSON;
     }
@@ -308,7 +313,10 @@ public class PhenoTipsPatient implements Patient
     {
         JSONArray diseasesJSON = new JSONArray();
         for (Disorder disease : this.disorders) {
-            diseasesJSON.add(disease.toJSON());
+            JSONObject diseaseJSON = disease.toJSON();
+            if (diseaseJSON != null) {
+                diseasesJSON.put(diseaseJSON);
+            }
         }
         return diseasesJSON;
     }
@@ -319,20 +327,20 @@ public class PhenoTipsPatient implements Patient
         JSONObject result = new JSONObject();
 
         if (isFieldIncluded(onlyFieldNames, JSON_KEY_ID)) {
-            result.element(JSON_KEY_ID, getDocument().getName());
+            result.put(JSON_KEY_ID, getDocument().getName());
         }
 
         if (getReporter() != null && isFieldIncluded(onlyFieldNames, JSON_KEY_REPORTER)) {
-            result.element(JSON_KEY_REPORTER, getReporter().getName());
+            result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
         if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
-            result.element(JSON_KEY_FEATURES, featuresToJSON());
-            result.element(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
+            result.put(JSON_KEY_FEATURES, featuresToJSON());
+            result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
         }
 
         if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISORDER_PROPERTIES)) {
-            result.element(JSON_KEY_DISORDERS, diseasesToJSON());
+            result.put(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
         for (PatientDataController<?> serializer : this.serializers.values()) {
@@ -354,7 +362,7 @@ public class PhenoTipsPatient implements Patient
                 List<String> positiveValues = new LinkedList<String>();
                 List<String> negativeValues = new LinkedList<String>();
 
-                for (int i = 0; i < inputFeatures.size(); i++) {
+                for (int i = 0; i < inputFeatures.length(); i++) {
                     JSONObject featureInJSON = inputFeatures.optJSONObject(i);
                     if (featureInJSON == null) {
                         continue;
@@ -394,7 +402,7 @@ public class PhenoTipsPatient implements Patient
                 // new disorders list (for setting values in the Wiki document)
                 List<String> disorderValues = new LinkedList<String>();
 
-                for (int i = 0; i < inputDisorders.size(); i++) {
+                for (int i = 0; i < inputDisorders.length(); i++) {
                     JSONObject disorderJSON = inputDisorders.optJSONObject(i);
                     if (disorderJSON == null) {
                         continue;

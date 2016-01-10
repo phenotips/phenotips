@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Locale;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Information about a {@link Patient patient} {@link Feature feature} property (meta-feature).
@@ -109,7 +109,7 @@ public interface FeatureMetadatum extends VocabularyProperty
      * }
      * </pre>
      *
-     * @return the meta-feature data, using the json-lib classes
+     * @return the meta-feature data, using the org.json classes
      */
     @Override
     JSONObject toJSON();

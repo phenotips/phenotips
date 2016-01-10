@@ -43,12 +43,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONObject;
 
 /**
  * Handle's the patient owner's contact information.
@@ -131,10 +130,10 @@ public class ContactInformationController implements PatientDataController<Strin
             return;
         }
 
-        JSONObject container = json.getJSONObject(DATA_CONTACT);
-        if (container == null || container.isNullObject()) {
+        JSONObject container = json.optJSONObject(DATA_CONTACT);
+        if (container == null) {
             json.put(DATA_CONTACT, new JSONObject());
-            container = json.getJSONObject(DATA_CONTACT);
+            container = json.optJSONObject(DATA_CONTACT);
         }
         while (iterator.hasNext()) {
             Entry<String, String> item = iterator.next();

@@ -19,10 +19,9 @@ package org.phenotips.data;
 
 import org.joda.time.MutablePeriod;
 import org.joda.time.Period;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-
-import net.sf.json.JSONObject;
 
 /**
  * Tests for the {@link Medication} class.
@@ -105,7 +104,7 @@ public class MedicationTest
         Assert.assertNull(m.getEffect());
         Assert.assertNull(m.getNotes());
 
-        Assert.assertTrue(m.toJSON().isEmpty());
+        Assert.assertEquals(0, m.toJSON().length());
     }
 
     @Test()

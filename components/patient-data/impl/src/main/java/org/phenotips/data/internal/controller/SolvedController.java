@@ -38,8 +38,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Handles fields for solved patient records, including solved status, PubMed ID, gene symbol, and notes.
@@ -124,17 +123,17 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
 
         Iterator<Entry<String, String>> dataIterator = data.dictionaryIterator();
-        JSONObject container = json.getJSONObject(getJsonPropertyName());
+        JSONObject container = json.optJSONObject(getJsonPropertyName());
 
         while (dataIterator.hasNext()) {
             Entry<String, String> datum = dataIterator.next();
             String key = datum.getKey();
 
             if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
-                if (container == null || container.isNullObject()) {
+                if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
-                    container = json.getJSONObject(getJsonPropertyName());
+                    container = json.optJSONObject(getJsonPropertyName());
                 }
                 // Parse value
                 String value = datum.getValue();

@@ -38,14 +38,13 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles allergies information.
@@ -108,7 +107,7 @@ public class AllergiesController implements PatientDataController<String>
             return new IndexedPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
-                    + " error has occurred during controller loading ", e.getMessage());
+                + " error has occurred during controller loading ", e.getMessage());
         }
         return null;
     }
@@ -164,7 +163,7 @@ public class AllergiesController implements PatientDataController<String>
 
         JSONArray allergiesJsonArray = new JSONArray();
         for (String allergy : allergiesData) {
-            allergiesJsonArray.add(allergy);
+            allergiesJsonArray.put(allergy);
         }
         json.put(DATA_NAME, allergiesJsonArray);
     }

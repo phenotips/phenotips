@@ -51,9 +51,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import net.sf.json.JSONObject;
 
 /**
  * Default implementation for {@link PatientsResource} using XWiki's support for REST resources.
@@ -100,7 +99,7 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
         try {
-            JSONObject jsonInput = JSONObject.fromObject(json);
+            JSONObject jsonInput = json == null ? null : new JSONObject(json);
 
             Patient patient = this.repository.createNewPatient();
             patient.updateFromJSON(jsonInput);

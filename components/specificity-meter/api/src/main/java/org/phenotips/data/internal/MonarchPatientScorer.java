@@ -32,9 +32,10 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
-
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -45,17 +46,17 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
 
 /**
  * Patient scorer that uses the remote service offered by the MONARCH initiative.
@@ -69,6 +70,9 @@ import net.sf.json.JSONSerializer;
 public class MonarchPatientScorer implements PatientScorer, Initializable
 {
     private static final String SCORER_NAME = "monarchinitiative.org";
+
+    @Inject
+    private Logger logger;
 
     @Inject
     @Named("xwikiproperties")
@@ -88,7 +92,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            scorerURL = this.configuration
+            this.scorerURL = this.configuration
                 .getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score");
             CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
             this.cache = this.cacheManager.createNewCache(config);
@@ -130,28 +134,29 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             JSONArray features = new JSONArray();
             for (Feature f : patient.getFeatures()) {
                 if (StringUtils.isNotEmpty(f.getId())) {
-                    JSONObject featureObj = new JSONObject();
-                    featureObj.put("id", f.getId());
+                    JSONObject featureObj = new JSONObject(Collections.singletonMap("id", f.getId()));
                     if (!f.isPresent()) {
                         featureObj.put("isPresent", false);
                     }
-                    features.add(featureObj);
+                    features.put(featureObj);
                 }
             }
             data.put("features", features);
 
-            HttpGet method =
-                new HttpGet(new URIBuilder(scorerURL).addParameter("annotation_profile",
-                    data.toString()).build());
+            HttpPost method = new HttpPost(this.scorerURL);
+            method.setEntity(new StringEntity("annotation_profile=" + URLEncoder.encode(data.toString(), "UTF-8"),
+                Consts.UTF_8));
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);
             response = this.client.execute(method);
-            JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
+            JSONObject score = new JSONObject(IOUtils.toString(response.getEntity().getContent()));
             specificity = new PatientSpecificity(score.getDouble("scaled_score"), now(), SCORER_NAME);
             this.cache.set(key, specificity);
             return specificity.getScore();
         } catch (Exception ex) {
             // Just return failure below
+            this.logger.error("Failed to compute specificity score for patient [{}] using the monarch server [{}]: {}",
+                patient.getDocument(), this.scorerURL, ex.getMessage());
         } finally {
             if (response != null) {
                 try {

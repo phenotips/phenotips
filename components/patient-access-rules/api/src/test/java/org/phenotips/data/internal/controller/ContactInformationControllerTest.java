@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,9 +50,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -261,7 +259,7 @@ public class ContactInformationControllerTest
         when(this.patient.getData("contact")).thenReturn(null);
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertEquals(0, json.size());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -270,7 +268,7 @@ public class ContactInformationControllerTest
         JSONObject json = new JSONObject();
         Collection<String> enabledFields = Collections.singleton("features");
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
-        Assert.assertEquals(0, json.size());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -279,7 +277,7 @@ public class ContactInformationControllerTest
         JSONObject json = new JSONObject();
         when(this.data.isNamed()).thenReturn(false);
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertEquals(0, json.size());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -288,7 +286,7 @@ public class ContactInformationControllerTest
         JSONObject json = new JSONObject();
         when(this.data.dictionaryIterator()).thenReturn(Collections.<Entry<String, String>>emptyIterator());
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertEquals(0, json.size());
+        Assert.assertEquals(0, json.length());
     }
 
     @Test
@@ -306,9 +304,9 @@ public class ContactInformationControllerTest
         when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
         Collection<String> enabledFields = Collections.singleton("contact");
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
-        Assert.assertEquals(1, json.size());
+        Assert.assertEquals(1, json.length());
         contact = json.getJSONObject("contact");
-        Assert.assertEquals(3, contact.size());
+        Assert.assertEquals(3, contact.length());
         Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
         Assert.assertEquals("Cardiology", contact.getString("workgroup"));
         Assert.assertEquals("John Doe", contact.getString("name"));
@@ -318,7 +316,6 @@ public class ContactInformationControllerTest
     public void writeJSONReplacesNullElement() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
-        json.put("contact", JSONNull.getInstance());
 
         Map<String, String> data = new HashMap<>();
         data.put("email", "jdoe@hospital.org");
@@ -326,9 +323,9 @@ public class ContactInformationControllerTest
         when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
         Collection<String> enabledFields = Collections.singleton("contact");
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
-        Assert.assertEquals(1, json.size());
+        Assert.assertEquals(1, json.length());
         JSONObject contact = json.getJSONObject("contact");
-        Assert.assertEquals(2, contact.size());
+        Assert.assertEquals(2, contact.length());
         Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
         Assert.assertEquals("John Doe", contact.getString("name"));
     }
@@ -343,9 +340,9 @@ public class ContactInformationControllerTest
         data.put("name", "John Doe");
         when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
-        Assert.assertEquals(1, json.size());
+        Assert.assertEquals(1, json.length());
         JSONObject contact = json.getJSONObject("contact");
-        Assert.assertEquals(2, contact.size());
+        Assert.assertEquals(2, contact.length());
         Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
         Assert.assertEquals("John Doe", contact.getString("name"));
     }

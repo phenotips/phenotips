@@ -29,6 +29,7 @@ import org.xwiki.diff.DiffManager;
 
 import javax.inject.Provider;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +39,6 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.web.Utils;
-
-import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

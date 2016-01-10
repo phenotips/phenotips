@@ -22,9 +22,9 @@ import org.phenotips.data.VocabularyProperty;
 
 import java.util.Locale;
 
-import com.xpn.xwiki.objects.StringProperty;
+import org.json.JSONObject;
 
-import net.sf.json.JSONObject;
+import com.xpn.xwiki.objects.StringProperty;
 
 /**
  * Implementation of patient data based on the XWiki data model, where feature metadata is represented by properties in
@@ -59,7 +59,7 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsVocabularyProper
     public JSONObject toJSON()
     {
         JSONObject result = super.toJSON();
-        result.element("type", getType());
+        result.put("type", getType());
         return result;
     }
 

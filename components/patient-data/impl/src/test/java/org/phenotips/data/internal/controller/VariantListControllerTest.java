@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,9 +50,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.objects.classes.ListClass;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -398,7 +397,7 @@ public class VariantListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -414,7 +413,7 @@ public class VariantListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
         verify(this.patient).getData(CONTROLLER_NAME);
     }
 
@@ -430,7 +429,7 @@ public class VariantListControllerTest
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
-        Assert.assertNull(json.get(CONTROLLER_NAME));
+        Assert.assertFalse(json.has(CONTROLLER_NAME));
     }
 
     @Test
@@ -456,7 +455,7 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        Assert.assertTrue(json.getJSONArray(CONTROLLER_NAME).isEmpty());
+        Assert.assertEquals(0, json.getJSONArray(CONTROLLER_NAME).length());
     }
 
     @Test
@@ -479,8 +478,8 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("variantName", item.get(VARIANT_KEY));
+        JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
+        Assert.assertEquals("variantName", result.get(VARIANT_KEY));
     }
 
     @Test
@@ -525,13 +524,13 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("variantName", item.get(VARIANT_KEY));
-        Assert.assertEquals("geneSymbol", item.get(GENESYMBOL_KEY));
-        Assert.assertEquals("Protein", item.get(PROTEIN_KEY));
-        Assert.assertEquals("Transcript", item.get(TRANSCRIPT_KEY));
-        Assert.assertEquals("DBSNP", item.get(DBSNP_KEY));
-        Assert.assertEquals("Zygosity", item.get(ZYGOSITY_KEY));
+        JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
+        Assert.assertEquals("variantName", result.get(VARIANT_KEY));
+        Assert.assertEquals("geneSymbol", result.get(GENESYMBOL_KEY));
+        Assert.assertEquals("Protein", result.get(PROTEIN_KEY));
+        Assert.assertEquals("Transcript", result.get(TRANSCRIPT_KEY));
+        Assert.assertEquals("DBSNP", result.get(DBSNP_KEY));
+        Assert.assertEquals("Zygosity", result.get(ZYGOSITY_KEY));
 
         json = new JSONObject();
         internalList = new LinkedList<>();
@@ -558,9 +557,9 @@ public class VariantListControllerTest
 
         Assert.assertNotNull(json.get(CONTROLLER_NAME));
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
-        item = (Map<String, String>) json.getJSONArray(CONTROLLER_NAME).get(0);
-        Assert.assertEquals("variantName", item.get(VARIANT_KEY));
-        Assert.assertEquals(1, item.size());
+        result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
+        Assert.assertEquals("variantName", result.get(VARIANT_KEY));
+        Assert.assertEquals(1, result.length());
     }
 
     // ----------------------------------------Private methods----------------------------------------
