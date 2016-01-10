@@ -156,7 +156,8 @@ public class VariantListControllerTest
     public void checkGetJsonPropertyName() throws ComponentLookupException
     {
         Assert.assertEquals(CONTROLLER_NAME,
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getJsonPropertyName());
+            ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest())
+                .getJsonPropertyName());
     }
 
     @Test
@@ -184,13 +185,15 @@ public class VariantListControllerTest
     public void checkGetBooleanFields() throws ComponentLookupException
     {
         Assert.assertTrue(
-            ((AbstractComplexController) this.mocker.getComponentUnderTest()).getBooleanFields().isEmpty());
+            ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getBooleanFields()
+                .isEmpty());
     }
 
     @Test
     public void checkGetCodeFields() throws ComponentLookupException
     {
-        Assert.assertTrue(((AbstractComplexController) this.mocker.getComponentUnderTest()).getCodeFields().isEmpty());
+        Assert.assertTrue(((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest())
+            .getCodeFields().isEmpty());
     }
 
     // --------------------load() is Overridden from AbstractSimpleController--------------------
