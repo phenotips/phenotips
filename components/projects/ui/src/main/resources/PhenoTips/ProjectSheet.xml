@@ -431,7 +431,7 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
          var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times'});
          row.insert(deleteTool.wrap('td'));
          deleteTool.observe('click', function(event) {
-            if (_this.openForContribution) { //contributors-div is disabled
+            if (_this.openForContribution &amp;&amp; collaboratorType == 'contributors') { //contributors-div is disabled
                return;
             }
             event.findElement('tr').remove();
