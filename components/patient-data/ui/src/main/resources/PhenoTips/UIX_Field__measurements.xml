@@ -112,8 +112,6 @@
 
 {{include reference="PhenoTips.ChartServiceMacros" /}}
 
-{{include reference="PhenoTips.UtilityMacros" /}}
-
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssfx.use('uicomponents/phenotips/measurements.css')##
@@ -203,9 +201,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 #end
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
-#set ($orderedMeasurements = $configObj.getProperty('ordering').value)
-#foreach ($measurement in $orderedMeasurements)
-  #set ($handler = $services.measurements.get($measurement))
+#foreach ($handler in $services.measurements.getAvailableMeasurementHandlers())
   #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
        &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
     #set($name = $handler.getName())
@@ -285,8 +281,8 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 ##
 #if ($xcontext.action == 'edit' || $doc.getObject('PhenoTips.MeasurementClass'))##
 ##
-#set ($sortedMeasurementObjs = [])
-#sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
+#set ($sortedMeasurementObjs = $doc.getObjects('PhenoTips.MeasurementClass'))
+#set ($discard = $services.measurements.sortMeasurementObjectsByAge($sortedMeasurementObjs))
 ##
 #set ($measurementSets = {})
 #foreach ($obj in $sortedMeasurementObjs)
