@@ -29,7 +29,7 @@
   <name>PhenoTips - Patient measurements - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.72</coverage.instructionRatio>
+    <coverage.instructionRatio>0.59</coverage.instructionRatio>
   </properties>
 
   <dependencies>
