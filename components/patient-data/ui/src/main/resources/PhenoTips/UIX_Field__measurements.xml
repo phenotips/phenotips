@@ -286,8 +286,8 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 ##
 #if ($xcontext.action == 'edit' || $doc.getObject('PhenoTips.MeasurementClass'))##
 ##
-#set ($sortedMeasurementObjs = [])
-#sortXWikiObjectsList($doc.getObjects('PhenoTips.MeasurementClass'), 'age', $sortedMeasurementObjs)
+#set ($sortedMeasurementObjs = $doc.getObjects('PhenoTips.MeasurementClass'))
+#set ($discard = $services.measurements.sortMeasurementObjects($sortedMeasurementObjs))
 ##
 #set ($measurementSets = {})
 #foreach ($obj in $sortedMeasurementObjs)
