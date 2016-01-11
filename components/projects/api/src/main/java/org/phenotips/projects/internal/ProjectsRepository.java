@@ -21,9 +21,10 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -41,6 +42,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * @version $Id$
@@ -63,8 +66,10 @@ public class ProjectsRepository
     private ProjectAccessLevel leaderAccessLevel;
 
     @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> entityResolver;
+    private DocumentReferenceResolver<String> stringResolver;
+
+    @Inject
+    private DocumentAccessBridge bridge;
 
     /**
      * Returns a collection of EntityReferences of all projects.
@@ -89,7 +94,7 @@ public class ProjectsRepository
 
         List<Project> projects = new ArrayList<Project>(queryResults.size());
         for (String projectId : queryResults) {
-            Project p = new DefaultProject(projectId);
+            Project p = this.getProjectById(projectId);
             projects.add(p);
         }
         return projects;
@@ -161,5 +166,24 @@ public class ProjectsRepository
         }
 
         return projects;
+    }
+
+    /**
+     * Returns an existing project by its id. If no project is found, returns null.
+     *
+     * @param projectId id of project to return
+     * @return a project object with project.getId().equals(projectId)
+     */
+    public Project getProjectById(String projectId) {
+        DocumentReference reference = this.stringResolver.resolve(projectId, Project.DEFAULT_DATA_SPACE);
+        try {
+            XWikiDocument xDoc = (XWikiDocument) this.bridge.getDocument(reference);
+            if (xDoc != null && xDoc.getXObject(Project.CLASS_REFERENCE) != null) {
+                return new DefaultProject(xDoc);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Failed to access project with id [{}]: {}", projectId, ex.getMessage(), ex);
+        }
+        return null;
     }
 }
