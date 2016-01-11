@@ -77,6 +77,9 @@ public class ProjectAndTemplateBinder
     @Inject
     private Logger logger;
 
+    @Inject
+    private ProjectsRepository projectsRepository;
+
     /**
      * Assigns project(s) to a patient.
      *
@@ -88,7 +91,7 @@ public class ProjectAndTemplateBinder
         List<String> projectsList = new ArrayList<String>();
         if (!StringUtils.isEmpty(projectsSelected)) {
             for (String projectId : projectsSelected.split(",")) {
-                Project p = new DefaultProject(projectId);
+                Project p = this.projectsRepository.getProjectById(projectId);
                 projectsList.add(p.getFullName());
             }
         }
@@ -113,7 +116,8 @@ public class ProjectAndTemplateBinder
             String projectsString = projectBindingObject.getStringValue(PROJECT_BINDING_FIELD);
             if (projectsString != null) {
                 for (String projectId : projectsString.split(PROJECTS_SEPARATOR)) {
-                    projects.add(new DefaultProject(projectId));
+                    Project project = this.projectsRepository.getProjectById(projectId);
+                    projects.add(project);
                 }
             }
         }
