@@ -41,6 +41,8 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.api.Object;
+
 /**
  * Bridge offering access to specific {@link MeasurementHandler measurement handlers} to scripts.
  *
@@ -210,5 +212,44 @@ public class MeasurementsScriptService implements ScriptService
             }
             return p1 - p2;
         }
+    }
+
+    /**
+     * Mechanism for sorting measurement objects according to age string, in ascending order according to the parsed
+     * value of the age string, in months.
+     *
+     * @version $Id $
+     */
+    private static final class MeasurementObjectSorter implements Comparator<Object>
+    {
+        /** Singleton instance. */
+        private static MeasurementObjectSorter instance = new MeasurementObjectSorter();
+
+        private static final String AGE_KEY = "age";
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            double age1 = MeasurementUtils.convertAgeStrToNumMonths((String) o1.getProperty(AGE_KEY).getValue());
+            double age2 = MeasurementUtils.convertAgeStrToNumMonths((String) o2.getProperty(AGE_KEY).getValue());
+
+            if (age1 > age2) {
+                return 1;
+            } else if (age1 < age2) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    /**
+     * Sort a list of measurement objects.
+     *
+     * @param objects the list of XWiki objects to sort
+     */
+    public void sortMeasurementObjects(List<Object> objects)
+    {
+        Collections.sort(objects, MeasurementObjectSorter.instance);
     }
 }
