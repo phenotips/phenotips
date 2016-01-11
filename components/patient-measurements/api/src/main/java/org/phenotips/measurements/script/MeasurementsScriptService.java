@@ -225,6 +225,7 @@ public class MeasurementsScriptService implements ScriptService
         /** Singleton instance. */
         private static MeasurementObjectSorter instance = new MeasurementObjectSorter();
 
+        /** Key for accessing age property. */
         private static final String AGE_KEY = "age";
 
         @Override
