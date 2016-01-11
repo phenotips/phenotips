@@ -21,7 +21,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
-import org.phenotips.projects.internal.DefaultProject;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
 import org.phenotips.projects.internal.ProjectsRepository;
 import org.phenotips.templates.data.Template;
@@ -70,7 +69,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public Project getProjectById(String projectId)
     {
-        return new DefaultProject(projectId);
+        return this.projectsRepository.getProjectById(projectId);
     }
 
     /**

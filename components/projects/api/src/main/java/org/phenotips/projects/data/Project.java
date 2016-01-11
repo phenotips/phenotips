@@ -45,6 +45,13 @@ public interface Project
         new EntityReference("ProjectTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /**
+     * Returns the id of the project.
+     *
+     * @return id of the project
+     */
+    String getId();
+
+    /**
      * Returns the document reference of the project.
      *
      * @return document reference of the project
