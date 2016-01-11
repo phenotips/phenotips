@@ -306,21 +306,27 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
 
     _getProjectTemplateSelection : function() {
        var projectsSelected = '';
-       $('projectsSection').select(":input").map(function(item) {
-          if (item.checked) {
-             if (projectsSelected.length>0) {
-                projectsSelected += ",";
+       var projectsSection = $('projectsSection');
+       if (projectsSection) {
+          $('projectsSection').select(":input").map(function(item) {
+             if (item.checked) {
+                if (projectsSelected.length>0) {
+                   projectsSelected += ",";
+                }
+                projectsSelected += item.name;
              }
-             projectsSelected += item.name;
-          }
-       });
+          });
+       }
 
        var templateSelected = '';
-       var templates = $('templatesSelect').select("option").map(function(item) {
-          if (item.selected) {
-             templateSelected = item.value;
-          }
-       });
+       var templatesSelect = $('templatesSelect');
+       if (templatesSelect) {
+          var templates = $('templatesSelect').select("option").map(function(item) {
+             if (item.selected) {
+                templateSelected = item.value;
+             }
+          });
+       }
 
        return {projectsSelected : projectsSelected,
                templateSelected : templateSelected};
