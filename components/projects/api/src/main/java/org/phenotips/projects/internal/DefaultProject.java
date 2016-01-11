@@ -27,7 +27,6 @@ import org.phenotips.projects.data.Project;
 import org.phenotips.templates.data.Template;
 import org.phenotips.templates.internal.DefaultTemplate;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
@@ -76,19 +75,23 @@ public class DefaultProject implements Project
     /**
      * Basic constructor.
      *
-     * @param projectId if of the project
+     * @param projectObject xwiki object of project
      */
-    public DefaultProject(String projectId)
-    {
-        this.projectId = projectId;
-        this.projectObject = this.getProjectObject();
+    public DefaultProject(XWikiDocument projectObject) {
+        this.projectObject = projectObject;
         this.projectReference = this.projectObject.getDocumentReference();
+        this.projectId = this.projectReference.getName();
     }
 
     @Override
     public DocumentReference getReference()
     {
         return projectReference;
+    }
+
+    @Override
+    public String getId() {
+        return this.projectId;
     }
 
     @Override
@@ -272,17 +275,6 @@ public class DefaultProject implements Project
         return null;
     }
 
-    private XWikiDocument getProjectObject()
-    {
-        DocumentReference reference = this.getStringResolver().resolve(this.projectId, Project.DEFAULT_DATA_SPACE);
-        try {
-            return (XWikiDocument) this.getBridge().getDocument(reference);
-        } catch (Exception ex) {
-            this.getLogger().warn("Failed to access project with id [{}]: {}", projectId, ex.getMessage(), ex);
-        }
-        return null;
-    }
-
     private DocumentReferenceResolver<EntityReference> getEntityResolver() {
         try {
             return ComponentManagerRegistry.getContextComponentManager()
@@ -297,16 +289,6 @@ public class DefaultProject implements Project
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                 .getInstance(EntityReferenceSerializer.TYPE_STRING);
-        } catch (ComponentLookupException e) {
-            // Should not happen
-        }
-        return null;
-    }
-
-    private DocumentAccessBridge getBridge() {
-        try {
-            return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(DocumentAccessBridge.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
