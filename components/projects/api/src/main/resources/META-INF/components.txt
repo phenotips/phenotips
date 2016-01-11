@@ -4,3 +4,4 @@ org.phenotips.projects.access.ContributorAccessLevel
 org.phenotips.projects.internal.ProjectsRepository
 org.phenotips.projects.internal.ProjectAndTemplateAssignmentInitializer
 org.phenotips.projects.internal.ProjectAndTemplateBinder
+org.phenotips.projects.authorization.ProjectAuthorizationModule
