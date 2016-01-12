@@ -25,7 +25,7 @@ import org.json.JSONObject;
  * Used for representing a single consent; for example in a patient record.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Unstable
 public interface Consent

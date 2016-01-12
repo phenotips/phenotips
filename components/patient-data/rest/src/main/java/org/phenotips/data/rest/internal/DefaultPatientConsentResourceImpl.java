@@ -45,7 +45,7 @@ import org.slf4j.Logger;
  * The only implementation of the {@link PatientConsentResource} endpoints.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Component
 @Named("org.phenotips.data.rest.internal.DefaultPatientConsentResourceImpl")

@@ -21,6 +21,8 @@ import org.phenotips.configuration.RecordElement;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
+
 
 import java.util.List;
 
@@ -28,8 +30,9 @@ import java.util.List;
  * Grants authorization to keep a {@link RecordElement} enabled.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
+@Unstable
 @Role
 public interface ConsentAuthorizer
 {

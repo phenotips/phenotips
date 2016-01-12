@@ -38,7 +38,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * application-configuration section must be redesigned.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Component
 @Singleton

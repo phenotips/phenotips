@@ -27,7 +27,7 @@ import org.json.JSONObject;
  * Default (currently only) implementation of {@link Consent}.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 public class DefaultConsent implements Consent
 {

@@ -18,6 +18,7 @@
 package org.phenotips.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.List;
 
@@ -28,8 +29,9 @@ import org.json.JSONArray;
  * from a patient and converting them to JSON.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
+@Unstable
 @Role
 public interface ConsentManager
 {

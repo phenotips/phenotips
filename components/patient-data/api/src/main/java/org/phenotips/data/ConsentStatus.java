@@ -21,7 +21,7 @@ package org.phenotips.data;
  * Used to indicate the status of a consent, which is not limited to 'granted'/'not granted'.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 public enum ConsentStatus
 {

@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
  * Resource for working with patient records, identified by their internal PhenoTips identifier.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Path("/patients/{patient_id}/consents")
 public interface PatientConsentResource

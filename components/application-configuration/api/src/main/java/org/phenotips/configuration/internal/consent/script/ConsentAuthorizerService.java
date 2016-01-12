@@ -36,7 +36,7 @@ import javax.inject.Singleton;
  * The service exposing {@link org.phenotips.configuration.internal.consent.DefaultConsentAuthorizer}.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Unstable
 @Component

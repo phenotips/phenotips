@@ -55,7 +55,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * {@link ConsentManager} that integrates with XWiki and the {@link DefaultConsent}.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 @Component
 @Singleton
