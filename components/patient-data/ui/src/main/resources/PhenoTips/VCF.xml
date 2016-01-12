@@ -236,7 +236,7 @@ enabled=true
 required=
 order=2
 fields=
-privacy_level=2</parameters>
+required_consents=genetic</parameters>
     </property>
     <property>
       <scope>wiki</scope>

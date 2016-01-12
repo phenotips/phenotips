@@ -54,6 +54,11 @@ public class DefaultPushServerSendPatientResponse extends DefaultPushServerGetPa
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
     }
 
+    @Override public boolean isActionFailed_MissingConsent()
+    {
+        return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT);
+    }
+
     @Override
     public boolean isActionFailed_knownReason()
     {

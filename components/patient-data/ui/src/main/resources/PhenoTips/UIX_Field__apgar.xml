@@ -133,7 +133,7 @@ enabled=true
 required=
 order=3
 fields=apgar1,apgar5
-privacy_level=3</parameters>
+required_consents=share_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

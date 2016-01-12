@@ -22,6 +22,7 @@ import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PushServerPatientStateResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -95,18 +96,29 @@ public class PushPatientScriptService implements ScriptService
             saveUserToken);
     }
 
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier)
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGuid)
     {
-        return this.internalService.sendPatient(patientID, exportFieldListJSON, groupName, remoteGUID,
-            remoteServerIdentifier);
+        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGuid);
     }
 
-    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
-        String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
+    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGuid,
+        String remoteUserName, String password)
     {
-        return this.internalService.sendPatient(patientID, exportFieldListJSON, groupName, remoteGUID,
-            remoteServerIdentifier, remoteUserName, password);
+        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGuid, remoteUserName, password);
+    }
+
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier)
+    {
+        return this.internalService.sendPatient(patientID, exportFieldListJSON, patientState, groupName,
+            remoteGUID, remoteServerIdentifier);
+    }
+
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
+        String groupName, String remoteGUID, String remoteServerIdentifier, String remoteUserName, String password)
+    {
+        return this.internalService.sendPatient(patientID, exportFieldListJSON, patientState, groupName,
+            remoteGUID, remoteServerIdentifier, remoteUserName, password);
     }
 
     public PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remotePatientGUID)

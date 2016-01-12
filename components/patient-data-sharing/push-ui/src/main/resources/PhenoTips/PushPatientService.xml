@@ -106,6 +106,41 @@
     #set ($data.loginfailed = 'true')    ## one form or another of incorrect username, password or stored token
   #end
   $jsontool.serialize($data)
+#elseif ($request.do == 'getremotepatientstate')
+  ## test1: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getremoteconfig&amp;serverid=PUSH1&amp;usr=Zzz2&amp;pwd=zzz123&amp;savetoken=true
+  ## test2: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getremoteconfig&amp;serverid=PUSH1  (after test1, supposedly works using stored username/token)
+  #set ($serverId  = $request.serverid)
+  #set ($username  = $request.usr)
+  #set ($password  = $request.pwd)
+  #set ($savetoken = $request.savetoken)
+  #set ($guid      = $request.guid)
+
+  #if ($guid == 'auto')
+    #set ($guid = $service.getPatientPushHistory($patientid, $serverId).getRemotePatientGUID())
+  #end
+
+  #if (!$username)
+    #set ($response = $service.getRemotePatientState($serverId, $guid))  ## passwordless login using stored token
+  #else
+    #set ($response = $service.getRemotePatientState($serverId, $guid, $username, $password, $savetoken))
+  #end
+
+  ## There are many possible sources of error. Assume error until you actually get success :)
+  ##
+  #set ($data = {'status':'error'})
+  #if (!$response || $response.isIncorrectProtocolVersion())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.cantconnect = 'true')
+  #elseif ($response.isSuccessful())
+    ## yay!
+    #set ($data = {'status':'success', 'consents':$response.getConsentsAsJson()})
+  #elseif ($response.isLoginFailed_UnauthorizedServer())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.unauthorizedserver = 'true')
+  #elseif ($response.isLoginFailed())
+    #set ($data.loginfailed = 'true')    ## one form or another of incorrect username, password or stored token
+  #end
+  $jsontool.serialize($data)
 #elseif ($request.do == 'push')
   #set ($serverId  = $request.serverid)
   #set ($username  = $request.usr)
@@ -114,15 +149,16 @@
   #set ($patientid = $request.patientid)
   #set ($guid      = $request.guid)
   #set ($fields    = $request.fields)
+  #set ($patientState = $request.patientState)
 
   #if ($guid == 'auto')
      #set ($guid = $service.getPatientPushHistory($patientid, $serverId).getRemotePatientGUID())
   #end
 
   #if (!$username)
-    #set ($response = $service.sendPatient($patientid, $fields, $groupname, $guid, $serverId))  ## passwordless login using stored token
+    #set ($response = $service.sendPatient($patientid, $fields, $patientState, $groupname, $guid, $serverId))  ## passwordless login using stored token
   #else
-    #set ($response = $service.sendPatient($patientid, $fields, $groupname, $guid, $serverId, $username, $password))
+    #set ($response = $service.sendPatient($patientid, $fields, $patientState, $groupname, $guid, $serverId, $username, $password))
   #end
 
   ##$jsontool.serialize($response)
@@ -149,6 +185,9 @@
     #end
     #if ($response.isActionFailed_GUIDAccessDenied())
        #set ($data.accessdeniedguid = 'true')
+    #end
+    #if ($response.isActionFailed_MissingConsent())
+      #set ($data.missingconsent = 'true')
     #end
   #end
   $jsontool.serialize($data)

@@ -778,7 +778,7 @@ enabled=true
 required=
 order=1
 fields=unaffected,phenotype,negative_phenotype
-privacy_level=1</parameters>
+required_consents=real</parameters>
     </property>
     <property>
       <scope>wiki</scope>
