@@ -39,7 +39,7 @@ public class DefaultConsent implements Consent
 
     DefaultConsent(String id, String description, boolean required)
     {
-        if (id == null || description == null || StringUtils.isEmpty(id) || StringUtils.isEmpty(description)) {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(description)) {
             throw new IllegalArgumentException("A consent cannot have empty id or description");
         }
         this.id = id;
