@@ -20,11 +20,9 @@ package org.phenotips.data.internal;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentStatus;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 
 public class DefaultConsentTest
 {
@@ -98,13 +96,12 @@ public class DefaultConsentTest
         Consent consent = new DefaultConsent(ID_STRING, DESCRIPTION_STRING, required);
         consent.setStatus(status);
 
-        JSON json = consent.toJson();
-        Assert.assertTrue(!json.isArray());
+        JSONObject json = consent.toJson();
+        Assert.assertNotNull(json);
 
-        JSONObject obj = (JSONObject) json;
-        Assert.assertSame(obj.getString("id"), ID_STRING);
-        Assert.assertSame(obj.getString("description"), DESCRIPTION_STRING);
-        Assert.assertSame(obj.getString("status"), status.toString());
-        Assert.assertSame(obj.getBoolean("isRequired"), required);
+        Assert.assertSame(json.getString("id"), ID_STRING);
+        Assert.assertSame(json.getString("description"), DESCRIPTION_STRING);
+        Assert.assertSame(json.getString("status"), status.toString());
+        Assert.assertSame(json.getBoolean("isRequired"), required);
     }
 }

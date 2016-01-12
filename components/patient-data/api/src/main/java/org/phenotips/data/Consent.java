@@ -19,7 +19,7 @@ package org.phenotips.data;
 
 import org.xwiki.stability.Unstable;
 
-import net.sf.json.JSON;
+import org.json.JSONObject;
 
 /**
  * Used for representing a single consent; for example in a patient record.
@@ -72,7 +72,7 @@ public interface Consent
      *
      * @return a JSON object representing this consent
      */
-    JSON toJson();
+    JSONObject toJson();
 
     /**
      * Should be a static method, but should also be in the interface.
@@ -80,5 +80,5 @@ public interface Consent
      * @param json the representation of a consent
      * @return a new {@link Consent} instance, as represented by
      */
-    Consent fromJson(JSON json);
+    Consent fromJson(JSONObject json);
 }

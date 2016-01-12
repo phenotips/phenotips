@@ -39,6 +39,8 @@ import java.util.List;
 import javax.inject.Provider;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,10 +50,6 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -310,8 +308,8 @@ public class PatientXWikiConsentManagerTest
     @Test
     public void testJson() throws ComponentLookupException
     {
-        JSON j1 = JSONObject.fromObject("{j1: 1}");
-        JSON j2 = JSONObject.fromObject("{j2: 2}");
+        JSONObject j1 = new JSONObject("{j1: 1}");
+        JSONObject j2 = new JSONObject("{j2: 2}");
         Consent c1 = mock(Consent.class);
         doReturn(j1).when(c1).toJson();
         Consent c2 = mock(Consent.class);
@@ -320,12 +318,20 @@ public class PatientXWikiConsentManagerTest
         consents.add(c1);
         consents.add(c2);
 
-        JSON json = this.mocker.getComponentUnderTest().toJson(consents);
-        Assert.assertTrue(json.isArray());
-
-        JSONArray jsonArray = (JSONArray) json;
-        Assert.assertTrue(jsonArray.contains(j1));
-        Assert.assertTrue(jsonArray.contains(j2));
-        Assert.assertTrue(jsonArray.size() == 2);
+        JSONArray json = this.mocker.getComponentUnderTest().toJson(consents);
+        Assert.assertNotNull(json);
+        Assert.assertTrue(json.length() == 2);
+        boolean found1 = false;
+        boolean found2 = false;
+        for (int i = 0; i < json.length(); ++i) {
+            JSONObject o = json.getJSONObject(i);
+            if (o.similar(j1)) {
+                found1 = true;
+            } else if (o.similar(j2)) {
+                found2 = true;
+            }
+        }
+        Assert.assertTrue(found1);
+        Assert.assertTrue(found2);
     }
 }

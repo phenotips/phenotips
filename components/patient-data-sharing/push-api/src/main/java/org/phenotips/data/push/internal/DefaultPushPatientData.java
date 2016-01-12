@@ -264,7 +264,7 @@ public class DefaultPushPatientData implements PushPatientData
                     return null;
                 }
 
-                JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+                JSONObject responseJSON = new JSONObject(response);
 
                 return new DefaultPushServerPatientStateResponse(responseJSON, consentManager);
             }
@@ -279,7 +279,7 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, JSON patientState,
+    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, JSONObject patientState,
         String groupName, String remoteGUID, String remoteServerIdentifier, String userName, String password,
         String userToken)
     {

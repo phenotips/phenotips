@@ -21,7 +21,7 @@ import org.xwiki.component.annotation.Role;
 
 import java.util.List;
 
-import net.sf.json.JSON;
+import org.json.JSONArray;
 
 /**
  * Used for interacting with several consents (represented as {@link Consent}) at once; for example loading all consents
@@ -85,12 +85,12 @@ public interface ConsentManager
      * @param consents to be converted into JSON representation
      * @return an array of consents in JSON format
      */
-    JSON toJson(List<Consent> consents);
+    JSONArray toJson(List<Consent> consents);
 
     /**
      * A convenience function (which must be static), that allows for conversion of JSON representing several consents.
      * @param json which contains representation of consents
      * @return a list of {@link Consent} instances, converted from JSON
      */
-    List<Consent> fromJson(JSON json);
+    List<Consent> fromJson(JSONArray json);
 }

@@ -21,9 +21,7 @@ import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentStatus;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Default (currently only) implementation of {@link Consent}.
@@ -74,7 +72,7 @@ public class DefaultConsent implements Consent
         return this.required;
     }
 
-    @Override public JSON toJson()
+    @Override public JSONObject toJson()
     {
         JSONObject json = new JSONObject();
         json.put("id", this.getId());
@@ -84,7 +82,7 @@ public class DefaultConsent implements Consent
         return json;
     }
 
-    @Override public Consent fromJson(JSON json)
+    @Override public Consent fromJson(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

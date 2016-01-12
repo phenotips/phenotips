@@ -43,15 +43,13 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 
 /**
  * {@link ConsentManager} that integrates with XWiki and the {@link DefaultConsent}.
@@ -196,16 +194,16 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return this.manageConsent(patient, consentId, false);
     }
 
-    @Override public JSON toJson(List<Consent> consents)
+    @Override public JSONArray toJson(List<Consent> consents)
     {
         JSONArray json = new JSONArray();
         for (Consent consent : consents) {
-            json.add(consent.toJson());
+            json.put(consent.toJson());
         }
         return json;
     }
 
-    @Override public List<Consent> fromJson(JSON json)
+    @Override public List<Consent> fromJson(JSONArray json)
     {
         return null;
     }

@@ -564,7 +564,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     {
         if (rawPatientState != null) {
             try {
-                return JSONObject.fromObject(URLDecoder.decode(rawPatientState, XWiki.DEFAULT_ENCODING));
+                return new JSONObject(URLDecoder.decode(rawPatientState, XWiki.DEFAULT_ENCODING));
             } catch (Exception ex) {
                 // do nothing
             }
@@ -644,7 +644,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             * then return the state as it will be when a new patient is created. */
             String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
             String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
-            JSON consents;
+            JSONArray consents;
             if (guid != null) {
                 Patient patient =  getPatientByGUID(guid);
                 if (patient == null) {
@@ -661,7 +661,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             JSONObject response = generateSuccessfulResponse();
-            response.element(ShareProtocol.SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS, consents);
+            response.put(ShareProtocol.SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS, consents);
 
             return response;
 

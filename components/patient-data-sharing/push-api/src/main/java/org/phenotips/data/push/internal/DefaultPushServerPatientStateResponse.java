@@ -24,9 +24,8 @@ import org.phenotips.data.shareprotocol.ShareProtocol;
 
 import java.util.List;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class DefaultPushServerPatientStateResponse extends DefaultPushServerResponse implements
     PushServerPatientStateResponse
@@ -55,7 +54,7 @@ public class DefaultPushServerPatientStateResponse extends DefaultPushServerResp
         return consentManager.fromJson(this.getConsentsAsJson());
     }
 
-    @Override public JSON getConsentsAsJson()
+    @Override public JSONArray getConsentsAsJson()
     {
         JSONArray consents = this.response.optJSONArray(ShareProtocol.SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS);
         if (consents == null) {

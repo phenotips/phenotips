@@ -424,7 +424,7 @@
             <difference>
               <className>org/phenotips/data/receive/ReceivePatientData</className>
               <differenceType>7012</differenceType>
-              <method>net.sf.json.JSONObject getPatientState()</method>
+              <method>org.json.JSONObject getPatientState()</method>
               <justification>Added a new endpoint on the receiving side in patient push module</justification>
             </difference>
             <difference>

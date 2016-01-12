@@ -38,9 +38,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
-
-import net.sf.json.JSON;
 
 /**
  * The only implementation of the {@link PatientConsentResource} endpoints.
@@ -75,7 +74,7 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
         Security security = this.securityCheck(patientId);
         if (security.isAllowed()) {
             List<Consent> consents = consentManager.loadConsentsFromPatient(security.getPatient());
-            JSON json = consentManager.toJson(consents);
+            JSONArray json = consentManager.toJson(consents);
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } else {
             return security.getFailResponse();

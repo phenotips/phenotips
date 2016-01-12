@@ -320,7 +320,7 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
-        JSON patientStateJSON = this.parsePatientStateToJSON(patientState);
+        JSONObject patientStateJSON = this.parsePatientStateToJSON(patientState);
 
         PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields,
             patientStateJSON, groupName, remoteGUID, remoteServerIdentifier, storedData.getRemoteUserName(), null,
@@ -343,7 +343,7 @@ public class DefaultPushPatientService implements PushPatientService
         }
 
         Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
-        JSON patientStateJSON = this.parsePatientStateToJSON(patientState);
+        JSONObject patientStateJSON = this.parsePatientStateToJSON(patientState);
 
         PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields,
             patientStateJSON, groupName, remoteGUID, remoteServerIdentifier, remoteUserName, password, null);
@@ -387,11 +387,11 @@ public class DefaultPushPatientService implements PushPatientService
             null);
     }
 
-    private JSON parsePatientStateToJSON(String patientStateString) {
+    private JSONObject parsePatientStateToJSON(String patientStateString) {
         /* since the state comes directly from the user side, taking some basic security precautions */
         JSONObject patientState = new JSONObject();
         try {
-            JSONObject parsedString = JSONObject.fromObject(patientStateString);
+            JSONObject parsedString = new JSONObject(patientStateString);
             copyOverConsents(parsedString, patientState);
         } catch(Exception ex) {
             // do nothing
@@ -399,7 +399,7 @@ public class DefaultPushPatientService implements PushPatientService
         return patientState;
     }
 
-    private JSON copyOverConsents(JSONObject from, JSONObject to) {
+    private JSONObject copyOverConsents(JSONObject from, JSONObject to) {
         String key = "consents";
         try {
             /* should be an array of strings */
