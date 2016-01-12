@@ -112,8 +112,6 @@
 
 {{include reference="PhenoTips.ChartServiceMacros" /}}
 
-{{include reference="PhenoTips.UtilityMacros" /}}
-
 {{velocity}}
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssfx.use('uicomponents/phenotips/measurements.css')##
