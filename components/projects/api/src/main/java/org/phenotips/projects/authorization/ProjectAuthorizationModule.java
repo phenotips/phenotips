@@ -122,6 +122,6 @@ public class ProjectAuthorizationModule implements AuthorizationModule
             }
         }
 
-        return false;
+        return null;
     }
 }
