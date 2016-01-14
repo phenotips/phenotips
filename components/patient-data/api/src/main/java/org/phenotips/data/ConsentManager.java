@@ -83,7 +83,7 @@ public interface ConsentManager
 
     /**
      * A convenience function (which must be static), that allows for conversion of a list of consents into a
-     * {@link net.sf.json.JSONArray} containing JSON representations of all consents.
+     * {@link org.json.JSONArray} containing JSON representations of all consents.
      * @param consents to be converted into JSON representation
      * @return an array of consents in JSON format
      */
