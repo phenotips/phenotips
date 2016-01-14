@@ -155,10 +155,12 @@ public class ParentalAgeController implements PatientDataController<Integer>
             }
         }
         // todo. Chose this block over what was in Master. Need to check that it was the right choice
-        if (!result.isEmpty()) {
+        if (result.length() > 0) {
             JSONObject container = json.optJSONObject(this.getJsonPropertyName());
             if (container != null) {
-                container.putAll(result);
+                for (String key : result.keySet()) {
+                    container.put(key, result.opt(key));
+                }
             } else {
                 json.put(getJsonPropertyName(), result);
             }

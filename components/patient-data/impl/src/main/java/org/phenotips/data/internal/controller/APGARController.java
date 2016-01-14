@@ -170,7 +170,7 @@ public class APGARController implements PatientDataController<Integer>
     public PatientData<Integer> readJSON(JSONObject json)
     {
         JSONObject container = json.getJSONObject(DATA_NAME);
-        if (container != null && !container.isNullObject()) {
+        if (container != null) {
             Map<String, Integer> parsed = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 try {

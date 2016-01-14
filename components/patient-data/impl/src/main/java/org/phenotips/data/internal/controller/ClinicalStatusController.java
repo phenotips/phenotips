@@ -142,7 +142,7 @@ public class ClinicalStatusController implements PatientDataController<String>
     public PatientData<String> readJSON(JSONObject json)
     {
         JSONObject data = json.optJSONObject(this.getName());
-        if (data == null || data.isNullObject()) {
+        if (data == null) {
             return null;
         }
         String status = data.optString(this.getName());

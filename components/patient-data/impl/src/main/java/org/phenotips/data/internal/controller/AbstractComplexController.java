@@ -201,7 +201,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     return terms;
                 } else if (value instanceof JSONArray) {
                     List list = new LinkedList();
-                    list.addAll((JSONArray) value);
+                    for (Object o : (JSONArray) value) {
+                        list.add(o);
+                    }
                     return list;
                 } else {
                     return value.toString();
@@ -304,7 +306,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     {
         Map<String, T> result = new LinkedHashMap<String, T>();
         JSONObject container = json.getJSONObject(getJsonPropertyName());
-        if (container != null || container.isNullObject()) {
+        if (container != null) {
             for (String propertyName : getProperties()) {
                 Object value = this.inverseFormat(propertyName, container.opt(propertyName));
                 if (value != null) {

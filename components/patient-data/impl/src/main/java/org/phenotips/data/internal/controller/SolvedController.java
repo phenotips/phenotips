@@ -182,7 +182,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
-        if (!json.containsKey(this.getJsonPropertyName())) {
+        if (!json.has(this.getJsonPropertyName())) {
             // no data supported by this controller is present in provided JSON
             return null;
         }
