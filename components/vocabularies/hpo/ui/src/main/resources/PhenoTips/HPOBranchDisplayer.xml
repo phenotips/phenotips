@@ -204,7 +204,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 document.observe('xwiki:dom:loaded', function(){
   function canCollapse(sublist){
     return sublist.select('input').every(function(input){
-      return !input.checked
+      return !input.checked;
     });
   }
   $$('.hpo-branch&gt;ul').forEach(function(list){
@@ -221,13 +221,13 @@ document.observe('xwiki:dom:loaded', function(){
           sublist.removeClassName('collapsed');
           expandTool.innerHTML = "▼";
         } else if (canCollapse(sublist)) {
-          expandTool.innerHTML = "▶";
+          expandTool.innerHTML = "►";
           sublist.addClassName('collapsed');
         }
       });
       var toggleCollapse = function() {
         if (canCollapse(sublist) &amp;&amp; !checkInput.checked) {
-          expandTool.innerHTML = "▶";
+          expandTool.innerHTML = "►";
           sublist.addClassName('collapsed');
         } else {
           expandTool.innerHTML = "▼";
@@ -237,7 +237,11 @@ document.observe('xwiki:dom:loaded', function(){
 
       toggleCollapse();
 
-      listElement.observe('click', function() {
+      listElement.observe('click', function(e) {
+        if (e.target.hasClassName('phenotype-qualifier-info')) {
+          //Prevents toggle behaviour when clicking on the info icon
+          return;
+        }
         toggleCollapse();
       });
 
@@ -364,9 +368,9 @@ document.observe('xwiki:dom:loaded', function(){
   cursor: help;
 }
 .hpo-branch .term-entry .expand-tool {
-    margin-left: -1em;
-    position: absolute;
-    top: .5em;
+  margin-left: -1em;
+  top: 0.3em;
+  position: absolute;
 }</code>
     </property>
     <property>
