@@ -143,6 +143,8 @@ public class MonarchPatientScorerTest
         JSONObject expectedJson =
             new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
         Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, score, 0.0);
     }
 
@@ -223,6 +225,8 @@ public class MonarchPatientScorerTest
         JSONObject expectedJson =
             new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
         Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, spec.getScore(), 0.0);
         Assert.assertEquals("monarchinitiative.org", spec.getComputingMethod());
         Assert.assertFalse(d1.after(spec.getComputationDate()));
@@ -284,6 +288,8 @@ public class MonarchPatientScorerTest
         JSONObject expectedJson =
             new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
         Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, score, 0.0);
     }
 }
