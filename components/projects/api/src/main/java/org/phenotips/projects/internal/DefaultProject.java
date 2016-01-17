@@ -33,6 +33,9 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -338,7 +341,18 @@ public class DefaultProject implements Project
     private Logger getLogger() {
         try {
             return ComponentManagerRegistry.getContextComponentManager()
-                .getInstance(Logger.class);
+                    .getInstance(Logger.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private QueryManager getQueryManager()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                    .getInstance(QueryManager.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
@@ -383,5 +397,29 @@ public class DefaultProject implements Project
     @Override
     public int hashCode() {
         return this.projectId.hashCode();
+    }
+
+    @Override
+    public int getNumberOfPatients() {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
+        querySb.append("where patientObj.name = doc.fullName ");
+        querySb.append("and doc.fullName <> 'PhenoTips.PatientTemplate' ");
+        querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
+        querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
+        querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
+        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and accessProp.value =':project'");
+
+        Query query = null;
+        List<String> queryResults = null;
+        try {
+            query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
+            query.bindValue(":project", this.projectId);
+            queryResults = query.execute();
+        } catch (QueryException e) {
+            this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
+        }
+
+        return queryResults.size();
     }
 }
