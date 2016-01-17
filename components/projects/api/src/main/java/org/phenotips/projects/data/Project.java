@@ -88,7 +88,15 @@ public interface Project
     int getNumberOfCollaboratorsUsers();
 
     /**
-     * Returns a collection project collaborators, both leaders and contributors.
+     * Returns the number of patients that are assigned to the project.
+     *
+     * @return number of patients that are assigned to the project.
+     */
+    int getNumberOfPatients();
+
+    /**
+     * Returns a collection project collaborators, both leaders and
+     * contributors.
      *
      * @return a collection of collaborators
      */
