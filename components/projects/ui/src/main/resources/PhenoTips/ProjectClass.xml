@@ -774,11 +774,13 @@ $xwiki.jsx.use('PhenoTips.ProjectClass')
   #foreach ($project in $projectsData)
     #if ($foreach.index &lt; $max)
       #set ($colUsers = $project.getNumberOfCollaboratorsUsers())
+      #set ($patientsNumber = $project.getNumberOfPatient())
       #set ($description = $project.getDescription())
       #set ($fullName = $project.getFullName())
       ##
       |(% class="name" %) [[$project.getName()&gt;&gt;$fullName]] ##
       \\(% class="members"%)$colUsers collabortor user#if($colUsers != 1)s#end(%%)##
+      \\(% class="members"%)$patientsNumber patient#if($patientsNumber != 1)s#end(%%)##
       #if ($xcontext.macro.params.fullinfo == 'true')|##
         #if ("$!{$description}" != '')
           (% class="desc" %) ((($description)))
