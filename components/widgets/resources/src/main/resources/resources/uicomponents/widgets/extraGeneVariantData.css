@@ -64,16 +64,6 @@
   border-radius: 4px;
   opacity: .9;
 }
-.gene-table .variant-title:before {
-  position: absolute;
-  top: -15px;
-  left: 0;
-  content: "";
-  display: block;
-  border: 10px solid transparent;
-  border-bottom: 15px solid #def;
-  border-top: 0 none;
-}
 .gene-table td.variant.editing {
   background: #FFD;
 }
@@ -197,4 +187,8 @@ a.action-edit.secondary.variant-edit:hover, a.action-edit.secondary.variant-edit
 }
 .gene-table .variant-title {
   background-color: #d5e6ff !important;
+}
+.variant-title .expand-tools {
+  margin-right: -8px;
+  margin-top: -0.8em;
 }
