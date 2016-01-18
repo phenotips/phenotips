@@ -122,6 +122,9 @@
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.PushPatientWidget = Class.create({
     initialize : function() {
+      /* Due to loading problems, this will be instantiated on first use. */
+      this._consentsModule = null;
+      this._consentsModulePresent = PhenoTips.widgets.ConsentsModule ? true : false;
       // ---------------------------------------------------------------------
       // Search for the push patient elements. Exist if missing.
       // ---------------------------------------------------------------------
@@ -215,6 +218,11 @@
       this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
                      .insert(generateSection('user-selection', "$services.localization.render('phenotips.patientSharing.push.dialog.authentication.label')","$services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint')"))
                      .insert(generateSection('group-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label')","$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint')"));
+      if (this._consentsModulePresent) {
+        this._container.insert(generateSection('consents-section',
+          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
+          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')"));
+      }
       if (!this._pushManyPatients) {
           this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
       }
@@ -234,6 +242,15 @@
       this._serverManager = this._container.down('#server-selection .section-contents');
       this._userManager   = this._container.down('#user-selection .section-contents');
       this._groupManager  = this._container.down('#group-selection .section-contents');
+      if (this._consentsModulePresent) {
+        this._consentsSection = this._container.down('#consents-section');
+        this._consentsManager = this._consentsSection.down('.section-contents');
+        /* the section should appear only if the remote has consents configured */
+        this._consentsSection.hide();
+        /* inserting the error message */
+        this._consentsManager.insert('&lt;div class="box warningmessage hidden error"&gt;' +
+          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.warning')&lt;/div&gt;");
+      }
       this._fieldsManager = this._pushManyPatients ? null : this._container.down('#fields-selection .section-contents');
 
       this._initServerSelector();
@@ -514,6 +531,9 @@
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
             this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
+            if(_this._consentsModulePresent) {
+              this._populateConsentsList();
+            }
           }
           else {
             console.log("--&gt; login failed!");
@@ -749,7 +769,7 @@
     _generateDataPreview: function(fieldList) {
       this._patientFieldList = fieldList;
       var _this = this;
-      //AJAX 4: local AJAX request to get patient JSON to let the user see the actual data being pushed
+      //AJAX 5: local AJAX request to get patient JSON to let the user see the actual data being pushed
       new Ajax.Request(this._serviceURL, {
         method: _this._container.method,
         parameters : { "do":"getpatientjson", "patientid":_this._patientId, "fields":Object.toJSON(this._patientFieldList) },
@@ -836,6 +856,55 @@
           result.insert(new Element('div', {'class' : (f.observed == "no" ? "negative" : "")}).update((f.observed == "no" ? "$services.localization.render('phenotips.PushPatient.negative')" : "") + f.label).insert(f.id &amp;&amp; new Element('span', {'class' : 'hint'}).update(' (' + f.id + ')')  || '') );
         });
         return result;
+    },
+
+    // ---------------------------------------------------------------------
+    // Generate consents section UI
+    // ---------------------------------------------------------------------
+    _populateConsentsList: function() {
+      var _this = this;
+      if (!this._consentsModule) {
+        this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
+      }
+      var consentsConfiguredOnRemote = true;
+      //AJAX 4: Consents present on the remote server
+      new Ajax.Request(this._serviceURL, {
+        method: _this._container.method,
+        parameters: { "do": "getremotepatientstate", 'serverid': this._selectedServer, "patientid": _this._patientId},
+          onCreate: function ()
+          {
+            console.log("PUSH: get patient state JSON - start");
+            _this._disableInputs();
+          },
+          onSuccess: function (response)
+          {
+            console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
+            /* iff there are any consents to grant - show the section */
+            if (response.responseJSON.consents.length &gt; 1) {
+              _this._consentsModule.init(_this._consentsManager, "edit", response.responseJSON.consents);
+            } else {
+              consentsConfiguredOnRemote = false;
+            }
+          },
+          onFailure: function (response)
+          {
+            console.log("PUSH: unable to get patient state JSON");
+            _this._consentsModule.init(_this._consentsManager, "edit", []);
+          },
+          on0: function (response)
+          {
+            _this._consentsModule.init(_this._consentsManager, "edit", []);
+          },
+          onComplete: function ()
+          {
+            if(consentsConfiguredOnRemote) {
+              _this._consentsSection.show();
+            }
+            _this._restoreInputs();
+            console.log("PUSH: get patient state JSON - complete");
+          }
+        }
+      );
     },
 
     // ---------------------------------------------------------------------
@@ -1054,6 +1123,12 @@
         if (radioSelectValue != "__self") {
             params["groupname"] = radioSelectValue;
         }
+
+        var patientState = {};
+        if (_this._consentsModulePresent &amp;&amp; _this._consentsModule) {
+          patientState["consents"] = _this._consentsModule.listUIGranted(/* the HTML holder can be omitted */);
+        }
+        params["patientState"] = stringifyObject(patientState);
 
         console.log("PUSH request params: " + stringifyObject(params));
 

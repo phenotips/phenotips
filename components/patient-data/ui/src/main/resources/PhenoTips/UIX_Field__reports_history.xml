@@ -130,7 +130,7 @@ enabled=true
 required=
 order=4
 fields=reports_history
-privacy_level=4</parameters>
+required_consents=share_images</parameters>
     </property>
     <property>
       <scope>wiki</scope>

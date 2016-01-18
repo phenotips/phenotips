@@ -50,6 +50,7 @@ import org.apache.http.Consts;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -145,7 +146,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
 
             HttpPost method = new HttpPost(this.scorerURL);
             method.setEntity(new StringEntity("annotation_profile=" + URLEncoder.encode(data.toString(), "UTF-8"),
-                Consts.UTF_8));
+                ContentType.create("application/x-www-form-urlencoded", Consts.UTF_8)));
+
             RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
             method.setConfig(config);
             response = this.client.execute(method);

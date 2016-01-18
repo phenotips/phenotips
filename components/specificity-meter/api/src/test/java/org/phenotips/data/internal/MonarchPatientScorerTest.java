@@ -36,7 +36,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -49,6 +49,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -135,9 +136,15 @@ public class MonarchPatientScorerTest
         when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream("{\"scaled_score\":2}"));
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
-        Assert.assertEquals("annotation_profile="
-            + URLEncoder.encode("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}", "UTF-8"),
-            IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"));
+        String content =
+            URLDecoder.decode(IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"), "UTF-8");
+        Assert.assertTrue(content.startsWith("annotation_profile="));
+        JSONObject actualJson = new JSONObject(content.substring("annotation_profile=".length()));
+        JSONObject expectedJson =
+            new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
+        Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, score, 0.0);
     }
 
@@ -166,9 +173,6 @@ public class MonarchPatientScorerTest
         when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream(""));
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
-        Assert.assertEquals("annotation_profile="
-            + URLEncoder.encode("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}", "UTF-8"),
-            IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"));
         Assert.assertEquals(-1.0, score, 0.0);
     }
 
@@ -214,9 +218,15 @@ public class MonarchPatientScorerTest
         Date d2 = new Date();
         PatientSpecificity spec = specCapture.getLastValue();
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
-        Assert.assertEquals("annotation_profile="
-            + URLEncoder.encode("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}", "UTF-8"),
-            IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"));
+        String content =
+            URLDecoder.decode(IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"), "UTF-8");
+        Assert.assertTrue(content.startsWith("annotation_profile="));
+        JSONObject actualJson = new JSONObject(content.substring("annotation_profile=".length()));
+        JSONObject expectedJson =
+            new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
+        Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, spec.getScore(), 0.0);
         Assert.assertEquals("monarchinitiative.org", spec.getComputingMethod());
         Assert.assertFalse(d1.after(spec.getComputationDate()));
@@ -271,9 +281,15 @@ public class MonarchPatientScorerTest
         ((Initializable) this.mocker.getComponentUnderTest()).initialize();
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
-        Assert.assertEquals("annotation_profile="
-            + URLEncoder.encode("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}", "UTF-8"),
-            IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"));
+        String content =
+            URLDecoder.decode(IOUtils.toString(reqCapture.getLastValue().getEntity().getContent(), "UTF-8"), "UTF-8");
+        Assert.assertTrue(content.startsWith("annotation_profile="));
+        JSONObject actualJson = new JSONObject(content.substring("annotation_profile=".length()));
+        JSONObject expectedJson =
+            new JSONObject("{\"features\":[{\"id\":\"HP:1\"},{\"id\":\"HP:2\",\"isPresent\":false}]}");
+        Assert.assertTrue(expectedJson.similar(actualJson));
+        Assert.assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
+            reqCapture.getLastValue().getEntity().getContentType().getValue());
         Assert.assertEquals(2.0, score, 0.0);
     }
 }

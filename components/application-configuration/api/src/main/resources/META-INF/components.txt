@@ -1,2 +1,4 @@
 org.phenotips.configuration.internal.DefaultRecordConfigurationManager
 org.phenotips.configuration.script.RecordConfigurationManagerScriptService
+org.phenotips.configuration.internal.consent.script.ConsentAuthorizerService
+org.phenotips.configuration.internal.consent.DefaultConsentAuthorizer

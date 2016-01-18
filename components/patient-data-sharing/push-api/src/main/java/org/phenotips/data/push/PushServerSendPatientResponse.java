@@ -54,4 +54,11 @@ public interface PushServerSendPatientResponse extends PushServerGetPatientIDRes
      *         have permissions to update the corresponding document on the remote server.
      */
     boolean isActionFailed_GUIDAccessDenied();
+
+    /**
+     * @return {@code true} iff at least one consent that is required to have a patient record on the remote server is
+     *         missing. A missing consent is a consent that was not granted by the user on the local instance during
+     *         push.
+     */
+    boolean isActionFailed_MissingConsent();
 }

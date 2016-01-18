@@ -144,7 +144,8 @@ enabled=true
 required=
 order=1
 fields=solved,solved__pubmed_id,solved__notes
-privacy_level=1</parameters>
+privacy_level=1
+required_consents=real</parameters>
     </property>
     <property>
       <scope>wiki</scope>

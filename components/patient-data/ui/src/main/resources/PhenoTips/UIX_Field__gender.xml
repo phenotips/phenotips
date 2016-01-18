@@ -126,7 +126,7 @@ enabled=true
 required=
 order=7
 fields=gender
-privacy_level=1</parameters>
+required_consents=real</parameters>
     </property>
     <property>
       <scope>wiki</scope>

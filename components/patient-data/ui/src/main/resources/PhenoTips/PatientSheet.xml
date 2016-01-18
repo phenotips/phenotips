@@ -114,32 +114,18 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 
 #end
 ##
-#set($privacyLevelObject = $doc.getObject('PhenoTips.PatientConsent'))
-#if ("$!{privacyLevelObject}" != '')
-  #set($minimumPrivacy = false)
-  #set($docPrivacyLevels = ['0'])
-  #if ("$!{privacyLevelObject.getProperty('real').value}" == '1') 
-    #set($discard = $docPrivacyLevels.add('1'))
-    #set($minimumPrivacy = true)
-  #end
-  #if ("$!{privacyLevelObject.getProperty('genetic').value}" == '1') #set($discard = $docPrivacyLevels.add('2')) #end
-  #if ("$!{privacyLevelObject.getProperty('share_history').value}" == '1') #set($discard = $docPrivacyLevels.add('3')) #end
-  #if ("$!{privacyLevelObject.getProperty('share_images').value}" == '1') #set($discard = $docPrivacyLevels.add('4')) #end
-#end
 ## Extensions making up the main content, the actual information about the patient
 #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+#set ($consentAuthorizer = $services.consentauthorizer)
+#set ($elementCount = 0)
 #foreach ($section in $recordConfiguration.enabledSections)
   #set ($sectionContent = '')
-  #foreach ($element in $section.enabledElements)
-    #set ($privacyLevel = $element.extension.getParameters().get('privacy_level'))
-    #if ("$!{privacyLevel}" == '')
-      #set ($privacyLevel = '0')
-    #end
-    #if (($docPrivacyLevels.contains($!{privacyLevel}) &amp;&amp; $minimumPrivacy) || "$!{privacyLevelObject}" == '')
-      #set ($extension_required = ($element.extension.getParameters().get('required') == 'true'))
-      #set ($itemContent = $services.rendering.render($element.extension.execute(), 'xhtml/1.0').trim())
-      #set ($sectionContent = $sectionContent.concat($itemContent))
-    #end
+  #set ($consented = $consentAuthorizer.filterEnabled($section.enabledElements, $doc.getName()))
+  #set ($elementCount = $elementCount + $consented.size())
+  #foreach ($element in $consented)
+    #set ($extension_required = ($element.extension.getParameters().get('required') == 'true'))
+    #set ($itemContent = $services.rendering.render($element.extension.execute(), 'xhtml/1.0').trim())
+    #set ($sectionContent = $sectionContent.concat($itemContent))
   #end
   #if ($sectionContent.trim() != '')
     (% class="clear clinical-info $stringtool.substringAfterLast($section.extension.id, '.') chapter" %)(((
@@ -148,6 +134,10 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
       {{html clean="false" wiki="false"}}$sectionContent.trim(){{/html}}
     )))
   #end
+#end
+#if ($elementCount == 0)
+  {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_to_dispaly'){{/warning}}
+
 #end
 ##
 ## Extensions displayed after the content
