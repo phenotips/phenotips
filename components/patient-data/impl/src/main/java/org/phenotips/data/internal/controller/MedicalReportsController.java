@@ -69,6 +69,7 @@ public class MedicalReportsController implements PatientDataController<String>
     @Inject
     private Provider<XWikiContext> contextProvider;
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public PatientData<String> load(Patient patient)
     {

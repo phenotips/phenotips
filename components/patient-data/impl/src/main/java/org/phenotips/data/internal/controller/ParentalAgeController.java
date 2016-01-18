@@ -142,28 +142,24 @@ public class ParentalAgeController implements PatientDataController<Integer>
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         PatientData<Integer> data = patient.getData(getName());
-        if (data == null || !data.isNamed() || data.size() <= 0) {
+        if (data == null || !data.isNamed() || data.size() == 0) {
             return;
         }
 
-        JSONObject result = new JSONObject();
+        JSONObject container = json.optJSONObject(getJsonPropertyName());
+        if (container == null) {
+            container = new JSONObject();
+        }
+
         for (String propertyName : this.getProperties()) {
             if ((selectedFieldNames == null || selectedFieldNames.contains(propertyName))
                 && data.get(propertyName) != null) {
-                Integer value = data.get(propertyName);
-                result.put(propertyName, value);
+                container.put(propertyName, data.get(propertyName));
             }
         }
-        // todo. Chose this block over what was in Master. Need to check that it was the right choice
-        if (result.length() > 0) {
-            JSONObject container = json.optJSONObject(this.getJsonPropertyName());
-            if (container != null) {
-                for (String key : result.keySet()) {
-                    container.put(key, result.opt(key));
-                }
-            } else {
-                json.put(getJsonPropertyName(), result);
-            }
+
+        if (container.length() > 0) {
+            json.put(getJsonPropertyName(), container);
         }
     }
 

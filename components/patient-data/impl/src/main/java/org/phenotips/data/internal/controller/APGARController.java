@@ -93,6 +93,7 @@ public class APGARController implements PatientDataController<Integer>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
@@ -169,7 +170,7 @@ public class APGARController implements PatientDataController<Integer>
     @Override
     public PatientData<Integer> readJSON(JSONObject json)
     {
-        JSONObject container = json.getJSONObject(DATA_NAME);
+        JSONObject container = json.optJSONObject(DATA_NAME);
         if (container != null) {
             Map<String, Integer> parsed = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {

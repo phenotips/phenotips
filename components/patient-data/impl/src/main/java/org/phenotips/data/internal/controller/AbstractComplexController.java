@@ -186,6 +186,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     }
 
     /** For converting JSON into internal representation. */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private Object inverseFormat(String key, Object value)
     {
         if (value != null) {
@@ -226,8 +227,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
-    /** For different types to ones that can be saved by XWiki.
-     * @return the converted value if `value` is convertible, original `value` otherwise */
+    /**
+     * For different types to ones that can be saved by XWiki.
+     *
+     * @return the converted value if `value` is convertible, original `value` otherwise
+     */
     private Object saveFormat(Object value)
     {
         if (value == null) {
@@ -265,6 +269,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         writeJSON(patient, json, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
@@ -301,11 +306,12 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public PatientData<T> readJSON(JSONObject json)
     {
         Map<String, T> result = new LinkedHashMap<String, T>();
-        JSONObject container = json.getJSONObject(getJsonPropertyName());
+        JSONObject container = json.optJSONObject(getJsonPropertyName());
         if (container != null) {
             for (String propertyName : getProperties()) {
                 Object value = this.inverseFormat(propertyName, container.opt(propertyName));
@@ -350,6 +356,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             super(id);
         }
 
-        public QuickVocabularyProperty(JSONObject json) {super(json);}
+        public QuickVocabularyProperty(JSONObject json)
+        {
+            super(json);
+        }
     }
 }

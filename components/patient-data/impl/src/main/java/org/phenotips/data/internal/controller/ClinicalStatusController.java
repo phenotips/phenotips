@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.json.JSONObject;
 import org.apache.commons.codec.binary.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -51,9 +51,9 @@ import com.xpn.xwiki.objects.BaseProperty;
 @Singleton
 public class ClinicalStatusController implements PatientDataController<String>
 {
-    private final static String UNAFFECTED = "unaffected";
+    private static final String UNAFFECTED = "unaffected";
 
-    private final static String AFFECTED = "affected";
+    private static final String AFFECTED = "affected";
 
     /** Logging helper object. */
     @Inject
@@ -117,6 +117,7 @@ public class ClinicalStatusController implements PatientDataController<String>
         writeJSON(patient, json, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {

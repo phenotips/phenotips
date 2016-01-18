@@ -178,7 +178,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
     }
 
-
+    @SuppressWarnings("static-access")
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
@@ -207,6 +207,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
         return new DictionaryPatientData<>(this.getName(), result);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
@@ -232,6 +233,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
     }
 
     /** Finds a key inside the {@link #fields} map, given a value. If fails, returns {@code null}. */
+    @SuppressWarnings({ "unused", "static-access" })
     private String findXWikiKey(String value)
     {
         for (Entry<String, String> kv : this.fields.entrySet())

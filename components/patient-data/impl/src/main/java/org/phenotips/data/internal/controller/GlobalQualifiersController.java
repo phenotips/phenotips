@@ -66,6 +66,8 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
 {
     private static final String DATA_NAME = "global-qualifiers";
 
+    private static final String ID_NAME = "id";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -109,6 +111,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
@@ -171,7 +174,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                 JSONArray elements = new JSONArray();
                 for (VocabularyTerm term : terms) {
                     JSONObject element = new JSONObject();
-                    element.put("id", term.getId());
+                    element.put(ID_NAME, term.getId());
                     element.put("label", term.getName());
                     elements.put(element);
                 }
@@ -192,7 +195,7 @@ public class GlobalQualifiersController implements PatientDataController<List<Vo
                     Iterator<Object> elementsIterator = elements.iterator();
                     while (elementsIterator.hasNext()) {
                         JSONObject element = (JSONObject) elementsIterator.next();
-                        String termId = element.optString("id");
+                        String termId = element.optString(ID_NAME);
                         if (termId != null) {
                             VocabularyTerm term = vocabularyManager.resolveTerm(termId);
                             propertyTerms.add(term);
