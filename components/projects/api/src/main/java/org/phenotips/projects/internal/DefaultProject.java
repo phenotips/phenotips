@@ -32,6 +32,7 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -190,13 +191,22 @@ public class DefaultProject implements Project
         querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
         querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
         querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
-        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and accessProp.value =:project");
+        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and ");
+        querySb.append("(lower(accessProp.value) like ? or lower(accessProp.value) like ? ");
+        querySb.append("    or lower(accessProp.value) like ? or lower(accessProp.value) = ?)");
+
+        String projectName = this.getFullName().toLowerCase();
+        Object[] projectValues = new String[] {
+            String.format("%s;%%", projectName),
+            String.format("%%;%s", projectName),
+            String.format("%%;%s;%%", projectName),
+            projectName};
 
         Query query = null;
         List<String> queryResults = null;
         try {
             query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
-            query.bindValue("project", this.projectId);
+            query.bindValues(Arrays.asList(projectValues));
             queryResults = query.execute();
         } catch (QueryException e) {
             this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
