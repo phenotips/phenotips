@@ -190,13 +190,13 @@ public class DefaultProject implements Project
         querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
         querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
         querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
-        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and accessProp.value =':project'");
+        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and accessProp.value =:project");
 
         Query query = null;
         List<String> queryResults = null;
         try {
             query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
-            query.bindValue(":project", this.projectId);
+            query.bindValue("project", this.projectId);
             queryResults = query.execute();
         } catch (QueryException e) {
             this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
