@@ -1232,7 +1232,7 @@ document.observe('xwiki:dom:loaded', function()
             // ------------------------------------------------------------------------
             var ynPickerElt = item.up('.yes-no-picker');
             if (ynPickerElt) {
-              item._ynpicker = new YesNoPicker(ynPickerElt, item.down('.yes-no-picker-label'), true);
+              item._ynpicker = new YesNoPicker(ynPickerElt, item.up('.term-entry').down('.yes-no-picker-label'), true);
               enableHighlightChecked(item, true);
               var negItem = ynPickerElt.down('.no input');
               if (negItem) {
