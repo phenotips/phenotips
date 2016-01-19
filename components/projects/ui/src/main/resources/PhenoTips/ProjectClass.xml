@@ -774,7 +774,7 @@ $xwiki.jsx.use('PhenoTips.ProjectClass')
   #foreach ($project in $projectsData)
     #if ($foreach.index &lt; $max)
       #set ($colUsers = $project.getNumberOfCollaboratorsUsers())
-      #set ($patientsNumber = $project.getNumberOfPatient())
+      #set ($patientsNumber = $project.getNumberOfPatients())
       #set ($description = $project.getDescription())
       #set ($fullName = $project.getFullName())
       ##
