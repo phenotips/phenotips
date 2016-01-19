@@ -25,7 +25,7 @@
     <artifactId>templates</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-templates-default-impl</artifactId>
+  <artifactId>templates-default-impl</artifactId>
   <name>PhenoTips - Templates - Default implementaion</name>
   <dependencies>
     <dependency>

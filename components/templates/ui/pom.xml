@@ -28,19 +28,13 @@
   <artifactId>templates-ui</artifactId>
   <name>PhenoTips - Templates - Wiki Documents</name>
   <packaging>xar</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-templates-api</artifactId>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-studies-migrations</artifactId>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-  </dependencies>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
