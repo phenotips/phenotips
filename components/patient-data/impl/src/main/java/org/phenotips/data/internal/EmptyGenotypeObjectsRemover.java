@@ -47,9 +47,9 @@ import com.xpn.xwiki.objects.BaseStringProperty;
  * @since 1.3M1
  */
 @Component
-@Named("empty-objects-remover")
+@Named("empty-genotype-objects-remover")
 @Singleton
-public class PatientEmptyObjectsRemover extends AbstractEventListener
+public class EmptyGenotypeObjectsRemover extends AbstractEventListener
 {
     private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -64,9 +64,9 @@ public class PatientEmptyObjectsRemover extends AbstractEventListener
     /**
      * Default constructor, sets up the listener name and the list of events to subscribe to.
      */
-    public PatientEmptyObjectsRemover()
+    public EmptyGenotypeObjectsRemover()
     {
-        super("empty-objects-remover", new PatientChangingEvent());
+        super("empty-genotype-objects-remover", new PatientChangingEvent());
     }
 
     @Override

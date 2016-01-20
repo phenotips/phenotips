@@ -48,12 +48,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class PatientEmptyObjectsRemoverTest
+public class EmptyGenotypeObjectsRemoverTest
 {
 
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(PatientEmptyObjectsRemover.class);
+        new MockitoComponentMockingRule<EventListener>(EmptyGenotypeObjectsRemover.class);
 
     @Mock
     private XWikiContext context;
@@ -61,7 +61,7 @@ public class PatientEmptyObjectsRemoverTest
     @Mock
     private XWiki xWiki;
 
-    private PatientEmptyObjectsRemover patientEmptyObjectsRemover;
+    private EmptyGenotypeObjectsRemover patientEmptyObjectsRemover;
 
     private List<BaseObject> xWikiObjects;
 
@@ -72,7 +72,7 @@ public class PatientEmptyObjectsRemoverTest
     public void setUp() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.patientEmptyObjectsRemover = (PatientEmptyObjectsRemover) this.mocker.getComponentUnderTest();
+        this.patientEmptyObjectsRemover = (EmptyGenotypeObjectsRemover) this.mocker.getComponentUnderTest();
 
         xWikiObjects = new ArrayList<>();
         doReturn(xWikiObjects).when(xWikiDocument).getXObjects(any(EntityReference.class));
