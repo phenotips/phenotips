@@ -215,6 +215,12 @@ public class DefaultProject implements Project
         return queryResults.size();
     }
 
+    @Override
+    public String toString()
+    {
+        return getFullName();
+    }
+
     private Logger getLogger()
     {
         try {
