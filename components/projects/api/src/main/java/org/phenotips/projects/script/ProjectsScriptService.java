@@ -73,15 +73,6 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * Returns a collection of all projects.
-     *
-     * @return a collection of all projects
-     */
-    public Collection<Project> getAllProjects() {
-        return this.projectsRepository.getAllProjects();
-    }
-
-    /**
      * Returns a collection of all projects that the current user can contribute to.
      *
      * @return a collection of all projects that the current user can contribute to.
