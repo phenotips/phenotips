@@ -754,7 +754,7 @@ $xwiki.jsx.use($projectClassName)
     </class>
     <property>
       <code>{{velocity}}
-#set ($projectsData = $services.projects.getAllProjects())
+#set ($projectsData = $services.projects.getAllProjectsWithViewingRights())
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
 #if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $projectsData.size()))
   #set ($max = $projectsData.size())
