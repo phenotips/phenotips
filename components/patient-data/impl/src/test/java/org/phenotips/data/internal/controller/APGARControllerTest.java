@@ -241,18 +241,6 @@ public class APGARControllerTest
         Assert.assertFalse(json.has(DATA_NAME));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void saveIsUnsupported() throws ComponentLookupException
-    {
-        this.mocker.getComponentUnderTest().save(this.patient);
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void readJSONIsUnsupported() throws ComponentLookupException
-    {
-        this.mocker.getComponentUnderTest().readJSON(new JSONObject());
-    }
-
     @Test
     public void checkGetName() throws ComponentLookupException
     {

@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -24,6 +25,7 @@ import org.phenotips.data.PatientDataController;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,11 +36,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 
 /**
  * Handles fields for solved patient records, including solved status, PubMed ID, gene symbol, and notes.
@@ -63,9 +71,16 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private static final String STATUS_UNSOLVED = "unsolved";
 
+    private static final String STATUS_SOLVED_NUMERIC = "1";
+
+    private static final String STATUS_UNSOLVED_NUMERIC = "0";
+
     private static final String STATUS_UNKNOWN = "";
 
     private static Map<String, String> fields = new LinkedHashMap<String, String>();
+
+    @Inject
+    private Logger logger;
 
     @Override
     public void initialize() throws InitializationException
@@ -115,6 +130,18 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
     }
 
+    /** Given a status converts it back into `1` or `0`, or if status is unknown into an {@code null}. */
+    private String invertSolvedStatus(String status)
+    {
+        if (STATUS_SOLVED.equals(status)) {
+            return STATUS_SOLVED_NUMERIC;
+        } else if (STATUS_UNSOLVED.equals(status)) {
+            return STATUS_UNSOLVED_NUMERIC;
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -151,10 +178,82 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
     }
 
+    @SuppressWarnings("static-access")
+    @Override
+    public PatientData<String> readJSON(JSONObject json)
+    {
+        if (!json.has(this.getJsonPropertyName())) {
+            // no data supported by this controller is present in provided JSON
+            return null;
+        }
+        Map<String, String> result = new LinkedHashMap<String, String>();
+
+        // since the loader always returns dictionary data, this should always be a block.
+        Object jsonBlockObject = json.get(this.getJsonPropertyName());
+        if (!(jsonBlockObject instanceof JSONObject)) {
+            return null;
+        }
+        JSONObject jsonBlock = (JSONObject) jsonBlockObject;
+        for (String property : this.fields.values()) {
+            if (jsonBlock.has(property)) {
+                String value = jsonBlock.getString(property);
+                if (this.fields.get(STATUS_KEY).equals(property)) {
+                    value = invertSolvedStatus(value);
+                }
+                result.put(property, value);
+            }
+        }
+
+        return new DictionaryPatientData<>(this.getName(), result);
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            PatientData<String> data = patient.getData(getName());
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseObject xwikiDataObject = doc.getXObject(Patient.CLASS_REFERENCE);
+            if (data == null || !data.isNamed() || xwikiDataObject == null) {
+                return;
+            }
+
+            for (String key : this.getProperties()) {
+                String datum = data.get(key);
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(key);
+                if (field != null) {
+                    field.setValue(applyCast(datum));
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
+        }
     }
 
+    /** Finds a key inside the {@link #fields} map, given a value. If fails, returns {@code null}. */
+    @SuppressWarnings({ "unused", "static-access" })
+    private String findXWikiKey(String value)
+    {
+        for (Entry<String, String> kv : this.fields.entrySet())
+        {
+            if (StringUtils.equals(kv.getValue(), value)) {
+                return kv.getKey();
+            }
+        }
+        return null;
+    }
+
+    private Object applyCast(String value)
+    {
+        if (value == null) {
+            return null;
+        }
+        if (STATUS_SOLVED_NUMERIC.equals(value) || STATUS_UNSOLVED_NUMERIC.equals(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return value;
+        }
+    }
 }

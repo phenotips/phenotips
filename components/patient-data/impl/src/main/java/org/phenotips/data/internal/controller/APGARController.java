@@ -24,6 +24,7 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.ObjectPropertyReference;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 
 /**
  * Handles the two APGAR scores.
@@ -91,10 +93,28 @@ public class APGARController implements PatientDataController<Integer>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
-        throw new UnsupportedOperationException();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            BaseObject dataHolder = doc.getXObject(Patient.CLASS_REFERENCE);
+            PatientData<Integer> data = patient.getData(getName());
+            if (data == null || dataHolder == null) {
+                return;
+            }
+            for (String propertyName : getProperties()) {
+                Integer value = data.get(propertyName);
+                BaseProperty<ObjectPropertyReference> field =
+                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
+                if (field != null && value != null) {
+                    field.setValue(value.toString());
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
+        }
     }
 
     @Override
@@ -150,7 +170,23 @@ public class APGARController implements PatientDataController<Integer>
     @Override
     public PatientData<Integer> readJSON(JSONObject json)
     {
-        throw new UnsupportedOperationException();
+        JSONObject container = json.optJSONObject(DATA_NAME);
+        if (container != null) {
+            Map<String, Integer> parsed = new LinkedHashMap<>();
+            for (String propertyName : getProperties()) {
+                try {
+                    /* could be 'unknown' rather than an int */
+                    String value = container.getString(propertyName);
+                    if (NumberUtils.isDigits(value)) {
+                        parsed.put(propertyName, Integer.valueOf(value));
+                    }
+                } catch (Exception ex) {
+                    // should never happen
+                }
+            }
+            return new DictionaryPatientData<Integer>(DATA_NAME, parsed);
+        }
+        return null;
     }
 
     @Override

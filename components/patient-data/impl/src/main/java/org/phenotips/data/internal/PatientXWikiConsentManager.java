@@ -97,22 +97,26 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
      */
     private List<Consent> systemConsents = new LinkedList<>();
 
-    @Override public void initialize() throws InitializationException
+    @Override
+    public void initialize() throws InitializationException
     {
         this.refreshSystemConsents();
     }
 
-    @Override public List<Consent> getSystemConsents()
+    @Override
+    public List<Consent> getSystemConsents()
     {
         return systemConsents;
     }
 
-    @Override public List<Consent> loadConsentsFromPatient(String patientId)
+    @Override
+    public List<Consent> loadConsentsFromPatient(String patientId)
     {
         return this.loadConsentsFromPatient(repository.getPatientById(patientId));
     }
 
-    @Override public List<Consent> loadConsentsFromPatient(Patient patient)
+    @Override
+    public List<Consent> loadConsentsFromPatient(Patient patient)
     {
         List<Consent> patientConsents = new LinkedList<>();
         /* List of consent ids a patient has agreed to, read from the database */
@@ -127,8 +131,10 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
                 patient == null ? "NULL" : patient.getId(), ex.getMessage());
         }
 
-        /* Using system consents to determine what consents a patient has agreed to, but not reusing the system consents
-         cache, since those should not have a status. */
+        /*
+         * Using system consents to determine what consents a patient has agreed to, but not reusing the system consents
+         * cache, since those should not have a status.
+         */
         for (Consent systemConsent : this.systemConsents) {
             Consent copy = DefaultConsent.copy(systemConsent);
             if (xwikiPatientConsents.contains(systemConsent.getId())) {
@@ -142,6 +148,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return patientConsents;
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> readConsentIdsFromPatientDoc(XWikiDocument doc)
     {
         List<String> ids = new LinkedList<>();
@@ -155,7 +162,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return ids;
     }
 
-    @Override public boolean setPatientConsents(Patient patient, Iterable<String> consents)
+    @Override
+    public boolean setPatientConsents(Patient patient, Iterable<String> consents)
     {
         try {
             List<Consent> existingConsents = this.selectFromSystem(consents);
@@ -184,17 +192,20 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return existingConsents;
     }
 
-    @Override public boolean grantConsent(Patient patient, String consentId)
+    @Override
+    public boolean grantConsent(Patient patient, String consentId)
     {
         return this.manageConsent(patient, consentId, true);
     }
 
-    @Override public boolean revokeConsent(Patient patient, String consentId)
+    @Override
+    public boolean revokeConsent(Patient patient, String consentId)
     {
         return this.manageConsent(patient, consentId, false);
     }
 
-    @Override public JSONArray toJson(List<Consent> consents)
+    @Override
+    public JSONArray toJson(List<Consent> consents)
     {
         JSONArray json = new JSONArray();
         for (Consent consent : consents) {
@@ -203,7 +214,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return json;
     }
 
-    @Override public List<Consent> fromJson(JSONArray json)
+    @Override
+    public List<Consent> fromJson(JSONArray json)
     {
         return null;
     }
@@ -351,6 +363,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             this.context = context;
         }
 
+        @SuppressWarnings("unchecked")
         public List<String> getConsents() throws XWikiException
         {
             return this.consentHolder.getListValue(GRANTED);

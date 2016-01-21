@@ -350,45 +350,67 @@ public class PhenoTipsPatient implements Patient
         return result;
     }
 
-    private void updateFeaturesFromJSON(XWikiDocument doc, BaseObject data, XWikiContext context, JSONObject json)
+    private void updateFeaturesFromJSON(XWikiDocument doc, BaseObject data, XWikiContext context,
+        JSONObject json)
     {
         try {
-            JSONArray inputFeatures = json.optJSONArray(JSON_KEY_FEATURES);
-            if (inputFeatures != null) {
-                // keep this instance of PhenotipsPatient in sync with the document: reset features
-                this.features = new TreeSet<Feature>();
+            JSONArray jsonFeatures =
+                joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
 
-                // new feature lists (for setting values in the Wiki document)
-                List<String> positiveValues = new LinkedList<String>();
-                List<String> negativeValues = new LinkedList<String>();
+            if (jsonFeatures.length() == 0) {
+                return;
+            }
 
-                for (int i = 0; i < inputFeatures.length(); i++) {
-                    JSONObject featureInJSON = inputFeatures.optJSONObject(i);
-                    if (featureInJSON == null) {
-                        continue;
-                    }
+            // keep this instance of PhenotipsPatient in sync with the document: reset features
+            this.features = new TreeSet<Feature>();
 
-                    Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
-                    this.features.add(phenotipsFeature);
+            // new feature lists (for setting values in the Wiki document)
+            List<String> positiveValues = new LinkedList<String>();
+            List<String> negativeValues = new LinkedList<String>();
 
-                    if (phenotipsFeature.isPresent()) {
-                        positiveValues.add(phenotipsFeature.getValue());
-                    } else {
-                        negativeValues.add(phenotipsFeature.getValue());
-                    }
+            for (int i = 0; i < jsonFeatures.length(); i++) {
+                JSONObject featureInJSON = jsonFeatures.optJSONObject(i);
+                if (featureInJSON == null) {
+                    continue;
                 }
 
-                // as in constructor: make unmodifiable
-                this.features = Collections.unmodifiableSet(this.features);
+                Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
+                this.features.add(phenotipsFeature);
 
-                // update the values in the document (overwriting the old list, if any)
-                data.set(PHENOTYPE_POSITIVE_PROPERTY, positiveValues, context);
-                data.set(PHENOTYPE_NEGATIVE_PROPERTY, negativeValues, context);
-                context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
+                if (phenotipsFeature.isPresent()) {
+                    positiveValues.add(phenotipsFeature.getValue());
+                } else {
+                    negativeValues.add(phenotipsFeature.getValue());
+                }
             }
+
+            // as in constructor: make unmodifiable
+            this.features = Collections.unmodifiableSet(this.features);
+
+            // update the values in the document (overwriting the old list, if any)
+            data.set(PHENOTYPE_POSITIVE_PROPERTY, positiveValues, context);
+            data.set(PHENOTYPE_NEGATIVE_PROPERTY, negativeValues, context);
+            context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
+
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient features from JSON [{}]: {}", ex.getMessage(), ex);
         }
+    }
+
+    private JSONArray joinArrays(JSONArray jsonOne, JSONArray jsonTwo)
+    {
+        JSONArray result = new JSONArray();
+        if (jsonOne == null || jsonOne.length() == 0) {
+            result = jsonTwo;
+        } else {
+            result = jsonOne;
+            if (jsonTwo != null && jsonTwo.length() > 0) {
+                for (int i = 0; i < jsonTwo.length(); i++) {
+                    result.put(jsonTwo.get(i));
+                }
+            }
+        }
+        return result;
     }
 
     private void updateDisordersFromJSON(XWikiDocument doc, BaseObject data, XWikiContext context, JSONObject json)
@@ -446,7 +468,6 @@ public class PhenoTipsPatient implements Patient
             }
 
             updateFeaturesFromJSON(doc, data, context, json);
-
             updateDisordersFromJSON(doc, data, context, json);
 
             for (PatientDataController<?> serializer : this.serializers.values()) {

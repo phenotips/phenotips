@@ -65,8 +65,8 @@ public class PatientXWikiConsentManagerTest
     public final MockitoComponentMockingRule<ConsentManager> mocker =
         new MockitoComponentMockingRule<ConsentManager>(PatientXWikiConsentManager.class);
 
-
     /** Sets up initialization of the component with the given `baseObjects` */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private DocumentModelBridge setUpInitialization(List<BaseObject> baseObjects) throws Exception
     {
         DocumentReferenceResolver resolver =
@@ -82,6 +82,7 @@ public class PatientXWikiConsentManagerTest
         return configDoc;
     }
 
+    @SuppressWarnings("static-access")
     private ConsentConfigurationMocks setUpInitializationWithConfigurationMocks() throws Exception
     {
         ConsentConfigurationMocks mocks = new ConsentConfigurationMocks();
@@ -106,21 +107,31 @@ public class PatientXWikiConsentManagerTest
     private class ConsentConfigurationMocks
     {
         static final String idKey = "id";
+
         static final String descriptionKey = "description";
+
         static final String requiredKey = "required";
 
         static final String id1 = "id1";
+
         static final String descr1 = "clean description";
+
         Integer req1 = 1;
+
         Boolean req1B = true;
 
         static final String id2 = "id2";
+
         static final String descr2 = "non <div>clean</div> <p>description</p>";
+
         static final String descr2C = "non clean description";
+
         Integer req2 = 0;
+
         Boolean req2B = false;
 
         BaseObject consentConfig1 = mock(BaseObject.class);
+
         BaseObject consentConfig2 = mock(BaseObject.class);
     }
 
@@ -138,8 +149,11 @@ public class PatientXWikiConsentManagerTest
         Assert.assertTrue(this.mocker.getComponentUnderTest().getSystemConsents().isEmpty());
     }
 
-    /** For testing normal initialization, when there are consents configured in the system.
-     * Also tests for description strings being properly cleaned. */
+    /**
+     * For testing normal initialization, when there are consents configured in the system. Also tests for description
+     * strings being properly cleaned.
+     */
+    @SuppressWarnings("static-access")
     @Test
     public void testConfiguredInitialization() throws Exception
     {
@@ -225,7 +239,7 @@ public class PatientXWikiConsentManagerTest
 
         DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
         Provider<XWikiContext> contextProvider = this.mocker.getInstance(
-            new DefaultParameterizedType((Type) null, Provider.class, new Type[]{ XWikiContext.class }));
+            new DefaultParameterizedType((Type) null, Provider.class, new Type[] { XWikiContext.class }));
         DocumentReference patientRef = mock(DocumentReference.class);
 
         doReturn(patientRef).when(patient).getDocument();
@@ -235,6 +249,7 @@ public class PatientXWikiConsentManagerTest
         doReturn(wiki).when(context).getWiki();
     }
 
+    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_normal() throws Exception
     {
@@ -256,6 +271,7 @@ public class PatientXWikiConsentManagerTest
         verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
     }
 
+    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_xwikiObjectDoesNotExist() throws Exception
     {
@@ -281,6 +297,7 @@ public class PatientXWikiConsentManagerTest
         verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
     }
 
+    @SuppressWarnings("static-access")
     @Test
     public void testSettingConsentsOnARecord_nonExistentConsents() throws Exception
     {
