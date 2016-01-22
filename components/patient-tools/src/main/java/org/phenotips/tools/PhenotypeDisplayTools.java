@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.api.Document;
@@ -153,22 +154,26 @@ public class PhenotypeDisplayTools implements ScriptService
             List<String> correctNegativeIds = new LinkedList<String>();
             if (data.getSelectedValues() != null && !data.getSelectedValues().isEmpty()) {
                 for (String id : data.getSelectedValues()) {
-                    VocabularyTerm properTerm = this.ontologyService.getTerm(id);
-                    if (properTerm != null) {
-                        correctIds.add(properTerm.getId());
-                    } else {
-                        correctIds.add(id);
+                    if (StringUtils.isNotBlank(id)) {
+                        VocabularyTerm properTerm = this.ontologyService.getTerm(id);
+                        if (properTerm != null) {
+                            correctIds.add(properTerm.getId());
+                        } else {
+                            correctIds.add(id);
+                        }
                     }
                 }
             }
             data.setSelectedValues(correctIds);
             if (data.getSelectedNegativeValues() != null && !data.getSelectedNegativeValues().isEmpty()) {
                 for (String id : data.getSelectedNegativeValues()) {
-                    VocabularyTerm properTerm = this.ontologyService.getTerm(id);
-                    if (properTerm != null) {
-                        correctNegativeIds.add(properTerm.getId());
-                    } else {
-                        correctNegativeIds.add(id);
+                    if (StringUtils.isNotBlank(id)) {
+                        VocabularyTerm properTerm = this.ontologyService.getTerm(id);
+                        if (properTerm != null) {
+                            correctNegativeIds.add(properTerm.getId());
+                        } else {
+                            correctNegativeIds.add(id);
+                        }
                     }
                 }
             }
