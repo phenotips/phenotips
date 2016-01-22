@@ -34,8 +34,10 @@ import org.xwiki.users.UserManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -64,6 +66,10 @@ public class ProjectsRepository
     @Inject
     @Named("leader")
     private ProjectAccessLevel leaderAccessLevel;
+
+    @Inject
+    @Named("contributor")
+    private ProjectAccessLevel contributorAccessLevel;
 
     @Inject
     private DocumentReferenceResolver<String> stringResolver;
@@ -96,6 +102,39 @@ public class ProjectsRepository
         for (String projectId : queryResults) {
             Project p = this.getProjectById(projectId);
             projects.add(p);
+        }
+        return projects;
+    }
+
+    /**
+     * @return a collection of all projects that the current user can contribute to.
+     */
+    public Collection<Project> getAllProjectsWithContributionRights()
+    {
+        Set<ProjectAccessLevel> accessLevels = new HashSet<>();
+        accessLevels.add(contributorAccessLevel);
+        accessLevels.add(leaderAccessLevel);
+        Collection<Project> projects = this.getAllProjects(accessLevels);
+
+        for (Project p : this.getAllProjectsOpenForContribution()) {
+            if (!projects.contains(p)) {
+                projects.add(p);
+            }
+        }
+        return projects;
+    }
+
+    /**
+     * @return a collection of all projects that the current user can view.
+     */
+    public Collection<Project> getAllProjectsWithViewingRights()
+    {
+        Collection<Project> projects = this.getAllProjectsWithContributionRights();
+
+        for (Project p : this.getAllProjectsOpenForViewing()) {
+            if (!projects.contains(p)) {
+                projects.add(p);
+            }
         }
         return projects;
     }
