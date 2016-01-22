@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,7 +51,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
-import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
  * Base class for handling data in different types of objects (String, List, etc) and preserving the object type. Has
@@ -239,13 +239,14 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
         if (value instanceof Boolean) {
             return (Boolean) value ? 1 : 0;
-        } else {
+        } else if (NumberUtils.isNumber(String.valueOf(value))) {
             try {
                 return Integer.valueOf(value.toString());
             } catch (Exception ex) {
                 return value;
             }
         }
+        return value;
     }
 
     private JSONArray codeToHumanReadable(List<T> codes)
@@ -280,25 +281,21 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             if (dataHolder == null && data != null) {
                 return;
             }
+            XWikiContext context = this.contextProvider.get();
             for (String propertyName : getProperties()) {
-                BaseProperty<ObjectPropertyReference> field =
-                    (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
                 Object propertyValue = data.get(propertyName);
-                if (field != null) {
-                    if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
-                        List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
-                        List<String> listToStore = new LinkedList<>();
-                        for (VocabularyProperty term : terms) {
-                            listToStore.add(term.getId());
-                        }
-                        ((DBStringListProperty) field).setList(listToStore);
-                    } else {
-                        propertyValue = this.saveFormat(propertyValue);
-                        field.setValue(propertyValue);
+                if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
+                    List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
+                    List<String> listToStore = new LinkedList<>();
+                    for (VocabularyProperty term : terms) {
+                        listToStore.add(term.getId());
                     }
+                    dataHolder.set(propertyName, listToStore, context);
+                } else {
+                    propertyValue = this.saveFormat(propertyValue);
+                    dataHolder.set(propertyName, propertyValue, context);
                 }
             }
-            XWikiContext context = this.contextProvider.get();
             context.getWiki()
                 .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
         } catch (Exception ex) {
