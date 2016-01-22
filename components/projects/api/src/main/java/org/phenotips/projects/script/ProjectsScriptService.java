@@ -19,7 +19,6 @@ package org.phenotips.projects.script;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.projects.access.ProjectAccessLevel;
 import org.phenotips.projects.data.Project;
 import org.phenotips.projects.internal.ProjectAndTemplateBinder;
 import org.phenotips.projects.internal.ProjectsRepository;
@@ -52,14 +51,6 @@ public class ProjectsScriptService implements ScriptService
     private PatientRepository patientsRepository;
 
     @Inject
-    @Named("contributor")
-    private ProjectAccessLevel contributorAccessLevel;
-
-    @Inject
-    @Named("leader")
-    private ProjectAccessLevel leaderAccessLevel;
-
-    @Inject
     private ProjectAndTemplateBinder ptBinder;
 
     /**
@@ -73,40 +64,19 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * Returns a collection of all projects that the current user can contribute to.
-     *
      * @return a collection of all projects that the current user can contribute to.
      */
     public Collection<Project> getAllProjectsWithContributionRights()
     {
-        Set<ProjectAccessLevel> accessLevels = new HashSet<>();
-        accessLevels.add(contributorAccessLevel);
-        accessLevels.add(leaderAccessLevel);
-        Collection<Project> projects = this.projectsRepository.getAllProjects(accessLevels);
-
-        for (Project p : this.projectsRepository.getAllProjectsOpenForContribution()) {
-            if (!projects.contains(p)) {
-                projects.add(p);
-            }
-        }
-        return projects;
+        return this.projectsRepository.getAllProjectsWithContributionRights();
     }
 
     /**
-     * Returns a collection of all projects that the current user can view.
-     *
      * @return a collection of all projects that the current user can view.
      */
     public Collection<Project> getAllProjectsWithViewingRights()
     {
-        Collection<Project> projects = this.getAllProjectsWithContributionRights();
-
-        for (Project p : this.projectsRepository.getAllProjectsOpenForViewing()) {
-            if (!projects.contains(p)) {
-                projects.add(p);
-            }
-        }
-        return projects;
+        return this.projectsRepository.getAllProjectsWithViewingRights();
     }
 
     /**
