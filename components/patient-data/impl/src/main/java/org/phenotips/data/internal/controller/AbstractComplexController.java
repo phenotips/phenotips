@@ -280,6 +280,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             if (dataHolder == null && data != null) {
                 return;
             }
+            XWikiContext context = this.contextProvider.get();
             for (String propertyName : getProperties()) {
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
@@ -296,9 +297,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                         propertyValue = this.saveFormat(propertyValue);
                         field.setValue(propertyValue);
                     }
+                } else {
+                    dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
                 }
             }
-            XWikiContext context = this.contextProvider.get();
+
             context.getWiki()
                 .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
         } catch (Exception ex) {
