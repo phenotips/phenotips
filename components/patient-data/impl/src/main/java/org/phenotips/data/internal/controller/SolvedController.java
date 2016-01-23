@@ -220,7 +220,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
             }
 
             for (String key : this.getProperties()) {
-                String datum = data.get(key);
+                String datum = data.get(this.fields.get(key));
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(key);
                 if (field != null) {

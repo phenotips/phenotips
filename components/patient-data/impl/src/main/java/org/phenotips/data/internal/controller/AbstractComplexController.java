@@ -294,10 +294,10 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     }
                     dataHolder.set(propertyName, listToStore, context);
                 } else {
-                    propertyValue = this.saveFormat(propertyValue);
-                    dataHolder.set(propertyName, propertyValue, context);
+                    dataHolder.set(propertyName, this.saveFormat(propertyValue), context);
                 }
             }
+
             context.getWiki()
                 .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
         } catch (Exception ex) {

@@ -400,9 +400,9 @@ public class PhenoTipsPatient implements Patient
     private JSONArray joinArrays(JSONArray jsonOne, JSONArray jsonTwo)
     {
         JSONArray result = new JSONArray();
-        if (jsonOne == null || jsonOne.length() == 0) {
+        if (jsonOne == null && jsonTwo != null) {
             result = jsonTwo;
-        } else {
+        } else if (jsonOne != null) {
             result = jsonOne;
             if (jsonTwo != null && jsonTwo.length() > 0) {
                 for (int i = 0; i < jsonTwo.length(); i++) {
