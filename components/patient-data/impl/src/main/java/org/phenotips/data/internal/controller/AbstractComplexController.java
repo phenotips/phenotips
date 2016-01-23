@@ -137,7 +137,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
-    /** @return list of fields which should be resolved to booleans */
+    /**
+     * @return list of fields which should be resolved to booleans
+     */
     protected abstract List<String> getBooleanFields();
 
     /**
@@ -192,7 +194,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         if (value != null) {
             try {
                 if (this.getBooleanFields().contains(key)) {
-                    return (Boolean) value;
+                    return value;
                 } else if (this.getCodeFields().contains(key)) {
                     LinkedList<VocabularyProperty> terms = new LinkedList<>();
                     for (Object termJson : (JSONArray) value) {
