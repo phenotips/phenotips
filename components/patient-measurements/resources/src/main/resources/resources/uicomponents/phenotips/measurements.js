@@ -9,6 +9,10 @@ var PhenoTips = (function(PhenoTips) {
 
       this.getObject = this.getObject.bind(this);
       this._sets = [];
+      // a map of currently selected "smart" phenotype terms, key is term name,
+      // value is the number of measurements that have currently selected this 
+      // term (a sort of counting semaphore)
+      this.selectedAssocTerms = {};
 
       var measurementSetsEls = this.el.select('.measurement-set:not(.proto)');
       if (!measurementSetsEls.length) {
@@ -635,6 +639,8 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     _selectAssocPhenotypes: function(terms) {
+      var termSemaphores = this.parent.parent.selectedAssocTerms;
+
       var toRemove = this._curSelectedTerms.filter(function(n) {
         return terms.indexOf(n) == -1
       });
@@ -645,21 +651,16 @@ var PhenoTips = (function(PhenoTips) {
       this._curSelectedTerms = terms;
 
       toRemove.each((function(term) {
-        var elt = findFormElementForPhenotype(term);
-        elt.store('refCount', elt.retrieve('refCount') - 1);
-
-        if (elt.retrieve('refCount') < 1) {
-          this._unselectMeasurementTerm(elt);
+        if (--termSemaphores[term] < 1) {
+          this._unselectMeasurementTerm(findFormElementForPhenotype(term));
         }
       }).bind(this));
 
       toAdd.each((function(term) {
-        var targetEl = this._selectFormElementForPhenotype(term);
-        var refCount = targetEl.retrieve('refCount') || 0;
-        targetEl.store('refCount', refCount + 1);
+        termSemaphores[term] = termSemaphores[term] || 0;
 
-        if (refCount == 0) {
-          this._selectMeasurementTerm(targetEl);
+        if (termSemaphores[term]++ == 0) {
+          this._selectMeasurementTerm(this._selectFormElementForPhenotype(term));
         }
       }).bind(this));
     },
