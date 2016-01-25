@@ -155,4 +155,22 @@ public class ProjectsScriptService implements ScriptService
         Patient patient = this.patientsRepository.getPatientById(patientId);
         this.ptBinder.setTemplateForPatient(templateId, patient);
     }
+
+    /**
+     * Returns a condition for an HQL patients query that selects all patients that belong to any project in
+     * {@link projects}.
+     *
+     * @param baseObjectTable name of BaseObject in query
+     * @param propertyTable name of StringProperty in query
+     * @return HQL condition
+     */
+    public String getProjectConditionForCurrentUser(String baseObjectTable, String propertyTable)
+    {
+        Collection<Project> projects = this.getAllProjectsWithViewingRights();
+        if (projects.size() > 0) {
+            return this.projectsRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
+        } else {
+            return null;
+        }
+    }
 }

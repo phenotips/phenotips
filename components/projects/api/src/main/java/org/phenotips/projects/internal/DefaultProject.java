@@ -32,7 +32,6 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -191,22 +190,16 @@ public class DefaultProject implements Project
         querySb.append("and patientObj.className = 'PhenoTips.PatientClass' ");
         querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
         querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
-        querySb.append("and accessObj.className='PhenoTips.ProjectBindingClass' and ");
-        querySb.append("(lower(accessProp.value) like ? or lower(accessProp.value) like ? ");
-        querySb.append("    or lower(accessProp.value) like ? or lower(accessProp.value) = ?)");
 
-        String projectName = this.getFullName().toLowerCase();
-        Object[] projectValues = new String[] {
-            String.format("%s;%%", projectName),
-            String.format("%%;%s", projectName),
-            String.format("%%;%s;%%", projectName),
-            projectName};
+        Set<Project> projects = new HashSet<Project>();
+        projects.add(this);
+        querySb.append(" and ");
+        querySb.append(this.getProjectsRepository().getProjectCondition("accessObj", "accessProp", projects));
 
         Query query = null;
         List<String> queryResults = null;
         try {
             query = this.getQueryManager().createQuery(querySb.toString(), Query.HQL);
-            query.bindValues(Arrays.asList(projectValues));
             queryResults = query.execute();
         } catch (QueryException e) {
             this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
@@ -259,6 +252,17 @@ public class DefaultProject implements Project
         try {
             return ComponentManagerRegistry.getContextComponentManager()
                 .getInstance(DefaultProjectHelper.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
+    private ProjectsRepository getProjectsRepository()
+    {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(ProjectsRepository.class);
         } catch (ComponentLookupException e) {
             // Should not happen
         }
