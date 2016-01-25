@@ -54,6 +54,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Singleton
 public class ProjectsRepository
 {
+    private static final String OR = " or ";
+
     @Inject
     private QueryManager qm;
 
@@ -225,4 +227,42 @@ public class ProjectsRepository
         }
         return null;
     }
+
+    /**
+     * Returns a condition for an HQL patients query that selects all patients that belong to any project in
+     * {@link projects}. This is used, for example, in counting the number of cases for a projects (projects would
+     * contain only one project), in showing shared data for user (projects would contains all projects that current
+     * user is a contributor in).
+     *
+     * @param baseObjectTable name of BaseObject in query
+     * @param propertyTable name of StringProperty in query
+     * @param projects list of projects to show patients for
+     * @return HQL condition
+     */
+    public String getProjectCondition(String baseObjectTable, String propertyTable, Collection<Project> projects)
+    {
+        String propertyField = new StringBuffer().append("lower(").append(propertyTable).append(".value)").toString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ").append(baseObjectTable).append(".className='PhenoTips.ProjectBindingClass' and (");
+
+        String[] likes = { "'%s;%%'", "'%%;%s'", "'%%;%s;%%'" };
+        boolean firstProject = true;
+        for (Project p : projects) {
+            String projectName = p.getFullName().toLowerCase();
+            if (firstProject) {
+                firstProject = false;
+            } else {
+                sb.append(OR);
+            }
+            for (String l : likes) {
+                sb.append(propertyField).append(" like ").append(String.format(l, projectName)).append(OR);
+            }
+            sb.append(propertyField).append(" = '").append(projectName).append("' ");
+        }
+        sb.append(") ");
+
+        return sb.toString();
+    }
+
 }
