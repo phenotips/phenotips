@@ -279,7 +279,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 28em;
+  width: 27em;
   color: #000000;
   z-index: 100000;
 }
@@ -918,9 +918,14 @@
   left: 4px;
   margin: 1.4em 0 0;
 }
-
-.cancer_field {
-  margin-top: 0.65em;
+.cancer_field td {
+  padding: .2em;
+}
+.cancer_textarea td {
+  padding: .3em 0 .2em .2em;
+}
+.cancer-header td {
+  padding-top: 0.65em;
 }
 .cancer-notes {
   margin-left: 2px;
@@ -928,19 +933,11 @@
 .cancer-header {
   color: #888;
 }
-.cancer_label_field {
-  display: inline-block;
-  width: 100px;
-}
 .cancer_status_select {
-  display: inline-block;
-  width: 90px;
-  margin-right: 15px;
+  margin-right: 10px;
 }
 .cancer_age_select {
-  display: inline-block;
-  margin-right: 6px;
-  max-width: 114px;
+  margin-right: 3px;
 }
 .cancer_field .clickable:hover {
   cursor: pointer;
