@@ -1347,6 +1347,12 @@ document.observe('xwiki:dom:loaded', function()
             } else if (selected == 'no') {
                 var negative = new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName});
                 elt.__termCategory &amp;&amp;  elt.__termCategory.insert(negative) || (elt.__termCategory = negative);
+            } else if (selected == 'yes') {
+              var element = event.findElement('.entry');
+              if (!element.down('.descendents') || element.hasClassName('collapsed')) {
+                var obrowser = event.findElement('.dropdown').previous('.dropdown-root').down('label.yes input')._ontologyBrowser;
+                obrowser._toggleExpandState(element);
+              }
             }
             // both yes &amp; no:
             ynpickerElt._obrowser._selectEntry(elt);
