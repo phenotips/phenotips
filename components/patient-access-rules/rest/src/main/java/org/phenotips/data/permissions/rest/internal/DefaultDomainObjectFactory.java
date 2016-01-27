@@ -26,7 +26,6 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.Relations;
-import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.model.Collaborators;
 import org.phenotips.data.rest.model.Link;
@@ -40,7 +39,6 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
@@ -67,9 +65,6 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultDomainObjectFactory implements DomainObjectFactory, Initializable
 {
-    @Inject
-    private SecureContextFactory secureContextFactory;
-
     /** Provides access to the underlying data storage. */
     @Inject
     private DocumentAccessBridge documentAccessBridge;
@@ -104,10 +99,6 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public PhenotipsUser createPatientOwner(Patient patient)
     {
-        if (!commonSecurityChecks(patient)) {
-            return null;
-        }
-
         // todo. is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Owner owner = patientAccess.getOwner();
@@ -187,10 +178,6 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public PatientVisibility createPatientVisibility(Patient patient)
     {
-        if (!commonSecurityChecks(patient)) {
-            return null;
-        }
-
         PatientVisibility result = new PatientVisibility();
         // todo. is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
@@ -204,10 +191,6 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public Collaborators createCollaborators(Patient patient, UriInfo uriInfo)
     {
-        if (!commonSecurityChecks(patient)) {
-            return null;
-        }
-
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Collection<Collaborator> collaborators = patientAccess.getCollaborators();
 
@@ -228,31 +211,11 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public PhenotipsUser createCollaborator(Patient patient, Collaborator collaborator)
     {
-        /*
-        * From a standpoint of the API, this method is not secure, given that there is no check that the `collaborator`
-        * belongs to the `patient`, rendering the below check useless.
-        * On the other hand, the DomainObjectFactory is expected to be used internally - passing the correct
-        * `patient` instance.
-        */
-        if (!commonSecurityChecks(patient)) {
-            return null;
-        }
         return this.createPhenotipsUser(collaborator.getUsername(), collaborator.getType(), collaborator.getUser());
     }
 
     private PhenotipsUser createCollaborator(Collaborator collaborator)
     {
         return this.createPhenotipsUser(collaborator.getUsername(), collaborator.getType(), collaborator.getUser());
-    }
-
-    private boolean commonSecurityChecks(Patient patient)
-    {
-        try {
-            // if this doesn't throw an exception, then everything is ok
-            this.secureContextFactory.getContext(patient, Right.VIEW);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
     }
 }

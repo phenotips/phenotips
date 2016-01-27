@@ -24,8 +24,6 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
 
-import org.xwiki.security.authorization.AuthorizationManager;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -35,8 +33,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 
 /**
- * Default context that securely provides the current user and patient. In case that the current user does not have the
- * minimum required rights, the context will fail to initialize.
+ * Default context that securely provides the current user, patient instance, and patient access. In case that the
+ * current user does not have the minimum required rights, the context will fail to initialize.
  *
  * @version $Id$
  * @since 1.3M1
@@ -54,15 +52,15 @@ public class PatientAccessContext
      * any of these conditions are not met, initialization fails.
      *
      * @param patientId by which to find a patient record
-     * @param minimumRight that the current must have or exceed
+     * @param minimumAccessLevel that the current must have or exceed
      * @param repository used to find the patient record
      * @param users used to get the current user
-     * @param access used to check that the user has a certain access level
+     * @param manager used to initialize instance with access API
      * @param logger for logging failures
      * @throws WebApplicationException if the patient could not be found, or the current user has insufficient rights
      */
-    public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository, UserManager users,
-        PermissionsManager manager, Logger logger) throws WebApplicationException
+    public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository,
+        UserManager users, PermissionsManager manager, Logger logger) throws WebApplicationException
     {
         this.patient = repository.getPatientById(patientId);
         if (this.patient == null) {
@@ -73,34 +71,10 @@ public class PatientAccessContext
         this.initializeUser(minimumAccessLevel, users, logger);
     }
 
-    /**
-     * Initializes the context, making sure that the current user has sufficient rights. If the current user does not
-     * have sufficient rights, initialization fails.
-     *
-     * @param patient instance which will be returned by the context upon request
-     * @param minimumRight that the current must have or exceed
-     * @param users used to get the current user
-     * @param access used to check that the user has a certain access level
-     * @param logger for logging failures
-     * @throws WebApplicationException if the patient instance was {@link null}, or the current user has insufficient
-     * rights
-     */
-    public PatientAccessContext(Patient patient, AccessLevel minimumAccessLevel, UserManager users,
-        PermissionsManager manager, Logger logger) throws WebApplicationException
-    {
-        this.patient = patient;
-        if (this.patient == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-        this.patientAccess = new SecurePatientAccess(manager.getPatientAccess(this.patient), manager);
-        this.initializeUser(minimumAccessLevel, users, logger);
-    }
-
     private void initializeUser(AccessLevel minimumAccessLevel, UserManager users, Logger logger)
     {
         this.currentUser = users.getCurrentUser();
-        if (!this.patientAccess.hasAccessLevel(this.currentUser.getProfileDocument(), minimumAccessLevel));
-        {
+        if (!this.patientAccess.hasAccessLevel(this.currentUser.getProfileDocument(), minimumAccessLevel)) {
             logger.debug("{} access denied to user [{}] on patient record [{}]",
                 minimumAccessLevel.getName(), this.currentUser, this.patient.getId());
             throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -127,6 +101,11 @@ public class PatientAccessContext
         return this.currentUser;
     }
 
+    /**
+     * Allows for reuse of {@link PatientAccess} instance.
+     *
+     * @return an initialized instance of {@link PatientAccess}
+     */
     public PatientAccess getPatientAccess()
     {
         return patientAccess;

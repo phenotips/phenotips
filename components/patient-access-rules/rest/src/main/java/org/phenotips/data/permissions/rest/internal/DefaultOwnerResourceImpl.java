@@ -18,14 +18,12 @@
 package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
-import org.phenotips.data.permissions.rest.internal.utils.PatientUserContext;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PhenotipsUser;
@@ -37,7 +35,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.text.StringUtils;
 
 import javax.inject.Inject;
@@ -76,9 +73,6 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     @Inject
     private DomainObjectFactory factory;
 
-    @Inject
-    private PermissionsManager manager;
-
     /** Needed for retrieving the `owner` parameter during the PUT request (as part of setting a new owner). */
     @Inject
     private Container container;
@@ -88,9 +82,9 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     {
         this.logger.debug("Retrieving patient record's owner [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.VIEW);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        PhenotipsUser result = this.factory.createPatientOwner(patientUserContext.getPatient());
+        PhenotipsUser result = this.factory.createPatientOwner(patientAccessContext.getPatient());
 
         // adding links relative to this context
         result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
@@ -133,21 +127,18 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
         this.logger.debug("Setting owner of the patient record [{}] to [{}] via REST", patientId, ownerId);
-        // besides getting the patient, checks that the current user has edit access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.EDIT);
+        // besides getting the patient, checks that the current user has manage access
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 
         EntityReference ownerReference =
             this.currentResolver.resolve(ownerId, EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
         // todo. ask Sergiu as to what the right thing to do is
         // the code in DefaultPatientAccessHelper needs to be changed
         // this is just a hack
-        // the helper needs to use this.entitySerializer.serialize
+        // the helper in PatientAccess needs to use this.entitySerializer.serialize
         DocumentReference ownerDocRef = new DocumentReference(ownerReference);
 
-        PatientAccess patientAccess =
-            new SecurePatientAccess(this.manager.getPatientAccess(patientUserContext.getPatient()), this.manager);
-        // fixme. there should be a check for current user being the owner
-        // existence and validity of the passed in owner should be checked by .setOwner
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         if (!patientAccess.setOwner(ownerDocRef)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

@@ -21,11 +21,11 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
+import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.PatientUserContext;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PatientVisibility;
@@ -33,7 +33,6 @@ import org.phenotips.data.rest.model.PatientVisibility;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.text.StringUtils;
 
 import javax.inject.Inject;
@@ -77,9 +76,9 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     {
         this.logger.debug("Retrieving patient record's visibility [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.VIEW);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        PatientVisibility result = this.factory.createPatientVisibility(patientUserContext.getPatient());
+        PatientVisibility result = this.factory.createPatientVisibility(patientAccessContext.getPatient());
 
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
             new Link().withRel(Relations.PATIENT_RECORD)
@@ -139,11 +138,10 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
 
         this.logger.debug(
             "Setting the visibility of the patient record [{}] to [{}] via REST", patientId, visibilityName);
-        // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.EDIT);
+        // besides getting the patient, checks that the user has manage access
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 
-        PatientAccess patientAccess =
-            new SecurePatientAccess(this.manager.getPatientAccess(patientUserContext.getPatient()), this.manager);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         if (!patientAccess.setVisibility(visibility)) {
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

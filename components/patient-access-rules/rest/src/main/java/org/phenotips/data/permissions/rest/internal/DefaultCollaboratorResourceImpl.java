@@ -20,15 +20,13 @@ package org.phenotips.data.permissions.rest.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
-import org.phenotips.data.permissions.rest.internal.utils.PatientUserContext;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PhenotipsUser;
@@ -39,7 +37,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.text.StringUtils;
 
 import javax.inject.Inject;
@@ -83,9 +80,6 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private DomainObjectFactory factory;
 
     @Inject
-    private PermissionsManager manager;
-
-    @Inject
     private Container container;
 
     @Override
@@ -94,10 +88,11 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         this.logger.debug(
             "Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId, patientId);
         // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.VIEW);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
         try {
-            PhenotipsUser result = this.createCollaborator(patientUserContext.getPatient(), collaboratorId.trim());
+            PhenotipsUser result = this.createCollaborator(
+                patientAccessContext.getPatient(), collaboratorId.trim(), patientAccessContext.getPatientAccess());
 
             // adding links relative to this context
             result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
@@ -147,11 +142,10 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     {
         this.logger.debug(
             "Removing collaborator with id [{}] from patient record [{}] via REST", collaboratorId, patientId);
-        // besides getting the patient, checks that the user has edit access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.EDIT);
+        // besides getting the patient, checks that the user has manage access
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 
-        PatientAccess patientAccess =
-            new SecurePatientAccess(this.manager.getPatientAccess(patientUserContext.getPatient()), this.manager);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
         EntityReference collaboratorReference =
             this.currentResolver.resolve(collaboratorId, EntityType.DOCUMENT, XWIKI_SPACE);
 
@@ -163,13 +157,12 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         return Response.noContent().build();
     }
 
-    private PhenotipsUser createCollaborator(Patient patient, String id) throws Exception
+    private PhenotipsUser createCollaborator(Patient patient, String id, PatientAccess patientAccess) throws Exception
     {
         String collaboratorId = id.trim();
         // check if the space reference is used more than once in this class
         EntityReference collaboratorReference =
             this.currentResolver.resolve(collaboratorId, EntityType.DOCUMENT, XWIKI_SPACE);
-        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         for (Collaborator collaborator : patientAccess.getCollaborators()) {
             if (collaboratorReference.equals(collaborator.getUser())) {
                 return this.factory.createCollaborator(patient, collaborator);
