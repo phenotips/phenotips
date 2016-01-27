@@ -76,8 +76,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($filterFrom = ", BaseObject ownerObj, StringProperty owner")
 #set ($filterWhere = "and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and owner.id.id = ownerObj.id and owner.value = '${escapetool.sql($doc.documentReference)}'")
 #if (!$isMyGroup)
-  #set ($filterFrom = "${filterFrom}, BaseObject visibilityObj, StringProperty visibility")
-  #set ($filterWhere = "${filterWhere} and visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibility.id.id = visibilityObj.id and visibility.value = 'public'")
+  #set ($filterFrom = "${filterFrom}, BaseObject accessObj, StringProperty access")
+  #set ($filterWhere = "${filterWhere} and accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.VisibilityClass' and access.id.id = accessObj.id and access.value = 'public'")
 #end
 #set ($options = {
   'className'         : $patientClassName,
