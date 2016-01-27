@@ -26,9 +26,8 @@ import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
-import org.phenotips.data.permissions.rest.internal.utils.PatientUserContext;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
-import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Collaborators;
 import org.phenotips.data.rest.model.Link;
@@ -39,7 +38,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -70,6 +68,8 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 {
     private static final String LEVEL = "level";
 
+    private static final String MANAGE_LEVEL = "manage";
+
     private static final EntityReference XWIKI_SPACE = new EntityReference("XWiki", EntityType.SPACE);
 
     @Inject
@@ -97,9 +97,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     {
         this.logger.debug("Retrieving collaborators of patient record [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.VIEW);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        Collaborators result = this.factory.createCollaborators(patientUserContext.getPatient(), this.uriInfo);
+        Collaborators result = this.factory.createCollaborators(patientAccessContext.getPatient(), this.uriInfo);
 
         // factor these out as common
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
@@ -160,10 +160,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
         this.logger.debug(
             "Adding collaborator [{}] with permission level [{}] to the patient record [{}] via REST",
             collaboratorId, accessLevelName, patientId);
-        // besides getting the patient, checks that the user has edit access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.EDIT);
-        PatientAccess patientAccess = new SecurePatientAccess(
-            this.manager.getPatientAccess(patientUserContext.getPatient()), this.manager);
+        // besides getting the patient, checks that the user has manage access
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         // will throw an error if something goes wrong
         this.addCollaborator(collaboratorId, accessLevelName.trim(), patientAccess);
@@ -172,11 +171,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
     private Response updateCollaborators(Collection<Collaborator> collaborators, String patientId)
     {
-        // besides getting the patient, checks that the user has edit access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.EDIT);
-
-        PatientAccess patientAccess = new SecurePatientAccess(
-            this.manager.getPatientAccess(patientUserContext.getPatient()), this.manager);
+        // besides getting the patient, checks that the user has manage access
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, MANAGE_LEVEL);
+        PatientAccess patientAccess = patientAccessContext.getPatientAccess();
 
         if (!patientAccess.updateCollaborators(collaborators)) {
             this.logger.error("Could not update collaborators");
@@ -190,8 +187,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     {
         // checking that the access level is valid
         AccessLevel level = this.getAccessLevelFromString(levelName);
-        EntityReference collaboratorReference = this.currentResolver.resolve(
-            id, EntityType.DOCUMENT, XWIKI_SPACE);
+        EntityReference collaboratorReference = this.currentResolver.resolve(id, EntityType.DOCUMENT, XWIKI_SPACE);
 
         // todo. function .addCollaborator has to check if the collaborator already exists before adding them
         if (!patientAccess.addCollaborator(collaboratorReference, level)) {

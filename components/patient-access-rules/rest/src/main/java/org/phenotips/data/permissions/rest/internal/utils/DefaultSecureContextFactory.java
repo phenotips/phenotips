@@ -17,12 +17,11 @@
  */
 package org.phenotips.data.permissions.rest.internal.utils;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PermissionsManager;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.security.authorization.AuthorizationManager;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
@@ -50,20 +49,15 @@ public class DefaultSecureContextFactory implements SecureContextFactory
     private PatientRepository repository;
 
     @Inject
-    private AuthorizationManager access;
-
-    @Inject
     private UserManager users;
 
-    @Override
-    public PatientUserContext getContext(String patientId, Right minimumRight) throws WebApplicationException
-    {
-        return new PatientUserContext(patientId, minimumRight, repository, users, access, logger);
-    }
+    @Inject
+    private PermissionsManager manager;
 
     @Override
-    public PatientUserContext getContext(Patient patient, Right minimumRight) throws WebApplicationException
+    public PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException
     {
-        return new PatientUserContext(patient, minimumRight, users, access, logger);
+        AccessLevel level = this.manager.resolveAccessLevel(minimumAccessLevel);
+        return new PatientAccessContext(patientId, level, repository, users, manager, logger);
     }
 }

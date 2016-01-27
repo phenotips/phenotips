@@ -48,6 +48,8 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
     @Override
     public VisibilityOptions getVisibilityOptions()
     {
+        // todo. should this be world-visible?
+
         VisibilityOptions result = new VisibilityOptions();
         for (Visibility visibility : this.manager.listVisibilityOptions()) {
             result.withLevels(visibility.getName());

@@ -17,10 +17,7 @@
  */
 package org.phenotips.data.permissions.rest.internal.utils;
 
-import org.phenotips.data.Patient;
-
 import org.xwiki.component.annotation.Role;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
 import javax.ws.rs.WebApplicationException;
@@ -39,24 +36,15 @@ public interface SecureContextFactory
     // todo. should the return type be an interface?
 
     /**
-     * Provides the patient and current user context, making sure that the current user has high enough access level.
+     * Provides the patient, current user, and access context, making sure that the current user has high enough
+     * access level.
      *
      * @param patientId by which a patient is to be found
-     * @param minimumRight that the current user must have
+     * @param minimumAccessLevel that the current user must have, that maps to one
+     * of {@link org.phenotips.data.permissions.AccessLevel}
      * @return context containing a {@link Patient} instance and the current user
      * @throws WebApplicationException if the patient could not be found, or the current user does not have high enough
      * access level
      */
-    PatientUserContext getContext(String patientId, Right minimumRight) throws WebApplicationException;
-
-    /**
-     * Provides the patient and current user context, making sure that the current user has high enough access level.
-     *
-     * @param patient that will be returned by the context
-     * @param minimumRight that the current user must have
-     * @return context containing a {@link Patient} instance and the current user
-     * @throws WebApplicationException if the patient instance was {@link null}, or the current user does not have high
-     * enough access level
-     */
-    PatientUserContext getContext(Patient patient, Right minimumRight) throws WebApplicationException;
+    PatientAccessContext getContext(String patientId, String minimumAccessLevel) throws WebApplicationException;
 }

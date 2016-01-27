@@ -23,7 +23,7 @@ import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityResource;
-import org.phenotips.data.permissions.rest.internal.utils.PatientUserContext;
+import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Collaborators;
@@ -34,7 +34,6 @@ import org.phenotips.data.rest.model.PhenotipsUser;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
-import org.xwiki.security.authorization.Right;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -83,12 +82,12 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     {
         this.logger.debug("Retrieving patient record [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
-        PatientUserContext patientUserContext = this.secureContextFactory.getContext(patientId, Right.VIEW);
+        PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
         Permissions result = new Permissions();
-        PhenotipsUser owner = this.factory.createPatientOwner(patientUserContext.getPatient());
-        PatientVisibility visibility = this.factory.createPatientVisibility(patientUserContext.getPatient());
-        Collaborators collaborators = this.factory.createCollaborators(patientUserContext.getPatient(), this.uriInfo);
+        PhenotipsUser owner = this.factory.createPatientOwner(patientAccessContext.getPatient());
+        PatientVisibility visibility = this.factory.createPatientVisibility(patientAccessContext.getPatient());
+        Collaborators collaborators = this.factory.createCollaborators(patientAccessContext.getPatient(), this.uriInfo);
 
         // adding links into sub-parts
         owner.getLinks().add(new Link().withRel(Relations.OWNER)
