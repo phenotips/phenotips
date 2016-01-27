@@ -40,5 +40,5 @@ public interface VisibilityOptionsResource
      * @return all the visibility levels present in the system
      */
     @GET
-    @Path("options") VisibilityOptions getVisibilityOptions();
+    VisibilityOptions getVisibilityOptions();
 }
