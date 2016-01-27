@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>users</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
   <artifactId>users-default-impl</artifactId>
   <name>PhenoTips - Users and Groups - Default implementation</name>
@@ -98,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-templates-default-impl</artifactId>
+      <artifactId>templates-default-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->

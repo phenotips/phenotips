@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>projects</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
   <artifactId>projects-api</artifactId>
   <name>PhenoTips - Projects - api</name>
@@ -100,7 +100,7 @@
     <dependency>
       <groupId>org.phenotips</groupId>
       <artifactId>phenotips-authorization</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -113,9 +113,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
