@@ -45,4 +45,12 @@ public interface PatientScorer
      * @return a score between {@code 0} and {@code 1}, or {@code -1} if the score cannot be computed by this scorer
      */
     double getScore(Patient patient);
+
+    /**
+     * Get the priority of this scorer. Higher priority (larger integer) scorers will be used first.
+     *
+     * @since 1.2RC1
+     * @return a score greater than {@code 0}
+     */
+    int getScorerPriority();
 }

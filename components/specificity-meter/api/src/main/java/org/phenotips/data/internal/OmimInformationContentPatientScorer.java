@@ -96,6 +96,10 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
         return score;
     }
 
+    public int getScorerPriority() {
+        return 10;
+    }
+
     /**
      * Compute the information content of a patient's positive or negative symptoms.
      *

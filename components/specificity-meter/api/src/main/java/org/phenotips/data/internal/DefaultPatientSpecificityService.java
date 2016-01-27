@@ -23,42 +23,47 @@ import org.phenotips.data.PatientSpecificity;
 import org.phenotips.data.PatientSpecificityService;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Default specificity computation, using the MONARCH initiative service, and, if that isn't available, falling back to
- * a local information content score.
+ * Default specificity computation, using the highest priority scorer from all available scorers.
  *
  * @version $Id$
  * @since 1.0M12
  */
 @Component
 @Singleton
-public class DefaultPatientSpecificityService implements PatientSpecificityService
+public class DefaultPatientSpecificityService implements PatientSpecificityService, Initializable
 {
-    /** The default, high quality scorer. */
+    /** The list of all available scorers. */
     @Inject
-    @Named("monarch")
-    private PatientScorer monarchScorer;
+    private List<PatientScorer> scorers;
 
-    /** The fast local scorer. */
-    @Inject
-    @Named("omimInformationContent")
-    private PatientScorer omimScorer;
+    public void initialize()
+    {
+        Collections.sort(this.scorers, new PatientScorerComparator());
+    }
 
     @Override
     public PatientSpecificity getSpecificity(Patient patient)
     {
-        PatientSpecificity spec = null;
+        PatientSpecificity specificity = null;
 
-        spec = this.monarchScorer.getSpecificity(patient);
-        if (spec == null) {
-            spec = this.omimScorer.getSpecificity(patient);
+        for (PatientScorer scorer : this.scorers) {
+            specificity = scorer.getSpecificity(patient);
+
+            if (specificity != null) {
+                return specificity;
+            }
         }
-        return spec;
+
+        return specificity;
     }
 
     @Override
@@ -66,10 +71,14 @@ public class DefaultPatientSpecificityService implements PatientSpecificityServi
     {
         double score = -1;
 
-        score = this.monarchScorer.getScore(patient);
-        if (score == -1) {
-            score = this.omimScorer.getScore(patient);
+        for (PatientScorer scorer : this.scorers) {
+            score = scorer.getScore(patient);
+
+            if (score >= 0) {
+                return score;
+            }
         }
+
         return score;
     }
 }
