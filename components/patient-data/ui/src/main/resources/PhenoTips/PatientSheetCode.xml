@@ -1264,9 +1264,9 @@ document.observe('xwiki:dom:loaded', function()
       var categories = '';
       var DO_EXPAND = !selectionSummary;
       var syncTermCategory = function(term) {
-        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
+        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type=checkbox][name="' + fieldName + '"][value="' + term +'"]');
         if (field) {
-          var subtermsInCategory = $$('label.accepted-suggestion[for^=' + fieldName + '_] + .term-category input[type=hidden][value=' + term + ']');
+          var subtermsInCategory = $$('label.accepted-suggestion[for^="' + fieldName + '_"] + .term-category input[type=hidden][value="' + term + '"]');
           var selectedSubterms  = 0;
           var countIfSelectedSubterm = function (categoryElement) {
             var subtermElement = categoryElement.up('li').down('label.accepted-suggestion input[type=checkbox]');
