@@ -83,9 +83,9 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
 
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
             new Link().withRel(Relations.PATIENT_RECORD)
-                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
-
-        // todo. put permissions link
+                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()),
+            new Link().withRel(Relations.PERMISSIONS).withHref(this.uriInfo.getBaseUriBuilder()
+                .path(PermissionsResource.class).build(patientId).toString()));
 
         return result;
     }

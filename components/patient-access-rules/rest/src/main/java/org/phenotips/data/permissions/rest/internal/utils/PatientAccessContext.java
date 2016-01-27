@@ -19,6 +19,10 @@ package org.phenotips.data.permissions.rest.internal.utils;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.script.SecurePatientAccess;
 
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
@@ -37,11 +41,13 @@ import org.slf4j.Logger;
  * @version $Id$
  * @since 1.3M1
  */
-public class PatientUserContext
+public class PatientAccessContext
 {
     private Patient patient;
 
     private User currentUser;
+
+    private PatientAccess patientAccess;
 
     /**
      * Initializes the context, making sure that the patient exists, and that the current user has sufficient rights. If
@@ -55,15 +61,16 @@ public class PatientUserContext
      * @param logger for logging failures
      * @throws WebApplicationException if the patient could not be found, or the current user has insufficient rights
      */
-    public PatientUserContext(String patientId, Right minimumRight, PatientRepository repository, UserManager users,
-        AuthorizationManager access, Logger logger) throws WebApplicationException
+    public PatientAccessContext(String patientId, AccessLevel minimumAccessLevel, PatientRepository repository, UserManager users,
+        PermissionsManager manager, Logger logger) throws WebApplicationException
     {
         this.patient = repository.getPatientById(patientId);
         if (this.patient == null) {
             logger.debug("No such patient record: [{}]", patientId);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        this.initializeUser(this.patient, minimumRight, users, access, logger);
+        this.patientAccess = new SecurePatientAccess(manager.getPatientAccess(this.patient), manager);
+        this.initializeUser(minimumAccessLevel, users, logger);
     }
 
     /**
@@ -78,25 +85,24 @@ public class PatientUserContext
      * @throws WebApplicationException if the patient instance was {@link null}, or the current user has insufficient
      * rights
      */
-    public PatientUserContext(Patient patient, Right minimumRight, UserManager users,
-        AuthorizationManager access, Logger logger) throws WebApplicationException
+    public PatientAccessContext(Patient patient, AccessLevel minimumAccessLevel, UserManager users,
+        PermissionsManager manager, Logger logger) throws WebApplicationException
     {
         this.patient = patient;
         if (this.patient == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-        this.initializeUser(patient, minimumRight, users, access, logger);
+        this.patientAccess = new SecurePatientAccess(manager.getPatientAccess(this.patient), manager);
+        this.initializeUser(minimumAccessLevel, users, logger);
     }
 
-    private void initializeUser(Patient patient, Right minimumRight, UserManager users, AuthorizationManager access,
-        Logger logger)
+    private void initializeUser(AccessLevel minimumAccessLevel, UserManager users, Logger logger)
     {
         this.currentUser = users.getCurrentUser();
-        if (!access.hasAccess(minimumRight, this.currentUser == null ? null : this.currentUser.getProfileDocument(),
-            patient.getDocument()))
+        if (!this.patientAccess.hasAccessLevel(this.currentUser.getProfileDocument(), minimumAccessLevel));
         {
             logger.debug("{} access denied to user [{}] on patient record [{}]",
-                minimumRight.getName(), this.currentUser, this.patient.getId());
+                minimumAccessLevel.getName(), this.currentUser, this.patient.getId());
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
@@ -119,5 +125,10 @@ public class PatientUserContext
     public User getCurrentUser()
     {
         return this.currentUser;
+    }
+
+    public PatientAccess getPatientAccess()
+    {
+        return patientAccess;
     }
 }
