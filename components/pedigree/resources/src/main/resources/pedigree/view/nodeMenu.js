@@ -702,14 +702,13 @@ define([
                 var result = this._generateEmptyField(data);
                 var cancerList = editor.getCancerLegend()._getAllSupportedCancers();
 
-                var div = new Element('tr', {'class': 'cancer_field cancer-header field-no-user-select'} );
+                var tableHeaderRow = new Element('tr', {'class': 'cancer_field cancer-header field-no-user-select'} );
                 var label1 = new Element('td').insert(new Element('label', {'class': 'cancer_label_field'} ).update("Name"));
                 var label2 = new Element('td').insert(new Element('label', {'class': 'cancer_status_select'} ).update("Status"));
                 var label3 = new Element('td').insert(new Element('label', {'class': 'cancer_age_select'} ).update("As of"));
-                div.insert(label1).insert(label2).insert(label3);
-                result.inputsContainer.table = new Element('table');
-                result.inputsContainer.insert(result.inputsContainer.table);
-                result.inputsContainer.table.insert(div);
+                tableHeaderRow.insert(label1).insert(label2).insert(label3);
+                table = new Element('table');
+                table.insert(tableHeaderRow);
 
                 // create once and clone for each cancer - it takes too much time to create all elements anew each time
                 // (Note1: for performace reasons also using raw HTML for options)
@@ -738,7 +737,7 @@ define([
                 var cancersUIElements = [];
                 for (var i = 0; i < cancerList.length; i++) {
                     var cancerName = cancerList[i];
-                    var div = new Element('tr', {'class': 'cancer_field'} );
+                    var tableRow = new Element('tr', {'class': 'cancer_field'} );
                     var label = new Element('td').insert(new Element('label', {'class': 'cancer_label_field'} ).update(cancerName));
 
                     var spanAge   = spanAgeProto.cloneNode(true);
@@ -856,12 +855,14 @@ define([
                             selFunc();
                         });
                     });
-                    div.insert(label)
+                    tableRow.insert(label)
                        .insert(new Element('td').insert(spanSelect))
                        .insert(new Element('td').insert(spanAge))
                        .insert(new Element('td').insert(expandNotes));
-                    result.inputsContainer.table.insert(div)
-                                                .insert(new Element('tr', {'class': 'cancer_textarea'}).insert(new Element('td', {'colspan': 3}).insert(textInput)));
+                    table.insert(tableRow)
+                         .insert(new Element('tr', {'class': 'cancer_textarea'}).insert(new Element('td', {'colspan': 3}).insert(textInput)));
+                    result.inputsContainer.insert(table);
+                 
                 }
 
                 var buttonContainer = new Element('div', { 'class': 'button-container'});
