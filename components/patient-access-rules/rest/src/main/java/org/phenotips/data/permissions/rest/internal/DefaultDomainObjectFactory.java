@@ -39,6 +39,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
@@ -85,6 +86,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Inject
     private Logger logger;
 
+    @Inject
+    private EntityReferenceSerializer<String> entitySerializer;
+
     private EntityReference userObjectReference;
 
     private EntityReference groupObjectReference;
@@ -105,14 +109,14 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
 
         // links should be added at a later point, to allow the reuse of this method in different contexts
 
-        return createPhenotipsUser(owner.getUsername(), owner.getType(), owner.getUser());
+        return createPhenotipsUser(owner.getUser(), owner.getType(), owner.getUser());
     }
 
-    private PhenotipsUser createPhenotipsUser(String username, String type, EntityReference reference)
+    private PhenotipsUser createPhenotipsUser(EntityReference user, String type, EntityReference reference)
     {
         PhenotipsUser result = new PhenotipsUser();
 
-        result.withId(username);
+        result.withId(this.entitySerializer.serialize(user));
         result.withType(type);
 
         // there is a chance of not being able to retrieve the rest of the data,
@@ -211,11 +215,11 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public PhenotipsUser createCollaborator(Patient patient, Collaborator collaborator)
     {
-        return this.createPhenotipsUser(collaborator.getUsername(), collaborator.getType(), collaborator.getUser());
+        return this.createPhenotipsUser(collaborator.getUser(), collaborator.getType(), collaborator.getUser());
     }
 
     private PhenotipsUser createCollaborator(Collaborator collaborator)
     {
-        return this.createPhenotipsUser(collaborator.getUsername(), collaborator.getType(), collaborator.getUser());
+        return this.createPhenotipsUser(collaborator.getUser(), collaborator.getType(), collaborator.getUser());
     }
 }
