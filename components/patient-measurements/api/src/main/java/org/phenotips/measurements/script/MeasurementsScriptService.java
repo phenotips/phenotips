@@ -18,7 +18,7 @@
 package org.phenotips.measurements.script;
 
 import org.phenotips.measurements.MeasurementHandler;
-import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+import org.phenotips.measurements.MeasurementHandlersSorter;
 import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.component.annotation.Component;
@@ -38,7 +38,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.api.Object;
@@ -62,6 +61,10 @@ public class MeasurementsScriptService implements ScriptService
     @Inject
     @Named("context")
     private Provider<ComponentManager> componentManager;
+
+    /** Provides sorting for measurement handlers using configured ordering. */
+    @Inject
+    private MeasurementHandlersSorter measurementHandlersSorter;
 
     /**
      * Get the handler for a specific kind of measurements.
@@ -92,7 +95,7 @@ public class MeasurementsScriptService implements ScriptService
             if (result == null) {
                 result = Collections.emptyList();
             }
-            Collections.sort(result, MeasurementSorter.instance);
+            Collections.sort(result, measurementHandlersSorter.getMeasurementHandlerComparator());
             return result;
         } catch (ComponentLookupException ex) {
             this.logger.warn("Failed to list available measurements", ex);
@@ -112,7 +115,7 @@ public class MeasurementsScriptService implements ScriptService
             Map<String, MeasurementHandler> handlers =
                 this.componentManager.get().getInstanceMap(MeasurementHandler.class);
             if (handlers != null) {
-                Set<String> result = new TreeSet<String>(MeasurementNameSorter.instance);
+                Set<String> result = new TreeSet<String>(measurementHandlersSorter.getMeasurementNameComparator());
                 result.addAll(handlers.keySet());
                 return result;
             }
@@ -157,73 +160,15 @@ public class MeasurementsScriptService implements ScriptService
     }
 
     /**
-     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
-     *
-     * @version $Id$
-     */
-    private static final class MeasurementSorter implements Comparator<MeasurementHandler>
-    {
-        /** Hardcoded list of measurements and their order. */
-        private static final String[] TARGET_ORDER = new String[] {"weight", "height", "bmi", "armspan", "sitting",
-            "hc", "philtrum", "ear", "ocd", "icd", "pfl", "ipd", "hand", "palm", "foot"};
-
-        /** Singleton instance. */
-        private static MeasurementSorter instance = new MeasurementSorter();
-
-        @Override
-        public int compare(MeasurementHandler o1, MeasurementHandler o2)
-        {
-            String n1 = ((AbstractMeasurementHandler) o1).getName();
-            String n2 = ((AbstractMeasurementHandler) o2).getName();
-            int p1 = ArrayUtils.indexOf(TARGET_ORDER, n1);
-            int p2 = ArrayUtils.indexOf(TARGET_ORDER, n2);
-            if (p1 == -1 && p2 == -1) {
-                return n1.compareTo(n2);
-            } else if (p1 == -1) {
-                return 1;
-            } else if (p2 == -1) {
-                return -1;
-            }
-            return p1 - p2;
-        }
-    }
-
-    /**
-     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
-     *
-     * @version $Id$
-     */
-    private static final class MeasurementNameSorter implements Comparator<String>
-    {
-        /** Singleton instance. */
-        private static MeasurementNameSorter instance = new MeasurementNameSorter();
-
-        @Override
-        public int compare(String n1, String n2)
-        {
-            int p1 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n1);
-            int p2 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n2);
-            if (p1 == -1 && p2 == -1) {
-                return n1.compareTo(n2);
-            } else if (p1 == -1) {
-                return 1;
-            } else if (p2 == -1) {
-                return -1;
-            }
-            return p1 - p2;
-        }
-    }
-
-    /**
      * Mechanism for sorting measurement objects according to age string, in ascending order according to the parsed
      * value of the age string, in months.
      *
      * @version $Id $
      */
-    private static final class MeasurementObjectSorter implements Comparator<Object>
+    private static final class MeasurementObjectAgeComparator implements Comparator<Object>
     {
         /** Singleton instance. */
-        private static MeasurementObjectSorter instance = new MeasurementObjectSorter();
+        private static MeasurementObjectAgeComparator instance = new MeasurementObjectAgeComparator();
 
         /** Key for accessing age property. */
         private static final String AGE_KEY = "age";
@@ -249,8 +194,8 @@ public class MeasurementsScriptService implements ScriptService
      *
      * @param objects the list of XWiki objects to sort
      */
-    public void sortMeasurementObjects(List<Object> objects)
+    public void sortMeasurementObjectsByAge(List<Object> objects)
     {
-        Collections.sort(objects, MeasurementObjectSorter.instance);
+        Collections.sort(objects, MeasurementObjectAgeComparator.instance);
     }
 }

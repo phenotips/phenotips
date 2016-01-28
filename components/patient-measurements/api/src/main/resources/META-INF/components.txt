@@ -17,3 +17,4 @@ org.phenotips.measurements.internal.WeightMeasurementHandler
 org.phenotips.measurements.internal.MeasurementAgeUpdater
 org.phenotips.measurements.internal.PatientMeasurementEmptyObjectsRemover
 org.phenotips.measurements.internal.MeasurementsController
+org.phenotips.measurements.internal.DefaultMeasurementHandlersSorter
