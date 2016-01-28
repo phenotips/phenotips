@@ -390,11 +390,12 @@
   #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
   ##
   #set($propType = '')
+  #set($propertyHasFilterValue = "$!stringtool.join($filterValueList, '')" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
   #set($propClassName = "$!request.get(${colname.concat('/class')})")
   #set ($targetedObject = 'obj')
   #if($propClassName != '')
     #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
-    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
+    #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName) &amp;&amp; $propertyHasFilterValue)
       #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
       #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
       #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
@@ -412,7 +413,7 @@
   #end
   ##
   ## Filter values
-  #if("$!stringtool.join($filterValueList, '')" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
+  #if($propertyHasFilterValue)
     #set($discard = $tablelist.add($tableAlias))
     #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
