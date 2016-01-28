@@ -2642,6 +2642,11 @@ return PhenoTips;
           this._toggleExpandState(entry);
         }
       }.bindAsEventListener(this));
+      element.observe('ynpicker:selectionChanged', function(e) {
+        if(!this._isExpandToolLocked(element) &amp;&amp; e.memo.selected == "yes") {
+          this._expandEntry(element);
+        }
+      }.bind(this))
       wrapper.insert({'top': expandTool});
       this.expand(element, element.hasClassName('root'));
       //element.observe('obrowser:expand:done', this._obrowserExpandEventHandler);
@@ -2672,19 +2677,31 @@ return PhenoTips;
     }
   },
 
+  _expandEntry : function(target) {
+    if(!target) return;
+    if (!target.down('.descendents')){
+      //This is the first expansion, fetch subterms
+      target.down(".error") &amp;&amp; target.down(".error").remove();
+      this.expand(target, true);
+    } else {
+      Event.fire(target, "obrowser:expand:finished");
+    }
+    target.removeClassName('collapsed');
+    target.down('.expand-tool').update(this._getExpandCollapseSymbol(false));
+  },
+  _collapseEntry : function(target) {
+    if(!target) return;
+    target.addClassName('collapsed');
+    Event.fire(target, "obrowser:expand:finished");
+    target.down('.expand-tool').update(this._getExpandCollapseSymbol(true));
+  },
   _toggleExpandState : function(target) {
     if (target) {
-      if (target.down('.descendents')) {
-        target.toggleClassName('collapsed');
-        Event.fire(target, "obrowser:expand:finished");
+      if (!target.down('.descendents') || target.hasClassName('collapsed')){
+        this._expandEntry(target);
       } else {
-        target.removeClassName('collapsed');
-        if (target.down(".error")) {
-          target.down(".error").remove();
-        }
-        this.expand(target, true);
+        this._collapseEntry(target);
       }
-      target.down('.expand-tool').update(this._getExpandCollapseSymbol(target.hasClassName("collapsed")));
     }
   },
 
