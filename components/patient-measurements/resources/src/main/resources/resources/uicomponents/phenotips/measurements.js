@@ -480,10 +480,8 @@ var PhenoTips = (function(PhenoTips) {
       if (dateEl.alt.length) {
         if (!this._globalDobEl.alt.length) return;
 
-        var dateOnlyRegex = /((\d{4})-(\d{2})-(\d{2}))T/;
-        var bday = new Date(this._globalDobEl.alt.match(dateOnlyRegex)[1]);
-        var thisDate = new Date(dateEl.alt.match(dateOnlyRegex)[1]);
-
+        var bday = new Date(this._globalDobEl.alt).toUTC();
+        var thisDate = new Date(dateEl.alt);
         var age = new TimePeriod(bday, thisDate);
         var dateDisplayParts = {
           y: age.years,
