@@ -167,7 +167,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
         // will throw an error if something goes wrong
         this.addCollaborator(collaboratorId, accessLevelName.trim(), patientAccess);
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     private Response updateCollaborators(Collection<Collaborator> collaborators, String patientId)
@@ -180,7 +180,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             this.logger.error("Could not update collaborators");
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     private void addCollaborator(String id, String levelName, PatientAccess patientAccess)

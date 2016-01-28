@@ -154,7 +154,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
 
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     private CollaboratorRepresentation createCollaboratorRepresentation

@@ -144,6 +144,6 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 }
