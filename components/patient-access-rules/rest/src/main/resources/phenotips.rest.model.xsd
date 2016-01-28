@@ -40,6 +40,7 @@
           <element name="name" type="string"/>
           <element name="email" type="string"/>
           <element name="type" type="string"/>
+          <element name="level" type="string"/>
         </sequence>
       </extension>
     </complexContent>

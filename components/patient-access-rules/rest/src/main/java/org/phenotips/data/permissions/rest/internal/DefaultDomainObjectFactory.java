@@ -201,7 +201,7 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
         Collaborators result = new Collaborators();
         for (Collaborator collaborator : collaborators)
         {
-            PhenotipsUser collaboratorObject = this.createCollaborator(collaborator);
+            PhenotipsUser collaboratorObject = this.createCollaborator(patientAccess, collaborator);
             String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
                 .build(patient.getId(), collaborator.getUser().getName()).toString();
             collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR).withHref(href));
@@ -215,11 +215,16 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public PhenotipsUser createCollaborator(Patient patient, Collaborator collaborator)
     {
-        return this.createPhenotipsUser(collaborator.getUser(), collaborator.getType(), collaborator.getUser());
+        PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
+        return this.createCollaborator(patientAccess, collaborator);
     }
 
-    private PhenotipsUser createCollaborator(Collaborator collaborator)
+    private PhenotipsUser createCollaborator(PatientAccess patientAccess, Collaborator collaborator)
     {
-        return this.createPhenotipsUser(collaborator.getUser(), collaborator.getType(), collaborator.getUser());
+        String accessLevel = patientAccess.getAccessLevel(collaborator.getUser()).toString();
+        PhenotipsUser result = this.createPhenotipsUser(
+            collaborator.getUser(), collaborator.getType(), collaborator.getUser());
+        result.withLevel(accessLevel);
+        return result;
     }
 }

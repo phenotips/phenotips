@@ -97,7 +97,6 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         collaborators.getLinks().add(new Link().withRel(Relations.COLLABORATORS)
             .withHref(this.uriInfo.getBaseUriBuilder().path(CollaboratorsResource.class).build(patientId).toString()));
 
-
         result.withOwner(owner);
         result.withVisibility(visibility);
         result.withCollaborators(collaborators);
