@@ -269,15 +269,11 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
           return;
        }
 
-       if (__this.numberOfProjects > 0) {
-          var projectsSection = $(projectSectionId);
-          formDataWrapper.insert(__this._createSection(projectsSection, 'PhenoTips.ProjectBindingSheet'));
-       }
+       var projectsSection = $(projectSectionId);
+       formDataWrapper.insert(__this._createSection(projectsSection, 'PhenoTips.ProjectBindingSheet'));
 
-       if (__this.numberOfTemplates > 0) {
-          var templatesSection = $(templatesSectionId);
-          formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.StudyBindingSheet'));
-       }
+       var templatesSection = $(templatesSectionId);
+       formDataWrapper.insert(__this._createSection(templatesSection, 'PhenoTips.StudyBindingSheet'));
     },
 
     _updatePopupByMode : function() {
