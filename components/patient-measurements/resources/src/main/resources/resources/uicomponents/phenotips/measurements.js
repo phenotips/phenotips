@@ -199,7 +199,7 @@ var PhenoTips = (function(PhenoTips) {
     _addPlaceholder: function() {
       var infoEl = new Element('div');
       infoEl.addClassName('infomessage');
-      infoEl.innerHTML = "$services.localization.render('phenotips.patientSheet.measurements.chartPlaceholderMsg')";
+      infoEl.innerHTML = "$services.localization.render('phenotips.patientSheet.measurements.chartPlaceholder')";
 
       var url = new XWiki.Document("ChartService", "PhenoTips").getURL('get', 'a=-1&weight=1&standalone=1&n=weight&s=M&f=svg');
       var mainChartEl = new Element('a');
