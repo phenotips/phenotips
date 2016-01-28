@@ -100,7 +100,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                             "Cannot parse age."));
                     }
 
-                    if (config.getLowerAgeLimit() <= ageMonths && config.getUpperAgeLimit() >= ageMonths
+                    if (config.getLowerAgeLimit() < ageMonths && config.getUpperAgeLimit() >= ageMonths
                         && measurements.has(config.getMeasurementType())) {
                         if (chart == null) {
                             chart = new ChartResource(config.getMeasurementType(), sex.charAt(0), config, this.bridge);
