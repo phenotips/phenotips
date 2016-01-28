@@ -27,15 +27,14 @@ import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
+import org.phenotips.data.permissions.rest.internal.utils.UserOrGroupResolver;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.Link;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.text.StringUtils;
 
@@ -63,18 +62,14 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
 {
     private static final String LEVEL = "level";
 
-    private static final EntityReference XWIKI_SPACE = new EntityReference("XWiki", EntityType.SPACE);
-
     @Inject
     private Logger logger;
 
     @Inject
     private SecureContextFactory secureContextFactory;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject
-    @Named("current")
-    private EntityReferenceResolver<String> currentResolver;
+    private UserOrGroupResolver userOrGroupResolver;
 
     @Inject
     private DomainObjectFactory factory;
@@ -90,23 +85,26 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
+        CollaboratorRepresentation result;
         try {
-            CollaboratorRepresentation result = this.createCollaboratorRepresentation(
-                patientAccessContext.getPatient(), collaboratorId.trim(), patientAccessContext.getPatientAccess());
-
-            // adding links relative to this context
-            result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
-            result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
-            result.getLinks().add(new Link().withRel(Relations.COLLABORATORS).withHref(
-                this.uriInfo.getBaseUriBuilder().path(CollaboratorsResource.class).build(patientId).toString()));
-            result.getLinks().add(new Link().withRel(Relations.PERMISSIONS).withHref(
-                this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId).toString()));
-
-            return result;
-        } catch (Exception ex) {
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            result = this.createCollaboratorRepresentation(patientAccessContext.getPatient(), collaboratorId.trim(),
+                patientAccessContext.getPatientAccess());
+        } catch (WebApplicationException ex) {
+            this.logger.debug("Collaborator of patient record [{}] with id [{}] was not found",
+                patientId, collaboratorId);
+            throw ex;
         }
+
+        // adding links relative to this context
+        result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
+        result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+        result.getLinks().add(new Link().withRel(Relations.COLLABORATORS).withHref(
+            this.uriInfo.getBaseUriBuilder().path(CollaboratorsResource.class).build(patientId).toString()));
+        result.getLinks().add(new Link().withRel(Relations.PERMISSIONS).withHref(
+            this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId).toString()));
+
+        return result;
     }
 
     @Override
@@ -146,8 +144,12 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 
         PatientAccess patientAccess = patientAccessContext.getPatientAccess();
-        EntityReference collaboratorReference =
-            this.currentResolver.resolve(collaboratorId, EntityType.DOCUMENT, XWIKI_SPACE);
+        EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
+        if (collaboratorReference == null) {
+            // what would be a better status to indicate that the user/group id is not valid?
+            // ideally, the status page should show some sort of a message indicating that the id was not found
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
 
         if (!patientAccess.removeCollaborator(collaboratorReference)) {
             this.logger.error("Could not remove collaborator [{}] from patient record [{}]", collaboratorId, patientId);
@@ -157,20 +159,25 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         return Response.ok().build();
     }
 
-    private CollaboratorRepresentation createCollaboratorRepresentation
-        (Patient patient, String id, PatientAccess patientAccess) throws Exception
+    private CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, String id,
+        PatientAccess patientAccess)
     {
         String collaboratorId = id.trim();
         // check if the space reference is used more than once in this class
-        EntityReference collaboratorReference =
-            this.currentResolver.resolve(collaboratorId, EntityType.DOCUMENT, XWIKI_SPACE);
+        EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorId);
+        if (collaboratorReference == null) {
+            // what would be a better status to indicate that the user/group id is not valid?
+            // ideally, the status page should show some sort of a message indicating that the id was not found
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
         for (Collaborator collaborator : patientAccess.getCollaborators()) {
             if (collaboratorReference.equals(collaborator.getUser())) {
                 return this.factory.createCollaboratorRepresentation(patient, collaborator);
             }
         }
-        throw new Exception(String.format(
-            "Collaborator of patient record [%s] with id [%s] was not found", patient.getId(), collaboratorId));
+        // same here
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     private Response putLevel(String collaboratorId, String accessLevelName, String patientId)
