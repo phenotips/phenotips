@@ -29,7 +29,7 @@ import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.model.Collaborators;
+import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
 
 import org.xwiki.component.annotation.Component;
@@ -93,13 +93,14 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     private Container container;
 
     @Override
-    public Collaborators getCollaborators(String patientId)
+    public CollaboratorsRepresentation getCollaborators(String patientId)
     {
         this.logger.debug("Retrieving collaborators of patient record [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        Collaborators result = this.factory.createCollaborators(patientAccessContext.getPatient(), this.uriInfo);
+        CollaboratorsRepresentation result =
+            this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         // factor these out as common
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),

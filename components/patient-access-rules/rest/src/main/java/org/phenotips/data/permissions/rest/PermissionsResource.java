@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.rest.model.Permissions;
+import org.phenotips.data.rest.model.PermissionsRepresentation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -44,7 +44,7 @@ public interface PermissionsResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of an owner of a patient record
      */
-    @GET Permissions getPermissions(@PathParam("patient-id") String patientId);
+    @GET PermissionsRepresentation getPermissions(@PathParam("patient-id") String patientId);
 
     /**
      * Overwrites all permissions: owner, collaborators, visibility. If the indicated patient record doesn't exist, or

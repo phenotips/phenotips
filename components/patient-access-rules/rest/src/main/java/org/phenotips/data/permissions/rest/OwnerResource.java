@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Role;
 
@@ -47,7 +47,7 @@ public interface OwnerResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of an owner of a patient record
      */
-    @GET PhenotipsUser getOwner(@PathParam("patient-id") String patientId);
+    @GET UserSummary getOwner(@PathParam("patient-id") String patientId);
 
     /**
      * Updates the owner of a patient record - identified by `patientId` - with the owner specified in JSON. If the

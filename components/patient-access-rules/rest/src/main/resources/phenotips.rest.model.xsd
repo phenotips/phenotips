@@ -40,6 +40,15 @@
           <element name="name" type="string"/>
           <element name="email" type="string"/>
           <element name="type" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="CollaboratorSummary">
+    <complexContent>
+      <extension base="phenotips:UserSummary">
+        <sequence>
           <element name="level" type="string"/>
         </sequence>
       </extension>
@@ -94,13 +103,17 @@
   *
   -->
 
-  <element name="phenotipsUser" type="phenotips:UserSummary"/>
+  <!-- this bugger does not want to be generated as OwnerRepresentation class,
+  like the rest - it generates as UserSummary -->
+  <element name="ownerRepresentation" type="phenotips:UserSummary"/>
 
-  <element name="patientVisibility" type="phenotips:VisibilitySummary"/>
+  <element name="collaboratorRepresentation" type="phenotips:CollaboratorSummary"/>
 
-  <element name="collaborators" type="phenotips:UserCollection"/>
+  <element name="patientVisibilityRepresentation" type="phenotips:VisibilitySummary"/>
 
-  <element name="visibilityOptions" type="phenotips:VisibilityOptions"/>
+  <element name="collaboratorsRepresentation" type="phenotips:UserCollection"/>
 
-  <element name="permissions" type="phenotips:PermissionsSummary"/>
+  <element name="visibilityOptionsRepresentation" type="phenotips:VisibilityOptions"/>
+
+  <element name="permissionsRepresentation" type="phenotips:PermissionsSummary"/>
 </schema>

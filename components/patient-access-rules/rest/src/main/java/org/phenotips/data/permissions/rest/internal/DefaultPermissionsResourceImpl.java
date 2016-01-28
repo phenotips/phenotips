@@ -26,11 +26,11 @@ import org.phenotips.data.permissions.rest.VisibilityResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
-import org.phenotips.data.rest.model.Collaborators;
+import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PatientVisibility;
-import org.phenotips.data.rest.model.Permissions;
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
+import org.phenotips.data.rest.model.PermissionsRepresentation;
+import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -78,16 +78,18 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
     private CollaboratorsResource collaboratorsResource;
 
     @Override
-    public Permissions getPermissions(String patientId)
+    public PermissionsRepresentation getPermissions(String patientId)
     {
         this.logger.debug("Retrieving patient record [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        Permissions result = new Permissions();
-        PhenotipsUser owner = this.factory.createPatientOwner(patientAccessContext.getPatient());
-        PatientVisibility visibility = this.factory.createPatientVisibility(patientAccessContext.getPatient());
-        Collaborators collaborators = this.factory.createCollaborators(patientAccessContext.getPatient(), this.uriInfo);
+        PermissionsRepresentation result = new PermissionsRepresentation();
+        UserSummary owner = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
+        PatientVisibilityRepresentation visibility =
+            this.factory.createPatientVisibilityRepresentation(patientAccessContext.getPatient());
+        CollaboratorsRepresentation collaborators =
+            this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         // adding links into sub-parts
         owner.getLinks().add(new Link().withRel(Relations.OWNER)

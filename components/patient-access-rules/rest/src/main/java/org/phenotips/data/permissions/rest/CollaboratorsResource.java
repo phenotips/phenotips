@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.rest.model.Collaborators;
+import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 
 import org.xwiki.component.annotation.Role;
 
@@ -49,7 +49,7 @@ public interface CollaboratorsResource
      * @param patientId internal identifier of a patient record
      * @return REST representation of a collection of patient record's collaborators
      */
-    @GET Collaborators getCollaborators(@PathParam("patient-id") String patientId);
+    @GET CollaboratorsRepresentation getCollaborators(@PathParam("patient-id") String patientId);
 
     /**
      * Adds a new collaborator, or updates the permission level of a collaborator. If the indicated patient record

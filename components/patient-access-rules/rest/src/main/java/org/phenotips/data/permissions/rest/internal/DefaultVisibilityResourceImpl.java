@@ -28,7 +28,7 @@ import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PatientVisibility;
+import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
@@ -72,13 +72,14 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     private Container container;
 
     @Override
-    public PatientVisibility getVisibility(String patientId)
+    public PatientVisibilityRepresentation getVisibility(String patientId)
     {
         this.logger.debug("Retrieving patient record's visibility [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        PatientVisibility result = this.factory.createPatientVisibility(patientAccessContext.getPatient());
+        PatientVisibilityRepresentation result =
+            this.factory.createPatientVisibilityRepresentation(patientAccessContext.getPatient());
 
         result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
             new Link().withRel(Relations.PATIENT_RECORD)
