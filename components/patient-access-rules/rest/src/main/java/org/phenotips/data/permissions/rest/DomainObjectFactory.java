@@ -19,9 +19,10 @@ package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.rest.model.Collaborators;
-import org.phenotips.data.rest.model.PatientVisibility;
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.CollaboratorRepresentation;
+import org.phenotips.data.rest.model.CollaboratorsRepresentation;
+import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
+import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -45,7 +46,7 @@ public interface DomainObjectFactory
      * @return a summary of the patient record's owner, or {@code null} if the current user doesn't have access to the
      * patient or accessing the patient data fails
      */
-    PhenotipsUser createPatientOwner(Patient patient);
+    UserSummary createOwnerRepresentation(Patient patient);
 
     /**
      * Create the REST representation for a {@link org.phenotips.data.permissions.Visibility}'s summary, starting from a
@@ -55,7 +56,7 @@ public interface DomainObjectFactory
      * @return a summary of the patient record's visibility, or {@code null} if the current user doesn't have access to
      * the patient or accessing the patient data fails
      */
-    PatientVisibility createPatientVisibility(Patient patient);
+    PatientVisibilityRepresentation createPatientVisibilityRepresentation(Patient patient);
 
     /**
      * Create the REST representation for a list of {@link Collaborators}, starting from a {@link Patient} instance.
@@ -65,7 +66,7 @@ public interface DomainObjectFactory
      * @return a summary of each collaborator on the patient record, or {@code null} if the current user doesn't have
      * access to the patient or accessing the patient data fails.
      */
-    Collaborators createCollaborators(Patient patient, UriInfo uriInfo);
+    CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo);
 
     /**
      * Create the REST representation for summary of a {@link Collaborator} instance, starting from a {@link Patient}
@@ -76,5 +77,5 @@ public interface DomainObjectFactory
      * @return a summary of the collaborator, or {@code null} if the current user doesn't have access to the patient or
      * accessing the patient data fails.
      */
-    PhenotipsUser createCollaborator(Patient patient, Collaborator collaborator);
+    CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator);
 }

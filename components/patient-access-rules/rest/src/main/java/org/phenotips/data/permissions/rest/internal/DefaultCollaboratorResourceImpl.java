@@ -28,8 +28,8 @@ import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PhenotipsUser;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
@@ -83,7 +83,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
     private Container container;
 
     @Override
-    public PhenotipsUser getCollaborator(String patientId, String collaboratorId)
+    public CollaboratorRepresentation getCollaborator(String patientId, String collaboratorId)
     {
         this.logger.debug(
             "Retrieving collaborator with id [{}] of patient record [{}] via REST", collaboratorId, patientId);
@@ -91,7 +91,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
         try {
-            PhenotipsUser result = this.createCollaborator(
+            CollaboratorRepresentation result = this.createCollaboratorRepresentation(
                 patientAccessContext.getPatient(), collaboratorId.trim(), patientAccessContext.getPatientAccess());
 
             // adding links relative to this context
@@ -157,7 +157,8 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
         return Response.noContent().build();
     }
 
-    private PhenotipsUser createCollaborator(Patient patient, String id, PatientAccess patientAccess) throws Exception
+    private CollaboratorRepresentation createCollaboratorRepresentation
+        (Patient patient, String id, PatientAccess patientAccess) throws Exception
     {
         String collaboratorId = id.trim();
         // check if the space reference is used more than once in this class
@@ -165,7 +166,7 @@ public class DefaultCollaboratorResourceImpl extends XWikiResource implements Co
             this.currentResolver.resolve(collaboratorId, EntityType.DOCUMENT, XWIKI_SPACE);
         for (Collaborator collaborator : patientAccess.getCollaborators()) {
             if (collaboratorReference.equals(collaborator.getUser())) {
-                return this.factory.createCollaborator(patient, collaborator);
+                return this.factory.createCollaboratorRepresentation(patient, collaborator);
             }
         }
         throw new Exception(String.format(

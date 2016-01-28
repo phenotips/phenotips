@@ -26,7 +26,7 @@ import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
@@ -78,13 +78,13 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     private Container container;
 
     @Override
-    public PhenotipsUser getOwner(String patientId)
+    public UserSummary getOwner(String patientId)
     {
         this.logger.debug("Retrieving patient record's owner [{}] via REST", patientId);
         // besides getting the patient, checks that the user has view access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "view");
 
-        PhenotipsUser result = this.factory.createPatientOwner(patientAccessContext.getPatient());
+        UserSummary result = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
 
         // adding links relative to this context
         result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));

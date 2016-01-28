@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.CollaboratorRepresentation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -46,7 +46,7 @@ public interface CollaboratorResource
      * @param collaboratorId fully qualified, internal id of a collaborator (ex. xwiki:XWiki.JohnAdams)
      * @return REST representation of a single collaborator
      */
-    @GET PhenotipsUser getCollaborator(@PathParam("patient-id") String patientId,
+    @GET CollaboratorRepresentation getCollaborator(@PathParam("patient-id") String patientId,
         @PathParam("collaborator-id") String collaboratorId);
 
     /**

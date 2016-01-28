@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -14,31 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
- */
-package org.phenotips.data.permissions.rest;
+-->
 
-import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
-import org.xwiki.component.annotation.Role;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
-/**
- * Resource for working with patient independent features of {@link org.phenotips.data.permissions.Visibility}.
- *
- * @version $Id$
- * @since 1.3M1
- */
-@Role
-@Path("/permissions/visibility")
-public interface VisibilityOptionsResource
-{
-    /**
-     * The system has several predefined options of visibility levels.
-     *
-     * @return all the visibility levels present in the system
-     */
-    @GET
-    VisibilityOptionsRepresentation getVisibilityOptions();
-}
+<suppressions>
+  <suppress checks="ClassDataAbstractionCoupling" files="DefaultDomainObjectFactory.java"/>
+  <!-- missed the target by 1 -->
+  <suppress checks="ClassFanOutComplexity" files="DefaultDomainObjectFactory.java"/>
+</suppressions>

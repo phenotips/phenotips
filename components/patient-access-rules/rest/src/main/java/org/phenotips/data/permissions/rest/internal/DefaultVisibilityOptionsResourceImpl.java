@@ -22,7 +22,7 @@ import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityOptionsResource;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.VisibilityOptions;
+import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
@@ -46,11 +46,11 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
     private PermissionsManager manager;
 
     @Override
-    public VisibilityOptions getVisibilityOptions()
+    public VisibilityOptionsRepresentation getVisibilityOptions()
     {
         // todo. should this be world-visible?
 
-        VisibilityOptions result = new VisibilityOptions();
+        VisibilityOptionsRepresentation result = new VisibilityOptionsRepresentation();
         for (Visibility visibility : this.manager.listVisibilityOptions()) {
             result.withLevels(visibility.getName());
         }

@@ -27,15 +27,17 @@ import org.phenotips.data.permissions.rest.CollaboratorResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
-import org.phenotips.data.rest.model.Collaborators;
+import org.phenotips.data.rest.model.CollaboratorRepresentation;
+import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PatientVisibility;
-import org.phenotips.data.rest.model.PhenotipsUser;
+import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
+import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -73,11 +75,6 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     /** Parses string representations of document references into proper references. */
     @Inject
     @Named("current")
-    private DocumentReferenceResolver<String> stringResolver;
-
-    /** Parses string representations of document references into proper references. */
-    @Inject
-    @Named("current")
     private DocumentReferenceResolver<EntityReference> referenceResolver;
 
     @Inject
@@ -96,33 +93,37 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     @Override
     public void initialize() throws InitializationException
     {
-        this.userObjectReference = this.stringResolver.resolve("XWiki.XWikiUsers");
-        this.groupObjectReference = this.stringResolver.resolve("PhenoTips.PhenoTipsGroupClass");
+        this.userObjectReference = this.referenceResolver.resolve(
+            new EntityReference("XWikiUsers", EntityType.DOCUMENT), new EntityReference("XWiki", EntityType.SPACE));
+        this.groupObjectReference =
+            this.referenceResolver.resolve(new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT),
+                new EntityReference("PhenoTips", EntityType.SPACE));
     }
 
     @Override
-    public PhenotipsUser createPatientOwner(Patient patient)
+    public UserSummary createOwnerRepresentation(Patient patient)
     {
+        // todo. this method should not return UserSummary - it should return OwnerRepresentation, but the class
+        // generator doesn't want to generate OwnerRepresentation
+
         // todo. is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Owner owner = patientAccess.getOwner();
 
         // links should be added at a later point, to allow the reuse of this method in different contexts
 
-        return createPhenotipsUser(owner.getUser(), owner.getType(), owner.getUser());
+        return loadUserSummary(new UserSummary(), owner.getUser(), owner.getType());
     }
 
-    private PhenotipsUser createPhenotipsUser(EntityReference user, String type, EntityReference reference)
+    private UserSummary loadUserSummary(UserSummary result, EntityReference user, String type)
     {
-        PhenotipsUser result = new PhenotipsUser();
-
         result.withId(this.entitySerializer.serialize(user));
         result.withType(type);
 
         // there is a chance of not being able to retrieve the rest of the data,
         // which should not prevent the returning of `id` and `type`
         try {
-            DocumentReference userRef = this.referenceResolver.resolve(reference);
+            DocumentReference userRef = this.referenceResolver.resolve(user);
             XWikiDocument entityDocument = (XWikiDocument) this.documentAccessBridge.getDocument(userRef);
             NameEmail nameEmail = new NameEmail(type, entityDocument);
 
@@ -180,9 +181,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     }
 
     @Override
-    public PatientVisibility createPatientVisibility(Patient patient)
+    public PatientVisibilityRepresentation createPatientVisibilityRepresentation(Patient patient)
     {
-        PatientVisibility result = new PatientVisibility();
+        PatientVisibilityRepresentation result = new PatientVisibilityRepresentation();
         // todo. is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Visibility visibility = patientAccess.getVisibility();
@@ -193,15 +194,16 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     }
 
     @Override
-    public Collaborators createCollaborators(Patient patient, UriInfo uriInfo)
+    public CollaboratorsRepresentation createCollaboratorsRepresentation(Patient patient, UriInfo uriInfo)
     {
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Collection<Collaborator> collaborators = patientAccess.getCollaborators();
 
-        Collaborators result = new Collaborators();
+        CollaboratorsRepresentation result = new CollaboratorsRepresentation();
         for (Collaborator collaborator : collaborators)
         {
-            PhenotipsUser collaboratorObject = this.createCollaborator(patientAccess, collaborator);
+            CollaboratorRepresentation collaboratorObject =
+                this.createCollaboratorRepresentation(patientAccess, collaborator);
             String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
                 .build(patient.getId(), collaborator.getUser().getName()).toString();
             collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR).withHref(href));
@@ -213,17 +215,18 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     }
 
     @Override
-    public PhenotipsUser createCollaborator(Patient patient, Collaborator collaborator)
+    public CollaboratorRepresentation createCollaboratorRepresentation(Patient patient, Collaborator collaborator)
     {
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
-        return this.createCollaborator(patientAccess, collaborator);
+        return this.createCollaboratorRepresentation(patientAccess, collaborator);
     }
 
-    private PhenotipsUser createCollaborator(PatientAccess patientAccess, Collaborator collaborator)
+    private CollaboratorRepresentation createCollaboratorRepresentation(
+        PatientAccess patientAccess, Collaborator collaborator)
     {
         String accessLevel = patientAccess.getAccessLevel(collaborator.getUser()).toString();
-        PhenotipsUser result = this.createPhenotipsUser(
-            collaborator.getUser(), collaborator.getType(), collaborator.getUser());
+        CollaboratorRepresentation result = (CollaboratorRepresentation) this.loadUserSummary(
+            new CollaboratorRepresentation(), collaborator.getUser(), collaborator.getType());
         result.withLevel(accessLevel);
         return result;
     }
