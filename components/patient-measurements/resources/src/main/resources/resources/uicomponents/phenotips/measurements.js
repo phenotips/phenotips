@@ -480,9 +480,11 @@ var PhenoTips = (function(PhenoTips) {
       if (dateEl.alt.length) {
         if (!this._globalDobEl.alt.length) return;
 
-        var bday = Date.parseISO_8601(this._globalDobEl.alt || '');
-        bday.setTimezoneOffset((new Date()).getTimezoneOffset() * -10/3);
-        var age = new TimePeriod(bday, new Date(dateEl.alt));
+        var dateOnlyRegex = /((\d{4})-(\d{2})-(\d{2}))T/;
+        var bday = new Date(this._globalDobEl.alt.match(dateOnlyRegex)[1]);
+        var thisDate = new Date(dateEl.alt.match(dateOnlyRegex)[1]);
+
+        var age = new TimePeriod(bday, thisDate);
         var dateDisplayParts = {
           y: age.years,
           m: age.months,
