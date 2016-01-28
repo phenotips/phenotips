@@ -708,7 +708,7 @@ define([
                 var label3 = new Element('td').insert(new Element('label', {'class': 'cancer_age_select'} ).update("As of"));
                 tableHeaderRow.insert(label1).insert(label2).insert(label3);
                 table = new Element('table');
-                table.insert(tableHeaderRow);
+                var table.insert(tableHeaderRow);
 
                 // create once and clone for each cancer - it takes too much time to create all elements anew each time
                 // (Note1: for performace reasons also using raw HTML for options)
