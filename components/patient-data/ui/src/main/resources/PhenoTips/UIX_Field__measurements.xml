@@ -238,7 +238,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
     &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
   #end
   #if ($xcontext.action == 'edit')
-    &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSetTitle')"&gt;✖&lt;/a&gt;
+    &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
   #end
   {{/html}}
   (% class="age"%)(((
