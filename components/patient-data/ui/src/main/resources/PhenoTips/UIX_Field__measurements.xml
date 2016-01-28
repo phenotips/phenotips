@@ -204,9 +204,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 #end##
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
-#set ($orderedMeasurements = $configObj.getProperty('ordering').value)
-#foreach ($measurement in $orderedMeasurements)
-  #set ($handler = $services.measurements.get($measurement))
+#foreach ($handler in $services.measurements.getAvailableMeasurementHandlers())
   #if (($showEnabled == $configObj.getProperty('enabled').value.contains($handler.getName()))
        &amp;&amp; ($showDefault == $configObj.getProperty('default').value.contains($handler.getName())))
     #set($name = $handler.getName())
