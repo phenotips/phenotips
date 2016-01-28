@@ -19,15 +19,17 @@ package org.phenotips.data.rest.internal;
 
 import org.phenotips.data.rest.MeasurementChartResourcesResource;
 import org.phenotips.measurements.MeasurementHandler;
+import org.phenotips.measurements.MeasurementHandlersSorter;
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,6 +57,10 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
     @Inject
     private DocumentAccessBridge bridge;
 
+    /** Used for sorting measurement handlers using configured ordering. */
+    @Inject
+    private MeasurementHandlersSorter measurementHandlersSorter;
+
     @Override
     public Response getChartResources(String json)
     {
@@ -74,8 +80,12 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
         String sex = reqObj.getString("sex");
         JSONArray measurementSets = reqObj.optJSONArray("measurementSets");
         List<ChartResource> charts = new LinkedList<>();
-        for (Map.Entry<String, MeasurementHandler> entry : this.handlers.entrySet()) {
-            for (MeasurementsChartConfiguration config : entry.getValue().getChartsConfigurations()) {
+
+        List<MeasurementHandler> handlers = new ArrayList<>(this.handlers.values());
+        Collections.sort(handlers, measurementHandlersSorter.getMeasurementHandlerComparator());
+
+        for (MeasurementHandler handler : handlers) {
+            for (MeasurementsChartConfiguration config : handler.getChartsConfigurations()) {
                 ChartResource chart = null;
 
                 for (int i = 0; i < measurementSets.length(); i++) {
