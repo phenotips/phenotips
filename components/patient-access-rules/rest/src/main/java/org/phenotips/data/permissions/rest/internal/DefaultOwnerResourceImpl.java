@@ -24,16 +24,15 @@ import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
+import org.phenotips.data.permissions.rest.internal.utils.UserOrGroupResolver;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 import org.xwiki.text.StringUtils;
 
@@ -65,10 +64,8 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     @Inject
     private SecureContextFactory secureContextFactory;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject
-    @Named("current")
-    private EntityReferenceResolver<String> currentResolver;
+    private UserOrGroupResolver userOrGroupResolver;
 
     @Inject
     private DomainObjectFactory factory;
@@ -130,8 +127,13 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         // besides getting the patient, checks that the current user has manage access
         PatientAccessContext patientAccessContext = this.secureContextFactory.getContext(patientId, "manage");
 
-        EntityReference ownerReference =
-            this.currentResolver.resolve(ownerId, EntityType.DOCUMENT, new EntityReference("XWiki", EntityType.SPACE));
+        EntityReference ownerReference = this.userOrGroupResolver.resolve(ownerId);
+        if (ownerReference == null) {
+            // what would be a better status to indicate that the user/group id is not valid?
+            // ideally, the status page should show some sort of a message indicating that the id was not found
+            throw new WebApplicationException(
+                new IllegalArgumentException("Specified user/group was not found"), Status.NOT_FOUND);
+        }
         // todo. ask Sergiu as to what the right thing to do is
         // the code in DefaultPatientAccessHelper needs to be changed
         // this is just a hack

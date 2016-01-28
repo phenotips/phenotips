@@ -28,15 +28,14 @@ import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
+import org.phenotips.data.permissions.rest.internal.utils.UserOrGroupResolver;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.rest.XWikiResource;
 
 import java.util.Collection;
@@ -70,18 +69,14 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
     private static final String MANAGE_LEVEL = "manage";
 
-    private static final EntityReference XWIKI_SPACE = new EntityReference("XWiki", EntityType.SPACE);
-
     @Inject
     private Logger logger;
 
     @Inject
     private SecureContextFactory secureContextFactory;
 
-    /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject
-    @Named("current")
-    private EntityReferenceResolver<String> currentResolver;
+    private UserOrGroupResolver userOrGroupResolver;
 
     @Inject
     private DomainObjectFactory factory;
@@ -188,7 +183,12 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     {
         // checking that the access level is valid
         AccessLevel level = this.getAccessLevelFromString(levelName);
-        EntityReference collaboratorReference = this.currentResolver.resolve(id, EntityType.DOCUMENT, XWIKI_SPACE);
+        EntityReference collaboratorReference = this.userOrGroupResolver.resolve(id);
+        if (collaboratorReference == null) {
+            // what would be a better status to indicate that the user/group id is not valid?
+            // ideally, the status page should show some sort of a message indicating that the id was not found
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
 
         // todo. function .addCollaborator has to check if the collaborator already exists before adding them
         if (!patientAccess.addCollaborator(collaboratorReference, level)) {
@@ -236,9 +236,13 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
                 this.collaboratorInfoFromJson(JSONObject.fromObject(collaboratorObject));
             this.checkCollaboratorInfo(collaboratorInfo.getId(), collaboratorInfo.getLevel());
 
-            EntityReference collaboratorReference =
-                this.currentResolver.resolve(collaboratorInfo.id, EntityType.DOCUMENT, XWIKI_SPACE);
-            AccessLevel level = this.getAccessLevelFromString(collaboratorInfo.level);
+            EntityReference collaboratorReference = this.userOrGroupResolver.resolve(collaboratorInfo.getId());
+            if (collaboratorReference == null) {
+                // what would be a better status to indicate that the user/group id is not valid?
+                // ideally, the status page should show some sort of a message indicating that the id was not found
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+            AccessLevel level = this.getAccessLevelFromString(collaboratorInfo.getLevel());
             Collaborator collaborator = new DefaultCollaborator(collaboratorReference, level, null);
             collaborators.add(collaborator);
         }
