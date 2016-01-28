@@ -178,7 +178,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
   #end
   {{html clean="false" wiki="false"}}
   &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
-  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.getComputationDependencies().size())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputedMsg')"&gt;&lt;/span&gt;#end&lt;/span&gt;
+  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.getComputationDependencies().size())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputed')"&gt;&lt;/span&gt;#end&lt;/span&gt;
   &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
   &lt;div class="metric"&gt;
     #if ($xcontext.action == 'edit')
@@ -245,7 +245,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
     {{html clean="false" wiki="false"}}
     &lt;label for=""&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
     #if ($xcontext.action == 'edit')
-      &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.agePlaceholder')" value="$!age"&gt;
+      &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
     #else
       &lt;span&gt;$!age&lt;/span&gt;
     #end
