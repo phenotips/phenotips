@@ -2642,11 +2642,13 @@ return PhenoTips;
           this._toggleExpandState(entry);
         }
       }.bindAsEventListener(this));
-      element.observe('ynpicker:selectionChanged', function(e) {
+      var expandOnSelect = function (e) {
         if(!this._isExpandToolLocked(element) &amp;&amp; e.memo.selected == "yes") {
           this._expandEntry(element);
         }
-      }.bind(this))
+      }
+      element.observe('obrowser:entry:selected', expandOnSelect.bindAsEventListener(this));
+      element.observe('ynpicker:selectionChanged', expandOnSelect.bindAsEventListener(this));
       wrapper.insert({'top': expandTool});
       this.expand(element, element.hasClassName('root'));
       //element.observe('obrowser:expand:done', this._obrowserExpandEventHandler);
@@ -2783,6 +2785,7 @@ return PhenoTips;
       if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
         this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
       }
+      entry.fire('obrowser:entry:selected', {selected: "yes"});
     }
   },
   _unselectEntry: function (entry) {
