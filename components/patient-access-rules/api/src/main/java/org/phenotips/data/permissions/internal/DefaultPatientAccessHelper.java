@@ -280,7 +280,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 o = patientDoc.newXObject(classReference, context);
             }
 
-            o.setStringValue("collaborator", user);
+            o.setStringValue("collaborator", StringUtils.defaultString(user));
             o.setStringValue("access", collaborator.getAccessLevel().getName());
 
             context.getWiki().saveDocument(patientDoc, "Added collaborator: " + user, true, context);
