@@ -131,7 +131,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
         try {
             EntityReference previousOwner = getOwner(patient).getUser();
-            this.bridge.setProperty(patient.getDocument(), classReference, "owner", String.valueOf(userOrGroup));
+            this.bridge.setProperty(patient.getDocument(), classReference, "owner",
+                StringUtils.defaultString(this.entitySerializer.serialize(userOrGroup)));
             if (!previousOwner.equals(userOrGroup)) {
                 addCollaborator(patient,
                     new DefaultCollaborator(previousOwner, this.manager.resolveAccessLevel("manage"), null));
