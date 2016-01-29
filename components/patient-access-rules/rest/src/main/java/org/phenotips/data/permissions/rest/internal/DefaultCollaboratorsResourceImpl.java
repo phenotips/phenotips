@@ -200,8 +200,7 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
 
     private AccessLevel getAccessLevelFromString(String accessLevelName)
     {
-        for (AccessLevel accessLevelOption : this.manager.listAccessLevels())
-        {
+        for (AccessLevel accessLevelOption : this.manager.listAccessLevels()) {
             if (StringUtils.equalsIgnoreCase(accessLevelOption.getName(), accessLevelName)) {
                 return accessLevelOption;
             }
