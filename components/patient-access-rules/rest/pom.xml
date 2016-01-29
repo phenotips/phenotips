@@ -140,12 +140,12 @@
     <dependency>
       <groupId>org.phenotips</groupId>
       <artifactId>patient-access-rules-api</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>${phenotips.version}</version>
     </dependency>
     <dependency>
       <groupId>org.phenotips</groupId>
       <artifactId>patient-data-rest</artifactId>
-      <version>1.3-SNAPSHOT</version>
+      <version>${phenotips.version}</version>
     </dependency>
   </dependencies>
 
