@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +81,11 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     private Execution execution;
 
     @Inject
+    @Named("currentmixed")
     private DocumentReferenceResolver<EntityReference> partialEntityResolver;
 
     @Inject
+    @Named("currentmixed")
     private DocumentReferenceResolver<String> stringEntityResolver;
 
     @Inject
