@@ -276,7 +276,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            String user = this.entitySerializer.serialize(collaborator.getUser());
+            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(collaborator.getUser()) : "";
 
             BaseObject o = patientDoc.getXObject(classReference, "collaborator", user, false);
             if (o == null) {
@@ -302,7 +302,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            String user = this.entitySerializer.serialize(collaborator.getUser());
+            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(collaborator.getUser()) : "";
 
             BaseObject o = patientDoc.getXObject(classReference, "collaborator", user, false);
             if (o != null) {
