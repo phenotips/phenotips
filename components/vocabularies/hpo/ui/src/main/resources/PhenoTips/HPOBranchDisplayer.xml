@@ -57,7 +57,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 #end
 ##
 ##
-#macro (_displayChildren $rootId)
+#macro (_displayChildren $rootId $isTopLevel)
   #set ($term = $services.vocabularies.resolveTerm($rootId))
   #set($childrenList = $services.vocabularies.hpo.search({'is_a': $term.id}))
   #if ($childrenList.size() &gt; 0)
@@ -65,7 +65,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   #if($firstLevel)
     #set($firstLevel = false)
     #if($field.getProperty('multiSelect').value != 1)
-      &lt;li class="hpo-unknown"&gt;&lt;span class="expand-tool locked disabled"&gt;▼&lt;/span&gt;#_displayItem('', 'Unknown')&lt;/li&gt;
+      &lt;li class="hpo-unknown term-entry"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;
     #end
   #end
   #set($macro.childrenMap = {})
@@ -75,11 +75,11 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
   #foreach($orderedItemId in $order)
     #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
     #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')
-      #set ($childrenHtml = "#_displayChildren($foreach.item.id)")
+      #set ($childrenHtml = "#_displayChildren($foreach.item.id, false)")
       #if ("$childrenHtml" != "")
-        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked"&gt;▼&lt;/span&gt;')
+        #set ($childrenExpandSymbol = '&lt;span class="expand-tool"&gt;▶&lt;/span&gt;')
       #else
-        #set ($childrenExpandSymbol = '&lt;span class="expand-tool locked disabled"&gt;▼&lt;/span&gt;')
+        #set ($childrenExpandSymbol = '')
       #end
       &lt;li class="term-entry"&gt;$!childrenExpandSymbol#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)$!childrenHtml&lt;/li&gt;
     #end
@@ -91,7 +91,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 #if ($startWith &amp;&amp; $order)
 {{html wiki=false clean=false}}
 &lt;div class="hpo-branch"&gt;
-#_displayChildren($startWith)
+#_displayChildren($startWith, true)
 #if($field.getProperty('multiSelect').value == 1)
   &lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;
 #end
@@ -200,6 +200,53 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
     });
     $$('.hpo-branch .term-entry:not(.initialized)').invoke('addClassName', 'initialized');
   });
+});
+document.observe('xwiki:dom:loaded', function(){
+  function canCollapse(sublist){
+    return sublist.select('input').every(function(input){
+      return !input.checked;
+    });
+  }
+  $$('.hpo-branch&gt;ul').forEach(function(list){
+    var listElements = list.select('li');
+    listElements.forEach(function(listElement){
+      var sublist = listElement.down('ul');
+      if (!sublist) {return;}
+      //attach click handlers
+      var expandTool = listElement.down('span.expand-tool');
+      var checkInput = listElement.down('input');
+      expandTool.observe('click', function(e) {
+        e.stop();
+        if (sublist.hasClassName('collapsed')) {
+          sublist.removeClassName('collapsed');
+          expandTool.innerHTML = "▼";
+        } else if (canCollapse(sublist)) {
+          expandTool.innerHTML = "►";
+          sublist.addClassName('collapsed');
+        }
+      });
+      var toggleCollapse = function() {
+        if (canCollapse(sublist) &amp;&amp; !checkInput.checked) {
+          expandTool.innerHTML = "►";
+          sublist.addClassName('collapsed');
+        } else {
+          expandTool.innerHTML = "▼";
+          sublist.removeClassName('collapsed');
+        }
+      };
+
+      toggleCollapse();
+
+      listElement.observe('click', function(e) {
+        if (e.target.hasClassName('phenotype-qualifier-info')) {
+          //Prevents toggle behaviour when clicking on the info icon
+          return;
+        }
+        toggleCollapse();
+      });
+
+    });
+  });
 });</code>
     </property>
     <property>
@@ -295,13 +342,17 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
       <code>.hpo-branch ul {
   list-style-type: none;
   margin: 0;
+  margin-left: 1em;
+}
+.hpo-branch .collapsed {
+    display: none;
 }
 .hpo-branch ul ul {
   margin-left: 1.2em;
 }
 .hpo-branch &gt; ul {
-  -moz-column-count: 2;
   /* removing the following line until we can fix issue https://github.com/phenotips/phenotips/issues/865 more elegantly:
+  -moz-column-count: 2;
   -webkit-column-count: 2; */
   column-count: 2;
 }
@@ -315,7 +366,15 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 }
 .hpo-branch .term-entry .info-tool {
   cursor: help;
+}
+.hpo-branch .term-entry .expand-tool {
+  margin-left: -1em;
+  top: 0.3em;
+  position: absolute;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
