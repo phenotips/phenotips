@@ -132,8 +132,8 @@ public class DefaultPatientAccessHelperTest
     public void setup() throws ComponentLookupException
     {
         this.bridge = this.mocker.getInstance(DocumentAccessBridge.class);
-        this.partialEntityResolver = this.mocker.getInstance(this.entityResolverType);
-        this.stringEntityResolver = this.mocker.getInstance(this.stringResolverType);
+        this.partialEntityResolver = this.mocker.getInstance(this.entityResolverType, "currentmixed");
+        this.stringEntityResolver = this.mocker.getInstance(this.stringResolverType, "currentmixed");
         this.stringEntitySerializer = this.mocker.getInstance(this.stringSerializerType);
 
         when(this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
