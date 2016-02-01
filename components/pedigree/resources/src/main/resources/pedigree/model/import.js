@@ -209,6 +209,8 @@ define([
 
         // first pass: add all vertices and assign vertex IDs
         for (var i = 0; i < inputLines.length; i++) {
+            if (inputLines[i].charAt(0) == '#')
+                continue;
 
             inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
             inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
@@ -294,6 +296,9 @@ define([
 
         // second pass (once all vertex IDs are known): process edges
         for (var i = 0; i < inputLines.length; i++) {
+            if (inputLines[i].charAt(0) == '#')
+                continue;
+
             var parts = inputLines[i].split(/\s+/);
 
             var thisPersonName = parts[1];
