@@ -128,8 +128,14 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
-    <coverage.instructionRatio>0</coverage.instructionRatio>
+    <coverage.instructionRatio>0.2</coverage.instructionRatio>
   </properties>
 </project>
