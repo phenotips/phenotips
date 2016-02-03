@@ -871,7 +871,7 @@ define([
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
             this.getLinkLabel() && labels.push(this.getLinkLabel());
-            if (!this._anonimized) {
+            if (!this._anonymized) {
                 if (this.getNameLabel()) {
                     this.getNameLabel().show();
                     labels.push(this.getNameLabel());

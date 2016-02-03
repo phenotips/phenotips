@@ -109,10 +109,10 @@ define([
          *                  elements such as handles, invisible interactive layers, etc. removed.
          *
          * @method getSVGCopy
-         * @param {Boolean} anonimize - if true, all names and birthdays are removed.
+         * @param {Boolean} anonymize - if true, all names and birthdays are removed.
          * @return {Object} SVGWrapper object.
          */
-        getSVGCopy: function(anonimize) {
+        getSVGCopy: function(anonymize) {
             editor.getView().unmarkAll();
 
             var image = $('canvas');
@@ -120,8 +120,8 @@ define([
             var background = image.getElementsByClassName('panning-background')[0];
             background.style.display = "none";
 
-            if (anonimize) {
-                editor.getView().setAnonimizeStatus(true);
+            if (anonymize) {
+                editor.getView().setAnonymizeStatus(true);
             }
 
             var _bbox = image.down().getBBox();
@@ -139,8 +139,8 @@ define([
             var svgText = image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '')
                           .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
 
-            if (anonimize) {
-                editor.getView().setAnonimizeStatus(false);
+            if (anonymize) {
+                editor.getView().setAnonymizeStatus(false);
             }
  
             // set display:block

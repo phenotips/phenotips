@@ -18,7 +18,7 @@ define([], function(){
             this._absoluteY  = y;
             this._hoverBox   = null;
             this._isGrown    = false;
-            this._anonimized = false;
+            this._anonymized = false;
             //console.log("abstract node visuals end");
         },
 
@@ -53,8 +53,8 @@ define([], function(){
         /**
          * Removes all PII labels
          */
-        setAnonimizedStatus: function(status) {
-            this._anonimized = status;
+        setAnonymizedStatus: function(status) {
+            this._anonymized = status;
         },
 
         /**
