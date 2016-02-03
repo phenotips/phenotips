@@ -230,26 +230,32 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 #set ($date = $set.get("date"))
 #set ($dateFormatted = $datetool.format('dd/MM/yyyy', $date))
 (% class="measurement-set#if ($proto) proto#end"%)(((
-  {{html clean="false" wiki="false"}}
-  &lt;label for="date"&gt;$services.localization.render('phenotips.patientSheet.measurements.date'):&lt;/label&gt;
-  #if ($xcontext.action == 'edit')
-    &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
-  #else
-    &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
-  #end
-  #if ($xcontext.action == 'edit')
-    &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
-  #end
-  {{/html}}
-  (% class="age"%)(((
+  (% class="top"%)(((
+    (% class="date"%)(((
+      {{html clean="false" wiki="false"}}
+      &lt;label for="date"&gt;$services.localization.render('phenotips.patientSheet.measurements.date'):&lt;/label&gt;
+      #if ($xcontext.action == 'edit')
+        &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
+      #else
+        &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
+      #end
+      {{/html}}
+    )))
     {{html clean="false" wiki="false"}}
-    &lt;label for=""&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
     #if ($xcontext.action == 'edit')
-      &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
-    #else
-      &lt;span&gt;$!age&lt;/span&gt;
+      &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
     #end
     {{/html}}
+    (% class="age"%)(((
+      {{html clean="false" wiki="false"}}
+      &lt;label for=""&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
+      #if ($xcontext.action == 'edit')
+        &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
+      #else
+        &lt;span&gt;$!age&lt;/span&gt;
+      #end
+      {{/html}}
+    )))
   )))
   (% class="measurements"%)(((
     #measurements(true true $set $proto)
