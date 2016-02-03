@@ -49,6 +49,17 @@ public interface Pedigree
     String getImage(String highlightCurrentPatientId);
 
     /**
+     * Getter for `image` string (SVG).
+     *
+     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient.
+     *        May be null, in which case no patient would be highlighed as current.
+     * @param width sets the returned SVG width to this value. 0 or negative number means "leave as is".
+     * @param height sets the returned SVG height to this value. 0 or negative number means "leave as is".
+     * @return can not be null
+     */
+    String getImage(String highlightCurrentPatientId, int width, int height);
+
+    /**
      * Extracts and returns all PhenoTips patient ids.
      *
      * @return all PhenoTips ids from pedigree nodes that have internal ids

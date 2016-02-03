@@ -46,6 +46,36 @@ public final class SvgUpdater
     }
 
     /**
+     * Sets svg width to the given value. If value <= 0 it is ignored and the same svg is returned.
+     * @param svg a string representing an svg
+     * @param width target width in pixels
+     * @return svg with width changed
+     */
+    public static String setSVGWidth(String svg, int width)
+    {
+        if (width <= 0 || svg == null) {
+            return svg;
+        }
+        String updatedSvg = svg.replaceFirst("(<svg[^>]+)width=\"\\d+\"", "$1width=\"" + width + '"');
+        return updatedSvg;
+    }
+
+    /**
+     * Sets svg height to the given value. If value <= 0 it is ignored and the same svg is returned.
+     * @param svg a string representing an svg
+     * @param height target height in pixels
+     * @return svg with height changed
+     */
+    public static String setSVGHeight(String svg, int height)
+    {
+        if (height <= 0 || svg == null) {
+            return svg;
+        }
+        String updatedSvg = svg.replaceFirst("(<svg[^>]+)height=\"\\d+\"", "$1height=\"" + height + '"');
+        return updatedSvg;
+    }
+
+    /**
      * Removes an HTML link and label for the given patient from the SVG.
      *
      * @param svg can not be null
