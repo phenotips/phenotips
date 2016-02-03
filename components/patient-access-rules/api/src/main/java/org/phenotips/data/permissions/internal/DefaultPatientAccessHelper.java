@@ -134,8 +134,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
         try {
             EntityReference previousOwner = getOwner(patient).getUser();
-            this.bridge.setProperty(patient.getDocument(), classReference, "owner",
-                StringUtils.defaultString(this.entitySerializer.serialize(userOrGroup)));
+            DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(userOrGroup);
+            String owner = userOrGroup != null ? this.entitySerializer.serialize(absoluteUserOrGroup) : "";
+            this.bridge.setProperty(patient.getDocument(), classReference, "owner", owner);
             if (!previousOwner.equals(userOrGroup)) {
                 addCollaborator(patient,
                     new DefaultCollaborator(previousOwner, this.manager.resolveAccessLevel("manage"), null));
@@ -276,7 +277,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(collaborator.getUser()) : "";
+
+            DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(collaborator.getUser());
+            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(absoluteUserOrGroup) : "";
 
             BaseObject o = patientDoc.getXObject(classReference, "collaborator", user, false);
             if (o == null) {
@@ -302,7 +305,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(collaborator.getUser()) : "";
+            DocumentReference absoluteUserOrGroup = this.partialEntityResolver.resolve(collaborator.getUser());
+            String user = collaborator.getUser() != null ? this.entitySerializer.serialize(absoluteUserOrGroup) : "";
 
             BaseObject o = patientDoc.getXObject(classReference, "collaborator", user, false);
             if (o != null) {
