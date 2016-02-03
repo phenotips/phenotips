@@ -117,5 +117,40 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </propagateFatherLastName>
+    <uiGradientNodes>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>uiGradientNodes</name>
+      <number>3</number>
+      <prettyName>Apply color gradient to pedigree nodes</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </uiGradientNodes>
+    <pedigreePreviewSize>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>pedigreePreviewSize</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Pedigree preview size</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>small=Small|medium=Medium|large=Large</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </pedigreePreviewSize>
   </class>
 </xwikidoc>
