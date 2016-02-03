@@ -86,6 +86,13 @@ $xwiki.ssx.use($displayDocumentName)##
       &lt;dd&gt;${doc.display("dateDisplayFormat", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
+    &lt;legend&gt;Preview settings&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_pedigreePreviewSize"&gt;${targetObj.getxWikiClass().get('pedigreePreviewSize').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dd&gt;${doc.display("pedigreePreviewSize", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
+  &lt;fieldset&gt;
+  &lt;/fieldset&gt;
+
   &lt;div class="buttons"&gt;
     &lt;input class="button" type="submit" value="Save" /&gt;
   &lt;/div&gt;

@@ -1302,6 +1302,27 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </propagateFatherLastName>
+      <pedigreePreviewSize>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>pedigreePreviewSize</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Pedigree preview size</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>Small=small|Medium=medium|Large=large</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </pedigreePreviewSize>
     </class>
     <property>
       <dateDisplayFormat>MDY</dateDisplayFormat>
@@ -1314,6 +1335,9 @@
     </property>
     <property>
       <propagateFatherLastName>1</propagateFatherLastName>
+    </property>
+    <property>
+      <pedigreePreviewSize>small</pedigreePreviewSize>
     </property>
   </object>
   <object>

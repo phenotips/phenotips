@@ -63,7 +63,20 @@ public class DefaultPedigree implements Pedigree
     @Override
     public String getImage(String highlightCurrentPatientId)
     {
-        return SvgUpdater.setCurrentPatientStylesInSvg(this.image, highlightCurrentPatientId);
+        return getImage(highlightCurrentPatientId, 0, 0);
+    }
+
+    @Override
+    public String getImage(String highlightCurrentPatientId, int width, int height)
+    {
+        String svg = SvgUpdater.setCurrentPatientStylesInSvg(this.image, highlightCurrentPatientId);
+        if (width > 0) {
+            svg = SvgUpdater.setSVGWidth(svg, width);
+        }
+        if (height > 0) {
+            svg = SvgUpdater.setSVGHeight(svg, height);
+        }
+        return svg;
     }
 
     @Override
