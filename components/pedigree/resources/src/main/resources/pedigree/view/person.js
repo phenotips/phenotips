@@ -19,14 +19,16 @@ define([
         "pedigree/view/abstractPerson",
         "pedigree/view/childlessBehavior",
         "pedigree/view/childlessBehaviorVisuals",
-        "pedigree/view/personVisuals"
+        "pedigree/view/personVisuals",
+        "pedigree/hpoTerm"
     ], function(
         PedigreeDate,
         Helpers,
         AbstractPerson,
         ChildlessBehavior,
         ChildlessBehaviorVisuals,
-        PersonVisuals
+        PersonVisuals,
+        HPOTerm
     ){
     var Person = Class.create(AbstractPerson, {
 
@@ -720,17 +722,6 @@ define([
         },
 
         /**
-         * Returns a list of phenotypes of this person, with non-scrambled IDs
-         *
-         * @method getHPOForExport
-         * @return {Array} List of human-readable versions of HPO IDs
-         */
-        getHPOForExport: function() {
-            var exportHPOs = this._hpo.slice(0);
-            return exportHPOs;
-        },
-
-        /**
          * Adds HPO term to the list of this node's phenotypes and updates the Legend.
          *
          * @method addHPO
@@ -1136,8 +1127,13 @@ define([
                 info['disorders'] = this.getDisordersForExport();
             if (!Helpers.isObjectEmpty(this.getCancers()))
                 info['cancers'] = this.getCancers();
-            if (this.getHPO().length > 0)
-                info['hpoTerms'] = this.getHPOForExport();
+
+            // convert HPO data to PhenoTips feature format
+            // (which stores features and non-standard features separately)
+            var phenotipsFeatures = this.getPhenotipsFormattedFeatures();
+            info['features']             = phenotipsFeatures.features;
+            info['nonstandard_features'] = phenotipsFeatures.nonstandard_features;
+
             if (this.getEthnicities().length > 0)
                 info['ethnicities'] = this.getEthnicities();
             if (this.getGenes().length > 0)
@@ -1159,6 +1155,94 @@ define([
             info = editor.getExtensionManager().callExtensions("personToModel", extensionParameters).extendedData.modelData;
 
             return info;
+         },
+
+         /**
+          * Updates stored features as read from patient JSON to include
+          * features manually added and exclude features explicitly removed.
+          * Returns an array of features in Phenotips patient JSON format.
+          *
+          * 1) One complication is that pedigree only supports positive phenotypes,
+          *    so in the following case:
+          *  OLD:
+          *     [ A: observed, B: observed, C: not observed, D: not observed, Z: not a phenotype ]
+          *
+          *  NEW:
+          *     [ A, C, E ]    // all assumed ot be observed
+          *
+          *  The resulting set of features should be:
+          *     [ A: observed, C: observed, D: not observed, E: observed, Z: not a phenotype ]
+          *
+          *  ...since B is assumed to have been removed, C and E added, and D and Z left as is.
+          *
+          *  2) Any qualifiers that A or D or Z above had should be preserved; new features are assumed
+          *  to have no qualifiers since UI doe snto support them (yet). C is assumd ot have no qualifiers
+          *  as well since old qualifiers applied to the "non observed" version of the feature.
+          *
+          *  3) Another complication is that PhenoTips stores "standard" (with an HPPO id) and
+          *     custom (user-entered) features separately
+          */
+         getPhenotipsFormattedFeatures: function() {
+             var newFeatures = [];
+             var newNonStdFeatures = [];
+
+             var hpo = Helpers.toObjectWithTrue(this.getHPO());
+
+             // go over all old features and transfer:
+             //  1) those which are non-phenotypes (transfer completely as is)
+             //  2) those which are still observed (keep qualifiers)
+             //  3) those which were not observed and still are not (keep qualifiers)
+             for (var i = 0; i < this.features.length; i++) {
+                 if ( (this.features[i].type != "phenotype") ||
+                      (this.features[i].observed === "yes" && hpo.hasOwnProperty(this.features[i].id)) ||
+                      (this.features[i].observed === "no"  && !hpo.hasOwnProperty(this.features[i].id))
+                    ) {
+                     newFeatures.push(this.features[i]);
+                 }
+             }
+
+             // go over all old non-std-features and do the same as above
+             for (var i = 0; i < this.nonStandardFeatures.length; i++) {
+                 if ( (this.nonStandardFeatures[i].type != "phenotype") ||
+                      (this.nonStandardFeatures[i].observed === "yes" && hpo.hasOwnProperty(this.nonStandardFeatures[i].label)) ||
+                      (this.nonStandardFeatures[i].observed === "no"  && !hpo.hasOwnProperty(this.nonStandardFeatures[i].label))
+                    ) {
+                     newNonStdFeatures.push(this.nonStandardFeatures[i]);
+                 }
+             }
+
+             var toObjectWithTrueByField = function(arrayOfObjects, objectFiledName) {
+                 var arrayOfFieldValues = [];
+                 for (var i = 0; i < arrayOfObjects.length; i++) {
+                     arrayOfFieldValues.push(arrayOfObjects[i][objectFiledName]);
+                 }
+                 return Helpers.toObjectWithTrue(arrayOfFieldValues);
+             };
+             var featureHash       = toObjectWithTrueByField(newFeatures, "id");
+             var nonStdFeatureHash = toObjectWithTrueByField(newNonStdFeatures, "label");
+
+             // go over all observed features and add them to either newFeatures or newNonStdFeatures
+             // (if not already there) - with no qualifiers
+             for (var i = 0; i < this.getHPO().length; i++) {
+                 var term = this.getHPO()[i];
+                 if (HPOTerm.isValidID(term)) {
+                     // this is supposed to be a standard term
+                     if (!featureHash.hasOwnProperty(term)) {
+                         newFeatures.push( { "id": term,
+                                             "observed": "yes",
+                                             "type": "phenotype",
+                                             "label": editor.getHPOLegend().getTerm(term).getName() } );
+                     }
+                 } else {
+                     if (!newNonStdFeatures.hasOwnProperty(term)) {
+                         newNonStdFeatures.push( { "observed": "yes",
+                                                   "type": "phenotype",
+                                                   "label": term } );
+                     }
+                 }
+             }
+
+             return {"features": newFeatures, "nonstandard_features": newNonStdFeatures};
          },
 
          /**
@@ -1252,11 +1336,38 @@ define([
                 } else {
                     this.setCancers({});
                 }
-                if(info.hpoTerms) {
-                    this.setHPO(info.hpoTerms);
-                } else {
-                    this.setHPO([]);
+
+                // save original feature data
+                this.features = info.hasOwnProperty("features")? info.features.slice(0) : [];
+                this.nonStandardFeatures = info.hasOwnProperty("nonstandard_features") ? info.nonstandard_features.slice(0) : [];
+
+                var hpoTerms = [];
+                if (info.features) {
+                    // "features":
+                    //    [
+                    //     {"id":"HP:0000175","observed":"yes","label":"Cleft palate","type":"phenotype", "qualifiers":[{"id":"HP:0003577","label":"Congenital onset","type":"age_of_onset"}]},
+                    //     {"id":"HP:0000204","observed":"no","label":"Cleft upper lip","type":"phenotype"}
+                    //    ]
+                    for (var i = 0; i < info.features.length; i++) {
+                        if (info.features[i].observed === "yes" && info.features[i].type == "phenotype") {
+                            hpoTerms.push(info.features[i].id);
+                        }
+                    }
                 }
+                if (info.nonstandard_features) {
+                    // "nonstandard_features":
+                    //    [
+                    //     {"observed":"no","label":"xxx","type":"phenotype"},
+                    //     {"observed":"yes","label":"zzz","type":"phenotype"}
+                    //    ]
+                    for (var i = 0; i < info.nonstandard_features.length; i++) {
+                        if (info.nonstandard_features[i].observed === "yes" && info.nonstandard_features[i].type == "phenotype") {
+                            hpoTerms.push(info.nonstandard_features[i].label);
+                        }
+                    }
+                }
+                this.setHPO(hpoTerms);
+
                 if(info.ethnicities) {
                     this.setEthnicities(info.ethnicities);
                 } else {
