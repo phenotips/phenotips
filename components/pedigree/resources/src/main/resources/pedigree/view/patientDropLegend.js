@@ -22,7 +22,7 @@ define([
 
             this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
                     new Element('div', {'class' : 'infomessage no-word-wrap'}).insert(
-                      "You can drag and drop patients onto individuals in the pedigree")
+                      "Drag and drop onto the pedigree")
                  );
             this.closeButton = new Element('span', {'class' : 'close-button'}).update('x');
             this.closeButton.observe('click', this.hideDragHint.bindAsEventListener(this));
