@@ -369,8 +369,11 @@ var PhenoTips = (function(PhenoTips) {
 
       if (XWiki.contextaction == 'edit') {
         // Init datepicker
-        if (!this._dateEl.hasClassName('initialized')) {
-          this._datePicker = new XWiki.widgets.DateTimePicker(this._dateEl, this._dateEl.title);
+        if (window.dateTimePicker) {
+          window.dateTimePicker.attachPickers(this._dateEl);
+        } else {
+          var crtYear = new Date().getFullYear();
+          window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
         }
 
         // Init hidden inputs
