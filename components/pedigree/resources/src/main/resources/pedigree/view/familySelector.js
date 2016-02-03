@@ -27,7 +27,7 @@ define(["pedigree/view/familySelector"], function(Legend){
             createFamily.observe('click', this.selectOptions.bind(this) );
             assignFamily.observe('click', this.selectOptions.bind(this) );
 
-            createLabel.insert(createFamily).insert("Create a new family for this patient");
+            createLabel.insert(createFamily).insert("Create a new family");
             assignLabel.insert(assignFamily).insert("$services.localization.render('phenotips.UIXField.family_membership.add')");
             var ul = new Element('ul');
             ul.insert(createLabel.wrap('li', {'class' : 'left-aligned'})).insert(assignLabel.wrap('li', {'class' : 'left-aligned'}));
