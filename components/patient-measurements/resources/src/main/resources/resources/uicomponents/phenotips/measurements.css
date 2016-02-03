@@ -155,6 +155,18 @@
   float: right;
   margin-left: 15px;
 }
+.measurement-set .top {
+  overflow: hidden;
+}
+.measurement-set .date {
+  float: left;
+  max-width: 200px;
+}
+.measurement-set .date .LV_validation_message {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
 .measurement-set .age {
   float: right;
 }

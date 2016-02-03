@@ -423,6 +423,9 @@ var PhenoTips = (function(PhenoTips) {
           this._moreContainer.hide();
           this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
         }
+
+        // Init validation 
+        this._initDateValidation.call(this);
       }
 
       return this;
@@ -430,6 +433,7 @@ var PhenoTips = (function(PhenoTips) {
 
     _globalDobChangeHandler: function() {
       if (this.el.select('.measurement-date')[0].alt.length) {
+        this._dateEl.__validation.validate();
         this._setAgeUsingDateAndDob();
       }
     },
@@ -533,6 +537,25 @@ var PhenoTips = (function(PhenoTips) {
 
       return obj;
     },
+
+    _initDateValidation: function() {
+      this._dateEl.__validation = new LiveValidation(this._dateEl, {validMessage: '', onlyOnBlur: true});
+      this._dateEl.__validation.add(Validate.Custom, { 
+        against: this._dateAfterDOBValidator.bind(this),
+        failureMessage: "$services.localization.render('phenotips.patientSheet.measurements.chosenDateIsBeforeBirthdate')", 
+      });
+    },
+
+    _dateAfterDOBValidator: function(value,args) {
+      if (!this._globalDobEl.alt || !this._dateEl.alt) {
+        return true;
+      } else {
+        var bday = new Date(this._globalDobEl.alt).toUTC();
+        var thisDate = new Date(this._dateEl.alt);
+
+        return thisDate >= bday;
+      }
+    }
   });
 
   widgets.MeasurementSetRow = Class.create({
