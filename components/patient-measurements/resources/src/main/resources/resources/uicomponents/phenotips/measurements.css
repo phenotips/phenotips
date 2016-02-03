@@ -145,7 +145,7 @@
 }
 .measurement-set .measurements {
   border-top: 1px dotted #aaa;
-  margin-top: 8px;
+  margin-top: 5px;
   padding-top: 8px;
 }
 .measurement-set input[type=text] {
@@ -157,6 +157,7 @@
 }
 .measurement-set .top {
   overflow: hidden;
+  padding: 3px 0;
 }
 .measurement-set .date {
   float: left;
@@ -164,8 +165,12 @@
 }
 .measurement-set .date .LV_validation_message {
   display: block;
+  line-height: 1.3em;
   margin: 0;
   text-align: center;
+}
+.measurement-set .date .LV_validation_message.LV_invalid {
+  padding: 3px 0;
 }
 .measurement-set .age {
   float: right;
