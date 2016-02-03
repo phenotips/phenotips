@@ -124,10 +124,10 @@ define([
          *                  elements such as handles, invisible interactive layers, etc. removed.
          *
          * @method getSVGCopy
-         * @param {Object} anonimizeSettings a set of anonimization properties, currently "removePII" and "removeComments"
+         * @param {Object} anonymizeSettings a set of anonymization properties, currently "removePII" and "removeComments"
          * @return {Object} SVGWrapper object.
          */
-        getSVGCopy: function(anonimizeSettings) {
+        getSVGCopy: function(anonymizeSettings) {
             editor.getView().unmarkAll();
 
             var image = $('canvas');
@@ -135,7 +135,7 @@ define([
             var background = image.getElementsByClassName('panning-background')[0];
             background.style.display = "none";
 
-            editor.getView().setAnonimizeStatus(anonimizeSettings);
+            editor.getView().setAnonymizeStatus(anonymizeSettings);
 
             var _bbox = image.down().getBBox();
             var bbox = {};
@@ -154,7 +154,7 @@ define([
                           .replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + (bbox.width) + "\" height=\"" + (bbox.height) +
                           "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\"");
 
-            editor.getView().setAnonimizeStatus({});
+            editor.getView().setAnonymizeStatus({});
 
             // set display:block
             svgText = svgText.replace(/(<svg[^<>]+style=")/g, "$1display:block; ");
