@@ -50,6 +50,9 @@ import net.sf.json.JSONObject;
 @Component
 public class PedigreeProcessorImpl implements PedigreeProcessor
 {
+    private static final String JSON_KEY_FEATURES = "features";
+    private static final String JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
+
     @Inject
     private Logger logger;
 
@@ -158,26 +161,16 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     private static JSONObject exchangePhenotypes(JSONObject pedigreePatient,
         JSONObject phenotipsPatientJSON, Vocabulary hpoService, Logger logger)
     {
-        JSONArray internalTerms = new JSONArray();
-        JSONArray externalTerms = pedigreePatient.optJSONArray("hpoTerms");
-
-        if (externalTerms != null) {
-            for (Object termIdObj : externalTerms) {
-                try {
-                    VocabularyTerm term = hpoService.getTerm(termIdObj.toString());
-                    if (term != null) {
-                        JSONObject termJson = JSONObject.fromObject(term.toJSON());
-                        termJson.put("observed", "yes");
-                        termJson.put("type", "phenotype");
-                        internalTerms.add(termJson);
-                    }
-                } catch (Exception ex) {
-                    logger.error("Could not convert phenotype {} from pedigree JSON to patient JSON", termIdObj);
-                }
-            }
+        JSONArray pedigreeFeatures = pedigreePatient.optJSONArray(JSON_KEY_FEATURES);
+        if (pedigreeFeatures != null) {
+            phenotipsPatientJSON.put(JSON_KEY_FEATURES, pedigreeFeatures);
         }
 
-        phenotipsPatientJSON.put("features", internalTerms);
+        JSONArray pedigreeNonStdFeatures = pedigreePatient.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES);
+        if (pedigreeNonStdFeatures != null) {
+            phenotipsPatientJSON.put(JSON_KEY_NON_STANDARD_FEATURES, pedigreeNonStdFeatures);
+        }
+
         return phenotipsPatientJSON;
     }
 

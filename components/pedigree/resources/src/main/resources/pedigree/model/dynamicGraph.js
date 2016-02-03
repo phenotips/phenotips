@@ -317,29 +317,16 @@ define([
                 delete this.DG.GG.properties[id].externalID;
             }
 
-            var hpoTerms = [];
-            if (patientObject.hasOwnProperty("features")) {
-                // e.g.: "features":[{"id":"HP:0000359","label":"Abnormality of the inner ear","type":"phenotype","observed":"yes"},{"id":"HP:0000639","label":"Nystagmus","type":"phenotype","observed":"yes"}]
-                for (var i = 0; i < patientObject.features.length; i++) {
-                    if ((patientObject.features[i].observed === true || patientObject.features[i].observed === "yes")
-                        && patientObject.features[i].type == "phenotype") {
-                        hpoTerms.push(patientObject.features[i].id);
-                    }
-                }
-            }
-            if (patientObject.hasOwnProperty("nonstandard_features")) {
-                //e.g.: "nonstandard_features":[{"label":"freetext","type":"phenotype","observed":"yes","categories":[{"id":"HP:0001507","label":"Growth abnormality"},{"id":"HP:0000240","label":"Abnormality of skull size"}]}]
-                for (var i = 0; i < patientObject.nonstandard_features.length; i++) {
-                    if ((patientObject.nonstandard_features[i].observed === true || patientObject.nonstandard_features[i].observed === "yes")
-                        && patientObject.nonstandard_features[i].type == "phenotype") {
-                        hpoTerms.push(patientObject.nonstandard_features[i].label);
-                    }
-                }
-            }
-            if (hpoTerms.length > 0) {
-                this.DG.GG.properties[id].hpoTerms = hpoTerms;
+            if (patientObject.hasOwnProperty("features") && patientObject.features.length > 0) {
+                this.DG.GG.properties[id].features = patientObject.features;
             } else {
-                delete this.DG.GG.properties[id].hpoTerms;
+                delete this.DG.GG.properties[id].features;
+            }
+
+            if (patientObject.hasOwnProperty("nonstandard_features") && patientObject.nonstandard_features.length > 0) {
+                nonstandard_features = patientObject.nonstandard_features;
+            } else {
+                delete this.DG.GG.properties[id].nonstandard_features;
             }
 
             var disorders = [];
