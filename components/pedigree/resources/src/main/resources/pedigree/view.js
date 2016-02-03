@@ -141,7 +141,7 @@ define([
         },
 
         /**
-         * Redraws the pedigree image in anoimized/non-anonimized way
+         * Redraws the pedigree image in anoymized/non-anonymized way
          */
         setAnonimizeStatus: function(status) {
             for (var nodeID in this._nodeMap) {

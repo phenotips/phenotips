@@ -98,12 +98,12 @@ define([
             mainDiv.insert(controlsDiv);
 
             var configListElement = new Element('table', {id : 'print-settings'});
-            var anonimize = new Element('input', {"type" : "checkbox", "value": "0", "name": "anonimize"});
-            anonimize.checked = false;
-            anonimize.observe('click', function() {
+            var anonymize = new Element('input', {"type" : "checkbox", "value": "0", "name": "anonymize"});
+            anonymize.checked = false;
+            anonymize.observe('click', function() {
                 _this._updatePreview();
             });
-            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonimize).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
+            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonymize).insert("Remove PII information (anonymize)").wrap('td').wrap('tr'));
             var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
             addLegend.checked = true;
             configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr'));
@@ -166,7 +166,7 @@ define([
         _generateOptions: function() {
             var patientInfo = $$('input[type=checkbox][name="patient-info"]')[0].checked;
 
-            var anonimize = $$('input[type=checkbox][name="anonimize"]')[0].checked;
+            var anonymize = $$('input[type=checkbox][name="anonymize"]')[0].checked;
 
             var closePrintVersion = $$('input[type=checkbox][name="close-print"]')[0].checked;
 
@@ -178,7 +178,7 @@ define([
                      "legendAtBottom": true,
                      "addOverlaps": addOverlaps,
                      "closeAfterPrint": closePrintVersion,
-                     "anonimize": anonimize,
+                     "anonymize": anonymize,
                      "includePatientInfo": patientInfo};
         },
 
