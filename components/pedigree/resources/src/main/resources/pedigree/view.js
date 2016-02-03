@@ -141,18 +141,18 @@ define([
         },
 
         /**
-         * Redraws the pedigree image in anoimized/non-anonimized way
-         * @param {Object} anonimizeSettings a set of anonimization properties, currently "removePII" and "removeComments"
-         * When false anonimizatio nstatus is reset to "do not anonimize"
+         * Redraws the pedigree image in anonymized/non-anonymized way
+         * @param {Object} anonymizeSettings a set of anonymization properties, currently "removePII" and "removeComments"
+         *                                   When false anonymization status is reset to "do not anonymize"
          */
-        setAnonimizeStatus: function(anonimizeSettings) {
-            if (typeof anonimizeSettings !== 'object') {
-                anonimizeSettings = {};
+        setAnonymizeStatus: function(anonymizeSettings) {
+            if (typeof anonymizeSettings !== 'object') {
+                anonymizeSettings = {};
             }
             for (var nodeID in this._nodeMap) {
                 if (this._nodeMap.hasOwnProperty(nodeID)) {
                     var node = this.getNode(nodeID);
-                    node.getGraphics().setAnonimizedStatus(anonimizeSettings);
+                    node.getGraphics().setAnonymizedStatus(anonymizeSettings);
                 }
             }
         },

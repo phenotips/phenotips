@@ -77,7 +77,7 @@ define([
             if (options.includePatientInfo) {
                 patientInfoHeight = 30;
                 var proband = editor.getNode(0);
-                if (options.anonimize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
+                if (options.anonymize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
                     if (XWiki.currentDocument.space == 'data') {
                         patientInfoHTML = "Patient " + XWiki.currentDocument.page;
                     } else {
@@ -104,7 +104,7 @@ define([
                 }
             }
 
-            var svg = editor.getWorkspace().getSVGCopy(options.anonimize);
+            var svg = editor.getWorkspace().getSVGCopy(options.anonymize);
 
             //console.log("BBOX: " + stringifyObject(svg.getBBox()));
 

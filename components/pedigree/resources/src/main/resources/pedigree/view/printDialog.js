@@ -103,7 +103,7 @@ define([
             removePII.observe('click', function() {
                 _this._updatePreview();
             });
-            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(removePII).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
+            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(removePII).insert("Remove PII information (anonymize)").wrap('td').wrap('tr'));
             var removeComments = new Element('input', {"type" : "checkbox", "value": "0", "name": "removeComments"});
             removeComments.checked = false;
             removeComments.observe('click', function() {
@@ -174,7 +174,7 @@ define([
 
             var removePII = $$('input[type=checkbox][name="removePII"]')[0].checked;
             var removeComments = $$('input[type=checkbox][name="removeComments"]')[0].checked;
-            var anonimize = { "removePII": removePII,
+            var anonymize = { "removePII": removePII,
                               "removeComments": removeComments };
 
             var closePrintVersion = $$('input[type=checkbox][name="close-print"]')[0].checked;
@@ -187,7 +187,7 @@ define([
                      "legendAtBottom": true,
                      "addOverlaps": addOverlaps,
                      "closeAfterPrint": closePrintVersion,
-                     "anonimize": anonimize,
+                     "anonymize": anonymize,
                      "includePatientInfo": patientInfo};
         },
 

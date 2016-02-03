@@ -872,7 +872,7 @@ define([
         getLabels: function() {
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
-            if (!this._anonimized.hasOwnProperty("removePII") || !this._anonimized.removePII) {
+            if (!this._anonymized.hasOwnProperty("removePII") || !this._anonymized.removePII) {
                 if (this.getLinkLabel()) {
                     this.getLinkLabel().show();
                     labels.push(this.getLinkLabel());
@@ -895,7 +895,7 @@ define([
                 this.getAgeLabel() && this.getAgeLabel().hide();
                 this.getExternalIDLabel() && this.getExternalIDLabel().hide();
             }
-            if (!this._anonimized.hasOwnProperty("removeComments") || !this._anonimized.removeComments) {
+            if (!this._anonymized.hasOwnProperty("removeComments") || !this._anonymized.removeComments) {
                 if (this.getCommentsLabel()) {
                     this.getCommentsLabel().show();
                     labels.push(this.getCommentsLabel());
@@ -915,7 +915,7 @@ define([
         /**
          * Removes all PII labels
          */
-        setAnonimizedStatus: function($super, status) {
+        setAnonymizedStatus: function($super, status) {
             $super(status);
             this.drawLabels();
         },
