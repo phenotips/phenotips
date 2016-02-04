@@ -121,7 +121,15 @@ public class PhenotipsFamilyPermissions
         permissions.set(ALLOW, 1, context);
     }
 
-    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
+    /**
+     * Returns all the users and groups that can edit the patient as array of two strings. First string in returned
+     * array contains all the users that can edit the patient, second string contains all the groups that can edit the
+     * patient.
+     *
+     * @param patientDoc patient to read permissions from
+     * @return array of rights
+     */
+    public String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
     {
         String[] fullRights = new String[2];
         int i = 0;
