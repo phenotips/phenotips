@@ -303,7 +303,7 @@
             this.classVariables.baseUrl = baseUrlOrConsents;
             this.loadConsents(baseUrlOrConsents);
           } else if ($.isArray(baseUrlOrConsents)) {
-          /* is a consents array */
+            /* is a consents array */
             this.afterLoadAttempt(baseUrlOrConsents);
           }
           /* otherwise do nothing*/
@@ -342,10 +342,10 @@
 
         displayConsents: function (consentsBlock, action, consents)
         {
-          var listBlock = consentsBlock.children(".list-block");
-          if (listBlock.length == 0) {
-            listBlock = $("&lt;div class='list-block consents'&gt;");
-            consentsBlock.append(listBlock);
+          var consentList = consentsBlock.children(".consents");
+          if (consentList.length == 0) {
+            consentList = $("&lt;ul class='consents'&gt;");
+            consentsBlock.append(consentList);
           }
           var list;
           if (action == "edit") {
@@ -356,16 +356,14 @@
             })
           } else if (action == "view") {
             var granted = this.filterGranted(consents);
-            this.displayViewTitle(consentsBlock, granted);
+            this.displayWarning(consentsBlock, granted);
             list = granted.map(this.displayConsentDescription);
           }
           if (list) {
-            var listHtml = $("&lt;ul&gt;&lt;/ul&gt;");
             list.each(function (c)
             {
-              listHtml.append(c)
+              consentList.append(c)
             });
-            listBlock.append(listHtml);
           }
         },
 
@@ -389,8 +387,8 @@
         attachManagingListeners: function (baseUrl)
         {
           var _this = this;
-          var listBlock = $(".list-block");
-          listBlock.on("change", "li input", function (event)
+          var consentList = $(".consents");
+          consentList.on("change", "li input", function (event)
           {
             var checkbox = $(event.target);
             var rest = _this.interactWithManagingRest(checkbox.attr("data-bind"), baseUrl);
@@ -439,12 +437,10 @@
           return this.displayConsentDescription(consent).prepend(checkbox);
         },
 
-        displayViewTitle: function (consentsBlock, grantedConsents)
+        displayWarning: function (consentsBlock, grantedConsents)
         {
-          if (grantedConsents.length &gt; 0) {
-            consentsBlock.children('.view-title').removeClass('hidden');
-          } else {
-            consentsBlock.children('.view-title-none').removeClass('hidden');
+          if (grantedConsents.length == 0) {
+            consentsBlock.children('.warning-no-consents').removeClass('hidden');
           }
         },
 
@@ -467,8 +463,7 @@
       var consentsBlock = $('#consents-block');
       if (consentsBlock.length == 1 &amp;&amp; !consentsBlock[0].initialized) {
         var action = consentsBlock.attr("class");
-        var patientId = consentsBlock.children('.patient-id').html();
-        var baseUrl = "/rest/patients/" + patientId + "/consents/";
+        var baseUrl = consentsBlock.attr("data-url");
 
         consentsModule.createNew().init(consentsBlock, action, baseUrl, function ()
         {
@@ -483,9 +478,9 @@
     function insertInfo(consentsBlock, action)
     {
       if (action == "edit") {
-        var listBlock = consentsBlock.children(".list-block");
-        var info = consentsBlock.children(".consent-form-bullet");
-        var realBullet = listBlock.find("#real-consent-checkbox");
+        var consentList = consentsBlock.children(".consents");
+        var info = consentsBlock.children(".consent-form-label");
+        var realBullet = consentList.find("#real-consent-checkbox");
         if (realBullet.length &gt; 0) {
           realBullet.parent().after(info);
           info.removeClass("hidden");
@@ -605,14 +600,31 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.list-block.consents ul
+      <code>
+#consents-block.edit ul
 {
   list-style-type: none;
 }
-.list-block.consents ul li
+
+.consents ul li
 {
   margin-bottom: 0.5em;
-}</code>
+}
+
+.consents .hint {
+  font-size: 100%;
+}
+
+.consent-form-label
+{
+  margin-top: 0.5em;
+}
+
+#patient-consent-continue
+{
+  margin: 1em 0 1em 2em;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -702,27 +714,26 @@
 $xwiki.jsx.use('PhenoTips.PatientConsent')
 $xwiki.ssx.use('PhenoTips.PatientConsent')
 #if ($services.consentauthorizer.consentsGloballyEnabled())
-  (% id='consents-block' class='$xcontext.action' %)(((
+  #set($consentBaseUrl = "/rest/patients/${doc.getName()}/consents/")
+  (% id='consents-block' class='$xcontext.action' data-url='$consentBaseUrl' %)(((
     {{html clean='false' wiki='false'}}&lt;div class='patient-id hidden'&gt;${doc.getName()}&lt;/div&gt;{{/html}}
-    (% class='view-title hidden' %)(((
+    (% class='consents-title' %)(((
       ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
     )))
-    (% class='view-title-none hidden' %)(((
+    (% class='warning-no-consents hidden' %)(((
       {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
     )))
     (% class='error hidden' %)(((
       {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
     )))
     {{html wiki='false' clean='false'}}
-    &lt;li class='consent-form-bullet hidden'&gt;
+    &lt;li class='consent-form-label hint hidden'&gt;
       #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
       #set ($formUrl = $consentDoc.getAttachmentURL('PhenomeCentral_Consent.pdf'))
       $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"])
     &lt;/li&gt;
+    &lt;ul class="consents" &gt;&lt;/ul&gt;
     {{/html}}
-    (% class='list-block consents' %)(((
-
-    )))
 
     #if ($xcontext.action == 'edit')
     {{html clean='false' wiki='false'}}##
