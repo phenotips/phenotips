@@ -18,6 +18,7 @@
 package org.phenotips.studies.family.listener;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -36,7 +37,8 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Detects the deletion of a family and modifies the members' records accordingly.
+ * Detects the deletion of a family (and modifies the members' records accordingly)
+ * and of a patient (and modifies the family accordingly).
  *
  * @version $Id$
  * @since 1.0RC1
@@ -48,6 +50,9 @@ public class FamilyDeletingListener implements EventListener
 {
     @Inject
     private FamilyRepository familyRepository;
+
+    @Inject
+    private PatientRepository patientRepository;
 
     @Override
     public String getName()
@@ -61,20 +66,32 @@ public class FamilyDeletingListener implements EventListener
         return Collections.<Event>singletonList(new DocumentDeletingEvent());
     }
 
-    // TODO: Test!
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiDocument familyDocument = (XWikiDocument) source;
-        String familyId = familyDocument.getDocumentReference().getName();
-        if (familyDocument == null || "FamilyTemplate".equals(familyId)) {
+        XWikiDocument document = (XWikiDocument) source;
+        if (document == null) {
             return;
         }
 
-        Family family = this.familyRepository.getFamilyById(familyId);
-        List<Patient> members = family.getMembers();
-        for (Patient patient : members) {
-            family.removeMember(patient);
+        String documentId = document.getDocumentReference().getName();
+
+        Family family = this.familyRepository.getFamilyById(documentId);
+        if (family != null) {
+            // a family has been removed - unlink all patients
+            List<Patient> members = family.getMembers();
+            for (Patient patient : members) {
+                family.removeMember(patient);
+            }
+        } else {
+            // a patient has been removed - remove it from the family, if she has one
+            Patient patient = this.patientRepository.getPatientById(documentId);
+            if (patient != null) {
+                family = this.familyRepository.getFamilyForPatient(patient);
+                if (family != null) {
+                    family.removeMember(patient);
+                }
+            }
         }
     }
 }
