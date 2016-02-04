@@ -605,14 +605,16 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.list-block.consents ul
-{
-  list-style-type: none;
-}
-.list-block.consents ul li
+      <code>.list-block.consents ul li
 {
   margin-bottom: 0.5em;
-}</code>
+}
+
+#patient-consent-continue
+{
+  margin: 1em 0 1em 2em;
+}
+</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -704,7 +706,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')
 #if ($services.consentauthorizer.consentsGloballyEnabled())
   (% id='consents-block' class='$xcontext.action' %)(((
     {{html clean='false' wiki='false'}}&lt;div class='patient-id hidden'&gt;${doc.getName()}&lt;/div&gt;{{/html}}
-    (% class='view-title hidden' %)(((
+    (% class='view-title' %)(((
       ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
     )))
     (% class='view-title-none hidden' %)(((
