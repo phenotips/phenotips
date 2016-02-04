@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.Collections;
 import java.util.Set;
@@ -48,18 +49,26 @@ public class GroupManagerScriptService implements ScriptService
     @Inject
     private GroupManager manager;
 
+    @Inject
+    private UserManager userManager;
+
     /**
      * List the groups that this user is a member of.
      *
-     * @param user the user whose groups will be retrieved
+     * @param username name of the user whose groups will be retrieved
      * @return an unmodifiable set of groups, empty if the user isn't part of any groups.
      */
-    public Set<Group> getGroupsForUser(User user)
+    public Set<Group> getGroupsForUser(String username)
     {
+        User user = this.userManager.getUser(username);
+        if (user == null) {
+            return Collections.EMPTY_SET;
+        }
+
         try {
             return this.manager.getGroupsForUser(user);
         } catch (Exception ex) {
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         }
     }
 }
