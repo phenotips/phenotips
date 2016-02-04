@@ -114,28 +114,9 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.OwnerClass' and (accessProp.value = '' or accessProp.value is null)")
   #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #elseif (!$hasAdmin)
-  #set ($groups = [])
-  #set ($toProcess = $collectionstool.queue)
+  #set ($groups = $services.groups.getGroupsForUser($xcontext.userReference))
   #if ($xcontext.userReference)
     #set ($discard = $groups.add($xcontext.userReference))
-    #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-  #end
-  #foreach ($iteration in [0..1000])
-    #if ($toProcess.empty)
-      #break
-    #end
-    #set ($item = $toProcess.poll())
-    #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-        #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
-        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #end
-      #if ($groupObj &amp;&amp; !$groups.contains($group.documentReference.toString()))
-        #set ($discard = $toProcess.add($group.documentReference.toString()))
-        #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
-      #end
-    #end
   #end
   #set ($groups = "('${stringtool.join($groups, ""','"")}')")
   #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
