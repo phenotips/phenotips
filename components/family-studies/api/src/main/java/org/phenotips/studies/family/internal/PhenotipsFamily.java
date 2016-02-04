@@ -22,7 +22,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
+import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
@@ -56,7 +56,7 @@ import net.sf.json.JSONObject;
  *
  * @version $Id$
  */
-public class XWikiFamily implements Family
+public class PhenotipsFamily implements Family
 {
     private static final String WARNING = "warning";
 
@@ -64,9 +64,9 @@ public class XWikiFamily implements Family
 
     private static PatientRepository patientRepository;
 
-    private static XWikiFamilyPermissions familyPermissions;
+    private static PhenotipsFamilyPermissions familyPermissions;
 
-    private static XWikiFamilyExport familyExport;
+    private static PhenotipsFamilyExport familyExport;
 
     @Inject
     private Logger logger;
@@ -75,12 +75,12 @@ public class XWikiFamily implements Family
 
     static {
         try {
-            XWikiFamily.patientRepository =
+            PhenotipsFamily.patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
-            XWikiFamily.familyPermissions =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyPermissions.class);
-            XWikiFamily.familyExport =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiFamilyExport.class);
+            PhenotipsFamily.familyPermissions =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyPermissions.class);
+            PhenotipsFamily.familyExport =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(PhenotipsFamilyExport.class);
 
         } catch (ComponentLookupException e) {
             e.printStackTrace();
@@ -90,7 +90,7 @@ public class XWikiFamily implements Family
     /**
      * @param familyDocument not-null document associated with the family
      */
-    public XWikiFamily(XWikiDocument familyDocument)
+    public PhenotipsFamily(XWikiDocument familyDocument)
     {
         this.familyDocument = familyDocument;
     }
@@ -134,7 +134,7 @@ public class XWikiFamily implements Family
         List<String> memberIds = this.getMembersIds();
         List<Patient> members = new ArrayList<>(memberIds.size());
         for (String memberId : memberIds) {
-            Patient patient = XWikiFamily.patientRepository.getPatientById(memberId);
+            Patient patient = PhenotipsFamily.patientRepository.getPatientById(memberId);
             members.add(patient);
         }
         return members;
@@ -174,10 +174,10 @@ public class XWikiFamily implements Family
         BaseObject familyObject = this.familyDocument.getXObject(Family.CLASS_REFERENCE);
         familyObject.set(FAMILY_MEMBERS_FIELD, members, context);
 
-        XWikiFamily.familyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
+        PhenotipsFamily.familyPermissions.setFamilyPermissionsFromPatient(this.familyDocument, patientDocument);
 
         try {
-            XWikiFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
+            PhenotipsFamilyRepository.setFamilyReference(patientDocument, this.familyDocument, context);
         } catch (XWikiException e) {
             this.logger.error("Could not add patient [{}] to family. Error setting family reference: [{}]",
                 patientId, e.getMessage());
@@ -215,7 +215,7 @@ public class XWikiFamily implements Family
         }
 
         // Remove family reference from patient
-        boolean removed = XWikiFamilyRepository.removeFamilyReference(patientDocument);
+        boolean removed = PhenotipsFamilyRepository.removeFamilyReference(patientDocument);
         if (!removed) {
             this.logger.info("Family reference not removed from patient. Returning from removeMember()");
             return false;
@@ -293,7 +293,7 @@ public class XWikiFamily implements Family
     @Override
     public JSONObject toJSON()
     {
-        return XWikiFamily.familyExport.toJSON(this);
+        return PhenotipsFamily.familyExport.toJSON(this);
     }
 
     @Override
@@ -302,7 +302,7 @@ public class XWikiFamily implements Family
         Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
 
         for (Patient patient : getMembers()) {
-            allFamilyLinks.put(patient.getId(), XWikiFamily.familyExport.getMedicalReports(patient));
+            allFamilyLinks.put(patient.getId(), PhenotipsFamily.familyExport.getMedicalReports(patient));
         }
         return allFamilyLinks;
     }
@@ -361,11 +361,11 @@ public class XWikiFamily implements Family
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof XWikiFamily)) {
+        if (!(obj instanceof PhenotipsFamily)) {
             return false;
         }
 
-        XWikiFamily xobj = (XWikiFamily) obj;
+        PhenotipsFamily xobj = (PhenotipsFamily) obj;
         return (this.getId().equals(xobj.getId()));
     }
 
@@ -434,7 +434,7 @@ public class XWikiFamily implements Family
     @Override
     public void updatePermissions()
     {
-        XWikiFamily.familyPermissions.updatePermissions(this, this.familyDocument);
+        PhenotipsFamily.familyPermissions.updatePermissions(this, this.familyDocument);
     }
 
     @Override
@@ -446,7 +446,7 @@ public class XWikiFamily implements Family
             for (Patient patient : getMembers()) {
                 removeMember(patient);
                 if (deleteAllMembers) {
-                    if (!XWikiFamily.patientRepository.deletePatient(patient.getId())) {
+                    if (!PhenotipsFamily.patientRepository.deletePatient(patient.getId())) {
                         return false;
                     }
                 }
