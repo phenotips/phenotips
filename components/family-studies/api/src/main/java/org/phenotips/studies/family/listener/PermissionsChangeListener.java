@@ -20,7 +20,6 @@ package org.phenotips.studies.family.listener;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.events.PatientChangedEvent;
-import org.phenotips.data.events.PatientDeletedEvent;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -35,7 +34,7 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * When a patient record's permissions are changed or a patient record is deleted, if that patient belongs to a family,
+ * When a patient record's permissions are changed, if that patient belongs to a family,
  * the family's permissions should change also.
  *
  * @version $Id$
@@ -55,7 +54,7 @@ public class PermissionsChangeListener extends AbstractEventListener
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PermissionsChangeListener()
     {
-        super("family-studies-permissions-listener", new PatientChangedEvent(), new PatientDeletedEvent());
+        super("family-studies-permissions-listener", new PatientChangedEvent());
     }
 
     // TODO: test!
@@ -63,21 +62,15 @@ public class PermissionsChangeListener extends AbstractEventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument xwikiDoc = (XWikiDocument) source;
-        String patientId = xwikiDoc.getDocumentReference().getName();
-        Patient patient = this.patientRepository.getPatientById(patientId);
+        String documentId = xwikiDoc.getDocumentReference().getName();
+        Patient patient = this.patientRepository.getPatientById(documentId);
+        if (patient == null) {
+            return;
+        }
         Family family = this.familyRepository.getFamilyForPatient(patient);
-
         if (family == null) {
             return;
         }
-
-        if (event instanceof PatientDeletedEvent) {
-            family.removeMember(patient);
-
-            // TODO delete family if no members left?
-        } else {
-            // if member was deleted (true branch of if), this is done in removing member.
-            family.updatePermissions();
-        }
+        family.updatePermissions();
     }
 }
