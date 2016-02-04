@@ -24,7 +24,7 @@ import org.phenotips.studies.family.Family;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Contains information to be returned in a family search (specifically in XWikiFamilyExport).
+ * Contains information to be returned in a family search (specifically in PhenotipsFamilyExport).
  *
  * @version $Id$
  */

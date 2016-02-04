@@ -52,9 +52,9 @@ import com.xpn.xwiki.objects.BaseStringProperty;
  *
  * @version $Id$
  */
-@Component(roles = { XWikiFamilyPermissions.class })
+@Component(roles = { PhenotipsFamilyPermissions.class })
 @Singleton
-public class XWikiFamilyPermissions
+public class PhenotipsFamilyPermissions
 {
     /** XWiki class that contains rights to XWiki documents. */
     private static final EntityReference RIGHTS_CLASS =
@@ -97,7 +97,7 @@ public class XWikiFamilyPermissions
 
         XWikiContext context = this.provider.get();
 
-        BaseObject permissions = familyDoc.getXObject(XWikiFamilyPermissions.RIGHTS_CLASS);
+        BaseObject permissions = familyDoc.getXObject(PhenotipsFamilyPermissions.RIGHTS_CLASS);
         String[] fullRights = this.getEntitiesWithEditAccessAsString(patientDoc);
         permissions.set(RIGHTS_USERS_FIELD, fullRights[0], context);
         permissions.set(RIGHTS_GROUPS_FIELD, fullRights[1], context);
@@ -115,7 +115,7 @@ public class XWikiFamilyPermissions
         User currentUser = this.userManager.getCurrentUser();
         XWikiContext context = this.provider.get();
 
-        BaseObject permissions = familyDoc.getXObject(XWikiFamilyPermissions.RIGHTS_CLASS);
+        BaseObject permissions = familyDoc.getXObject(PhenotipsFamilyPermissions.RIGHTS_CLASS);
         permissions.set(RIGHTS_USERS_FIELD, currentUser.getId(), context);
         permissions.set(RIGHTS_LEVELS_FIELD, OWNER_RIGHTS, context);
         permissions.set(ALLOW, 1, context);
@@ -142,7 +142,7 @@ public class XWikiFamilyPermissions
      */
     private List<Set<String>> getEntitiesWithEditAccess(XWikiDocument patientDoc)
     {
-        Collection<BaseObject> rightsObjects = patientDoc.getXObjects(XWikiFamilyPermissions.RIGHTS_CLASS);
+        Collection<BaseObject> rightsObjects = patientDoc.getXObjects(PhenotipsFamilyPermissions.RIGHTS_CLASS);
         Set<String> users = new HashSet<>();
         Set<String> groups = new HashSet<>();
         for (BaseObject rights : rightsObjects) {
@@ -245,10 +245,10 @@ public class XWikiFamilyPermissions
      */
     private BaseObject getDefaultRightsObject(XWikiDocument familyDoc)
     {
-        List<BaseObject> rights = familyDoc.getXObjects(XWikiFamilyPermissions.RIGHTS_CLASS);
+        List<BaseObject> rights = familyDoc.getXObjects(PhenotipsFamilyPermissions.RIGHTS_CLASS);
         for (BaseObject right : rights) {
             String level = right.getStringValue(RIGHTS_LEVELS_FIELD);
-            if (StringUtils.equalsIgnoreCase(level, XWikiFamilyPermissions.DEFAULT_RIGHTS)) {
+            if (StringUtils.equalsIgnoreCase(level, PhenotipsFamilyPermissions.DEFAULT_RIGHTS)) {
                 return right;
             }
         }
