@@ -88,7 +88,7 @@ public class TemplatesRepository
     public List<Template> getAllTemplatesForUser() {
         List<Template> templatesList = null;
         if (this.isTemplatesAccessUnrestricted()) {
-            templatesList = this.queryTemplates(null, -1);
+            templatesList = this.getAllTemplates();
         } else {
             templatesList = new ArrayList<Template>();
             User currentUser = this.userManager.getCurrentUser();
@@ -168,6 +168,10 @@ public class TemplatesRepository
         } else {
             return null;
         }
+    }
+
+    private List<Template> getAllTemplates() {
+        return this.queryTemplates(null, -1);
     }
 
     private List<Template> queryTemplates(String input, int resultsLimit)
