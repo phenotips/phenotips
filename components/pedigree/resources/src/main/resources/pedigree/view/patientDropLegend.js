@@ -303,28 +303,16 @@ define([
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
             var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
             if (node) {
-                if (node.getGender() != this._getGender(event.element()) && node.getGender() != 'U' && this._getGender(event.element()) != 'U') {
-                  editor.getOkCancelDialogue().showCustomized("Can not drag the patient to a different gender","Can't assign", "OK", null);
+                if (node.getGender() != patient.gender && node.getGender() != 'U' && patient.gender != 'U') {
+                    editor.getOkCancelDialogue().showCustomized("Can not drag the patient to a different gender","Can't assign", "OK", null);
                     return;
                 }
                 if (node.getPhenotipsPatientId() != "") {
                     editor.getOkCancelDialogue().showCustomized("This individual is already linked to another patient","Can't assign", "OK", null);
                     return;
                 }
-
                 this._onDropObject(node, patient);
             }
-        },
-
-        /**
-         * Get the gender of a patient element
-         *
-         * @method _getGender
-         * @param {element} Person patient element
-         * @private
-         */
-        _getGender: function(element) {
-            return this._notLinkedPatients[element.up().identify()].gender;
         },
 
         /**
