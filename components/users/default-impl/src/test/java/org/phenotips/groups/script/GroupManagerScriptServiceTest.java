@@ -19,10 +19,10 @@ package org.phenotips.groups.script;
 
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -50,20 +50,35 @@ public class GroupManagerScriptServiceTest
     public void getGroupsForUser() throws ComponentLookupException
     {
         Set<Group> groups = new LinkedHashSet<Group>();
+        String username = "username";
         User user = mock(User.class);
+        UserManager userManager = this.mocker.getInstance(UserManager.class);
+        when(userManager.getUser(username)).thenReturn(user);
         groups.add(mock(Group.class));
         GroupManager manager = this.mocker.getInstance(GroupManager.class);
         when(manager.getGroupsForUser(user)).thenReturn(groups);
-        Assert.assertSame(groups, this.mocker.getComponentUnderTest().getGroupsForUser(user));
+        Assert.assertSame(groups, this.mocker.getComponentUnderTest().getGroupsForUser(username));
     }
 
     /** {@link GroupManagerScriptService#getEnabledFieldNames()} catches exception. */
     @Test
     public void getGroupsForUserWithException() throws ComponentLookupException
     {
+        String username = "username";
         User user = mock(User.class);
+        UserManager userManager = this.mocker.getInstance(UserManager.class);
+        when(userManager.getUser(username)).thenReturn(user);
         GroupManager manager = this.mocker.getInstance(GroupManager.class);
         when(manager.getGroupsForUser(user)).thenThrow(new NullPointerException());
-        Assert.assertTrue(this.mocker.getComponentUnderTest().getGroupsForUser(user).isEmpty());
+        Assert.assertTrue(this.mocker.getComponentUnderTest().getGroupsForUser(username).isEmpty());
+    }
+
+    @Test
+    public void getGroupsForUserWhenUserNotFound() throws ComponentLookupException
+    {
+        String username = "username";
+        UserManager userManager = this.mocker.getInstance(UserManager.class);
+        when(userManager.getUser(username)).thenReturn(null);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().getGroupsForUser(username).isEmpty());
     }
 }
