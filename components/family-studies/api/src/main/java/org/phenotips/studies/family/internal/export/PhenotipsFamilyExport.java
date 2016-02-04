@@ -58,9 +58,9 @@ import net.sf.json.JSONObject;
  *
  * @version $Id$
  */
-@Component(roles = { XWikiFamilyExport.class })
+@Component(roles = { PhenotipsFamilyExport.class })
 @Singleton
-public class XWikiFamilyExport
+public class PhenotipsFamilyExport
 {
     private static final String LAST_NAME = "last_name";
 
@@ -196,8 +196,8 @@ public class XWikiFamilyExport
         querySb.append("select doc.name ");
         querySb.append(" from  Document doc, ");
         querySb.append("       doc.object(PhenoTips.FamilyClass) as family ");
-        querySb.append(" where lower(doc.name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
-        querySb.append(" or lower(family.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+        querySb.append(" where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
+        querySb.append(" or lower(family.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
 
         List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
 
@@ -225,15 +225,15 @@ public class XWikiFamilyExport
         StringBuilder querySb = new StringBuilder();
         querySb.append("from doc.object(PhenoTips.PatientClass) as patient, ");
         querySb.append(" doc.object(PhenoTips.FamilyReference) as familyref ");
-        querySb.append("  where lower(doc.name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
-        querySb.append(" or lower(patient.external_id) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+        querySb.append("  where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
+        querySb.append(" or lower(patient.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
 
         boolean usePatientName = this.configuration.getActiveConfiguration().getEnabledFieldNames()
             .contains(FIRST_NAME);
         if (usePatientName)
         {
-            querySb.append(" or lower(patient.first_name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
-            querySb.append(" or lower(patient.last_name) like :").append(XWikiFamilyExport.INPUT_PARAMETER);
+            querySb.append(" or lower(patient.first_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
+            querySb.append(" or lower(patient.last_name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         }
 
         List<String> queryResults = runQuery(querySb.toString(), input, resultsLimit);
@@ -261,7 +261,7 @@ public class XWikiFamilyExport
 
     private List<String> runQuery(String queryString, String input, int resultsLimit)
     {
-        String formattedInput = String.format(XWikiFamilyExport.INPUT_FORMAT, input);
+        String formattedInput = String.format(PhenotipsFamilyExport.INPUT_FORMAT, input);
 
         // Query patients
         Query query = null;
@@ -269,7 +269,7 @@ public class XWikiFamilyExport
         try {
             query = this.qm.createQuery(queryString, Query.XWQL);
             query.setLimit(resultsLimit);
-            query.bindValue(XWikiFamilyExport.INPUT_PARAMETER, formattedInput);
+            query.bindValue(PhenotipsFamilyExport.INPUT_PARAMETER, formattedInput);
             queryResults = query.execute();
         } catch (QueryException e) {
             this.logger.error("Error while performing patiets query: [{}] ", e.getMessage());
