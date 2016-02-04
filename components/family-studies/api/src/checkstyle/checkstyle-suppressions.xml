@@ -25,5 +25,5 @@
 <suppressions>
   <suppress checks="ClassDataAbstractionCoupling" files="PedigreeUtils.java"/>
   <suppress checks="ClassFanOutComplexityCheck" files="PedigreeUtils.java"/>
-  <suppress checks="ReturnCount" files="XWikiFamily.java"/>
+  <suppress checks="ReturnCount" files="PhenotipsFamily.java"/>
 </suppressions>

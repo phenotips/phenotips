@@ -23,7 +23,7 @@ import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Pedigree;
-import org.phenotips.studies.family.internal.export.XWikiFamilyExport;
+import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
@@ -54,7 +54,7 @@ public class FamilyScriptService implements ScriptService
     private PatientRepository patientRepository;
 
     @Inject
-    private XWikiFamilyExport familyExport;
+    private PhenotipsFamilyExport familyExport;
 
     @Inject
     private AuthorizationService authorizationService;
