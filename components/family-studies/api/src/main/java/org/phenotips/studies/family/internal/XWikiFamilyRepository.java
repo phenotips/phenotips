@@ -141,6 +141,9 @@ public class XWikiFamilyRepository implements FamilyRepository
      */
     public Family getFamilyForPatient(Patient patient)
     {
+        if (patient == null) {
+            return null;
+        }
         String patientId = patient.getId();
         XWikiDocument patientDocument = null;
         try {
