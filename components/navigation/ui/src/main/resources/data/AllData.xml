@@ -115,14 +115,18 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #elseif (!$hasAdmin)
   #set ($groups = $services.groups.getGroupsForUser($xcontext.userReference))
-  #if ($xcontext.userReference)
-    #set ($discard = $groups.add($xcontext.userReference))
+  #set ($groupsAndSelf = [])
+  #foreach($g in $groups)
+    #set ($discard = $groupsAndSelf.add($g))
   #end
-  #set ($groups = "('${stringtool.join($groups, ""','"")}')")
+  #if ($xcontext.userReference)
+    #set ($discard = $groupsAndSelf.add($xcontext.userReference))
+  #end
+  #set ($groupsAndSelf = "('${stringtool.join($groupsAndSelf, ""','"")}')")
   #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
   #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ")
-  #set ($ownerCondition = "(accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups})")
-  #set ($collaboratorCondition = "(accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groups})")
+  #set ($ownerCondition = "(accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groupsAndSelf})")
+  #set ($collaboratorCondition = "(accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groupsAndSelf})")
   #set ($publicVisibilityPatients = "(accessObj.className = 'PhenoTips.VisibilityClass' and accessProp.value in ('public', 'open'))")
   #set ($filterWhere = "${filterWhere} and (${ownerCondition} or ${collaboratorCondition} or ${publicVisibilityPatients}")
   ##
