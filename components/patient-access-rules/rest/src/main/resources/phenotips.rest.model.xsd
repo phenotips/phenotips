@@ -70,6 +70,8 @@
       <extension base="phenotips:LinkCollection">
         <sequence>
           <element name="level" type="string"/>
+          <element name="label" type="string"/>
+          <element name="description" type="string"/>
         </sequence>
       </extension>
     </complexContent>
@@ -79,7 +81,7 @@
     <complexContent>
       <extension base="phenotips:LinkCollection">
         <sequence>
-          <element name="level" type="string" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="visibility" type="phenotips:VisibilitySummary" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>
@@ -109,7 +111,7 @@
 
   <element name="collaboratorRepresentation" type="phenotips:CollaboratorSummary"/>
 
-  <element name="patientVisibilityRepresentation" type="phenotips:VisibilitySummary"/>
+  <element name="visibilityRepresentation" type="phenotips:VisibilitySummary"/>
 
   <element name="collaboratorsRepresentation" type="phenotips:UserCollection"/>
 

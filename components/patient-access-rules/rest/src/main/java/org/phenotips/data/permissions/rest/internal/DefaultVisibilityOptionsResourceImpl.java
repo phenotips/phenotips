@@ -19,13 +19,18 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityOptionsResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
+import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.rest.XWikiResource;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,16 +50,19 @@ public class DefaultVisibilityOptionsResourceImpl extends XWikiResource implemen
     @Inject
     private PermissionsManager manager;
 
+    @Inject
+    private DomainObjectFactory factory;
+
     @Override
     public VisibilityOptionsRepresentation getVisibilityOptions()
     {
         // todo. should this be world-visible?
 
-        VisibilityOptionsRepresentation result = new VisibilityOptionsRepresentation();
+        List<VisibilityRepresentation> visibilities = new LinkedList<>();
         for (Visibility visibility : this.manager.listVisibilityOptions()) {
-            result.withLevels(visibility.getName());
+            visibilities.add(this.factory.createVisibilityRepresentation(visibility));
         }
-
+        VisibilityOptionsRepresentation result = (new VisibilityOptionsRepresentation()).withVisibilities(visibilities);
         result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
         return result;
     }

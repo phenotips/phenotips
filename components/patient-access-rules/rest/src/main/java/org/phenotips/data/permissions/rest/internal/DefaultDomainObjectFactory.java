@@ -30,8 +30,8 @@ import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
-import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
 import org.phenotips.data.rest.model.UserSummary;
+import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -181,16 +181,25 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
     }
 
     @Override
-    public PatientVisibilityRepresentation createPatientVisibilityRepresentation(Patient patient)
+    public VisibilityRepresentation createVisibilityRepresentation(Patient patient)
     {
-        PatientVisibilityRepresentation result = new PatientVisibilityRepresentation();
         // todo. is this allowed?
         PatientAccess patientAccess = new SecurePatientAccess(this.manager.getPatientAccess(patient), this.manager);
         Visibility visibility = patientAccess.getVisibility();
 
-        result.withLevel(visibility.getName());
+        return this.createVisibilityRepresentation(visibility);
+    }
 
-        return result;
+    @Override
+    public VisibilityRepresentation createVisibilityRepresentation(Visibility visibility)
+    {
+        if (visibility == null) {
+            return null;
+        }
+        return (new VisibilityRepresentation())
+                .withLevel(visibility.getName())
+                .withLabel(visibility.getLabel())
+                .withDescription(visibility.getDescription());
     }
 
     @Override
