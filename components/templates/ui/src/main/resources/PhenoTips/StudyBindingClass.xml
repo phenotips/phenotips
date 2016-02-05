@@ -56,7 +56,7 @@
 #set ($boundTemplate = $boundTemplate.getProperty('templateReference').value)
 #if ($mode == 'edit')
    #if ("$!request.input" == '')
-      #set ($templates = $services.templates.getAllTemplatesForUser())
+      #set ($templates = $services.templates.getAllTemplates())
    #else
       #set ($templates = $services.projects.getTemplatesForProjects($request.input))
    #end

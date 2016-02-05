@@ -17,8 +17,6 @@
  */
 package org.phenotips.templates.internal;
 
-import org.phenotips.groups.Group;
-import org.phenotips.groups.GroupManager;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
@@ -26,8 +24,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-import org.xwiki.users.User;
-import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,44 +66,18 @@ public class TemplatesRepository
     @Inject
     private Provider<XWikiContext> contextProvider;
 
-    @Inject
-    private UserManager userManager;
-
-    @Inject
-    private GroupManager groupManager;
-
     /**
-     * Returns a collection of templates that are available for the user. The
-     * list is compiled based on the system property of templates visibility. If
-     * templates are unrestricted, all templates will be returned. If the
-     * templates are available based on group visibility, then only templates
-     * for which the current user has permission will be returned.
-     *
-     * @return a collection of templates
+     * @return all templates
      */
-    public List<Template> getAllTemplatesForUser() {
-        List<Template> templatesList = null;
-        if (this.isTemplatesAccessUnrestricted()) {
-            templatesList = this.getAllTemplates();
-        } else {
-            templatesList = new ArrayList<Template>();
-            User currentUser = this.userManager.getCurrentUser();
-            for (Group group : this.groupManager.getGroupsForUser(currentUser)) {
-                for (Template templates : group.getTemplates()) {
-                    if (!templatesList.contains(templates)) {
-                        templatesList.add(templates);
-                    }
-                }
-            }
-        }
-
-        Collections.sort(templatesList, new Comparator<Template>() {
+    public List<Template> getAllTemplates() {
+        List<Template> templates = this.queryTemplates(null, -1);
+        Collections.sort(templates, new Comparator<Template>() {
             @Override
             public int compare(Template o1, Template o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        return templatesList;
+        return templates;
     }
 
     /**
@@ -168,10 +138,6 @@ public class TemplatesRepository
         } else {
             return null;
         }
-    }
-
-    private List<Template> getAllTemplates() {
-        return this.queryTemplates(null, -1);
     }
 
     private List<Template> queryTemplates(String input, int resultsLimit)

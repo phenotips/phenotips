@@ -38,7 +38,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ($services.templates.getAllTemplatesForUser().size() &gt; 0)
+#if ($services.templates.getAllTemplates().size() &gt; 0)
 ; $services.localization.render('phenotips.templateBindingSheet.selectTemplate')
 #if ($doc.getObject('PhenoTips.StudyBindingClass'))
 : $doc.getObject('PhenoTips.StudyBindingClass').studyReference
