@@ -55,17 +55,10 @@ public class TemplatesScriptService implements ScriptService
     }
 
     /**
-     * Returns a collection of templates that are available for the user. The
-     * list is compiled based on the system property of templates visibility. If
-     * templates are unrestricted, all templates will be returned. If the
-     * templates are available based on group visibility, then only templates
-     * for which the current user has permission will be returned.
-     *
-     * @return a collection of templates
+     * @return a collection of all templates
      */
-    public Collection<Template> getAllTemplatesForUser()
-    {
-        return templatesRepository.getAllTemplatesForUser();
+    public Collection<Template> getAllTemplates() {
+        return templatesRepository.getAllTemplates();
     }
 
     /**
