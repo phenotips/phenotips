@@ -24,10 +24,10 @@ import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
-import org.phenotips.data.permissions.rest.internal.utils.UserOrGroupResolver;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.UserSummary;
+import org.phenotips.groups.UserOrGroupResolver;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
