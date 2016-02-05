@@ -242,6 +242,8 @@ $xwiki.jsx.use('PhenoTips.CreatePatientRecordForm')##
        formDataWrapper.insert(projectsSection);
        var templatesSection = new Element('div', {id : templatesSectionId});
        formDataWrapper.insert(templatesSection);
+       __this._messages = new Element('div', {id : 'manager-messages'});
+       formDataWrapper.insert(__this._messages);
 
        __this.newPatientForm.select('input[type="hidden"]').each(function(item) {
           formDataWrapper.insert(new Element('input', {type : item.type, name: item.name, value: item.value}));
