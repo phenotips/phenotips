@@ -135,9 +135,7 @@
 #set ($groupsCondition = " accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups} ")
 #set ($sharedDataCondition = "and ${notInMyDataCondition} and ( ")
 #set ($sharedDataCondition = "${sharedDataCondition} (${collaboratorCondition}) ")
-#if ($groups.size() &gt; 0)
-   #set ($sharedDataCondition = "${sharedDataCondition} or (${groupsCondition}) ")
-#end
+#set ($sharedDataCondition = "${sharedDataCondition} or (${groupsCondition}) ")
 #if (${projectsCondition})
    #set ($sharedDataCondition = "${sharedDataCondition} or (${projectsCondition}) ")
 #end
