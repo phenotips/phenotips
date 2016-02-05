@@ -59,6 +59,9 @@
       #set ($templates = $services.templates.getAllTemplates())
    #else
       #set ($templates = $services.projects.getTemplatesForProjects($request.input))
+      #if ($templates.size() == 0)
+         #set ($templates = $services.templates.getAllTemplates())
+      #end
    #end
    &lt;select id="templatesSelect"&gt;
       &lt;div class="form-template-option"&gt;
