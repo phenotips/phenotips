@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.data.permissions.rest.internal.utils;
+package org.phenotips.groups;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.EntityReference;
