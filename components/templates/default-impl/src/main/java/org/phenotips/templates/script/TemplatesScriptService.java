@@ -70,3 +70,4 @@ public class TemplatesScriptService implements ScriptService
         return new DefaultTemplate(templateId);
     }
 }
+
