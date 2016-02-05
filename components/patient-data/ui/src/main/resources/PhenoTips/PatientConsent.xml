@@ -434,7 +434,8 @@
           if (consent.status == "yes") {
             checkbox.attr("checked", "checked");
           }
-          return this.displayConsentDescription(consent).prepend(checkbox);
+          var label = "&lt;label&gt;&lt;/label&gt;";
+          return this.displayConsentDescription(consent).prepend(checkbox).wrapInner(label);
         },
 
         displayWarning: function (consentsBlock, grantedConsents)
