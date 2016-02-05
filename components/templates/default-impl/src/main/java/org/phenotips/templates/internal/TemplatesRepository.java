@@ -20,7 +20,6 @@ package org.phenotips.templates.internal;
 import org.phenotips.templates.data.Template;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -31,16 +30,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -56,15 +48,11 @@ public class TemplatesRepository
 
     private static final String MATCHED_TEMPLATES = "matchedTemplates";
 
-    private static final String UNRESTRICTED_TEMPLATES_ACCESS = "unrestricted";
     @Inject
     private QueryManager qm;
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private Provider<XWikiContext> contextProvider;
 
     /**
      * @return all templates
@@ -105,39 +93,6 @@ public class TemplatesRepository
         JSONObject result = new JSONObject();
         result.put(MATCHED_TEMPLATES, templatesArray);
         return result.toString();
-    }
-
-    /**
-     * @return true is access to templates is unrestricted (and not by group subscription).
-     */
-    public boolean isTemplatesAccessUnrestricted()
-    {
-        return UNRESTRICTED_TEMPLATES_ACCESS.equals(this.getTemplatesSubmissionPreference());
-    }
-
-    /**
-     * @return value of templates submission preference property
-     */
-    public String getTemplatesSubmissionPreference()
-    {
-        XWikiContext xContext = this.contextProvider.get();
-        XWiki xwiki = xContext.getWiki();
-        XWikiDocument prefsDoc = null;
-        String objectsSpace = "XWiki";
-        try {
-            DocumentReference prefsref = new DocumentReference(xContext.getWikiId(), objectsSpace, "XWikiPreferences");
-            prefsDoc = xwiki.getDocument(prefsref, xContext);
-        } catch (XWikiException e) {
-            this.logger.error("Error reading templates submission preferences.", e.getMessage());
-            return null;
-        }
-        DocumentReference confRef = new DocumentReference(xContext.getWikiId(), objectsSpace, "ConfigurationClass");
-        BaseObject result = prefsDoc.getXObject(confRef, "property", "study-visibility-option");
-        if (result != null) {
-            return result.getStringValue("value");
-        } else {
-            return null;
-        }
     }
 
     private List<Template> queryTemplates(String input, int resultsLimit)
