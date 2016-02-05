@@ -17,7 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
-import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
+import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Role;
 
@@ -48,7 +48,7 @@ public interface VisibilityResource
      * @param patientId identifier of the patient whose visibility to retrieve
      * @return a representation of {@link Visibility} of the patient
      */
-    @GET PatientVisibilityRepresentation getVisibility(@PathParam("patient-id") String patientId);
+    @GET VisibilityRepresentation getVisibility(@PathParam("patient-id") String patientId);
 
     /**
      * Updates the visibility of a patient. If the indicated patient record doesn't exist, or if the user sending the

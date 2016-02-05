@@ -19,10 +19,11 @@ package org.phenotips.data.permissions.rest;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
-import org.phenotips.data.rest.model.PatientVisibilityRepresentation;
 import org.phenotips.data.rest.model.UserSummary;
+import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -56,7 +57,16 @@ public interface DomainObjectFactory
      * @return a summary of the patient record's visibility, or {@code null} if the current user doesn't have access to
      * the patient or accessing the patient data fails
      */
-    PatientVisibilityRepresentation createPatientVisibilityRepresentation(Patient patient);
+    VisibilityRepresentation createVisibilityRepresentation(Patient patient);
+
+    /**
+     * Create the REST representation for a {@link org.phenotips.data.permissions.Visibility}'s summary, starting from a
+     * {@link Visibility} instance.
+     *
+     * @param visibility of interest
+     * @return a summary of the visibility, or {@code null} if the visibility is null
+     */
+    VisibilityRepresentation createVisibilityRepresentation(Visibility visibility);
 
     /**
      * Create the REST representation for a list of {@link Collaborators}, starting from a {@link Patient} instance.
