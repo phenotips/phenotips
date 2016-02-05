@@ -116,9 +116,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
 #elseif (!$hasAdmin)
   #set ($groups = $services.groups.getGroupsForUser($xcontext.userReference))
   #set ($groupsAndSelf = [])
-  #foreach($g in $groups)
-    #set ($discard = $groupsAndSelf.add($g))
-  #end
+  #set ($discard = $groupsAndSelf.addAll($groups))
   #if ($xcontext.userReference)
     #set ($discard = $groupsAndSelf.add($xcontext.userReference))
   #end
