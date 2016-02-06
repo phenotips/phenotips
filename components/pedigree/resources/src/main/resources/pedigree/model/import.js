@@ -209,8 +209,9 @@ define([
 
         // first pass: add all vertices and assign vertex IDs
         for (var i = 0; i < inputLines.length; i++) {
-            if (inputLines[i].charAt(0) == '#')
+            if (inputLines[i].charAt(0) == '#') {
                 continue;
+            }
 
             inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
             inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
@@ -231,19 +232,22 @@ define([
             }
 
             var pedID = parts[1];
-            if (nameToId.hasOwnProperty(pedID))
+            if (nameToId.hasOwnProperty(pedID)) {
                 throw "Multiple persons with the same ID [" + pedID + "]";
+            }
 
             var genderValue = postMakeped ? parts[7] : parts[4];
             var gender = "U";
-            if (genderValue == 1)
+            if (genderValue == 1) {
                 gender = "M";
-            else if (genderValue == 2)
+            } else if (genderValue == 2) {
                 gender = "F";
+            }
             var properties = {"gender": gender};
 
-            if (saveIDAsExternalID)
+            if (saveIDAsExternalID) {
                 properties["externalID"] = pedID;
+            }
 
             var useID = (postMakeped && parts[8] == 1) ? 0 : nextID++;
             if (i == inputLines.length-1 && newG.v[0] === undefined) {
@@ -296,8 +300,9 @@ define([
 
         // second pass (once all vertex IDs are known): process edges
         for (var i = 0; i < inputLines.length; i++) {
-            if (inputLines[i].charAt(0) == '#')
+            if (inputLines[i].charAt(0) == '#') {
                 continue;
+            }
 
             var parts = inputLines[i].split(/\s+/);
 
@@ -309,12 +314,14 @@ define([
                 var disorder = disorderNames.hasOwnProperty(phenotype) ? disorderNames[phenotype] : "affected";
                 newG.properties[id]["carrierStatus"] = 'affected';
                 newG.properties[id]["disorders"]     = [disorder];
-                if (markEvaluated)
+                if (markEvaluated) {
                     newG.properties[id]["evaluated"] = true;
+                }
             } else if (unaffectedValues.hasOwnProperty(phenotype)) {
                 newG.properties[id]["carrierStatus"] = '';
-                if (markEvaluated)
+                if (markEvaluated) {
                     newG.properties[id]["evaluated"] = true;
+                }
             } else if (!missingValues.hasOwnProperty(phenotype)) {
                 //treat all unsupported values as "unknown/no evaluation"
                 //throw "Individual with ID [" + thisPersonName + "] has unsupported phenotype value [" + phenotype + "]";
@@ -338,8 +345,9 @@ define([
                 if (typeof fatherID === 'undefined') {
                     throw "Unable to import pedigree: incorrect father link on line " + (i+1) + "; Maybe import data is not in PED format?";
                 }
-                if (newG.properties[fatherID].gender == "F")
+                if (newG.properties[fatherID].gender == "F") {
                     throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+thisPersonName+"]";
+                }
             }
             if (motherID == 0) {
                 motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
@@ -348,8 +356,9 @@ define([
                 if (typeof motherID === 'undefined') {
                     throw "Unable to import pedigree: incorrect mother link on line " + (i+1) + "; Maybe import data is not in PED format?";
                 }
-                if (newG.properties[motherID].gender == "M")
+                if (newG.properties[motherID].gender == "M") {
                     throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+thisPersonName+"]";
+                }
             }
 
             // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
