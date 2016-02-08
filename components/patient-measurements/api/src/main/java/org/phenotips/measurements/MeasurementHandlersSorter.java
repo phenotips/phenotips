@@ -32,14 +32,14 @@ import java.util.Comparator;
 public interface MeasurementHandlersSorter
 {
     /**
-     * @return a comparator instance for measurement handler objects. The configuration will be reloaded prior to the
-     * instance being returned.
+     * @return a comparator instance for measurement handler objects. The comparator will sort based on the configured
+     * measurement ordering.
      */
     Comparator<MeasurementHandler> getMeasurementHandlerComparator();
 
     /**
-     * @return a comparator instance for measurement names. The configuration will be reloaded prior to the instance
-     * being returned.
+     * @return a comparator instance for measurement names. The comparator will sort based on the configured measurement
+     * ordering.
      */
     Comparator<String> getMeasurementNameComparator();
 }

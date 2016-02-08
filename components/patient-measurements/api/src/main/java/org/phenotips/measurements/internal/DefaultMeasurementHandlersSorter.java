@@ -118,7 +118,8 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
     }
 
     /**
-     * @return the singleton instance of the measurement handler comparator.
+     * @return the singleton instance of the measurement handler comparator, reloading the configuration prior to
+     * returning.
      */
     public MeasurementHandlerComparator getMeasurementHandlerComparator()
     {
@@ -128,7 +129,8 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
     }
 
     /**
-     * @return the singleton instance of the measurement name comparator.
+     * @return the singleton instance of the measurement name comparator, reloading the configuration prior to
+     * returning.
      */
     public MeasurementNameComparator getMeasurementNameComparator()
     {
