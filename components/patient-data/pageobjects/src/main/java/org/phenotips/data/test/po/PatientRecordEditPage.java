@@ -623,9 +623,6 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(id = "PhenoTips.PatientClass_0_solved__pubmed_id")
     private WebElement pubmedID;
 
-    @FindBy(css = ".fieldset.solved__gene_id input.suggested")
-    private WebElement geneID;
-
     @FindBy(id = "PhenoTips.PatientClass_0_solved__notes")
     private WebElement resolutionNotes;
 
@@ -951,8 +948,6 @@ public class PatientRecordEditPage extends InlinePage
     {
         this.pubmedID.clear();
         this.pubmedID.sendKeys(pID);
-        this.geneID.clear();
-        this.geneID.sendKeys(gID);
         this.resolutionNotes.clear();
         this.resolutionNotes.sendKeys(notes);
     }
@@ -1122,21 +1117,6 @@ public class PatientRecordEditPage extends InlinePage
     {
         this.genotypeInformationSectionHeading.click();
     }
-
-    ///////////////////////////////////
-
-    // public void setGenotypeInformationComments(String value)
-    // {
-    // this.getDriver().waitUntilElementIsVisible(By.id("PhenoTips.InvestigationClass_0_comments"));
-    // this.genotypeInformationComments.clear();
-    // this.genotypeInformationComments.sendKeys(value);
-    // }
-
-    // public void setGenotypeInformationGene(String value)
-    // {
-    // this.genotypeInformationGene.clear();
-    // this.genotypeInformationGene.sendKeys(value);
-    // }
 
     public void setPatientClinicallyNormal()
     {

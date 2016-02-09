@@ -4888,7 +4888,8 @@ h1, h2, h3, h4 {
     <property>
       <code>#template('colorThemeInit.vm')
 .LV_validation_message {
-  position: static !important;
+  position: absolute;
+  display: block;
 }
 .LV_valid:empty {
   display: none;
