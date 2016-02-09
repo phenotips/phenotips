@@ -56,6 +56,10 @@ public class ProjectAuthorizationModule implements AuthorizationModule
     @Inject
     private ProjectsRepository projectsRepository;
 
+    @Inject
+    @Named("leader")
+    private AccessLevel leaderAccessLevel;
+
     @Override
     public int getPriority() {
         return 105;
@@ -82,19 +86,10 @@ public class ProjectAuthorizationModule implements AuthorizationModule
         Collection<Project> projects = this.ptBinder.getProjectsForPatient(patient);
         for (Project project : projects) {
 
-            if (project.isProjectOpenForContribution()) {
-                return true;
-            }
-
-            if (project.isProjectOpenForViewing() && access.isReadOnly()) {
-                return true;
-            }
-
             Collection<Collaborator> collaborators = project.getCollaborators();
             for (Collaborator collaborator : collaborators) {
-                if (collaborator.isUserIncluded(user)) {
-                    return true;
-                }
+                return collaborator.isUserIncluded(user)
+                    && this.leaderAccessLevel.equals(collaborator.getAccessLevel());
             }
         }
         return null;
@@ -102,7 +97,7 @@ public class ProjectAuthorizationModule implements AuthorizationModule
 
     private Boolean hasAccess(User user, Right access, Project project) {
 
-        if ((project.isProjectOpenForContribution() || project.isProjectOpenForViewing()) && access.isReadOnly()) {
+        if (project.isProjectOpenForContribution() && access.isReadOnly()) {
             return true;
         }
 
