@@ -142,13 +142,6 @@ public interface Project
     AccessLevel getCurrentUserAccessLevel();
 
     /**
-     * Return true if the project is open for viewing by all users.
-     *
-     * @return true if the project is open for viewing by all users.
-     */
-    boolean isProjectOpenForViewing();
-
-    /**
      * Return true if the project is open for contribution by all users.
      *
      * @return true if the project is open for contribution by all users.
