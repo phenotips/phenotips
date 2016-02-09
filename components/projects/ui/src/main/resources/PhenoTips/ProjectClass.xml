@@ -61,20 +61,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </openProjectForContribution>
-    <openProjectForViewing>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>openProjectForViewing</name>
-      <number>3</number>
-      <prettyName>openProjectForViewing</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </openProjectForViewing>
     <templates>
       <cache>0</cache>
       <classname/>

@@ -228,12 +228,12 @@
 #if ("$!value" == '')
   #set ($value = '')
 #end
-&lt;select name="${object.getxWikiClass().name}_${object.number}_${name}" id="${object.getxWikiClass().name}_${object.number}_${name}">
-  #if ($editor != 'globaladmin')&lt;option value=""#if ($value == '') selected="selected"#end>---&lt;/option>#end
+&lt;select name="${object.getxWikiClass().name}_${object.number}_${name}" id="${object.getxWikiClass().name}_${object.number}_${name}"&gt;
+  #if ($editor != 'globaladmin')&lt;option value=""#if ($value == '') selected="selected"#end&gt;---&lt;/option&gt;#end
 #foreach($theme in $xwiki.wrapDocs($services.query.hql(", BaseObject as theme where doc.fullName=theme.name and theme.className='ColorThemes.ColorThemeClass' and doc.fullName&lt;&gt;'ColorThemes.ColorThemeTemplate' order by doc.title").execute()))
-  &lt;option value="$theme.fullName"#if ($theme.fullName.equals($value)) selected="selected"#end>$theme.plainTitle&lt;/option>
+  &lt;option value="$theme.fullName"#if ($theme.fullName.equals($value)) selected="selected"#end&gt;$theme.plainTitle&lt;/option&gt;
 #end
-&lt;/select>
+&lt;/select&gt;
 {{/html}}
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -323,16 +323,16 @@
 #if ("$!value" == '')
   #set ($value = $xwiki.getDefaultDocumentSyntax())
 #end
-&lt;select name="${object.getxWikiClass().name}_${object.number}_${name}" id="${object.getxWikiClass().name}_${object.number}_${name}">
+&lt;select name="${object.getxWikiClass().name}_${object.number}_${name}" id="${object.getxWikiClass().name}_${object.number}_${name}"&gt;
 #set ($configuredSyntaxes = $xwiki.getConfiguredSyntaxes())
 #set ($availableParserSyntaxes = $services.rendering.getAvailableParserSyntaxes())
 ##
 #foreach($syntax in $availableParserSyntaxes)
   #if($configuredSyntaxes.contains($syntax.toIdString()))
-    &lt;option value="$syntax.toIdString()"#if($syntax.toIdString().equalsIgnoreCase($value)) selected="selected"#end>$syntax.toString()&lt;/option>
+    &lt;option value="$syntax.toIdString()"#if($syntax.toIdString().equalsIgnoreCase($value)) selected="selected"#end&gt;$syntax.toString()&lt;/option&gt;
   #end
 #end
-&lt;/select>
+&lt;/select&gt;
 {{/html}}
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
@@ -1184,14 +1184,14 @@
       #if ($xcontext.action == 'admin' || $xcontext.action == 'edit' || $xcontext.action == 'inline')
         {{html}}
           #if($xwiki.jodatime)
-            &lt;select id='$prefix$name' name='$prefix$name'>
-              &lt;option value="" #if($value == $tz)selected="selected"#end>$services.localization.render('XWiki.XWikiPreferences_timezone_default')&lt;/option>
+            &lt;select id='$prefix$name' name='$prefix$name'&gt;
+              &lt;option value="" #if($value == $tz)selected="selected"#end&gt;$services.localization.render('XWiki.XWikiPreferences_timezone_default')&lt;/option&gt;
               #foreach($tz in $xwiki.jodatime.getServerTimezone().getAvailableIDs())
-                &lt;option value="$tz" #if($value == $tz)selected="selected"#end>$tz&lt;/option>
+                &lt;option value="$tz" #if($value == $tz)selected="selected"#end&gt;$tz&lt;/option&gt;
               #end
-            &lt;/select>
+            &lt;/select&gt;
           #else
-            &lt;input id='$prefix$name' name='$prefix$name' type="text" value="$!value"/>
+            &lt;input id='$prefix$name' name='$prefix$name' type="text" value="$!value"/&gt;
           #end
         {{/html}}
       #else

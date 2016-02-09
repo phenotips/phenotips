@@ -60,8 +60,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.projectDescription.hint')
 : {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="2" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
 
-$doc.display('openProjectForViewing') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
-
 ##
 ## Contributors section
 ##
@@ -118,10 +116,6 @@ $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.locali
 #if ($doc.content != '')
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.projectDescription')&lt;/label&gt;{{/html}}
 : $!escapetool.html($doc.content)
-#end
-
-#if ($doc.openProjectForViewing == 'Yes')
-{{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForViewing')&lt;/label&gt;{{/html}}
 #end
 
 ##

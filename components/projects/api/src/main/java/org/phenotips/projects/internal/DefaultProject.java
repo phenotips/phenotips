@@ -153,13 +153,6 @@ public class DefaultProject implements Project
     }
 
     @Override
-    public boolean isProjectOpenForViewing() {
-        BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
-        int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_VIEWING_KEY);
-        return openIntValue == 1;
-    }
-
-    @Override
     public boolean isProjectOpenForContribution() {
         BaseObject xObject = this.projectObject.getXObject(Project.CLASS_REFERENCE);
         int openIntValue = xObject.getIntValue(DefaultProject.OPEN_FOR_CONTRIBUTION_KEY);

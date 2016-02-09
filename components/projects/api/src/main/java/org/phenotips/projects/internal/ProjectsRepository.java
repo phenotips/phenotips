@@ -131,31 +131,9 @@ public class ProjectsRepository
      */
     public Collection<Project> getAllProjectsWithViewingRights()
     {
-        Collection<Project> projects = this.getAllProjectsWithContributionRights();
-
-        for (Project p : this.getAllProjectsOpenForViewing()) {
-            if (!projects.contains(p)) {
-                projects.add(p);
-            }
-        }
-        return projects;
-    }
-
-    /**
-     * Returns a collection of projects that are open for viewing by all users.
-     *
-     * @return a collection of projects that are open for viewing by all users
-     */
-    public Collection<Project> getAllProjectsOpenForViewing() {
-        Collection<Project> projects = this.getAllProjects();
-        Iterator<Project> projectIterator = projects.iterator();
-        while (projectIterator.hasNext()) {
-            Project project = projectIterator.next();
-            if (!project.isProjectOpenForViewing()) {
-                projectIterator.remove();
-            }
-        }
-        return projects;
+        Set<ProjectAccessLevel> accessLevels = new HashSet<>();
+        accessLevels.add(leaderAccessLevel);
+        return this.getAllProjects(accessLevels);
     }
 
     /**
