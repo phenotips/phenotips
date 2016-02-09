@@ -1013,8 +1013,8 @@ document.observe("xwiki:dom:loaded", function(){
   margin: 10px 10px 25px;
 }
 .designer-panel .new-section .section-title{
-  color $theme.titleColor;
-  text-transform: uppercase;
+  color: $theme.titleColor;
+  font-weight: bold;
   padding-left: 16px;
   background: transparent url("$xwiki.getSkinFile('icons/silk/bullet_add.png')") left center no-repeat;
 }
@@ -1090,8 +1090,8 @@ document.observe("xwiki:dom:loaded", function(){
 }
 
 .section-maquette .section-title {
-  color $theme.titleColor;
-  text-transform: uppercase;
+  color: $theme.titleColor;
+  font-weight: bold;
 }
 .section-maquette .section-title * {
   margin: 0 !important;
