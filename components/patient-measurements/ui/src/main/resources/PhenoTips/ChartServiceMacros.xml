@@ -235,7 +235,14 @@ $format##
   ## ---------------------------------------------------------
   ## Generate all the charts for all the available data
   ## ---------------------------------------------------------
-  #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+  #set ($measurementsConfigDoc = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())##
+  #if ($measurementsConfigDoc.size() &gt; 0)
+    #set ($measurementsConfigDoc = $measurementsConfigDoc.get(0))##
+    #set ($orderedMeasurements = $measurementsConfigObj.getProperty('ordering').value)##
+  #else
+    #set ($orderedMeasurements = $services.measurements.getAvailableMeasurementNames())##
+  #end
+  #foreach ($measurementName in $orderedMeasurements)))
     #_generateCharts($measurements.get($measurementName), $measurementName)
   #end
 #end
