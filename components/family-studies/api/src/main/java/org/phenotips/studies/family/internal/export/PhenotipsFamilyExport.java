@@ -181,9 +181,9 @@ public class PhenotipsFamilyExport
         User currentUser = this.userManager.getCurrentUser();
         JSONObject permissionJSON = new JSONObject();
         permissionJSON.put("hasEdit",
-                           this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument()));
+            this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument()));
         permissionJSON.put("hasView",
-                           this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument()));
+            this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocument()));
         patientJSON.put(PERMISSIONS, permissionJSON);
 
         return patientJSON;
@@ -210,7 +210,7 @@ public class PhenotipsFamilyExport
 
             Right right = Right.toRight(requiredPermissions);
             if (!this.authorizationService.hasAccess(
-                    this.userManager.getCurrentUser(), right, family.getDocumentReference()))
+                this.userManager.getCurrentUser(), right, family.getDocumentReference()))
             {
                 continue;
             }
@@ -224,7 +224,7 @@ public class PhenotipsFamilyExport
     {
         StringBuilder querySb = new StringBuilder();
         querySb.append("from doc.object(PhenoTips.PatientClass) as patient, ");
-        querySb.append(" doc.object(PhenoTips.FamilyReference) as familyref ");
+        querySb.append(" doc.object(PhenoTips.FamilyReferenceClass) as familyref ");
         querySb.append("  where lower(doc.name) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
         querySb.append(" or lower(patient.external_id) like :").append(PhenotipsFamilyExport.INPUT_PARAMETER);
 

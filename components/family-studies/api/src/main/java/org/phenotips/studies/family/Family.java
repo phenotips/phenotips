@@ -42,12 +42,6 @@ public interface Family
     EntityReference DATA_SPACE = new EntityReference("Families", EntityType.SPACE);
 
     /**
-     * XClass that holds pedigree data (image, structure, etc).
-     */
-    EntityReference PEDIGREE_CLASS =
-        new EntityReference("PedigreeClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    /**
      * @return family id
      */
     String getId();
@@ -141,10 +135,10 @@ public interface Family
     void updatePermissions();
 
     /**
-    * Deletes the family.
-    *
-    * @param deleteAllMembers if true, also removes all member patients documents
-    * @return true if successful
-    */
+     * Deletes the family.
+     *
+     * @param deleteAllMembers if true, also removes all member patients documents
+     * @return true if successful
+     */
     boolean deleteFamily(boolean deleteAllMembers);
 }
