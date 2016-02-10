@@ -642,6 +642,7 @@ Template: ##
 (% class='buttonwrapper' %)[[{{icon name='copy' /}} ${template.getName()}&gt;&gt;$template.getId()||rel='__blank' class='button secondary']](%%)
   #end
 #end
+#if ($xcontext.action != 'export' &amp;&amp; $templates.size() + $projects.size() &gt; 0)
 #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
 (% class='buttonwrapper' %)##
 [[ {{icon name="edit" title="$services.localization.render('phenotips.templateBindingClass.changeTemplateButton.title')" /}}##
@@ -649,6 +650,7 @@ Template: ##
 &gt;&gt;path:$doc.getURL('get', "sheet='PhenoTips.CreatePatientRecordForm'&amp;faction=$!{faction}")||class="button" rel="__blank" id="pt-assignment-config" class="$xcontext.action"]]
 (%%)
 (%%)
+#end
 ##</content>
     </property>
     <property>
