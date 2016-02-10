@@ -241,7 +241,7 @@ public class PhenotipsFamily implements Family
             pedigree.removeLink(patientId);
             if (!setPedigreeObject(pedigree, false)) {
                 this.logger.error("Could not remove patient [{}] from pedigree for family [{}]",
-                        patientId, this.getId());
+                    patientId, this.getId());
                 return false;
             }
         }
@@ -255,7 +255,7 @@ public class PhenotipsFamily implements Family
     }
 
     private boolean savePatientDocument(XWikiDocument patientDocument, String documentHistoryComment,
-            String logActionDescription, XWikiContext context)
+        String logActionDescription, XWikiContext context)
     {
         try {
             context.getWiki().saveDocument(patientDocument, documentHistoryComment, context);
@@ -378,7 +378,7 @@ public class PhenotipsFamily implements Family
     @Override
     public Pedigree getPedigree()
     {
-        BaseObject pedigreeObj = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
+        BaseObject pedigreeObj = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
         if (pedigreeObj != null) {
             BaseStringProperty data = null;
             BaseStringProperty image = null;
@@ -415,7 +415,7 @@ public class PhenotipsFamily implements Family
         XWikiContext context = getXContext();
         XWiki wiki = context.getWiki();
 
-        BaseObject pedigreeObject = this.familyDocument.getXObject(Family.PEDIGREE_CLASS);
+        BaseObject pedigreeObject = this.familyDocument.getXObject(Pedigree.CLASS_REFERENCE);
         pedigreeObject.set(Pedigree.IMAGE, pedigree.getImage(null), context);
         pedigreeObject.set(Pedigree.DATA, pedigree.getData().toString(), context);
 

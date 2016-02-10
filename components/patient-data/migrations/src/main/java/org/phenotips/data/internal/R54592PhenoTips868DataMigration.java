@@ -17,12 +17,10 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.Constants;
+import org.phenotips.studies.family.Pedigree;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import java.util.List;
@@ -59,9 +57,6 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Singleton
 public class R54592PhenoTips868DataMigration extends AbstractHibernateDataMigration
 {
-    private static final EntityReference PEDIGREE_CLASS = new EntityReference("PedigreeClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
     @Named("current")
@@ -95,9 +90,6 @@ public class R54592PhenoTips868DataMigration extends AbstractHibernateDataMigrat
      */
     private class FixPedigreeImageCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
     {
-        /** The name of the property to fix. */
-        private static final String PROPERTY_NAME = "image";
-
         @Override
         public Object doInHibernate(Session session) throws HibernateException, XWikiException
         {
@@ -105,18 +97,19 @@ public class R54592PhenoTips868DataMigration extends AbstractHibernateDataMigrat
             XWiki xwiki = context.getWiki();
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o, LargeStringProperty p where"
-                    + " o.className = '" + R54592PhenoTips868DataMigration.this.serializer.serialize(PEDIGREE_CLASS)
-                    + "' and p.id.id = o.id and p.id.name = '" + PROPERTY_NAME + "' and p.value like '% \"width=\"%'");
+                    + " o.className = '"
+                    + R54592PhenoTips868DataMigration.this.serializer.serialize(Pedigree.CLASS_REFERENCE)
+                    + "' and p.id.id = o.id and p.id.name = '" + Pedigree.IMAGE + "' and p.value like '% \"width=\"%'");
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
             for (String docName : documents) {
                 XWikiDocument doc =
                     xwiki.getDocument(R54592PhenoTips868DataMigration.this.resolver.resolve(docName), context);
-                for (BaseObject object : doc.getXObjects(PEDIGREE_CLASS)) {
+                for (BaseObject object : doc.getXObjects(Pedigree.CLASS_REFERENCE)) {
                     if (object == null) {
                         continue;
                     }
-                    LargeStringProperty oldProperty = (LargeStringProperty) object.get(PROPERTY_NAME);
+                    LargeStringProperty oldProperty = (LargeStringProperty) object.get(Pedigree.IMAGE);
                     if (oldProperty == null || StringUtils.isBlank(oldProperty.getValue())) {
                         continue;
                     }

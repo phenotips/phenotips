@@ -17,6 +17,11 @@
  */
 package org.phenotips.studies.family;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
+
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -26,6 +31,12 @@ import net.sf.json.JSONObject;
  */
 public interface Pedigree
 {
+    /**
+     * XClass that holds pedigree data (image, structure, etc).
+     */
+    EntityReference CLASS_REFERENCE = new EntityReference("PedigreeClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /** Code for data. **/
     String DATA = "data";
 
@@ -42,8 +53,8 @@ public interface Pedigree
     /**
      * Getter for `image` string (SVG).
      *
-     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient.
-     *        May be null, in which case no patient would be highlighed as current.
+     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient. May be
+     *            null, in which case no patient would be highlighed as current.
      * @return can not be null
      */
     String getImage(String highlightCurrentPatientId);
@@ -51,8 +62,8 @@ public interface Pedigree
     /**
      * Getter for `image` string (SVG).
      *
-     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient.
-     *        May be null, in which case no patient would be highlighed as current.
+     * @param highlightCurrentPatientId id of the patient which should be highlighted as the current patient. May be
+     *            null, in which case no patient would be highlighed as current.
      * @param width sets the returned SVG width to this value. 0 or negative number means "leave as is".
      * @param height sets the returned SVG height to this value. 0 or negative number means "leave as is".
      * @return can not be null
