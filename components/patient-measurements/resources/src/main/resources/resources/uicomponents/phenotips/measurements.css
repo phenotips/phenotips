@@ -92,7 +92,7 @@
 .measurement-row span.unit {
   width: 60px;
 }
-.measurement-row span.pctl {
+.measurement-row span.feedback {
   font-size: 80%;
   width: 120px;
 }
