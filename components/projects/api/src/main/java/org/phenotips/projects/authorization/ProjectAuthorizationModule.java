@@ -88,8 +88,10 @@ public class ProjectAuthorizationModule implements AuthorizationModule
 
             Collection<Collaborator> collaborators = project.getCollaborators();
             for (Collaborator collaborator : collaborators) {
-                return collaborator.isUserIncluded(user)
-                    && this.leaderAccessLevel.equals(collaborator.getAccessLevel());
+                if (collaborator.isUserIncluded(user)
+                    && this.leaderAccessLevel.equals(collaborator.getAccessLevel())) {
+                    return true;
+                }
             }
         }
         return null;
