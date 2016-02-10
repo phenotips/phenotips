@@ -89,6 +89,8 @@ public class MeasurementsController implements PatientDataController<Measurement
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
+    private static final String ARMSPAN = "armspan";
+
     @Inject
     private Logger logger;
 
@@ -262,7 +264,8 @@ public class MeasurementsController implements PatientDataController<Measurement
         String sex = (sexData != null) ? sexData.getValue() : "";
         // ideally, the constants from the SexController should be used here,
         // but that would introduce a hard dependency. Maybe add it to constants?
-        if (StringUtils.equals(sex, maleConst) || StringUtils.equals(sex, femaleConst)) {
+        if (!entry.getType().equals(ARMSPAN)
+            && (StringUtils.equals(sex, maleConst) || StringUtils.equals(sex, femaleConst))) {
             // has to be either male or female, otherwise how can we compute SD?
             // finding the handler
             MeasurementHandler handler = getHandler(entry.getType(), handlers);
@@ -271,7 +274,7 @@ public class MeasurementsController implements PatientDataController<Measurement
             Integer percentile = handler.valueToPercentile(isMale, ageInMonths.floatValue(), entry.getValue());
 
             Map<String, Object> result = new HashMap<>();
-            result.put(SD, sd);
+            result.put(SD, sd.isNaN() ? "" : sd);
             result.put(PERCENTILE, percentile);
             return result;
         }

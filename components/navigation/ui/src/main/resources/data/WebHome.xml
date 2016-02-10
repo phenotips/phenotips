@@ -403,7 +403,7 @@ $!value
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>weight|height|bmi|sitting|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
+        <values>weight|height|bmi|sitting|armspan|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </ordering>
     </class>
@@ -425,6 +425,7 @@ $!value
         <value>bmi</value>
         <value>hc</value>
         <value>sitting</value>
+        <value>armspan</value>
         <value>ocd</value>
         <value>icd</value>
         <value>ipd</value>
@@ -446,6 +447,7 @@ $!value
         <value>bmi</value>
         <value>hc</value>
         <value>sitting</value>
+        <value>armspan</value>
         <value>ocd</value>
         <value>icd</value>
         <value>ipd</value>
