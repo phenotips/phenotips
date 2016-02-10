@@ -65,6 +65,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 ##
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.contributors')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.projectSheet.contributorsHint')
+: $doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
 : {{html clean="false"}}
 &lt;table id="contributorsTable"&gt;
    &lt;tfoot&gt;
@@ -75,9 +76,6 @@ $xwiki.jsx.use('PhenoTips.Widgets')
    &lt;tbody id="contributorslist"/&gt;
 &lt;/table&gt;
 {{/html}}
-
-$doc.display('openProjectForContribution') {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.openProjectForContribution')&lt;/label&gt;{{/html}}
-
 ##
 ## Leaders section
 ##
