@@ -1,5 +1,6 @@
 org.phenotips.measurements.script.MeasurementsScriptService
 org.phenotips.measurements.internal.DefaultMeasurementsChartConfigurationsFactory
+org.phenotips.measurements.internal.ArmspanMeasurementHandler
 org.phenotips.measurements.internal.BMIMeasurementHandler
 org.phenotips.measurements.internal.EarLengthMeasurementHandler
 org.phenotips.measurements.internal.FootLengthMeasurementHandler
