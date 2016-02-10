@@ -122,37 +122,37 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 #set ($objs = $services.query.xwql('from doc.object(PhenoTips.MeasurementsConfigurationClass) as obj').setLimit(1).execute())##
 #set ($itemDoc = $xwiki.getDocument($objs.get(0)))##
 #set ($configObj = $itemDoc.getObject('PhenoTips.MeasurementsConfigurationClass'))##
-#macro (measurement $handler $vals $proto)
+#macro (measurement $handler $vals $proto $set)
 #if (!$vals.isEmpty() || $xcontext.action == 'edit')
   #if ($handler.isDoubleSided())
     #if ($xcontext.action == 'edit' || $vals.get('l') || $vals.get('r'))
       (% class="measurement"%)(((
         #set ($needToShowName = true)
         #if ($vals.get('l')) 
-          #measurementRow($handler true 'l' $vals.get('l') $proto)
+          #measurementRow($handler true 'l' $vals.get('l') $proto $set)
           #set ($needToShowName = false)
         #elseif ($xcontext.action == 'edit')
-          #measurementRow($handler true 'l' "" $proto)
+          #measurementRow($handler true 'l' "" $proto $set)
           #set ($needToShowName = false)
         #end
         #if ($vals.get('r')) 
-          #measurementRow($handler $needToShowName 'r' $vals.get('r') $proto)
+          #measurementRow($handler $needToShowName 'r' $vals.get('r') $proto $set)
         #elseif ($xcontext.action == 'edit')
-          #measurementRow($handler $needToShowName 'r' "" $proto)
+          #measurementRow($handler $needToShowName 'r' "" $proto $set)
         #end
       )))
     #end
   #else
     #if ($xcontext.action == 'edit' || $vals)
       (% class="measurement"%)(((
-        #measurementRow($handler true '' $vals $proto)
+        #measurementRow($handler true '' $vals $proto $set)
       )))
     #end
   #end
 #end
 #end##
 ##
-#macro (measurementRow $handler $displayName $side $obj $proto)
+#macro (measurementRow $handler $displayName $side $obj $proto $set)
 #set ($name = $handler.getName())
 #set ($unit = $handler.getUnit())
 (% class="measurement-row $name#if ($handler.getComputationDependencies().size()) computed#end"%)(((
@@ -169,11 +169,20 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
     #else
       #set ($id = $obj.getNumber())
       #set ($val = $obj.getProperty('value').value)
-      #set ($ageMonths = $services.measurements.convertAgeStrToNumMonths($obj.getProperty('age').value))
-      #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-      #set ($percentile = $handler.valueToPercentile($male, $ageMonths, $val))
-      #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
-      #set ($eval = "${percentile}%ile (#if ($sd &gt;= 0)+#end${sd}SD)")
+      #if ("$!handler.getName()" != "armspan")
+        #set ($ageMonths = $services.measurements.convertAgeStrToNumMonths($obj.getProperty('age').value))
+        #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+        #set ($percentile = $handler.valueToPercentile($male, $ageMonths, $val))
+        #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
+        #set ($eval = "${percentile}%ile (#if ($sd &gt;= 0)+#end${sd}SD)")
+      #else
+        #if ("$!set.get('armspan').getProperty('value').value" != "" &amp;&amp; "$!obj.getProperty('value').value" != "")
+          #set ($delta = $obj.getProperty('value').value - $!set.get("height").getProperty('value').value)
+          #set ($eval = "= $services.localization.render('PhenoTips.MeasurementsClass_height')")
+          #set ($eval = "$eval #if ($delta &gt; 0) + #else &amp;minus; #end$mathtool.abs($delta)")
+          #set ($eval = "${eval}$services.localization.render('phenotips.UIXField.measurements.units.cm')")
+        #end
+      #end
     #end
   #end
   {{html clean="false" wiki="false"}}
@@ -196,7 +205,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
     #end
     &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
   &lt;/div&gt;
-  &lt;span class="pctl#if ("$!val" != "") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$eval#end&lt;/span&gt;
+  &lt;span class="feedback#if ("$!val" != "" &amp;&amp; "$!handler.getName()" != "armspan") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$!eval#end&lt;/span&gt;
   {{/html}}
 )))
 #end##
@@ -215,7 +224,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
     #else
       #set($vals = {})
     #end
-    #measurement($handler $vals $proto)
+    #measurement($handler $vals $proto $measurementSet)
   #end
 #end
 #end##
