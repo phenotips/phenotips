@@ -370,8 +370,10 @@ var PhenoTips = (function(PhenoTips) {
       this.el.select('.measurement-row').each((function(el) {
         if (el.hasClassName('computed')) {
           this._rows.push(new widgets.ComputedMeasurementSetRow(el, this));
+        } else if (el.down('[name$=type]').value == 'armspan') {
+          this._rows.push(new widgets.ArmspanMeasurementSetRow(el, this));
         } else {
-          this._rows.push(new widgets.MeasurementSetRow(el, this));
+          this._rows.push(new widgets.PercentileSDMeasurementSetRow(el, this));
         }
       }).bind(this));
 
@@ -602,20 +604,48 @@ var PhenoTips = (function(PhenoTips) {
       this.el = el; this.parent = parent;
 
       // Bind methods
-      this.fetchAndRenderPercentileSd = this.fetchAndRenderPercentileSd.bind(this);
       this.destroy = this.destroy.bind(this);
-      this._genderChangeHandler = this._genderChangeHandler.bind(this);
       this.getMeasurementType = this.getMeasurementType.bind(this);
       this.getValue = this.getValue.bind(this);
+
+      if (XWiki.contextaction == 'edit') {
+        // DOM shortcuts
+        this._valueEl = this.el.select('[name$=value]')[0];
+      }
+    },
+
+    getMeasurementType: function() {
+      return this.el.down('[name$=type]').value;
+    },
+
+    getValue: function() {
+      if (XWiki.contextaction == 'edit') {
+        return this._valueEl.value;
+      } else {
+        return this.el.down('span.val').innerHTML;
+      }
+    },
+
+    destroy: function() {
+      $$('input[name$=gender]').each((function(el) {
+        el.stopObserving('click', this._genderChangeHandler);
+      }).bind(this));
+    }
+  });
+
+  widgets.PercentileSDMeasurementSetRow = Class.create(widgets.MeasurementSetRow, {
+    initialize: function($super, el, parent) {
+      $super(el, parent);
+
+      // Bind methods
+      this.fetchAndRenderPercentileSd = this.fetchAndRenderPercentileSd.bind(this);
+      this._genderChangeHandler = this._genderChangeHandler.bind(this);
       this._selectAssocPhenotypes = this._selectAssocPhenotypes.bind(this);
       this._selectMeasurementTerm = this._selectMeasurementTerm.bind(this);
       this._unselectMeasurementTerm = this._unselectMeasurementTerm.bind(this);
       this._selectFormElementForPhenotype = this._selectFormElementForPhenotype.bind(this);
 
       if (XWiki.contextaction == 'edit') {
-        // DOM shortcuts
-        this._valueEl = this.el.select('[name$=value]')[0];
-
         // Init array for smart phenotype terms triggered by this row
         this._curSelectedTerms = [];
 
@@ -635,20 +665,8 @@ var PhenoTips = (function(PhenoTips) {
       }
     },
 
-    getMeasurementType: function() {
-      return this.el.down('[name$=type]').value;
-    },
-
-    getValue: function() {
-      if (XWiki.contextaction == 'edit') {
-        return this._valueEl.value;
-      } else {
-        return this.el.down('span.val').innerHTML;
-      }
-    },
-
     fetchAndRenderPercentileSd: function(e) {
-      var pctlEl = this.el.select('.pctl')[0];
+      var pctlEl = this.el.select('.feedback')[0];
       var fetchParams = {
         'measurement': this.el.select('[name$=type]')[0].value,
         'value': this._valueEl.value,
@@ -792,16 +810,53 @@ var PhenoTips = (function(PhenoTips) {
       }
     },
 
-    destroy: function() {
+    destroy: function($super) {
       this._selectAssocPhenotypes([]);
 
-      $$('input[name$=gender]').each((function(el) {
-        el.stopObserving('click', this._genderChangeHandler);
-      }).bind(this));
+      $super();
     }
   });
 
-  widgets.ComputedMeasurementSetRow = Class.create(widgets.MeasurementSetRow, {
+  widgets.ArmspanMeasurementSetRow = Class.create(widgets.MeasurementSetRow, {
+    initialize: function($super, el, parent) {
+      $super(el, parent);
+
+      // DOM node shortcuts
+      this._heightInputEl = this.parent.el.select('input[name$=type][value=height]')[0].up(0).select('input[name$=value]')[0];
+      this._feedbackEl = this.el.select('.feedback')[0];
+
+      // Bind methods
+      this._renderFeedback = this._renderFeedback.bind(this);
+
+      if (XWiki.contextaction == 'edit') {
+        // Attach handlers
+        var _this = this;
+        ['input', 'phenotips:measurement-updated'].each(function(ev) {
+          [_this._heightInputEl, _this._valueEl].each(function(el) {
+            el.observe(ev, _this._renderFeedback);
+          });
+        });
+
+        this._renderFeedback();
+      }
+    },
+
+    _renderFeedback: function() {
+      if (this.getValue() && !isNaN(this.getValue()) && this._heightInputEl.value && !isNaN(this._heightInputEl.value)) {
+        var delta = this.getValue() - this._heightInputEl.value;
+        var feedback = "= $services.localization.render('PhenoTips.MeasurementsClass_height')";
+        feedback += delta > 0 ? ' + ' : ' &minus; ';
+        feedback += Math.abs(delta).toFixed(2);
+        feedback += "$services.localization.render('phenotips.UIXField.measurements.units.cm')";
+
+        this._feedbackEl.innerHTML = feedback;
+      } else {
+        this._feedbackEl.innerHTML = '';
+      }
+    },
+  });
+
+  widgets.ComputedMeasurementSetRow = Class.create(widgets.PercentileSDMeasurementSetRow, {
     initialize: function($super, el, parent) {
       $super(el, parent);
 
