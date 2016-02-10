@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>FamilyReference</name>
+  <name>FamilyReferenceClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content/>
   <class>
-    <name>PhenoTips.FamilyReference</name>
+    <name>PhenoTips.FamilyReferenceClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>

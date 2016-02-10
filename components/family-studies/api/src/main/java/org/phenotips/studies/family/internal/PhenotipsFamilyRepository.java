@@ -19,6 +19,7 @@ package org.phenotips.studies.family.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
 
@@ -64,11 +65,8 @@ public class PhenotipsFamilyRepository implements FamilyRepository
         new EntityReference("FamilyTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** XWiki class that represents objects that contain a string reference to a family document. */
-    private static final EntityReference FAMILY_REFERENCE =
-        new EntityReference("FamilyReference", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    private static final EntityReference OWNER_CLASS =
-        new EntityReference("OwnerClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+    private static final EntityReference FAMILY_REFERENCE = new EntityReference("FamilyReferenceClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String FAMILY_REFERENCE_FIELD = "reference";
 
@@ -246,7 +244,7 @@ public class PhenotipsFamilyRepository implements FamilyRepository
 
         // Adding additional values to family
         User currentUser = PhenotipsFamilyRepository.userManager.getCurrentUser();
-        BaseObject ownerObject = newFamilyDoc.newXObject(OWNER_CLASS, context);
+        BaseObject ownerObject = newFamilyDoc.newXObject(Owner.CLASS_REFERENCE, context);
         ownerObject.set("owner", currentUser.getId(), context);
 
         BaseObject familyObject = newFamilyDoc.getXObject(Family.CLASS_REFERENCE);
