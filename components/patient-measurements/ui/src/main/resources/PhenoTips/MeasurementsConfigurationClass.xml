@@ -154,7 +154,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>weight|height|bmi|sitting|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
+      <values>weight|height|bmi|sitting|armspan|hc|philtrum|ear|ocd|icd|pfl|ipd|hand|palm|foot</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </ordering>
   </class>

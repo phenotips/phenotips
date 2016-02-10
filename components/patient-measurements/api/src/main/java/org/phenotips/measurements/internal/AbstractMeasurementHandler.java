@@ -255,10 +255,8 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 
     /**
      * Read the LMS triplets for this feature from a resource file.
-     *
-     * @throws InitializationException if the resource file is missing
      */
-    private void readData() throws InitializationException
+    private void readData()
     {
         BufferedReader in = null;
         String filename = getName() + ".csv";
@@ -266,7 +264,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
         this.measurementsForAgeGirls = new ArrayList<>();
         InputStream inStream = this.getClass().getResourceAsStream(filename);
         if (inStream == null) {
-            throw new InitializationException("Missing measurements tables for [" + this.getName() + "]");
+            return;
         }
         try {
             in = new BufferedReader(new InputStreamReader(inStream, "UTF-8"));
@@ -319,7 +317,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     {
         // LMS data is stored per day, currently but input is given as a float for months
         int ageInDays = (int) Math.round(ageInMonths * 30.4375);
-        if (ageInDays < 0) {
+        if (ageInDays < 0 || list.size() == 0) {
             return null;
         } else if (ageInDays >= list.size()) {
             return list.get(list.size() - 1);
