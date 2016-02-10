@@ -172,13 +172,17 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
         #set ($ageMonths = $services.measurements.convertAgeStrToNumMonths($obj.getProperty('age').value))
         #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
         #set ($percentile = $handler.valueToPercentile($male, $ageMonths, $val))
-        #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
-        #set ($eval = "${percentile}%ile (#if ($sd &gt;= 0)+#end${sd}SD)")
+        #if ($percentile &gt;= 0)
+          #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
+          #set ($eval = "${percentile}%ile (#if ($sd &gt;= 0)+#end${sd}SD)")
+        #else
+          #set ($eval = '')
+        #end
       #else
-        #if ("$!set.get('armspan').getProperty('value').value" != "" &amp;&amp; "$!obj.getProperty('value').value" != "")
+        #if ("$!set.get('armspan').getProperty('value').value" != "" &amp;&amp; "$!obj.getProperty('value').value" != "" &amp;&amp; $!set.get("height").getProperty('value').value)
           #set ($delta = $obj.getProperty('value').value - $!set.get("height").getProperty('value').value)
           #set ($eval = "= $services.localization.render('PhenoTips.MeasurementsClass_height')")
-          #set ($eval = "$eval #if ($delta &gt; 0) + #else &amp;minus; #end$mathtool.abs($delta)")
+          #set ($eval = "$eval #if ($delta &gt; 0) + #else &amp;minus; #end$mathtool.roundTo(2, $mathtool.abs($delta))")
           #set ($eval = "${eval}$services.localization.render('phenotips.UIXField.measurements.units.cm')")
         #end
       #end

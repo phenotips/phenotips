@@ -395,7 +395,7 @@ $!value
         <number>3</number>
         <picker>0</picker>
         <prettyName>ordering</prettyName>
-        <relationalStorage>0</relationalStorage>
+        <relationalStorage>1</relationalStorage>
         <separator> </separator>
         <separators>|, </separators>
         <size>1</size>
