@@ -77,7 +77,7 @@ public class ConfigureJsonMapper extends AbstractEventListener
         public void serialize(JSONObject value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException, JsonProcessingException
         {
-            jgen.writeRaw(value.toString());
+            jgen.writeRawValue(value.toString());
         }
     }
 
@@ -87,7 +87,7 @@ public class ConfigureJsonMapper extends AbstractEventListener
         public void serialize(JSONArray value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException, JsonProcessingException
         {
-            jgen.writeRaw(value.toString());
+            jgen.writeRawValue(value.toString());
         }
     }
 }
