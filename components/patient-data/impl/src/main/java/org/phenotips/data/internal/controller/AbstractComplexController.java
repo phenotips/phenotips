@@ -286,6 +286,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             XWikiContext context = this.contextProvider.get();
             for (String propertyName : getProperties()) {
                 Object propertyValue = data.get(propertyName);
+                if (propertyValue == null) {
+                    continue;
+                }
                 if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
                     List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
                     List<String> listToStore = new LinkedList<>();
@@ -301,7 +304,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             context.getWiki()
                 .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
         } catch (Exception ex) {
-            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
+            this.logger.error("Could not save patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 
