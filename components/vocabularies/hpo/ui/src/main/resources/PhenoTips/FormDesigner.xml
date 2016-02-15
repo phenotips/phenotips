@@ -381,7 +381,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## SHOW SECTION ADDITION FORM
 ## =====================================================================
 #if ($globalConfig)
-{{html clean=false wiki=false}}&lt;form action="$formAction" method="post" class="xformInline" id="create-section-form"&gt;
+{{html clean=false wiki=false}}&lt;form action="$escapetool.xml($formAction)" method="post" class="xformInline" id="create-section-form"&gt;
 &lt;h2&gt;Add a form section&lt;/h2&gt;
 &lt;div&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
@@ -400,7 +400,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## ----------------------------------------------------------------------
 ## Display the configuration form if the user has permissions
 ## ----------------------------------------------------------------------
-{{html clean=false wiki=false}}&lt;form action="$formAction" method="post"&gt;{{/html}}
+{{html clean=false wiki=false}}&lt;form action="$escapetool.xml($formAction)" method="post"&gt;{{/html}}
 (% id="patient-form-designer" #if ($globalConfig) class="global" #end%)(((
 (% class="designer-panel sections" %)(((
 #_formDesigner__displaySections()
