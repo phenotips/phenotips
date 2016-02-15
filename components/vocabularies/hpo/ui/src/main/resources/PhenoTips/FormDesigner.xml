@@ -387,7 +387,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
   &lt;input type="hidden" name="create_extension" value="1"/&gt;
   &lt;input type="hidden" name="xredirect" value="$doc.getURL('get', 'showsection=')"/&gt;
-  &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
+  &lt;input type="text" name="extension_id" value="" placeholder="$escapetool.xml($services.localization.render('phenotips.formDesigner.sectionID.placeholder'))" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
   &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
   &lt;input class="button" type="button" name="create_extension" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;
 &lt;/div&gt;&lt;/form&gt;{{/html}}
