@@ -74,30 +74,6 @@ public class JSONTool
     private Logger logger = LoggerFactory.getLogger(JSONTool.class);
 
     /**
-     * Serialize a JSON object as a string.
-     *
-     * @param object the object to be serialized
-     * @return the JSON-verified string representation of the given object
-     * @since 8.0M1
-     */
-    public String serialize(JSONObject object)
-    {
-        return object.toString();
-    }
-
-    /**
-     * Serialize a JSON array as a string.
-     *
-     * @param array the array to be serialized
-     * @return the JSON-verified string representation of the given array
-     * @since 8.0M1
-     */
-    public String serialize(JSONArray array)
-    {
-        return array.toString();
-    }
-
-    /**
      * Serialize a Java object to the JSON format.
      * <p>
      * Examples:
