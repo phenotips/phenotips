@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -48,8 +49,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
-
-import net.sf.json.JSONObject;
 
 /**
  * XWiki implementation of Family.
@@ -388,7 +387,7 @@ public class PhenotipsFamily implements Family
                 image = (BaseStringProperty) pedigreeObj.get(Pedigree.IMAGE);
 
                 if (StringUtils.isNotBlank(data.toText())) {
-                    return new DefaultPedigree(JSONObject.fromObject(data.toText()), image.toText());
+                    return new DefaultPedigree(new JSONObject(data.toText()), image.toText());
                 }
             } catch (XWikiException e) {
                 this.logger.error("Error reading data from pedigree. {}", e.getMessage());

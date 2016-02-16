@@ -46,12 +46,11 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Handles export of information about families.
@@ -149,7 +148,7 @@ public class PhenotipsFamilyExport
         JSONArray patientsJSONArray = new JSONArray();
         for (Patient patient : family.getMembers()) {
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
-            patientsJSONArray.add(patientJSON);
+            patientsJSONArray.put(patientJSON);
         }
         familyJSON.put(FAMILY_MEMBERS, patientsJSONArray);
 
@@ -299,7 +298,7 @@ public class PhenotipsFamilyExport
                 familyJson.put(URL, searchResult.getUrl());
                 familyJson.put(IDENTIFIER, searchResult.getExternalId());
                 familyJson.put("textSummary", searchResult.getDescription());
-                familyArray.add(familyJson);
+                familyArray.put(familyJson);
             } else {
                 String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
                 String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());

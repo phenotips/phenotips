@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -33,17 +33,20 @@ public class InvalidPatientIdResponse extends AbstractJSONResponse
      *
      * @param patientId The id which is not a valid PhenotTips patient id.
      */
-    public InvalidPatientIdResponse(String patientId) {
+    public InvalidPatientIdResponse(String patientId)
+    {
         this.patientId = patientId;
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.INVALID_PATIENT_ID, this.patientId));
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

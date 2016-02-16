@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -29,18 +29,21 @@ public class ValidLinkJSONResponse extends AbstractJSONResponse
     /**
      * Default constructor, takes no parameters.
      */
-    public ValidLinkJSONResponse() {
+    public ValidLinkJSONResponse()
+    {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         JSONObject response = new JSONObject();
         response.put("validLink", true);
         return response;
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return false;
     }
 }

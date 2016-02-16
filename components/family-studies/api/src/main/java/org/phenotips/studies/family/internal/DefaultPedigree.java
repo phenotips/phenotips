@@ -23,9 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @version $Id$
@@ -47,7 +46,7 @@ public class DefaultPedigree implements Pedigree
      */
     public DefaultPedigree(JSONObject data, String image)
     {
-        if (data == null || data.isEmpty()) {
+        if (data == null || data.length() == 0) {
             throw new IllegalArgumentException();
         }
         this.data = data;
@@ -84,7 +83,7 @@ public class DefaultPedigree implements Pedigree
     {
         List<String> extractedIds = new LinkedList<>();
         for (JSONObject properties : this.extractPatientJSONProperties()) {
-            Object id = properties.get(DefaultPedigree.PATIENT_LINK_JSON_KEY);
+            Object id = properties.opt(DefaultPedigree.PATIENT_LINK_JSON_KEY);
             if (id != null && StringUtils.isNotBlank(id.toString())) {
                 extractedIds.add(id.toString());
             }
@@ -96,12 +95,12 @@ public class DefaultPedigree implements Pedigree
     public List<JSONObject> extractPatientJSONProperties()
     {
         List<JSONObject> extractedObjects = new LinkedList<>();
-        JSONArray gg = (JSONArray) this.data.get("GG");
+        JSONArray gg = (JSONArray) this.data.opt("GG");
         // letting it throw a null exception on purpose
         for (Object nodeObj : gg) {
             JSONObject node = (JSONObject) nodeObj;
-            JSONObject properties = (JSONObject) node.get("prop");
-            if (properties == null || properties.isEmpty()) {
+            JSONObject properties = (JSONObject) node.opt("prop");
+            if (properties == null || properties.length() == 0) {
                 continue;
             }
             extractedObjects.add(properties);
@@ -126,7 +125,7 @@ public class DefaultPedigree implements Pedigree
     {
         List<JSONObject> patientProperties = this.extractPatientJSONProperties();
         for (JSONObject properties : patientProperties) {
-            Object patientLink = properties.get(DefaultPedigree.PATIENT_LINK_JSON_KEY);
+            Object patientLink = properties.opt(DefaultPedigree.PATIENT_LINK_JSON_KEY);
             if (patientLink != null && StringUtils.equalsIgnoreCase(patientLink.toString(), linkedPatientId)) {
                 properties.remove(DefaultPedigree.PATIENT_LINK_JSON_KEY);
             }

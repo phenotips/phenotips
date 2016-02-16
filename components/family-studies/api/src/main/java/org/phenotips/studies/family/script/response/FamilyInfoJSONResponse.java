@@ -20,7 +20,7 @@ package org.phenotips.studies.family.script.response;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -36,12 +36,14 @@ public class FamilyInfoJSONResponse extends AbstractJSONResponse
      *
      * @param family The family for which info was requested.
      */
-    public FamilyInfoJSONResponse(Family family) {
+    public FamilyInfoJSONResponse(Family family)
+    {
         this.family = family;
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         JSONObject response = new JSONObject();
         response.put("family", this.family.toJSON());
 
@@ -53,7 +55,8 @@ public class FamilyInfoJSONResponse extends AbstractJSONResponse
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return false;
     }
 }
