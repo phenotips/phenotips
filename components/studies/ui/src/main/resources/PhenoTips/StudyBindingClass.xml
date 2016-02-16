@@ -701,7 +701,7 @@ $xwiki.ssx.use($className)##
     #end
     #set($displayedValue = "(% class='buttonwrapper' %)[[{{icon name='copy' /}} ${configTitle}&gt;&gt;${value}||rel='__blank' class='button secondary']]")
   #end
-  #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;objectPolicy=updateOrCreate&amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
+  #set ($faction = $doc.getURL('save', "form_token=${services.csrf.token}&amp;amp;objectPolicy=updateOrCreate&amp;amp;xredirect=$escapetool.url($doc.getURL($xcontext.action))"))
 (% class="study-assignment-config" %)(((Study: $displayedValue (% class="buttonwrapper" %)[[ {{icon name="edit" title="$services.localization.render('phenotips.studyBindingClass.changeStudyButton.title')" /}} {{html clean=false}}&lt;input type="hidden" name="faction" value="$faction"/&gt;{{/html}}&gt;&gt;path:$doc.getURL('get', "sheet=$!{sheetName}&amp;faction=$!{escapetool.url($faction)}")||class="button" rel="__blank" id="study-assignment-config" class="$xcontext.action"]])))
 #end
 {{/velocity}}</content>

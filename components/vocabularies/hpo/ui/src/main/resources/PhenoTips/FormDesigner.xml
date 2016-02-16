@@ -298,7 +298,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 #macro(_formDesigner__displayExtensionTools $extension $tools)
 {{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
 #if ($globalConfig)
-#if ($tools.required)&lt;label class="extension-tool flag" title="$services.localization.render('phenotips.formDesigner.requiredExtension')"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
+#if ($tools.required)&lt;label class="extension-tool flag" title="$services.localization.render('phenotips.formDesigner.requiredExtension')"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="checked" #end/&gt;&lt;/label&gt;#end
 #if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' "$services.localization.render('phenotips.formDesigner.editExtension')" $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
 #if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' "$services.localization.render('phenotips.formDesigner.deleteExtension')" $extension.doc.getURL('delete') 'target="_blank"')#end
 #end
@@ -311,7 +311,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__displayExtensionInputs $extension $fieldName)##
 {{html wiki=false clean=false}}
-&lt;input type="checkbox" class="uix-toggle"   name="$fieldName" value="${extension.id}" #if ($extension.enabled) checked="true" #end/&gt;
+&lt;input type="checkbox" class="uix-toggle"   name="$fieldName" value="${extension.id}" #if ($extension.enabled) checked="checked" #end/&gt;
 &lt;input type="hidden"   class="uix-pointid"  name="${fieldName}_${extension.id}_extensionPointId" value="${extension.uix.getExtensionPointId()}" /&gt;
 &lt;input type="hidden"   class="uix-order"    name="${fieldName}_${extension.id}_order" value="" /&gt;
 {{/html}}##
@@ -381,13 +381,13 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## SHOW SECTION ADDITION FORM
 ## =====================================================================
 #if ($globalConfig)
-{{html clean=false wiki=false}}&lt;form action="$formAction" method="post" class="xformInline" id="create-section-form"&gt;
+{{html clean=false wiki=false}}&lt;form action="$escapetool.xml($formAction)" method="post" class="xformInline" id="create-section-form"&gt;
 &lt;h2&gt;Add a form section&lt;/h2&gt;
 &lt;div&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
   &lt;input type="hidden" name="create_extension" value="1"/&gt;
   &lt;input type="hidden" name="xredirect" value="$doc.getURL('get', 'showsection=')"/&gt;
-  &lt;input type="text" name="extension_id" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionID.placeholder')" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
+  &lt;input type="text" name="extension_id" value="" placeholder="$escapetool.xml($services.localization.render('phenotips.formDesigner.sectionID.placeholder'))" title="$services.localization.render('phenotips.formDesigner.sectionID.title')" size="32"/&gt;
   &lt;input type="text" name="extension_name" value="" placeholder="$services.localization.render('phenotips.formDesigner.sectionTitle.placeholder')" size="32"/&gt;
   &lt;input class="button" type="button" name="create_extension" value="$services.localization.render('phenotips.formDesigner.createButton')"/&gt;
 &lt;/div&gt;&lt;/form&gt;{{/html}}
@@ -400,7 +400,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 ## ----------------------------------------------------------------------
 ## Display the configuration form if the user has permissions
 ## ----------------------------------------------------------------------
-{{html clean=false wiki=false}}&lt;form action="$formAction" method="post"&gt;{{/html}}
+{{html clean=false wiki=false}}&lt;form action="$escapetool.xml($formAction)" method="post"&gt;{{/html}}
 (% id="patient-form-designer" #if ($globalConfig) class="global" #end%)(((
 (% class="designer-panel sections" %)(((
 #_formDesigner__displaySections()
