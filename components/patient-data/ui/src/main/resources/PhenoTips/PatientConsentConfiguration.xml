@@ -47,14 +47,24 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <description>
+    <label>
       <disabled>0</disabled>
-      <name>description</name>
+      <name>label</name>
       <number>2</number>
-      <prettyName>description</prettyName>
+      <prettyName>label</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </label>
+    <description>
+      <disabled>0</disabled>
+      <name>description</name>
+      <number>3</number>
+      <prettyName>description (optional, may include HTML)</prettyName>
+      <rows>5</rows>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </description>
     <id>
       <disabled>0</disabled>
@@ -74,5 +84,52 @@
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </required>
+    <affectsFields>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <name>affectsFields</name>
+      <number>5</number>
+      <prettyName>Are any patient form fields affected by this consent?</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </affectsFields>
+    <fields>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+## Extensions making up the main content, the actual information about the patient
+#set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
+#foreach ($section in $recordConfiguration.enabledSections)
+ #set ($sectionContent = '')
+ #foreach ($element in $section.enabledElements)
+   #set ($itemContent = "&lt;li>&lt;label>&lt;input type=""checkbox"" name=""$!{prefix}$!{name}"" value=""$element.extension.id"" #if ($value.contains(""$element.extension.id"")) checked=""checked"" #end/> $element.name ($element.extension.id)&lt;/label>&lt;/li>")
+   #set ($sectionContent = $sectionContent.concat($itemContent))
+ #end
+ #if ($sectionContent.trim() != '')
+ **$section.name**
+ {{html clean="false" wiki="false"}}&lt;ul style="list-style-type: none;">$sectionContent.trim()&lt;/ul>{{/html}}
+ #end
+#end
+{{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>checkbox</displayType>
+      <idField/>
+      <multiSelect>1</multiSelect>
+      <name>fields</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Fields allowed by this consent (none selected implies all affected)</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </fields>
   </class>
 </xwikidoc>

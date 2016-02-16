@@ -34,8 +34,14 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +50,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -59,7 +66,7 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Component
 @Singleton
-public class PatientXWikiConsentManager implements ConsentManager, Initializable
+public class PhenoTipsPatientConsentManager implements ConsentManager, Initializable
 {
     private static final String GRANTED = "granted";
 
@@ -91,73 +98,149 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private EntityReference configurationPageReference =
         new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
 
-    /**
-     * All the consents present in the system. Example usage includes checking if all possible consents present in the
-     * system/database are present/filled out in a patient record.
-     */
-    private List<Consent> systemConsents = new LinkedList<>();
+    private Date lastSystemConsentLoadTime;
+    private Set<Consent> cachedSystemConsents = Collections.unmodifiableSet(new LinkedHashSet<Consent>());
 
     @Override
     public void initialize() throws InitializationException
     {
-        this.refreshSystemConsents();
     }
 
     @Override
-    public List<Consent> getSystemConsents()
+    public Set<Consent> getSystemConsents()
     {
-        return systemConsents;
-    }
-
-    @Override
-    public List<Consent> loadConsentsFromPatient(String patientId)
-    {
-        return this.loadConsentsFromPatient(repository.getPatientById(patientId));
-    }
-
-    @Override
-    public List<Consent> loadConsentsFromPatient(Patient patient)
-    {
-        List<Consent> patientConsents = new LinkedList<>();
-        /* List of consent ids a patient has agreed to, read from the database */
-        List<String> xwikiPatientConsents = new LinkedList<>();
-
         try {
-            DocumentModelBridge patientDocBridge = bridge.getDocument(patient.getDocument());
-            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
-            xwikiPatientConsents = readConsentIdsFromPatientDoc(patientDoc);
-        } catch (Exception ex) {
-            this.logger.error("Could not load patient document {} or read consents. {}",
-                patient == null ? "NULL" : patient.getId(), ex.getMessage());
-        }
-
-        /*
-         * Using system consents to determine what consents a patient has agreed to, but not reusing the system consents
-         * cache, since those should not have a status.
-         */
-        for (Consent systemConsent : this.systemConsents) {
-            Consent copy = DefaultConsent.copy(systemConsent);
-            if (xwikiPatientConsents.contains(systemConsent.getId())) {
-                copy.setStatus(ConsentStatus.YES);
-            } else {
-                copy.setStatus(ConsentStatus.NO);
+            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
+            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
+            XWikiDocument configDoc = (XWikiDocument) configDocBridge;
+            if (this.lastSystemConsentLoadTime == null || configDoc.getDate().after(this.lastSystemConsentLoadTime)) {
+                updateSystemConsentCache(configDoc);
             }
-            patientConsents.add(copy);
+        } catch (Exception ex) {
+            logger.error("Could not load preferences document: {}", ex.getMessage());
+        }
+        return this.cachedSystemConsents;
+    }
+
+    private synchronized void updateSystemConsentCache(XWikiDocument configDoc)
+    {
+        try {
+            Set<Consent> consents = new LinkedHashSet<Consent>();
+            List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
+            if (consentObjects != null) {
+                for (BaseObject consentObject : consentObjects) {
+                    Consent nextConsent = fromXWikiConsentConfiguration(consentObject, configDoc);
+                    if (nextConsent != null) {
+                        consents.add(nextConsent);
+                    }
+                }
+            }
+            this.cachedSystemConsents = Collections.unmodifiableSet(consents);
+            this.lastSystemConsentLoadTime = configDoc.getDate();
+        } catch (Exception ex) {
+            logger.error("Could not load system consents from preferences document: {}", ex.getMessage());
+        }
+    }
+
+    // supressing conversion of List returned by getListValue() to List<String>
+    @SuppressWarnings("unchecked")
+    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
+    {
+        try {
+            String id = xwikiConsent.getStringValue("id");
+            String label = cleanDescription(configDoc.display("label", "view", xwikiConsent, contextProvider.get()));
+            String description = xwikiConsent.getStringValue("description");
+            boolean required = intToBool(xwikiConsent.getIntValue("required"));
+            boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
+            List<String> formFields = null;
+            if (affectsFields) {
+                formFields = xwikiConsent.getListValue("fields");
+            }
+            return new DefaultConsent(id, label, description, required, formFields);
+        } catch (Exception ex) {
+            this.logger.error("A patient consent is improperly configured: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    private static String cleanDescription(String toClean)
+    {
+        String clean = toClean;
+        clean = clean.replace("<div>", "").replace("</div>", "");
+        clean = clean.replace("<p>", "").replace("</p>", "");
+        clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        return clean;
+    }
+
+    @Override
+    public Set<Consent> getMissingConsentsForPatient(String patientId)
+    {
+        return this.getMissingConsentsForPatient(repository.getPatientById(patientId));
+    }
+
+    @Override
+    public Set<Consent> getMissingConsentsForPatient(Patient patient)
+    {
+        return this.getConsentsForPatient(patient, false);
+    }
+
+    @Override
+    public Set<Consent> getAllConsentsForPatient(String patientId)
+    {
+        return this.getAllConsentsForPatient(repository.getPatientById(patientId));
+    }
+
+    @Override
+    public Set<Consent> getAllConsentsForPatient(Patient patient)
+    {
+        return this.getConsentsForPatient(patient, true);
+    }
+
+    private Set<Consent> getConsentsForPatient(Patient patient, boolean includeGranted)
+    {
+        if (patient == null) {
+            return null;
         }
 
-        return patientConsents;
+        // List of consent ids a patient has agreed to, read from the database
+        Set<String> xwikiPatientConsents = readConsentIdsFromPatientDoc(patient);
+
+        Set<Consent> returnedConsents = new LinkedHashSet<>();
+
+        // Using system consents to ignore consents set for the patient but no longer configured in the system
+        // (it is faster to check contains() in a set, so iterating through the list and checking the set)
+        Set<Consent> systemConsents = getSystemConsents();
+        for (Consent systemConsent : systemConsents) {
+            if (xwikiPatientConsents.contains(systemConsent.getId())) {
+                if (includeGranted) {
+                    Consent copy = systemConsent.copy(ConsentStatus.YES);
+                    returnedConsents.add(copy);
+                }
+            } else {
+                Consent copy = systemConsent.copy(ConsentStatus.NO);
+                returnedConsents.add(copy);
+            }
+        }
+
+        return returnedConsents;
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> readConsentIdsFromPatientDoc(XWikiDocument doc)
+    private Set<String> readConsentIdsFromPatientDoc(Patient patient)
     {
-        List<String> ids = new LinkedList<>();
-        BaseObject idsHolder = doc.getXObject(consentIdsHolderReference);
-        if (idsHolder != null) {
-            List<String> patientIds = idsHolder.getListValue(GRANTED);
-            if (patientIds != null) {
-                ids = patientIds;
+        Set<String> ids = new HashSet<String>();
+        try {
+            DocumentModelBridge patientDocBridge = bridge.getDocument(patient.getDocument());
+            XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;
+            BaseObject idsHolder = patientDoc.getXObject(consentIdsHolderReference);
+            if (idsHolder != null) {
+                List<String> patientConsentIds = idsHolder.getListValue(GRANTED);
+                if (patientConsentIds != null) {
+                    ids.addAll(patientConsentIds);
+                }
             }
+        } catch (Exception ex) {
+            this.logger.error("Could not read consents for patient {}: {}", patient.getId(), ex.getMessage());
         }
         return ids;
     }
@@ -175,6 +258,18 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
             this.logger.error("Could not update consents in patient record {}. {}", patient, ex.getMessage());
         }
         return false;
+    }
+
+    @Override
+    public boolean hasConsent(Patient patient, String consentId)
+    {
+        Set<Consent> missingPatientConsents = getMissingConsentsForPatient(patient);
+        for (Consent consent : missingPatientConsents) {
+            if (consent.getId().equals(consentId)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** @return consents that exist in the system and correspond to the given ids */
@@ -204,73 +299,6 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         return this.manageConsent(patient, consentId, false);
     }
 
-    @Override
-    public JSONArray toJson(List<Consent> consents)
-    {
-        JSONArray json = new JSONArray();
-        for (Consent consent : consents) {
-            json.put(consent.toJson());
-        }
-        return json;
-    }
-
-    @Override
-    public List<Consent> fromJson(JSONArray json)
-    {
-        return null;
-    }
-
-    private List<Consent> loadConsentsFromSystem()
-    {
-        List<Consent> consents = new LinkedList<>();
-        try {
-            DocumentReference configDocRef = referenceResolver.resolve(this.configurationPageReference);
-            DocumentModelBridge configDocBridge = bridge.getDocument(configDocRef);
-            XWikiDocument configDoc = (XWikiDocument) configDocBridge;
-            List<BaseObject> consentObjects = configDoc.getXObjects(consentReference);
-            if (consentObjects != null) {
-                for (BaseObject consentObject : consentObjects) {
-                    try {
-                        consents.add(this.fromXWikiConsentConfiguration(consentObject, configDoc));
-                    } catch (Exception ex) {
-                        this.logger.warn("An XWiki consent configuration is improperly configured. {}",
-                            ex.getMessage());
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            /* if configuration cannot be loaded, it cannot be loaded; nothing to be done */
-            logger.error("Could not load the configurations for patient consents. {}", ex.getMessage());
-        }
-        return consents;
-    }
-
-    // fixme. must be run on every save of XWikiPreferences. There is no UI yet, however if there is to be one, that
-    // must be a implemented.
-    private void refreshSystemConsents()
-    {
-        this.systemConsents = loadConsentsFromSystem();
-    }
-
-    private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
-    {
-        String id = xwikiConsent.getStringValue("id");
-        String description = configDoc.display("description", "view", xwikiConsent, contextProvider.get());
-        /* removing divs and ps */
-        description = cleanDescription(description);
-        boolean required = intToBool(xwikiConsent.getIntValue("required"));
-        return new DefaultConsent(id, description, required);
-    }
-
-    private static String cleanDescription(String toClean)
-    {
-        String clean = toClean;
-        clean = clean.replace("<div>", "").replace("</div>", "");
-        clean = clean.replace("<p>", "").replace("</p>", "");
-        clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
-        return clean;
-    }
-
     /**
      * @param grant if true will grant the consent, otherwise will revoke
      * @return if operation was successful
@@ -278,7 +306,7 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     private boolean manageConsent(Patient patient, String consentId, boolean grant)
     {
         if (!this.isValidId(consentId)) {
-            this.logger.warn("Invalid consent id ({}) was supplied", consentId);
+            this.logger.error("Invalid consent id ({}) was supplied", consentId);
             return false;
         }
         try {
@@ -322,7 +350,8 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
     /** Checks if passed in consent id is actually configured (in the system). */
     private boolean isValidId(String consentId)
     {
-        for (Consent consent : this.systemConsents) {
+        Set<Consent> systemConsents = getSystemConsents();
+        for (Consent consent : systemConsents) {
             if (StringUtils.equals(consentId, consent.getId())) {
                 return true;
             }
@@ -378,5 +407,31 @@ public class PatientXWikiConsentManager implements ConsentManager, Initializable
         {
             this.context.getWiki().saveDocument(this.patientDoc, "Changed patient consents", true, context);
         }
+    }
+
+    @Override
+    public JSONArray toJSON(Collection<Consent> consents)
+    {
+        JSONArray result = new JSONArray();
+        for (Consent consent : consents) {
+            result.put(consent.toJSON());
+        }
+        return result;
+    }
+
+    @Override
+    public Set<Consent> fromJSON(JSONArray consentsJSON)
+    {
+        if (consentsJSON == null) {
+            return null;
+        }
+        Set<Consent> result = new LinkedHashSet<Consent>();
+        for (int i = 0; i < consentsJSON.length(); i++) {
+            JSONObject consentJSON = consentsJSON.optJSONObject(i);
+            if (consentJSON != null) {
+                result.add(new DefaultConsent(consentJSON));
+            }
+        }
+        return result;
     }
 }

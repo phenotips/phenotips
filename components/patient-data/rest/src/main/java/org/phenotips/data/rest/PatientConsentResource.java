@@ -41,7 +41,8 @@ public interface PatientConsentResource
      * @return a JSON array of all consents if the user is allowed to do so and such a record exists, otherwise a failed
      * response.
      */
-    @GET Response getConsents(@PathParam("patient_id") String patientId);
+    @GET
+    Response getConsents(@PathParam("patient_id") String patientId);
 
     /**
      * For granting a single consent in a patient record.
@@ -51,7 +52,8 @@ public interface PatientConsentResource
      */
     @PUT
     @Path("/grant")
-    @Consumes(MediaType.TEXT_PLAIN) Response grantConsent(@PathParam("patient_id") String patientId, String id);
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response grantConsent(@PathParam("patient_id") String patientId, String id);
 
     /**
      * For revoking a single consent in a patient record.
@@ -61,5 +63,6 @@ public interface PatientConsentResource
      */
     @PUT
     @Path("/revoke")
-    @Consumes(MediaType.TEXT_PLAIN) Response revokeConsent(@PathParam("patient_id") String patientId, String id);
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response revokeConsent(@PathParam("patient_id") String patientId, String id);
 }

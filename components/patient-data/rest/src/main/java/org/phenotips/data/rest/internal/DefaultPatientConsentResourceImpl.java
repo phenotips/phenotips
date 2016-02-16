@@ -30,7 +30,7 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,8 +73,8 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
         this.logger.debug("Retrieving consents from patient record [{}] via REST", patientId);
         Security security = this.securityCheck(patientId);
         if (security.isAllowed()) {
-            List<Consent> consents = consentManager.loadConsentsFromPatient(security.getPatient());
-            JSONArray json = consentManager.toJson(consents);
+            Set<Consent> consents = consentManager.getAllConsentsForPatient(security.getPatient());
+            JSONArray json = consentManager.toJSON(consents);
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } else {
             return security.getFailResponse();

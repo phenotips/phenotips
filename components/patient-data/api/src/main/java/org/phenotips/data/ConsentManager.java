@@ -20,7 +20,8 @@ package org.phenotips.data;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 import org.json.JSONArray;
 
@@ -39,21 +40,43 @@ public interface ConsentManager
      * The underlying system should have a configuration of different consents available.
      * @return all the possible consents that can be used in this system
      */
-    List<Consent> getSystemConsents();
+    Set<Consent> getSystemConsents();
 
     /**
-     * Same as {@link #loadConsentsFromPatient(Patient)}, for the exception that the patient record lookup happens internally.
-     * @param patientId for which a patient record is to be looked up
-     * @return same as {@link #loadConsentsFromPatient(Patient)}
-     */
-    List<Consent> loadConsentsFromPatient(String patientId);
-
-    /**
-     * Each patient should implicitly or explicitly have a list of consents with different grant status.
+     * Returns the list of all consents configured in the system, with "granted"/"not granted" status
+     * for the given patient for each consent.
+     *
      * @param patient record on which consents are granted (or not granted)
-     * @return a list of all consents configured in the system, with their status
+     * @return All the consents configured in the system with granted (for the patient) status set for each.
+     *         Returns null if patientId is not a valid id.
      */
-    List<Consent> loadConsentsFromPatient(Patient patient);
+    Set<Consent> getAllConsentsForPatient(Patient patient);
+
+    /**
+     * Same as {@link #getAllConsentsForPatient(Patient)}, for the exception that the patient record
+     * lookup happens internally.
+     *
+     * @param patientId for which a patient record is to be looked up
+     * @return same as {@link #getAllConsentsForPatient(Patient)}. Returns null if patientId is not a valid id.
+     */
+    Set<Consent> getAllConsentsForPatient(String patientId);
+
+    /**
+     * Returns the list of consents configured in the system but NOT granted for the patient.
+     *
+     * @param patient record on which consents are checked
+     * @return a list of consents granted for the patient. If patient is null then null is returned.
+     */
+    Set<Consent> getMissingConsentsForPatient(Patient patient);
+
+    /**
+     * Same as {@link #getMissingConsentsForPatient(Patient)}, for the exception that the patient record
+     * lookup happens internally.
+     *
+     * @param patientId for which a patient record is to be looked up
+     * @return same as {@link #getMissingConsentsForPatient(Patient)}. Returns null if patientId is not a valid id.
+     */
+    Set<Consent> getMissingConsentsForPatient(String patientId);
 
     /**
      * Determines if the given ids are present in the system, and grants them on the given patient record. All other
@@ -63,6 +86,16 @@ public interface ConsentManager
      * @return {@link true} if the operation was successful, otherwise {@link false}
      */
     boolean setPatientConsents(Patient patient, Iterable<String> consents);
+
+    /**
+     * Checks if a specific consent is given for the patient record. If consentId is not configured
+     * in the system returns {@link false} regardless of patient consent status.
+     *
+     * @param patient record in which to test consent
+     * @param consentId of consent which is to be checked
+     * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
+     */
+    boolean hasConsent(Patient patient, String consentId);
 
     /**
      * Grants a specific consent in a patient record.
@@ -82,17 +115,17 @@ public interface ConsentManager
     boolean revokeConsent(Patient patient, String consentId);
 
     /**
-     * A convenience function (which must be static), that allows for conversion of a list of consents into a
+     * A convenience function that allows for conversion of a list of consents into a
      * {@link org.json.JSONArray} containing JSON representations of all consents.
      * @param consents to be converted into JSON representation
-     * @return an array of consents in JSON format
+     * @return a JSON array of consents, each consent represented by a JSONObject
      */
-    JSONArray toJson(List<Consent> consents);
+    JSONArray toJSON(Collection<Consent> consents);
 
     /**
-     * A convenience function (which must be static), that allows for conversion of JSON representing several consents.
-     * @param json which contains representation of consents
-     * @return a list of {@link Consent} instances, converted from JSON
+     * A convenience function that allows for conversion of JSON representing several consents.
+     * @param consentsJSON array which contains a list of consents
+     * @return a set of {@link Consent} instances, converted from JSON
      */
-    List<Consent> fromJson(JSONArray json);
+    Set<Consent> fromJSON(JSONArray consentsJSON);
 }

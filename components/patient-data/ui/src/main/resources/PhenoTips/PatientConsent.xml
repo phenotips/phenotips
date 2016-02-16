@@ -267,21 +267,18 @@
 {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   /* hack; otherwise loading order for push is wrong */
-  var consentsModule = {
-    createNew: function ()
-    {
-    }
-  };
+  var consentsModule = {};
   require(['jquery'], function ($)
   {
     consentsModule.createNew = function ()
     {
       return {
         consentIdSuffix: "-consent-checkbox",
+
         classVariables: {
           consentsBlock: null,
           errorFunction: null,
-          successfulLoadCallback: null,
+          consentChangeCallback: null,
           baseUrl: null,
           action: null
         },
@@ -289,24 +286,28 @@
         /**
          * @param callback function fired when the consent are successfully loaded and displayed
          */
-        init: function (consentsBlock, action, baseUrlOrConsents, callback)
+        init: function (consentsBlock, action, baseUrlOrConsents, displayDetails, consentChangeCallback)
         {
           consentsBlock = $(consentsBlock);
           this.classVariables.consentsBlock = consentsBlock;
           this.classVariables.errorFunction = this.displayError(consentsBlock);
-          this.classVariables.successfulLoadCallback = callback;
+          this.classVariables.clearErrorFunction = this.clearError(consentsBlock);
+          this.classVariables.displayDetails = displayDetails;
+          this.classVariables.consentChangeCallback = consentChangeCallback;
           this.classVariables.action = action;
-          /* fixme modify */
+
+          // FIXME: get consents in velocity and do not make a REST call (works faster,
+          // less visible delay for the user()
 
           if (typeof baseUrlOrConsents == "string") {
-            /* is a base url */
+            // is a base url
             this.classVariables.baseUrl = baseUrlOrConsents;
             this.loadConsents(baseUrlOrConsents);
           } else if ($.isArray(baseUrlOrConsents)) {
-            /* is a consents array */
+            // is a consents array
             this.afterLoadAttempt(baseUrlOrConsents);
           }
-          /* otherwise do nothing*/
+          // otherwise do nothing
         },
 
         /** Loads a list of consents from a URL and executes a callback if successful. */
@@ -315,7 +316,7 @@
           $.get(baseUrl, function (consents)
           {
             _this.afterLoadAttempt(consents);
-          }).fail(_this.afterLoadAttempt)
+          }).fail(_this.afterLoadAttempt.bind(_this))
         },
 
         /** Should be called in blocks of code where consents should have been present.
@@ -328,11 +329,10 @@
             if (this.classVariables.baseUrl) {
               this.attachManagingListeners(this.classVariables.baseUrl);
             }
-            if (this.classVariables.successfulLoadCallback) {
-              this.classVariables.successfulLoadCallback();
+            if (this.classVariables.consentChangeCallback) {
+              this.attachStateChangeCallbacks(this.classVariables.consentChangeCallback);
             }
-            var continueButton = $('#patient-consent-continue');
-            continueButton.removeClass("hidden");
+            this.classVariables.clearErrorFunction();
             this.classVariables.consentsBlock.initialized = true;
           } else {
             this.classVariables.errorFunction();
@@ -344,7 +344,7 @@
         {
           var consentList = consentsBlock.children(".consents");
           if (consentList.length == 0) {
-            consentList = $("&lt;ul class='consents'&gt;");
+            consentList = $("&lt;div class='consents'&gt;");
             consentsBlock.append(consentList);
           }
           var list;
@@ -357,13 +357,16 @@
           } else if (action == "view") {
             var granted = this.filterGranted(consents);
             this.displayWarning(consentsBlock, granted);
-            list = granted.map(this.displayConsentDescription);
+            list = granted.map(this.displayConsentLabel);
           }
+
           if (list) {
+            var listHtml = $("&lt;ul class='consents-list'&gt;&lt;/ul&gt;");
             list.each(function (c)
             {
-              consentList.append(c)
+              listHtml.append(c);
             });
+            consentList.html(listHtml);
           }
         },
 
@@ -375,6 +378,9 @@
           if (!block) {
             block = this.classVariables.consentsBlock;
           }
+          if (!block) {  // e.g. when block is hidden
+            return [];
+          }
           var checked = block.find("input[type=checkbox]").filter(function(i, ch){
             return $(ch).is(":checked")
           });
@@ -382,6 +388,22 @@
             var id = $(ch).attr("id");
             return id.replace(_this.consentIdSuffix, "");
           }).get();
+        },
+
+        attachStateChangeCallbacks: function(callback)
+        {
+          var _this = this;
+          var consentList = $(".consents");
+          consentList.on("change", "li input", function (event)
+          {
+            var checkbox = $(event.target);
+            var name = checkbox.attr("data-bind");
+            if (checkbox.is(":checked")) {
+              callback(name, true);
+            } else {
+              callback(name, false);
+            }
+          })
         },
 
         attachManagingListeners: function (baseUrl)
@@ -407,7 +429,8 @@
           {
             var url = baseUrl + action;
             $.ajax(url, {data: consentId, dataType: "text", method: "PUT", contentType: "text/plain;charset=UTF-8"})
-              .fail(_this.classVariables.errorFunction);
+              .fail(_this.classVariables.errorFunction.bind(_this))
+              .success(_this.classVariables.clearErrorFunction.bind(_this));
           }
         },
 
@@ -421,39 +444,68 @@
 
         /* Display util functions */
 
+        displayConsentLabel: function (consent)
+        {
+          return $("&lt;li class='consent-label'&gt;" + consent.label + "&lt;/li&gt;");
+        },
+
         displayConsentDescription: function (consent)
         {
-          return $("&lt;li&gt;" + consent.description + "&lt;/li&gt;");
+          return $("&lt;li class='consent-description'&gt;" + consent.description + "&lt;/li&gt;");
         },
 
         displayGrantableConsent: function (consent)
         {
-          var checkbox = $("&lt;input type='checkbox'&gt;")
+          var checkbox = $("&lt;input type='checkbox' class='consent-checkbox'&gt;")
             .attr("id", consent.id + this.consentIdSuffix)
             .attr("data-bind", consent.id);
           if (consent.status == "yes") {
             checkbox.attr("checked", "checked");
           }
-          var label = "&lt;label&gt;&lt;/label&gt;";
-          return this.displayConsentDescription(consent).prepend(checkbox).wrapInner(label);
+          var labelHTML = "&lt;label&gt;&lt;/label&gt;";
+          var label = this.displayConsentLabel(consent).prepend(checkbox).wrapInner(labelHTML);
+          if (this.classVariables.displayDetails &amp;&amp; consent.description &amp;&amp; consent.description.length &gt; 0) {
+            return label.add(this.displayConsentDescription(consent));
+          } else {
+            return label;
+          }
         },
 
         displayWarning: function (consentsBlock, grantedConsents)
         {
+          // TODO:
+          // go over all consents
+          // - If some required are not granted display the error message.
+          // Independently:
+          //  - if none are granted display the message
+          //  - if some are granted display them
+
           if (grantedConsents.length == 0) {
-            consentsBlock.children('.warning-no-consents').removeClass('hidden');
+            consentsBlock.children('.view-title-required-not-granted').removeClass('hidden');
           }
         },
 
         displayError: function (consentsBlock)
         {
-          /* used only in the standard implementation (on the patient sheet) */
+          // used only in the standard implementation (on the patient sheet)
           var continueButton = $('#patient-consent-continue');
           return function ()
           {
             var errorBlock = consentsBlock.children(".error");
-            continueButton.hide();
+            continueButton.addClass("hidden");
             errorBlock.removeClass("hidden");
+          }
+        },
+
+        clearError: function (consentsBlock)
+        {
+          // used only in the standard implementation (on the patient sheet)
+          var continueButton = $('#patient-consent-continue');
+          return function ()
+          {
+            var errorBlock = consentsBlock.children(".error");
+            continueButton.removeClass("hidden");
+            errorBlock.addClass("hidden");
           }
         }
       }
@@ -466,28 +518,9 @@
         var action = consentsBlock.attr("class");
         var baseUrl = consentsBlock.attr("data-url");
 
-        consentsModule.createNew().init(consentsBlock, action, baseUrl, function ()
-        {
-          insertInfo(consentsBlock, action)
-        });
+        consentsModule.createNew().init(consentsBlock, action, baseUrl, true);
       }
     });
-
-    /* Display hack, the real way around this problem is to allow for descriptions in Consents API or to make the
-     following part of the description of the real consent (which can cause problems, given that the document
-     link will be valid only locally). */
-    function insertInfo(consentsBlock, action)
-    {
-      if (action == "edit") {
-        var consentList = consentsBlock.children(".consents");
-        var info = consentsBlock.children(".consent-form-label");
-        var realBullet = consentList.find("#real-consent-checkbox");
-        if (realBullet.length &gt; 0) {
-          realBullet.parent().after(info);
-          info.removeClass("hidden");
-        }
-      }
-    }
   });
 
   widgets.ConsentsModule = consentsModule;
@@ -601,31 +634,38 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>
-#consents-block.edit ul
+      <code>.consents ul
 {
   list-style-type: none;
 }
-
-.consents ul li
+.consents-list li
 {
   margin-bottom: 0.5em;
 }
-
-.consents .hint {
+.consents .hint
+{
   font-size: 100%;
 }
-
-.consent-form-label
+.consents-list .hint
 {
-  margin-top: 0.5em;
+  font-size: 100%;
 }
-
-#patient-consent-continue
+.consent-checkbox
+{
+  margin-right: 0.25em !important;
+}
+.consent-description
+{
+  margin-left: 2em;
+}
+.consent-update-button
 {
   margin: 1em 0 1em 2em;
 }
-</code>
+#HConsentsgranted
+{
+  margin-bottom: 0.75em;
+}</code>
     </property>
     <property>
       <contentType>CSS</contentType>
@@ -721,25 +761,19 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')
     (% class='consents-title' %)(((
       ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
     )))
-    (% class='warning-no-consents hidden' %)(((
-      {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
+    (% class='view-title-required-not-granted hidden' %)(((
+      {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
     )))
     (% class='error hidden' %)(((
       {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
     )))
-    {{html wiki='false' clean='false'}}
-    &lt;li class='consent-form-label hint hidden'&gt;
-      #set ($consentDoc = $xwiki.getDocument('PhenoTips.PatientConsent'))
-      #set ($formUrl = $consentDoc.getAttachmentURL('PhenomeCentral_Consent.pdf'))
-      $services.localization.render('PhenoTips.PatientConsent_message', ["$!{formUrl}"])
-    &lt;/li&gt;
-    &lt;ul class="consents" &gt;&lt;/ul&gt;
-    {{/html}}
+    (% class='consents' %)(((
 
+    )))
     #if ($xcontext.action == 'edit')
     {{html clean='false' wiki='false'}}##
-    &lt;span class="buttonwrapper hidden" id="patient-consent-continue"&gt;##
-        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_continue_btn')&lt;/a&gt;##
+    &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-continue"&gt;##
+        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_change_consents_btn')&lt;/a&gt;##
         &lt;/span&gt;##
     {{/html}}##
     #end

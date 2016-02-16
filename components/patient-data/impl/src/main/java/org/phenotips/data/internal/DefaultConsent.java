@@ -20,7 +20,13 @@ package org.phenotips.data.internal;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentStatus;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -31,60 +37,154 @@ import org.json.JSONObject;
  */
 public class DefaultConsent implements Consent
 {
-    private String id;
-    private String description;
+    private static final String JSON_KEY_ID = "id";
+    private static final String JSON_KEY_LABEL = "label";
+    private static final String JSON_KEY_DESCRIPTION = "description";
+    private static final String JSON_KEY_ISREQUIRED = "isRequired";
+    private static final String JSON_KEY_STATUS = "status";
+    private static final String JSON_KEY_FIELDS = "formFields";
+
+    private final String id;
+    private final String label;
+    private final String description;
+    private final List<String> formFields;
     private boolean required;
 
     private ConsentStatus status = ConsentStatus.NOT_SET;
 
-    DefaultConsent(String id, String description, boolean required)
+    /**
+     * @param id consent id
+     * @param label consent label/title (required)
+     * @param description consent detailed description (optional, may be null)
+     * @param required when true, no interaction with a document is allowed until this consent is granted
+     * @param formFields form fields which are only availablke when this consent is granted
+     */
+    public DefaultConsent(String id, String label, String description, boolean required, List<String> formFields)
     {
-        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(description)) {
-            throw new IllegalArgumentException("A consent cannot have empty id or description");
-        }
         this.id = id;
-        this.description = description;
+        this.label = label;
+        this.description = processDescription(description);
         this.required = required;
+        this.formFields = (formFields == null) ? null : Collections.unmodifiableList(formFields);
+        validate();
     }
 
-    @Override public String getId()
+    /**
+     * A constructor from JSON representation.
+     * @param consentJSON JSON in the format produced by toJSON()
+     */
+    public DefaultConsent(JSONObject consentJSON)
+    {
+        this.id = consentJSON.optString(JSON_KEY_ID);
+        this.label = consentJSON.optString(JSON_KEY_LABEL);
+        this.description = processDescription(consentJSON.optString(JSON_KEY_DESCRIPTION));
+        this.required = consentJSON.optBoolean(JSON_KEY_ISREQUIRED);
+        setStatus(ConsentStatus.fromString(consentJSON.optString(JSON_KEY_ISREQUIRED)));
+        JSONArray fields = consentJSON.optJSONArray(JSON_KEY_FIELDS);
+        if (fields == null) {
+            this.formFields = null;
+        } else {
+            this.formFields = new LinkedList<String>();
+            for (Object field: fields) {
+                this.formFields.add((String) field);
+            }
+        }
+        validate();
+    }
+
+    /**
+     * Converts empty descripton to null for consistency.
+     */
+    private static String processDescription(String rawDescription)
+    {
+        return (rawDescription != null && rawDescription.length() > 0) ? rawDescription : null;
+    }
+
+    private void validate()
+    {
+        if (StringUtils.isEmpty(this.id) || StringUtils.isEmpty(this.label)) {
+            throw new IllegalArgumentException("a consent cannot have empty id or description");
+        }
+    }
+
+    @Override
+    public String getId()
     {
         return this.id;
     }
 
-    @Override public String getDescription()
+    @Override
+    public String getLabel()
+    {
+        return this.label;
+    }
+
+    @Override
+    public String getDescription()
     {
         return this.description;
     }
 
-    @Override public ConsentStatus getStatus()
+    @Override
+    public ConsentStatus getStatus()
     {
         return this.status;
     }
 
-    @Override public void setStatus(ConsentStatus status)
+    @Override
+    public boolean isGranted()
     {
-        this.status = status;
+        return this.getStatus() == ConsentStatus.YES;
     }
 
-    @Override public boolean isRequired()
+    @Override
+    public void setStatus(ConsentStatus status)
+    {
+        if (status != null) {
+            this.status = status;
+        } else {
+            this.status = ConsentStatus.NOT_SET;
+        }
+    }
+
+    @Override
+    public boolean isRequired()
     {
         return this.required;
     }
 
-    @Override public JSONObject toJson()
+    @Override
+    public List<String> getFields()
     {
-        JSONObject json = new JSONObject();
-        json.put("id", this.getId());
-        json.put("description", this.getDescription());
-        json.put("isRequired", this.isRequired());
-        json.put("status", this.getStatus().toString());
-        return json;
+        return this.formFields;
     }
 
-    @Override public Consent fromJson(JSONObject json)
+    @Override
+    public boolean affectsAllFields()
     {
-        throw new UnsupportedOperationException();
+        return (this.formFields != null) && (this.formFields.size() == 0);
+    }
+
+    @Override
+    public boolean affectsSomeFields()
+    {
+        return this.formFields != null;
+    }
+
+    @Override
+    public JSONObject toJSON()
+    {
+        JSONObject json = new JSONObject();
+        json.put(JSON_KEY_ID, this.getId());
+        json.put(JSON_KEY_LABEL, this.getLabel());
+        json.put(JSON_KEY_DESCRIPTION, this.getDescription());
+        json.put(JSON_KEY_ISREQUIRED, this.isRequired());
+        json.put(JSON_KEY_STATUS, this.getStatus().toString());
+        if (this.formFields != null) {
+            JSONArray fields = new JSONArray(this.formFields);
+            json.put(JSON_KEY_FIELDS, fields);
+        }
+        return json;
     }
 
     /**
@@ -92,10 +192,12 @@ public class DefaultConsent implements Consent
      * @param from the consent whose state is to be copied
      * @return an instance which is identical to the `from` instance
      */
-    public static Consent copy(Consent from)
+    @Override
+    public Consent copy(ConsentStatus status)
     {
-        Consent copy = new DefaultConsent(from.getId(), from.getDescription(), from.isRequired());
-        copy.setStatus(from.getStatus());
+        Consent copy = new DefaultConsent(
+                this.getId(), this.getLabel(), this.getDescription(), this.isRequired(), this.getFields());
+        copy.setStatus(status);
         return copy;
     }
 }

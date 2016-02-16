@@ -33,4 +33,4 @@ org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater
 org.phenotips.data.internal.PatientDeathdateUpdater
 org.phenotips.data.internal.PatientExtendedPhenotypeUpdater
-org.phenotips.data.internal.PatientXWikiConsentManager
+org.phenotips.data.internal.PhenoTipsPatientConsentManager

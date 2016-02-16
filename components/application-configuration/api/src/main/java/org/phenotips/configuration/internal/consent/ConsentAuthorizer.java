@@ -23,8 +23,8 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-
 import java.util.List;
+import java.util.Set;
 
 /**
  * Grants authorization to keep a {@link RecordElement} enabled.
@@ -54,8 +54,7 @@ public interface ConsentAuthorizer
     List<RecordElement> filterForm(List<RecordElement> elements, Patient patient);
 
     /**
-     * Determines if any interactions with a patient record given the consents that have been granted should be
-     * allowed.
+     * Determines if all required (by the system) consents have been granted for the given patient record.
      *
      * @param patient record in question
      * @return {@link true} if the patient record can be modified or viewed, {@link false} otherwise
@@ -63,13 +62,12 @@ public interface ConsentAuthorizer
     boolean authorizeInteraction(Patient patient);
 
     /**
-     * Determines if any interactions with a patient record given the consents that have been granted should be
-     * allowed.
+     * Determines if the set of granted consents incldes all the required consents configured in the system.
      *
-     * @param grantedConsents list of consent ids that have been granted; can be {@link null}
-     * @return true if interactions with the patient record can occur, false otherwise.
+     * @param grantedConsents list of consents that have been granted; can be {@link null}.
+     * @return true if interactions with the patient record can occur given the set of consents, false otherwise.
      */
-    boolean authorizeInteraction(Iterable<String> grantedConsents);
+    boolean authorizeInteraction(Set<String> grantedConsents);
 
     /**
      * This {@link ConsentAuthorizer} takes into account several factors in deciding whether a {@link RecordElement} is
