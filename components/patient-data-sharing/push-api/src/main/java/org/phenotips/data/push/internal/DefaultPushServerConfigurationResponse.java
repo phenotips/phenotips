@@ -114,4 +114,10 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
     {
         return valueOrNull(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN);
     }
+
+    @Override
+    public JSONArray getConsents()
+    {
+        return this.response.optJSONArray(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_CONSENTS);
+    }
 }

@@ -20,7 +20,6 @@ package org.phenotips.data.receive.internal;
 import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.configuration.internal.consent.ConsentAuthorizer;
-import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
@@ -33,7 +32,6 @@ import org.phenotips.data.shareprotocol.ShareProtocol;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 import org.phenotips.security.authorization.AuthorizationService;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
@@ -50,7 +48,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +57,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -454,13 +453,13 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 return generateFailedActionResponse();
             }
 
-            List<String> consentIds = null;
+            Set<String> consentIds = null;
             String patientStateRaw = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE);
             if (patientStateRaw != null) {
                 consentIds = extractConsents(patientStateRaw);
-                /* there should not be any consent updates if consents are not enabled */
+                // there should not be any consent updates if consents are not enabled
                 if (!consentIds.isEmpty() && !consentAuthorizer.consentsGloballyEnabled()) {
-                    /* no key, as a non malicious user would never arrive to this execution point */
+                    // reject, as a non-malicious user would never arrive to this execution point
                     return this.generateFailedActionResponse();
                 }
             }
@@ -513,12 +512,11 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             JSONObject patientData = new JSONObject(patientJSON);
+            affectedPatient.updateFromJSON(patientData);
 
             if (consentIds != null) {
                 consentManager.setPatientConsents(affectedPatient, consentIds);
             }
-
-            affectedPatient.updateFromJSON(patientData);
 
             this.logger.warn("Updated patient successfully");
 
@@ -539,19 +537,21 @@ public class DefaultReceivePatientData implements ReceivePatientData
      * Exctacts the list of granted consents from a request
      * @param rawPatientState patient state JSON string directly from the {@link Request} object
      */
-    private List<String> extractConsents(String rawPatientState)
+    private Set<String> extractConsents(String rawPatientState)
     {
-        List<String> consents = new LinkedList<>();
+        Set<String> consents = new HashSet<>();
         JSONObject patientState = this.patientStateToJson(rawPatientState);
         if (patientState != null) {
             try {
                 JSONArray consentsJson =
-                    patientState.getJSONArray(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE_CONSENTS);
-                for (Object consent : consentsJson) {
-                    consents.add(consent.toString());
+                        patientState.optJSONArray(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTSTATE_CONSENTS);
+                if (consentsJson != null) {
+                    for (Object consent : consentsJson) {
+                        consents.add(consent.toString());
+                    }
                 }
             } catch (Exception ex) {
-                // do nothing
+                this.logger.error("Misformatted patient consent string: {}", ex.getMessage());
             }
         }
         return consents;
@@ -565,8 +565,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
         if (rawPatientState != null) {
             try {
                 return new JSONObject(URLDecoder.decode(rawPatientState, XWiki.DEFAULT_ENCODING));
+            } catch (JSONException ex) {
+                this.logger.error("Patient state JSON has errors: {}", ex.getMessage());
             } catch (Exception ex) {
-                // do nothing
+                this.logger.error("Error processing patient state: {}", ex.getMessage());
             }
         }
         return null;
@@ -600,6 +602,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
+            response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_CONSENTS,
+                    consentManager.toJSON(consentManager.getSystemConsents()));
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {
@@ -618,51 +622,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
                 response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN, token);
             }
-            return response;
-
-        } catch (Exception ex) {
-            this.logger.error("Unable to perform getConfig [{}] {}", ex.getMessage(), ex);
-            return generateFailedActionResponse();
-        }
-    }
-
-    @Override
-    public JSONObject getPatientState()
-    {
-        try {
-            XWikiContext context = getXContext();
-            XWikiRequest request = context.getRequest();
-
-            this.logger.warn("Get state request from remote [{}]", request.getRemoteAddr());
-
-            JSONObject loginError = validateLogin(request, context);
-            if (loginError != null) {
-                return loginError;
-            }
-
-            /* If there is a patient, than return the state of the patient; if there is no existing patient,
-            * then return the state as it will be when a new patient is created. */
-            String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
-            String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
-            JSONArray consents;
-            if (guid != null) {
-                Patient patient =  getPatientByGUID(guid);
-                if (patient == null) {
-                    return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGUID);
-                }
-                if (!userCanAccessPatient(userName, patient)) {
-                    return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
-                }
-                List<Consent> patientConsents = consentManager.loadConsentsFromPatient(patient);
-                consents = consentManager.toJson(patientConsents);
-            } else {
-                List<Consent> systemConsents = consentManager.getSystemConsents();
-                consents = consentManager.toJson(systemConsents);
-            }
-
-            JSONObject response = generateSuccessfulResponse();
-            response.put(ShareProtocol.SERVER_JSON_GETPATIENTSTATE_KEY_NAME_CONSENTS, consents);
-
             return response;
 
         } catch (Exception ex) {

@@ -122,9 +122,9 @@
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.PushPatientWidget = Class.create({
     initialize : function() {
-      /* Due to loading problems, this will be instantiated on first use. */
+      // Due to loading problems, this will be instantiated on first use
       this._consentsModule = null;
-      this._consentsModulePresent = PhenoTips.widgets.ConsentsModule ? true : false;
+
       // ---------------------------------------------------------------------
       // Search for the push patient elements. Exist if missing.
       // ---------------------------------------------------------------------
@@ -187,7 +187,7 @@
 	                    _this._launchUI();
 	                  }
 	                },
-	                /* Interaction parameters */
+	                // Interaction parameters
 	                { confirmationText: "$services.localization.render('phenotips.PushPatient.confirmationText')", showCancelButton: true }
 	              );
 	            } else {
@@ -218,14 +218,21 @@
       this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
                      .insert(generateSection('user-selection', "$services.localization.render('phenotips.patientSharing.push.dialog.authentication.label')","$services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint')"))
                      .insert(generateSection('group-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label')","$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint')"));
-      if (this._consentsModulePresent) {
-        this._container.insert(generateSection('consents-section',
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')"));
-      }
-      if (!this._pushManyPatients) {
-          this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
-      }
+
+      this._container.insert(generateSection('consents-section',
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')"));
+
+      // TODO: a sectionto preview patient data being pushd. It used to be easy, but
+      //       now that we push a lot of different fields the preview is disabled until
+      //       we come up with an easy way to display all of the data
+      // if (!this._pushManyPatients) {
+      //   this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
+      //   this._fieldsManager = this._container.down('#fields-selection .section-contents');
+      // } else {
+      this._fieldsManager = null;
+
+      this._retryButtonClass = 'button secondary push-retry-button';
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
       var labelApprove = new Element('label', {'id':'approve-label'});
@@ -242,16 +249,14 @@
       this._serverManager = this._container.down('#server-selection .section-contents');
       this._userManager   = this._container.down('#user-selection .section-contents');
       this._groupManager  = this._container.down('#group-selection .section-contents');
-      if (this._consentsModulePresent) {
-        this._consentsSection = this._container.down('#consents-section');
-        this._consentsManager = this._consentsSection.down('.section-contents');
-        /* the section should appear only if the remote has consents configured */
-        this._consentsSection.hide();
-        /* inserting the error message */
-        this._consentsManager.insert('&lt;div class="box warningmessage hidden error"&gt;' +
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.warning')&lt;/div&gt;");
-      }
-      this._fieldsManager = this._pushManyPatients ? null : this._container.down('#fields-selection .section-contents');
+
+      this._consentsSection = this._container.down('#consents-section');
+      this._consentsManager = this._consentsSection.down('.section-contents');
+      // the section should appear only if the remote has consents configured
+      this._consentsSection.hide();
+      // inserting the error message
+      this._consentsManager.insert('&lt;div class="box warningmessage hidden error"&gt;' +
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.warning')&lt;/div&gt;");
 
       this._initServerSelector();
       this._initMainFormActions();
@@ -269,7 +274,7 @@
     },
 
     _generateNoPatientJSONMessage: function(fieldList) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._generateDataPreview(fieldList);
@@ -278,7 +283,7 @@
     },
 
     _generateNoServerListMessage: function() {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._launchUI();
@@ -287,7 +292,7 @@
     },
 
     _generateCantConnectToServerMessage: function(failMessage, username, password) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._loginAndGetConfig(username, password);
@@ -308,7 +313,7 @@
 
       if (retryButton)
       {
-        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryButton.observe('click', function(event) {
           _this._pushPatient();
@@ -317,7 +322,7 @@
       }
       if (retryAsNew)
       {
-        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retryAsNew')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retryAsNew')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryAsNewButton.observe('click', function(event) {
           _this._selectPushNewPatient();
@@ -332,7 +337,9 @@
       this._patientData = undefined;
 
       this._groupManager.update(this._generateServerAndUserFirstMessage());
-      !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
+
+      // TODO: fields sectionis disabled for now
+      // !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
 
       this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
       this._approveElement.hide();
@@ -400,6 +407,8 @@
       document.stopObserving('xwiki:document:saved', _this._observeSave);
 
       if (this.__launchUIAjaxInProgress) { return; }
+
+      this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
 
       // reset data about available push servers
       this._remoteServers       = {};
@@ -531,9 +540,7 @@
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
             this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
-            if(_this._consentsModulePresent) {
-              this._populateConsentsList();
-            }
+            this._populateConsentsList(this._lastLoginResponse.consents);
           }
           else {
             console.log("--&gt; login failed!");
@@ -713,11 +720,14 @@
           this._remoteServers[this._selectedServer]["noUpdates"] = true;
       }
       this._displayGroupPicker(groupList);
-      if (this._pushManyPatients) {
-        this._showApproveCheckbox();
-      } else {
-        this._generateDataPreview(fieldList);
-      }
+
+      this._showApproveCheckbox();
+      // TODO: patient preview is disabled for now
+      // if (this._pushManyPatients) {
+      //   this._showApproveCheckbox();
+      // } else {
+      //  this._generateDataPreview(fieldList);
+      // }
     },
 
     _displayGroupPicker: function(groupList) {
@@ -769,7 +779,7 @@
     _generateDataPreview: function(fieldList) {
       this._patientFieldList = fieldList;
       var _this = this;
-      //AJAX 5: local AJAX request to get patient JSON to let the user see the actual data being pushed
+      //AJAX 4: local AJAX request to get patient JSON to let the user see the actual data being pushed
       new Ajax.Request(this._serviceURL, {
         method: _this._container.method,
         parameters : { "do":"getpatientjson", "patientid":_this._patientId, "fields":Object.toJSON(this._patientFieldList) },
@@ -861,50 +871,19 @@
     // ---------------------------------------------------------------------
     // Generate consents section UI
     // ---------------------------------------------------------------------
-    _populateConsentsList: function() {
-      var _this = this;
-      if (!this._consentsModule) {
-        this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
-      }
-      var consentsConfiguredOnRemote = true;
-      //AJAX 4: Consents present on the remote server
-      new Ajax.Request(this._serviceURL, {
-        method: _this._container.method,
-        parameters: { "do": "getremotepatientstate", 'serverid': this._selectedServer, "patientid": _this._patientId},
-          onCreate: function ()
-          {
-            console.log("PUSH: get patient state JSON - start");
-            _this._disableInputs();
-          },
-          onSuccess: function (response)
-          {
-            console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-            /* iff there are any consents to grant - show the section */
-            if (response.responseJSON.consents.length &gt; 1) {
-              _this._consentsModule.init(_this._consentsManager, "edit", response.responseJSON.consents);
-            } else {
-              consentsConfiguredOnRemote = false;
-            }
-          },
-          onFailure: function (response)
-          {
-            console.log("PUSH: unable to get patient state JSON");
-            _this._consentsModule.init(_this._consentsManager, "edit", []);
-          },
-          on0: function (response)
-          {
-            _this._consentsModule.init(_this._consentsManager, "edit", []);
-          },
-          onComplete: function ()
-          {
-            if(consentsConfiguredOnRemote) {
-              _this._consentsSection.show();
-            }
-            _this._restoreInputs();
-            console.log("PUSH: get patient state JSON - complete");
-          }
+    _populateConsentsList: function(consentJSONArray) {
+        if (consentJSONArray == null || consentJSONArray.length == 0) {
+            this._consentsSection.hide();
+            return;
         }
-      );
+
+        var onConsentStateChange = function(consentName, consentState) {
+            this._pushResultSection.update("");
+            this._checkBoxApprove.checked = false;
+        }.bind(this);
+        this._consentsModule.init(this._consentsManager, "edit", consentJSONArray, false /* do not display consent details */, onConsentStateChange);
+
+        this._consentsSection.show();
     },
 
     // ---------------------------------------------------------------------
@@ -1124,10 +1103,7 @@
             params["groupname"] = radioSelectValue;
         }
 
-        var patientState = {};
-        if (_this._consentsModulePresent &amp;&amp; _this._consentsModule) {
-          patientState["consents"] = _this._consentsModule.listUIGranted(/* the HTML holder can be omitted */);
-        }
+        var patientState = { "consents" : _this._consentsModule.listUIGranted() };
         params["patientState"] = stringifyObject(patientState);
 
         console.log("PUSH request params: " + stringifyObject(params));
@@ -1184,6 +1160,9 @@
                     } else
                     if (res.cantconnect) {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedCantConnect')", true));
+                    } else
+                    if (res.missingconsent) {
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedMissingConsent')", true));
                     } else {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailed')", true));
                     }
@@ -1254,6 +1233,8 @@
                            reason = "$services.localization.render('phenotips.PushPatient.incorrectGuid')";
                        } else if (previousPushResult.accessdeniedguid) {
                            reason = "$services.localization.render('phenotips.PushPatient.accessDenied')";
+                       } else if (previousPushResult.missingconsent) {
+                           reason = "$services.localization.render('phenotips.PushPatient.pushFailedMissingConsent')";
                        }
                        pushResult.insert(' ' + reason + "&lt;br/&gt;");
                    } else {
@@ -1317,7 +1298,7 @@
 // End PhenoTips augmentation.
 
 
-// overwrite thebehaviour of the "export/push to" button on the export preferences page:
+// overwrite the behaviour of the "export/push to" button on the export preferences page:
 // get the selected patients and fields and push using this javascript
 ['xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {
@@ -1610,7 +1591,7 @@ function _printObjectInternal(o, level) {
 }
 .confirm-push {
   padding: .5em;
-  margin: .5em 0;
+  margin: 1.25em 0 0.5em 0;
   font-weight: bold;
 }
 .multi-push-results {
@@ -1625,6 +1606,13 @@ function _printObjectInternal(o, level) {
   max-height: 150px;
   width: 250px;
   padding: 0.5em;
+}
+.push-retry-button {
+  margin-left: 0.5em !important;
+}
+.consents {
+  margin-top: 0.75em;
+  margin-right: 3em;
 }</code>
     </property>
     <property>
@@ -1708,6 +1696,7 @@ function _printObjectInternal(o, level) {
     </class>
     <property>
       <content>{{velocity}}
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
 #set ($service = $services.pushPatient)

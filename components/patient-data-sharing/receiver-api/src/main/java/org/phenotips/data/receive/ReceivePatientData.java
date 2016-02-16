@@ -69,19 +69,6 @@ public interface ReceivePatientData
     JSONObject getConfiguration();
 
     /**
-     * A state of a patient record on the receiving server can affect the actions of the sending server (or user).
-     * This function validates the username and credentials (password or user_token) given in the request, and iff
-     * credentials are valid:
-     * - returns the consents and their statuses for a patient with a given guid, iff the patient exists. If no guid is
-     * given, returns the consents that any new patient record will be created with.
-     * @return {@code JSONObject} with {@code "success"} set to {@code true} if the request was successful,
-     * and set to {@code false} in case of any failures. On success the following fields are set:
-     *  "success": {@code true}
-     *  "consents": {@code JSONArray}, list of consents in the format produced by {@link org.phenotips.data.Consent}
-     */
-    JSONObject getPatientState();
-
-    /**
      * Receives patient data and either updates an existing patient or creates a new patient.
      * <p>
      * Requires a valid username and credentials to be supplied in the request, which are validated the same way
