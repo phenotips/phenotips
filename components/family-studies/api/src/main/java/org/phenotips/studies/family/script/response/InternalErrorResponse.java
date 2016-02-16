@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -28,18 +28,22 @@ public class InternalErrorResponse extends AbstractJSONResponse
 {
     /**
      * Default constructor, takes no parameters.
+     *
      * @param errorMessage Internal error message, supposedly obtained form an exception.
      */
-    public InternalErrorResponse(String errorMessage) {
+    public InternalErrorResponse(String errorMessage)
+    {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.UNKNOWN_ERROR));
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

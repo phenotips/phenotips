@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -29,16 +29,19 @@ public class OKJSONResponse extends AbstractJSONResponse
     /**
      * Default constructor, takes no parameters.
      */
-    public OKJSONResponse() {
+    public OKJSONResponse()
+    {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return new JSONObject();
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return false;
     }
 }

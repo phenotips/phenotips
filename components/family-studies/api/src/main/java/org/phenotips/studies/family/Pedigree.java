@@ -24,7 +24,7 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * @version $Id$

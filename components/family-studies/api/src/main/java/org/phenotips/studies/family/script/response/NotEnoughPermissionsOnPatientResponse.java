@@ -21,8 +21,8 @@ import org.xwiki.security.authorization.Right;
 
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -39,19 +39,21 @@ public class NotEnoughPermissionsOnPatientResponse extends AbstractJSONResponse
      * Default constructor, takes no parameters.
      *
      * @param patientIDs List of patients which the current user does not have enough
-     * @param missingRight The type of Right that the current user is missing
-     * permissions to perform the requested action (view or edit, depending on the action).
+     * @param missingRight The type of Right that the current user is missing permissions to perform the requested
+     *            action (view or edit, depending on the action).
      */
-    public NotEnoughPermissionsOnPatientResponse(List<String> patientIDs, Right missingRight) {
+    public NotEnoughPermissionsOnPatientResponse(List<String> patientIDs, Right missingRight)
+    {
         this.listOfInaccessiblePatient = patientIDs;
         this.missingRight = missingRight;
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         JSONArray patientList = new JSONArray();
         for (String patient : this.listOfInaccessiblePatient) {
-            patientList.add(patient);
+            patientList.put(patient);
         }
         JSONObject reply = baseErrorJSON(getErrorMessage((this.missingRight == Right.EDIT)
             ? PedigreeScriptServiceErrorMessage.INSUFFICIENT_PERMISSIONS_ON_PATIENT_EDIT
@@ -63,7 +65,8 @@ public class NotEnoughPermissionsOnPatientResponse extends AbstractJSONResponse
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

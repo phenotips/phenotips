@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -27,20 +27,24 @@ import net.sf.json.JSONObject;
 public class AlreadyHasFamilyResponse extends AbstractJSONResponse
 {
     private String patientId;
+
     private String familyId;
 
     /**
      * Default constructor, takes no parameters.
+     *
      * @param patientId Id of the patient which already belongs ot another family
      * @param familyId Id of the family that patient already belongs to.
      */
-    public AlreadyHasFamilyResponse(String patientId, String familyId) {
+    public AlreadyHasFamilyResponse(String patientId, String familyId)
+    {
         this.patientId = patientId;
         this.familyId = familyId;
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         JSONObject reply = baseErrorJSON(
             getErrorMessage(PedigreeScriptServiceErrorMessage.ALREADY_HAS_FAMILY, this.patientId, this.familyId));
         reply.put("patientId", this.patientId);
@@ -49,7 +53,8 @@ public class AlreadyHasFamilyResponse extends AbstractJSONResponse
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }
