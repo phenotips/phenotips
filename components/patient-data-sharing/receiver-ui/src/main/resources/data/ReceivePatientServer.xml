@@ -94,7 +94,6 @@
     <user_token_life_in_days>
       <customDisplay/>
       <disabled>0</disabled>
-      <defaultValue>1</defaultValue>
       <name>user_token_life_in_days</name>
       <number>6</number>
       <numberType>long</numberType>
