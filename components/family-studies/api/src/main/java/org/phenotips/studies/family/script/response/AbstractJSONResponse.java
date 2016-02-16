@@ -31,7 +31,7 @@ import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 import java.util.Locale;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Passed around to preserve important error information. Holds onto a status (modelled after HTTP statuses), a message,
@@ -130,7 +130,8 @@ public abstract class AbstractJSONResponse implements JSONResponse
         return wikiPrinter.toString();
     }
 
-    protected String getErrorMessage(PedigreeScriptServiceErrorMessage messageCode, Object... parameters) {
+    protected String getErrorMessage(PedigreeScriptServiceErrorMessage messageCode, Object... parameters)
+    {
         String messageKey = messageCode.getClass().getSimpleName() + "." + messageCode.toString();
         return AbstractJSONResponse.translate(messageKey, parameters);
     }

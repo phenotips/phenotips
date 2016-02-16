@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -29,16 +29,19 @@ public class NotEnoughPermissionsOnFamilyResponse extends AbstractJSONResponse
     /**
      * Default constructor, takes no parameters.
      */
-    public NotEnoughPermissionsOnFamilyResponse() {
+    public NotEnoughPermissionsOnFamilyResponse()
+    {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.INSUFFICIENT_PERMISSIONS_ON_FAMILY));
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

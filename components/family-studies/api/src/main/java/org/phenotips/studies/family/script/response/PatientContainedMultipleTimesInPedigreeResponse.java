@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -30,20 +30,24 @@ public class PatientContainedMultipleTimesInPedigreeResponse extends AbstractJSO
 
     /**
      * Default constructor, takes no parameters.
-     * @param duplicateId An id which is contained more than once in the pedigree. If there is more than one
-     * such ID, any one of them may be returned as the response.
+     *
+     * @param duplicateId An id which is contained more than once in the pedigree. If there is more than one such ID,
+     *            any one of them may be returned as the response.
      */
-    public PatientContainedMultipleTimesInPedigreeResponse(String duplicateId) {
+    public PatientContainedMultipleTimesInPedigreeResponse(String duplicateId)
+    {
         this.duplicateId = duplicateId;
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.DUPLICATE_PATIENT, this.duplicateId));
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

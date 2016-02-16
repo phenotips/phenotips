@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * @version $Id$
@@ -26,12 +26,14 @@ public interface JSONResponse
 {
     /**
      * Returns response as a JSONObject.
+     *
      * @return JSONObject
      */
     JSONObject toJSON();
 
     /**
-     * A quick way to check if an error has occured or som epermissions are missing, etc.
+     * A quick way to check if an error has occurred or some permissions are missing, etc.
+     *
      * @return true iff this response indicates an error (E.g. action not permitted, ID not found)
      */
     boolean isErrorResponse();

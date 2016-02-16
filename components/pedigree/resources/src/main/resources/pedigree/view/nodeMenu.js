@@ -661,26 +661,8 @@ define([
                 var patientPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-patients', name: data.name});
                 var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
                 newPatientButton.observe('click', function(event) {
-
-                    var _this = this;
-                    var _onPatientCreated = function(response) {
-                        if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
-                            console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
-                            Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID,
-                                                                                    "eventDetails": {"loadPatientProperties": false} });
-                            _this.reposition();
-                        } else {
-                            alert("Patient creation failed");
-                        }
-                    }
-
-                    var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                    document.fire("pedigree:load:start");
-                    new Ajax.Request(createPatientURL, {
-                        method: "GET",
-                        onSuccess: _onPatientCreated,
-                        onComplete: function() { document.fire("pedigree:load:finish"); }
-                    });
+                     Event.fire(patientPicker, 'custom:selection:changed', { "useValue": null, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                    _this.reposition();
                 });
                 patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
                 result.insert(patientNewLinkContainer);

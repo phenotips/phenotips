@@ -17,7 +17,7 @@
  */
 package org.phenotips.studies.family.script.response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * JSON Response to client. Formats information from StatusResponse.
@@ -29,16 +29,19 @@ public class InvalidFamilyIdResponse extends AbstractJSONResponse
     /**
      * Default constructor, takes no parameters.
      */
-    public InvalidFamilyIdResponse() {
+    public InvalidFamilyIdResponse()
+    {
     }
 
     @Override
-    public JSONObject toJSON() {
+    public JSONObject toJSON()
+    {
         return baseErrorJSON(getErrorMessage(PedigreeScriptServiceErrorMessage.INVALID_FAMILY_ID));
     }
 
     @Override
-    public boolean isErrorResponse() {
+    public boolean isErrorResponse()
+    {
         return true;
     }
 }

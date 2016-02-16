@@ -48,7 +48,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Processes pedigree from UI.
@@ -91,7 +91,7 @@ public class PedigreeUtils
         }
         if (useCurrentUser
             && !this.authorizationService.hasAccess(
-                    this.userManager.getCurrentUser(), Right.EDIT, patient.getDocument())) {
+                this.userManager.getCurrentUser(), Right.EDIT, patient.getDocument())) {
             return new NotEnoughPermissionsOnPatientResponse(Arrays.asList(patientToLinkId), Right.EDIT);
         }
         Family familyForLinkedPatient = familyRepository.getFamilyForPatient(patient);
@@ -185,9 +185,9 @@ public class PedigreeUtils
 
         // TODO: do we care?
         // Edge case - empty list of new members
-        //if (newMembers.size() < 1) {
-        //    return ...
-        //}
+        // if (newMembers.size() < 1) {
+        // return ...
+        // }
 
         String duplicateID = this.findDuplicate(newMembers);
         if (duplicateID != null) {
@@ -214,7 +214,7 @@ public class PedigreeUtils
             List<JSONObject> patientsJson = this.pedigreeConverter.convert(pedigree);
 
             for (JSONObject singlePatient : patientsJson) {
-                if (singlePatient.containsKey(idKey)) {
+                if (singlePatient.has(idKey)) {
                     Patient patient = this.patientRepository.getPatientById(singlePatient.getString(idKey));
                     if (useCurrentUser
                         && !this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocument())) {

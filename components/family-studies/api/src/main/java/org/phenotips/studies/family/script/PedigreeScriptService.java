@@ -31,7 +31,6 @@ import org.phenotips.studies.family.script.response.NotEnoughPermissionsOnPatien
 import org.phenotips.studies.family.script.response.PatientHasNoFamilyResponse;
 
 import org.xwiki.component.annotation.Component;
-
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -43,8 +42,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Script service for working with families. All methods assume actions are performed by current user and do
@@ -110,7 +109,6 @@ public class PedigreeScriptService implements ScriptService
         return new FamilyInfoJSONResponse(family);
     }
 
-
     /**
      * Checks if a patient can be linked to a family. The id of the patient to link is patientItLinkId. The family is
      * given by documentId: If document is a family id, it is read directly by its id. If it's a patient id, the family
@@ -125,12 +123,12 @@ public class PedigreeScriptService implements ScriptService
         Family family = this.familyRepository.getFamilyById(familyId);
         if (family != null) {
             if (!this.authorizationService.hasAccess(
-                    this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference())) {
+                this.userManager.getCurrentUser(), Right.EDIT, family.getDocumentReference())) {
                 return new NotEnoughPermissionsOnFamilyResponse();
             }
         }
         // else: if family == null mewans linking to new family, which will be creatd by current user and thus
-        //       current user will have edit rights
+        // current user will have edit rights
         return this.pedigreeUtils.canPatientBeAddedToFamily(family, patientToLinkId, true);
     }
 
@@ -147,7 +145,7 @@ public class PedigreeScriptService implements ScriptService
     public JSONResponse savePedigree(String familyId, String json, String image)
     {
         try {
-            JSONObject pedigreeJSON = JSONObject.fromObject(json);
+            JSONObject pedigreeJSON = new JSONObject(json);
             return this.pedigreeUtils.savePedigree(familyId, pedigreeJSON, image, true);
         } catch (JSONException ex) {
             return new InvalidInputJSONResponse(json);
