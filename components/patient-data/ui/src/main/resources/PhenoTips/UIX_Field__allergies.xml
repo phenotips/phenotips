@@ -158,8 +158,7 @@ enabled=true
 order=2
 required=
 fields=allergies,NKDA
-pt_class=PhenoTips.AllergiesDataClass
-privacy_level=1</parameters>
+pt_class=PhenoTips.AllergiesDataClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>

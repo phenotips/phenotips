@@ -133,8 +133,7 @@
 enabled=true
 required=
 order=4
-fields=maternal_ethnicity,paternal_ethnicity
-required_consents=share_history</parameters>
+fields=maternal_ethnicity,paternal_ethnicity</parameters>
     </property>
     <property>
       <scope>wiki</scope>

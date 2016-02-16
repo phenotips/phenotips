@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=12
-fields=global_mode_of_inheritance
-required_consents=real</parameters>
+fields=global_mode_of_inheritance</parameters>
     </property>
     <property>
       <scope>wiki</scope>

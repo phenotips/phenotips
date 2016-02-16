@@ -132,8 +132,7 @@
 enabled=true
 required=
 order=4
-fields=prenatal_phenotype,negative_prenatal_phenotype
-required_consents=share_history</parameters>
+fields=prenatal_phenotype,negative_prenatal_phenotype</parameters>
     </property>
     <property>
       <scope>wiki</scope>

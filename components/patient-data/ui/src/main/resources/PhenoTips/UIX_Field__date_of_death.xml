@@ -145,8 +145,7 @@ enabled=true
 required=
 order=6
 fields=date_of_death, date_of_death_unknown
-contains_PII=true
-required_consents=real</parameters>
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

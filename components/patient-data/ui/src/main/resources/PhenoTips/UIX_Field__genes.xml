@@ -553,8 +553,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 enabled=true
 required=
 order=1
-fields=
-required_consents=real</parameters>
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

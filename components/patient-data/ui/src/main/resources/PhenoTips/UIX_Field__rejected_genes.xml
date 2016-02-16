@@ -299,8 +299,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__rejected_genes')##
 enabled=true
 required=
 order=2
-fields=
-required_consents=real</parameters>
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=1
-fields=omim_id
-required_consents=real</parameters>
+fields=omim_id</parameters>
     </property>
     <property>
       <scope>wiki</scope>
