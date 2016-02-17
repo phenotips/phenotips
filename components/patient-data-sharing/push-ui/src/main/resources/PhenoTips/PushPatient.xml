@@ -1278,7 +1278,7 @@
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content
-        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
+        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
           onSuccess: function(transport) {
             var content = dialog.dialogBox._x_contentPlug;
             content.update(transport.responseText);

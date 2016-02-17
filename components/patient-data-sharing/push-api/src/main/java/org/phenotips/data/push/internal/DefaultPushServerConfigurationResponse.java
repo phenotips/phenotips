@@ -93,7 +93,7 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
 
             RecordConfiguration patientConfig = configurationManager.getActiveConfiguration();
 
-            Set<String> commonFields = new TreeSet<String>(patientConfig.getEnabledNonIdentifiableFieldNames());
+            Set<String> commonFields = new TreeSet<String>(patientConfig.getEnabledFieldNames());
 
             // From the non-PII fields available, keep only those that are also enabled on the remote server
             commonFields.retainAll(remoteAcceptedFields);

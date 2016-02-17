@@ -596,7 +596,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             List<String> acceptedFields =
-                this.configurationManager.getActiveConfiguration().getEnabledNonIdentifiableFieldNames();
+                this.configurationManager.getActiveConfiguration().getEnabledFieldNames();
 
             JSONObject response = generateSuccessfulResponse();
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
