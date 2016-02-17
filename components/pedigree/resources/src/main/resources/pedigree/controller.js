@@ -624,18 +624,22 @@ define([
 
                         if (!event.memo.noUndoRedo) {
                             var loadPatientProperties = true;
-                            if (event.memo.hasOwnProperty("details")
-                                && event.memo.details.hasOwnProperty("loadPatientProperties")) {
-                                loadPatientProperties = event.memo.details.loadPatientProperties;
+                            var skipConfirmDialogue = false;
+                            if (event.memo.hasOwnProperty("details")) {
+                                if (event.memo.details.hasOwnProperty("loadPatientProperties")) {
+                                    loadPatientProperties = event.memo.details.loadPatientProperties;
+                                }
+                                if (event.memo.details.hasOwnProperty("skipConfirmDialogue")) {
+                                    skipConfirmDialogue = event.memo.details.skipConfirmDialogue;
+                                }
                             }
-                            Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties);
+                            Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties, skipConfirmDialogue);
                         } else {
                             // if this is a redo event skip all the warnings
                             setLink(event.memo.clearOldData);
                         }
                     }
-                    else
-                    if (modificationType == "makePlaceholder") {
+                    else if (modificationType == "makePlaceholder") {
                         // TODO
                     }
                 }
@@ -942,8 +946,8 @@ define([
             }
         }
     }
-
-    Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties)
+    
+    Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties, skipConfirmDialogue)
     {
         var onCancelAssignPatient = function() {
             // clear link input field in node menu
@@ -959,80 +963,85 @@ define([
                 callbackOnValid(clearParameter, false);
             }
         }
-
-        if (linkID == "") {
-            var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-            editor.getOkCancelDialogue().showWithCheckbox("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
-                    "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                    "1) You will have the option to re-assign " + oldLinkID + " to another place in the pedigree<br><br>" +
-                    "2) You will have the option to leave " + oldLinkID + " unassigned and thus completely unlinked from the " + editor.getFamilyData().getFamilyId() + " family.</div>",
-                    'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
-            return;
-        }
-
-        var allLinkedNodes = editor.getGraph().getAllPatientLinks();
-        if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
-            var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
-            editor.getView().unmarkAll();
-            editor.getView().markNode(currentLinkedNodeID);
-            var onCancel = function() {
-                editor.getView().unmarkAll();
-                onCancelAssignPatient();
+        
+        if (skipConfirmDialogue) {
+    		// assigning a new patient
+        	processLinkCallback(false);
+    	} else {
+    		if (linkID == "") {
+                var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
+                editor.getOkCancelDialogue().showWithCheckbox("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
+                        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                        "1) You will have the option to re-assign " + oldLinkID + " to another place in the pedigree<br><br>" +
+                        "2) You will have the option to leave " + oldLinkID + " unassigned and thus completely unlinked from the " + editor.getFamilyData().getFamilyId() + " family.</div>",
+                        'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
+                return;
             }
-            editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the indiviudal currently selected?",
-                                                   "Re-link patient " + linkID + " to this node?",
-                                                   'Clear data from the pedigree node currently linked to this patient', true,
-                                                   "OK", processLinkCallback, "Cancel", onCancel );
-            return;
-        }
 
-        var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
-        new Ajax.Request(familyServiceURL, {
-            method: 'POST',
-            onSuccess: function(response) {
-                if (response.responseJSON) {
-                    if (!response.responseJSON.validLink) {
-                        SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
-                                "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
-                    } else {
-                        if (loadPatientProperties) {
-                            var clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
-                        } else {
-                            var clearPropertiesMsg = "";
-                        }
-
-                        var setDoNotShow = function(checkBoxStatus) {
-                            if (checkBoxStatus) {
-                                editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
-                            }
-                        };
-
-                        var processLinking = function(topMessage, notesMessage) {
-                            var alreadyWasInFamily = editor.isFamilyMember(linkID);
-                            if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
-                                editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
-                                        "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
-                                        notesMessage + "</div>",
-                                        "Adding a patient",
-                                        "Do not show this warning again<br>", false,
-                                        "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processLinkCallback() },
-                                        "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); onCancelAssignPatient() });
-                            } else {
-                                processLinkCallback();
-                            }
-                        }
-
-                        processLinking("Do you approve the addition of patient " + linkID + " to this family?<br>",
-                                "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
-                                "2) Adding a patient to a family will automatically grant users who can modify that patient's record the same level of access to the family page." + clearPropertiesMsg);
-                    }
-                } else  {
-                    editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',
-                            'Error verifying patient link', "OK", onCancelAssignPatient );
+            var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+            if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+                var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
+                editor.getView().unmarkAll();
+                editor.getView().markNode(currentLinkedNodeID);
+                var onCancel = function() {
+                    editor.getView().unmarkAll();
+                    onCancelAssignPatient();
                 }
-            },
-            parameters: {"family_id": editor.getFamilyData().getFamilyId(), "patient_to_link_id": linkID }
-        });
+                editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the indiviudal currently selected?",
+                                                       "Re-link patient " + linkID + " to this node?",
+                                                       'Clear data from the pedigree node currently linked to this patient', true,
+                                                       "OK", processLinkCallback, "Cancel", onCancel );
+                return;
+            }
+
+            var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
+            new Ajax.Request(familyServiceURL, {
+                method: 'POST',
+                onSuccess: function(response) {
+                    if (response.responseJSON) {
+                        if (!response.responseJSON.validLink) {
+                            SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON,
+                                    "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
+                        } else {
+                            if (loadPatientProperties) {
+                                var clearPropertiesMsg = "<br><br>3) All data entered for this individual in the pedigree will be replaced by information pulled from the patient record  " + linkID + ".";
+                            } else {
+                                var clearPropertiesMsg = "";
+                            }
+
+                            var setDoNotShow = function(checkBoxStatus) {
+                                if (checkBoxStatus) {
+                                    editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
+                                }
+                            };
+
+                            var processLinking = function(topMessage, notesMessage) {
+                                var alreadyWasInFamily = editor.isFamilyMember(linkID);
+                                if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                                    editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
+                                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                                            notesMessage + "</div>",
+                                            "Adding a patient",
+                                            "Do not show this warning again<br>", false,
+                                            "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processLinkCallback() },
+                                            "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); onCancelAssignPatient() });
+                                } else {
+                                    processLinkCallback();
+                                }
+                            }
+
+                            processLinking("Do you approve the addition of patient " + linkID + " to this family?<br>",
+                                    "1) This pedigree will be shared between all members of the family, including this patient.<br><br>"+
+                                    "2) Adding a patient to a family will automatically grant users who can modify that patient's record the same level of access to the family page." + clearPropertiesMsg);
+                        }
+                    } else  {
+                        editor.getOkCancelDialogue().showError('Server error - unable to verify validity of patient link',
+                                'Error verifying patient link', "OK", onCancelAssignPatient );
+                    }
+                },
+                parameters: {"family_id": editor.getFamilyData().getFamilyId(), "patient_to_link_id": linkID }
+            });
+    	}        
     }
 
     return Controller;
