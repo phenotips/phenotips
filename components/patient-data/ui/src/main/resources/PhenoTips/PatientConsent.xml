@@ -356,7 +356,7 @@
             })
           } else if (action == "view") {
             var granted = this.filterGranted(consents);
-            this.displayWarning(consentsBlock, granted);
+            this.displayWarning(consentsBlock, consents);
             list = granted.map(this.displayConsentLabel);
           }
 
@@ -471,17 +471,29 @@
           }
         },
 
-        displayWarning: function (consentsBlock, grantedConsents)
+        displayWarning: function (consentsBlock, consents)
         {
-          // TODO:
           // go over all consents
           // - If some required are not granted display the error message.
           // Independently:
           //  - if none are granted display the message
           //  - if some are granted display them
 
-          if (grantedConsents.length == 0) {
+          var noneGranted = true;
+          var requiredNotGranted = false;
+
+          for (var i = 0; i &lt; consents.length; i++) {
+            if (consents[i].status != "no") {
+              noneGranted = false;
+            } else if (consents[i].isRequired) {
+              requiredNotGranted = true;
+            }
+          }
+
+          if (requiredNotGranted) {
             consentsBlock.children('.view-title-required-not-granted').removeClass('hidden');
+          } else if (noneGranted) {
+            consentsBlock.children('.view-title-none-granted').removeClass('hidden');
           }
         },
 
@@ -763,6 +775,9 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')
     )))
     (% class='view-title-required-not-granted hidden' %)(((
       {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
+    )))
+    (% class='view-title-none-granted hidden' %)(((
+      {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
     )))
     (% class='error hidden' %)(((
       {{error}}$services.localization.render('PhenoTips.PatientConsent_error'){{/error}}
