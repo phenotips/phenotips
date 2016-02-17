@@ -241,9 +241,6 @@
       labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
-      if (this._pushManyPatients) {
-          this._container.insert("&lt;br/&gt;");
-      }
       this._container.insert(this._approveElement);
 
       this._serverManager = this._container.down('#server-selection .section-contents');
@@ -880,6 +877,7 @@
         var onConsentStateChange = function(consentName, consentState) {
             this._pushResultSection.update("");
             this._checkBoxApprove.checked = false;
+            this._pushButton.disable();
         }.bind(this);
         this._consentsModule.init(this._consentsManager, "edit", consentJSONArray, false /* do not display consent details */, onConsentStateChange);
 
@@ -1012,7 +1010,7 @@
       var buttons = new Element('div', {'class' : 'buttons'});
       buttons.insert(new Element('input', {type: 'hidden', name : 'xaction', 'value': 'push'}));
       buttons.insert(new Element('input', {type: 'hidden', name : 'patient', 'value': this._patientId}));
-      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.submit')" : "$services.localization.render('phenotips.PushPatient.button.push')";
+      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.push')" : "$services.localization.render('phenotips.PushPatient.button.singlePatient.push')";
       buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': pushButtonTitle, 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
       buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$services.localization.render('phenotips.PushPatient.button.cancel')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(buttons);
@@ -1038,11 +1036,7 @@
 
       this._container.observe('submit', function(event) {
         event.stop();
-        if (_this._pushManyPatients) {
-            _this._pushMultiplePatients();
-        } else {
-            _this._pushPatient();
-        }
+        _this._pushSelectFieldsAndPatients();
       })  // observe('submit')
     },
 
@@ -1077,13 +1071,23 @@
         }
     },
 
-    _pushPatient: function(patientID, callBack, columnList) {
+    _pushPatient: function(columnList, patientID, callBack) {
         var _this = this;
         if (_this._pushManyPatients &amp;&amp; (!patientID || !callBack)) {
             return;
         }
         if (!_this._pushManyPatients) {
             _this._pushResultSection.update("");
+        }
+
+        if (columnList) {
+            _this._lastSelectedColumnList = columnList;
+        } else {
+            columnList = _this._lastSelectedColumnList;
+        }
+        if (!columnList || columnList.length == 0) {
+            _this._pushResultSection.update(new Element('div', {'class' : 'errormessage'}).update("No columns were selected"));
+            return;
         }
 
         var patientID = patientID ? patientID : this._patientId;
@@ -1209,7 +1213,8 @@
         return url;
     },
 
-    _pushMultiplePatients: function() {
+
+    _pushSelectFieldsAndPatients: function() {
         var _this = this;
 
         var doMultiPush = function(patients, columns) {
@@ -1248,7 +1253,7 @@
                if (next &lt; patients.length) {
                    var nextPatientID = patients[next++];
                    pushResult.insert("$services.localization.render('phenotips.PushPatient.pushing')".replace("__nextPatientID__", nextPatientID));
-                   _this._pushPatient(nextPatientID, pushSingleFunc, columns);
+                   _this._pushPatient(columns, nextPatientID, pushSingleFunc);
                }
             }
 
@@ -1269,26 +1274,61 @@
               { confirmationText: confirmMessage, showCancelButton: false }
             );
         }
-        var pushPreferencesFail = function() {
+
+        if (_this._pushManyPatients) {
+          //-------------- push multiple
+          var exportTool = $('phenotips_export');
+          if (!exportTool) return;
+          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+          dialog.showDialog();
+
+          var pushPreferencesFail = function() {
             alert("Failed to get the list of patients to be pushed");
-        }
-        var exportTool = $('phenotips_export');
-        if (!exportTool) return;
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.exportTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-        dialog.showDialog();
-        // =================================================================================
-        // Generate the dialog content
-        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
-          onSuccess: function(transport) {
-            var content = dialog.dialogBox._x_contentPlug;
-            content.update(transport.responseText);
-            content.__dialog = dialog;
-            document.fire('xwiki:dom:updated', {'elements': [content],
-                                                'multiPushPreferences': content,
-                                                'callbackOK': pushCallBack,
-                                                'callbackFail': pushPreferencesFail});
           }
-        });
+
+          // =================================================================================
+          // Generate the dialog content
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
+            onSuccess: function(transport) {
+              var content = dialog.dialogBox._x_contentPlug;
+              content.update(transport.responseText);
+              content.__dialog = dialog;
+              document.fire('xwiki:dom:updated', {'elements': [content],
+                                                  'pushPreferences': content,
+                                                  'pushMulti': true,
+                                                  'callbackOK': pushCallBack,
+                                                  'callbackFail': pushPreferencesFail});
+            }
+          });
+        } else {
+          //-------------- push single
+          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
+          dialog.showDialog();
+
+          var singlePushPreferencesFail = function() {
+            alert("Failed to get the list of fields to be pushed");
+          }
+
+          var singlePushCallBack = function(columns) {
+            _this._pushPatient(columns);
+          }
+
+          // =================================================================================
+          // Generate the dialog content
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
+            onSuccess: function(transport) {
+              var content = dialog.dialogBox._x_contentPlug;
+              content.update(transport.responseText);
+              content.__dialog = dialog;
+              document.fire('xwiki:dom:updated', {'elements': [content],
+                                                  'pushPreferences': content,
+                                                  'pushMulti': false,
+                                                  'callbackOK': singlePushCallBack,
+                                                  'callbackFail': singlePushPreferencesFail});
+            }
+          });
+
+        }
     }
 
   });
@@ -1302,17 +1342,23 @@
 // get the selected patients and fields and push using this javascript
 ['xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {
-        if (!event.memo || !event.memo.multiPushPreferences || !event.memo.callbackOK) {
+        if (!event.memo || !event.memo.pushPreferences || !event.memo.callbackOK) {
             return;
         }
-        var dialog       = event.memo.multiPushPreferences.__dialog;
+        var dialog       = event.memo.pushPreferences.__dialog;
         var callbackOK   = event.memo.callbackOK;
         var callbackFail = event.memo.callbackFail;
-        var pushButton = $('push-multiple-patients');
+        var pushMulti = event.memo.pushMulti;
+
+        var cancelButton = $('export_cancel');
+        cancelButton &amp;&amp; cancelButton.observe('click', function(event) {
+          dialog.closeDialog();
+        });
+
+        var pushButton = event.memo.pushMulti ? $('push-multiple-patients') : $('push-patient');
         pushButton &amp;&amp; pushButton.observe('click', function(event) {
             event.stop();
-            var liveMatchCounter = $('filter-match-count');
-            var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
+            var form = pushButton.up('form');
             if (form) {
                 // 1) get the list of selected data columns from the form
                 var selectedFields = [];
@@ -1324,7 +1370,14 @@
                     }
                 });
 
+                if (!pushMulti) {
+                  dialog.closeDialog();
+                  callbackOK(selectedFields);
+                  return;
+                }
+
                 // 2) get the list of filtered patients from the ExportFilter page
+                var liveMatchCounter = $('filter-match-count');
                 var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?list=true&amp;" + form.serialize();
                 var ajx = new Ajax.Request(url, {
                     method: 'get',
@@ -1578,6 +1631,13 @@ function _printObjectInternal(o, level) {
   margin: 3px;
 }
 
+#group-selection {
+  margin-bottom: 1.5em;
+}
+#consents-section {
+  margin-bottom: 1.5em;
+}
+
 #fields-selection dl {
   background: none repeat scroll 0 0 #FFFFFF;
   box-shadow: 0 0 3px #AAAAAA;
@@ -1589,9 +1649,10 @@ function _printObjectInternal(o, level) {
 #fields-selection .negative {
   color: $theme.notificationErrorColor;;
 }
+
 .confirm-push {
   padding: .5em;
-  margin: 1.25em 0 0.5em 0;
+  margin: 0 0 0.5em 0;
   font-weight: bold;
 }
 .multi-push-results {
@@ -1613,7 +1674,16 @@ function _printObjectInternal(o, level) {
 .consents {
   margin-top: 0.75em;
   margin-right: 3em;
-}</code>
+}
+.push-fields {
+  margin-left: 2em !important;
+  margin-bottom: 1.5em !important;
+  width: 90% !important;
+}
+.narrow-export-dialog.export-dialog {
+  width: 60% !important;
+}
+</code>
     </property>
     <property>
       <name/>
@@ -1699,6 +1769,7 @@ function _printObjectInternal(o, level) {
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
+$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
 #set ($service = $services.pushPatient)
 #set ($configuredServers = $service.getPushTargetsWithHistory(""))
 #foreach ($mapEntry in $configuredServers.entrySet())
