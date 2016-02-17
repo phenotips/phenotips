@@ -110,6 +110,7 @@
  {{html clean="false" wiki="false"}}&lt;ul style="list-style-type: none;">$sectionContent.trim()&lt;/ul>{{/html}}
  #end
 #end
+{{html clean="false" wiki="false"}}&lt;input type="hidden" name="$!{prefix}$!{name}" value="" /&gt;{{/html}}
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
