@@ -373,9 +373,6 @@ var PhenoTips = (function(PhenoTips) {
         // Init datepicker
         if (window.dateTimePicker) {
           window.dateTimePicker.attachPickers(this._dateEl);
-        } else {
-          var crtYear = new Date().getFullYear();
-          window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
         }
 
         // Init hidden inputs
