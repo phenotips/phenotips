@@ -308,7 +308,7 @@
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
-        <version>2.48.2</version>
+        <version>2.52.0</version>
         <scope>test</scope>
       </dependency>
       <!-- Use a more recent version of Jackson, the latest compatible with the version of restlet in use -->
