@@ -54,8 +54,8 @@ import static org.mockito.Mockito.doReturn;
 public class APGARControllerTest
 {
     @Rule
-    public MockitoComponentMockingRule<PatientDataController<Integer>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<Integer>>(APGARController.class);
+    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(APGARController.class);
 
     private static final String DATA_NAME = "apgar";
 
@@ -92,41 +92,41 @@ public class APGARControllerTest
     {
         doReturn(null).when(this.doc).getXObject(Patient.CLASS_REFERENCE);
 
-        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
         Assert.assertNull(result);
     }
 
     @Test
-    public void loadDoesNotReturnNullIntegers() throws ComponentLookupException
+    public void loadDoesReturnNullStrings() throws ComponentLookupException
     {
         doReturn(null).when(this.data).getStringValue(anyString());
 
-        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(0, result.size());
+        Assert.assertEquals(2, result.size());
     }
 
     @Test
-    public void loadDoesNotReturnNonIntegerStrings() throws ComponentLookupException
+    public void loadDoesReturnNonNullStrings() throws ComponentLookupException
     {
         doReturn("STRING").when(this.data).getStringValue(anyString());
 
-        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(0, result.size());
+        Assert.assertEquals(2, result.size());
     }
 
     @Test
-    public void loadReturnsExpectedIntegers() throws ComponentLookupException
+    public void loadReturnsExpectedStrings() throws ComponentLookupException
     {
         doReturn("1").when(this.data).getStringValue(APGAR_1);
         doReturn("2").when(this.data).getStringValue(APGAR_5);
 
-        PatientData<Integer> result = this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
-        Assert.assertEquals(Integer.valueOf(1), result.get(APGAR_1));
-        Assert.assertEquals(Integer.valueOf(2), result.get(APGAR_5));
+        Assert.assertEquals(String.valueOf(1), result.get(APGAR_1));
+        Assert.assertEquals(String.valueOf(2), result.get(APGAR_5));
         Assert.assertEquals(2, result.size());
     }
 
@@ -158,8 +158,8 @@ public class APGARControllerTest
     @Test
     public void writeJSONReturnsWhenDataIsEmpty() throws ComponentLookupException
     {
-        Map<String, Integer> map = new LinkedHashMap<>();
-        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        Map<String, String> map = new LinkedHashMap<>();
+        PatientData<String> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -171,8 +171,8 @@ public class APGARControllerTest
     @Test
     public void writeJSONWithSelectedFieldsReturnsWhenDataIsEmpty() throws ComponentLookupException
     {
-        Map<String, Integer> map = new LinkedHashMap<>();
-        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        Map<String, String> map = new LinkedHashMap<>();
+        PatientData<String> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
@@ -187,27 +187,27 @@ public class APGARControllerTest
     @Test
     public void writeJSONAddsAllDataEntriesToJSON() throws ComponentLookupException
     {
-        Map<String, Integer> map = new LinkedHashMap<>();
-        map.put(APGAR_1, 1);
-        map.put(APGAR_5, 2);
-        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(APGAR_1, "1");
+        map.put(APGAR_5, "2");
+        PatientData<String> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
-        Assert.assertEquals(2, json.getJSONObject(DATA_NAME).get(APGAR_5));
+        Assert.assertEquals("1", json.getJSONObject(DATA_NAME).get(APGAR_1));
+        Assert.assertEquals("2", json.getJSONObject(DATA_NAME).get(APGAR_5));
     }
 
     @Test
     public void writeJSONWithSelectedFieldsAddsAllDataEntriesWhenAPGARSelected() throws ComponentLookupException
     {
-        Map<String, Integer> map = new LinkedHashMap<>();
-        map.put(APGAR_1, 1);
-        map.put(APGAR_5, 2);
-        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(APGAR_1, "1");
+        map.put(APGAR_5, "2");
+        PatientData<String> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new ArrayList<>();
@@ -219,17 +219,17 @@ public class APGARControllerTest
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
         Assert.assertNotNull(json.getJSONObject(DATA_NAME));
-        Assert.assertEquals(1, json.getJSONObject(DATA_NAME).get(APGAR_1));
-        Assert.assertEquals(2, json.getJSONObject(DATA_NAME).get(APGAR_5));
+        Assert.assertEquals("1", json.getJSONObject(DATA_NAME).get(APGAR_1));
+        Assert.assertEquals("2", json.getJSONObject(DATA_NAME).get(APGAR_5));
     }
 
     @Test
     public void writeJSONWithSelectedFieldsReturnsWhenAPGARNotSelected() throws ComponentLookupException
     {
-        Map<String, Integer> map = new LinkedHashMap<>();
-        map.put(APGAR_1, 1);
-        map.put(APGAR_5, 2);
-        PatientData<Integer> data = new DictionaryPatientData<>(DATA_NAME, map);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(APGAR_1, "1");
+        map.put(APGAR_5, "2");
+        PatientData<String> data = new DictionaryPatientData<>(DATA_NAME, map);
         doReturn(data).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();

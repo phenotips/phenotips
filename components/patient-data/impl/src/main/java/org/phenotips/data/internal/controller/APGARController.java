@@ -39,7 +39,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -56,7 +55,7 @@ import com.xpn.xwiki.objects.BaseProperty;
 @Component(roles = { PatientDataController.class })
 @Named("apgar")
 @Singleton
-public class APGARController implements PatientDataController<Integer>
+public class APGARController implements PatientDataController<String>
 {
     /** The name of this data. */
     private static final String DATA_NAME = "apgar";
@@ -70,7 +69,7 @@ public class APGARController implements PatientDataController<Integer>
     private Logger logger;
 
     @Override
-    public PatientData<Integer> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -78,14 +77,12 @@ public class APGARController implements PatientDataController<Integer>
             if (data == null) {
                 return null;
             }
-            Map<String, Integer> result = new LinkedHashMap<>();
+            Map<String, String> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 String value = data.getStringValue(propertyName);
-                if (NumberUtils.isDigits(value)) {
-                    result.put(propertyName, Integer.valueOf(value));
-                }
+                result.put(propertyName, value);
             }
-            return new DictionaryPatientData<Integer>(DATA_NAME, result);
+            return new DictionaryPatientData<String>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document or some unforeseen"
                 + " error has occurred during controller loading ", e.getMessage());
@@ -100,12 +97,12 @@ public class APGARController implements PatientDataController<Integer>
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject dataHolder = doc.getXObject(Patient.CLASS_REFERENCE);
-            PatientData<Integer> data = patient.getData(getName());
+            PatientData<String> data = patient.getData(getName());
             if (data == null || dataHolder == null) {
                 return;
             }
             for (String propertyName : getProperties()) {
-                Integer value = data.get(propertyName);
+                String value = data.get(propertyName);
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
                 if (field != null && value != null) {
@@ -129,12 +126,12 @@ public class APGARController implements PatientDataController<Integer>
         if (selectedFieldNames != null && !hasAnySelected(selectedFieldNames)) {
             return;
         }
-        PatientData<Integer> data = patient.getData(getName());
+        PatientData<String> data = patient.getData(getName());
         if (data == null || !data.isNamed()) {
             return;
         }
 
-        Iterator<Entry<String, Integer>> iterator = data.dictionaryIterator();
+        Iterator<Entry<String, String>> iterator = data.dictionaryIterator();
         if (!iterator.hasNext()) {
             return;
         }
@@ -145,7 +142,7 @@ public class APGARController implements PatientDataController<Integer>
             container = json.optJSONObject(DATA_NAME);
         }
         while (iterator.hasNext()) {
-            Entry<String, Integer> item = iterator.next();
+            Entry<String, String> item = iterator.next();
             container.put(item.getKey(), item.getValue());
         }
     }
@@ -168,23 +165,20 @@ public class APGARController implements PatientDataController<Integer>
     }
 
     @Override
-    public PatientData<Integer> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         JSONObject container = json.optJSONObject(DATA_NAME);
         if (container != null) {
-            Map<String, Integer> parsed = new LinkedHashMap<>();
+            Map<String, String> parsed = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 try {
-                    /* could be 'unknown' rather than an int */
-                    String value = container.getString(propertyName);
-                    if (NumberUtils.isDigits(value)) {
-                        parsed.put(propertyName, Integer.valueOf(value));
-                    }
+                    parsed.put(propertyName, container.getString(propertyName));
                 } catch (Exception ex) {
+                    /* could be 'unknown' rather than an int */
                     // should never happen
                 }
             }
-            return new DictionaryPatientData<Integer>(DATA_NAME, parsed);
+            return new DictionaryPatientData<String>(DATA_NAME, parsed);
         }
         return null;
     }
