@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
@@ -78,6 +80,10 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
 
     @Inject
     private Logger logger;
+
+    /** Provides access to the current execution context. */
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
 
     @Override
     public String getName()
@@ -174,12 +180,89 @@ public class RejectedGeneListController extends AbstractComplexController<Map<St
 
                 if (StringUtils.isBlank(item.get(COMMENTS_KEY))
                     || (selectedFieldNames != null
-                        && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
+                    && !selectedFieldNames.contains(REJECTEDGENES_COMMENTS_ENABLING_FIELD_NAME))) {
                     item.remove(COMMENTS_KEY);
                 }
 
                 container.put(item);
             }
+        }
+    }
+
+    @Override
+    public PatientData<Map<String, String>> readJSON(JSONObject json)
+    {
+        if (json == null || !json.has(getJsonPropertyName())) {
+            return null;
+        }
+
+        try {
+            JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
+            List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
+            for (int i = 0; i < genesJson.length(); ++i) {
+                JSONObject geneJson = genesJson.getJSONObject(i);
+                Map<String, String> singleGene = new LinkedHashMap<String, String>();
+                for (String property : this.getProperties()) {
+                    if (geneJson.has(property)) {
+                        String field = geneJson.getString(property);
+                        if (field != null) {
+                            singleGene.put(property, field);
+                        }
+                    }
+                }
+                if (!singleGene.isEmpty()) {
+                    allGenes.add(singleGene);
+                }
+            }
+
+            if (allGenes.isEmpty()) {
+                return null;
+            } else {
+                return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
+            }
+        } catch (Exception e) {
+            this.logger.error("Could not load genes from JSON", e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public void save(Patient patient)
+    {
+        try {
+            PatientData<Map<String, String>> genes = patient.getData(this.getName());
+            if (genes == null || !genes.isIndexed()) {
+                return;
+            }
+
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            if (doc == null) {
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
+            }
+
+            XWikiContext context = this.xcontextProvider.get();
+            doc.removeXObjects(GENE_CLASS_REFERENCE);
+            Iterator<Map<String, String>> iterator = genes.iterator();
+            while (iterator.hasNext()) {
+                try {
+                    Map<String, String> gene = iterator.next();
+                    BaseObject xwikiObject = doc.newXObject(GENE_CLASS_REFERENCE, context);
+
+                    for (String property : this.getProperties()) {
+                        String value = gene.get(property);
+                        if (value != null) {
+                            xwikiObject.set(property, value, context);
+                        }
+                    }
+                    xwikiObject.set("type", "molecular", context);
+                } catch (Exception e) {
+                    this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
+                }
+            }
+
+            context.getWiki().saveDocument(doc, "Updated genes from JSON", true, context);
+        } catch (Exception e) {
+            this.logger.error("Failed to save genes: [{}]", e.getMessage());
         }
     }
 }
