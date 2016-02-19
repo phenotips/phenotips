@@ -111,7 +111,7 @@ public class ProjectsRepository
     /**
      * @return a collection of all projects that the current user can contribute to.
      */
-    public Collection<Project> getAllProjectsWithContributionRights()
+    public Collection<Project> getProjectsCurrentUserCanContributeTo()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
         accessLevels.add(contributorAccessLevel);
