@@ -144,6 +144,7 @@ enabled=true
 required=
 order=2
 fields=maternal_age,paternal_age
+pt_class=PhenoTips.ParentalInformationClass
 privacy_level=3</parameters>
     </property>
     <property>

@@ -166,7 +166,8 @@ enabled=true
 required=
 order=2
 fields=
-required_consents=share_history</parameters>
+required_consents=share_history
+pt_class=PhenoTips.MeasurementsClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -148,7 +148,8 @@
 enabled=false
 required=
 order=3
-fields=
+fields=pregnancy_history__gravida,pregnancy_history__para,pregnancy_history__term,pregnancy_history__preterm,pregnancy_history__sab,pregnancy_history__tab,pregnancy_history__births
+pt_class=PhenoTips.ParentalInformationClass
 privacy_level=3</parameters>
     </property>
     <property>
