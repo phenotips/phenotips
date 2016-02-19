@@ -72,11 +72,11 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * @return a collection of all projects that the current user can view.
+     * @return a collection of all projects that the current user is a leader in.
      */
-    public Collection<Project> getAllProjectsWithViewingRights()
+    public Collection<Project> getProjectsWithLeadingRights()
     {
-        return this.projectsRepository.getAllProjectsWithViewingRights();
+        return this.projectsRepository.getProjectsWithLeadingRights();
     }
 
     /**
@@ -166,7 +166,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public String getProjectConditionForCurrentUser(String baseObjectTable, String propertyTable)
     {
-        Collection<Project> projects = this.getAllProjectsWithViewingRights();
+        Collection<Project> projects = this.getProjectsWithLeadingRights();
         if (projects.size() > 0) {
             return this.projectsRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
         } else {
