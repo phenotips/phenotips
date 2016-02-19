@@ -1426,12 +1426,14 @@ define([
                     this.setDeathDate(null);
                 }
                 if(info.disorders) {
-                    this.setDisorders(info.disorders);
+                	var disordersCopy = Helpers.cloneObject(info.disorders);
+                    this.setDisorders(disordersCopy);
                 } else {
                     this.setDisorders([]);
                 }
                 if(info.cancers) {
-                    this.setCancers(info.cancers);
+                	var cancersCopy = Helpers.cloneObject(info.cancers);
+                    this.setCancers(cancersCopy);
                 } else {
                     this.setCancers({});
                 }
@@ -1468,10 +1470,12 @@ define([
                 this.setHPO(hpoTerms);
 
                 if(info.ethnicities) {
-                    this.setEthnicities(info.ethnicities);
+                    var ethnicitiesCopy = Helpers.cloneObject(info.ethnicities);
+                    this.setEthnicities(ethnicitiesCopy);
                 } else {
                     this.setEthnicities([]);
                 }
+
                 this._genes = {};
                 if(info.genes) {
                     // genes: [ {gene: 'JADE3', status: 'candidate', comments: 'abc'},
@@ -1482,10 +1486,11 @@ define([
                         this._addGene(pedigreeGene.gene, pedigreeGene.status, pedigreeGene);
                     }
                     // setGenes() works on a nodeMenu specific format, and can't be used
-                    // to set genes from the full format, so ned ot manually call redraw
-                    // TODO: fix, make nodeMenu accept full format
+                    // to set genes from the full format, so need to manually call redraw
+                    // TODO: fix, make nodeMenu and setGenes() accept full format
                     this.getGraphics().updateDisorderShapes();
                 }
+
                 if(info.hasOwnProperty("adoptedStatus")) {
                     if (this.getAdopted() != info.adoptedStatus) {
                         this.setAdopted(info.adoptedStatus);
@@ -1523,7 +1528,8 @@ define([
                 }
                 if(info.hasOwnProperty("twinGroup")) {
                     if (this._twinGroup != info.twinGroup) {
-                        this.setTwinGroup(info.twinGroup);
+                    	var twinGroup = Helpers.cloneObject(info.twinGroup);
+                        this.setTwinGroup(twinGroup);
                     }
                 } else {
                     this.setTwinGroup(null);
