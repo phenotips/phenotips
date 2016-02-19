@@ -876,8 +876,6 @@
 
         var onConsentStateChange = function(consentName, consentState) {
             this._pushResultSection.update("");
-            this._checkBoxApprove.checked = false;
-            this._pushButton.disable();
         }.bind(this);
         this._consentsModule.init(this._consentsManager, "edit", consentJSONArray, false /* do not display consent details */, onConsentStateChange);
 
