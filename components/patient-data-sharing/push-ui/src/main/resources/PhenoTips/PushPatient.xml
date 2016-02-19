@@ -176,21 +176,10 @@
 	            //console.log("Initializing push to " + serverID);
 
 	            if (event.findElement('.editbody')) {
-	              // we're in edit mode; ask user if they want to save before exporting the data
-	              new XWiki.widgets.ConfirmationBox(
-	                {
-	                  onYes : function() {
-	                    document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-	                    document.observe('xwiki:document:saved', _this._observeSave);
-	                  },
-	                  onNo : function() {
-	                    _this._launchUI();
-	                  }
-	                },
-	                // Interaction parameters
-	                { confirmationText: "$services.localization.render('phenotips.PushPatient.confirmationText')", showCancelButton: true }
-	              );
-	            } else {
+	              // we're in edit mode
+	              document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+	              document.observe('xwiki:document:saved', _this._observeSave);
+  	            } else {
 	              _this._launchUI();
 	            }
 	          }
