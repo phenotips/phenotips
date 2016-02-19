@@ -127,9 +127,9 @@ public class ProjectsRepository
     }
 
     /**
-     * @return a collection of all projects that the current user can view.
+     * @return a collection of all projects that the current user is a leader in.
      */
-    public Collection<Project> getAllProjectsWithViewingRights()
+    public Collection<Project> getProjectsWithLeadingRights()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
         accessLevels.add(leaderAccessLevel);
