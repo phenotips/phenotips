@@ -1318,12 +1318,14 @@ define([
                     this.setDeathDate(null);
                 }
                 if(info.disorders) {
-                    this.setDisorders(info.disorders);
+                	var disordersCopy = Helpers.cloneObject(info.disorders);
+                    this.setDisorders(disordersCopy);
                 } else {
                     this.setDisorders([]);
                 }
                 if(info.cancers) {
-                    this.setCancers(info.cancers);
+                	var cancersCopy = Helpers.cloneObject(info.cancers);
+                    this.setCancers(cancersCopy);
                 } else {
                     this.setCancers({});
                 }
@@ -1360,12 +1362,14 @@ define([
                 this.setHPO(hpoTerms);
 
                 if(info.ethnicities) {
-                    this.setEthnicities(info.ethnicities);
+                	var ethnicitiesCopy = Helpers.cloneObject(info.ethnicities);
+                    this.setEthnicities(ethnicitiesCopy);
                 } else {
                     this.setEthnicities([]);
                 }
                 if(info.candidateGenes) {
-                    this.setGenes(info.candidateGenes);
+                	var candidateGenes = Helpers.cloneObject(info.candidateGenes);
+                    this.setGenes(candidateGenes);
                 } else {
                     this.setGenes([]);
                 }
@@ -1406,7 +1410,8 @@ define([
                 }
                 if(info.hasOwnProperty("twinGroup")) {
                     if (this._twinGroup != info.twinGroup) {
-                        this.setTwinGroup(info.twinGroup);
+                    	var twinGroup = Helpers.cloneObject(info.twinGroup);
+                        this.setTwinGroup(twinGroup);
                     }
                 } else {
                     this.setTwinGroup(null);
