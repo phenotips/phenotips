@@ -796,7 +796,7 @@ var PhenoTips = (function(PhenoTips) {
         var delta = this.getValue() - this._heightInputEl.value;
         var feedback = "= $services.localization.render('PhenoTips.MeasurementsClass_height')";
         feedback += delta > 0 ? ' + ' : ' &minus; ';
-        feedback += Math.abs(delta);
+        feedback += Math.abs(delta).toFixed(2);
         feedback += "$services.localization.render('phenotips.UIXField.measurements.units.cm')"; 
 
         this._feedbackEl.innerHTML = feedback;
