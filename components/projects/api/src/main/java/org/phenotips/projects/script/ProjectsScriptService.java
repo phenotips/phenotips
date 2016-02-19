@@ -66,9 +66,9 @@ public class ProjectsScriptService implements ScriptService
     /**
      * @return a collection of all projects that the current user can contribute to.
      */
-    public Collection<Project> getAllProjectsWithContributionRights()
+    public Collection<Project> getProjectsCurrentUserCanContributeTo()
     {
-        return this.projectsRepository.getAllProjectsWithContributionRights();
+        return this.projectsRepository.getProjectsCurrentUserCanContributeTo();
     }
 
     /**
