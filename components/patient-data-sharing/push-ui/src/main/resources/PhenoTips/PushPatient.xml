@@ -356,7 +356,7 @@
 
     _disableInputs: function(disableCancelAsWell) {
        // disable all UI elements while waiting for AJAX rerquest to complete
-       this._container.addClassName('loading');
+       this._container.addClassName('loading-indicator-large');
        var allInputs = this._container.getElementsByTagName('input');
        for (var i = 0; i &lt; allInputs.length; i++) {
           if (allInputs[i].disabled) {
@@ -374,7 +374,7 @@
     },
 
     _restoreInputs: function() {
-       this._container.removeClassName('loading');
+       this._container.removeClassName('loading-indicator-large');
        // but do not enable what was disbaled before
        var allInputs = this._container.getElementsByTagName('input');
        for (var i = 0; i &lt; allInputs.length; i++) {
@@ -405,7 +405,7 @@
       this._serverLoadMessages.update(new Element('div', {'class' : 'infomessage'}).update("$services.localization.render('phenotips.PushPatient.retrievingListMessage')"));
       this._serverLoadMessages.show();
       this._serverSelector.hide();
-      this._container.addClassName('loading');
+      this._container.addClassName('loading-indicator-large');
 
       //AJAX 1: Get available remote servers
       new Ajax.Request(this._serviceURL, {
@@ -439,7 +439,7 @@
         },
         onComplete : function() {
           _this.__launchUIAjaxInProgress = false;
-          _this._container.removeClassName('loading');
+          _this._container.removeClassName('loading-indicator-large');
           console.log("PUSH: getting remotes - complete");
         }
       });
@@ -1669,6 +1669,9 @@ function _printObjectInternal(o, level) {
 }
 .narrow-export-dialog.export-dialog {
   width: 60% !important;
+}
+.loading-indicator-large {
+  background: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')") no-repeat center center;
 }
 </code>
     </property>
