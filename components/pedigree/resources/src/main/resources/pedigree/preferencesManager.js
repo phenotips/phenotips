@@ -5,8 +5,7 @@ define(["pedigree/model/helpers"], function(Helpers){
         },
 
         load: function(callWhenReady) {
-            // TODO: get URL from endpoints.js after merger with family-studies
-            var preferencesJsonURL = new XWiki.Document('PedigreeInterface', 'PhenoTips').getURL('get', 'action=getPreferences');
+            var preferencesJsonURL = editor.getExternalEndpoint().getPedigreePreferencesURL();
             preferencesJsonURL += "&rand=" + Math.random();
 
             new Ajax.Request(preferencesJsonURL, {

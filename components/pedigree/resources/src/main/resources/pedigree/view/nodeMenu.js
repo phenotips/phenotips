@@ -167,7 +167,7 @@ define([
                 if (!item.hasClassName('initialized')) {
                     // Create the Suggest.
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
-                        script: Disorder.getOMIMServiceURL() + "&",
+                        script: editor.getExternalEndpoint().getOMIMServiceURL() + "&",
                         queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                             'name' : {'wordBoost': 20, 'phraseBoost': 40},
                             'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
@@ -214,7 +214,7 @@ define([
             // ethnicities
             this.form.select('input.suggest-ethnicity').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var ethnicityServiceURL = new XWiki.Document('EthnicitySearch', 'PhenoTips').getURL("get", "outputSyntax=plain")
+                    var ethnicityServiceURL = editor.getExternalEndpoint().getEthnicitySearchURL();
                     //console.log("Ethnicity URL: " + ethnicityServiceURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
                         script: ethnicityServiceURL + "&json=true&",
@@ -254,7 +254,7 @@ define([
             // genes
             this.form.select('input.suggest-genes').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var geneServiceURL = new XWiki.Document('GeneNameService', 'PhenoTips').getURL("get", "outputSyntax=plain")
+                    var geneServiceURL = editor.getExternalEndpoint().getGeneNameServiceURL();
                     //console.log("GeneService URL: " + geneServiceURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
                         script: geneServiceURL + "&json=true&",
@@ -339,7 +339,7 @@ define([
             // patient selector
             this.form.select('input.suggest-patients').each(function(item) {
                 if (!item.hasClassName('initialized')) {
-                    var patientSuggestURL = new XWiki.Document('SuggestPatientsService', 'PhenoTips').getURL("get", "outputSyntax=plain") +
+                    var patientSuggestURL = editor.getExternalEndpoint().getPatientSuggestServiceURL() +
                        "&permission=edit&json=true&nb=12&markFamilyAssociation=true&";
                     //console.log("PatientSuggest URL: " + patientSuggestURL);
                     item._suggest = new PhenoTips.widgets.Suggest(item, {
@@ -1286,7 +1286,7 @@ define([
                     suggestContainer.show();
                 } else {
                     suggestContainer.hide();
-                    link.href = new XWiki.Document(value, 'data').getURL();
+                    link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
                     link.innerHTML = value;
                     linkContainer.show();
                     if (_this.targetNode.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {

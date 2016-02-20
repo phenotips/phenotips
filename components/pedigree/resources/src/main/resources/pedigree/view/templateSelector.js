@@ -19,7 +19,7 @@ define([
             this.mainDiv = new Element('div', {'class': 'template-outer-container'});
             this.mainDiv.update(this.internalDiv);
             this.internalDiv.update("Loading list of templates...");
-            new Ajax.Request(new XWiki.Document('WebHome', 'data').getRestURL('objects/PhenoTips.PedigreeClass/'), {
+            new Ajax.Request(editor.getExternalEndpoint().getPedigreeTemplatesURL(), {
                 method: 'GET',
                 onSuccess: this._onTemplateListAvailable.bind(this)
             });
