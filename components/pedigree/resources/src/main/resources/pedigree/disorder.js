@@ -40,7 +40,7 @@ define([
         },
 
         load: function(callWhenReady) {
-            var baseOMIMServiceURL = Disorder.getOMIMServiceURL();
+            var baseOMIMServiceURL = editor.getExternalEndpoint().getOMIMServiceURL();
             var queryURL           = baseOMIMServiceURL + "&q=id:" + this._disorderID;
             //console.log("queryURL: " + queryURL);
             new Ajax.Request(queryURL, {
@@ -62,10 +62,6 @@ define([
             }
         }
     });
-
-    Disorder.getOMIMServiceURL = function() {
-        return new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain");
-    };
 
     return Disorder;
 });
