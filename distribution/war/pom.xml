@@ -550,6 +550,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>vocabularies-rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-hpo-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -566,11 +571,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-hgnc-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>vocabularies-rest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
