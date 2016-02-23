@@ -505,6 +505,12 @@ define([
                             if (node.getAdopted() == "adoptedIn") {
                                 twinProperty["adoptedStatus"] = node.getAdopted();
                             }
+                            if (node.getBirthDate()) {
+                                twinProperty["dob"] = node.getBirthDate().getSimpleObject();
+                            }
+                            if (node.getBirthDate()) {
+                                twinProperty["lName"] = node.getLastName();
+                            }
                             var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );
                             editor.getView().applyChanges(changeSet, true);
                         }
