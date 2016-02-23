@@ -70,6 +70,8 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 {
     private static final String GRANTED = "granted";
 
+    private static final String RENDERING_MODE = "view";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -148,8 +150,10 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     {
         try {
             String id = xwikiConsent.getStringValue("id");
-            String label = cleanDescription(configDoc.display("label", "view", xwikiConsent, contextProvider.get()));
-            String description = xwikiConsent.getStringValue("description");
+            String label = cleanDescription(
+                    configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+            String description = cleanDescription(
+                    configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()));
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
             boolean affectsFields = intToBool(xwikiConsent.getIntValue("affectsFields"));
             List<String> formFields = null;
@@ -166,9 +170,11 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     private static String cleanDescription(String toClean)
     {
         String clean = toClean;
-        clean = clean.replace("<div>", "").replace("</div>", "");
-        clean = clean.replace("<p>", "").replace("</p>", "");
-        clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        if (clean != null) {
+            clean = clean.replace("<div>", "").replace("</div>", "");
+            clean = clean.replace("<p>", "").replace("</p>", "");
+            clean = clean.replaceAll("[{]{2}(/{0,1})html(.*?)[}]{2}", "");
+        }
         return clean;
     }
 

@@ -97,7 +97,7 @@ public class DefaultConsent implements Consent
      */
     private static String processDescription(String rawDescription)
     {
-        return (rawDescription != null && rawDescription.length() > 0) ? rawDescription : null;
+        return StringUtils.isEmpty(rawDescription) ? null : rawDescription;
     }
 
     private void validate()

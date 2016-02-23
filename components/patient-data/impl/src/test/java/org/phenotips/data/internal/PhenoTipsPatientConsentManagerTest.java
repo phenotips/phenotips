@@ -93,7 +93,8 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(mocks.id1).when(mocks.consentConfig1).getStringValue(mocks.idKey);
         doReturn(mocks.label1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
             Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
-        doReturn(mocks.description1).when(mocks.consentConfig1).getStringValue(mocks.descriptionKey);
+        doReturn(mocks.description1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
         doReturn(mocks.req1).when(mocks.consentConfig1).getIntValue(mocks.requiredKey);
         doReturn(mocks.affects1).when(mocks.consentConfig1).getIntValue(mocks.affectsFieldsKey);
         doReturn(mocks.formFields1).when(mocks.consentConfig1).getListValue(mocks.fieldsKey);
@@ -101,7 +102,8 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(mocks.id2).when(mocks.consentConfig2).getStringValue(mocks.idKey);
         doReturn(mocks.label2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
             Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
-        doReturn(mocks.description2).when(mocks.consentConfig2).getStringValue(mocks.descriptionKey);
+        doReturn(mocks.description2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
         doReturn(mocks.req2).when(mocks.consentConfig2).getIntValue(mocks.requiredKey);
         doReturn(mocks.affects2).when(mocks.consentConfig2).getIntValue(mocks.affectsFieldsKey);
         doReturn(mocks.formFields2).when(mocks.consentConfig2).getListValue(mocks.fieldsKey);
@@ -109,7 +111,8 @@ public class PhenoTipsPatientConsentManagerTest
         doReturn(mocks.id3).when(mocks.consentConfig3).getStringValue(mocks.idKey);
         doReturn(mocks.label3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
             Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
-        doReturn(mocks.description3).when(mocks.consentConfig3).getStringValue(mocks.descriptionKey);
+        doReturn(mocks.description3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
         doReturn(mocks.req3).when(mocks.consentConfig3).getIntValue(mocks.requiredKey);
         doReturn(mocks.affects3).when(mocks.consentConfig3).getIntValue(mocks.affectsFieldsKey);
         doReturn(mocks.formFields3).when(mocks.consentConfig3).getListValue(mocks.fieldsKey);
@@ -145,7 +148,7 @@ public class PhenoTipsPatientConsentManagerTest
 
         static final String id3 = "id3";
         static final String label3 = "blah";
-        static final String description3 = "Long description with HTML <a href='http://abc.com'>link</a>";
+        static final String description3 = "Long description with a link [[link>>http://abc.com]]";
         final List<String> formFields3 = new LinkedList<String>();
         Integer affects3 = 1;
         Integer req3 = 1;
