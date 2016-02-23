@@ -210,7 +210,7 @@
 
       this._container.insert(generateSection('consents-section',
         "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
-        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')"));
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.defaulthint')"));
 
       // TODO: a sectionto preview patient data being pushd. It used to be easy, but
       //       now that we push a lot of different fields the preview is disabled until
@@ -224,10 +224,8 @@
       this._retryButtonClass = 'button secondary push-retry-button';
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
-      var labelApprove = new Element('label', {'id':'approve-label'});
-      var approveMessage = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.multiplePatients')":
-                                                    "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.singlePatient')";
-      labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
+      this._approveMessage = new Element('span', {class: 'field-no-user-select'});
+      var labelApprove = new Element('label', {'id':'approve-label'}).update(this._checkBoxApprove).insert(this._approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
       this._container.insert(this._approveElement);
@@ -249,6 +247,13 @@
 
       var title = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.title.multiplePatients')" : "$services.localization.render('phenotips.patientSharing.push.dialog.title.singlePatient')".replace("__patientID__", this._patientId);
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
+    },
+
+    _updateConsentHint: function(hint) {
+        var consentHint = $('consents-section').down('.intro');
+        if (consentHint) {
+          consentHint.update(hint);
+        }
     },
 
     _generateServerFirstMessage: function() {
@@ -323,6 +328,7 @@
       this._patientData = undefined;
 
       this._groupManager.update(this._generateServerAndUserFirstMessage());
+      this._consentsSection.hide();
 
       // TODO: fields sectionis disabled for now
       // !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
@@ -866,6 +872,8 @@
         var onConsentStateChange = function(consentName, consentState) {
             this._pushResultSection.update("");
         }.bind(this);
+        this._consentsManager.update("");
+        this._updateConsentHint(this._selectedServer + " " + "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')");
         this._consentsModule.init(this._consentsManager, "edit", consentJSONArray, false /* do not display consent details */, onConsentStateChange);
 
         this._consentsSection.show();
@@ -924,7 +932,7 @@
 
            var description = new Element('p', {'id': 'server-description'});
            var lastUpdated = serverData.pushAgeHours;
-           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')");
+           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')" + " " + this._selectedServer);
            if (lastUpdated &lt; 1) {
               description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour')");
            } else {
@@ -956,6 +964,8 @@
                            .insert(serverData.desc &amp;&amp; new Element('dd', {'class' : 'hint'}).update(serverData.desc) || '')
                            .insert(existingPatientDataInfo || '')
         );
+
+        this._approveMessage.update("$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label')" + " " + this._selectedServer);
 
         if (!keepUserAndGroup) {
             this._serverInfo.show();
@@ -1012,13 +1022,12 @@
 
       this._pushButton = buttons.down('input[name="submit"]');
       this._checkBoxApprove.observe("click", function(event) {
+        _this._pushResultSection.update("");
         if (_this._checkBoxApprove.checked) {
-          _this._pushResultSection.update("");
           _this._pushButton.enable();
-        }
-        else
+        } else {
           _this._pushButton.disable();
-          _this._pushResultSection.update("");
+        }
       });
 
       this._container.observe('submit', function(event) {
@@ -1673,6 +1682,14 @@ function _printObjectInternal(o, level) {
 .loading-indicator-large {
   background: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')") no-repeat center center;
 }
+.field-no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 </code>
     </property>
     <property>
@@ -1792,3 +1809,4 @@ $xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
     </property>
   </object>
 </xwikidoc>
+
