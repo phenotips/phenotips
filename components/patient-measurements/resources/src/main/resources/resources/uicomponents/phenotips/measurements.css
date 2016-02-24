@@ -155,6 +155,9 @@
 .viewbody .clinical-info .measurement-row td.side-label {
   text-align: right;
 }
+.viewbody .clinical-info .measurement-row td.feedback {
+  text-align: center;
+}
 .normal {
   color: green;
 }
