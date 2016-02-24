@@ -2924,63 +2924,47 @@ hr {
 #measurements-container {
   position: relative;
 }
-#measurements {
-  width: 485px;
-  float: left;
-}
-.measurement {
-  padding: 0.2em 0;
+
+#measurements-container {
   clear: both;
-  overflow: auto;
+  position: relative;
 }
-.measurement &gt; * {
+#measurements {
   float: left;
+  width: 485px;
 }
-.measurement .delete {
-  width: 15px;
-  cursor: pointer;
+#measurements td {
+  border: 0;
+}
+.measurement-row td.type {
+  width: 14em;
+}
+.measurement-row .side-label {
   font-size: 80%;
   font-weight: bold;
+  text-align: right;
+  width: 15px;
 }
-.measurement-row {
-  clear: both;
+.measurement-row td.val {
+  width: 8em;
 }
-.viewbody .measurement-row &gt; *,
-.editbody .measurement-row &gt; * {
-  display: block;
-  float: left;
-  min-height: 1px;
+.measurement-row td.val span.val.empty {
+  text-align: center;
 }
-.viewbody .measurement-set label {
+.measurement-row td.feedback {
+  font-size: 80%;
+  width: 15em;
+  text-align: center;
+}
+.measurement-row input {
+  margin: 0 3px;
   width: auto;
 }
-.measurement-row &gt; span {
-  line-height: 20px;
-}
-.measurement-row span.side-label {
-  width: 15px;
-  font-size: 80%;
-  font-weight: bold;
+.measurement-set th.age {
   text-align: right;
 }
-.measurement-row span.val {
-  margin: 0 3px;
-  width: 45px;
-  text-align: right;
-}
-.measurement-row span.unit {
-  width: 60px;
-}
-.measurement-row span.pctl {
-  width: 120px;
-  font-size: 80%;
-}
-.editbody .measurement-row label,
-.viewbody .measurement-row label {
-  width: 180px;
-}
-.normal { 
-  color: green; 
+.normal {
+  color: green;
 }
 .below-normal,
 .above-normal {
@@ -2993,25 +2977,17 @@ hr {
 .measurement-set.proto {
   display: none;
 }
-.measurement-set {
-  border: 1px solid #aaa;
-  padding: 10px;
-  float: left;
-  clear: both;
-  overflow: auto;
-  margin: 5px;
-  position: relative;
+.measurement-set td.age {
+  text-align: right;
 }
-.measurement-set .age {
-  float: right;
+.measurement-select {
+  width: 190px;
 }
-.measurement-set input {
-  width: auto;
+.computed-values {
+  margin-top: 20px;
 }
-.measurement-set .measurements {
-  border-top: 1px dotted #aaa;
-  padding-top: 8px;
-  margin-top: 8px;
+.computed-values .measurement-row input {
+  border: 1px solid white;
 }</style>
     </property>
     <property>
