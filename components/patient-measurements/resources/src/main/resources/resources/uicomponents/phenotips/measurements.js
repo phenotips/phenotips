@@ -346,7 +346,7 @@ var PhenoTips = (function(PhenoTips) {
       this._dateEl = this.el.select('input.measurement-date')[0];
       this._ageEl = this.el.select('input.measurement-age')[0];
       this._globalDobEl = $(document.documentElement).down('input[name$=date_of_birth]');
-      this._moreContainer = this.el.select('div.expanded-measurements')[0];
+      this._moreContainer = this.el.select('.expanded-measurements')[0];
 
       // Bind methods
       this._setAgeUsingDateAndDob = this._setAgeUsingDateAndDob.bind(this);
