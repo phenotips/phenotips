@@ -61,76 +61,13 @@
   float: left;
   width: 460px;
 }
-.measurement {
-  clear: both;
-  overflow: auto;
-  padding: 0.2em 0;
-}
 #measurements .list-actions {
   clear: both;
   width: auto;
 }
-.measurement > * {
-  float: left;
-}
-.measurement-row {
-  clear: both;
-}
-.measurement-row span.side-label {
-  font-size: 80%;
-  font-weight: bold;
-  text-align: right;
-  width: 15px;
-}
-.measurement-row span.val.empty {
-  text-align: center;
-}
-.measurement-row div.metric,
-.measurement-row div.imperial {
-  width: 120px;
-}
-.measurement-row span.unit {
-  width: 60px;
-}
-.measurement-row span.feedback {
-  font-size: 80%;
-  width: 120px;
-}
-.measurement-row span.val {
-  margin: 0 6px;
-  text-align: right;
-  width: 40px;
-}
-.measurement-row > label,
-.measurement-row > span,
-.measurement-row > div,
-.measurement-row span.val {
-  display: block;
-  float: left;
-  line-height: 20px;
-  min-height: 1px;
-}
-.measurement-row input {
-  margin: 0 3px;
-  width: auto;
-}
-.viewbody .clinical-info .measurement-set label {
-  width: auto;
-}
-.editbody .measurement-row > label,
-.viewbody .clinical-info .measurement-row > label {
-  width: 180px;
-}
-.normal {
-  color: green;
-}
-.below-normal,
-.above-normal {
-  color: orange;
-}
-.extreme-below-normal,
-.extreme-above-normal {
-  color: red;
+#measurements td {
+  border: 0;
+  box-sizing: border-box;
 }
 .measurement-set.proto {
   display: none;
@@ -143,10 +80,20 @@
   padding: 1.5em 0;
   position: relative;
 }
-.measurement-set .measurements {
-  border-top: 1px dotted #aaa;
-  margin-top: 5px;
-  padding-top: 8px;
+.measurement-set th.date {
+  border-right: 0;
+}
+.measurement-set th.age {
+  border-left: 0;
+  text-align: right;
+}
+.measurement-set td.age {
+  text-align: right;
+}
+#measurements .measurement-set thead td {
+  border-bottom: 1px dotted #aaa;
+  margin-bottom: 5px;
+  padding-bottom: 8px;
 }
 .measurement-set input[type=text] {
   width: auto;
@@ -155,36 +102,72 @@
   float: right;
   margin-left: 15px;
 }
-.measurement-set .top {
-  overflow: hidden;
-  padding: 3px 0;
+.measurement-row.side-r td {
+  padding-top: 0;
 }
-.measurement-set .date {
-  float: left;
-  max-width: 200px;
+.measurement-row.side-l td {
+  padding-bottom: 0;
 }
-.measurement-set .date .LV_validation_message {
-  display: block;
-  line-height: 1.3em;
-  margin: 0;
+.measurement-row td.type {
+  width: 180px;
+}
+.measurement-row .side-label {
+  font-size: 80%;
+  font-weight: bold;
+  text-align: right;
+  width: 15px;
+}
+.measurement-row td.val span.val.empty {
   text-align: center;
 }
-.measurement-set .date .LV_validation_message.LV_invalid {
-  padding: 3px 0;
+.measurement-row .feedback {
+  font-size: 80%;
+  width: 120px;
+  text-align: center;
 }
-.measurement-set .age {
-  float: right;
-}
-.measurement-set .age span {
-  display: inline-block;
+.measurement-row td.val input {
   text-align: right;
-  width: 85px;
 }
-.new-measurement-select {
+.measurement-row td.val span.val {
+  margin: 0 4px;
+  text-align: right;
+  width: 40px;
+  display: inline-block;
+}
+.measurement-row input {
+  margin: 0 3px;
+  width: auto;
+}
+.viewbody .clinical-info .measurement-set label {
+  width: auto;
+}
+.viewbody .clinical-info .measurement-set th {
+  font-weight: normal;
+}
+.viewbody .clinical-info .measurement-set th.age span {
+  display: inline-block;
+  width: 125px;
+}
+.editbody .measurement-row > label,
+.viewbody .clinical-info .measurement-row td {
+  text-align: left;
+}
+.viewbody .clinical-info .measurement-row td.side-label {
+  text-align: right;
+}
+.normal {
+  color: green;
+}
+.below-normal,
+.above-normal {
+  color: orange;
+}
+.extreme-below-normal,
+.extreme-above-normal {
+  color: red;
+}
+.measurement-select {
   width: 190px;
-}
-div.birthdate {
-  float: left;
 }
 .computed-values {
   margin-top: 20px;

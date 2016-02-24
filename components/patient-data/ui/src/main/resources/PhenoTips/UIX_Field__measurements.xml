@@ -125,7 +125,6 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 #if (!$vals.isEmpty() || $xcontext.action == 'edit')
   #if ($handler.isDoubleSided())
     #if ($xcontext.action == 'edit' || $vals.get('l') || $vals.get('r'))
-      (% class="measurement"%)(((
         #set ($needToShowName = true)
         #if ($vals.get('l'))
           #measurementRow($handler true 'l' $vals.get('l') $proto $set)
@@ -139,13 +138,10 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
         #elseif ($xcontext.action == 'edit')
           #measurementRow($handler $needToShowName 'r' "" $proto $set)
         #end
-      )))
     #end
   #else
     #if ($xcontext.action == 'edit' || $vals)
-      (% class="measurement"%)(((
-        #measurementRow($handler true '' $vals $proto $set)
-      )))
+      #measurementRow($handler true '' $vals $proto $set)
     #end
   #end
 #end
@@ -154,7 +150,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 #macro (measurementRow $handler $displayName $side $obj $proto $set)
 #set ($name = $handler.getName())
 #set ($unit = $handler.getUnit())
-(% class="measurement-row $name#if ($handler.isComputed()) computed#end"%)(((
+&lt;tr class="measurement-row $name#if ($handler.isComputed()) computed#end#if ("$!side" != "") side-$side#end"&gt;
   #if ($proto)
     #set ($disabled = ' disabled="disabled"')
     #set ($id = '[id]')
@@ -188,29 +184,29 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
       #end
     #end
   #end
-  {{html clean="false" wiki="false"}}
-  &lt;label&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/label&gt;
-  &lt;span class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.isComputed())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputed')"&gt;&lt;/span&gt;#end&lt;/span&gt;
-  &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
-  &lt;div class="metric"&gt;
-    #if ($xcontext.action == 'edit')
-      #if ($handler.isComputed())
-        &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
-        &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+  &lt;td class="type"&gt;#if ("$!name" != "" &amp;&amp; $displayName)$services.localization.render("phenotips.UIXField.measurements.types.${name}"):#end&lt;/td&gt;
+  &lt;td class="side-label"&gt;#if ("$!side" != "")$services.localization.render("phenotips.UIXField.measurements.sides.${side}")#end#if ($handler.isComputed())&lt;span class="fa fa-bolt" title="$services.localization.render('phenotips.patientSheet.measurements.measurementIsComputed')"&gt;&lt;/span&gt;#end&lt;/td&gt;
+  &lt;td class="val"&gt;
+    &lt;div class="metric"&gt;
+      #if ($xcontext.action == 'edit')
+        #if ($handler.isComputed())
+          &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+          &lt;span class="val"&gt;$!{val}&lt;/span&gt;
+        #else
+          &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+        #end
       #else
-        &lt;input type="text" size="5" name="PhenoTips.MeasurementClass_${id}_value" value="$!{val}"$disabled&gt;
+        &lt;span class="val"&gt;$!mathtool.roundTo(2, $val)&lt;/span&gt;
       #end
-      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
-      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
-      &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
-    #else
-      &lt;span class="val"&gt;$!{val}&lt;/span&gt;
-    #end
-    &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
-  &lt;/div&gt;
-  &lt;span class="feedback#if ("$!val" != "" &amp;&amp; "$!handler.getName()" != "armspan") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$!eval#end&lt;/span&gt;
-  {{/html}}
-)))
+      &lt;span class="unit"&gt;#if ("$!unit" != "")$services.localization.render("phenotips.UIXField.measurements.units.${unit}")#end&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_type" value="${name}"$disabled&gt;
+    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_age" value=""$disabled&gt;
+    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_date" value=""$disabled&gt;
+    &lt;input type="hidden" name="PhenoTips.MeasurementClass_${id}_side" value="$!{side}"$disabled&gt;
+  &lt;/td&gt;
+  &lt;td class="feedback#if ("$!val" != "" &amp;&amp; "$!handler.getName()" != "armspan") $services.measurements.getFuzzyValue($sd)#end"&gt;#if ("$!val" != "")$!eval#end&lt;/td&gt;
+&lt;/tr&gt;
 #end
 ##
 #macro (measurements $showDefault $showEnabled $measurementSet $proto)
@@ -240,62 +236,63 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 #end
 #set ($age = $set.get("age"))
 #set ($date = $set.get("date"))
-#set ($dateFormatted = $datetool.format('dd/MM/yyyy', $date))
-(% class="measurement-set#if ($proto) proto#end"%)(((
-  (% class="top"%)(((
-    (% class="date"%)(((
-      {{html clean="false" wiki="false"}}
+#set ($dateFormatted = $datetool.format($!dateFormat, $date))
+
+{{html clean="false" wiki="false"}}
+&lt;table class="measurement-set#if ($proto) proto#end"&gt;
+  &lt;thead class="top"&gt;
+    &lt;th class="date" colspan="2"&gt;
       &lt;label for="date"&gt;$services.localization.render('phenotips.patientSheet.measurements.date'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
-        &lt;input class="xwiki-date measurement-date" type="text" title="dd/MM/yyyy" alt="" value="$!dateFormatted"&gt;
+        &lt;input class="xwiki-date measurement-date" type="text" title="$!dateFormat" alt="#if($date)#formatdateISO($date)#end" value="$!dateFormatted"&gt;
+        &lt;span class="error"&gt;&lt;/span&gt;
       #else
         &lt;span&gt;#if ("$!dateFormatted" == "")-#else$!dateFormatted#end&lt;/span&gt;
       #end
-      {{/html}}
-    )))
-    {{html clean="false" wiki="false"}}
-    #if ($xcontext.action == 'edit')
-      &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
-    #end
-    {{/html}}
-    (% class="age"%)(((
-      {{html clean="false" wiki="false"}}
+    &lt;/th&gt;
+    &lt;th class="age" colspan="2"&gt;
       &lt;label&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
         &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
+        &lt;span class="error"&gt;&lt;/span&gt;
       #else
         &lt;span&gt;$!age&lt;/span&gt;
       #end
-      {{/html}}
-    )))
-  )))
-  (% class="measurements"%)(((
+      #if ($xcontext.action == 'edit')
+        &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
+      #end
+    &lt;/th&gt;
+  &lt;/thead&gt;
+  &lt;tbody class="measurements"&gt;
     #measurements(true true $set $proto)
     #if ($xcontext.action == 'edit')
-      {{html clean="false" wiki="false"}}
-      &lt;div class="expand-buttons"&gt;
-        &lt;span class="buttonwrapper show"&gt;
-          &lt;button type="button" class="tool button secondary"&gt;
-            &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
-            $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
-          &lt;/button&gt;
-        &lt;/span&gt;
-        &lt;span class="buttonwrapper hide"&gt;
-          &lt;button type="button" class="tool button secondary"&gt;
-            &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
-            $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
-          &lt;/button&gt;
-        &lt;/span&gt;
-      &lt;/div&gt;
-      {{/html}}
-      (% class="expanded-measurements "%)(((
+      &lt;tr&gt;
+        &lt;td colspan="4" class="expand-buttons"&gt;
+          &lt;span class="buttonwrapper show"&gt;
+            &lt;button type="button" class="tool button secondary"&gt;
+              &lt;span class="fa fa-lg fa-plus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+              $services.localization.render('phenotips.patientSheet.measurements.showExpandedMeasurements')
+            &lt;/button&gt;
+          &lt;/span&gt;
+          &lt;span class="buttonwrapper hide"&gt;
+            &lt;button type="button" class="tool button secondary"&gt;
+              &lt;span class="fa fa-lg fa-minus-square-o"&gt;&lt;/span&gt;&amp;nbsp;
+              $services.localization.render('phenotips.patientSheet.measurements.hideExpandedMeasurements')
+            &lt;/button&gt;
+          &lt;/span&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+
+      &lt;tbody class="expanded-measurements"&gt;
         #measurements(false true $set $proto)
-      )))
+      &lt;/tbody&gt;
     #else
       #measurements(false true $set $proto)
     #end
-  )))
-)))
+  &lt;/tbody&gt;
+&lt;/table&gt;
+{{/html}}
+
 #end
 ##
 #if ($xcontext.action == 'edit' || $doc.getObject('PhenoTips.MeasurementClass'))##
@@ -310,6 +307,9 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
   #set ($val = $obj.getProperty('value').value)
   #set ($age = $obj.getProperty('age').value)
   #set ($date = $obj.getProperty('date').value)
+  #if ("$!dateFormat" == "")
+    #set ($dateFormat = $obj.xWikiClass.get("date").getProperty('dateFormat').value)
+  #end
   ##
   #if ("$!val" != "" &amp;&amp; ("$!age" != "" || "$!date" != ""))
     #if (!$measurementSets.get("$age"))
