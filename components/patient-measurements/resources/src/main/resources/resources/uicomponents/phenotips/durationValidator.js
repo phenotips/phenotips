@@ -25,7 +25,7 @@ var PhenoTips = (function(PhenoTips) {
       this.regexp = new RegExp("^((" + this.subgroups.y + sep + this.subgroups.m + ")|" + this.subgroups.w + ")" + sep + this.subgroups.d + "$");
       this.element = element;
       var _this = this;
-      ['keyup', 'input'].each(function(ev) {
+      ['keyup', 'input', 'duration:change'].each(function(ev) {
         element.observe(ev, function(event) {
           if (_this.regexp.match(element.value)) {
             element.removeClassName('error');
@@ -34,11 +34,17 @@ var PhenoTips = (function(PhenoTips) {
           }
         });
       });
-      element.observe('blur', function(event) {
-        element.value = _this.format(element.value);
-        Element.fire(element, 'duration:format');
-        element.title = _this.getValue(element.value);
+      ['blur', 'duration:change'].each(function(ev) {
+        element.observe(ev, function(event) {
+          element.value = _this.format(element.value);
+          element.title = _this.getValue(element.value);
+          Element.fire(element, 'duration:format');
+        });
       });
+
+      element.value = _this.format(element.value);
+      element.title = _this.getValue(element.value);
+      element.addClassName('initialized');
     },
     _regexpifyDurationUnit : function(unit, makeOptional) {
       return "(" + this.pieces.s + this.pieces.n + this.pieces.s + this._regexpifyWord(this.pieces[unit] || "") + this.pieces.s + ")" + (makeOptional ? '?' : '');

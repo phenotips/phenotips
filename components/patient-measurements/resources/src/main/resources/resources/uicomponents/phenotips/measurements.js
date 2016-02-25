@@ -102,7 +102,12 @@ var PhenoTips = (function(PhenoTips) {
           }
         });
       }
-    
+
+      // On an age change, check for duplicates
+      this.el.on('duration:format', 'input.measurement-age', (function(ev, el) {
+        this._sets.invoke('setAgeValidationState');
+      }).bind(this));
+
       this._charts = new PhenoTips.widgets.MeasurementsCharts($('charts-new'), this);
 
       return this;
@@ -112,13 +117,14 @@ var PhenoTips = (function(PhenoTips) {
       $('btn_add-measurement-set').observe('click', function(e) {
         that._addMeasurementSet();
 
-        e.preventDefault(); 
+        e.preventDefault();
         return false;
       });
     },
     _addMeasurementSet: function() {
       var clone = this.el.select('.measurement-set.proto')[0].clone(true);
       clone.removeClassName('proto');
+      clone.select('.initialized').invoke('removeClassName', 'initialized');
       this.el.down('.list-actions').insert({before: clone});
       this._sets.push(new PhenoTips.widgets.MeasurementSet(clone, this));
       Event.fire(document, 'xwiki:dom:updated', {'elements' : [clone]});
@@ -178,7 +184,7 @@ var PhenoTips = (function(PhenoTips) {
         $$('.measurement-info.chapter')[0].observe('chapter:show', resetSticky);
         $('measurements').observe('measurementSet:delete', resetSticky);
 
-        ['change', 'age:change', 'measurementSet:delete'].each((function(ev) {
+        ['change', 'duration:change', 'measurementSet:delete'].each((function(ev) {
           $('measurements').observe(ev, this._updateCharts);
         }).bind(this));
         Event.observe(window, 'resize', this._setChartsWidth);
@@ -267,7 +273,7 @@ var PhenoTips = (function(PhenoTips) {
         this._mainImgEl.remove();
         this._mainImgEl = undefined;
       }
-      
+
       var firstThumb, notYetSelected = true;
       for (var i = 0; i < charts.length; i++) {
         var thumbEl = this._addThumb(charts[i]);
@@ -354,6 +360,8 @@ var PhenoTips = (function(PhenoTips) {
       this._globalDobChangeHandler = this._globalDobChangeHandler.bind(this);
       this._moreToggleButtonHandler = this._moreToggleButtonHandler.bind(this);
       this._deleteHandler = this._deleteHandler.bind(this);
+      this._setDateValidationState = this._setDateValidationState.bind(this);
+      this.setAgeValidationState = this.setAgeValidationState.bind(this);
       this.getObject = this.getObject.bind(this);
       this.destroy = this.destroy.bind(this);
 
@@ -372,7 +380,7 @@ var PhenoTips = (function(PhenoTips) {
       if (XWiki.contextaction == 'edit') {
         // Init datepicker
         if (window.dateTimePicker) {
-          window.dateTimePicker.attachPickers(this._dateEl);
+          window.dateTimePicker.attachPickers(this.el);
         }
 
         // Init hidden inputs
@@ -395,17 +403,17 @@ var PhenoTips = (function(PhenoTips) {
           _this._updateHiddenFields('date', e.target.value);
           _this._ageEl.readOnly = e.target.alt.length > 0;
 
+          _this._setDateValidationState();
           _this._setAgeUsingDateAndDob();
         });
-        ['input', 'keypress'].each(function(ev) {
+
+        ['duration:format'].each(function(ev) {
           _this._ageEl.observe(ev, function(e) {
-            _this._dateEl.readOnly = e.target.value.trim().length > 0;
+            _this.setAgeValidationState();
+            _this._updateHiddenFields('age', e.target.value);
           });
         });
-        _this._ageEl.observe('duration:format', function(e) {
-          _this._updateHiddenFields('age', e.target.value);
-        });
-        
+
         this._globalDobEl.observe('xwiki:date:changed', this._globalDobChangeHandler);
         this.el.select('.expand-buttons .buttonwrapper').each((function(el) {
           el.observe('click', this._moreToggleButtonHandler);
@@ -426,16 +434,17 @@ var PhenoTips = (function(PhenoTips) {
           this.el.select('.expand-buttons .buttonwrapper.hide')[0].hide();
         }
 
-        // Init validation 
-        this._initDateValidation.call(this);
+        // Init age/date readonly state
+        if (this._dateEl.value.length > 0) {
+          this._ageEl.readOnly = true;
+        }
       }
 
       return this;
     },
 
     _globalDobChangeHandler: function() {
-      if (this.el.select('.measurement-date')[0].alt.length) {
-        this._dateEl.__validation.validate();
+      if (this._dateEl.alt.length) {
         this._setAgeUsingDateAndDob();
       }
     },
@@ -452,7 +461,7 @@ var PhenoTips = (function(PhenoTips) {
       if (deleteTrigger.disabled) {
         return;
       }
-      
+
       var removeElement = (function() {
         this.destroy();
         this.el.remove();
@@ -499,11 +508,11 @@ var PhenoTips = (function(PhenoTips) {
           if (dateDisplayParts[k] > 0) ageStr += dateDisplayParts[k] + k;
         })
         this._ageEl.value = ageStr;
-        this._ageEl.fire("age:change");
+        this._ageEl.fire("duration:change");
         this._updateHiddenFields('age', ageStr);
       } else {
         this._ageEl.value = '';
-        this._ageEl.fire("age:change");
+        this._ageEl.fire("duration:change");
         this._updateHiddenFields('age', '');
       }
     },
@@ -529,6 +538,9 @@ var PhenoTips = (function(PhenoTips) {
         age: XWiki.contextaction == 'view' ? this.el.down('div.age > span').innerHTML : this._ageEl.value,
         measurements: {}
       };
+      if (this._ageEl.hasClassName('error')) {
+        obj.age = '';
+      }
 
       for (var i = 0; i < this._rows.length; i++) {
         var row = this._rows[i];
@@ -540,24 +552,48 @@ var PhenoTips = (function(PhenoTips) {
       return obj;
     },
 
-    _initDateValidation: function() {
-      this._dateEl.__validation = new LiveValidation(this._dateEl, {validMessage: '', onlyOnBlur: true});
-      this._dateEl.__validation.add(Validate.Custom, { 
-        against: this._dateAfterDOBValidator.bind(this),
-        failureMessage: "$services.localization.render('phenotips.patientSheet.measurements.chosenDateIsBeforeBirthdate')", 
-      });
-    },
+    _setDateValidationState: function() {
+      var errorEl = this._dateEl.up().down('span.error');
 
-    _dateAfterDOBValidator: function(value,args) {
-      if (!this._globalDobEl.alt || !this._dateEl.alt) {
-        return true;
-      } else {
+      // reset
+      errorEl.update('');
+      this._dateEl.removeClassName('error');
+
+      if (this._globalDobEl.alt && this._dateEl.alt) {
         var bday = new Date(this._globalDobEl.alt).toUTC();
         var thisDate = new Date(this._dateEl.alt);
 
-        return thisDate >= bday;
+        if (thisDate < bday) {
+          errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.chosenDateIsBeforeBirthdate')");
+          this._dateEl.addClassName('error');
+        }
       }
-    }
+    },
+
+    setAgeValidationState: function() {
+      var errorEl = this._ageEl.up().down('span.error');
+
+      // reset
+      errorEl.update('');
+      this._ageEl.removeClassName('error');
+      this._ageEl.removeClassName('duplicate');
+
+      if (this._ageEl.title == "-1") {
+        errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.ageIsInvalid')");
+        this._ageEl.addClassName('error');
+      } else if (this._ageEl.title > 0) {
+        var thisAgeEl = this._ageEl;
+        var otherAgeEls = this.parent.el.select('input.measurement-age');
+        var dupAgeEls = otherAgeEls.filter(function(el) {
+          return el.title == thisAgeEl.title && el != thisAgeEl;
+        });
+        if (dupAgeEls.length) {
+          errorEl.update("$services.localization.render('phenotips.patientSheet.measurements.measurementSetAgeExists')");
+          this._ageEl.addClassName('error');
+          this._ageEl.addClassName('duplicate');
+        }
+      }
+    },
   });
 
   widgets.MeasurementSetRow = Class.create({
@@ -588,8 +624,6 @@ var PhenoTips = (function(PhenoTips) {
     },
 
     destroy: function() {
-      this._selectAssocPhenotypes([]);
-
       $$('input[name$=gender]').each((function(el) {
         el.stopObserving('click', this._genderChangeHandler);
       }).bind(this));
@@ -619,7 +653,7 @@ var PhenoTips = (function(PhenoTips) {
         ['input', 'phenotips:measurement-updated'].each((function(ev) {
           this._valueEl.observe(ev, this.fetchAndRenderPercentileSd);
         }).bind(this));
-        ['age:change', 'duration:format'].each((function(ev) {
+        ['duration:change', 'duration:format'].each((function(ev) {
           this.parent._ageEl.observe(ev, this.fetchAndRenderPercentileSd);
         }).bind(this));
         $$('input[name$=gender]').each((function(el) {
@@ -633,7 +667,7 @@ var PhenoTips = (function(PhenoTips) {
       var fetchParams = {
         'measurement': this.el.select('[name$=type]')[0].value,
         'value': this._valueEl.value,
-        'age': this.parent._ageEl.value,
+        'age': this.parent._ageEl.hasClassName('error') ? '' : this.parent._ageEl.value,
         'sex': ($$('[name$=gender]:checked')[0] || {value:''}).value,
       };
       // Normalize sex for the purposes of measurements, assuming other == male
@@ -789,9 +823,12 @@ var PhenoTips = (function(PhenoTips) {
 
       if (XWiki.contextaction == 'edit') {
         // Attach handlers
-        [this._heightInputEl, this._valueEl].each((function(el) {
-          el.observe('input', this._renderFeedback);
-        }).bind(this));
+        var _this = this;
+        ['input', 'phenotips:measurement-updated'].each(function(ev) {
+          [_this._heightInputEl, _this._valueEl].each(function(el) {
+            el.observe(ev, _this._renderFeedback);
+          });
+        });
 
         this._renderFeedback();
       }
@@ -803,7 +840,7 @@ var PhenoTips = (function(PhenoTips) {
         var feedback = "= $services.localization.render('PhenoTips.MeasurementsClass_height')";
         feedback += delta > 0 ? ' + ' : ' &minus; ';
         feedback += Math.abs(delta).toFixed(2);
-        feedback += "$services.localization.render('phenotips.UIXField.measurements.units.cm')"; 
+        feedback += "$services.localization.render('phenotips.UIXField.measurements.units.cm')";
 
         this._feedbackEl.innerHTML = feedback;
       } else {
@@ -833,7 +870,7 @@ var PhenoTips = (function(PhenoTips) {
 
         // Attach deps handlers
         for (var i = 0; i < this._deps.length; i++) {
-          ['input'].each((function(ev) {
+          ['input', 'phenotips:measurement-updated'].each((function(ev) {
             this._getDependentMeasurementField(this._deps[i]).observe(ev, this.fetchAndRenderComputedValue);
           }).bind(this));
         }
