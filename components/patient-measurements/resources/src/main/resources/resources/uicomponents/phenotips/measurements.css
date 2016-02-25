@@ -59,7 +59,7 @@
 }
 #measurements {
   float: left;
-  width: 485px;
+  width: 460px;
 }
 #measurements .list-actions {
   clear: both;
@@ -79,15 +79,25 @@
   padding: 1.5em 0;
   position: relative;
 }
+.measurement-set th {
+  vertical-align: top;
+}
 .measurement-set th.date {
   border-right: 0;
+  width: 211px;
 }
 .measurement-set th.age {
   border-left: 0;
   text-align: right;
+  width: 235px;
 }
-.measurement-set td.age {
-  text-align: right;
+.measurement-set th span.error {
+  color: #c33;
+  display: block;
+  font-weight: normal;
+  font-size: 85%;
+  line-height: 18px;
+  text-align: center;
 }
 #measurements .measurement-set thead td {
   border-bottom: 1px dotted #aaa;

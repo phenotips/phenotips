@@ -248,15 +248,15 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
       #end
     &lt;/th&gt;
     &lt;th class="age" colspan="2"&gt;
+      #if ($xcontext.action == 'edit')
+        &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
+      #end
       &lt;label for=""&gt;$services.localization.render('phenotips.patientSheet.measurements.age'):&lt;/label&gt;
       #if ($xcontext.action == 'edit')
         &lt;input class="pt-duration measurement-age" type="text" placeholder="$services.localization.render('phenotips.patientSheet.measurements.age.placeholder')" value="$!age"&gt;
         &lt;span class="error"&gt;&lt;/span&gt;
       #else
         &lt;span&gt;$!age&lt;/span&gt;
-      #end
-      #if ($xcontext.action == 'edit')
-        &lt;a class="delete" href="#" title="$services.localization.render('phenotips.patientSheet.measurements.deleteMeasurementSet.title')"&gt;✖&lt;/a&gt;
       #end
     &lt;/th&gt;
   &lt;/thead&gt;
