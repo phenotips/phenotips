@@ -1,0 +1,4 @@
+org.xwiki.locks.internal.DefaultLockManager
+org.xwiki.locks.internal.LockModuleListProvider
+org.xwiki.locks.internal.BasicEditLockModule
+org.xwiki.locks.script.LockScriptService
