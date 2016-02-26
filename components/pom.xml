@@ -61,5 +61,6 @@
     <module>diagnosis-suggestion</module>
     <module>pedigree</module>
     <module>record-locking</module>
+    <module>xwiki-locks</module>
   </modules>
 </project>
