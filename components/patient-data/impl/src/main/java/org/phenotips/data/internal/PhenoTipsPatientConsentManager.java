@@ -98,7 +98,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         new EntityReference("PatientConsent", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private EntityReference configurationPageReference =
-        new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
+        new EntityReference("Consents", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private Date lastSystemConsentLoadTime;
     private Set<Consent> cachedSystemConsents = Collections.unmodifiableSet(new LinkedHashSet<Consent>());
