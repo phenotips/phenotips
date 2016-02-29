@@ -49,8 +49,6 @@ public class DefaultProject implements Project
 {
     private static final String OPEN_FOR_CONTRIBUTION_KEY = "openProjectForContribution";
 
-    private static final String OPEN_FOR_VIEWING_KEY = "openProjectForViewing";
-
     private String projectId;
 
     private XWikiDocument projectObject;
