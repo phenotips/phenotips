@@ -18,6 +18,8 @@
 package org.phenotips.projects.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.projects.data.Project;
@@ -34,6 +36,7 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -173,7 +176,32 @@ public class DefaultProject implements Project
     }
 
     @Override
+    public Collection<Patient> getAllPatients() {
+        PatientRepository patientRepository = this.getPatientRepository();
+        List<Patient> patients = new LinkedList<Patient>();
+        Collection<String> patientIds = getAllPatientIds();
+        for (String id : patientIds) {
+            Patient patient = patientRepository.getPatientById(id);
+            if (patient != null) {
+                patients.add(patient);
+            }
+        }
+        return patients;
+    }
+
+    @Override
     public int getNumberOfPatients() {
+        Collection<String> patientIds = getAllPatientIds();
+        return patientIds == null ? 0 : patientIds.size();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getFullName();
+    }
+
+    private Collection<String> getAllPatientIds() {
         StringBuilder querySb = new StringBuilder();
         querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
         querySb.append("where patientObj.name = doc.fullName ");
@@ -196,13 +224,7 @@ public class DefaultProject implements Project
             this.getLogger().error("Error while performing projects query: [{}] ", e.getMessage());
         }
 
-        return queryResults.size();
-    }
-
-    @Override
-    public String toString()
-    {
-        return getFullName();
+        return queryResults;
     }
 
     private Logger getLogger()
@@ -259,4 +281,14 @@ public class DefaultProject implements Project
         }
         return null;
     }
+
+    private PatientRepository getPatientRepository() {
+        try {
+            return ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
+        } catch (ComponentLookupException e) {
+            // Should not happen
+        }
+        return null;
+    }
+
 }
