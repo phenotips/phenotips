@@ -150,6 +150,15 @@ $xwiki.jsx.use('PhenoTips.Widgets')
 &lt;/table&gt;
 {{/html}}
 #end
+##
+## Patients (read only in edit or view mode)
+##
+; {{html}}&lt;label&gt;$services.localization.render('phenotips.projectSheet.patientList')&lt;/label&gt;{{/html}}
+#set ($project = $services.projects.getProjectById($doc))
+#set ($patientList = $project.getAllPatients())
+#foreach ($patient in $patientList)
+:   {{html}}&lt;label&gt;$patient.getId()&lt;/label&gt;{{/html}}
+#end
 {{/velocity}}</content>
   <object>
     <name>PhenoTips.ProjectSheet</name>
