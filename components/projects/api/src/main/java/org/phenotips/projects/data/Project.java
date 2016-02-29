@@ -18,6 +18,7 @@
 package org.phenotips.projects.data;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.templates.data.Template;
@@ -86,6 +87,11 @@ public interface Project
      * @return total number of users who are collaborators in the project
      */
     int getNumberOfCollaboratorsUsers();
+
+    /**
+     * @return a collection of all patients who are assigned to the project.
+     */
+    Collection<Patient> getAllPatients();
 
     /**
      * Returns the number of patients that are assigned to the project.
