@@ -1270,6 +1270,9 @@
               { confirmationText: confirmMessage, showCancelButton: false }
             );
         }
+        
+        // Fields enabled on the server, to be passed on to the field selector displayer in the next screen
+        var fieldsSelectionQS = this._lastLoginResponse &amp;&amp; this._lastLoginResponse.serverfields &amp;&amp; ('&amp;e=' + this._lastLoginResponse.serverfields.join('&amp;e=')) || '';
 
         if (_this._pushManyPatients) {
           //-------------- push multiple
@@ -1284,7 +1287,7 @@
 
           // =================================================================================
           // Generate the dialog content
-          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer + fieldsSelectionQS), {
             onSuccess: function(transport) {
               var content = dialog.dialogBox._x_contentPlug;
               content.update(transport.responseText);
@@ -1311,7 +1314,7 @@
 
           // =================================================================================
           // Generate the dialog content
-          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer + fieldsSelectionQS), {
             onSuccess: function(transport) {
               var content = dialog.dialogBox._x_contentPlug;
               content.update(transport.responseText);
