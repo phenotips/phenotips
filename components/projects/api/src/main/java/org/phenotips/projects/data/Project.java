@@ -32,7 +32,7 @@ import java.util.Collection;
 /**
  * @version $Id$
  */
-public interface Project
+public interface Project extends Comparable<Project>
 {
     /** The XClass used for storing project data. */
     EntityReference CLASS_REFERENCE = new EntityReference("ProjectClass", EntityType.DOCUMENT,
