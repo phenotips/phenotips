@@ -30,7 +30,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -101,12 +100,12 @@ public class ProjectAndTemplateBinder
     }
 
     /**
-     * Returns a collection of projects assigned to a patient.
+     * Returns a list of projects assigned to a patient.
      *
-     * @param patient to get a collection of projects from
-     * @return a collection of Projects
+     * @param patient to get a list of projects from
+     * @return a list of Projects
      */
-    public Collection<Project> getProjectsForPatient(Patient patient)
+    public List<Project> getProjectsForPatient(Patient patient)
     {
         List<Project> projects = new ArrayList<Project>();
         XWikiDocument patientXDoc = this.getPatientXWikiDocument(patient);
