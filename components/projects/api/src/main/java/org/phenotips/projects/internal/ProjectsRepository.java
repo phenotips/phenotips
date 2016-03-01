@@ -33,7 +33,6 @@ import org.xwiki.users.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -96,7 +95,6 @@ public class ProjectsRepository
         } catch (QueryException e) {
             this.logger.error("Error while performing projects query: [{}] ", e.getMessage());
         }
-        Collections.sort(queryResults, String.CASE_INSENSITIVE_ORDER);
 
         List<Project> projects = new ArrayList<Project>(queryResults.size());
         for (String projectId : queryResults) {
