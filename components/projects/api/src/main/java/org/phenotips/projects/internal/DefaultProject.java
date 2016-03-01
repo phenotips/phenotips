@@ -201,6 +201,11 @@ public class DefaultProject implements Project
         return getFullName();
     }
 
+    @Override
+    public int compareTo(Project other) {
+        return this.getId().compareTo(other.getId());
+    }
+
     private Collection<String> getAllPatientIds() {
         StringBuilder querySb = new StringBuilder();
         querySb.append(", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid ");
