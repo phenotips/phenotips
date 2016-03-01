@@ -29,6 +29,7 @@ import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -64,17 +65,17 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * @return a collection of all projects that the current user can contribute to.
+     * @return a list of all projects that the current user can contribute to.
      */
-    public Collection<Project> getProjectsCurrentUserCanContributeTo()
+    public List<Project> getProjectsCurrentUserCanContributeTo()
     {
         return this.projectsRepository.getProjectsCurrentUserCanContributeTo();
     }
 
     /**
-     * @return a collection of all projects that the current user is a leader in.
+     * @return a list of all projects that the current user is a leader in.
      */
-    public Collection<Project> getProjectsWithLeadingRights()
+    public List<Project> getProjectsWithLeadingRights()
     {
         return this.projectsRepository.getProjectsWithLeadingRights();
     }
@@ -103,12 +104,12 @@ public class ProjectsScriptService implements ScriptService
     }
 
     /**
-     * Returns a collection of projects assigned to a patient.
+     * Returns a list of projects assigned to a patient.
      *
      * @param patientId id of patient to get a collection of projects from
-     * @return a collection of Projects
+     * @return a list of Projects
      */
-    public Collection<Project> getProjectsForPatient(String patientId)
+    public List<Project> getProjectsForPatient(String patientId)
     {
         Patient patient = this.patientsRepository.getPatientById(patientId);
         if (patient == null) {
@@ -166,7 +167,7 @@ public class ProjectsScriptService implements ScriptService
      */
     public String getProjectConditionForCurrentUser(String baseObjectTable, String propertyTable)
     {
-        Collection<Project> projects = this.getProjectsWithLeadingRights();
+        List<Project> projects = this.getProjectsWithLeadingRights();
         if (projects.size() > 0) {
             return this.projectsRepository.getProjectCondition(baseObjectTable, propertyTable, projects);
         } else {

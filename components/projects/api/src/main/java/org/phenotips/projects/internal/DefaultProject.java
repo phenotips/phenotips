@@ -215,7 +215,7 @@ public class DefaultProject implements Project
         querySb.append("and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value >= 0 ");
         querySb.append("and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id ");
 
-        Set<Project> projects = new HashSet<Project>();
+        List<Project> projects = new LinkedList<Project>();
         projects.add(this);
         querySb.append(" and ");
         querySb.append(this.getProjectsRepository().getProjectCondition("accessObj", "accessProp", projects));

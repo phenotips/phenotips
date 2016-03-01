@@ -80,11 +80,9 @@ public class ProjectsRepository
     private DocumentAccessBridge bridge;
 
     /**
-     * Returns a collection of EntityReferences of all projects.
-     *
-     * @return collection of EntityReferences to projects
+     * @return a list of all projects
      */
-    public Collection<Project> getAllProjects()
+    public List<Project> getAllProjects()
     {
         StringBuilder querySb = new StringBuilder();
         querySb.append("from doc.object(PhenoTips.ProjectClass) as prj ");
@@ -109,14 +107,14 @@ public class ProjectsRepository
     }
 
     /**
-     * @return a collection of all projects that the current user can contribute to.
+     * @return a list of all projects that the current user can contribute to.
      */
-    public Collection<Project> getProjectsCurrentUserCanContributeTo()
+    public List<Project> getProjectsCurrentUserCanContributeTo()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
         accessLevels.add(contributorAccessLevel);
         accessLevels.add(leaderAccessLevel);
-        Collection<Project> projects = this.getAllProjects(accessLevels);
+        List<Project> projects = this.getAllProjects(accessLevels);
 
         for (Project p : this.getAllProjectsOpenForContribution()) {
             if (!projects.contains(p)) {
@@ -127,9 +125,9 @@ public class ProjectsRepository
     }
 
     /**
-     * @return a collection of all projects that the current user is a leader in.
+     * @return a list of all projects that the current user is a leader in.
      */
-    public Collection<Project> getProjectsWithLeadingRights()
+    public List<Project> getProjectsWithLeadingRights()
     {
         Set<ProjectAccessLevel> accessLevels = new HashSet<>();
         accessLevels.add(leaderAccessLevel);
@@ -137,12 +135,12 @@ public class ProjectsRepository
     }
 
     /**
-     * Returns a collection of projects that are open for contribution by all users.
+     * Returns a list of projects that are open for contribution by all users.
      *
-     * @return a collection of projects that are open for contribution by all users
+     * @return a list of projects that are open for contribution by all users
      */
-    public Collection<Project> getAllProjectsOpenForContribution() {
-        Collection<Project> projects = this.getAllProjects();
+    public List<Project> getAllProjectsOpenForContribution() {
+        List<Project> projects = this.getAllProjects();
         Iterator<Project> projectIterator = projects.iterator();
         while (projectIterator.hasNext()) {
             Project project = projectIterator.next();
@@ -154,16 +152,19 @@ public class ProjectsRepository
     }
 
     /**
-     * Returns a collection of all projects that the current user has an {@link accessLevel} to.
+     * Returns a list of all projects that the current user has an
+     * {@link accessLevel} to.
      *
-     * @param accessLevels access levels required for a project
-     * @return a collection of all projects that the current user has an {@link accessLevel} to.
+     * @param accessLevels
+     *            a collection of access levels required for a project
+     * @return a list of all projects that the current user has an
+     *         {@link accessLevel} to.
      */
-    public Collection<Project> getAllProjects(Collection<ProjectAccessLevel> accessLevels)
+    public List<Project> getAllProjects(Collection<ProjectAccessLevel> accessLevels)
     {
         User currentUser = this.userManager.getCurrentUser();
 
-        Collection<Project> projects = this.getAllProjects();
+        List<Project> projects = this.getAllProjects();
         Iterator<Project> projectsIterator = projects.iterator();
         while (projectsIterator.hasNext()) {
             Project p = projectsIterator.next();
@@ -217,7 +218,7 @@ public class ProjectsRepository
      * @param projects list of projects to show patients for
      * @return HQL condition
      */
-    public String getProjectCondition(String baseObjectTable, String propertyTable, Collection<Project> projects)
+    public String getProjectCondition(String baseObjectTable, String propertyTable, List<Project> projects)
     {
         String propertyField = new StringBuffer().append("lower(").append(propertyTable).append(".value)").toString();
 
