@@ -613,91 +613,93 @@
 {{include reference="PhenoTips.PedigreeMacros" /}}
 
 {{velocity}}
-#set ($canEditP = $hasEdit &amp;&amp; !$isReadOnly)
-##
-#if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
-  #set ($pedigreeObj = $services.families.getPedigreeForFamily($doc.getName()))
-  #set ($family = $services.families.getFamilyById($doc.getName()))
-#else
-  #set ($pedigreeObj = $services.families.getPedigreeForPatient($doc.getName()))
-  #set ($family = $services.families.getFamilyForPatient($doc.getName()))
-#end
-##
-#if ($pedigreeObj)
-  ## get desired thumbnail size from configuration
-  #set($config = $!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings')})##
-  #set($previewSize = "$!{config.getProperty('pedigreePreviewSize').value}")##
-  #if ($previewSize == "medium")##
-    #set($size = 400)##
-  #elseif ($previewSize == "large")##
-    #set($size = 600)##
-  #else
-    #set($size = 200)##
-  #end
-  ## get SVG image resized to the desired size
-  #set ($image = $pedigreeObj.getImage($doc.getName(), $size, $size))
-#end## pedigree obj exists
-
-#if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
-  $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
-  $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
-  $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
-  $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
+#if ($xcontext.action != 'export')
+  #set ($canEditP = $hasEdit &amp;&amp; !$isReadOnly)
+  ##
   #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
-    #set ($docIdRequest = 'fid=')
-=== {{translation key="phenotips.patientRecord.pedigree.title"/}} ===
+    #set ($pedigreeObj = $services.families.getPedigreeForFamily($doc.getName()))
+    #set ($family = $services.families.getFamilyById($doc.getName()))
   #else
-    #set ($docIdRequest = 'id=')
+    #set ($pedigreeObj = $services.families.getPedigreeForPatient($doc.getName()))
+    #set ($family = $services.families.getFamilyForPatient($doc.getName()))
   #end
-  
-  #if ("$!image" != '')
-    #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
-    #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
-    #set ($pPrint = "$services.localization.render('phenotips.patientRecord.pedigree.print')")
-    #set ($pDownload = "$services.localization.render('phenotips.patientRecord.pedigree.download')")
-    #if ("$family.getWarningMessage()" != "")
-      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
-      #set ($pClass = 'open')
-      #set ($pContent = $pAction)
+##
+  #if ($pedigreeObj)
+    ## get desired thumbnail size from configuration
+    #set($config = $!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings')})##
+    #set($previewSize = "$!{config.getProperty('pedigreePreviewSize').value}")##
+    #if ($previewSize == "medium")##
+      #set($size = 400)##
+    #elseif ($previewSize == "large")##
+      #set($size = 600)##
     #else
-      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
-      #set ($pClass = '')
-      #set ($pContent = $!image)
+      #set($size = 200)##
     #end
-  #else
-    #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
-    #set ($pClass = 'draw')
-    #set ($pContent = $pAction)
-  #end
-  (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
- 
-  #if ("$!image" != '')
-    &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
-    #if($canEditP)
-      &lt;div class="buttonwrapper pedigree-button p-edit"&gt;
-        &lt;a class="action-edit fa fa-pencil edit-pedegree button secondary pedigree-edit-trigger" href="#" title="${pAction}"&gt;&lt;/a&gt;
-      &lt;/div&gt;
-      #if(!$doc.getObject('PhenoTips.FamilyClass'))
-      &lt;div class="buttonwrapper pedigree-button p-delete"&gt;
-        &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="$doc.getURL('objectremove', 'classname=${pedigreeObj.xWikiClass.name}&amp;classid=${pedigreeObj.number}&amp;form_token=$!{services.csrf.getToken()}')" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
-      &lt;/div&gt;
+    ## get SVG image resized to the desired size
+    #set ($image = $pedigreeObj.getImage($doc.getName(), $size, $size))
+  #end## pedigree obj exists
+
+  #if ($xcontext.action == 'edit' || "$!image" != '' || $canEditP)
+    $xwiki.ssx.use('PhenoTips.UIX_Field__pedigree')##
+    $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+    $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+    $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
+    #if ($doc.getObject('PhenoTips.FamilyClass'))## it's a family page
+      #set ($docIdRequest = 'fid=')
+=== {{translation key="phenotips.patientRecord.pedigree.title"/}} ===
+    #else
+      #set ($docIdRequest = 'id=')
+    #end
+  
+    #if ("$!image" != '')
+      #set ($familyInfo = $services.families.getFamilyInfo($doc.getName()))
+      #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
+      #set ($pPrint = "$services.localization.render('phenotips.patientRecord.pedigree.print')")
+      #set ($pDownload = "$services.localization.render('phenotips.patientRecord.pedigree.download')")
+      #if ("$family.getWarningMessage()" != "")
+        #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
+        #set ($pClass = 'open')
+        #set ($pContent = $pAction)
+      #else
+        #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.edit')")
+        #set ($pClass = '')
+        #set ($pContent = $!image)
       #end
+    #else
+      #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.draw')")
+      #set ($pClass = 'draw')
+      #set ($pContent = $pAction)
     #end
-    ##&lt;div class="buttonwrapper pedigree-button p-print"&gt;
-    ##  &lt;a class="action-print fa fa-print print-pedegree button secondary" href="#" title="${pPrint}"&gt;&lt;/a&gt;
-    ##&lt;/div&gt;
-    &lt;div class="pedigree-button p-export"&gt;
-      &lt;span class="buttonwrapper"&gt;&lt;a class="action-download fa fa-download download-pedegree button secondary" id="pedigree-export-button" href="#" title="${pDownload}"&gt;&lt;/a&gt;&lt;/span&gt;
-      &lt;ul id="pedigree-export-buttons"&gt;
-        &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()&amp;format=raster")' target="_blank"&gt;Image (PNG)&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()")' target="_blank"&gt;Scalable image (SVG)&lt;/a&gt;&lt;/li&gt;
-        ##&lt;li&gt;&lt;a href="#" target="_blank"&gt;PDF&lt;/a&gt;&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/div&gt;
-    &lt;/div&gt;
+    (% class="pedigree-wrapper" %)((({{html clean="false"}}&lt;div style="display:inline-block;" id="pedigree-thumbnail" class="pedigree-box ${pClass} #if($canEditP) pedigree-edit-trigger #end" title="${pAction}" &gt;${pContent}&lt;/div&gt;
+ 
+    #if ("$!image" != '')
+      &lt;div class="pedigree-buttons" id="pedigree-buttons"&gt;
+      #if($canEditP)
+        &lt;div class="buttonwrapper pedigree-button p-edit"&gt;
+          &lt;a class="action-edit fa fa-pencil edit-pedegree button secondary pedigree-edit-trigger" href="#" title="${pAction}"&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        #if(!$doc.getObject('PhenoTips.FamilyClass'))
+        &lt;div class="buttonwrapper pedigree-button p-delete"&gt;
+          &lt;a class="action-delete fa fa-remove delete-pedegree button secondary" href="$doc.getURL('objectremove', 'classname=${pedigreeObj.xWikiClass.name}&amp;classid=${pedigreeObj.number}&amp;form_token=$!{services.csrf.getToken()}')" title="${pDelete}" id="pedigree-delete"&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        #end
+      #end
+      ##&lt;div class="buttonwrapper pedigree-button p-print"&gt;
+      ##  &lt;a class="action-print fa fa-print print-pedegree button secondary" href="#" title="${pPrint}"&gt;&lt;/a&gt;
+      ##&lt;/div&gt;
+      &lt;div class="pedigree-button p-export"&gt;
+        &lt;span class="buttonwrapper"&gt;&lt;a class="action-download fa fa-download download-pedegree button secondary" id="pedigree-export-button" href="#" title="${pDownload}"&gt;&lt;/a&gt;&lt;/span&gt;
+        &lt;ul id="pedigree-export-buttons"&gt;
+          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()&amp;format=raster")' target="_blank"&gt;Image (PNG)&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href='$xwiki.getDocument("PhenoTips","PedigreeImageService").getURL("get", "${docIdRequest}$doc.getName()")' target="_blank"&gt;Scalable image (SVG)&lt;/a&gt;&lt;/li&gt;
+          ##&lt;li&gt;&lt;a href="#" target="_blank"&gt;PDF&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;/div&gt;
+    #end
+    {{/html}})))
   #end
-  {{/html}})))
-#end
+#end  
 {{/velocity}}</content>
     </property>
     <property>
