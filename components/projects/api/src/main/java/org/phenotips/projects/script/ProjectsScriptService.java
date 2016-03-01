@@ -28,6 +28,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,9 @@ public class ProjectsScriptService implements ScriptService
      */
     public List<Project> getProjectsCurrentUserCanContributeTo()
     {
-        return this.projectsRepository.getProjectsCurrentUserCanContributeTo();
+        List<Project> projects = this.projectsRepository.getProjectsCurrentUserCanContributeTo();
+        Collections.sort(projects);
+        return projects;
     }
 
     /**
@@ -77,7 +80,9 @@ public class ProjectsScriptService implements ScriptService
      */
     public List<Project> getProjectsWithLeadingRights()
     {
-        return this.projectsRepository.getProjectsWithLeadingRights();
+        List<Project> projects = this.projectsRepository.getProjectsWithLeadingRights();
+        Collections.sort(projects);
+        return projects;
     }
 
     /**
@@ -115,7 +120,9 @@ public class ProjectsScriptService implements ScriptService
         if (patient == null) {
             return null;
         }
-        return this.ptBinder.getProjectsForPatient(patient);
+        List<Project> projects = this.ptBinder.getProjectsForPatient(patient);
+        Collections.sort(projects);
+        return projects;
     }
 
     /**
