@@ -19,7 +19,11 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://phenotips.org/"
   xmlns:phenotips="https://phenotips.org/" elementFormDefault="qualified">
 
+
   <complexType name="Link">
+    <sequence>
+      <element name="allowed_methods" type="string" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
     <attribute name="href" type="string"/>
     <attribute name="rel" type="string"/>
     <attribute name="type" type="string"/>

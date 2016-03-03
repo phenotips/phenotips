@@ -24,8 +24,10 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.rest.CollaboratorResource;
+import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.Relations;
+import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.script.SecurePatientAccess;
 import org.phenotips.data.rest.model.CollaboratorRepresentation;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
@@ -85,6 +87,9 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
 
     @Inject
     private EntityReferenceSerializer<String> entitySerializer;
+
+    @Inject
+    private RESTActionResolver restActionResolver;
 
     private EntityReference userObjectReference;
 
@@ -215,7 +220,10 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory, Initiali
                 this.createCollaboratorRepresentation(patientAccess, collaborator);
             String href = uriInfo.getBaseUriBuilder().path(CollaboratorResource.class)
                 .build(patient.getId(), collaborator.getUser().getName()).toString();
-            collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR).withHref(href));
+            collaboratorObject.withLinks(new Link().withRel(Relations.COLLABORATOR)
+                    .withHref(href)
+                    .withAllowedMethods(restActionResolver.resolveActions(CollaboratorsResource.class,
+                            patientAccess.getAccessLevel())));
 
             result.withCollaborators(collaboratorObject);
         }

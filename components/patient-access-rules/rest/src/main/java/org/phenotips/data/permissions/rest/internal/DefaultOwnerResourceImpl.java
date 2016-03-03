@@ -23,6 +23,7 @@ import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
@@ -70,6 +71,9 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
     @Inject
     private DomainObjectFactory factory;
 
+    @Inject
+    private RESTActionResolver restActionResolver;
+
     /** Needed for retrieving the `owner` parameter during the PUT request (as part of setting a new owner). */
     @Inject
     private Container container;
@@ -84,11 +88,16 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
         UserSummary result = this.factory.createOwnerRepresentation(patientAccessContext.getPatient());
 
         // adding links relative to this context
-        result.getLinks().add(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()));
+        result.getLinks().add(new Link().withRel(Relations.SELF)
+                .withHref(this.uriInfo.getRequestUri().toString())
+                .withAllowedMethods(restActionResolver.resolveActions(this.getClass().getInterfaces()[0],
+                        patientAccessContext.getPatientAccess().getAccessLevel())));
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
             .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
         result.getLinks().add(new Link().withRel(Relations.PERMISSIONS)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId).toString()));
+            .withHref(this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId).toString())
+            .withAllowedMethods(restActionResolver.resolveActions(PermissionsResource.class,
+                    patientAccessContext.getPatientAccess().getAccessLevel())));
 
         return result;
     }

@@ -25,6 +25,7 @@ import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityResource;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.Link;
@@ -71,6 +72,9 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
     @Inject
     private Container container;
 
+    @Inject
+    private RESTActionResolver restActionResolver;
+
     @Override
     public VisibilityRepresentation getVisibility(String patientId)
     {
@@ -81,11 +85,17 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
         VisibilityRepresentation result =
             this.factory.createVisibilityRepresentation(patientAccessContext.getPatient());
 
-        result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
+        result.withLinks(new Link().withRel(Relations.SELF)
+                        .withHref(this.uriInfo.getRequestUri().toString())
+                        .withAllowedMethods(restActionResolver.resolveActions(this.getClass().getInterfaces()[0],
+                                patientAccessContext.getPatientAccess().getAccessLevel())),
             new Link().withRel(Relations.PATIENT_RECORD)
                 .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()),
-            new Link().withRel(Relations.PERMISSIONS).withHref(this.uriInfo.getBaseUriBuilder()
-                .path(PermissionsResource.class).build(patientId).toString()));
+            new Link().withRel(Relations.PERMISSIONS)
+                    .withHref(this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId)
+                            .toString())
+                    .withAllowedMethods(restActionResolver.resolveActions(PermissionsResource.class,
+                            patientAccessContext.getPatientAccess().getAccessLevel())));
 
         return result;
     }

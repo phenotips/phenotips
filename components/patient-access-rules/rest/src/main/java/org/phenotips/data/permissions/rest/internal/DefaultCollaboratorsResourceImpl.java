@@ -27,6 +27,7 @@ import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.PermissionsResource;
 import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
+import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
@@ -87,6 +88,9 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
     @Inject
     private Container container;
 
+    @Inject
+    private RESTActionResolver restActionResolver;
+
     @Override
     public CollaboratorsRepresentation getCollaborators(String patientId)
     {
@@ -98,11 +102,16 @@ public class DefaultCollaboratorsResourceImpl extends XWikiResource implements C
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
         // factor these out as common
-        result.withLinks(new Link().withRel(Relations.SELF).withHref(this.uriInfo.getRequestUri().toString()),
+        result.withLinks(new Link().withRel(Relations.SELF)
+                        .withHref(this.uriInfo.getRequestUri().toString())
+                .withAllowedMethods(restActionResolver.resolveActions(this.getClass().getInterfaces()[0],
+                        patientAccessContext.getPatientAccess().getAccessLevel())),
             new Link().withRel(Relations.PATIENT_RECORD)
                 .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()),
             new Link().withRel(Relations.PERMISSIONS)
                 .withHref(this.uriInfo.getBaseUriBuilder().path(PermissionsResource.class).build(patientId).toString())
+                .withAllowedMethods(restActionResolver.resolveActions(PermissionsResource.class,
+                        patientAccessContext.getPatientAccess().getAccessLevel()))
         );
 
         return result;
