@@ -43,6 +43,13 @@ public interface ConsentManager
     Set<Consent> getSystemConsents();
 
     /**
+     * Checks if passed in consent id is actually configured (in the system).
+     * @param consentId of consent which is to be tested
+     * @return {@link true} if consentId is a valid consent configure din the system
+     */
+    boolean isValidConsentId(String consentId);
+
+    /**
      * Returns the list of all consents configured in the system, with "granted"/"not granted" status
      * for the given patient for each consent.
      *
@@ -96,6 +103,16 @@ public interface ConsentManager
      * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
      */
     boolean hasConsent(Patient patient, String consentId);
+
+    /**
+     * Same as {@link #hasConsent(Patient,String)}, for the exception that the patient record
+     * lookup happens internally.
+     *
+     * @param patientId for which a patient record is to be looked up
+     * @param consentId of consent which is to be checked
+     * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
+     */
+    boolean hasConsent(String patientId, String consentId);
 
     /**
      * Grants a specific consent in a patient record.

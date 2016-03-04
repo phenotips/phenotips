@@ -65,4 +65,21 @@ public interface PatientConsentResource
     @Path("/revoke")
     @Consumes(MediaType.TEXT_PLAIN)
     Response revokeConsent(@PathParam("patient_id") String patientId, String id);
+
+    /**
+     * For setting a set of consents at the same time.
+     *
+     * Note: for technical reasons both grantConsent() and revokeConsent() block the
+     * given patient document for a short time, in a way that all other requests to grant or revoke a consent
+     * for the same patient will fail until the document is "unblocked". So if multiple consents should
+     * be changed at the same time it is advised to use this method instead of multiple gant/revoke calls.
+     *
+     * @param patientId of the record which is to be affected
+     * @param json a string representing a JSOn array of consent IDs
+     * @return response with code 200 if successful, or a response with a non-successful code
+     */
+    @PUT
+    @Path("/assign")
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response assignConsents(@PathParam("patient_id") String patientId, String json);
 }

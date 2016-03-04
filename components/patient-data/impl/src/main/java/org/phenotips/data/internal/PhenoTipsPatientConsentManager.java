@@ -179,6 +179,18 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     }
 
     @Override
+    public boolean isValidConsentId(String consentId)
+    {
+        Set<Consent> systemConsents = getSystemConsents();
+        for (Consent consent : systemConsents) {
+            if (StringUtils.equals(consentId, consent.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public Set<Consent> getMissingConsentsForPatient(String patientId)
     {
         return this.getMissingConsentsForPatient(repository.getPatientById(patientId));
@@ -267,9 +279,21 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     }
 
     @Override
+    public boolean hasConsent(String patientId, String consentId)
+    {
+        return this.hasConsent(repository.getPatientById(patientId), consentId);
+    }
+
+    @Override
     public boolean hasConsent(Patient patient, String consentId)
     {
+        if (patient == null || !isValidConsentId(consentId)) {
+            return false;
+        }
         Set<Consent> missingPatientConsents = getMissingConsentsForPatient(patient);
+        if (missingPatientConsents == null) {
+            return false;
+        }
         for (Consent consent : missingPatientConsents) {
             if (consent.getId().equals(consentId)) {
                 return false;
@@ -311,7 +335,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
      */
     private boolean manageConsent(Patient patient, String consentId, boolean grant)
     {
-        if (!this.isValidId(consentId)) {
+        if (!this.isValidConsentId(consentId)) {
             this.logger.error("Invalid consent id ({}) was supplied", consentId);
             return false;
         }
@@ -329,8 +353,8 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             consentHolder.save();
             return true;
         } catch (Exception ex) {
-            this.logger
-                .error("Could not update consent {} in patient record {}. {}", consentId, patient, ex.getMessage());
+            this.logger.error("Could not update consent {} in patient record {}. {}",
+                    consentId, patient.getId(), ex.getMessage());
             return false;
         }
     }
@@ -351,18 +375,6 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             holder = doc.newXObject(this.consentIdsHolderReference, contextProvider.get());
         }
         return holder;
-    }
-
-    /** Checks if passed in consent id is actually configured (in the system). */
-    private boolean isValidId(String consentId)
-    {
-        Set<Consent> systemConsents = getSystemConsents();
-        for (Consent consent : systemConsents) {
-            if (StringUtils.equals(consentId, consent.getId())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static List<String> convertToIds(List<Consent> consents)
@@ -418,6 +430,10 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @Override
     public JSONArray toJSON(Collection<Consent> consents)
     {
+        if (consents == null) {
+            return null;
+        }
+
         JSONArray result = new JSONArray();
         for (Consent consent : consents) {
             result.put(consent.toJSON());

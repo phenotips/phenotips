@@ -224,7 +224,7 @@
       this._retryButtonClass = 'button secondary push-retry-button';
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
-      this._approveMessage = new Element('span', {class: 'field-no-user-select'});
+      this._approveMessage = new Element('span', {'class': 'field-no-user-select'});
       var labelApprove = new Element('label', {'id':'approve-label'}).update(this._checkBoxApprove).insert(this._approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
@@ -1103,7 +1103,7 @@
             params["groupname"] = radioSelectValue;
         }
 
-        var patientState = { "consents" : _this._consentsModule.listUIGranted() };
+        var patientState = { "consents" : _this._consentsModule.listGrantedConsentIDs() };
         params["patientState"] = stringifyObject(patientState);
 
         console.log("PUSH request params: " + stringifyObject(params));
