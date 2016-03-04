@@ -41,8 +41,7 @@
 
 {{velocity output="false"}}
 #macro (__export__displayOrganizedFieldList)
-#set ($remoteEnabledFields = $request.getParameterValues("e'))## fields enabled on the remote server
-{{html clean="false" wiki="false"}}
+#set ($remoteEnabledFields = $request.getParameterValues('enabledFields'))## fields enabled on the remote server
 #set($ignored = {
     'fields' : [],
     'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass', 'PhenoTips.GeneVariantClass']
@@ -52,9 +51,8 @@
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"}
 })
 #set ($targetFieldName = "columns")
-
 #set($valueList = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'omim_id'])
-
+{{html clean="false" wiki="false"}}
 &lt;ul class="field-list"&gt;
 ## Extensions making up the main content, the actual information about the patient
 #set ($recordConfiguration = $services.recordConfiguration.getActiveConfiguration())
@@ -67,9 +65,9 @@
        #set ($eCMeta = $customExporters.get($eClass))
        #if (!$ignored.types.contains($eClass) &amp;&amp;
             "$!{eCMeta}" != '' &amp;&amp;
-            (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp; 
+            (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp;
             $xwiki.getDocument($eClass).getxWikiClass().properties.size() &gt; 0
-            ) 
+            )
          #set ($itemContent = "&lt;li&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name)) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
@@ -80,8 +78,8 @@
      #if ($eFields)
        #foreach ($eField in $eFields)
           #set ($f = $eClass.get($eField))
-          #if ("$!f" != '' &amp;&amp; 
-               !$ignored.fields.contains($eField) &amp;&amp; 
+          #if ("$!f" != '' &amp;&amp;
+               !$ignored.fields.contains($eField) &amp;&amp;
                (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField))
             )
             #set ($itemContent = "&lt;li&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;${f.translatedPrettyName}&lt;/label&gt;&lt;/li&gt;")
