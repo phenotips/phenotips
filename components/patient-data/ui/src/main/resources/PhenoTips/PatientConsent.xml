@@ -393,6 +393,9 @@
 
         listConsentIDs: function(includeGranted, includeNotGranted)
         {
+          if (!this.classVariables.consentsBlock) {
+            return [];
+          }
           var _this = this;
           var checked = this.classVariables.consentsBlock.find("input[type=checkbox]").filter(function(i, ch){
             return (includeGranted &amp;&amp; $(ch).is(":checked")) || (includeNotGranted &amp;&amp; !$(ch).is(":checked"));

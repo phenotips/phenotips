@@ -93,7 +93,7 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
         }
         Set<Consent> missingConsents = new HashSet<Consent>();
         for (Consent consent : systemConsents) {
-            if (!grantedConsents.contains(consent.getId())) {
+            if (grantedConsents == null || !grantedConsents.contains(consent.getId())) {
                 missingConsents.add(consent);
             }
         }
