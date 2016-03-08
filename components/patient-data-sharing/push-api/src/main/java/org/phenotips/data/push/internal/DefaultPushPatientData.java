@@ -154,7 +154,7 @@ public class DefaultPushPatientData implements PushPatientData
         List<NameValuePair> result = new LinkedList<>();
         result.add(new BasicNameValuePair(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
-            ShareProtocol.POST_PROTOCOL_VERSION));
+            ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION, actionName));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, userName));
         if (StringUtils.isNotBlank(userToken)) {
@@ -213,9 +213,14 @@ public class DefaultPushPatientData implements PushPatientData
                     return null;
                 }
 
-                JSONObject responseJSON = new JSONObject(response);
-
-                return new DefaultPushServerConfigurationResponse(responseJSON);
+                try {
+                    JSONObject responseJSON = new JSONObject(response);
+                    return new DefaultPushServerConfigurationResponse(responseJSON);
+                } catch (Exception ex) {
+                    this.logger.error("Received invalid JSON reply from remote server: {}...",
+                            response.substring(0, 50));
+                    return null;
+                }
             }
         } catch (Exception ex) {
             this.logger.error("Failed to login: {}", ex.getMessage(), ex);

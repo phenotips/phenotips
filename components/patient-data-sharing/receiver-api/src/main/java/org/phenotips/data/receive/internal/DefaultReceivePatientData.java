@@ -82,6 +82,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
     private final static boolean DEFAULT_USER_TOKENS_ENABLED = true;
 
     private final static String MAIN_CONFIG_ALLOW_ANY_SOURCE_PROPERTY_NAME = "AllowPushesFromNonListedServers";
+    private final static String MAIN_CONFIG_ALLOW_NO_CONSENTS_FROM_OLD_CLIENTS = "AllowNoConsentsFromOldClients";
 
     private final static String SERVER_CONFIG_IP_PROPERTY_NAME = "ip";
 
@@ -211,6 +212,13 @@ public class DefaultReceivePatientData implements ReceivePatientData
         if (jsonKeyToSet != null) {
             response.put(jsonKeyToSet, true);
         }
+        return response;
+    }
+
+    protected JSONObject generateIncompatibleVersionResponse()
+    {
+        JSONObject response = generateFailureResponse();
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED, true);
         return response;
     }
 
@@ -387,6 +395,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject validateLogin(XWikiRequest request, XWikiContext context)
     {
         try {
+            String clientVersion = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER);
+            if (!isCompatibleVersion(clientVersion)) {
+                this.logger.error("Rejecting push request by {} - incompatible push protocol version", request.getRemoteAddr());
+                return generateIncompatibleVersionResponse();
+            }
+
             String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
             String token = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
 
@@ -426,6 +440,14 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return null;
     }
 
+    protected boolean isCompatibleVersion(String clientVersion)
+    {
+        if (ShareProtocol.COMPATIBLE_PROTOCOL_VERSIONS.contains(clientVersion)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public JSONObject receivePatient()
     {
@@ -443,7 +465,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
             String groupName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GROUPNAME);
             if (groupName != null && !isValidUserGroup(userName, groupName)) {
-                this.logger.warn("Incorrect group");
+                this.logger.warn("Incorrect group name provided by {}", request.getRemoteAddr());
                 return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGROUP);
             }
 
@@ -463,9 +485,14 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     return this.generateFailedActionResponse();
                 }
             }
-            boolean consentAuthorized = consentAuthorizer.authorizeInteraction(consentIds);
-            if (!consentAuthorized) {
-                return this.generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT);
+
+            boolean requireConsents = areConsentsRequired(request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER));
+            if (requireConsents) {
+                boolean consentAuthorized = consentAuthorizer.authorizeInteraction(consentIds);
+                if (!consentAuthorized) {
+                    this.logger.error("Rejecting patient data from {} - not all required consents have been given", request.getRemoteAddr());
+                    return this.generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_MISSINGCONSENT);
+                }
             }
 
             String patientJSON = URLDecoder.decode(patientJSONRaw, XWiki.DEFAULT_ENCODING);
@@ -531,6 +558,20 @@ public class DefaultReceivePatientData implements ReceivePatientData
             this.logger.error("Error importing patient [{}] {}", ex.getMessage(), ex);
             return this.generateFailedActionResponse();
         }
+    }
+
+    private boolean areConsentsRequired(String clientProtocolVersion)
+    {
+        if (!ShareProtocol.ALLOW_NO_CONSENTS_PROTOCOL_VERSIONS.contains(clientProtocolVersion)) {
+            return true;
+        }
+        // protocol is one of those which may be allowed to skip consents; now need to check if
+        // not providing consents is allowed/configured in receive patient settings
+        BaseObject mainConfig = getMainConfiguration(getXContext());
+        if (mainConfig != null && mainConfig.getIntValue(MAIN_CONFIG_ALLOW_NO_CONSENTS_FROM_OLD_CLIENTS) == 1) {
+            return false;
+        }
+        return true;
     }
 
     /**

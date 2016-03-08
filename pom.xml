@@ -468,6 +468,12 @@
               <method>org.json.JSONArray getConsents()</method>
               <justification>Needed for synchronizing consents</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/shareprotocol/ShareProtocol</className>
+              <differenceType>6011</differenceType>
+              <field>POST_PROTOCOL_VERSION</field>
+              <justification>Renamed to better reflect its meaning</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

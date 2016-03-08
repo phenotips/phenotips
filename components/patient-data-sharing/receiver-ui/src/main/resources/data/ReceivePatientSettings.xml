@@ -57,5 +57,15 @@
       <unmodifiable>0</unmodifiable>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </AllowPushesFromNonListedServers>
+    <AllowNoConsentsFromOldClients>
+      <disabled>0</disabled>
+      <defaultValue>0</defaultValue>
+      <displayFormType>select</displayFormType>
+      <name>AllowNoConsentsFromOldClients</name>
+      <number>1</number>
+      <prettyName>AllowNoConsentsFromOldClients</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </AllowNoConsentsFromOldClients>
   </class>
 </xwikidoc>

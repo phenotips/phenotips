@@ -20,6 +20,9 @@ package org.phenotips.data.shareprotocol;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Push protocol constants defining client HTTP POST fields and server JSON response fields.
  *
@@ -29,7 +32,12 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class ShareProtocol
 {
-    public static final String POST_PROTOCOL_VERSION = "1";
+    public static final String VERSION_1 = "1";
+    public static final String VERSION_1_1 = "1.1";
+
+    public static final String CURRENT_PUSH_PROTOCOL_VERSION = VERSION_1_1;
+    public static final List<String> COMPATIBLE_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1,VERSION_1_1);
+    public static final List<String> ALLOW_NO_CONSENTS_PROTOCOL_VERSIONS = Arrays.asList(VERSION_1);
 
     // Every POST request should include the following parameters:
     public static final String CLIENT_POST_KEY_NAME_PROTOCOLVER  = "push_protocol_version";
