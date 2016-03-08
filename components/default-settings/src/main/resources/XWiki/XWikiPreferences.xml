@@ -1413,9 +1413,21 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </AllowPushesFromNonListedServers>
+      <AllowNoConsentsFromOldClients>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <name>AllowNoConsentsFromOldClients</name>
+        <number>1</number>
+        <prettyName>AllowNoConsentsFromOldClients</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </AllowNoConsentsFromOldClients>
     </class>
     <property>
-      <AllowPushesFromNonListedServers>1</AllowPushesFromNonListedServers>
+      <AllowPushesFromNonListedServers>0</AllowPushesFromNonListedServers>
+    </property>
+    <property>
+      <AllowNoConsentsFromOldClients>0</AllowNoConsentsFromOldClients>
     </property>
   </object>
   <object>
