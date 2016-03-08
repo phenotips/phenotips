@@ -948,7 +948,7 @@
            }
 
            description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedAsID') ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
-           description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')")
+           description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')".replace("__serverID__", this._selectedServer))
            existingPatientDataInfo.insert(description);
 
            var _this = this;
