@@ -1,0 +1,393 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+package org.phenotips.studies.family.migrations;
+
+import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.studies.family.Family;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.QueryException;
+import org.hibernate.Session;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.StringProperty;
+import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
+import com.xpn.xwiki.store.XWikiHibernateStore;
+import com.xpn.xwiki.store.migration.DataMigrationException;
+import com.xpn.xwiki.store.migration.XWikiDBVersion;
+import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
+
+/**
+ * Migration for PhenoTips issue #2155: migrating old family studies data.
+ *
+ * @version $Id$
+ * @since 1.3M1
+ */
+@Component
+@Named("R71492PhenoTips#2155")
+@Singleton
+public class R71492PhenoTips2155DataMigration extends AbstractHibernateDataMigration
+{
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
+    /** Resolves unprefixed document names to the current wiki. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> resolver;
+
+    /** Serializes the class name without the wiki prefix, to be used in the database query. */
+    @Inject
+    @Named("compactwiki")
+    private EntityReferenceSerializer<String> serializer;
+
+    @Inject
+    private PhenotipsFamilyMigrations familyMigrations;
+
+    @Override
+    public String getDescription()
+    {
+        return "Migrating old family studies data.";
+    }
+
+    @Override
+    public XWikiDBVersion getVersion()
+    {
+        return new XWikiDBVersion(71492);
+    }
+
+    @Override
+    protected void hibernateMigrate() throws DataMigrationException, XWikiException
+    {
+        getStore().executeWrite(getXWikiContext(), new MigratePedigreeCallback());
+    }
+
+    private class MigratePedigreeCallback implements HibernateCallback<Object>
+    {
+        private static final String RELATIVE_PROPERTY_NAME = "relative_type";
+
+        private static final String RELATIVEOF_PROPERTY_NAME = "relative_of";
+
+        private static final String REFERENCE_PROPERTY_NAME = "reference";
+
+        private final List<String> allowedRelatives = Arrays.asList("parent", "child", "sibling", "twin");
+
+        private R71492PhenoTips2155DataMigration migrator = R71492PhenoTips2155DataMigration.this;
+
+        private EntityReference relativeClassReference = new EntityReference("RelativeClass",
+            EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+        private Session session;
+
+        private XWikiContext context;
+
+        @Override
+        public Object doInHibernate(Session hSession) throws HibernateException, XWikiException
+        {
+            session = hSession;
+            context = getXWikiContext();
+            XWiki xwiki = context.getWiki();
+
+            // Select all patients
+            Query q =
+                session.createQuery("select distinct o.name from BaseObject o where o.className = '"
+                    + migrator.serializer.serialize(Patient.CLASS_REFERENCE)
+                    + "' and o.name <> 'PhenoTips.PatientTemplate'");
+
+            @SuppressWarnings("unchecked")
+            List<String> documents = q.list();
+
+            migrator.logger.debug("Found {} patient documents", documents.size());
+
+            for (String docName : documents) {
+                XWikiDocument patientXDocument = xwiki.getDocument(migrator.resolver.resolve(docName), context);
+                if (patientXDocument == null) {
+                    continue;
+                }
+
+                List<BaseObject> relativeXObjects = patientXDocument.getXObjects(relativeClassReference);
+                Map<String, XWikiDocument> relativesDocList = getRelativesDocList(relativeXObjects, xwiki);
+                if (relativesDocList == null || relativesDocList.isEmpty()) {
+                    continue;
+                }
+
+                String relativesFamilyRef = getRelativesFamily(relativesDocList);
+                String patientFamilyRef = getPatientsFamily(patientXDocument);
+
+                XWikiDocument familyXDocument =
+                    processPatientWithRelatives(patientXDocument, patientFamilyRef, relativesFamilyRef,
+                        relativesDocList, xwiki);
+                if (familyXDocument == null) {
+                    migrator.logger.debug("Could not create a family. Patient Id: {}.", docName);
+                    continue;
+                }
+                patientXDocument.setComment(migrator.getDescription());
+                patientXDocument.setMinorEdit(true);
+                familyXDocument.setComment(migrator.getDescription());
+                try {
+                    session.clear();
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(patientXDocument, context, false);
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(familyXDocument, context, false);
+                    session.flush();
+                } catch (DataMigrationException e) {
+                    // We're in the middle of a migration, we're not expecting another migration
+                } finally {
+                    context.getWiki().flushCache(context);
+                    migrator.logger.debug("Updated [{}]", docName);
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * Returns either existing patient family or relative family document, or a new one. Patient and relatives are
+         * assigned to a new family as members. Returns null if more than one family exists for patient and relatives.
+         *
+         * @throws XWikiException
+         * @throws QueryException
+         */
+        private XWikiDocument processPatientWithRelatives(XWikiDocument patientXDocument, String patientFamilyRef,
+            String relativesFamilyRef, Map<String, XWikiDocument> relativesDocList, XWiki xwiki) throws QueryException,
+            XWikiException
+        {
+            XWikiDocument familyXDocument = null;
+            if (relativesFamilyRef == null || patientFamilyRef != null && !"".equals(relativesFamilyRef)) {
+                migrator.logger.debug("More than one family exists for patient and relatives. Patient Id: {}.",
+                    patientXDocument.getId());
+            }
+            // If patient has a family
+            if (patientFamilyRef != null) {
+                // set family references for all relatives
+                setAllFamilyRefs(patientXDocument, patientFamilyRef, relativesDocList, xwiki);
+                familyXDocument = xwiki.getDocument(migrator.resolver.resolve(patientFamilyRef), context);
+                // TODO --- update the family pedigree object only for allowed types of relatives---
+
+                // If one relative has a family
+            } else if (!"".equals(relativesFamilyRef)) {
+                // set relative family reference to patient doc
+                migrator.familyMigrations.setFamilyReference(patientXDocument, relativesFamilyRef, context);
+                // set family references for all relatives docs
+                setAllFamilyRefs(patientXDocument, relativesFamilyRef, relativesDocList, xwiki);
+                familyXDocument = xwiki.getDocument(migrator.resolver.resolve(relativesFamilyRef), context);
+                // TODO --- update the family pedigree object only for allowed types of relatives---
+
+                // If no one has a family yet
+            } else {
+                try {
+                    familyXDocument = this.createFamilyWithPedigree(patientXDocument, relativesDocList);
+                } catch (Exception e) {
+                    migrator.logger.error("Could not create a new family document: {}", e.getMessage());
+                }
+                String familyDocumentRef = familyXDocument.getDocumentReference().toString();
+                // set new family reference to patient doc
+                migrator.familyMigrations.setFamilyReference(patientXDocument, familyDocumentRef, context);
+                // set family references for all relatives docs
+                setAllFamilyRefs(patientXDocument, familyDocumentRef, relativesDocList, xwiki);
+            }
+            return familyXDocument;
+        }
+
+        /**
+         * A new family document with pedigree object is created for a patient with relatives. A family pedigree is
+         * created only for relatives from a list ["parent", "child", "sibling", "twin"].
+         *
+         * @throws Exception
+         * @throws XWikiException
+         * @throws QueryException
+         */
+        private XWikiDocument createFamilyWithPedigree(XWikiDocument patientXDocument,
+            Map<String, XWikiDocument> relativesDocList) throws QueryException, XWikiException, Exception
+        {
+            // TODO *****get new pedigree data and image via API passing over only allowed types of relatives *****
+            // if (!allowedRelatives.contains(relativeType))
+            JSONObject pedigreeData =
+                new JSONObject(
+                    "{'GG':[{'id':0,'prop':{'gender':'U','fName':'fm','lName':'fm',"
+                        + "'lifeStatus':'alive','externalID':'fm'}"
+                        + "}],'ranks':[3],'order':[[],[],[],[0]],'positions':[5]}");
+            JSONObject pedigreeImage = new JSONObject("{1:1}");
+
+            // TODO *****Do we need any check here at all?*****
+            if (pedigreeData.length() == 0) {
+                migrator.logger.debug("Can not create pedigree. Patient Id: {}.", patientXDocument.getId());
+                return null;
+            }
+
+            String patientId = patientXDocument.getDocumentReference().getName();
+            JSONObject procesedData = migrator.familyMigrations.processPedigree(pedigreeData, patientId);
+
+            migrator.logger.debug("Creating new family for patient {}.", patientXDocument.getId());
+            XWikiDocument newFamilyXDocument = null;
+            newFamilyXDocument =
+                migrator.familyMigrations.createFamilyDocument(patientXDocument, procesedData,
+                    pedigreeImage.toString(), context, session);
+
+            return newFamilyXDocument;
+        }
+
+        /**
+         * Set family references for all relatives.
+         *
+         * @throws XWikiException
+         */
+        private void setAllFamilyRefs(XWikiDocument patientXDocument, String famReference,
+            Map<String, XWikiDocument> relativesDocList, XWiki xwiki) throws XWikiException
+        {
+            List<String> membersRefsList = new LinkedList<String>();
+            membersRefsList.add(patientXDocument.getDocumentReference().getName());
+
+            for (String relativeType : relativesDocList.keySet()) {
+                // set the family reference to a relative doc
+                migrator.familyMigrations.setFamilyReference(relativesDocList.get(relativeType), famReference,
+                    context);
+                membersRefsList.add(relativesDocList.get(relativeType).getDocumentReference().getName());
+            }
+            // add all relatives to family doc as members
+            XWikiDocument familyXDocument = xwiki.getDocument(migrator.resolver.resolve(famReference), context);
+            BaseObject familyObject = familyXDocument.getXObject(Family.CLASS_REFERENCE);
+            if (familyObject == null) {
+                familyObject = familyXDocument.newXObject(Family.CLASS_REFERENCE, context);
+            }
+            familyObject.setStringListValue("members", membersRefsList);
+        }
+
+        /**
+         * Gets the family that patient belongs to, or null if there is no family.
+         */
+        private String getPatientsFamily(XWikiDocument patientXDocument)
+        {
+            BaseObject pointer = patientXDocument.getXObject(migrator.familyMigrations.familyReferenceClassReference);
+            if (pointer == null) {
+                return null;
+            }
+            String famReference = pointer.getStringValue(REFERENCE_PROPERTY_NAME);
+            if (!StringUtils.isBlank(famReference)) {
+                return famReference;
+            }
+            return null;
+        }
+
+        /**
+         * Gets a family that relative belongs to, empty string if relatives do not have family, or null if there is
+         * more than one family.
+         */
+        private String getRelativesFamily(Map<String, XWikiDocument> relativesDocList)
+        {
+            String relativeRef = "";
+            int count = 0;
+            for (String relativeType : relativesDocList.keySet()) {
+                XWikiDocument relativeXDocument = relativesDocList.get(relativeType);
+                String famDocReference = getPatientsFamily(relativeXDocument);
+                if (!StringUtils.isBlank(famDocReference)) {
+                    if (count > 0) {
+                        return null;
+                    }
+                    relativeRef = famDocReference;
+                    count++;
+                }
+            }
+            return relativeRef;
+        }
+
+        /**
+         * Gets the relative XWiki document or null.
+         */
+        private XWikiDocument getRelativeDoc(String relativeDoc, XWiki xwiki)
+            throws XWikiException
+        {
+            Query rq = session.createQuery("select distinct o.name from BaseObject o,"
+                + " StringProperty p where o.className = '"
+                + migrator.serializer.serialize(Patient.CLASS_REFERENCE)
+                + "' and p.id.id = o.id and p.id.name = 'external_id' "
+                + "and o.name <> 'PhenoTips.PatientTemplate' and p.value = '"
+                + relativeDoc + "'");
+
+            @SuppressWarnings("unchecked")
+            List<String> relativeDocuments = rq.list();
+
+            if (relativeDocuments.isEmpty()) {
+                return null;
+            }
+
+            String relativeDocName = relativeDocuments.get(0);
+            XWikiDocument relativeXDocument =
+                xwiki.getDocument(migrator.resolver.resolve(relativeDocName), context);
+            return relativeXDocument;
+        }
+
+        /**
+         * Gets the map of patient relative type mapped to relative XWiki document, or null.
+         */
+        private Map<String, XWikiDocument> getRelativesDocList(List<BaseObject> relativeXObjects, XWiki xwiki)
+            throws XWikiException
+        {
+            if (relativeXObjects == null || relativeXObjects.isEmpty()) {
+                return null;
+            }
+            Map<String, XWikiDocument> relativesDocMap = new HashMap<String, XWikiDocument>();
+            for (BaseObject object : relativeXObjects) {
+                StringProperty relativeTypeProperty = null;
+                StringProperty relativeOfProperty = null;
+
+                relativeTypeProperty = (StringProperty) object.get(RELATIVE_PROPERTY_NAME);
+                relativeOfProperty = (StringProperty) object.get(RELATIVEOF_PROPERTY_NAME);
+
+                String relativeType = relativeTypeProperty.getValue();
+                String relativeOf = relativeOfProperty.getValue();
+
+                if (StringUtils.isBlank(relativeType) || StringUtils.isBlank(relativeOf)) {
+                    continue;
+                }
+                XWikiDocument relativeXDocument = getRelativeDoc(relativeOf, xwiki);
+                if (relativeXDocument == null) {
+                    continue;
+                }
+                relativesDocMap.put(relativeType, relativeXDocument);
+            }
+            return relativesDocMap;
+        }
+
+    }
+}
