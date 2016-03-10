@@ -744,6 +744,13 @@
       <version>${project.version}</version>
     </dependency>
 
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-javascript-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->
     <dependency>
       <groupId>${project.groupId}</groupId>
