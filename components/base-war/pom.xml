@@ -244,7 +244,7 @@ extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/con
 extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
-activeinstalls.pingURL=http://localhost:9200
+activeinstalls.pingURL=http://stats.phenotips.org
 activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                 </xwikiPropertiesAdditionalProperties>
               </properties>
