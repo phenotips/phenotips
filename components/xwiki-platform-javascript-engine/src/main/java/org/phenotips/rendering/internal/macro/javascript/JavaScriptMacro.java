@@ -24,10 +24,11 @@ import org.xwiki.rendering.macro.descriptor.DefaultContentDescriptor;
 import org.xwiki.rendering.macro.script.AbstractJSR223ScriptMacro;
 import org.xwiki.rendering.macro.script.JSR223ScriptMacroParameters;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 
 /**
  * @version $Id$ *
@@ -35,40 +36,39 @@ import javax.script.ScriptEngineFactory;
 @Component
 @Named("javascript")
 @Singleton
-public class JavascriptMacro extends AbstractJSR223ScriptMacro<JSR223ScriptMacroParameters>
+public class JavaScriptMacro extends AbstractJSR223ScriptMacro<JSR223ScriptMacroParameters>
 {
     /**
      * The description of the macro.
      */
-    private static final String DESCRIPTION = "Execute a Javascript script.";
+    private static final String DESCRIPTION = "Execute a JavaScript script.";
 
     /**
      * The description of the macro content.
      */
-    private static final String CONTENT_DESCRIPTION = "the Javascript script to execute";
+    private static final String CONTENT_DESCRIPTION = "the JavaScript script to execute";
 
-    /**
-     * A specific XWiki Javascript Script Engine Factory.
-     */
-    @Inject
-    @Named("javascript")
-    private ScriptEngineFactory javascriptEngineFactory;
-
+    private static final String JS_ENGINE_NAME = "js";
 
     /**
      * Create and initialize the descriptor of the macro.
      */
-    public JavascriptMacro() {
-        super("Javascript", DESCRIPTION, new DefaultContentDescriptor(CONTENT_DESCRIPTION));
+    public JavaScriptMacro() {
+        super("JavaScript", DESCRIPTION, new DefaultContentDescriptor(CONTENT_DESCRIPTION));
     }
 
     @Override
     public void initialize() throws InitializationException {
         super.initialize();
 
-        // Register Javascript Compilation Customizers by registering the XWiki JavaScript Script Engine Factory which
-        // extends the default Javascript Script Engine Factory and registers Compilation Customizers.
-        this.scriptEngineManager.registerEngineName("javascript", this.javascriptEngineFactory);
+        // Read JavaScript engine factory from virtual machine.
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine jsEngine = mgr.getEngineByName(JS_ENGINE_NAME);
+        ScriptEngineFactory jsFactory = jsEngine.getFactory();
+
+        // Register JavaScript Compilation Customizers by registering the XWiki JavaScript Script Engine Factory which
+        // extends the default JavaScript Script Engine Factory and registers Compilation Customizers.
+        this.scriptEngineManager.registerEngineName("javascript", jsFactory);
     }
 
 }

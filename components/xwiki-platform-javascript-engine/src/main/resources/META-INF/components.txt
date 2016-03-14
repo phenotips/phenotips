@@ -1,2 +1,1 @@
-org.phenotips.rendering.internal.macro.javascript.JavascriptMacro
-org.phenotips.javascript.internal.JavascriptScriptEngineFactory2
+org.phenotips.rendering.internal.macro.javascript.JavaScriptMacro
