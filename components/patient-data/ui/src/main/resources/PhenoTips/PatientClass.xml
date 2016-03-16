@@ -537,6 +537,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </family_id>
+    <birth_number>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>birth_number</name>
+      <number>56</number>
+      <picker>0</picker>
+      <prettyName>Birth Number</prettyName>
+      <size>13</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </birth_number>
     <family_history>
       <contenttype>PureText</contenttype>
       <customDisplay/>

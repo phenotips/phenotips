@@ -395,6 +395,9 @@ public class DataToCellConverter
         if (enabledFields.remove("family_id")) {
             present.add("family_id");
         }
+        if (enabledFields.remove("birth_number")) {
+            present.add("birth_number");
+        }
         if (present.isEmpty()) {
             return null;
         }
@@ -417,6 +420,11 @@ public class DataToCellConverter
         }
         if (present.contains("family_id")) {
             DataCell familyIdCell = new DataCell("Family Identifier", x, 1, StyleOption.HEADER);
+            section.addCell(familyIdCell);
+            x++;
+        }
+        if (present.contains("birth_number")) {
+            DataCell familyIdCell = new DataCell("Birth Number", x, 1, StyleOption.HEADER);
             section.addCell(familyIdCell);
             x++;
         }
@@ -446,6 +454,11 @@ public class DataToCellConverter
         }
         if (present.contains("family_id")) {
             DataCell cell = new DataCell(patient.<String>getData("identifiers").get("family_id"), x, 0);
+            section.addCell(cell);
+            x++;
+        }
+        if (present.contains("birth_number")) {
+            DataCell cell = new DataCell(patient.<String>getData("identifiers").get("birth_number"), x, 0);
             section.addCell(cell);
             x++;
         }

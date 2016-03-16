@@ -62,7 +62,7 @@ public class IdentifiersController implements PatientDataController<String>
      */
     public static final String DATA_NAME = "identifiers";
 
-    private static final List<? extends String> IDS = Arrays.asList("external_id", "family_id");
+    private static final List<? extends String> IDS = Arrays.asList("external_id", "family_id", "birth_number");
 
     /** Logging helper object. */
     @Inject
