@@ -424,8 +424,8 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("birth_number")) {
-            DataCell familyIdCell = new DataCell("Birth Number", x, 1, StyleOption.HEADER);
-            section.addCell(familyIdCell);
+            DataCell birthNumberCell = new DataCell("Birth Number", x, 1, StyleOption.HEADER);
+            section.addCell(birthNumberCell);
             x++;
         }
         // section.finalizeToMatrix();
