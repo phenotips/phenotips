@@ -121,7 +121,13 @@ public class PhenotipsFamilyPermissions
         permissions.set(ALLOW, 1, context);
     }
 
-    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
+    /**
+     * Gets a patient document owner permissions.
+     *
+     * @param patientDoc patient to read permissions from
+     * @return array of rights
+     */
+    public String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
     {
         String[] fullRights = new String[2];
         int i = 0;
