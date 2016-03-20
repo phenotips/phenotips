@@ -743,6 +743,16 @@
       <artifactId>phenotips-proxy-authentication</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-client-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->
     <dependency>
