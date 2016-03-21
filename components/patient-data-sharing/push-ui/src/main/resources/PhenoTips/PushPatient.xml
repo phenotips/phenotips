@@ -212,14 +212,7 @@
         "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
         "$services.localization.render('phenotips.patientSharing.push.dialog.consents.defaulthint')"));
 
-      // TODO: a sectionto preview patient data being pushd. It used to be easy, but
-      //       now that we push a lot of different fields the preview is disabled until
-      //       we come up with an easy way to display all of the data
-      // if (!this._pushManyPatients) {
-      //   this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
-      //   this._fieldsManager = this._container.down('#fields-selection .section-contents');
-      // } else {
-      this._fieldsManager = null;
+      // TODO: DATAPREVIEW: implement preview of the data being pushed which works with multi-patient push and with all data fields
 
       this._retryButtonClass = 'button secondary push-retry-button';
 
@@ -262,15 +255,6 @@
 
     _generateServerAndUserFirstMessage: function() {
       return new Element('div', {'class' : 'warningmessage'}).update("$services.localization.render('phenotips.PushPatient.serverAndUserFirstMessage')");
-    },
-
-    _generateNoPatientJSONMessage: function(fieldList) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
-      var _this = this;
-      retryButton.observe('click', function(event) {
-        _this._generateDataPreview(fieldList);
-      });
-      return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noPatientMessage')").insert(retryButton);
     },
 
     _generateNoServerListMessage: function() {
@@ -330,8 +314,8 @@
       this._groupManager.update(this._generateServerAndUserFirstMessage());
       this._consentsSection.hide();
 
-      // TODO: fields sectionis disabled for now
-      // !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
+      // TODO: DATAPREVIEW: if preview is implemented on the main push dialog page, need to display
+      //                    this._generateServerAndUserFirstMessage() error there
 
       this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
       this._approveElement.hide();
@@ -718,12 +702,10 @@
       this._displayGroupPicker(groupList);
 
       this._showApproveCheckbox();
-      // TODO: patient preview is disabled for now
-      // if (this._pushManyPatients) {
-      //   this._showApproveCheckbox();
-      // } else {
-      //  this._generateDataPreview(fieldList);
-      // }
+
+      // TODO: DATAPREVIEW: patient data should be shown at this point. Note that we have both single- and multi- patient push.
+      //                    for inspiration check previous implementation in git, search for _generateDataPreview()
+      //                    (which used _displayPatientData(), generateNoPatientJSONMessage(), _generatePatientDataPreview())
     },
 
     _displayGroupPicker: function(groupList) {
@@ -772,96 +754,10 @@
       }
     },
 
-    _generateDataPreview: function(fieldList) {
-      this._patientFieldList = fieldList;
-      var _this = this;
-      //AJAX 4: local AJAX request to get patient JSON to let the user see the actual data being pushed
-      new Ajax.Request(this._serviceURL, {
-        method: _this._container.method,
-        parameters : { "do":"getpatientjson", "patientid":_this._patientId, "fields":Object.toJSON(this._patientFieldList) },
-        onCreate : function() {
-          console.log("PUSH: get patient JSON - start");
-          _this._disableInputs();
-        },
-        onSuccess : function (response) {
-          console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-          _this._displayPatientData(response.responseJSON);
-        },
-        onFailure : function(response) {
-          console.log("PUSH: unable to get patient JSON");
-          _this._fieldsManager.update(_this._generateNoPatientJSONMessage(fieldList));
-        },
-        on0 : function (response) {
-          response.request.options.onFailure(response);
-        },
-        onComplete : function() {
-          _this._restoreInputs();
-          console.log("PUSH: get patient JSON - complete");
-        }
-      });
-    },
-
-    _displayPatientData: function(patientData) {
-      this._showApproveCheckbox();
-      this._patientData = patientData;
-      //console.log("Data: " + stringifyObject(patientData));
-      this._fieldsManager.update(this._generatePatientDataPreview(patientData));
-    },
-
     _showApproveCheckbox: function() {
       this._checkBoxApprove.checked = false;
       this._checkBoxApprove.enable();
       this._approveElement.show();
-    },
-
-    _generatePatientDataPreview: function(patientJSON) {
-        var dataCategories = [
-           {
-              'name'     : 'external_id',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewIdentifier')",
-              'callback' : '__displayId'
-           },
-           {
-              'name'     : 'sex',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewSex')",
-              'callback' : '__displaySex'
-           },
-           {
-              'name'     : 'features',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewFeatures')",
-              'callback' : '__displayFeatures'
-           },
-           {
-              'name'     : 'disorders',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewDisorders')",
-              'callback' : '__displayFeatures'
-           },
-        ];
-        var result = new Element('dl');
-        var _this = this;
-        dataCategories.each(function(c) {
-           patientJSON[c.name] &amp;&amp; _this[c.callback] &amp;&amp; result.insert(new Element('dt').update(c.title || c.name)).insert(_this[c.callback](patientJSON[c.name]).addClassName('data-preview-section'));
-        });
-        return result;
-    },
-
-    __displayId : function(id) {
-        return new Element('dd').insert(id);
-    },
-    __displaySex : function(sex) {
-        return new Element('dd').insert(
-           (sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" :
-           (sex == "M") ? "$services.localization.render('phenotips.PushPatient.male')" :
-           (sex == "O") ? "$services.localization.render('phenotips.PushPatient.other')" :
-           "$services.localization.render('phenotips.PushPatient.unknown')");
-    },
-
-    __displayFeatures : function(features) {
-        var result = new Element('dd');
-        features.each(function (f) {
-          result.insert(new Element('div', {'class' : (f.observed == "no" ? "negative" : "")}).update((f.observed == "no" ? "$services.localization.render('phenotips.PushPatient.negative')" : "") + f.label).insert(f.id &amp;&amp; new Element('span', {'class' : 'hint'}).update(' (' + f.id + ')')  || '') );
-        });
-        return result;
     },
 
     // ---------------------------------------------------------------------
