@@ -62,7 +62,7 @@ public interface ConsentAuthorizer
     boolean authorizeInteraction(Patient patient);
 
     /**
-     * Determines if the set of granted consents incldes all the required consents configured in the system.
+     * Determines if the set of granted consents includes all the required consents configured in the system.
      *
      * @param grantedConsents list of consents that have been granted; can be {@link null}.
      * @return true if interactions with the patient record can occur given the set of consents, false otherwise.

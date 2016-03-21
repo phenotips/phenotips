@@ -132,8 +132,9 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
     }
 
     /**
-     * Returns the union of all fields which the provided set of missing consents prevents form
-     * being used. Returns an empty list of all fields are affected. Returns null if no fields are affected.
+     * Returns the union of all fields which the provided set of missing consents prevents from
+     * being used. Returns an empty list if all fields are affected (not consented).
+     * Returns null if no fields are affected.
      *
      * @param missingConsents a set of presumably not granted consents
      */
