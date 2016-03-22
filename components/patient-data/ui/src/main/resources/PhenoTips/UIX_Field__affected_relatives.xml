@@ -129,8 +129,8 @@
 enabled=true
 required=
 order=10
-fields=affectedRelatives
-required_consents=share_history</parameters>
+contains_PII=true
+fields=affectedRelatives</parameters>
     </property>
     <property>
       <scope>wiki</scope>

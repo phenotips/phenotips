@@ -133,8 +133,7 @@
 enabled=true
 required=
 order=1
-fields=
-required_consents=share_history</parameters>
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

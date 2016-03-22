@@ -77,6 +77,13 @@ $xwiki.ssx.use($displayDocumentName)##
     #end
     $doc.display("AllowPushesFromNonListedServers", "edit", $targetObj)
     ##
+  #if ($services.consentauthorizer.consentsGloballyEnabled())
+    {{html clean="false"}}
+    Accept data from old clients which do not ask the user to set consents when pushing: ##
+    {{/html}}##
+    $doc.display("AllowNoConsentsFromOldClients", "edit", $targetObj)
+  #end
+  ##
 {{html clean="false"}}
 &lt;div class="buttons"&gt;
     &lt;input class="button" type="submit" value="Save" /&gt;

@@ -142,8 +142,7 @@
 enabled=true
 required=
 order=4
-fields=
-required_consents=real</parameters>
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -685,6 +685,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-sharing-receiver-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>specificity-meter-api</artifactId>
       <version>${project.version}</version>
     </dependency>

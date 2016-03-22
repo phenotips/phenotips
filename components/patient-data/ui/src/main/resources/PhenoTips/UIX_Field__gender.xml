@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=7
-fields=gender
-required_consents=real</parameters>
+fields=gender</parameters>
     </property>
     <property>
       <scope>wiki</scope>

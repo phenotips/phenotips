@@ -19,6 +19,8 @@ package org.phenotips.data;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
 /**
@@ -38,9 +40,17 @@ public interface Consent
     String getId();
 
     /**
-     * The users never sees the ids of the consents, they only see titles (which are more like descriptions).
+     * The users never sees the ids of the consents, they only see labels (aka titles).
      *
      * @return the description of this consent
+     */
+    String getLabel();
+
+    /**
+     * An optional (potentially long) description which is supposed to be displayed under a consent, possibly with
+     * links to external documents such as consent form(s).
+     *
+     * @return the long description of this consent
      */
     String getDescription();
 
@@ -52,6 +62,12 @@ public interface Consent
      * @return {@link ConsentStatus} which should generally be Yes or No, but could be notLoaded
      */
     ConsentStatus getStatus();
+
+    /**
+     * A convenience method to check if Consent status is Yes.
+     * @return {@link true} iff getStatus() == Yes, {@link false} otherwise
+     */
+    boolean isGranted();
 
     /**
      * The status should be dynamically changeable.
@@ -68,17 +84,40 @@ public interface Consent
     boolean isRequired();
 
     /**
+     * The list of (patient form) fields only available if consent is granted.
+     * If a field is affected by more than one consent, all of the consents have to be granted in order
+     * to enable the field.
+     *
+     * @return A list of field IDs of the affected fields. If all fields are affected an empty list is returned.
+     * If no fields are affected {@link null} is returned.
+     */
+    List<String> getFields();
+
+    /**
+     * A convenience method to determine that all or no fields are affected.
+     * @return {@link true} if all fields are affected, {@link false} otherwise
+     */
+    boolean affectsAllFields();
+
+    /**
+     * A convenience method to determine that at least one field is affected (e.g. a consent may be
+     * requred for something other than fields).
+     * @return {@link true} if at least one fields is affected.
+     */
+    boolean affectsSomeFields();
+
+    /**
      * Consents should be convertible into a JSON format.
      *
      * @return a JSON object representing this consent
      */
-    JSONObject toJson();
+    JSONObject toJSON();
 
     /**
-     * Should be a static method, but should also be in the interface.
+     * Returns a copy of this consent with the given status set instead of the current status.
      *
-     * @param json the representation of a consent
-     * @return a new {@link Consent} instance, as represented by
+     * @param status the new status
+     * @return a new consent object identical to current except that the status is set to the given one.
      */
-    Consent fromJson(JSONObject json);
+    Consent copy(ConsentStatus status);
 }

@@ -55,11 +55,6 @@ public class ReceivePatientDataScriptService implements ScriptService
         return this.internalService.getConfiguration();
     }
 
-    public JSONObject getPatientState()
-    {
-        return this.internalService.getPatientState();
-    }
-
     public JSONObject receivePatient()
     {
         return this.internalService.receivePatient();

@@ -129,8 +129,7 @@
 enabled=true
 required=
 order=9
-fields=miscarriages
-required_consents=share_history</parameters>
+fields=miscarriages</parameters>
     </property>
     <property>
       <scope>wiki</scope>

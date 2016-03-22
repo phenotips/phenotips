@@ -125,8 +125,7 @@
 enabled=true
 order=3
 required=
-fields=global_age_of_onset
-required_consents=real</parameters>
+fields=global_age_of_onset</parameters>
     </property>
     <property>
       <scope>wiki</scope>

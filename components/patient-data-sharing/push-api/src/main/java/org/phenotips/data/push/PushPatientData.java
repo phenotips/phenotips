@@ -61,23 +61,6 @@ public interface PushPatientData
         String password, String user_token);
 
     /**
-     * A patient record can have a state, which is a form of metadata. For example, a patient record can have consents
-     * granted by the patient relating to which data is allowed to be part of the record. This function retrieves the
-     * patient state from a remote server. In case that this query is made with no specific patient, the server should
-     * return the patient state of a newly created record.
-     *
-     * @param remoteServerIdentifier server name as configured in TODO
-     * @param remoteGUID if a remote patient with the same GUID exists and is owned by the given group and is authored
-     * by the given user, patient state will be read from that patient, otherwise patient state will be that of a newly
-     * created patient (optional, can be {@code null})
-     * @param userName user name on the remote server
-     * @param password user password on the remote server. Ignored if user_token is not null.
-     * @param userToken passwordless-login token provided by the remote server on the last successful login (optional)
-     */
-    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
-        String userName, String password, String userToken);
-
-    /**
      * Submits the specified subset of patient data to the specified remote server. The new patient created on the
      * remote server will be created and authored by the given user, and owned by the given group (if provided) or the
      * user otherwise.

@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=2
-fields=external_id
-required_consents=real</parameters>
+fields=external_id</parameters>
     </property>
     <property>
       <scope>wiki</scope>

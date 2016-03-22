@@ -130,8 +130,7 @@ enabled=true
 required=
 order=5
 fields=date_of_birth
-contains_PII=true
-required_consents=real</parameters>
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

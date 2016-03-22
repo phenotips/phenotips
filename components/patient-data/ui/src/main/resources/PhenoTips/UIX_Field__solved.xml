@@ -143,8 +143,7 @@
 enabled=true
 required=
 order=1
-fields=solved,solved__pubmed_id,solved__notes
-required_consents=real</parameters>
+fields=solved,solved__pubmed_id,solved__notes</parameters>
     </property>
     <property>
       <scope>wiki</scope>

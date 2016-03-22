@@ -138,9 +138,7 @@ $displayedContent.trim()
 enabled=true
 required=
 order=2
-fields=assistedReproduction_fertilityMeds,assistedReproduction_iui,ivf,icsi,assistedReproduction_surrogacy,assistedReproduction_donoregg,assistedReproduction_donorsperm
-privacy_level=3
-required_consents=share_history</parameters>
+fields=assistedReproduction_fertilityMeds,assistedReproduction_iui,ivf,icsi,assistedReproduction_surrogacy,assistedReproduction_donoregg,assistedReproduction_donorsperm</parameters>
     </property>
     <property>
       <scope>wiki</scope>

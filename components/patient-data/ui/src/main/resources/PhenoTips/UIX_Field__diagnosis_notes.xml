@@ -126,8 +126,7 @@ enabled=true
 required=
 order=2
 fields=diagnosis_notes
-contains_PII=true
-required_consents=real</parameters>
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -427,33 +427,9 @@
               <justification>Switched from net.sf.json to org.json.</justification>
             </difference>
             <difference>
-              <className>org/phenotips/data/receive/ReceivePatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.json.JSONObject getPatientState()</method>
-              <justification>Added a new endpoint on the receiving side in patient push module</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientData</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
               <className>org/phenotips/data/push/PushPatientData</className>
               <differenceType>7004</differenceType>
               <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(org.phenotips.data.Patient, java.util.Set, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
-              <justification>Needed for synchronizing consents</justification>
-            </difference>
-            <difference>
-              <className>org/phenotips/data/push/PushPatientService</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.push.PushServerPatientStateResponse getRemotePatientState(java.lang.String, java.lang.String)</method>
               <justification>Needed for synchronizing consents</justification>
             </difference>
             <difference>
@@ -485,6 +461,18 @@
               <differenceType>7004</differenceType>
               <method>org.phenotips.data.push.PushServerSendPatientResponse sendPatient(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)</method>
               <justification>Needed for synchronizing consents</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/push/PushServerConfigurationResponse</className>
+              <differenceType>7012</differenceType>
+              <method>org.json.JSONArray getConsents()</method>
+              <justification>Needed for synchronizing consents</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/shareprotocol/ShareProtocol</className>
+              <differenceType>6011</differenceType>
+              <field>POST_PROTOCOL_VERSION</field>
+              <justification>Renamed to better reflect its meaning</justification>
             </difference>
           </ignored>
           <excludes>
