@@ -47,11 +47,11 @@ public class ConsentManagerScriptService implements ScriptService
 
     /**
      * Checks if a specific consent is given for the patient record. If consentId is not configured
-     * in the system returns {@link false} regardless of patient consent status.
+     * in the system returns {@code false} regardless of patient consent status.
      *
      * @param patientId record in which to test consent
      * @param consentId of consent which is to be checked
-     * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
+     * @return {@code true} if the consent was granted for the patient, otherwise {@code false}
      */
     public boolean hasConsent(String patientId, String consentId)
     {

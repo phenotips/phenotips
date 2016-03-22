@@ -65,7 +65,7 @@ public interface Consent
 
     /**
      * A convenience method to check if Consent status is Yes.
-     * @return {@link true} iff getStatus() == Yes, {@link false} otherwise
+     * @return {@code true} iff getStatus() == Yes, {@code false} otherwise
      */
     boolean isGranted();
 
@@ -79,7 +79,7 @@ public interface Consent
     /**
      * Some consents are required to for any interaction with a patient record data (viewing, modifying, etc).
      *
-     * @return {@link true} if required, {@link false} otherwise
+     * @return {@code true} if required, {@code false} otherwise
      */
     boolean isRequired();
 
@@ -89,20 +89,20 @@ public interface Consent
      * to enable the field.
      *
      * @return A list of field IDs of the affected fields. If all fields are affected an empty list is returned.
-     * If no fields are affected {@link null} is returned.
+     * If no fields are affected {@code null} is returned.
      */
     List<String> getFields();
 
     /**
      * A convenience method to determine that all or no fields are affected.
-     * @return {@link true} if all fields are affected, {@link false} otherwise
+     * @return {@code true} if all fields are affected, {@code false} otherwise
      */
     boolean affectsAllFields();
 
     /**
      * A convenience method to determine that at least one field is affected (e.g. a consent may be
      * requred for something other than fields).
-     * @return {@link true} if at least one fields is affected.
+     * @return {@code true} if at least one fields is affected.
      */
     boolean affectsSomeFields();
 

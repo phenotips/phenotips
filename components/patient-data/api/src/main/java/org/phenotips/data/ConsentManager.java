@@ -45,7 +45,7 @@ public interface ConsentManager
     /**
      * Checks if passed in consent id is actually configured (in the system).
      * @param consentId of consent which is to be tested
-     * @return {@link true} if consentId is a valid consent configure din the system
+     * @return {@code true} if consentId is a valid consent configure din the system
      */
     boolean isValidConsentId(String consentId);
 
@@ -90,17 +90,17 @@ public interface ConsentManager
      * consents are revoked.
      * @param patient record in which consents will be granted
      * @param consents list of consent ids
-     * @return {@link true} if the operation was successful, otherwise {@link false}
+     * @return {@code true} if the operation was successful, otherwise {@code false}
      */
     boolean setPatientConsents(Patient patient, Iterable<String> consents);
 
     /**
      * Checks if a specific consent is given for the patient record. If consentId is not configured
-     * in the system returns {@link false} regardless of patient consent status.
+     * in the system returns {@code false} regardless of patient consent status.
      *
      * @param patient record in which to test consent
      * @param consentId of consent which is to be checked
-     * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
+     * @return {@code true} if the consent was granted for the patient, otherwise {@code false}
      */
     boolean hasConsent(Patient patient, String consentId);
 
@@ -110,7 +110,7 @@ public interface ConsentManager
      *
      * @param patientId for which a patient record is to be looked up
      * @param consentId of consent which is to be checked
-     * @return {@link true} if the consent was granted for the patient, otherwise {@link false}
+     * @return {@code true} if the consent was granted for the patient, otherwise {@code false}
      */
     boolean hasConsent(String patientId, String consentId);
 
@@ -119,7 +119,7 @@ public interface ConsentManager
      *
      * @param patient record in which to grant a consent
      * @param consentId of consent which is to be granted
-     * @return {@link true} if the operation was successful, otherwise {@link false}
+     * @return {@code true} if the operation was successful, otherwise {@code false}
      */
     boolean grantConsent(Patient patient, String consentId);
 
@@ -127,7 +127,7 @@ public interface ConsentManager
      * Revokes a specific consent in a patient record.
      * @param patient record in which a consent is to be removed
      * @param consentId of consent to be removed
-     * @return {@link true} if the operation was successful, otherwise {@link false}
+     * @return {@code true} if the operation was successful, otherwise {@code false}
      */
     boolean revokeConsent(Patient patient, String consentId);
 
