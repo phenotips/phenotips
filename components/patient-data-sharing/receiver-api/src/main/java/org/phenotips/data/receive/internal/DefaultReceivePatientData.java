@@ -539,6 +539,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             JSONObject patientData = new JSONObject(patientJSON);
+            context.setUserReference(new DocumentReference(context.getMainXWiki(), "XWiki", userName));
             affectedPatient.updateFromJSON(patientData);
 
             if (consentIds != null) {
