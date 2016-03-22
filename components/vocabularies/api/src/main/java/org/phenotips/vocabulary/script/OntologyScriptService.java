@@ -69,7 +69,7 @@ public class OntologyScriptService implements ScriptService
      *            vocabulary, or a {@link Vocabulary#getAliases() known alias} for it, for example {@code MIM},
      *            {@code hpo}, {@code HP} or {@code HPO}
      * @return the requested vocabulary, or {@code null} if it doesn't exist or isn't available in the platform
-     * @deprecated use {@link VocabularyScriptService#getOntology(String) $services.vocabularies.getOntology} instead
+     * @deprecated use {@link VocabularyScriptService#getVocabulary(String) $services.vocabularies.getVocabulary} instead
      */
     @Deprecated
     public Vocabulary getOntology(String vocabularyId)
