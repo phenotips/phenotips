@@ -87,7 +87,6 @@ public class SolvedController extends AbstractSimpleController implements Initia
     {
         fields.put(STATUS_KEY, "status");
         fields.put("solved__pubmed_id", "pubmed_id");
-        fields.put("solved__gene_id", "gene");
         fields.put("solved__notes", "notes");
     }
 

@@ -27,6 +27,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +51,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseStringProperty;
+import com.xpn.xwiki.objects.StringListProperty;
 
 /**
  * Handles the patients genes.
@@ -63,7 +65,7 @@ import com.xpn.xwiki.objects.BaseStringProperty;
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
     /** The XClass used for storing gene data. */
-    public static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+    protected static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String GENES_STRING = "genes";
@@ -72,11 +74,24 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
+    private static final String GENES_STATUS_ENABLING_FIELD_NAME = "genes_status";
+
+    private static final String GENES_STRATEGY_ENABLING_FIELD_NAME = "genes_strategy";
+
     private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
 
     private static final String GENE_KEY = "gene";
 
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
+
     private static final String COMMENTS_KEY = "comments";
+
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
+
+    private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
+        "common_mutations");
 
     @Inject
     private Logger logger;
@@ -100,7 +115,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(GENE_KEY, COMMENTS_KEY);
+        return Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
     }
 
     @Override
@@ -122,21 +137,21 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
-                this.logger.debug("No candidate genes information found, returning");
                 return null;
             }
 
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
             for (BaseObject geneObject : geneXWikiObjects) {
-                if (geneObject == null || geneObject.getFieldList().size() == 0) {
+                if (geneObject == null || geneObject.getFieldList().isEmpty()) {
                     continue;
                 }
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
-                    BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
-                    if (field != null) {
-                        singleGene.put(property, field.getValue());
+                    String value = getFieldValue(geneObject, property);
+                    if (value == null) {
+                        continue;
                     }
+                    singleGene.put(property, value);
                 }
                 allGenes.add(singleGene);
             }
@@ -150,6 +165,38 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 + "error has occurred during controller loading ", e.getMessage());
         }
         return null;
+    }
+
+    private String getFieldValue(BaseObject geneObject, String property)
+    {
+        if (STRATEGY_KEY.equals(property)) {
+            StringListProperty fields = (StringListProperty) geneObject.getField(property);
+            if (fields == null || fields.getList().size() == 0) {
+                return null;
+            }
+            return fields.getTextValue();
+
+        } else {
+            BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
+            if (field == null) {
+                return null;
+            }
+            return field.getValue();
+        }
+    }
+
+    private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
+        Collection<String> selectedFieldNames)
+    {
+        int count = 0;
+        for (String property : keys) {
+            if (StringUtils.isBlank(item.get(property))
+                || (selectedFieldNames != null
+                && !selectedFieldNames.contains(enablingProperties.get(count)))) {
+                item.remove(property);
+            }
+            count++;
+        }
     }
 
     @Override
@@ -173,17 +220,17 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
+        List<String> keys =
+            Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
+
+        List<String> enablingProperties =
+            Arrays.asList(GENES_ENABLING_FIELD_NAME, GENES_STATUS_ENABLING_FIELD_NAME,
+                GENES_STRATEGY_ENABLING_FIELD_NAME, GENES_COMMENTS_ENABLING_FIELD_NAME);
+
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
-
             if (!StringUtils.isBlank(item.get(GENE_KEY))) {
-
-                if (StringUtils.isBlank(item.get(COMMENTS_KEY))
-                    || (selectedFieldNames != null
-                        && !selectedFieldNames.contains(GENES_COMMENTS_ENABLING_FIELD_NAME))) {
-                    item.remove(COMMENTS_KEY);
-                }
-
+                removeKeys(item, keys, enablingProperties, selectedFieldNames);
                 container.put(item);
             }
         }
@@ -196,23 +243,29 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             return null;
         }
 
+        Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
+        enumValues.put(STATUS_KEY, STATUS_VALUES);
+        enumValues.put(STRATEGY_KEY, STRATEGY_VALUES);
+
         try {
             JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
             List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
+            List<String> geneSymbols = new ArrayList<String>();
             for (int i = 0; i < genesJson.length(); ++i) {
                 JSONObject geneJson = genesJson.getJSONObject(i);
-                Map<String, String> singleGene = new LinkedHashMap<String, String>();
-                for (String property : this.getProperties()) {
-                    if (geneJson.has(property)) {
-                        String field = geneJson.getString(property);
-                        if (field != null) {
-                            singleGene.put(property, field);
-                        }
-                    }
+
+                // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
+                if (!geneJson.has(GENE_KEY) || StringUtils.isBlank(geneJson.getString(GENE_KEY))
+                    || geneSymbols.contains(geneJson.getString(GENE_KEY))) {
+                    continue;
                 }
-                if (!singleGene.isEmpty()) {
-                    allGenes.add(singleGene);
+
+                Map<String, String> singleGene = parseGeneJson(geneJson, enumValues);
+                if (singleGene.isEmpty()) {
+                    continue;
                 }
+                allGenes.add(singleGene);
+                geneSymbols.add(geneJson.getString(GENE_KEY));
             }
 
             if (allGenes.isEmpty()) {
@@ -224,6 +277,34 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             this.logger.error("Could not load genes from JSON", e.getMessage());
         }
         return null;
+    }
+
+    private Map<String, String> parseGeneJson(JSONObject geneJson, Map<String, List<String>> enumValues)
+    {
+        Map<String, String> singleGene = new LinkedHashMap<String, String>();
+        for (String property : this.getProperties()) {
+            if (geneJson.has(property) && !StringUtils.isBlank(geneJson.getString(property))) {
+
+                String field = geneJson.getString(property);
+
+                if (STATUS_KEY.equals(property) && enumValues.get(property).contains(field.toLowerCase())) {
+                    singleGene.put(property, field);
+                } else if (STRATEGY_KEY.equals(property)) {
+
+                    String strategyField = "";
+                    for (String value : field.split("\\|")) {
+                        if (enumValues.get(property).contains(value)) {
+                            strategyField += "|" + value;
+                        }
+                    }
+                    singleGene.put(property, strategyField);
+
+                } else {
+                    singleGene.put(property, field);
+                }
+            }
+        }
+        return singleGene;
     }
 
     @Override
@@ -247,14 +328,12 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 try {
                     Map<String, String> gene = iterator.next();
                     BaseObject xwikiObject = doc.newXObject(GENE_CLASS_REFERENCE, context);
-
                     for (String property : this.getProperties()) {
                         String value = gene.get(property);
                         if (value != null) {
                             xwikiObject.set(property, value, context);
                         }
                     }
-                    xwikiObject.set("type", "molecular", context);
                 } catch (Exception e) {
                     this.logger.error("Failed to save a specific gene: [{}]", e.getMessage());
                 }

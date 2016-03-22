@@ -29,7 +29,7 @@
   <name>PhenoTips - Data export - Spreadsheet Export APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.20</coverage.instructionRatio>
+    <coverage.instructionRatio>0.18</coverage.instructionRatio>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
 
@@ -86,6 +86,11 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>3.11</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-translation-manager</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies. Is not used as of now, but will be once the tests are included into this module. -->
     <dependency>

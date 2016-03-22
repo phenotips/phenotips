@@ -22,7 +22,7 @@ org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.MetaDataController
 org.phenotips.data.internal.controller.EthnicityController
 org.phenotips.data.internal.controller.GeneListController
-org.phenotips.data.internal.controller.RejectedGeneListController
+org.phenotips.data.internal.controller.VariantListController
 org.phenotips.data.internal.controller.ClinicalStatusController
 org.phenotips.data.internal.controller.SolvedController
 org.phenotips.data.internal.controller.AllergiesController
@@ -32,5 +32,6 @@ org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
 org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
 org.phenotips.data.internal.PatientBirthdateUpdater
 org.phenotips.data.internal.PatientDeathdateUpdater
+org.phenotips.data.internal.PatientEmptyObjectsRemover
 org.phenotips.data.internal.PatientExtendedPhenotypeUpdater
 org.phenotips.data.internal.PatientXWikiConsentManager
