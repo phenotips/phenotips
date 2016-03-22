@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>xwiki-platform-users</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1</version>
   </parent>
   <artifactId>xwiki-platform-users-wiki</artifactId>
   <name>XWiki Platform - Core - Users - Wiki</name>

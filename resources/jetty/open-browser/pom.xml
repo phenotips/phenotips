@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>jetty</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1</version>
   </parent>
   <artifactId>jetty-open-browser</artifactId>
   <name>PhenoTips - Jetty Lifecycle Listener - Open Browser</name>
