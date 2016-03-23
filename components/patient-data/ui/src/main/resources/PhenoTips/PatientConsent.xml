@@ -762,44 +762,46 @@
     </class>
     <property>
       <content>{{velocity}}
-## outside the enabled block, since the code is used by push functionality
-$xwiki.jsx.use('PhenoTips.PatientConsent')
-$xwiki.ssx.use('PhenoTips.PatientConsent')
-#if ($services.consentauthorizer.consentsGloballyEnabled())
-  #set($consentAssignUrl = "/rest/patients/${doc.getName()}/consents/assign")
-  #set($patientId = $doc.getName())
-  #set($consnents = $services.patientconsents.getAllConsentsForPatient("$patientId"))
-  (% id='consents-block' class='$xcontext.action' assign-url='$consentAssignUrl'%)(((
-    {{html clean='false' wiki='false'}}
-      &lt;div class='patient-id hidden'&gt;${patientId}&lt;/div&gt;
-      &lt;div class='patient-consents-json hidden'&gt;${consnents.toString()}&lt;/div&gt;
-    {{/html}}
-    (% class='consents-title' %)(((
-      ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
-    )))
-    (% class='consents' %)(((
+#if ($xcontext.action != 'export')
+  ## outside the enabled block, since the code is used by push functionality
+  $xwiki.jsx.use('PhenoTips.PatientConsent')
+  $xwiki.ssx.use('PhenoTips.PatientConsent')
+  #if ($services.consentauthorizer.consentsGloballyEnabled())
+    #set($consentAssignUrl = "/rest/patients/${doc.getName()}/consents/assign")
+    #set($patientId = $doc.getName())
+    #set($consnents = $services.patientconsents.getAllConsentsForPatient("$patientId"))
+    (% id='consents-block' class='$xcontext.action' assign-url='$consentAssignUrl'%)(((
+      {{html clean='false' wiki='false'}}
+        &lt;div class='patient-id hidden'&gt;${patientId}&lt;/div&gt;
+        &lt;div class='patient-consents-json hidden'&gt;${consnents.toString()}&lt;/div&gt;
+      {{/html}}
+      (% class='consents-title' %)(((
+        ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
+      )))
+      (% class='consents' %)(((
 
-    )))
-    #if ($xcontext.action == 'edit')
-    {{html clean='false' wiki='false'}}##
-    &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-update"&gt;##
+      )))
+      #if ($xcontext.action == 'edit')
+      {{html clean='false' wiki='false'}}##
+      &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-update"&gt;##
         &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_change_consents_btn')&lt;/a&gt;##
         &lt;/span&gt;##
-    {{/html}}##
-    #end
-    (% class='error error_updating_consents hidden' %)(((
-      {{error}}$services.localization.render('PhenoTips.PatientConsent_error_updating_consents'){{/error}}
+      {{/html}}##
+      #end
+      (% class='error error_updating_consents hidden' %)(((
+        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_updating_consents'){{/error}}
+      )))
+      (% class='view-title-required-not-granted hidden' %)(((
+        {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
+      )))
+      (% class='view-title-none-granted hidden' %)(((
+        {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
+      )))
+      (% class='error error_no_consent_data hidden' %)(((
+        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_no_consent_data'){{/error}}
+      )))
     )))
-    (% class='view-title-required-not-granted hidden' %)(((
-      {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
-    )))
-    (% class='view-title-none-granted hidden' %)(((
-      {{warning}}$services.localization.render('PhenoTips.PatientConsent_none_granted'){{/warning}}
-    )))
-    (% class='error error_no_consent_data hidden' %)(((
-      {{error}}$services.localization.render('PhenoTips.PatientConsent_error_no_consent_data'){{/error}}
-    )))
-  )))
+  #end
 #end
 {{/velocity}}</content>
     </property>
