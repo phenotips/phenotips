@@ -461,7 +461,7 @@ label.create-button-label, .add-data-button:before {
   position: absolute;
   text-align: center;
   text-shadow: none;
-  top: .24em;
+  top: .1em;
   vertical-align: middle;
   width: .8em !important;
   z-index: 2;
