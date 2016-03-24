@@ -84,29 +84,7 @@ public class VariantListControllerTest
 
     private static final String CONTROLLER_NAME = VARIANTS_STRING;
 
-    private static final String VARIANTS_ENABLING_FIELD_NAME = VARIANTS_STRING;
-
-    private static final String VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME = "variants_genesymbol";
-
-    private static final String VARIANTS_PROTEIN_ENABLING_FIELD_NAME = "variants_protein";
-
-    private static final String VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME = "variants_transcript";
-
-    private static final String VARIANTS_DBSNP_ENABLING_FIELD_NAME = "variants_dbsnp";
-
-    private static final String VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME = "variants_zygosity";
-
-    private static final String VARIANTS_EFFECT_ENABLING_FIELD_NAME = "variants_effect";
-
-    private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
-
-    private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
-
-    private static final String VARIANTS_EVIDENCE_ENABLING_FIELD_NAME = "variants_evidence";
-
-    private static final String VARIANTS_SEGREGATION_ENABLING_FIELD_NAME = "variants_segregation";
-
-    private static final String VARIANTS_SANGER_ENABLING_FIELD_NAME = "variants_sanger";
+    private static final String VARIANTS_ENABLING_FIELD_NAME = "genes";
 
     private static final String VARIANT_KEY = "cdna";
 
@@ -511,17 +489,6 @@ public class VariantListControllerTest
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(VARIANTS_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_PROTEIN_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_DBSNP_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_EFFECT_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_INHERITANCE_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_EVIDENCE_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_SEGREGATION_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_SANGER_ENABLING_FIELD_NAME);
-        selectedFields.add(VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -562,7 +529,7 @@ public class VariantListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("variantName", result.get(VARIANT_KEY));
-        Assert.assertEquals(1, result.length());
+        Assert.assertEquals(12, result.length());
     }
 
     // ----------------------------------------Private methods----------------------------------------

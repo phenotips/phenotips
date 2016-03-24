@@ -94,12 +94,6 @@ public class GeneListControllerTest
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
-    private static final String GENES_STATUS_ENABLING_FIELD_NAME = "genes_status";
-
-    private static final String GENES_STRATEGY_ENABLING_FIELD_NAME = "genes_strategy";
-
-    private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
-
     private static final String GENE_KEY = "gene";
 
     private static final String STATUS_KEY = "status";
@@ -364,9 +358,6 @@ public class GeneListControllerTest
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(GENES_ENABLING_FIELD_NAME);
-        selectedFields.add(GENES_STATUS_ENABLING_FIELD_NAME);
-        selectedFields.add(GENES_STRATEGY_ENABLING_FIELD_NAME);
-        selectedFields.add(GENES_COMMENTS_ENABLING_FIELD_NAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -375,7 +366,8 @@ public class GeneListControllerTest
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("GENE", result.get(GENE_KEY));
         Assert.assertEquals("Status", result.get(STATUS_KEY));
-        Assert.assertEquals("Strategy", result.get(STRATEGY_KEY));
+        String[] strategyArray = { "Strategy" };
+        Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(STRATEGY_KEY)).get(0));
         Assert.assertEquals("Comment", result.get(COMMENTS_KEY));
 
         json = new JSONObject();
@@ -397,9 +389,9 @@ public class GeneListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("GENE", result.get(GENE_KEY));
-        Assert.assertFalse(result.has(STATUS_KEY));
-        Assert.assertFalse(result.has(STRATEGY_KEY));
-        Assert.assertEquals(1, result.length());
+        Assert.assertTrue(result.has(STATUS_KEY));
+        Assert.assertTrue(result.has(STRATEGY_KEY));
+        Assert.assertEquals(4, result.length());
     }
 
     @Test

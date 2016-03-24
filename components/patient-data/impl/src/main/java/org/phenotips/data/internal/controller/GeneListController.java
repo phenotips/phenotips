@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -74,19 +75,21 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
-    private static final String GENES_STATUS_ENABLING_FIELD_NAME = "genes_status";
+    private static final String INTERNAL_GENE_KEY = "gene";
 
-    private static final String GENES_STRATEGY_ENABLING_FIELD_NAME = "genes_strategy";
+    private static final String INTERNAL_STATUS_KEY = "status";
 
-    private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
+    private static final String INTERNAL_STRATEGY_KEY = "strategy";
 
-    private static final String GENE_KEY = "gene";
+    private static final String INTERNAL_COMMENTS_KEY = "comments";
 
-    private static final String STATUS_KEY = "status";
+    private static final String JSON_GENE_KEY = INTERNAL_GENE_KEY;
 
-    private static final String STRATEGY_KEY = "strategy";
+    private static final String JSON_STATUS_KEY = INTERNAL_STATUS_KEY;
 
-    private static final String COMMENTS_KEY = "comments";
+    private static final String JSON_STRATEGY_KEY = INTERNAL_STRATEGY_KEY;
+
+    private static final String JSON_COMMENTS_KEY = INTERNAL_COMMENTS_KEY;
 
     private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved");
 
@@ -115,7 +118,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
+        return Arrays.asList(INTERNAL_GENE_KEY, INTERNAL_STATUS_KEY, INTERNAL_STRATEGY_KEY, INTERNAL_COMMENTS_KEY);
     }
 
     @Override
@@ -169,7 +172,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
 
     private String getFieldValue(BaseObject geneObject, String property)
     {
-        if (STRATEGY_KEY.equals(property)) {
+        if (INTERNAL_STRATEGY_KEY.equals(property)) {
             StringListProperty fields = (StringListProperty) geneObject.getField(property);
             if (fields == null || fields.getList().size() == 0) {
                 return null;
@@ -182,20 +185,6 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 return null;
             }
             return field.getValue();
-        }
-    }
-
-    private void removeKeys(Map<String, String> item, List<String> keys, List<String> enablingProperties,
-        Collection<String> selectedFieldNames)
-    {
-        int count = 0;
-        for (String property : keys) {
-            if (StringUtils.isBlank(item.get(property))
-                || (selectedFieldNames != null
-                && !selectedFieldNames.contains(enablingProperties.get(count)))) {
-                item.remove(property);
-            }
-            count++;
         }
     }
 
@@ -220,18 +209,26 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        List<String> keys =
-            Arrays.asList(GENE_KEY, STATUS_KEY, STRATEGY_KEY, COMMENTS_KEY);
-
-        List<String> enablingProperties =
-            Arrays.asList(GENES_ENABLING_FIELD_NAME, GENES_STATUS_ENABLING_FIELD_NAME,
-                GENES_STRATEGY_ENABLING_FIELD_NAME, GENES_COMMENTS_ENABLING_FIELD_NAME);
+        Map<String, String> internalToJSONkeys = new HashMap<String, String>();
+        internalToJSONkeys.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
+        internalToJSONkeys.put(JSON_STATUS_KEY, INTERNAL_STATUS_KEY);
+        internalToJSONkeys.put(JSON_STRATEGY_KEY, INTERNAL_STRATEGY_KEY);
+        internalToJSONkeys.put(JSON_COMMENTS_KEY, INTERNAL_COMMENTS_KEY);
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
-            if (!StringUtils.isBlank(item.get(GENE_KEY))) {
-                removeKeys(item, keys, enablingProperties, selectedFieldNames);
-                container.put(item);
+            if (!StringUtils.isBlank(item.get(INTERNAL_GENE_KEY))) {
+                JSONObject nextGene = new JSONObject();
+                for (String key : internalToJSONkeys.keySet()) {
+                    if (!StringUtils.isBlank(item.get(key))) {
+                        if (INTERNAL_STRATEGY_KEY.equals(key)) {
+                            nextGene.put(key, new JSONArray(item.get(internalToJSONkeys.get(key)).split("\\|")));
+                        } else {
+                            nextGene.put(key, item.get(internalToJSONkeys.get(key)));
+                        }
+                    }
+                }
+                container.put(nextGene);
             }
         }
     }
@@ -244,8 +241,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
         }
 
         Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
-        enumValues.put(STATUS_KEY, STATUS_VALUES);
-        enumValues.put(STRATEGY_KEY, STRATEGY_VALUES);
+        enumValues.put(INTERNAL_STATUS_KEY, STATUS_VALUES);
+        enumValues.put(INTERNAL_STRATEGY_KEY, STRATEGY_VALUES);
 
         try {
             JSONArray genesJson = json.getJSONArray(this.getJsonPropertyName());
@@ -255,8 +252,8 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                 JSONObject geneJson = genesJson.getJSONObject(i);
 
                 // discard it if gene symbol is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!geneJson.has(GENE_KEY) || StringUtils.isBlank(geneJson.getString(GENE_KEY))
-                    || geneSymbols.contains(geneJson.getString(GENE_KEY))) {
+                if (!geneJson.has(INTERNAL_GENE_KEY) || StringUtils.isBlank(geneJson.getString(INTERNAL_GENE_KEY))
+                    || geneSymbols.contains(geneJson.getString(INTERNAL_GENE_KEY))) {
                     continue;
                 }
 
@@ -265,7 +262,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
                     continue;
                 }
                 allGenes.add(singleGene);
-                geneSymbols.add(geneJson.getString(GENE_KEY));
+                geneSymbols.add(geneJson.getString(INTERNAL_GENE_KEY));
             }
 
             if (allGenes.isEmpty()) {
@@ -283,28 +280,35 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     {
         Map<String, String> singleGene = new LinkedHashMap<String, String>();
         for (String property : this.getProperties()) {
-            if (geneJson.has(property) && !StringUtils.isBlank(geneJson.getString(property))) {
-
-                String field = geneJson.getString(property);
-
-                if (STATUS_KEY.equals(property) && enumValues.get(property).contains(field.toLowerCase())) {
-                    singleGene.put(property, field);
-                } else if (STRATEGY_KEY.equals(property)) {
-
-                    String strategyField = "";
-                    for (String value : field.split("\\|")) {
-                        if (enumValues.get(property).contains(value)) {
-                            strategyField += "|" + value;
-                        }
-                    }
-                    singleGene.put(property, strategyField);
-
-                } else {
-                    singleGene.put(property, field);
-                }
+            if (geneJson.has(property)) {
+                parseGeneProperty(property, geneJson, enumValues, singleGene);
             }
         }
         return singleGene;
+    }
+
+    private void parseGeneProperty(String property, JSONObject geneJson, Map<String, List<String>> enumValues,
+        Map<String, String> singleGene)
+    {
+        String field = "";
+        if (INTERNAL_STRATEGY_KEY.equals(property) && geneJson.getJSONArray(property).length() > 0) {
+            JSONArray fieldArray = geneJson.getJSONArray(property);
+            for (Object value : fieldArray) {
+                if (enumValues.get(property).contains(value)) {
+                    field += "|" + value;
+                }
+            }
+            singleGene.put(property, field);
+        } else if (INTERNAL_STATUS_KEY.equals(property)
+            && !StringUtils.isBlank(geneJson.getString(property))) {
+            field = geneJson.getString(property);
+            if (enumValues.get(property).contains(field.toLowerCase())) {
+                singleGene.put(property, field);
+            }
+        } else if (!StringUtils.isBlank(geneJson.getString(property))) {
+            field = geneJson.getString(property);
+            singleGene.put(property, field);
+        }
     }
 
     @Override
