@@ -92,7 +92,7 @@
     #set ($options.isImage = false)
   #end
 #end
-#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;amp;property=$!{property}&amp;amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;amp;object=${object.number}")
+#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
 
 #if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
   #foreach($item in $options.filter)
@@ -198,8 +198,8 @@ $content
       #if ($options.manage)
         #__displayUploadForm($targetDoc)
       #else
-        #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;amp;mode=edit&amp;amp;manage=true"))
-        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+        #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="$!{escapetool.xml($actionURL)}"&gt;$services.localization.render('phenotips.imageDisplayer.uploadAndManage')&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
       #end
       #__displaySelectableAttachmentList($targetDoc $propValue)
       )))
