@@ -315,7 +315,7 @@
 $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
 ##
-{{/velocity}}{{velocity}}(% class="fa fa-$!iconName $!iconSize $!cssClass" title="$!{xcontext.macro.params.title}"%)$!{text}(%%){{/velocity}}</code>
+{{/velocity}}{{velocity}}(% class="fa fa-$!iconName $!iconSize $!cssClass"#if ("$!{xcontext.macro.params.title}" != '') title="$!{xcontext.macro.params.title}"#end%)$!{text}(%%){{/velocity}}</code>
     </property>
     <property>
       <contentDescription>The text to display next to the icon (optional)</contentDescription>
