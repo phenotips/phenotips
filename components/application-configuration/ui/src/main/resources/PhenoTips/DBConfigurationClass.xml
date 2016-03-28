@@ -51,7 +51,7 @@
       <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
-&lt;select name="$prefix$name" id="$prefix$iname"&gt;
+&lt;select name="$prefix$name" id="$prefix$name"&gt;
 #foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
   &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val $services.localization.render('phenotips.DBConfigurationClass.dateExample',[$xwiki.formatDate($util.date, $val)])&lt;/option&gt;
 #end
@@ -94,7 +94,7 @@ $!value
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
-    &lt;label for="${prefix}${name}_${sectionId}"&gt;
+    &lt;label&gt;
     &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
     $services.localization.render("patient.livetable.${option}")
     &lt;/label&gt;
@@ -148,7 +148,7 @@ $!value
       <customDisplay>{{velocity}}
 #if ($type == 'edit')
 {{html clean="false"}}
-&lt;select name="${prefix}${name}"&gt;
+&lt;select name="${prefix}${name}" id="${prefix}${name}"&gt;
 #foreach($column in $object.getProperty('livetableColumns').value)
   &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$services.localization.render("patient.livetable.${column}")&lt;/option&gt;
 #end
