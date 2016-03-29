@@ -23,5 +23,8 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
+  <suppress checks=".*" files="VariantListController.java"/>
   <suppress checks="ClassFanOutComplexityCheck" files="AbstractComplexController.java"/>
+  <suppress checks="ClassFanOutComplexityCheck" files="PhenoTipsPatient.java"/>
+  <suppress checks="CyclomaticComplexity" files="PhenoTipsPatient.java"/>
 </suppressions>
