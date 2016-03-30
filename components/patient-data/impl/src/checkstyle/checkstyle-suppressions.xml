@@ -25,5 +25,4 @@
 <suppressions>
   <suppress checks=".*" files="VariantListController.java"/>
   <suppress checks="ClassFanOutComplexityCheck" files="AbstractComplexController.java"/>
-  <suppress checks="CyclomaticComplexity" files="PhenoTipsPatient.java"/>
 </suppressions>

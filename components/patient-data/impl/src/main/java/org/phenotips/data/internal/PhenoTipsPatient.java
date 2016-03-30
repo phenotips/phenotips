@@ -81,11 +81,9 @@ public class PhenoTipsPatient implements Patient
     /** Known phenotype properties. */
     private static final String PHENOTYPE_POSITIVE_PROPERTY = "phenotype";
 
-    private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
+    private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
-    private static final String PRENATAL_PHENOTYPE_PROPERTY = "prenatal_phenotype";
-
-    private static final String PRENATAL_PHENOTYPE_NEGATIVE_PROPERTY = "negative_prenatal_phenotype";
+    private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
 
     private static final String[] PHENOTYPE_PROPERTIES =
         new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
@@ -380,11 +378,8 @@ public class PhenoTipsPatient implements Patient
                 Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
                 this.features.add(phenotipsFeature);
                 String featureType = phenotipsFeature.getType();
-                if (PHENOTYPE_POSITIVE_PROPERTY.equals(featureType) && !phenotipsFeature.isPresent()) {
-                    featureType = PHENOTYPE_NEGATIVE_PROPERTY;
-                }
-                if (PRENATAL_PHENOTYPE_PROPERTY.equals(featureType) && !phenotipsFeature.isPresent()) {
-                    featureType = PRENATAL_PHENOTYPE_NEGATIVE_PROPERTY;
+                if (!phenotipsFeature.isPresent()) {
+                    featureType = NEGATIVE_PHENOTYPE_PREFIX + featureType;
                 }
 
                 if (featuresMap.keySet().contains(featureType)) {
