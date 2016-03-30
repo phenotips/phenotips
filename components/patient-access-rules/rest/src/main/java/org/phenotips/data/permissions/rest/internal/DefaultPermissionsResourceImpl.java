@@ -95,7 +95,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         CollaboratorsRepresentation collaborators =
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
-        // adding links into sub-parts
+        //adding links into sub-parts
         owner.getLinks().add(new Link().withRel(Relations.OWNER)
             .withHref(this.uriInfo.getBaseUriBuilder().path(OwnerResource.class).build(patientId).toString())
             .withAllowedMethods(restActionResolver.resolveActions(ownerResource.getClass().getInterfaces()[0],

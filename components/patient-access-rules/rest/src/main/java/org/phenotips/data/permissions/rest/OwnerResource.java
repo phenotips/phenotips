@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
+import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.rest.model.UserSummary;
 
 import org.xwiki.component.annotation.Role;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.Response;
  */
 @Role
 @Path("/patients/{patient-id}/permissions/owner")
+@Relation("https://phenotips.org/rel/owner")
 public interface OwnerResource
 {
     /**

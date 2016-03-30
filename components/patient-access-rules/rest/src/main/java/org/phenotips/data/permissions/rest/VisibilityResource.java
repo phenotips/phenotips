@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.permissions.rest;
 
+import org.phenotips.data.permissions.rest.internal.utils.annotations.Relation;
 import org.phenotips.data.rest.model.VisibilityRepresentation;
 
 import org.xwiki.component.annotation.Role;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
  */
 @Role
 @Path("/patients/{patient-id}/permissions/visibility")
+@Relation("https://phenotips.org/rel/visibility")
 public interface VisibilityResource
 {
     /**
