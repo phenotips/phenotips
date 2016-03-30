@@ -71,7 +71,7 @@ import org.slf4j.Logger;
  * @since 1.0RC1
  */
 @Component
-@Named("hgncRemote")
+@Named("hgnc")
 @Singleton
 public class RemoteGeneNomenclature implements Vocabulary, Initializable
 {

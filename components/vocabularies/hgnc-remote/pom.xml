@@ -22,22 +22,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>vocabularies</artifactId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>vocabularies</artifactId>
+  <artifactId>vocabulary-hgnc-online</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Vocabularies</name>
+  <name>PhenoTips - Vocabularies - HUGO Gene Nomenclature Committee (GeneNames) integration - Online service</name>
 
   <modules>
     <module>api</module>
-    <module>ui</module>
-    <module>hpo</module>
-    <module>omim</module>
-    <module>rest</module>
-    <module>hgnc</module>
-    <module>hgnc-remote</module>
-    <module>chebi</module>
-    <module>ethnicity</module>
   </modules>
 </project>
