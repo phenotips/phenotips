@@ -440,7 +440,6 @@ public class VariantListControllerTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void writeJSONAddsContainerWithAllValuesWhenSelectedFieldsNull() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();
@@ -464,7 +463,6 @@ public class VariantListControllerTest
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void writeJSONAddsContainerWithOnlySelectedFields() throws ComponentLookupException
     {
         List<Map<String, String>> internalList = new LinkedList<>();

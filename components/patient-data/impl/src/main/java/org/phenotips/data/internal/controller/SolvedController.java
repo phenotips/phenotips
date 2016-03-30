@@ -77,7 +77,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private static final String STATUS_UNKNOWN = "";
 
-    private static Map<String, String> fields = new LinkedHashMap<String, String>();
+    private Map<String, String> fields = new LinkedHashMap<String, String>();
 
     @Inject
     private Logger logger;
@@ -85,9 +85,9 @@ public class SolvedController extends AbstractSimpleController implements Initia
     @Override
     public void initialize() throws InitializationException
     {
-        fields.put(STATUS_KEY, "status");
-        fields.put("solved__pubmed_id", "pubmed_id");
-        fields.put("solved__notes", "notes");
+        this.fields.put(STATUS_KEY, "status");
+        this.fields.put("solved__pubmed_id", "pubmed_id");
+        this.fields.put("solved__notes", "notes");
     }
 
     @Override
@@ -104,7 +104,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     protected String getJsonPropertyName(String property)
     {
-        String name = fields.get(property);
+        String name = this.fields.get(property);
         if (name == null) {
             name = property;
         }
@@ -114,7 +114,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
     @Override
     protected List<String> getProperties()
     {
-        Set<String> properties = fields.keySet();
+        Set<String> properties = this.fields.keySet();
         return new ArrayList<String>(properties);
     }
 
@@ -177,7 +177,6 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
     }
 
-    @SuppressWarnings("static-access")
     @Override
     public PatientData<String> readJSON(JSONObject json)
     {
@@ -229,19 +228,6 @@ public class SolvedController extends AbstractSimpleController implements Initia
         } catch (Exception ex) {
             this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
-    }
-
-    /** Finds a key inside the {@link #fields} map, given a value. If fails, returns {@code null}. */
-    @SuppressWarnings({ "unused", "static-access" })
-    private String findXWikiKey(String value)
-    {
-        for (Entry<String, String> kv : this.fields.entrySet())
-        {
-            if (StringUtils.equals(kv.getValue(), value)) {
-                return kv.getKey();
-            }
-        }
-        return null;
     }
 
     private Object applyCast(String value)
