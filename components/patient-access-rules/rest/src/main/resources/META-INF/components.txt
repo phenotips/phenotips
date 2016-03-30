@@ -7,4 +7,3 @@ org.phenotips.data.permissions.rest.internal.DefaultCollaboratorResourceImpl
 org.phenotips.data.permissions.rest.internal.DefaultPermissionsResourceImpl
 org.phenotips.data.permissions.rest.internal.DefaultVisibilityOptionsResourceImpl
 org.phenotips.data.permissions.rest.internal.utils.DefaultSecureContextFactory
-org.phenotips.data.permissions.rest.internal.utils.DefaultRESTActionResolver
