@@ -73,53 +73,55 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final String CONTROLLER_NAME = VARIANTS_STRING;
 
-    private static final String VARIANTS_ENABLING_FIELD_NAME = VARIANTS_STRING;
+    private static final String VARIANTS_ENABLING_FIELD_NAME = "genes";
 
-    private static final String VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME = "variants_genesymbol";
+    private static final String INTERNAL_VARIANT_KEY = "cdna";
 
-    private static final String VARIANTS_PROTEIN_ENABLING_FIELD_NAME = "variants_protein";
+    private static final String INTERNAL_GENESYMBOL_KEY = "genesymbol";
 
-    private static final String VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME = "variants_transcript";
+    private static final String INTERNAL_PROTEIN_KEY = "protein";
 
-    private static final String VARIANTS_DBSNP_ENABLING_FIELD_NAME = "variants_dbsnp";
+    private static final String INTERNAL_TRANSCRIPT_KEY = "transcript";
 
-    private static final String VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME = "variants_zygosity";
+    private static final String INTERNAL_DBSNP_KEY = "dbsnp";
 
-    private static final String VARIANTS_EFFECT_ENABLING_FIELD_NAME = "variants_effect";
+    private static final String INTERNAL_ZYGOSITY_KEY = "zygosity";
 
-    private static final String VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME = "variants_interpretation";
+    private static final String INTERNAL_EFFECT_KEY = "effect";
 
-    private static final String VARIANTS_INHERITANCE_ENABLING_FIELD_NAME = "variants_inheritance";
+    private static final String INTERNAL_INTERPRETATION_KEY = "interpretation";
 
-    private static final String VARIANTS_EVIDENCE_ENABLING_FIELD_NAME = "variants_evidence";
+    private static final String INTERNAL_INHERITANCE_KEY = "inheritance";
 
-    private static final String VARIANTS_SEGREGATION_ENABLING_FIELD_NAME = "variants_segregation";
+    private static final String INTERNAL_EVIDENCE_KEY = "evidence";
 
-    private static final String VARIANTS_SANGER_ENABLING_FIELD_NAME = "variants_sanger";
+    private static final String INTERNAL_SEGREGATION_KEY = "segregation";
 
-    private static final String VARIANT_KEY = "cdna";
+    private static final String INTERNAL_SANGER_KEY = "sanger";
 
-    private static final String GENESYMBOL_KEY = "genesymbol";
+    private static final String JSON_VARIANT_KEY = INTERNAL_VARIANT_KEY;
 
-    private static final String PROTEIN_KEY = "protein";
+    private static final String JSON_GENESYMBOL_KEY = INTERNAL_GENESYMBOL_KEY;
 
-    private static final String TRANSCRIPT_KEY = "transcript";
+    private static final String JSON_PROTEIN_KEY = INTERNAL_PROTEIN_KEY;
 
-    private static final String DBSNP_KEY = "dbsnp";
+    private static final String JSON_TRANSCRIPT_KEY = INTERNAL_TRANSCRIPT_KEY;
 
-    private static final String ZYGOSITY_KEY = "zygosity";
+    private static final String JSON_DBSNP_KEY = INTERNAL_DBSNP_KEY;
 
-    private static final String EFFECT_KEY = "effect";
+    private static final String JSON_ZYGOSITY_KEY = INTERNAL_ZYGOSITY_KEY;
 
-    private static final String INTERPRETATION_KEY = "interpretation";
+    private static final String JSON_EFFECT_KEY = INTERNAL_EFFECT_KEY;
 
-    private static final String INHERITANCE_KEY = "inheritance";
+    private static final String JSON_INTERPRETATION_KEY = INTERNAL_INTERPRETATION_KEY;
 
-    private static final String EVIDENCE_KEY = "evidence";
+    private static final String JSON_INHERITANCE_KEY = INTERNAL_INHERITANCE_KEY;
 
-    private static final String SEGREGATION_KEY = "segregation";
+    private static final String JSON_EVIDENCE_KEY = INTERNAL_EVIDENCE_KEY;
 
-    private static final String SANGER_KEY = "sanger";
+    private static final String JSON_SEGREGATION_KEY = INTERNAL_SEGREGATION_KEY;
+
+    private static final String JSON_SANGER_KEY = INTERNAL_SANGER_KEY;
 
     private static final List<String> ZYGOSITY_VALUES = Arrays.asList("heterozygous", "homozygous", "hemizygous");
 
@@ -161,8 +163,10 @@ public class VariantListController extends AbstractComplexController<Map<String,
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList(VARIANT_KEY, GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, ZYGOSITY_KEY,
-            EFFECT_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, EVIDENCE_KEY, SEGREGATION_KEY, SANGER_KEY);
+        return Arrays.asList(INTERNAL_VARIANT_KEY, INTERNAL_GENESYMBOL_KEY, INTERNAL_PROTEIN_KEY,
+            INTERNAL_TRANSCRIPT_KEY, INTERNAL_DBSNP_KEY, INTERNAL_ZYGOSITY_KEY,
+            INTERNAL_EFFECT_KEY, INTERNAL_INTERPRETATION_KEY, INTERNAL_INHERITANCE_KEY, INTERNAL_EVIDENCE_KEY,
+            INTERNAL_SEGREGATION_KEY, INTERNAL_SANGER_KEY);
     }
 
     @Override
@@ -216,7 +220,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private String getFieldValue(BaseObject variantObject, String property)
     {
-        if (EVIDENCE_KEY.equals(property)) {
+        if (INTERNAL_EVIDENCE_KEY.equals(property)) {
             StringListProperty fields = (StringListProperty) variantObject.getField(property);
             if (fields == null || fields.getList().size() == 0) {
                 return null;
@@ -229,18 +233,6 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 return null;
             }
             return field.getValue();
-        }
-    }
-
-    private void removeKeys(Map<String, String> item, List<String> keys, Map<String, String> enablingProperties,
-        Collection<String> selectedFieldNames)
-    {
-        for (String property : keys) {
-            if (StringUtils.isBlank(item.get(property))
-                || (selectedFieldNames != null
-                && !selectedFieldNames.contains(enablingProperties.get(property)))) {
-                item.remove(property);
-            }
         }
     }
 
@@ -265,28 +257,35 @@ public class VariantListController extends AbstractComplexController<Map<String,
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        List<String> keys =
-            Arrays.asList(GENESYMBOL_KEY, PROTEIN_KEY, TRANSCRIPT_KEY, DBSNP_KEY, ZYGOSITY_KEY, EFFECT_KEY,
-                INTERPRETATION_KEY, INHERITANCE_KEY, EVIDENCE_KEY, SANGER_KEY, SEGREGATION_KEY);
-        Map<String, String> enablingPropertiesMap = new HashMap<String, String>();
-        enablingPropertiesMap.put(GENESYMBOL_KEY, VARIANTS_GENESYMBOL_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(PROTEIN_KEY, VARIANTS_PROTEIN_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(TRANSCRIPT_KEY, VARIANTS_TRANSCRIPT_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(DBSNP_KEY, VARIANTS_DBSNP_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(ZYGOSITY_KEY, VARIANTS_ZYGOSITY_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(EFFECT_KEY, VARIANTS_EFFECT_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(INTERPRETATION_KEY, VARIANTS_INTERPRETATION_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(INHERITANCE_KEY, VARIANTS_INHERITANCE_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(EVIDENCE_KEY, VARIANTS_EVIDENCE_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(SEGREGATION_KEY, VARIANTS_SEGREGATION_ENABLING_FIELD_NAME);
-        enablingPropertiesMap.put(SANGER_KEY, VARIANTS_SANGER_ENABLING_FIELD_NAME);
+        Map<String, String> internalToJSONkeys = new HashMap<String, String>();
+        internalToJSONkeys.put(JSON_VARIANT_KEY, INTERNAL_VARIANT_KEY);
+        internalToJSONkeys.put(JSON_GENESYMBOL_KEY, INTERNAL_GENESYMBOL_KEY);
+        internalToJSONkeys.put(JSON_PROTEIN_KEY, INTERNAL_PROTEIN_KEY);
+        internalToJSONkeys.put(JSON_TRANSCRIPT_KEY, INTERNAL_TRANSCRIPT_KEY);
+        internalToJSONkeys.put(JSON_DBSNP_KEY, INTERNAL_DBSNP_KEY);
+        internalToJSONkeys.put(JSON_ZYGOSITY_KEY, INTERNAL_ZYGOSITY_KEY);
+        internalToJSONkeys.put(JSON_EFFECT_KEY, INTERNAL_EFFECT_KEY);
+        internalToJSONkeys.put(JSON_INTERPRETATION_KEY, INTERNAL_INTERPRETATION_KEY);
+        internalToJSONkeys.put(JSON_INHERITANCE_KEY, INTERNAL_INHERITANCE_KEY);
+        internalToJSONkeys.put(JSON_EVIDENCE_KEY, INTERNAL_EVIDENCE_KEY);
+        internalToJSONkeys.put(JSON_SEGREGATION_KEY, INTERNAL_SEGREGATION_KEY);
+        internalToJSONkeys.put(JSON_SANGER_KEY, INTERNAL_SANGER_KEY);
 
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
-            if (!StringUtils.isBlank(item.get(VARIANT_KEY))) {
-                removeKeys(item, keys, enablingPropertiesMap, selectedFieldNames);
-                container.put(item);
+            if (!StringUtils.isBlank(item.get(INTERNAL_VARIANT_KEY))) {
+                JSONObject nextVariant = new JSONObject();
+                for (String key : internalToJSONkeys.keySet()) {
+                    if (!StringUtils.isBlank(item.get(key))) {
+                        if (INTERNAL_EVIDENCE_KEY.equals(key)) {
+                            nextVariant.put(key, new JSONArray(item.get(internalToJSONkeys.get(key)).split("\\|")));
+                        } else {
+                            nextVariant.put(key, item.get(internalToJSONkeys.get(key)));
+                        }
+                    }
+                }
+                container.put(nextVariant);
             }
         }
     }
@@ -299,17 +298,18 @@ public class VariantListController extends AbstractComplexController<Map<String,
         }
 
         List<String> enumValueKeys =
-            Arrays.asList(ZYGOSITY_KEY, EFFECT_KEY, INTERPRETATION_KEY, INHERITANCE_KEY, SEGREGATION_KEY,
-                SANGER_KEY);
+            Arrays.asList(INTERNAL_ZYGOSITY_KEY, INTERNAL_EFFECT_KEY, INTERNAL_INTERPRETATION_KEY,
+                INTERNAL_INHERITANCE_KEY, INTERNAL_SEGREGATION_KEY,
+                INTERNAL_SANGER_KEY);
 
         Map<String, List<String>> enumValues = new LinkedHashMap<String, List<String>>();
-        enumValues.put(ZYGOSITY_KEY, ZYGOSITY_VALUES);
-        enumValues.put(EFFECT_KEY, EFFECT_VALUES);
-        enumValues.put(INTERPRETATION_KEY, INTERPRETATION_VALUES);
-        enumValues.put(INHERITANCE_KEY, INHERITANCE_VALUES);
-        enumValues.put(EVIDENCE_KEY, EVIDENCE_VALUES);
-        enumValues.put(SEGREGATION_KEY, SEGREGATION_VALUES);
-        enumValues.put(SANGER_KEY, SANGER_VALUES);
+        enumValues.put(INTERNAL_ZYGOSITY_KEY, ZYGOSITY_VALUES);
+        enumValues.put(INTERNAL_EFFECT_KEY, EFFECT_VALUES);
+        enumValues.put(INTERNAL_INTERPRETATION_KEY, INTERPRETATION_VALUES);
+        enumValues.put(INTERNAL_INHERITANCE_KEY, INHERITANCE_VALUES);
+        enumValues.put(INTERNAL_EVIDENCE_KEY, EVIDENCE_VALUES);
+        enumValues.put(INTERNAL_SEGREGATION_KEY, SEGREGATION_VALUES);
+        enumValues.put(INTERNAL_SANGER_KEY, SANGER_VALUES);
 
         try {
             JSONArray variantsJson = json.getJSONArray(this.getJsonPropertyName());
@@ -319,8 +319,9 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 JSONObject variantJson = variantsJson.getJSONObject(i);
 
                 // discard it if variant cDNA is not present in the geneJson, or is whitespace, empty or duplicate
-                if (!variantJson.has(VARIANT_KEY) || StringUtils.isBlank(variantJson.getString(VARIANT_KEY))
-                    || variantSymbols.contains(variantJson.getString(VARIANT_KEY))) {
+                if (!variantJson.has(INTERNAL_VARIANT_KEY)
+                    || StringUtils.isBlank(variantJson.getString(INTERNAL_VARIANT_KEY))
+                    || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))) {
                     continue;
                 }
 
@@ -330,7 +331,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                 }
 
                 allVariants.add(singleVariant);
-                variantSymbols.add(variantJson.getString(VARIANT_KEY));
+                variantSymbols.add(variantJson.getString(INTERNAL_VARIANT_KEY));
             }
 
             if (allVariants.isEmpty()) {
@@ -349,28 +350,34 @@ public class VariantListController extends AbstractComplexController<Map<String,
     {
         Map<String, String> singleVariant = new LinkedHashMap<String, String>();
         for (String property : this.getProperties()) {
-            if (variantJson.has(property) && !StringUtils.isBlank(variantJson.getString(property))) {
-
-                String field = variantJson.getString(property);
-
-                if (enumValueKeys.contains(property)) {
-                    if (enumValues.get(property).contains(field.toLowerCase())) {
-                        singleVariant.put(property, field);
-                    }
-                } else if (EVIDENCE_KEY.equals(property)) {
-                    String evidenceField = "";
-                    for (String value : field.split("\\|")) {
-                        if (enumValues.get(property).contains(value)) {
-                            evidenceField += "|" + value;
-                        }
-                    }
-                    singleVariant.put(property, evidenceField);
-                } else {
-                    singleVariant.put(property, field);
-                }
+            if (variantJson.has(property)) {
+                parseVariantProperty(property, variantJson, enumValues, singleVariant, enumValueKeys);
             }
         }
         return singleVariant;
+    }
+
+    private void parseVariantProperty(String property, JSONObject variantJson, Map<String, List<String>> enumValues,
+        Map<String, String> singleVariant, List<String> enumValueKeys)
+    {
+        String field = "";
+        if (INTERNAL_EVIDENCE_KEY.equals(property) && variantJson.getJSONArray(property).length() > 0) {
+            JSONArray fieldArray = variantJson.getJSONArray(property);
+            for (Object value : fieldArray) {
+                if (enumValues.get(property).contains(value)) {
+                    field += "|" + value;
+                }
+            }
+            singleVariant.put(property, field);
+        } else if (enumValueKeys.contains(property) && !StringUtils.isBlank(variantJson.getString(property))) {
+            field = variantJson.getString(property);
+            if (enumValues.get(property).contains(field.toLowerCase())) {
+                singleVariant.put(property, field);
+            }
+        } else if (!StringUtils.isBlank(variantJson.getString(property))) {
+            field = variantJson.getString(property);
+            singleVariant.put(property, field);
+        }
     }
 
     @Override

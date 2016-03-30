@@ -259,13 +259,13 @@ public class ParentalAgeControllerTest
             new DictionaryPatientData<Integer>(this.parentalAgeController.getName(), testData);
         doReturn(testPatientData).when(this.patient).getData(this.parentalAgeController.getName());
         JSONObject jsonTestData = new JSONObject();
-        jsonTestData.put("prenatal_perinatal_history", testData);
+        jsonTestData.put("prenatal_phenotype", testData);
 
         this.parentalAgeController.writeJSON(this.patient, json);
 
         Assert.assertNotNull(json);
-        Assert.assertTrue(jsonTestData.getJSONObject("prenatal_perinatal_history").similar(
-            json.getJSONObject("prenatal_perinatal_history")));
+        Assert.assertTrue(jsonTestData.getJSONObject("prenatal_phenotype").similar(
+            json.getJSONObject("prenatal_phenotype")));
     }
 
     @Test
@@ -291,7 +291,7 @@ public class ParentalAgeControllerTest
     public void readJSONObjectWithNoData()
     {
         JSONObject json = new JSONObject();
-        json.put("prenatal_perinatal_history", (Object) null);
+        json.put("prenatal_phenotype", (Object) null);
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
         Assert.assertNull(readData);
     }
@@ -303,7 +303,7 @@ public class ParentalAgeControllerTest
         JSONObject data = new JSONObject();
         data.put(MATERNAL_AGE, AGE_NON_ZERO);
         data.put(PATERNAL_AGE, AGE_NON_ZERO);
-        json.put("prenatal_perinatal_history", data);
+        json.put("prenatal_phenotype", data);
 
         PatientData<Integer> readData = this.parentalAgeController.readJSON(json);
         Assert.assertNotNull(readData);

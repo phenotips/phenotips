@@ -32,6 +32,7 @@ import org.xwiki.model.reference.ObjectPropertyReference;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -125,14 +126,15 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
 
         while (iterator.hasNext()) {
             Map.Entry<String, T> item = iterator.next();
-            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
+            String itemKey = item.getKey();
+            Object formattedValue = format(itemKey, item.getValue());
+            if (formattedValue != null && (selectedFieldNames == null || selectedFieldNames.contains(item.getKey()))) {
                 if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
                     container = json.optJSONObject(getJsonPropertyName());
                 }
-                String itemKey = item.getKey();
-                container.put(itemKey, format(itemKey, item.getValue()));
+                container.put(itemKey, formattedValue);
             }
         }
     }
@@ -172,10 +174,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
      * @param value the value which possibly needs to be formatted
      * @return the formatted object or the original value
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     private Object format(String key, Object value)
     {
-        if (value == null) {
+        List<Object> emptyList = Collections.emptyList();
+        if (value == null || "Unknown".equals(value) || value.equals(emptyList)) {
             return null;
         }
         if (getBooleanFields().contains(key)) {

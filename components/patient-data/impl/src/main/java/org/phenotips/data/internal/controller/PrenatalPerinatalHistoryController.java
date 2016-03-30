@@ -70,7 +70,7 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     @Override
     protected String getJsonPropertyName()
     {
-        return "prenatal_perinatal_history";
+        return "prenatal_phenotype";
     }
 
     @Override

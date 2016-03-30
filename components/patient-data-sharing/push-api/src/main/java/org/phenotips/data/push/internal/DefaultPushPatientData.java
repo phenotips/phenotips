@@ -218,7 +218,7 @@ public class DefaultPushPatientData implements PushPatientData
                     return new DefaultPushServerConfigurationResponse(responseJSON);
                 } catch (Exception ex) {
                     this.logger.error("Received invalid JSON reply from remote server: {}...",
-                            response.substring(0, 50));
+                        response.substring(0, 50));
                     return null;
                 }
             }
@@ -233,7 +233,8 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, JSONObject patientState,
+    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields,
+        JSONObject patientState,
         String groupName, String remoteGUID, String remoteServerIdentifier, String userName, String password,
         String userToken)
     {
@@ -250,6 +251,7 @@ public class DefaultPushPatientData implements PushPatientData
             }
 
             String patientJSON = patient.toJSON(exportFields).toString();
+            this.logger.debug("Sending patient JSON: [{}]", patientJSON);
 
             data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTJSON,
                 URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING)));
