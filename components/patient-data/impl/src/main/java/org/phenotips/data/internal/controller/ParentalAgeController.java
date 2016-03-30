@@ -141,7 +141,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(getJsonPropertyName())) {
+        if (selectedFieldNames != null && !selectedFieldNames.contains("prenatal_phenotype")) {
             return;
         }
 
@@ -199,6 +199,6 @@ public class ParentalAgeController implements PatientDataController<Integer>
 
     private String getJsonPropertyName()
     {
-        return "prenatal_phenotype";
+        return "prenatal_perinatal_history";
     }
 }
