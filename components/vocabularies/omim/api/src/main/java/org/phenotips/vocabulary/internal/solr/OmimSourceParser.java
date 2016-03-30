@@ -70,7 +70,7 @@ public class OmimSourceParser
     private static final String ANNOTATIONS_BASE_URL =
         "http://compbio.charite.de/hudson/job/hpo.annotations/lastStableBuild/artifact/misc/";
 
-    private static final String GENE_ANNOTATIONS_URL = "ftp://ftp.omim.org/OMIM/mim2gene.txt";
+    private static final String GENE_ANNOTATIONS_URL = "http://omim.org/static/omim/data/mim2gene.txt";
 
     private static final String POSITIVE_ANNOTATIONS_URL = ANNOTATIONS_BASE_URL + "phenotype_annotation.tab";
 
