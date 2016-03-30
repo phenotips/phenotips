@@ -34,7 +34,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -370,7 +369,7 @@ public class PhenoTipsPatient implements Patient
             this.features = new TreeSet<Feature>();
 
             // new feature lists (for setting values in the Wiki document)
-            Map<String, List<String>> featuresMap = new LinkedHashMap<>();
+            Map<String, List<String>> featuresMap = new TreeMap<>();
 
             for (int i = 0; i < jsonFeatures.length(); i++) {
                 JSONObject featureInJSON = jsonFeatures.optJSONObject(i);
