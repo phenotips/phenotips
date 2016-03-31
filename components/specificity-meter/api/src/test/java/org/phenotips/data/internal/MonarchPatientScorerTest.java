@@ -279,6 +279,7 @@ public class MonarchPatientScorerTest
         // Since the component was already initialized in setUp() with the default URL, re-initialize it
         // with the new configuration mock
         ((Initializable) this.mocker.getComponentUnderTest()).initialize();
+        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         String content =
