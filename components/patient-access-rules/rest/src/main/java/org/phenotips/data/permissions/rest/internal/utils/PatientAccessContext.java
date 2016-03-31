@@ -74,7 +74,9 @@ public class PatientAccessContext
     private void initializeUser(AccessLevel minimumAccessLevel, UserManager users, Logger logger)
     {
         this.currentUser = users.getCurrentUser();
-        if (!this.patientAccess.hasAccessLevel(this.currentUser.getProfileDocument(), minimumAccessLevel)) {
+        if (this.currentUser == null) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } else if (!this.patientAccess.hasAccessLevel(this.currentUser.getProfileDocument(), minimumAccessLevel)) {
             logger.debug("{} access denied to user [{}] on patient record [{}]",
                 minimumAccessLevel.getName(), this.currentUser, this.patient.getId());
             throw new WebApplicationException(Response.Status.FORBIDDEN);
