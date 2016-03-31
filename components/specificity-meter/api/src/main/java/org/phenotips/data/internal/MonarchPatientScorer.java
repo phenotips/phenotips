@@ -94,7 +94,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     {
         try {
             this.scorerURL = this.configuration
-                .getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score");
+                .getProperty("phenotips.patientScoring.monarch.serviceURL", "https://monarchinitiative.org/score");
             CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
             this.cache = this.cacheManager.createNewCache(config);
         } catch (CacheException ex) {
