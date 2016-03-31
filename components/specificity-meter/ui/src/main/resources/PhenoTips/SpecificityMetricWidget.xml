@@ -338,7 +338,10 @@
           }.bind(this),
           onSuccess : function (response) {
             var json = response.responseJSON;
-            var score = json &amp;&amp; json.score || -1;
+            var score = -1;
+            if (json &amp;&amp; typeof json.score != 'undefined') {
+              score = json.score;
+            }
             if (score &gt;= 0) {
               this.showValue(score);
             } else {
