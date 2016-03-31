@@ -17,16 +17,18 @@
  */
 package org.phenotips.data.permissions.rest.internal;
 
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.PermissionsResource;
-import org.phenotips.data.permissions.rest.Relations;
 import org.phenotips.data.permissions.rest.VisibilityResource;
+import org.phenotips.data.permissions.rest.internal.utils.LinkBuilder;
 import org.phenotips.data.permissions.rest.internal.utils.PatientAccessContext;
 import org.phenotips.data.permissions.rest.internal.utils.RESTActionResolver;
 import org.phenotips.data.permissions.rest.internal.utils.SecureContextFactory;
 import org.phenotips.data.rest.PatientResource;
+import org.phenotips.data.rest.Relations;
 import org.phenotips.data.rest.model.CollaboratorsRepresentation;
 import org.phenotips.data.rest.model.Link;
 import org.phenotips.data.rest.model.PermissionsRepresentation;
@@ -95,35 +97,44 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         CollaboratorsRepresentation collaborators =
             this.factory.createCollaboratorsRepresentation(patientAccessContext.getPatient(), this.uriInfo);
 
+        AccessLevel accessLevel = patientAccessContext.getPatientAccess().getAccessLevel();
         //adding links into sub-parts
-        owner.getLinks().add(new Link().withRel(Relations.OWNER)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(OwnerResource.class).build(patientId).toString())
-            .withAllowedMethods(restActionResolver.resolveActions(ownerResource.getClass().getInterfaces()[0],
-                    patientAccessContext.getPatientAccess().getAccessLevel())));
-        visibility.getLinks().add(new Link().withRel(Relations.VISIBILITY)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(VisibilityResource.class).build(patientId).toString())
-            .withAllowedMethods(restActionResolver.resolveActions(visibilityResource.getClass().getInterfaces()[0],
-                    patientAccessContext.getPatientAccess().getAccessLevel())));
-        collaborators.getLinks().add(
-                new Link().withRel(Relations.COLLABORATORS)
-                        .withHref(this.uriInfo.getBaseUriBuilder().path(CollaboratorsResource.class)
-                                .build(patientId).toString())
-                        .withAllowedMethods(restActionResolver.resolveActions(
-                                collaboratorsResource.getClass().getInterfaces()[0],
-                                patientAccessContext.getPatientAccess().getAccessLevel())
-                        ));
+        owner.withLinks(new LinkBuilder()
+                .withAccessLevel(accessLevel)
+                .withActionableResources(OwnerResource.class)
+                .withActionResolver(restActionResolver)
+                .withTargetPatient(patientId)
+                .withUriInfo(this.uriInfo)
+                .build());
+        visibility.withLinks(new LinkBuilder()
+                .withAccessLevel(accessLevel)
+                .withActionableResources(VisibilityResource.class)
+                .withActionResolver(restActionResolver)
+                .withTargetPatient(patientId)
+                .withUriInfo(this.uriInfo)
+                .build());
+        collaborators.withLinks(new LinkBuilder()
+                .withAccessLevel(accessLevel)
+                .withActionableResources(CollaboratorsResource.class)
+                .withActionResolver(restActionResolver)
+                .withTargetPatient(patientId)
+                .withUriInfo(this.uriInfo)
+                .build());
 
         result.withOwner(owner);
         result.withVisibility(visibility);
         result.withCollaborators(collaborators);
 
         // adding links relative to this context
-        result.getLinks().add(new Link().withRel(Relations.SELF)
-                .withHref(this.uriInfo.getRequestUri().toString())
-                .withAllowedMethods(restActionResolver.resolveActions(this.getClass().getInterfaces()[0],
-                        patientAccessContext.getPatientAccess().getAccessLevel())));
+        result.withLinks(new LinkBuilder()
+                .withAccessLevel(accessLevel)
+                .withRootInterface(PermissionsResource.class)
+                .withActionResolver(restActionResolver)
+                .withTargetPatient(patientId)
+                .withUriInfo(this.uriInfo)
+                .build());
         result.getLinks().add(new Link().withRel(Relations.PATIENT_RECORD)
-            .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
+                .withHref(this.uriInfo.getBaseUriBuilder().path(PatientResource.class).build(patientId).toString()));
 
         return result;
     }

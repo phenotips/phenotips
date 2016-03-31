@@ -52,11 +52,16 @@ public class LinkBuilder {
         }
         return this;
     }
-
-    public Collection<Link> build() throws Exception {
-        this.validateSelf();
+    public Collection<Link> build() {
+        try {
+            this.validateSelf();
+        } catch (Exception e) {
+            return null;
+        }
         List<Link> links = new LinkedList<>();
-        links.add(this.getActionableLinkToSelf());
+        if (this.rootInterface != null) {
+            links.add(this.getActionableLinkToSelf());
+        }
         for (Class endpoint : this.linkedActionableInterfaces) {
             links.add(this.getActionableLink(endpoint));
         }
@@ -74,7 +79,7 @@ public class LinkBuilder {
     }
 
     private void validateSelf() throws Exception {
-        if (this.actionResolver == null || this.uriInfo == null || this.rootInterface == null) {
+        if (this.actionResolver == null || this.uriInfo == null) {
             //TODO: what kind of exception?
             throw new Exception();
         }
