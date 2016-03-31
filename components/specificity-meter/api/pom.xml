@@ -29,7 +29,8 @@
   <name>PhenoTips - Specificity Meter - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.98</coverage.instructionRatio>
+    <coverage.instructionRatio>0.96</coverage.instructionRatio>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
 
   <dependencies>
