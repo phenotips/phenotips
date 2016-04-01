@@ -65,7 +65,7 @@ $xwiki.jsx.use($displayDocName)##
 &lt;form action="${consentsDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="${xredirect}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="${escapetool.xml($xredirect)}" /&gt;
     &lt;input type="hidden" name="classname" value="${consentClassname}" /&gt;
   &lt;/div&gt;
 {{/html}}
