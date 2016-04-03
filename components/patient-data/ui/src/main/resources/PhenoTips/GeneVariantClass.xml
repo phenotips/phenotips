@@ -196,7 +196,7 @@ $!{value}
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>NA= |pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign</values>
+      <values>NA= |pathogenic=Pathogenic|likely_pathogenic=Likely Pathogenic|variant_u_s=Variant of Unknown Significance|likely_benign=Likely Benign|benign=Benign|investigation_n=Investigation Needed</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </interpretation>
     <inheritance>
