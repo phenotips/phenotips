@@ -429,18 +429,20 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 
     //============================================================================
     // Date pickers: create pickers and copy existing dates
-    var crtYear = new Date().getFullYear();
-    if (tableFilters) {
-      content.select('.xwiki-date').each(function(input) {
-        var source = tableFilters.down('input[name="' + input.name + '"]');
-        if (source) {
-          input.value = source.value;
-          input.alt = source.alt;
-        }
-      });
+    if (typeof (XWiki.widgets.DateTimePicker) != "undefined") {
+      var crtYear = new Date().getFullYear();
+      if (tableFilters) {
+        content.select('.xwiki-date').each(function(input) {
+          var source = tableFilters.down('input[name="' + input.name + '"]');
+          if (source) {
+            input.value = source.value;
+            input.alt = source.alt;
+          }
+        });
+      }
+      window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
     }
-    window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
-
+    
     //============================================================================
     // Column selection
     var columnList = content.down('.section.columns ul');
@@ -526,9 +528,6 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
         });
       });
     });
-  } else if (!$('patients-topfilters')) {
-    // No filters and no export, nothing to do
-    return;
   }
 
   document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
