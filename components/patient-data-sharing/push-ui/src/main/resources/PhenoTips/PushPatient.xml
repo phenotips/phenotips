@@ -1247,6 +1247,35 @@
         var callbackOK   = event.memo.callbackOK;
         var callbackFail = event.memo.callbackFail;
         var pushMulti = event.memo.pushMulti;
+        var content = event.memo.elements[0];
+
+        //============================================================================
+        // Column selection
+        var columnList = content.down('.section.columns ul');
+        if (columnList) {
+          var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') ");
+          var all = new Element('span', {'class' : 'selection-tool select-all'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')");
+          var none = new Element('span', {'class' : 'selection-tool select-none'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')");
+          var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.invert')");
+          var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')");
+          selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
+
+          columnList.select('input[type=checkbox]').each(function(elt) {elt._originallyChecked = elt.checked});
+
+          all.observe('click', function(event) {
+            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = true});
+          });
+          none.observe('click', function(event) {
+            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = false});
+          });
+          invert.observe('click', function(event) {
+            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = !elt.checked});
+          });
+          restore.observe('click', function(event) {
+            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = elt._originallyChecked});
+          });
+          columnList.insert({'before' : selectionTools});
+        }
 
         var cancelButton = $('export_cancel');
         cancelButton &amp;&amp; cancelButton.observe('click', function(event) {
