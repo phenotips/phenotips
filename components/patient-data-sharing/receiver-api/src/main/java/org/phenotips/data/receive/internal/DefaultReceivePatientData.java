@@ -508,6 +508,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             // if GUID is present in the request attempt to update an existing patient
             // (or fail if GUID is invalid or the patient is not created/authored by the user)
             String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
+            User user = this.userManager.getUser(userName);
 
             if (guid != null) {
                 affectedPatient = getPatientByGUID(guid);
@@ -519,7 +520,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 }
                 this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getDocument().getName());
             } else {
-                User user = this.userManager.getUser(userName);
 
                 affectedPatient = this.patientRepository.createNewPatient(user.getProfileDocument());
 
@@ -545,6 +545,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             JSONObject patientData = new JSONObject(patientJSON);
+            context.setUserReference(user.getProfileDocument());
             affectedPatient.updateFromJSON(patientData);
 
             if (consentIds != null) {
