@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-distribution</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r1</version>
   </parent>
   <artifactId>phenotips-standalone</artifactId>
   <name>PhenoTips - Standalone Distribution</name>

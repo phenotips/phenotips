@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>jetty</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r1</version>
   </parent>
   <artifactId>jetty-log-writer</artifactId>
   <name>PhenoTips - Jetty Lifecycle Listener - Log Writer</name>
