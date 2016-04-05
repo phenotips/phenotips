@@ -236,7 +236,7 @@ public class VariantListControllerTest
     public void checkLoadParsingOfInterpretationKey() throws ComponentLookupException
     {
         addVariantFields(INTERPRETATION_KEY, new String[] {
-        "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s" });
+            "pathogenic", "likely_pathogenic", "likely_benign", "benign", "variant_u_s", "investigation_n" });
 
         PatientData<Map<String, String>> result = this.mocker.getComponentUnderTest().load(this.patient);
 
@@ -246,6 +246,7 @@ public class VariantListControllerTest
         Assert.assertEquals("likely_benign", result.get(2).get(INTERPRETATION_KEY));
         Assert.assertEquals("benign", result.get(3).get(INTERPRETATION_KEY));
         Assert.assertEquals("variant_u_s", result.get(4).get(INTERPRETATION_KEY));
+        Assert.assertEquals("investigation_n", result.get(5).get(INTERPRETATION_KEY));
     }
 
     @Test

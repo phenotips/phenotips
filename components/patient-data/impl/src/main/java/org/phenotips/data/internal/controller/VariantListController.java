@@ -130,7 +130,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
         "duplication", "repeat_expansion", "synonymous", "other");
 
     private static final List<String> INTERPRETATION_VALUES = Arrays.asList("pathogenic", "likely_pathogenic",
-        "variant_u_s", "likely_benign", "benign");
+        "variant_u_s", "likely_benign", "benign", "investigation_n");
 
     private static final List<String> INHERITANCE_VALUES = Arrays.asList("denovo_germline", "denovo_s_mosaicism",
         "maternal", "paternal", "unknown");

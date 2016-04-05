@@ -388,6 +388,7 @@ public class DataToCellConverter
         valueTranslates.put("likely_pathogenic", "Likely Pathogenic");
         valueTranslates.put("likely_benign", "Likely Benign");
         valueTranslates.put("variant_u_s", "Variant of Unknown Significance");
+        valueTranslates.put("investigation_n", "Investigation Needed");
         valueTranslates.put("not_segregates", "Does not segregate");
         valueTranslates.put("denovo_germline", "de novo germline");
         valueTranslates.put("denovo_s_mosaicism", "de novo somatic mosaicism");
