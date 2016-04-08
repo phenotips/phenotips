@@ -118,18 +118,20 @@
   #if ($showDod)
     #if ($xcontext.action == 'edit')
       (% class="fieldset date_of_death" %)(((
+      (% class="half-width date_of_death" style="line-height: 1.4em; margin: .5em 0;" %)(((
+        #__label('date_of_death' 'section' '')
+      )))
       (% class="half-width date_of_death" %)(((
-          #__label('date_of_death' "section" '')
+      #if ($showDodUnknown)
+        (% class="controller" %)(((
+          $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
         )))
-        (% class="half-width date_of_death" %)(((
-          (% class="controlled" %)(((
-            #__display('date_of_death')
-          ))) 
-          #if ($showDodUnknown)(% class="controller" %)(((
-            #__display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
-          )))#end
+      #end
+        (% class="controlled" %)(((
+          #__display('date_of_death')
         )))
-        (% class="clear" %)((()))
+      )))
+      (% class="clear" %)((()))
       )))##fieldset
     #else
       #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
@@ -140,9 +142,8 @@
       {{html wiki="false" clean="false"}}
         &lt;p class="fieldset"&gt;
           &lt;span class="label"&gt; ${class.get('date_of_death').translatedPrettyName}:&lt;/span&gt;
-          &lt;span class="displayed-value"&gt;$class.get('date_of_death_unknown').translatedPrettyName&lt;/span&gt;
-        &lt;/p&gt;
-      {{/html}}
+          &lt;span class="displayed-value" style="display: inline-block;"&gt;$class.get('date_of_death_unknown').translatedPrettyName&lt;/span&gt;
+        &lt;/p&gt;{{/html}}
     #end
   (% class="clear" %)((()))
   #end
