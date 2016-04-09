@@ -1,0 +1,114 @@
+#template('colorThemeInit.vm')
+.export-dialog {
+  width: 80% !important;
+}
+.export-dialog .xform .xHint {
+  margin: 0;
+}
+.filters {
+  list-style-position: outside !important;
+}
+.filters ul {
+  list-style-type: none;
+  margin: 0 0 1.5em;
+  padding: 0;
+  font-size: .9em;
+}
+.filters ul label {
+  font-weight: bold;
+}
+.filters input[type=text] {
+  width: 99%;
+  display: block;
+}
+
+.date-range {
+  clear: both;
+}
+.date-range label {
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: .9em;
+  font-style: italic;
+  width: 50%;
+  padding-left: 0.5em;
+}
+.date-range label:first-child {
+  padding-left: 0;
+  padding-right: 0.5em;
+}
+.xform input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+}
+.calendar_date_select, .suggestItems {
+  z-index : 300000 !important;
+}
+
+.export-dialog .section {
+  float: left;
+  width: 46%;
+  padding: 0 2% 1em;
+  margin: 0;
+  border-radius: .6em;
+}
+.export-dialog .section:hover {
+  background-color: $theme.highlightColor;
+}
+
+.export-dialog .section h3 {
+  margin-top: 0;
+}
+
+.export-dialog .section .selection-tools {
+  margin: 0 0 1em;
+}
+.export-dialog .section .selection-tool {
+  color: $theme.textPrimaryColor;
+  cursor: pointer;
+  font-style: italic;
+}
+.export-dialog .section .selection-tool:hover {
+  color: $theme.linkColor;
+}
+
+.export-dialog .buttons {
+  clear: both;
+}
+
+.export-dialog .step {
+  display: inline-block;
+  height: 1.2em;
+  width: 1.2em;
+  border-radius: .6em;
+  background: $theme.titleColor;
+  color: $theme.backgroundSecondaryColor;
+  text-align: center;
+  font-size: .87em;
+  margin-bottom: .2em;
+}
+
+.export-dialog .field-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.xdialog-modal-container {
+  z-index: 400000 !important;
+}
+.xdialog-box {
+  max-width: 600px;
+  width: inherit;
+}
+.xdialog-box .buttons {
+  margin-left: 25px;
+  margin-top: 0px;
+}
+.xdialog-box .button {
+  width: 100px;
+}
+.xdialog-box .question {
+  padding: 4px 0 6px 25px;
+  white-space: nowrap;
+}
