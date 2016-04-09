@@ -2785,7 +2785,7 @@ return PhenoTips;
       if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
         this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
       }
-      entry.fire('obrowser:entry:selected', {selected: "yes"});
+      entry.fire('obrowser:entry:selected', {selected: (entry.down('.selected.no')) ? "no" : "yes"});
     }
   },
   _unselectEntry: function (entry) {
