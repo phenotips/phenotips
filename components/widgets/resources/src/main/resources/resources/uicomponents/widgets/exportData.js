@@ -18,7 +18,7 @@ document.observe('xwiki:dom:loading', function() {
             timeout : 30000
         },
         "omim" : {
-            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&amp;",
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get", "vocabulary=omim") + "&",
             varname: "q",
             noresults: "$services.localization.render('phenotips.DBWebHomeSheet.noResults')",
             json: true,
@@ -232,7 +232,7 @@ document.observe('xwiki:dom:loading', function() {
       liveMatchCounter.initialized = true;
       var lastRequestID = 0;
       var updateMatchCounter = function(event) {
-        var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?count=true&amp;" + form.serialize();
+        var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?count=true&" + form.serialize();
         var requestID = ++lastRequestID;
         var ajx = new Ajax.Request(url, {
           method: 'get',
@@ -261,7 +261,7 @@ document.observe('xwiki:dom:loading', function() {
         dialog.showDialog();
         // =================================================================================
         // Generate the dialog content
-        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
+        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&]+)/.exec(exportTool.href)[1]), {
           parameters: {export_endpoint: exportTool.readAttribute("href"), export_id: exportTool.readAttribute("id")},
           onSuccess: function(transport) {
             var content = dialog.dialogBox._x_contentPlug;
