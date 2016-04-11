@@ -121,19 +121,19 @@
 #__hasDataToDisplay('allergies', $showAllergies)
 #__hasBooleanDataToDisplay('NKDA' $showNKDA)
 #if ($showNKDA || $showAllergies)
-  (% class="fieldset 'allergies' %)(((
-    (% class="displayed-value"%)(((
-      #__label('allergies' 'section group-title' '')
-    )))
-    (% class="displayed-value"%)(((
-      #if ($xcontext.action == 'edit')
-        $doc.display('NKDA') #__label('NKDA' '' "$class.get('NKDA').translatedPrettyName")
-      #else
-        #if ($showNKDA)
-          $class.get('NKDA').translatedPrettyName
-        #end
+  (% class="fieldset allergies %)(((
+    #__label('allergies' 'section group-title' '')
+    #if ($xcontext.action == 'edit')
+      (% class="displayed-value"%)(((
+      $doc.display('NKDA') #__label('NKDA' '' "$class.get('NKDA').translatedPrettyName")
+      )))
+    #else
+      #if ($showNKDA)
+        (% class="displayed-value"%)(((
+        $class.get('NKDA').translatedPrettyName
+        )))
       #end
-    )))
+    #end
     #if ($xcontext.action == 'edit' || ($doc.display('allergies') != ''))
       #__display('allergies')
     #end
