@@ -106,7 +106,6 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.8</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
