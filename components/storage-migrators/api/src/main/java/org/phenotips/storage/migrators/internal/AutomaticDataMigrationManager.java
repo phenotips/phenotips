@@ -21,6 +21,8 @@ import org.phenotips.storage.migrators.DataMigrationManager;
 import org.phenotips.storage.migrators.DataTypeMigrator;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.wiki.descriptor.WikiDescriptorManager;
+import org.xwiki.wiki.manager.WikiManagerException;
 
 import java.util.List;
 
@@ -31,7 +33,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 
 /**
  * Implementation for the {@link DataMigrationManager} role, which tries to invoke all available
@@ -55,6 +56,9 @@ public class AutomaticDataMigrationManager implements DataMigrationManager
     @Inject
     private List<DataTypeMigrator> migrators;
 
+    @Inject
+    private WikiDescriptorManager wikiDescriptorManager;
+
     /** The current request context. */
     @Inject
     private Provider<XWikiContext> contextProvider;
@@ -63,21 +67,21 @@ public class AutomaticDataMigrationManager implements DataMigrationManager
     public boolean migrate()
     {
         XWikiContext context = this.contextProvider.get();
-        String originalDatabase = context.getDatabase();
+        String originalDatabase = context.getWikiId();
         boolean result = true;
         try {
-            for (String db : context.getWiki().getVirtualWikisDatabaseNames(context)) {
-                context.setDatabase(db);
+            for (String db : this.wikiDescriptorManager.getAllIds()) {
+                context.setWikiId(db);
                 for (DataTypeMigrator<?> migrator : this.migrators) {
                     // Don't change the order, or the operation will be short-circuited before the call
                     result = migrator.migrate() && result;
                 }
             }
-        } catch (XWikiException ex) {
+        } catch (WikiManagerException ex) {
             this.logger.error("Failed to get the list of virtual wikis: {}", ex.getMessage(), ex);
             result = false;
         } finally {
-            context.setDatabase(originalDatabase);
+            context.setWikiId(originalDatabase);
         }
         return result;
     }

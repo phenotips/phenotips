@@ -151,7 +151,7 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
             XWikiContext context = getXWikiContext();
             XWiki xwiki = context.getWiki();
             DocumentReference classReference =
-                new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
+                new DocumentReference(context.getWikiId(), Constants.CODE_SPACE, "PatientClass");
             BaseClass cls = xwiki.getXClass(classReference, context);
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o, IntegerProperty p where o.className = '"

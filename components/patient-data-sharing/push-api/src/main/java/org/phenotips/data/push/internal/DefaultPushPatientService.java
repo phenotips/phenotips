@@ -141,8 +141,8 @@ public class DefaultPushPatientService implements PushPatientService
 
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getDatabase(),
+                xwiki.getDocument(new DocumentReference(context.getWikiId(), "XWiki", "XWikiPreferences"), context);
+            List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getWikiId(),
                 Constants.CODE_SPACE, "PushPatientServer"));
 
             Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
