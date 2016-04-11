@@ -12,7 +12,6 @@ org.phenotips.data.internal.controller.IdentifiersController
 org.phenotips.data.internal.controller.DatesController
 org.phenotips.data.internal.controller.PatientNameController
 org.phenotips.data.internal.controller.SexController
-org.phenotips.data.internal.controller.ProjectsController
 org.phenotips.data.internal.controller.GlobalQualifiersController
 org.phenotips.data.internal.controller.TextNotesController
 org.phenotips.data.internal.controller.APGARController
