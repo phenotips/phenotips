@@ -52,7 +52,7 @@
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$name"&gt;
-#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
+#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy', 'yyyy'])
   &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val $services.localization.render('phenotips.DBConfigurationClass.dateExample',[$xwiki.formatDate($util.date, $val)])&lt;/option&gt;
 #end
 &lt;/select&gt;
