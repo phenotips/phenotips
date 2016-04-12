@@ -125,7 +125,7 @@ define([
         _onExportStarted: function() {
             this.hide();
 
-            var patientDocument = XWiki.currentDocument.page + " pedigree";
+            var patientDocument = XWiki.currentDocument.page + "_pedigree";
 
             var exportType = $$('input:checked[type=radio][name="export-type"]')[0].value;
             //console.log("Import type: " + exportType);
