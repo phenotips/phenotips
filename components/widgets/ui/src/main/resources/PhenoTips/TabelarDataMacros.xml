@@ -68,9 +68,10 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #set ($disableLabels = true)
       #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $displayMode, $o)#if ($velocityCount %2 == 0)
+        #set ($localCounter = 1)
+        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($localCounter == 1)=#end#set($localCounter = $mathtool.add($localCounter, 1)) $doc.display($prop.getName(), $displayMode, $o)
 
-        #end#end#end## foreach object
+        #end#end## foreach object
 
       #end## foreach object
     #else
