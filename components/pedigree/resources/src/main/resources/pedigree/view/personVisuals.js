@@ -388,7 +388,7 @@ define([
                 var deathDate = person.getDeathDate();
 
                 var dateFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
-                if (dateFormat == "DMY" || dateFormat == "MY") {
+                if (dateFormat == "DMY" || dateFormat == "MY" || dateFormat == "Y") {
                     if(person.getLifeStatus() == 'alive') {
                         if (birthDate && birthDate.isComplete()) {
                             text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);

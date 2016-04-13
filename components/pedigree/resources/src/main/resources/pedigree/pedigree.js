@@ -67,8 +67,8 @@ define([
             //  nonStandardAdoptedOutGraphic: {true|false}   - use out-brackets for adopted out persons; default "false"
             //  hideDraggingHint:             {true|false}   - do not display the hint on top of the legend; default "false"
             //  propagateFatherLastName:      {true|false}   - auto-propagate father's last name or not; default: "true"
-            //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
-            //  dateEditFormat:               {"YMD"|"DMY"|"MY"}  - defines order of fields in the date picker; default "YMD"
+            //  dateDisplayFormat:            {"MDY"|"DMY"|"MY"|"Y"|"MMY"}  - date display format; default "MDY"; MY = "02-2015", MMY = "Feb 2015"
+            //  dateEditFormat:               {"YMD"|"DMY"|"MY"|"Y"}  - defines order of fields in the date picker; default "YMD"
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"

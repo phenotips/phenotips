@@ -93,7 +93,7 @@ define([
                     patientInfoHTML += " by " + userFirstName + " " + userLastName;
                 }
                 var dateDisplayFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
-                if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY") {
+                if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY" || dateDisplayFormat == "Y") {
                     patientInfoHTML += " on " + date.getBestPrecisionStringDDMMYYY() + ".";
                 } else {
                     patientInfoHTML += " on " + date.getMonthName() + " " + date.getDay() + ", " + date.getYear() + ".";
