@@ -61,6 +61,10 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
   #if (!$options.mode)
     #set ($discard = $options.put('mode', $xcontext.action))
   #end
+  #set ($displayMode = $options.mode)
+  #if ($options.mode == 'export')
+    #set ($displayMode = 'view')
+  #end
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
   #if ($dataClass)
     #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
@@ -70,7 +74,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end#if ("$!{options.rejectToClass}" != '') withReject#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #set ($disableLabels = true)
       #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $options.mode, $o)#if ($velocityCount %2 == 0)
+        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.translatedPrettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $displayMode, $o)#if ($velocityCount %2 == 0)
 
         #end#end#end## foreach object
 
@@ -81,9 +85,11 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
       #else
 
       #end
-      #if ($options.mode == 'export')#set ($disableLabels = true)#end
+      #if ($options.mode == 'export')
+        #set ($disableLabels = true)
+      #end
       #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $options.mode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($options.mode == 'edit')#if ("$!{options.rejectToClass}" != '')|(% class="actions" %)#__extradata_rejectTool($o "extradata-${dataClassName}" $options)#end|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.translatedPrettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $displayMode, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($displayMode == 'edit')#if ("$!{options.rejectToClass}" != '')|(% class="actions" %)#__extradata_rejectTool($o "extradata-${dataClassName}" $options)#end|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
