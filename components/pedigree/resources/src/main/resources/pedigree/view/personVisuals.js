@@ -393,8 +393,10 @@ define([
                         if (birthDate && birthDate.isComplete()) {
                             text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null) {
-                                var age = AgeCalc.getAge(person.getBirthDate());
-                                text += " (" + age + ")";
+                                var ageString = AgeCalc.getAgeString(person.getBirthDate(), null, dateFormat);
+                                if (ageString != "") {
+                                    text += " (" + ageString + ")";
+                                }
                             }
                         }
                     }
@@ -402,8 +404,8 @@ define([
                         if(deathDate && birthDate && deathDate.isComplete() && birthDate.isComplete()) {
                             text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                             if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
-                                var age = AgeCalc.getAge(person.getBirthDate(), person.getDeathDate());
-                                text += "\n" + age;
+                                var ageString = AgeCalc.getAgeString(person.getBirthDate(), person.getDeathDate(), dateFormat);
+                                text += "\n" + ageString;
                             }
                         }
                         else if (deathDate && deathDate.isComplete()) {
@@ -419,7 +421,6 @@ define([
                             if (birthDate.onlyDecadeAvailable()) {
                                 text = "b. " + birthDate.getDecade();
                             } else {
-                                var age = AgeCalc.getAge(birthDate, null);
                                 if (birthDate.getMonth() == null) {
                                     text = "b. " + birthDate.getYear();                          // b. 1972
                                 } else {
@@ -430,8 +431,9 @@ define([
                                         text = "b. " + birthDate.getMonthName() + " " +
                                         birthDate.getDay() + ", " +
                                         birthDate.getYear();                                     // b. Jan 13, 1972
-                                        if (age.indexOf("day") != -1 || age.indexOf("wk") != -1) {
-                                            text += " (" + age + ")";                            // b. Jan 13, 1972 (5 days)
+                                        var ageString = AgeCalc.getAgeString(birthDate, null, dateFormat);
+                                        if (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1) {
+                                            text += " (" + ageString + ")";                            // b. Jan 13, 1972 (5 days)
                                         }
                                     }
                                 }
@@ -440,15 +442,15 @@ define([
                     }
                     else {
                         if(deathDate && birthDate) {
-                            var age = AgeCalc.getAge(birthDate, deathDate);
-                            if (deathDate.getYear() != null && deathDate.getMonth() != null &&
-                                (age.indexOf("day") != -1 || age.indexOf("wk") != -1 || age.indexOf("mo") != -1) ) {
-                                text = "d. " + deathDate.getYear(true) + " (" + age + ")";
+                            var ageString = AgeCalc.getAgeString(birthDate, deathDate, dateFormat);
+                            if (deathDate.getYear() != null && deathDate.getYear() != birthDate.getYear() && deathDate.getMonth() != null &&
+                                (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1 || ageString.indexOf("mo") != -1) ) {
+                                text = "d. " + deathDate.getYear(true);
                             } else {
                                 text = birthDate.getBestPrecisionStringYear() + " – " + deathDate.getBestPrecisionStringYear();
-                                if (age !== "") {
-                                    text += "\n" + age;
-                                }
+                            }
+                            if (ageString !== "") {
+                                text += "\n" + ageString;
                             }
                         }
                         else if (deathDate) {

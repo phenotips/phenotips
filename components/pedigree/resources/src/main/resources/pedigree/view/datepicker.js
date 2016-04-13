@@ -97,7 +97,11 @@ define([
 
     getSelectedOption : function () {
        return (this.dropdown.selectedIndex >= 0) ? this.dropdown.options[this.dropdown.selectedIndex].innerHTML : '';
-    }
+    },
+
+    selectNone : function () {
+        this.dropdown.selectedIndex = 0;
+     }
   });
 
   var PedigreeFuzzyDatePicker = Class.create({
@@ -112,7 +116,7 @@ define([
       this.__input.insert({after : this.container});
 
       if (this.inputFormat == "DMY" || this.inputFormat == "MY") {
-          var hideDay = (this.inputFormat == "MY")
+          var hideDay = (this.inputFormat == "MY");
           this.container.insert(this.createDayDropdown(hideDay));
           this.container.insert(this.createMonthDropdown());
           this.container.insert(this.createYearDropdown());
@@ -190,6 +194,9 @@ define([
             this.daySelector.disable();
         }
       }
+      if (this.inputFormat == "MY" || this.inputFormat == "MMY") {
+          this.daySelector.selectNone();
+      }
       this.updateDate(doNotNotifyOnChange);
     },
 
@@ -248,13 +255,13 @@ define([
             }
         }
 
-        if (y > 0 || this.inputFormat == "DMY") {
+        if (y > 0 || this.inputFormat != "YMD") {
             var m = this.monthSelector.getSelectedValue();
             if (m > 0) {
                 dateObject["month"] = this.monthSelector.getSelectedOption();
             }
 
-            if (m > 0 || this.inputFormat == "DMY") {
+            if (m > 0 || this.inputFormat != "YMD") {
                 var d = this.daySelector.getSelectedValue();
                 if (d > 0) {
                     dateObject["day"] = this.daySelector.getSelectedOption();
