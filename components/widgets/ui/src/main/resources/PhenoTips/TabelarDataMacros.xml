@@ -58,7 +58,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
     #set ($discard = $options.put('mode', $xcontext.action))
   #end
   #set ($displayMode = $options.mode)
-	#if ($options.mode == 'export')#set ($displayMode = 'view')#end
+  #if ($options.mode == 'export')#set ($displayMode = 'view')#end
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
   #if ($dataClass)
     #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
