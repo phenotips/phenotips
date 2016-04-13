@@ -814,7 +814,14 @@ define([
                 this.getAgeLabel() && this.getAgeLabel().hide();
             }
             this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
-            this.getCommentsLabel() && labels.push(this.getCommentsLabel());
+            if (!this._anonimized) {
+            	if (this.getCommentsLabel()) {
+            		this.getCommentsLabel().show();
+                    labels.push(this.getCommentsLabel());
+                }
+			} else {
+				this.getCommentsLabel() && this.getCommentsLabel().hide();
+			}
             var cancerLabels = this.getCancerAgeOfOnsetLabels();
             if (!Helpers.isObjectEmpty(cancerLabels)) {
                 for (var cancerName in cancerLabels) {
