@@ -256,6 +256,7 @@ define([
             // - disorders
             // - genes
             // - maternal_ethnicity + paternal_ethnicity (merged with own ethnicities entered in pedigree editor)
+            // - family_history
 
             if (patientObject.hasOwnProperty("patient_name")) {
                 if (patientObject.patient_name.hasOwnProperty("first_name")) {
@@ -363,6 +364,12 @@ define([
                         this.DG.GG.properties[id][prop] = patientObject.pedigreeProperties[prop];
                     }
                 }
+            }
+
+            if (patientObject.hasOwnProperty("family_history")) {
+                // stored so that on save consanguinity status can be set via family_history without losing
+                // previous family_history
+                this.DG.GG.properties[id]["family_history"] = patientObject["family_history"];
             }
 
             return genderOK;
