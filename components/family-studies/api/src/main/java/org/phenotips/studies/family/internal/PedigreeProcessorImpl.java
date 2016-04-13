@@ -53,6 +53,8 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
     private static final String JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
 
+    private static final String JSON_KEY_FAMILY_HISTORY = "family_history";
+
     @Inject
     private Logger logger;
 
@@ -110,6 +112,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
             phenotipsPatient = exchangeDates(externalPatient, phenotipsPatient, useDateFormat);
             phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
             phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
+            phenotipsPatient = exchangeFamilyHistory(externalPatient, phenotipsPatient);
         } catch (Exception ex) {
             this.logger.error("Could not convert patient. {}", ex.getMessage());
         }
@@ -120,6 +123,12 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     private DateFormat getDateFormat()
     {
         return new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
+    }
+
+    private static JSONObject exchangeFamilyHistory(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
+    {
+        phenotipsPatientJSON.put(JSON_KEY_FAMILY_HISTORY, pedigreePatient.opt(JSON_KEY_FAMILY_HISTORY));
+        return phenotipsPatientJSON;
     }
 
     private static JSONObject exchangeIds(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
