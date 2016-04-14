@@ -858,7 +858,7 @@ NodeMenu = Class.create({
                     cancersUIElements[i].age.enable();
                     var birthDate = _this.targetNode.getBirthDate();
                     if (birthDate) {
-                        var age = getAge(birthDate, _this.targetNode.getDeathDate(), true);
+                        var age = getAgeForCancersDropdown(birthDate, _this.targetNode.getDeathDate());
                         cancersUIElements[i].age.value = age;
                     }
                 }
