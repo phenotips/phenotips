@@ -196,7 +196,7 @@ var PedigreeDate = Class.create({
         if (!this.isComplete()) return "";
         if (this.year == null) return this.decade;
         var dateStr = this.getYear().toString();
-        if (this.getMonth() != null) {
+        if (this.getMonth() != null && dateFormat != "Y") {
             dateStr = ("0" + this.getMonth()).slice(-2) + "-" + dateStr;
             if (this.getDay() != null && dateFormat == "DMY") {
                 dateStr = ("0" + this.getDay()).slice(-2) + "-" + dateStr;

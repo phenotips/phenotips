@@ -370,13 +370,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var deathDate = person.getDeathDate();
 
             var dateFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
-            if (dateFormat == "DMY" || dateFormat == "MY") {
+            if (dateFormat == "DMY" || dateFormat == "MY" || dateFormat == "Y") {
                 if(person.getLifeStatus() == 'alive') {
                     if (birthDate && birthDate.isComplete()) {
                         text = "b. " + person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat);
                         if (person.getBirthDate().getYear() !== null) {
-                            var age = getAge(person.getBirthDate());
-                            text += " (" + age + ")";
+                            var ageString = getAgeString(person.getBirthDate(), null, dateFormat);
+                            if (ageString != "") {
+                                text += " (" + ageString + ")";
+                            }
                         }
                     }
                 }
@@ -384,8 +386,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     if(deathDate && birthDate && deathDate.isComplete() && birthDate.isComplete()) {
                         text = person.getBirthDate().getBestPrecisionStringDDMMYYY(dateFormat) + " – " + person.getDeathDate().getBestPrecisionStringDDMMYYY(dateFormat);
                         if (person.getBirthDate().getYear() !== null && person.getDeathDate().getYear() !== null) {
-                            var age = getAge(person.getBirthDate(), person.getDeathDate());
-                            text += "\n" + age;
+                            var ageString = getAgeString(person.getBirthDate(), person.getDeathDate(), dateFormat);
+                            text += "\n" + ageString;
                         }
                     }
                     else if (deathDate && deathDate.isComplete()) {
@@ -401,7 +403,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                         if (birthDate.onlyDecadeAvailable()) {
                             text = "b. " + birthDate.getDecade();
                         } else {
-                            var age = getAge(birthDate, null);
                             if (birthDate.getMonth() == null) {
                                 text = "b. " + birthDate.getYear();                          // b. 1972
                             } else {
@@ -412,8 +413,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                                     text = "b. " + birthDate.getMonthName() + " " +
                                     birthDate.getDay() + ", " +
                                     birthDate.getYear();                                     // b. Jan 13, 1972
-                                    if (age.indexOf("day") != -1 || age.indexOf("wk") != -1) {
-                                        text += " (" + age + ")";                            // b. Jan 13, 1972 (5 days)
+                                    var ageString = getAgeString(birthDate, null, dateFormat);
+                                    if (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1) {
+                                        text += " (" + ageString + ")";                      // b. Jan 13, 1972 (5 days)
                                     }
                                 }
                             }
@@ -422,15 +424,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 else {
                     if(deathDate && birthDate) {
-                        var age = getAge(birthDate, deathDate);
-                        if (deathDate.getYear() != null && deathDate.getMonth() != null &&
-                            (age.indexOf("day") != -1 || age.indexOf("wk") != -1 || age.indexOf("mo") != -1) ) {
-                            text = "d. " + deathDate.getYear(true) + " (" + age + ")";
+                        var ageString = getAgeString(birthDate, deathDate, dateFormat);
+                        if (deathDate.getYear() != null && deathDate.getYear() != birthDate.getYear() && deathDate.getMonth() != null &&
+                            (ageString.indexOf("day") != -1 || ageString.indexOf("wk") != -1 || ageString.indexOf("mo") != -1) ) {
+                            text = "d. " + deathDate.getYear(true);
                         } else {
                             text = birthDate.getBestPrecisionStringYear() + " – " + deathDate.getBestPrecisionStringYear();
-                            if (age !== "") {
-                                text += "\n" + age;
-                            }
+                        }
+                        if (ageString !== "") {
+                            text += "\n" + ageString;
                         }
                     }
                     else if (deathDate) {

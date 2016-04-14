@@ -2921,8 +2921,8 @@ PositionedGraph.prototype = {
                 // if both DOB and DOD is given 2 lines are assumed. However this only happens
                 // when age is in years (and thus is displayed as e.g. "45 y")
                 if (dob !== null && dob.isComplete() && dod !== null && dod.isComplete()) {
-                    var age = getAge(dob, dod);
-                    if (age.length < 2 || age.indexOf(" y") < 0) {
+                    var ageString = getAgeString(dob, dod, editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat"));
+                    if (ageString.length < 2 || ageString.indexOf(" y") < 0) {
                         numLabelLines--;
                     }
                 }
