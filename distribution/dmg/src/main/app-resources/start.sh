@@ -18,7 +18,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/
 # ---------------------------------------------------------------------------
 
-START_OPTS=${START_OPTS:-"-Xmx512m -XX:MaxPermSize=192m"}
+START_OPTS=${START_OPTS:-"-Xmx1536m -XX:MaxPermSize=192m"}
 START_OPTS="$START_OPTS '-Xdock:name=${bundleName}'"
 [ -n "${iconFile}" ] &&
   START_OPTS="$START_OPTS '-Xdock:icon=../${iconFile}'"
