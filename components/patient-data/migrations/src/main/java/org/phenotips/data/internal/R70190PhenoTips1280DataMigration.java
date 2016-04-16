@@ -205,7 +205,13 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         throws HibernateException, XWikiException
     {
         List<BaseObject> genes = doc.getXObjects(oldGenesClassReference);
+        if (genes == null || genes.isEmpty()) {
+            return;
+        }
         for (BaseObject gene : genes) {
+            if (gene == null) {
+                continue;
+            }
             StringProperty oldGeneNameProp = (StringProperty) gene.get(GENE_NAME);
             if (oldGeneNameProp == null || StringUtils.isBlank(oldGeneNameProp.getValue())) {
                 continue;
@@ -249,8 +255,11 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     {
         List<BaseObject> genes = doc.getXObjects(geneClassReference);
         for (BaseObject gene : genes) {
+            if (gene == null) {
+                continue;
+            }
             StringProperty geneNameProp = (StringProperty) gene.get(GENE_NAME);
-            if (geneNameProp.getValue().equals(geneName)) {
+            if (geneNameProp != null && geneNameProp.getValue().equals(geneName)) {
                 LargeStringProperty oldGeneCommentsProp = (LargeStringProperty) gene.get(COMMENTS_NAME);
                 if (oldGeneCommentsProp == null) {
                     gene.setLargeStringValue(COMMENTS_NAME, commentUpend);

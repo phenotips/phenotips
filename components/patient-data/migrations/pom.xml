@@ -27,6 +27,11 @@
   </parent>
   <artifactId>patient-data-migrations</artifactId>
   <name>PhenoTips - Patient data - Data migrations</name>
+
+  <properties>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
