@@ -111,6 +111,9 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+#if ($xcontext.action == 'edit' &amp;&amp; $obj.getProperty('gender').value == '')
+$obj.set('gender','U')
+#end
 #__displayFormatted('2-col' 'gender' '' 'gender' 'group-title')
 {{/velocity}}</content>
     </property>
