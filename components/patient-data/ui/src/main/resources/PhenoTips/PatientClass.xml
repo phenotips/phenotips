@@ -607,7 +607,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>M=Male|F=Female|O=Other</values>
+      <values>M=Male|F=Female|O=Other|U=Unknown</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </gender>
     <gestation>
