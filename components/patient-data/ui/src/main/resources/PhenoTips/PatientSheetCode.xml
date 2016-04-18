@@ -4774,6 +4774,9 @@ h1, h2, h3, h4 {
 }
 .phenotype-details .collapsible {
   cursor: pointer !important;
+}
+.no ~ .phenotype-details dt:not(.comments), .no ~ .phenotype-details dd:not(.comments) {
+  display: none !important;
 }</code>
     </property>
     <property>
