@@ -94,15 +94,31 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   )))
 )))
 #end
-##
-{{html clean=false wiki=false}}&lt;form action="$formAction" method="post"&gt;{{/html}}
+
+{{html clean=false wiki=false}}
+&lt;form action="$formAction" method="post" class="xform"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;$services.localization.render("phenotips.MeasurementsConfigurationClass.unitSystemHeader")&lt;/legend&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;&lt;label for="${configObj.getxWikiClass().name}_${configObj.number}_enableImperialUnitSystem"&gt;${doc.display("enableImperialUnitSystem", "edit", $configObj).replaceAll('\{\{/?html.*?}}', '')} ${configObj.getxWikiClass().get('enableImperialUnitSystem').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dt&gt;&lt;label for="${configObj.getxWikiClass().name}_${configObj.number}_measurementUnitSystem"&gt;${configObj.getxWikiClass().get('measurementUnitSystem').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dd&gt;${doc.display("measurementUnitSystem", "edit", $configObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;$services.localization.render("phenotips.MeasurementsConfigurationClass.measurementTypesHeader")&lt;/legend&gt;
+{{/html}}
+
 (% id="measurements-configuration-editor"%)(((
   (% class="designer-panel extensions" %)(((
     #measurementSection(true)
     #measurementSection(false)
   )))
 )))
+
 {{html clean=false wiki=false}}
+&lt;/fieldset&gt;
 &lt;div class="hidden"&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/&gt;
 #foreach ($p in $formParams.keySet())
