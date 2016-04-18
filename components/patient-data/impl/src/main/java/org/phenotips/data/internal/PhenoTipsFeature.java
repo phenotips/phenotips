@@ -57,18 +57,24 @@ import com.xpn.xwiki.objects.StringProperty;
  */
 public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implements Feature
 {
+    static final String META_PROPERTY_NAME = "target_property_name";
+
+    static final String META_PROPERTY_VALUE = "target_property_value";
+
+    static final String META_PROPERTY_CATEGORIES = "target_property_category";
+
+    /** The XClass used for storing category phenotype metadata. */
+    static final EntityReference CATEGORY_CLASS_REFERENCE = new EntityReference("PhenotypeCategoryClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /**
      * Prefix marking negative feature.
      *
      * @see #isPresent()
      */
-    private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
+    private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
-    private static final String META_PROPERTY_NAME = "target_property_name";
-
-    private static final String META_PROPERTY_VALUE = "target_property_value";
-
-    private static final String META_PROPERTY_CATEGORIES = "target_property_category";
+    private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^" + NEGATIVE_PHENOTYPE_PREFIX);
 
     /** Used for reading and writing Features to JSON. */
     private static final String TYPE_JSON_KEY_NAME = "type";
@@ -166,7 +172,18 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
         super(json);
         this.present = (json.getString(OBSERVED_JSON_KEY_NAME).equals(JSON_PRESENTSTATUS_YES));
         this.type = json.getString(TYPE_JSON_KEY_NAME);
-        this.propertyName = null;
+        this.propertyName = (this.present) ? this.type : NEGATIVE_PHENOTYPE_PREFIX + this.type;
+        this.metadata = new TreeMap<String, FeatureMetadatum>();
+
+        if (json.has(METADATA_JSON_KEY_NAME)) {
+            JSONArray jsonMetadata = json.getJSONArray(METADATA_JSON_KEY_NAME);
+            for (int i = 0; i < jsonMetadata.length(); ++i) {
+                String metaType = jsonMetadata.getJSONObject(i).getString(TYPE_JSON_KEY_NAME);
+                this.metadata.put(metaType, new PhenoTipsFeatureMetadatum(jsonMetadata.getJSONObject(i)));
+            }
+        }
+        this.metadata = Collections.unmodifiableMap(this.metadata);
+
         this.notes = json.optString(NOTES_JSON_KEY_NAME);
         if (json.has(CATEGORIES_JSON_KEY_NAME)) {
             List<String> categoriesList = new ArrayList<>();
@@ -211,6 +228,26 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
     public String getNotes()
     {
         return this.notes;
+    }
+
+    /**
+     * Returns propertyName.
+     *
+     * @return the propertyName
+     */
+    public String getPropertyName()
+    {
+        return this.propertyName;
+    }
+
+    /**
+     * Returns categories.
+     *
+     * @return the categories
+     */
+    public List<String> getCategories()
+    {
+        return this.categories;
     }
 
     @Override
@@ -287,8 +324,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
     private BaseObject findCategoriesObject(XWikiDocument doc) throws XWikiException
     {
         List<BaseObject> objects =
-            doc.getXObjects(new EntityReference("PhenotypeCategoryClass", EntityType.DOCUMENT,
-                Constants.CODE_SPACE_REFERENCE));
+            doc.getXObjects(CATEGORY_CLASS_REFERENCE);
         if (objects != null && !objects.isEmpty()) {
             for (BaseObject o : objects) {
                 if (o == null) {
