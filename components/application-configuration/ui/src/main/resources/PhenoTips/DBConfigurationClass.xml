@@ -72,20 +72,6 @@ $!value
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </dateOfBirthFormat>
-    <enableImperialUnitSystem>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayFormType>checkbox</displayFormType>
-      <displayType/>
-      <name>enableImperialUnitSystem</name>
-      <number>6</number>
-      <prettyName>Enable imperial unit system for entering measurements</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </enableImperialUnitSystem>
     <livetableColumns>
       <cache>0</cache>
       <customDisplay>//{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}//
@@ -169,31 +155,6 @@ $!value
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </livetableSortColumn>
-    <measurementUnitSystem>
-      <cache>0</cache>
-      <customDisplay>{{velocity}}
-#if ($value != 'imperial')#set ($value = 'metric')#end
-{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
-&lt;br/&gt;
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <displayType>radio</displayType>
-      <multiSelect>0</multiSelect>
-      <name>measurementUnitSystem</name>
-      <number>7</number>
-      <picker>0</picker>
-      <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values>metric=Metric|imperial=Imperial</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </measurementUnitSystem>
     <phenotypeMapping>
       <cache>0</cache>
       <classname>PhenoTips.PhenotypeMappingClass</classname>
