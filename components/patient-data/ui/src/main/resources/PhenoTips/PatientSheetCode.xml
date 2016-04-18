@@ -4075,7 +4075,7 @@ h1, h2, h3, h4 {
 
 .ethnicity label, .ethnicity .label {
   font-size: 100% !important;
-  color: #000 !important;
+  color: inherit !important;
   font-weight: bold !important;
 }
 /** --------------------------------------------- **/
