@@ -76,7 +76,7 @@
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
-      <displayFormType>select</displayFormType>
+      <displayFormType>checkbox</displayFormType>
       <displayType/>
       <name>enableImperialUnitSystem</name>
       <number>4</number>
@@ -115,7 +115,7 @@
       <cache>0</cache>
       <customDisplay>{{velocity}}
 #if ($value != 'imperial')#set ($value = 'metric')#end
-{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.DBConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;$services.localization.render('PhenoTips.MeasurementsConfigurationClass_measurementUnitSystem_metric')&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;$services.localization.render('PhenoTips.MeasurementsConfigurationClass_measurementUnitSystem_imperial')&lt;/label&gt;&lt;/p&gt;
 &lt;br/&gt;
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
