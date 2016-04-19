@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.measurements.internal;
+package org.phenotips.measurements.internal.controller;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.IndexedPatientData;
@@ -23,6 +23,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.measurements.MeasurementHandler;
+import org.phenotips.measurements.data.MeasurementEntry;
+import org.phenotips.measurements.internal.MeasurementUtils;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -47,25 +49,24 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 /**
  * Handles the patient's measurements.
  *
  * @version $Id$
- * @since 1.3M1
+ * @since 1.3M2
  */
 @Component(roles = { PatientDataController.class })
 @Named("measurements")
 @Singleton
-public class MeasurementsController implements PatientDataController<MeasurementsController.MeasurementEntry>
+public class MeasurementsController implements PatientDataController<MeasurementEntry>
 {
     private static final String XCLASS = "PhenoTips.MeasurementClass";
 
@@ -228,11 +229,14 @@ public class MeasurementsController implements PatientDataController<Measurement
             while (iterator.hasNext()) {
                 MeasurementEntry entry = iterator.next();
                 JSONObject jsonEntry = entryToJson(entry);
-                jsonEntry.putAll(computeDependantInfo(entry, patient, handlers));
-                result.add(jsonEntry);
+                Map<String, Object> dependantInfo = computeDependantInfo(entry, patient, handlers);
+                for (String item : dependantInfo.keySet()) {
+                    jsonEntry.put(item, dependantInfo.get(item));
+                }
+                result.put(jsonEntry);
             }
 
-            if (!result.isEmpty()) {
+            if (!(result.length() == 0)) {
                 json.put(getName(), result);
             }
         }
@@ -303,13 +307,13 @@ public class MeasurementsController implements PatientDataController<Measurement
             // if not array, will err
             JSONArray entries = json.getJSONArray(getName());
             List<MeasurementEntry> measurements = new LinkedList<>();
-            if (entries.isEmpty()) {
+            if (entries.length() == 0) {
                 return null;
             }
 
             for (Object e : entries) {
                 try {
-                    JSONObject entry = JSONObject.fromObject(e);
+                    JSONObject entry = new JSONObject(e);
                     measurements.add(jsonToEntry(entry));
                 } catch (Exception er) {
                     this.logger.error("Could not read a particular JSON block", er.getMessage());
@@ -344,73 +348,4 @@ public class MeasurementsController implements PatientDataController<Measurement
         return "measurements";
     }
 
-    /** A class that represents a measurement entry with easy access. */
-    public class MeasurementEntry
-    {
-        private Date date;
-
-        private String age;
-
-        private String type;
-
-        private String side;
-
-        private Double value;
-
-        private String units;
-
-        /** The default constructor that takes all of the data stored in the patient record.
-         * @param date see the doc for the respective method
-         * @param age see the doc for the respective method
-         * @param type see the doc for the respective method
-         * @param side see the doc for the respective method
-         * @param value see the doc for the respective method
-         * @param units see the doc for the respective method
-         */
-        public MeasurementEntry(Date date, String age, String type, String side, Double value, String units)
-        {
-            this.date = date;
-            this.age = age;
-            this.type = type;
-            this.side = side;
-            this.value = value;
-            this.units = units;
-        }
-
-        /** @return the date of the measurement */
-        public Date getDate()
-        {
-            return this.date;
-        }
-
-        /** @return string representing age */
-        public String getAge()
-        {
-            return this.age;
-        }
-
-        /** @return the name of the measurement handler */
-        public String getType()
-        {
-            return this.type;
-        }
-
-        /** @return a letter representing the side, if applicable */
-        public String getSide()
-        {
-            return this.side;
-        }
-
-        /** @return the measurement itself */
-        public Double getValue()
-        {
-            return this.value;
-        }
-
-        /** @return the units that the value is measured in */
-        public String getUnits()
-        {
-            return this.units;
-        }
-    }
 }
