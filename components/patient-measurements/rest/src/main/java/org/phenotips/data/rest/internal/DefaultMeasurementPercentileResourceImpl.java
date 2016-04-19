@@ -32,8 +32,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Default implementation for {@link MeasurementPercentileResource} using XWiki's support for REST resources.
@@ -45,7 +45,7 @@ import net.sf.json.JSONObject;
 @Named("org.phenotips.data.rest.internal.DefaultMeasurementPercentileResourceImpl")
 @Singleton
 public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasurementRestResource implements
-        MeasurementPercentileResource
+    MeasurementPercentileResource
 {
     @Override
     public Response getMeasurementPercentile(String measurement, float value, String age, char sex)
@@ -53,7 +53,7 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         boolean isMale = Character.toLowerCase(sex) == 'm';
         if (!isMale && Character.toLowerCase(sex) != 'f') {
             throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                    "Invalid sex. Supported: M or F."));
+                "Invalid sex. Supported: M or F."));
         }
 
         Double ageMonths;
@@ -67,7 +67,7 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         handler = handlers.get(measurement);
         if (handler == null) {
             throw new WebApplicationException(generateErrorResponse(Response.Status.NOT_FOUND,
-                    "Specified measurement type not found."));
+                "Specified measurement type not found."));
         }
 
         JSONObject resp = new JSONObject();
@@ -80,11 +80,10 @@ public class DefaultMeasurementPercentileResourceImpl extends AbstractMeasuremen
         JSONArray termsJson = new JSONArray();
         for (VocabularyTerm term : terms) {
             if (term.getId() != null) {
-                termsJson.add(term.getId());
+                termsJson.put(term.getId());
             }
         }
         resp.accumulate("associated-terms", termsJson);
-
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
