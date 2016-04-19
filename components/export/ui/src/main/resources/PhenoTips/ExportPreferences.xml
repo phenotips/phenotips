@@ -44,9 +44,10 @@
 #set ($remoteEnabledFields = $request.getParameterValues('enabledFields'))## fields enabled on the remote server
 #set($ignored = {
     'fields' : ['negative_phenotype', 'negative_prenatal_phenotype'],
-    'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.MeasurementsClass', 'PhenoTips.GeneVariantClass']
+    'types'  : ['PhenoTips.PedigreeClass', 'PhenoTips.GeneVariantClass']
 })
 #set($customExporters = {
+    'PhenoTips.MeasurementClass' : {'name' : 'measurements', 'label': "$services.localization.render('phenotips.exportPreferences.field.measurements')"},
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"}
