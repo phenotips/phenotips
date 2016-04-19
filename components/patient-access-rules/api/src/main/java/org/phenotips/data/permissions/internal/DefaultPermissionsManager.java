@@ -127,7 +127,7 @@ public class DefaultPermissionsManager implements PermissionsManager
             Patient patient = iterator.next();
 
             Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();
-            if (requiredVisibility.compareTo(patientVisibility) > 0) {
+            if (requiredVisibility.compareTo(patientVisibility) >= 0) {
                 iterator.remove();
             }
         }
