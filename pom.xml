@@ -480,7 +480,13 @@
               <method>java.util.Collection getAllPatients()</method>
               <justification>Needed for matching notification</justification>
             </difference>
-          </ignored>
+            <difference>
+              <className>org/phenotips/data/permissions/PermissionsManager</className>
+              <differenceType>7012</differenceType>
+              <method>void filterByVisibility(java.util.Collection, org.phenotips.data.permissions.Visibility)</method>
+              <justification>Needed for matching notification</justification>
+            </difference>
+         </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>

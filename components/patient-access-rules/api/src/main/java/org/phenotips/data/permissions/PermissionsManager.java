@@ -41,4 +41,12 @@ public interface PermissionsManager
     AccessLevel resolveAccessLevel(String name);
 
     PatientAccess getPatientAccess(Patient targetPatient);
+
+    /**
+     * Receives a collection of patients and filters out those with visibility < {@code requiredVisibility}.
+     *
+     * @param patients a collection of patients
+     * @param requiredVisibility minimum level of visibility required for patients
+     */
+    void filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
 }
