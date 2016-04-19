@@ -78,7 +78,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
     private List<ChartResource> generateChartResources(JSONObject reqObj) throws WebApplicationException
     {
         String sex = reqObj.getString("sex");
-        JSONArray measurementSets = reqObj.getJSONArray("measurementSets");
+        JSONArray measurementSets = reqObj.optJSONArray("measurementSets");
         List<ChartResource> charts = new LinkedList<>();
 
         List<MeasurementHandler> handlers = new ArrayList<>(this.handlers.values());
@@ -89,9 +89,9 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                 ChartResource chart = null;
 
                 for (int i = 0; i < measurementSets.length(); i++) {
-                    JSONObject measurementSet = measurementSets.getJSONObject(i);
-                    String age = measurementSet.getString("age");
-                    JSONObject measurements = measurementSet.getJSONObject("measurements");
+                    JSONObject measurementSet = measurementSets.optJSONObject(i);
+                    String age = measurementSet.optString("age");
+                    JSONObject measurements = measurementSet.optJSONObject("measurements");
                     double ageMonths;
                     try {
                         ageMonths = MeasurementUtils.convertAgeStrToNumMonths(age);
@@ -106,7 +106,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                             chart = new ChartResource(config.getMeasurementType(), sex.charAt(0), config, this.bridge);
                         }
 
-                        Double value = measurements.getDouble(config.getMeasurementType());
+                        Double value = measurements.optDouble(config.getMeasurementType());
                         chart.addAgeValue(ageMonths, value);
                     }
                 }
