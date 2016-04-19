@@ -30,7 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Default implementation for {@link ComputedMeasurementResource} using XWiki's support for REST resources.

@@ -38,8 +38,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Default implementation for {@link MeasurementChartResourcesResource} using XWiki's support for REST resources.
@@ -51,7 +51,7 @@ import net.sf.json.JSONObject;
 @Named("org.phenotips.data.rest.internal.DefaultMeasurementChartResourcesResourceImpl")
 @Singleton
 public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasurementRestResource implements
-        MeasurementChartResourcesResource
+    MeasurementChartResourcesResource
 {
     /** Provides access to the XWiki data. */
     @Inject
@@ -64,7 +64,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
     @Override
     public Response getChartResources(String json)
     {
-        JSONObject reqObj = JSONObject.fromObject(json);
+        JSONObject reqObj = new JSONObject(json);
         return this.getResponse(this.generateChartResources(reqObj));
     }
 
@@ -88,7 +88,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
             for (MeasurementsChartConfiguration config : handler.getChartsConfigurations()) {
                 ChartResource chart = null;
 
-                for (int i = 0; i < measurementSets.size(); i++) {
+                for (int i = 0; i < measurementSets.length(); i++) {
                     JSONObject measurementSet = measurementSets.getJSONObject(i);
                     String age = measurementSet.getString("age");
                     JSONObject measurements = measurementSet.getJSONObject("measurements");
@@ -97,11 +97,11 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
                         ageMonths = MeasurementUtils.convertAgeStrToNumMonths(age);
                     } catch (IllegalArgumentException e) {
                         throw new WebApplicationException(generateErrorResponse(Response.Status.BAD_REQUEST,
-                                "Cannot parse age."));
+                            "Cannot parse age."));
                     }
 
                     if (config.getLowerAgeLimit() < ageMonths && config.getUpperAgeLimit() >= ageMonths
-                            && measurements.containsKey(config.getMeasurementType())) {
+                        && measurements.has(config.getMeasurementType())) {
                         if (chart == null) {
                             chart = new ChartResource(config.getMeasurementType(), sex.charAt(0), config, this.bridge);
                         }
@@ -132,7 +132,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
             JSONObject chartJson = new JSONObject();
             chartJson.accumulate("title", chart.getChartConfig().getChartTitle());
             chartJson.accumulate("url", chart.toString());
-            chartsJson.add(chartJson);
+            chartsJson.put(chartJson);
         }
         JSONObject resp = new JSONObject();
         resp.accumulate("charts", chartsJson);

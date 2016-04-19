@@ -84,9 +84,8 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
     private void loadOrderedMeasurementsFromConfig()
     {
         try {
-            Query q = this.qm.createQuery("select obj." + CONFIG_KEY_NAME + " from Document as doc, " +
-                            "doc.object(" + CONFIG_CLASS_NAME + ") as obj",
-                            Query.XWQL);
+            Query q = this.qm.createQuery("select obj." + CONFIG_KEY_NAME + " from Document as doc, "
+                + "doc.object(" + CONFIG_CLASS_NAME + ") as obj", Query.XWQL);
             this.orderedMeasurementNames = new ArrayList<>(q.<String>execute());
         } catch (QueryException ex) {
             this.logger.warn("Failed to fetch ordering configuration for measurement types");
@@ -99,9 +98,7 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
      *
      * @param n1 the first measurement name
      * @param n2 the second measurement name
-     * @return a negative int if n1 < n2
-     *         0 if n1 == n2
-     *         a positive int if n1 > n2
+     * @return a negative int if n1 < n2 0 if n1 == n2 a positive int if n1 > n2
      */
     private int compareMeasurementNames(String n1, String n2)
     {
@@ -119,7 +116,7 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
 
     /**
      * @return the singleton instance of the measurement handler comparator, reloading the configuration prior to
-     * returning.
+     *         returning.
      */
     public MeasurementHandlerComparator getMeasurementHandlerComparator()
     {
@@ -130,7 +127,7 @@ public class DefaultMeasurementHandlersSorter implements MeasurementHandlersSort
 
     /**
      * @return the singleton instance of the measurement name comparator, reloading the configuration prior to
-     * returning.
+     *         returning.
      */
     public MeasurementNameComparator getMeasurementNameComparator()
     {

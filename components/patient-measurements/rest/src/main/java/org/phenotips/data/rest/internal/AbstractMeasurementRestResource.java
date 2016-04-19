@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import net.sf.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Base class for implementing a measurement REST resource.
