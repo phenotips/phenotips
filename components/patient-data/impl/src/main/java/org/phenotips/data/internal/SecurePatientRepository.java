@@ -30,6 +30,9 @@ import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -107,8 +110,25 @@ public class SecurePatientRepository implements PatientRepository
         return createNewPatient(this.bridge.getCurrentUserReference());
     }
 
-    private Patient checkAccess(Patient patient, DocumentReference user)
+    @Override
+    public Collection<Patient> getAllPatients() {
+        Collection<Patient> patients = this.internalService.getAllPatients();
+        return checkAccess(patients, this.bridge.getCurrentUserReference());
+    }
+
+    private Collection<Patient> checkAccess(Collection<Patient> patients, DocumentReference user)
     {
+        Iterator<Patient> iterator = patients.iterator();
+        while (iterator.hasNext()) {
+            Patient patient = iterator.next();
+            if (!this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
+                iterator.remove();
+            }
+        }
+        return patients;
+    }
+
+    private Patient checkAccess(Patient patient, DocumentReference user) {
         if (patient != null && this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
             return patient;
         } else if (patient != null) {

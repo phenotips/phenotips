@@ -22,6 +22,8 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
+import java.util.Collection;
+
 /**
  * API that provides access to patient data. No access rights are checked here.
  *
@@ -74,4 +76,9 @@ public interface PatientRepository
      * @return the created patient record
      */
     Patient createNewPatient(DocumentReference creator);
+
+    /**
+     * @return a collection of all the patients.
+     */
+    Collection<Patient> getAllPatients();
 }

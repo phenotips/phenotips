@@ -474,6 +474,12 @@
               <field>POST_PROTOCOL_VERSION</field>
               <justification>Renamed to better reflect its meaning</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/PatientRepository</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection getAllPatients()</method>
+              <justification>Needed for matching notification</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

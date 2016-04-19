@@ -35,6 +35,8 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -203,5 +205,32 @@ public class PhenoTipsPatientRepository implements PatientRepository
         }
         crtMaxID = Math.max(crtMaxID, 0);
         return crtMaxID;
+    }
+
+    @Override
+    public Collection<Patient> getAllPatients()
+    {
+        List<String> patientIds = null;
+        try {
+            Query q = this.qm.createQuery(
+                "select doc.name "
+                + "from Document doc, "
+                + "doc.object(PhenoTips.PatientClass) as patient "
+                + "where patient.identifier is not null ", Query.XWQL);
+            patientIds = q.execute();
+        } catch (QueryException e) {
+            this.logger.error("Failed to read query all patients: {}", e);
+            return null;
+        }
+
+        List<Patient> patients = new ArrayList<>(patientIds.size());
+        for (String patientId : patientIds) {
+            Patient patient = this.getPatientById(patientId);
+            if (patient != null) {
+                patients.add(patient);
+            }
+        }
+
+        return patients;
     }
 }
