@@ -381,8 +381,8 @@ $xwiki.jsfx.use('uicomponents/phenotips/measurementsUnitSwitcher.js', true)##
 enabled=true
 required=
 order=2
-fields=
-pt_class=PhenoTips.MeasurementsClass
+fields=measurements
+pt_class=PhenoTips.MeasurementClass
 pt_class_usage=multiple
 </parameters>
     </property>

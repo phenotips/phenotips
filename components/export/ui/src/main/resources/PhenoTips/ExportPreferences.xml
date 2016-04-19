@@ -47,6 +47,7 @@
   #set ($remoteEnabledFields = [])
 #end
 #set($customExporters = {
+    'PhenoTips.MeasurementClass' : {'name' : 'measurements', 'label': "$services.localization.render('phenotips.exportPreferences.field.measurements')"},
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"},
