@@ -301,19 +301,19 @@ public class MeasurementsController implements PatientDataController<Measurement
     public PatientData<MeasurementEntry> readJSON(JSONObject json)
     {
         try {
-            if (json == null || json.get(getName()) == null) {
+            if (json == null || json.opt(getName()) == null) {
                 return null;
             }
             // if not array, will err
-            JSONArray entries = json.getJSONArray(getName());
+            JSONArray entries = json.optJSONArray(getName());
             List<MeasurementEntry> measurements = new LinkedList<>();
             if (entries.length() == 0) {
                 return null;
             }
 
-            for (Object e : entries) {
+            for (int i = 0; i < entries.length(); ++i) {
                 try {
-                    JSONObject entry = new JSONObject(e);
+                    JSONObject entry = entries.optJSONObject(i);
                     measurements.add(jsonToEntry(entry));
                 } catch (Exception er) {
                     this.logger.error("Could not read a particular JSON block", er.getMessage());
@@ -336,10 +336,10 @@ public class MeasurementsController implements PatientDataController<Measurement
         // not efficient to create a new one for every entry
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         final Date date =
-            j.getString(DATE) != null ? formatter.parse(j.getString(DATE)) : null;
+            j.optString(DATE) != null ? formatter.parse(j.optString(DATE)) : null;
 
         return new MeasurementEntry(
-            date, j.getString(AGE), j.getString(TYPE), j.getString(SIDE), j.getDouble(VALUE), j.getString(UNIT));
+            date, j.optString(AGE), j.optString(TYPE), j.optString(SIDE), j.optDouble(VALUE), j.optString(UNIT));
     }
 
     @Override
