@@ -378,8 +378,8 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
 enabled=true
 required=
 order=4
-fields=
-pt_class=PhenoTips.MeasurementsClass</parameters>
+fields=measurements
+pt_class=PhenoTips.MeasurementClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>
