@@ -134,13 +134,13 @@
           element.up().down().remove();
       if (geneNames[i] != "") {
         element._name = geneNames[i];
-        var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
-        var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
-        var triangle = new Element('span', {'class': "fa fa-exclamation-triangle", title: '$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardGenesymbol')'}).update(' ');
         if (isSuggestSelected) {
+          var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
+          var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
           element.insert({after: infoTool});
         }
         else {
+          var triangle = new Element('span', {'class': "fa fa-exclamation-triangle", title: '$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardGenesymbol')'}).update(' ');
           element.up().insert({top: triangle});
         }
         ++i;
