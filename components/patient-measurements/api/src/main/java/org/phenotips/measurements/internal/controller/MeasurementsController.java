@@ -190,6 +190,7 @@ public class MeasurementsController implements PatientDataController<Measurement
             if (!entries.isIndexed()) {
                 return;
             }
+            doc.removeXObjects(this.getXClassReference());
             Iterator<MeasurementEntry> iterator = entries.iterator();
             while (iterator.hasNext()) {
                 MeasurementEntry entry = iterator.next();
