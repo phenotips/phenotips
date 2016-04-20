@@ -43,10 +43,12 @@ public interface PermissionsManager
     PatientAccess getPatientAccess(Patient targetPatient);
 
     /**
-     * Receives a collection of patients and filters out those with visibility < {@code requiredVisibility}.
+     * Receives a collection of patients and returns a new collection containing only those with
+     * visibility < {@code requiredVisibility}.
      *
      * @param patients a collection of patients
      * @param requiredVisibility minimum level of visibility required for patients
+     * @return a collection containing only those with visibility < {@code requiredVisibility}
      */
-    void filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
+    Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility);
 }

@@ -31,7 +31,8 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -118,11 +119,10 @@ public class SecurePatientRepository implements PatientRepository
 
     private Collection<Patient> checkAccess(Collection<Patient> patients, DocumentReference user)
     {
-        Iterator<Patient> iterator = patients.iterator();
-        while (iterator.hasNext()) {
-            Patient patient = iterator.next();
-            if (!this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
-                iterator.remove();
+        List<Patient> patientsWithAccess = new LinkedList<Patient>();
+        for (Patient patient : patients) {
+            if (this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
+                patientsWithAccess.add(patient);
             }
         }
         return patients;
