@@ -172,7 +172,7 @@ $xwiki.jsfx.use('uicomponents/phenotips/durationValidator.js', true)##
         #set ($sd = $mathtool.roundTo(2, $handler.valueToStandardDeviation($male, $ageMonths, $val)))
         #set ($eval = "${percentile}%ile (#if ($sd &gt;= 0)+#end${sd}SD)")
       #else
-        #if ("$!set.get('armspan').getProperty('value').value" != "" &amp;&amp; "$!obj.getProperty('value').value" != "")
+        #if ("$!set.get('armspan').getProperty('value').value" != "" &amp;&amp; "$!obj.getProperty('value').value" != "" &amp;&amp; $!set.get("height").getProperty('value').value)
           #set ($delta = $obj.getProperty('value').value - $!set.get("height").getProperty('value').value)
           #set ($eval = "= $services.localization.render('PhenoTips.MeasurementsClass_height')")
           #set ($eval = "$eval #if ($delta &gt; 0) + #else &amp;minus; #end$mathtool.roundTo(2, $mathtool.abs($delta))")
