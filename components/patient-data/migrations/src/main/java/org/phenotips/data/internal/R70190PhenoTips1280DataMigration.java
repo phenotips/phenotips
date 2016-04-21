@@ -148,7 +148,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
 
         Query q =
             session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
-                + this.serializer.serialize(geneClassReference) + OR
+                + this.serializer.serialize(investigationClassReference) + OR
                 + this.serializer.serialize(rejectedGenesClassReference) + OR
                 + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
                 + SOLVED_NAME + "' and p.value <> ''");
