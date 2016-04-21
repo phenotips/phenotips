@@ -136,14 +136,10 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     {
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
-        DocumentReference patientClassReference =
-            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(PATIENT_CLASS);
-        DocumentReference investigationClassReference =
-            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(INVESTIGATION_CLASS);
-        DocumentReference geneClassReference =
-            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(GENE_CLASS);
-        DocumentReference rejectedGenesClassReference =
-            R70190PhenoTips1280DataMigration.this.entityResolver.resolve(REJECTED_CLASS);
+        DocumentReference patientClassReference = this.entityResolver.resolve(PATIENT_CLASS);
+        DocumentReference investigationClassReference = this.entityResolver.resolve(INVESTIGATION_CLASS);
+        DocumentReference geneClassReference = this.entityResolver.resolve(GENE_CLASS);
+        DocumentReference rejectedGenesClassReference = this.entityResolver.resolve(REJECTED_CLASS);
 
         Query q =
             session.createQuery("select distinct o.name from BaseObject o where o.className = '"
@@ -157,7 +153,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         List<String> docs = q.list();
         for (String docName : docs) {
             XWikiDocument doc =
-                xwiki.getDocument(R70190PhenoTips1280DataMigration.this.resolver.resolve(docName), context);
+                xwiki.getDocument(this.resolver.resolve(docName), context);
             List<String> geneList = new ArrayList<>();
             migrateSolvedGenes(doc, patientClassReference, geneClassReference, context, session, geneList);
             migrateGenes(doc, rejectedGenesClassReference, geneClassReference, context, session, geneList,
