@@ -152,21 +152,29 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
         for (String docName : docs) {
-            XWikiDocument doc =
-                xwiki.getDocument(this.resolver.resolve(docName), context);
+            XWikiDocument doc = xwiki.getDocument(this.resolver.resolve(docName), context);
             List<String> geneList = new ArrayList<>();
-            migrateSolvedGenes(doc, patientClassReference, geneClassReference, context, session, geneList);
-            migrateGenes(doc, rejectedGenesClassReference, geneClassReference, context, session, geneList,
-                "rejected");
-            migrateGenes(doc, investigationClassReference, geneClassReference, context, session, geneList,
-                "candidate");
+            migrateSolvedGenes(doc, patientClassReference, geneClassReference, context, geneList);
+            migrateGenes(doc, rejectedGenesClassReference, geneClassReference, context, geneList, "rejected");
+            migrateGenes(doc, investigationClassReference, geneClassReference, context, geneList, "candidate");
+            doc.setComment("Migrate old candidate/rejected/solved genes to GeneClass objects");
+            doc.setMinorEdit(true);
+            try {
+                // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
+                // so we must clear the session cache first.
+                session.clear();
+                ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
+                session.flush();
+            } catch (DataMigrationException e) {
+                //
+            }
         }
 
         return null;
     }
 
     private void migrateSolvedGenes(XWikiDocument doc, DocumentReference patientClassReference,
-        DocumentReference geneClassReference, XWikiContext context, Session session, List<String> geneList)
+        DocumentReference geneClassReference, XWikiContext context, List<String> geneList)
         throws HibernateException, XWikiException
     {
         BaseObject patient = doc.getXObject(patientClassReference);
@@ -182,22 +190,10 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             gene.setStringValue(STATUS_NAME, "solved");
             geneList.add(geneName);
         }
-        doc.setComment("Migrate 'solved' genes to the GeneClass objects");
-        doc.setMinorEdit(true);
-        try {
-            // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
-            // so we must clear the session cache first.
-            session.clear();
-            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-            session.flush();
-        } catch (DataMigrationException e) {
-            //
-        }
     }
 
     private void migrateGenes(XWikiDocument doc, DocumentReference oldGenesClassReference,
-        DocumentReference geneClassReference, XWikiContext context, Session session, List<String> geneList,
-        String status)
+        DocumentReference geneClassReference, XWikiContext context, List<String> geneList, String status)
         throws HibernateException, XWikiException
     {
         List<BaseObject> genes = doc.getXObjects(oldGenesClassReference);
@@ -230,24 +226,14 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             } else if (geneComments != null) {
                 String commentUpend = "\nAutomatic migration: gene was duplicated in the " + status + " gene section.";
                 commentUpend += "\nOriginal comment: \n" + geneComments;
-                updateComment(geneName, doc, commentUpend, geneClassReference, session, context);
+                updateComment(geneName, doc, commentUpend, geneClassReference);
             }
         }
-        doc.setComment("Migrating '" + status + "' genes to the GeneClass objects");
-        doc.setMinorEdit(true);
         doc.removeXObjects(oldGenesClassReference);
-        try {
-            session.clear();
-            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-            session.flush();
-        } catch (DataMigrationException e) {
-            //
-        }
     }
 
-    private void updateComment(String geneName, XWikiDocument doc,
-        String commentUpend, DocumentReference geneClassReference, Session session, XWikiContext context)
-        throws HibernateException, XWikiException
+    private void updateComment(String geneName, XWikiDocument doc, String commentUpend,
+        DocumentReference geneClassReference) throws HibernateException, XWikiException
     {
         List<BaseObject> genes = doc.getXObjects(geneClassReference);
         for (BaseObject gene : genes) {
@@ -264,15 +250,5 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
                 }
             }
         }
-        doc.setComment("Update comments for duplicate genes");
-        doc.setMinorEdit(true);
-        try {
-            session.clear();
-            ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
-            session.flush();
-        } catch (DataMigrationException e) {
-            //
-        }
     }
-
 }
