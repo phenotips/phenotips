@@ -224,15 +224,15 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
                 }
                 geneList.add(geneName);
             } else if (geneComments != null) {
-                String commentUpend = "\nAutomatic migration: gene was duplicated in the " + status + " gene section.";
-                commentUpend += "\nOriginal comment: \n" + geneComments;
-                updateComment(geneName, doc, commentUpend, geneClassReference);
+                String commentAppend = "\nAutomatic migration: gene was duplicated in the " + status + " gene section.";
+                commentAppend += "\nOriginal comment: \n" + geneComments;
+                updateComment(geneName, doc, commentAppend, geneClassReference);
             }
         }
         doc.removeXObjects(oldGenesClassReference);
     }
 
-    private void updateComment(String geneName, XWikiDocument doc, String commentUpend,
+    private void updateComment(String geneName, XWikiDocument doc, String commentAppend,
         DocumentReference geneClassReference) throws HibernateException, XWikiException
     {
         List<BaseObject> genes = doc.getXObjects(geneClassReference);
@@ -244,9 +244,9 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             if (geneNameProp != null && geneNameProp.getValue().equals(geneName)) {
                 LargeStringProperty oldGeneCommentsProp = (LargeStringProperty) gene.get(COMMENTS_NAME);
                 if (oldGeneCommentsProp == null) {
-                    gene.setLargeStringValue(COMMENTS_NAME, commentUpend);
+                    gene.setLargeStringValue(COMMENTS_NAME, commentAppend);
                 } else {
-                    gene.setLargeStringValue(COMMENTS_NAME, oldGeneCommentsProp.getValue() + commentUpend);
+                    gene.setLargeStringValue(COMMENTS_NAME, oldGeneCommentsProp.getValue() + commentAppend);
                 }
             }
         }
