@@ -66,7 +66,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * </ul>
  *
  * @version $Id$
- * @since 1.2M1
+ * @since 1.3M1
  */
 @Component
 @Named("R70190PhenoTips#1280")
