@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * mapping from OMIM, OMIM-Phenotype mapping from HPO, OMIM-GeneReviews mapping from NCBI.
  *
  * @version $Id$
- * @since 1.2RC2
+ * @since 1.3M1
  */
 public class OmimSourceParser
 {

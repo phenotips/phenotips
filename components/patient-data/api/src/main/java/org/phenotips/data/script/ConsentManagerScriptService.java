@@ -34,7 +34,7 @@ import org.json.JSONArray;
  * API that provides access to patient consents.
  *
  * @version $Id$
- * @since 1.0M8
+ * @since 1.3M1
  */
 @Unstable
 @Component
