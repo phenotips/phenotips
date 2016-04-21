@@ -197,7 +197,7 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
         throws HibernateException, XWikiException
     {
         List<BaseObject> genes = doc.getXObjects(oldGenesClassReference);
-        if (genes == null || genes.isEmpty()) {
+        if (genes == null) {
             return;
         }
         for (BaseObject gene : genes) {
@@ -211,8 +211,8 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             String geneName = oldGeneNameProp.getValue();
             LargeStringProperty oldGeneCommentsProp = (LargeStringProperty) gene.get(COMMENTS_NAME);
             String geneComments = null;
-            if (oldGeneCommentsProp != null && !StringUtils.isBlank(oldGeneCommentsProp.getValue())) {
-                geneComments = oldGeneCommentsProp.getValue();
+            if (oldGeneCommentsProp != null) {
+                geneComments = StringUtils.defaultIfBlank(oldGeneCommentsProp.getValue(), null);
             }
             // check if we already have migrated this gene
             if (!geneList.contains(geneName)) {
@@ -243,7 +243,7 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             StringProperty geneNameProp = (StringProperty) gene.get(GENE_NAME);
             if (geneNameProp != null && geneNameProp.getValue().equals(geneName)) {
                 LargeStringProperty oldGeneCommentsProp = (LargeStringProperty) gene.get(COMMENTS_NAME);
-                if (oldGeneCommentsProp == null) {
+                if (oldGeneCommentsProp == null || StringUtils.isBlank(oldGeneCommentsProp.getValue())) {
                     gene.setLargeStringValue(COMMENTS_NAME, commentAppend);
                 } else {
                     gene.setLargeStringValue(COMMENTS_NAME, oldGeneCommentsProp.getValue() + commentAppend);
