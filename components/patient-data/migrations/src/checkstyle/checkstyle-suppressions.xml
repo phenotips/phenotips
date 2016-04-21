@@ -23,5 +23,5 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-  <suppress checks="CyclomaticComplexityCheck" files="R70190PhenoTips1280DataMigration.java" lines="202"/>
+  <suppress checks="CyclomaticComplexityCheck" files="R71490PhenoTips1280DataMigration.java"/>
 </suppressions>
