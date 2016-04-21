@@ -115,19 +115,37 @@
 #__hasBooleanDataToDisplay('date_of_death_unknown' $showDodUnknown)
 #if ($showDod || $showDodUnknown)
   (% class="controlled-group complete-hide" %)(((
-  #if ($showDodUnknown)
-  (% class="controller" %)(((
-    #if ($xcontext.action == 'edit')
-      $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
-    #else
-      $class.get('date_of_death_unknown').translatedPrettyName
-    #end
-  )))
-  #end
   #if ($showDod)
-    (% class="controlled" %) (((
-    #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
-    )))
+    #if ($xcontext.action == 'edit')
+      (% class="fieldset date_of_death" %)(((
+      (% class="half-width date_of_death" %)(((
+        #__label('date_of_death' 'section' '')
+      )))
+      (% class="half-width date_of_death" %)(((
+      #if ($showDodUnknown)
+        (% class="controller" %)(((
+          $doc.display('date_of_death_unknown') #__label('date_of_death_unknown' '' "$class.get('date_of_death_unknown').translatedPrettyName")
+        )))
+      #end
+        (% class="controlled" %)(((
+          #__display('date_of_death')
+        )))
+      )))
+      (% class="clear" %)((()))
+      )))##fieldset
+    #else
+      #__displayFormatted('2-col' 'date_of_death' '' 'date' '')
+    #end
+  #end
+  #if ($showDodUnknown)
+    #if ($xcontext.action != 'edit')
+      {{html wiki="false" clean="false"}}
+        &lt;p class="fieldset"&gt;
+          &lt;span class="label"&gt; ${class.get('date_of_death').translatedPrettyName}:&lt;/span&gt;
+          &lt;span class="displayed-value" style="display: inline-block;"&gt;$class.get('date_of_death_unknown').translatedPrettyName&lt;/span&gt;
+        &lt;/p&gt;{{/html}}
+    #end
+  (% class="clear" %)((()))
   #end
   )))
 #end
