@@ -175,9 +175,9 @@ public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             return;
         }
         patient.removeField(SOLVED_NAME);
-        BaseObject gene = doc.newXObject(geneClassReference, context);
         String geneName = oldTarget.getValue();
         if (!StringUtils.isBlank(geneName)) {
+            BaseObject gene = doc.newXObject(geneClassReference, context);
             gene.setStringValue(GENE_NAME, geneName);
             gene.setStringValue(STATUS_NAME, "solved");
             geneList.add(geneName);
