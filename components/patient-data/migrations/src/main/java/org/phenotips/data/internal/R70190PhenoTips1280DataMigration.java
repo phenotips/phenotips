@@ -53,18 +53,17 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #1280: Automatically migrate existing {@code genes} (with {@code genes_comments}),
- * {@code rejectedGenes} (with {@code rejectedGenes_comments}) and {@code solved__gene_id} values to the {@code genes}
- * (with {@code genes_comments}) objects of {@code GeneClass} with new additional property of {@code status} with
- * "candidate", "rejected" and "solved" values respectively. Searches for all documents containing values for the: 1.-
- * {@code genes} (with {@code genes_comments}) property from {@code InvestigationClass} and for each such document set
- * the "candidate" value of {@code status} of {@code GeneClass}. 2.- {@code rejectedGenes} (with
- * {@code rejectedGenes_comments}) property from {@code RejectedGenesClass} and for each such document migrate property
- * value to the {@code genes} (with {@code genes_comments}) object with "rejected" value of {@code status} of
- * {@code GeneClass}. 3.- {@code solved__gene_id} property from {@code PatientClass} and for each such document migrate
- * property value to the {@code genes} (with {@code genes_comments}) object with "solved" value of {@code status} of
- * {@code GeneClass}. The old {@code rejectedGenes}, {@code rejectedGenes_comments}, {@code solved__gene_id} properties
- * and {@code RejectedGenesClass} are removed.
+ * Migration for PhenoTips issue #1280: automatically migrate old candidate, rejected and solved genes to the new
+ * unified genes data structure.
+ * <ul>
+ * <li>For each {@code InvestigationClass} object create a new {@code GeneClass} object, copying the {@code gene} and
+ * {@code comments}) fields, and set the {@code status} as "candidate".</li>
+ * <li>For each {@code RejectedGenesClass} object create a new {@code GeneClass} object, copying the {@code gene} and
+ * {@code comments}) fields, and set the {@code status} as "rejected".</li>
+ * <li>If the {@code PatientClass} has a non-empty {@code solved__gene_id} property, create a new {@code GeneClass}
+ * object, copying the {@code gene} field, and set the {@code status} as "solved".</li>
+ * <li>Successfully migrated objects are removed.</li>
+ * </ul>
  *
  * @version $Id$
  * @since 1.2M1
