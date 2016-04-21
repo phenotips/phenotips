@@ -69,9 +69,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.3M1
  */
 @Component
-@Named("R70190PhenoTips#1280")
+@Named("R71490PhenoTips#1280")
 @Singleton
-public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigration implements
+public class R71490PhenoTips1280DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>
 {
     private static final String GENE_NAME = "gene";
@@ -122,7 +122,7 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(70190);
+        return new XWikiDBVersion(71490);
     }
 
     @Override
