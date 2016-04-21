@@ -32,7 +32,6 @@ import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -119,7 +118,7 @@ public class SecurePatientRepository implements PatientRepository
 
     private Collection<Patient> checkAccess(Collection<Patient> patients, DocumentReference user)
     {
-        List<Patient> patientsWithAccess = new LinkedList<Patient>();
+        Collection<Patient> patientsWithAccess = new LinkedList<Patient>();
         for (Patient patient : patients) {
             if (this.access.hasAccess(Right.VIEW, user, patient.getDocument())) {
                 patientsWithAccess.add(patient);

@@ -44,7 +44,7 @@ public interface PermissionsManager
 
     /**
      * Receives a collection of patients and returns a new collection containing only those with
-     * visibility < {@code requiredVisibility}.
+     * visibility >= {@code requiredVisibility}.
      *
      * @param patients a collection of patients
      * @param requiredVisibility minimum level of visibility required for patients

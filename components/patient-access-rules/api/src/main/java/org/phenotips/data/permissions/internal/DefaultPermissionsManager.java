@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
@@ -121,7 +120,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Override
     public Collection<Patient> filterByVisibility(Collection<Patient> patients, Visibility requiredVisibility)
     {
-        List<Patient> patientsWithVisibility = new LinkedList<Patient>();
+        Collection<Patient> patientsWithVisibility = new LinkedList<Patient>();
         for (Patient patient : patients) {
             if (patient != null) {
                 Visibility patientVisibility = this.getPatientAccess(patient).getVisibility();
