@@ -147,11 +147,12 @@ public class R70190PhenoTips1280DataMigration extends AbstractHibernateDataMigra
             R70190PhenoTips1280DataMigration.this.entityResolver.resolve(REJECTED_CLASS);
 
         Query q =
-            session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
+            session.createQuery("select distinct o.name from BaseObject o where o.className = '"
                 + this.serializer.serialize(investigationClassReference) + OR
                 + this.serializer.serialize(rejectedGenesClassReference) + OR
-                + this.serializer.serialize(patientClassReference) + "' and p.id.id = o.id and p.id.name = '"
-                + SOLVED_NAME + "' and p.value <> ''");
+                + this.serializer.serialize(patientClassReference)
+                + "' and exists(from StringProperty p where p.id.id = o.id and p.id.name = '"
+                + SOLVED_NAME + "' and p.value <> '')");
 
         @SuppressWarnings("unchecked")
         List<String> docs = q.list();
