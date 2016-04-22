@@ -369,8 +369,9 @@ public class DataToCellConverter
         PatientData<Map<String, String>> variants = patient.getData("variants");
         // empties should be created in the case that there are no variants to write
         if (variants == null || !variants.isIndexed()) {
-            /* Genesymbol and variant cDNA columns are always present */
-            for (int i = 0; i < present.size(); i++) {
+            // Genesymbol and variant cDNA columns are always present, but Genesymbol isn't selectable;
+            // use <= to include a cell for Genesymbol as well
+            for (int i = 0; i <= present.size(); i++) {
                 DataCell cell = new DataCell("", i, y);
                 section.addCell(cell);
             }
