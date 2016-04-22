@@ -1441,6 +1441,9 @@ public class DataToCellConverter
 
     private String parseEvidence(String value)
     {
+        if (StringUtils.isBlank(value)) {
+            return "";
+        }
         Map<String, String> valueTranslates = new HashMap<String, String>();
         valueTranslates.put("rare", "Rare (MAF<0.01); ");
         valueTranslates.put("predicted", "Predicted damaging by in silico models; ");
