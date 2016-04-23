@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>solr-access-service</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>solr-access-service-api</artifactId>
   <name>PhenoTips - Solr Access Service - Java code</name>

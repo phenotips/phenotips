@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>application-configuration</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>application-configuration-ui</artifactId>
   <name>PhenoTips - Application configuration - Documents providing the configuration classes and their display code</name>

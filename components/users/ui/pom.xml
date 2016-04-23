@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>users</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>users-ui</artifactId>
   <name>PhenoTips - Users and Groups - Wiki Documents</name>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-hgnc</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>vocabulary-hgnc-api</artifactId>
   <name>PhenoTips - Vocabularies - HUGO Gene Nomenclature Committee (GeneNames) integration - APIs</name>

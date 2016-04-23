@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-data-export</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>phenotips-data-export-ui</artifactId>
   <name>PhenoTips - Data export - Documents providing the Export functionality</name>

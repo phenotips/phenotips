@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data-sharing</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3-milestone-1r2</version>
   </parent>
   <artifactId>patient-data-sharing-receiver-api</artifactId>
   <name>PhenoTips - Patient data sharing - Receiver Java APIs</name>
