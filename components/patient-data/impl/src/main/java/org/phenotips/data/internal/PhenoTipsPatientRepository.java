@@ -216,7 +216,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
                 "select doc.name "
                 + "from Document doc, "
                 + "doc.object(PhenoTips.PatientClass) as patient "
-                + "where patient.identifier is not null ", Query.XWQL);
+                + "where patient.identifier >= 0 "
+                + "order by doc.name ", Query.XWQL);
             patientIds = q.execute();
         } catch (QueryException e) {
             this.logger.error("Failed to read query all patients: {}", e);
