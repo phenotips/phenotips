@@ -111,7 +111,8 @@ public class SecurePatientRepository implements PatientRepository
     }
 
     @Override
-    public Collection<Patient> getAllPatients() {
+    public Collection<Patient> getAllPatients()
+    {
         Collection<Patient> patients = this.internalService.getAllPatients();
         return checkAccess(patients, this.bridge.getCurrentUserReference());
     }
