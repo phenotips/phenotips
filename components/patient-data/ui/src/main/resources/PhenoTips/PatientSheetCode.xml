@@ -1907,8 +1907,8 @@ document.observe('xwiki:dom:loaded', function()
        pfl : {
          evaluation : 'td.pfl_evaluation',
          valueHooks : {
-           'below-normal': 'HP:0000637',
-           'above-normal': 'HP:0012745'
+           'below-normal': 'HP:0012745',
+           'above-normal': 'HP:0000637'
          }
        },
        ipd : {
