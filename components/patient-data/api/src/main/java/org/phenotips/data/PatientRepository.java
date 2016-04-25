@@ -79,6 +79,7 @@ public interface PatientRepository
 
     /**
      * @return a collection of all the patients.
+     * @since 1.3M2
      */
     Collection<Patient> getAllPatients();
 }
