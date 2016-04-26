@@ -316,9 +316,9 @@ public class DefaultPatientAccessHelperTest
         when(manager.resolveAccessLevel("view")).thenReturn(view);
         Collection<Collaborator> collaborators = this.mocker.getComponentUnderTest().getCollaborators(this.patient);
         Assert.assertEquals(2, collaborators.size());
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit);
         Assert.assertTrue(collaborators.contains(c));
-        c = new DefaultCollaborator(OTHER_USER, view, this.mocker.getComponentUnderTest());
+        c = new DefaultCollaborator(OTHER_USER, view);
         Assert.assertTrue(collaborators.contains(c));
     }
 
@@ -356,7 +356,7 @@ public class DefaultPatientAccessHelperTest
         when(manage.compareTo(edit)).thenReturn(10);
         Collection<Collaborator> collaborators = this.mocker.getComponentUnderTest().getCollaborators(this.patient);
         Assert.assertEquals(1, collaborators.size());
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, manage, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, manage);
         Assert.assertTrue(collaborators.contains(c));
     }
 
@@ -409,9 +409,9 @@ public class DefaultPatientAccessHelperTest
         when(view.getName()).thenReturn("view");
         when(manager.resolveAccessLevel("view")).thenReturn(view);
         Collection<Collaborator> collaborators = new HashSet<Collaborator>();
-        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator c = new DefaultCollaborator(COLLABORATOR, edit);
         collaborators.add(c);
-        c = new DefaultCollaborator(OTHER_USER, view, this.mocker.getComponentUnderTest());
+        c = new DefaultCollaborator(OTHER_USER, view);
         collaborators.add(c);
         BaseObject o = mock(BaseObject.class);
         when(doc.newXObject(COLLABORATOR_CLASS, this.context)).thenReturn(o);
@@ -455,7 +455,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
         Mockito.verify(o).setStringValue("collaborator", COLLABORATOR_STR);
@@ -478,7 +478,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
         Mockito.verify(o).setStringValue("collaborator", COLLABORATOR_STR);
@@ -497,7 +497,7 @@ public class DefaultPatientAccessHelperTest
 
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().addCollaborator(this.patient, collaborator));
     }
@@ -514,7 +514,7 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
 
         AccessLevel edit = mock(AccessLevel.class);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
         Mockito.verify(doc).removeXObject(o);
@@ -535,7 +535,7 @@ public class DefaultPatientAccessHelperTest
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
         when(manager.resolveAccessLevel("edit")).thenReturn(edit);
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
         Mockito.verify(doc, Mockito.never()).removeXObject(Matchers.any(BaseObject.class));
@@ -554,7 +554,7 @@ public class DefaultPatientAccessHelperTest
 
         AccessLevel edit = mock(AccessLevel.class);
         when(edit.getName()).thenReturn("edit");
-        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
+        Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit);
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
     }

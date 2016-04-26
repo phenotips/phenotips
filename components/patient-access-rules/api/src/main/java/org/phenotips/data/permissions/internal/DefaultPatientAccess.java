@@ -113,14 +113,14 @@ public class DefaultPatientAccess implements PatientAccess
     @Override
     public boolean addCollaborator(EntityReference user, AccessLevel access)
     {
-        Collaborator collaborator = new DefaultCollaborator(user, access, null);
+        Collaborator collaborator = new DefaultCollaborator(user, access);
         return this.helper.addCollaborator(this.patient, collaborator);
     }
 
     @Override
     public boolean removeCollaborator(EntityReference user)
     {
-        Collaborator collaborator = new DefaultCollaborator(user, null, null);
+        Collaborator collaborator = new DefaultCollaborator(user, null);
         return removeCollaborator(collaborator);
     }
 

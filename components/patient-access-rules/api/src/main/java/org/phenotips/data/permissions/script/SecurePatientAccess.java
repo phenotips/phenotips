@@ -112,7 +112,7 @@ public class SecurePatientAccess implements PatientAccess
         if (hasAccessLevel("manage")) {
             Collection<Collaborator> collaborators = new LinkedHashSet<Collaborator>();
             for (Map.Entry<EntityReference, AccessLevel> collaborator : newCollaborators.entrySet()) {
-                collaborators.add(new DefaultCollaborator(collaborator.getKey(), collaborator.getValue(), null));
+                collaborators.add(new DefaultCollaborator(collaborator.getKey(), collaborator.getValue()));
             }
             return this.internalService.updateCollaborators(collaborators);
         }
