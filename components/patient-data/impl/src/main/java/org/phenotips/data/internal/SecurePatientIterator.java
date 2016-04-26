@@ -27,10 +27,12 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.slf4j.Logger;
 
 /**
- * An iterator on an immutable, secure patients collection. The iterator returns null if current user has no access to
- * the loaded patient.
+ * An iterator on an immutable, secure patients collection. The function next() guarantees not to return null.
  *
  * @version $Id$
  */
@@ -40,9 +42,13 @@ public class SecurePatientIterator implements Iterator<Patient>
 
     private static DocumentAccessBridge bridge;
 
+    private static Logger logger;
+
     private Iterator<Patient> patientIterator;
 
     private DocumentReference currentUser;
+
+    private Patient nextPatient;
 
     static {
         try {
@@ -51,7 +57,7 @@ public class SecurePatientIterator implements Iterator<Patient>
             SecurePatientIterator.bridge =
                     ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
         } catch (ComponentLookupException e) {
-            e.printStackTrace();
+            SecurePatientIterator.logger.error("Error loading static components: {}", e.getMessage(), e);
         }
     }
 
@@ -60,28 +66,49 @@ public class SecurePatientIterator implements Iterator<Patient>
      *
      * @param patientIterator Iterator for a collection of patients that this class wraps with security.
      */
-    public SecurePatientIterator(Iterator<Patient> patientIterator) {
+    public SecurePatientIterator(Iterator<Patient> patientIterator)
+    {
         this.patientIterator = patientIterator;
         this.currentUser = SecurePatientIterator.bridge.getCurrentUserReference();
+
+        this.findNextPatient();
     }
 
     @Override
-    public boolean hasNext() {
-        return patientIterator.hasNext();
+    public boolean hasNext()
+    {
+        return this.nextPatient != null;
     }
 
     @Override
-    public Patient next() {
-        Patient patient = this.patientIterator.next();
-        if (SecurePatientIterator.access.hasAccess(Right.VIEW, this.currentUser, patient.getDocument())) {
-            return patient;
-        } else {
-            return null;
+    public Patient next()
+    {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
         }
+
+        Patient toReturn = nextPatient;
+        this.findNextPatient();
+
+        return toReturn;
     }
 
     @Override
-    public void remove() {
+    public void remove()
+    {
         throw new UnsupportedOperationException();
+    }
+
+    private void findNextPatient()
+    {
+        this.nextPatient = null;
+
+        while (patientIterator.hasNext() && this.nextPatient == null) {
+            Patient potentialNextPatient = this.patientIterator.next();
+            if (SecurePatientIterator.access.hasAccess(
+                    Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
+                this.nextPatient = potentialNextPatient;
+            }
+        }
     }
 }

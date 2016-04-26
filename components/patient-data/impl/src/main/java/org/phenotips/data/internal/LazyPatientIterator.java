@@ -26,6 +26,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+
 /**
  * An iterator on a lazy, immutable patients collection.
  *
@@ -33,6 +35,8 @@ import java.util.List;
  */
 public class LazyPatientIterator implements Iterator<Patient>
 {
+    private static Logger logger;
+
     private static PatientRepository patientRepository;
 
     private Iterator<String> iterator;
@@ -42,7 +46,7 @@ public class LazyPatientIterator implements Iterator<Patient>
             LazyPatientIterator.patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
-            e.printStackTrace();
+            LazyPatientIterator.logger.error("Error loading static components: {}", e.getMessage(), e);
         }
     }
     /**
@@ -50,24 +54,28 @@ public class LazyPatientIterator implements Iterator<Patient>
      *
      * @param patientIds a collection of ids of patients to be contained in the lazy collection.
      */
-    public LazyPatientIterator(List<String> patientIds) {
+    public LazyPatientIterator(List<String> patientIds)
+    {
         this.iterator = patientIds.iterator();
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasNext()
+    {
         return this.iterator.hasNext();
     }
 
     @Override
-    public Patient next() {
+    public Patient next()
+    {
         String patientId = this.iterator.next();
         Patient patient = LazyPatientIterator.patientRepository.getPatientById(patientId);
         return patient;
     }
 
     @Override
-    public void remove() {
+    public void remove()
+    {
         throw new UnsupportedOperationException();
     }
 }
