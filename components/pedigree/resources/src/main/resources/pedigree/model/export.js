@@ -337,6 +337,7 @@ define([
          // TODO: Contralateral breast cancer export/field?
          var cancerSequence = [ "Breast", "", "Ovarian", "Prostate", "Pancreatic" ];
 
+         var is_affected = false;
          for (var c = 0; c < cancerSequence.length; c++) {
              cancer = cancerSequence[c];
              if (cancer == "" || !pedigree.GG.properties[i].hasOwnProperty("cancers")) {
@@ -348,20 +349,19 @@ define([
                  var cancerData = pedigree.GG.properties[i].cancers[cancer];
                  if (!cancerData.affected) {
                      output += "0\t";
-                     if (yob == "0") {
-                        warnMissingDOBUnaff = true;
-                     }
                  } else {
                      var ageAtDetection = cancerData.hasOwnProperty("numericAgeAtDiagnosis") && (cancerData.numericAgeAtDiagnosis > 0)
                                           ? cancerData.numericAgeAtDiagnosis : "AU";
                      output += ageAtDetection.toString() + "\t";
-                     if (yob == "0" || ageAtDetection == "AU") {
-                         warnAboutMissingDOB = true;
-                     }
+                     is_affected = true;
                  }
              } else {
                  output += "0\t";
              }
+         }
+         if (yob == "0") {
+            warnAboutMissingDOB = warnAboutMissingDOB || is_affected;
+            warnMissingDOBUnaff = warnMissingDOBUnaff || !is_affected;
          }
 
          output += "0\t"; // TODO: Genetic test status
@@ -403,7 +403,7 @@ define([
          output += "\n";
      }
 
-     if (alertUnknownGenderFound || warnAboutMissingDOB) {
+     if (alertUnknownGenderFound || warnAboutMissingDOB || warnMissingDOBUnaff) {
          var warningText = "Pedigree can be exported, but there are warnings:\n\n\n";
          var warnings = [];
          if (alertUnknownGenderFound) {
