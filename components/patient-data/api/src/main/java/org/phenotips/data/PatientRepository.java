@@ -22,7 +22,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
-import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * API that provides access to patient data. No access rights are checked here.
@@ -78,8 +78,8 @@ public interface PatientRepository
     Patient createNewPatient(DocumentReference creator);
 
     /**
-     * @return a collection of all the patients.
+     * @return an iterator for traversing a collection of patients.
      * @since 1.3M2
      */
-    Collection<Patient> getAllPatients();
+    Iterator<Patient> getAllPatientsIterator();
 }

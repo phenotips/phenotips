@@ -477,7 +477,7 @@
             <difference>
               <className>org/phenotips/data/PatientRepository</className>
               <differenceType>7012</differenceType>
-              <method>java.util.Collection getAllPatients()</method>
+              <method>java.util.Iterator getAllPatientsIterator()</method>
               <justification>Needed for matching notification</justification>
             </difference>
             <difference>

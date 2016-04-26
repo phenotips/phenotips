@@ -35,9 +35,9 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -208,7 +208,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
     }
 
     @Override
-    public Collection<Patient> getAllPatients()
+    public Iterator<Patient> getAllPatientsIterator()
     {
         List<String> patientIds = null;
         try {
@@ -221,17 +221,9 @@ public class PhenoTipsPatientRepository implements PatientRepository
             patientIds = q.execute();
         } catch (QueryException e) {
             this.logger.error("Failed to read query all patients: {}", e);
-            return null;
+            patientIds = new LinkedList<>();
         }
 
-        List<Patient> patients = new ArrayList<>(patientIds.size());
-        for (String patientId : patientIds) {
-            Patient patient = this.getPatientById(patientId);
-            if (patient != null) {
-                patients.add(patient);
-            }
-        }
-
-        return patients;
+        return new LazyPatientIterator(patientIds);
     }
 }
