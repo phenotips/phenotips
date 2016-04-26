@@ -72,6 +72,7 @@ define([
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
+            //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -79,7 +80,8 @@ define([
                                                      dateEditFormat: "YMD",
                                                      drawNodeShadows: true,
                                                      disabledFields: [],
-                                                     displayCancerLabels: true },
+                                                     displayCancerLabels: true,
+                                                     lineStyle: "regular" },
                                          user:     { hideDraggingHint: false,
                                                      firstName: "",
                                                      lastName: "" },
@@ -111,6 +113,14 @@ define([
 
             this._preferencesManager.load( function() {
                     Helpers.copyProperties(PedigreeEditorParameters.styles.blackAndWhite, PedigreeEditorParameters.attributes);
+                    // set up constants which depend on preferences
+                    if (editor.getPreferencesManager().getConfigurationOption("lineStyle") == "thin") {
+                        Helpers.copyProperties(PedigreeEditorParameters.lineStyles.thinLines, PedigreeEditorParameters.attributes);
+                    } else if (editor.getPreferencesManager().getConfigurationOption("lineStyle") == "bold") {
+                        Helpers.copyProperties(PedigreeEditorParameters.lineStyles.boldLines, PedigreeEditorParameters.attributes);
+                    } else {
+                        Helpers.copyProperties(PedigreeEditorParameters.lineStyles.regularLines, PedigreeEditorParameters.attributes);
+                    }
 
                     // load proband data and load the graph after proband data is available
                     this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
