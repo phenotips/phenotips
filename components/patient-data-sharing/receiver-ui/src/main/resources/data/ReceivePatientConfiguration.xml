@@ -79,7 +79,7 @@ $xwiki.ssx.use($displayDocumentName)##
     ##
   #if ($services.consentauthorizer.consentsGloballyEnabled())
     {{html clean="false"}}
-    Accept data from old clients which do not ask the user to set consents when pushing: ##
+    Accept data from old clients that cannot push consent information: ##
     {{/html}}##
     $doc.display("AllowNoConsentsFromOldClients", "edit", $targetObj)
   #end
