@@ -35,19 +35,26 @@ import org.slf4j.Logger;
  */
 public class LazyPatientIterator implements Iterator<Patient>
 {
-    private static Logger logger;
+    private static final Logger LOGGER;
 
-    private static PatientRepository patientRepository;
+    private static final PatientRepository PATIENT_REPOSITORY;
 
     private Iterator<String> iterator;
 
     static {
+        PatientRepository patientRepository = null;
+        Logger logger = null;
         try {
-            LazyPatientIterator.patientRepository =
+            logger =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
+            patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
-            LazyPatientIterator.logger.error("Error loading static components: {}", e.getMessage(), e);
+            logger.error("Error loading static components: {}", e.getMessage(), e);
         }
+
+        LOGGER = logger;
+        PATIENT_REPOSITORY = patientRepository;
     }
     /**
      * Default constructor.
@@ -69,7 +76,7 @@ public class LazyPatientIterator implements Iterator<Patient>
     public Patient next()
     {
         String patientId = this.iterator.next();
-        Patient patient = LazyPatientIterator.patientRepository.getPatientById(patientId);
+        Patient patient = LazyPatientIterator.PATIENT_REPOSITORY.getPatientById(patientId);
         return patient;
     }
 

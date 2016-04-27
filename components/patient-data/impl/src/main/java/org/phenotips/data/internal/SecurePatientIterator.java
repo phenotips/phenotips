@@ -38,11 +38,11 @@ import org.slf4j.Logger;
  */
 public class SecurePatientIterator implements Iterator<Patient>
 {
-    private static AuthorizationManager access;
+    private static final AuthorizationManager ACCESS;
 
-    private static DocumentAccessBridge bridge;
+    private static final DocumentAccessBridge BRIDGE;
 
-    private static Logger logger;
+    private static final Logger LOGGER;
 
     private Iterator<Patient> patientIterator;
 
@@ -51,14 +51,20 @@ public class SecurePatientIterator implements Iterator<Patient>
     private Patient nextPatient;
 
     static {
+        Logger logger = null;
+        AuthorizationManager access = null;
+        DocumentAccessBridge bridge = null;
         try {
-            SecurePatientIterator.access =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(AuthorizationManager.class);
-            SecurePatientIterator.bridge =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
+            logger = ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
+            access = ComponentManagerRegistry.getContextComponentManager().getInstance(AuthorizationManager.class);
+            bridge = ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
         } catch (ComponentLookupException e) {
-            SecurePatientIterator.logger.error("Error loading static components: {}", e.getMessage(), e);
+            logger.error("Error loading static components: {}", e.getMessage(), e);
         }
+
+        LOGGER = logger;
+        ACCESS = access;
+        BRIDGE = bridge;
     }
 
     /**
@@ -69,7 +75,7 @@ public class SecurePatientIterator implements Iterator<Patient>
     public SecurePatientIterator(Iterator<Patient> patientIterator)
     {
         this.patientIterator = patientIterator;
-        this.currentUser = SecurePatientIterator.bridge.getCurrentUserReference();
+        this.currentUser = SecurePatientIterator.BRIDGE.getCurrentUserReference();
 
         this.findNextPatient();
     }
@@ -105,7 +111,7 @@ public class SecurePatientIterator implements Iterator<Patient>
 
         while (patientIterator.hasNext() && this.nextPatient == null) {
             Patient potentialNextPatient = this.patientIterator.next();
-            if (SecurePatientIterator.access.hasAccess(
+            if (SecurePatientIterator.ACCESS.hasAccess(
                     Right.VIEW, this.currentUser, potentialNextPatient.getDocument())) {
                 this.nextPatient = potentialNextPatient;
             }
