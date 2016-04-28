@@ -146,6 +146,10 @@ public class DefaultPushPatientService implements PushPatientService
                 Constants.CODE_SPACE, "PushPatientServer"));
 
             Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
+            if (servers == null || servers.isEmpty()) {
+                return response;
+            }
+
             for (BaseObject serverConfiguration : servers) {
                 if (serverConfiguration == null) {
                     continue;
