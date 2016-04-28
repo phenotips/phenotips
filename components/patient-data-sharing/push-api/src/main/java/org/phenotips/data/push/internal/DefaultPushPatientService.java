@@ -164,7 +164,7 @@ public class DefaultPushPatientService implements PushPatientService
             }
             return response;
         } catch (Exception ex) {
-            this.logger.error("Failed to get server list: [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to get server list: {}", ex.getMessage(), ex);
             return Collections.emptySet();
         }
     }
