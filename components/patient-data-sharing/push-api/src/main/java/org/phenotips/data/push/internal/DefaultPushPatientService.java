@@ -372,13 +372,14 @@ public class DefaultPushPatientService implements PushPatientService
             null);
     }
 
-    private JSONObject parsePatientStateToJSON(String patientStateString) {
+    private JSONObject parsePatientStateToJSON(String patientStateString)
+    {
         // since the state comes directly from the user side, taking some basic security precautions
         try {
             JSONObject patientState = new JSONObject(patientStateString);
             // server will have to validate received JSON anyway, so only makin gsure we do send a valid JSON
             return patientState;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             return new JSONObject();
         }
     }
