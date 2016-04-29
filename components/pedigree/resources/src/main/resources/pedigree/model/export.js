@@ -56,6 +56,11 @@ define([
 
          var person = {"id": idToJSONId[i]};
 
+         // TODO: fix after family studies are merged in
+         if (i == 0) {
+             person["proband"] = true;
+         }
+
          var parents = getMotherFather(i);
          person["father"] = idToJSONId[parents.father];
          person["mother"] = idToJSONId[parents.mother];

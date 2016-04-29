@@ -738,7 +738,29 @@ define([
        var ambiguousReferences = {};
        var hasID               = {}
 
+       // TODO: fix once family studies are merged in
+       // Detect proband node, and make it node with id = 0
+       // Technical detail: all person nodes will have their IDs equal to their sequence number (among personnodes),
+       // except proband node, that will have ID 0, and first person node, which will have proband's sequence ##.
+       // If proband is not explicitly defined, the first node found will be considered to be the proband, which
+       // is consistent with the way old versions generated simpole JSONs.
+       var newPersonIDs = [];
+       var personSeqNumber = 0;
+       for (var i = 0; i < inputArray.length; i++) {
+           if (inputArray[i].hasOwnProperty("relationshipId")) {
+               continue;
+           }
+          if (inputArray[i].hasOwnProperty("proband")) {
+              newPersonIDs.push(0);
+              newPersonIDs[0] = personSeqNumber;
+          } else {
+              newPersonIDs.push(personSeqNumber);
+          }
+          personSeqNumber++;
+       }
+
        // first pass: add all vertices and assign vertex IDs
+       var personSeqNumber = 0;
        for (var i = 0; i < inputArray.length; i++) {
            if (inputArray[i].hasOwnProperty("relationshipId")) {
                continue;
@@ -755,7 +777,8 @@ define([
                throw "Unable to import pedigree: a node with no ID or name is found";
            }
 
-           var pedigreeID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {}, newG.defaultPersonNodeWidth );
+           var pedigreeID = newG._addVertex( newPersonIDs[personSeqNumber], BaseGraph.TYPE.PERSON, {}, newG.defaultPersonNodeWidth );
+           personSeqNumber++;
 
            var properties = {};
            properties["gender"] = "U";     // each person should have some gender set
