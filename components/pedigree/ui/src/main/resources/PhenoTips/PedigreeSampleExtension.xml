@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PedigreeSampleExtension</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1463084741000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1463169769000</date>
+  <contentUpdateDate>1463084741000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.PedigreeSampleExtension</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>96c3592c-c865-4257-bc4d-a06eb989e6e2</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>//=================================================================================================================
+//
+// This is a sample extension extending a node with a version history field and node menu with version history tab.
+//
+// To enable it, change the "Use this extension" property from "on demand only" to "on this wiki", which will make
+// sure it is loaded together with the pedigree editor.
+//
+//=================================================================================================================
+
+if (!window.pedigreeExtensions) {
+    window.pedigreeExtensions = [];
+}
+
+//---------------------------------------------------
+var extendPerson = function(personCreationParams) {
+  var node = personCreationParams.node;
+
+  node._versionHistory = "";
+  node.setVersionHistory = function(history) { this._versionHistory = history; }
+  node.getVersionHistory = function() { return this._versionHistory; }
+
+  return { "pedigreeChanged": true,
+           "parameters": personCreationParams };
+}
+
+//---------------------------------------------------
+var extendNodeMenu = function(nodeMenuParams) {
+  nodeMenuParams.fieldList.push({
+                'name' : 'versionhistory',
+                'label' : 'Version History',
+                'type' : 'textarea',
+                'rows' : 20,
+                'tab': 'Versions',
+                'function' : 'setVersionHistory'
+            });
+  return { "parameters": nodeMenuParams };
+}
+
+//---------------------------------------------------
+var extendGetNodeMenuData = function(nodeMenuDataParams) {
+  var node = nodeMenuDataParams.node;
+  nodeMenuDataParams.menuData["versionhistory"] = {"value": node.getVersionHistory() };
+  return { "parameters": nodeMenuDataParams };
+}
+
+//---------------------------------------------------
+var extendPersonToModel = function(personToModelParams) {
+  personToModelParams.modelData["versionHistory"] = personToModelParams.node.getVersionHistory();
+  return { "parameters": personToModelParams };
+}
+
+//---------------------------------------------------
+var extendModelToPerson = function(modelToPersonParams) {
+  if (modelToPersonParams.modelData.hasOwnProperty("versionHistory")) {
+    modelToPersonParams.node.setVersionHistory(modelToPersonParams.modelData["versionHistory"]);
+  }
+  return { "parameters": modelToPersonParams };
+}
+
+//---------------------------------------------------
+var extendOnNewState = function(newStateParams) {
+  console.log("  == [Version Extension] event: " + newStateParams.modificationEvent.eventName);
+  if (newStateParams.modificationEvent.hasOwnProperty("propertiesChanged")) {
+    var propertiesChanged = newStateParams.modificationEvent.propertiesChanged;
+    console.log("  == [Version Extension] node property change (nodeID: " + newStateParams.modificationEvent.afectedNodeIDs +
+                                   ", properties: " + Object.keys(propertiesChanged) + ")");
+
+    var affectsCancerHistory = false;
+    var propertiesAffectingFamilyCancerHistory =
+      ["setLifeStatus", "setDeathDate", "setBirthDate", "setAdopted", "setGender",
+       "setDisorders", "setCarrierStatus", "setCancers", "setConsanguinity", "setGenes", "setHPO"];
+    for (var i = 0; i &lt; propertiesAffectingFamilyCancerHistory.length; i++) {
+      if (propertiesChanged.hasOwnProperty(propertiesAffectingFamilyCancerHistory[i])) {
+        affectsCancerHistory = true;
+        break;
+      }
+    }
+    var affectedNodes = affectsCancerHistory ? editor.getGraph().getAllPersonIDs() : newStateParams.modificationEvent.afectedNodeIDs;
+    var immediatelyChangedNodes = newStateParams.modificationEvent.afectedNodeIDs;
+  } else {
+    console.log("  == [Version Extension] pedigree structure modification");
+    var affectedNodes = editor.getGraph().getAllPersonIDs();
+    var affectsCancerHistory = true;
+    var immediatelyChangedNodes = [];
+  }
+
+  console.log("  == [Version Extension] affected nodes: " + affectedNodes +
+              ", cancerHistoryPotentiallyAffected: " + affectsCancerHistory);
+  
+  var newMessage = (new Date().toISOString().substring(0,16).replace("T"," ")) + ": ";
+  if (newStateParams.modificationEvent.hasOwnProperty("propertiesChanged")) {
+    newMessage += Object.keys(propertiesChanged);
+  } else {
+    newMessage += newStateParams.modificationEvent.eventName;
+  }
+  if (!affectsCancerHistory) {
+    newMessage += " (minor)"; // else: affects cancer history for this node
+  }
+  affectedNodes.forEach(function(nodeID) {
+    var node = editor.getNode(nodeID);
+    var thisNodeMessage = (immediatelyChangedNodes.indexOf(nodeID) &gt; -1) ? " (this node)" : "";
+    node.setVersionHistory(node.getVersionHistory() + newMessage + thisNodeMessage + "\n");
+
+    // the line below is required and transfers data from UI node to model data.
+    // This should happen automatically, but the original design was favouring batch updates, so
+    // internal machinery does this automatically, but extensions which run at random points in time
+    // should do this manually. This should be refactored in a future version
+    editor.getGraph().setProperties( nodeID, node.getProperties() );
+  });
+
+  return { "pedigreeChanged": true,  // TODO: may be false if extension did not do anything
+           "parameters": newStateParams };
+}
+
+//---------------------------------------------------
+var versionHistoryExtension = {
+  "name": "Version History",
+  "extensions": [
+      { "extensionPoint": "personNodeMenu",        "code": extendNodeMenu },
+      { "extensionPoint": "personNodeCreated",     "code": extendPerson },
+      { "extensionPoint": "personGetNodeMenuData", "code": extendGetNodeMenuData },
+      { "extensionPoint": "personToModel",         "code": extendPersonToModel },
+      { "extensionPoint": "modelToPerson",         "code": extendModelToPerson },
+      { "extensionPoint": "newPedigreeState",      "code": extendOnNewState }
+  ]
+}
+window.pedigreeExtensions.push(versionHistoryExtension);</code>
+    </property>
+    <property>
+      <name>Version Extension</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>

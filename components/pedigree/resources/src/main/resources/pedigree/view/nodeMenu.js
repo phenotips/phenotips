@@ -39,13 +39,19 @@ define([
         AgeCalc
     ){
     NodeMenu = Class.create({
-        initialize : function(data, tabs, otherCSSClass) {
+        initialize : function(data, otherCSSClass) {
+
+            var tabs = this._findActiveTabs(data);
+
             //console.log("nodeMenu initialize");
             this._justOpened = false;
             this.canvas = editor.getWorkspace().canvas || $('body');
             var cssClass = 'menu-box';
             if (otherCSSClass) cssClass += " " + otherCSSClass;
             this.menuBox = new Element('div', {'class' : cssClass});
+            // width: 27em with 3 tabs, add 6.5em for each additional tab
+            var menuWidthEM = 27 + Math.max(0,(tabs.length - 3))*6.5;
+            this.menuBox.style.width = menuWidthEM + "em";
 
             this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
             this.menuBox.insert({'top': this.closeButton});
@@ -151,6 +157,20 @@ define([
                 }
                 _this._updateGeneColor(event.memo.id, event.memo.color);
             });
+        },
+
+        _findActiveTabs: function (data) {
+            var tabsInOrder = [];
+            var tabSet = {};
+            data.each(function(field) {
+                if (field.hasOwnProperty("tab")) {
+                    if (!tabSet.hasOwnProperty(field.tab)) {
+                        tabSet[field.tab] = true;
+                        tabsInOrder.push(field.tab);
+                    }
+                }
+            });
+            return tabsInOrder;
         },
 
         _generatePickersAndSuggests: function() {
@@ -708,7 +728,8 @@ define([
                 var label1 = new Element('td').insert(new Element('label', {'class': 'cancer_label_field'} ).update("Name"));
                 var label2 = new Element('td').insert(new Element('label', {'class': 'cancer_status_select'} ).update("Status"));
                 var label3 = new Element('td').insert(new Element('label', {'class': 'cancer_age_select'} ).update("As of"));
-                tableHeaderRow.insert(label1).insert(label2).insert(label3);
+                var label4 = new Element('td');  // notes icon column
+                tableHeaderRow.insert(label1).insert(label2).insert(label3).insert(label4);
                 var table = new Element('table');
                 table.insert(tableHeaderRow);
 
@@ -751,7 +772,7 @@ define([
                     var select = spanSelect.firstChild;
                     select.id = "cancer_status_" + cancerName;
 
-                    var textInput = new Element('textArea', {'type': 'text', 'name': data.name}).hide();
+                    var textInput = new Element('textArea', {'class': 'cancer-notes-textarea', 'type': 'text', 'name': data.name}).hide();
                     textInput.disabled = true;
                     textInput.id = "cancer_notes_" + cancerName;
                     var expandNotes = new Element('label', {'class': 'clickable cancer-notes', 'for': textInput.id}).update("<span class='fa fa-file-text-o'></span>");
@@ -864,7 +885,7 @@ define([
                     table.insert(tableRow)
                          .insert(new Element('tr', {'class': 'cancer_textarea'}).insert(new Element('td', {'colspan': 3}).insert(textInput)));
                     result.inputsContainer.insert(table);
-                 
+
                 }
 
                 var buttonContainer = new Element('div', { 'class': 'button-container'});

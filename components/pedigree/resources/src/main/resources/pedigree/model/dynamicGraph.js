@@ -80,6 +80,11 @@ define([
             return this.DG.GG.isAdoptedOut(id);
         },
 
+        getAllPersonIDs: function()
+        {
+            return this._getAllPersonsOfGenders(null, false);
+        },
+
         getGeneration: function( id )
         {
             var minRank = Math.min.apply(null, this.DG.ranks);
@@ -2287,6 +2292,10 @@ define([
         _getAllPersonsOfGenders: function (validGendersSet, excludeAdoptedOut)
         {
             // all person nodes whose gender matches one of genders in the validGendersSet array
+
+            if (!validGendersSet) {
+                validGendersSet = ['M','F','U','O'];
+            }
 
             // validate input genders
             for (var i = 0; i < validGendersSet.length; i++) {

@@ -443,13 +443,17 @@ define([
                 editor.getView().applyChanges(changeSet, true);
             }
 
-            editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
-                                            // gets reverted back - need to select the correct one in the nodeMenu as well
-
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             //console.log("Undo event: " + Helpers.stringifyObject(undoEvent));
-            if (!event.memo.noUndoRedo && changedValue)
+            if (!event.memo.noUndoRedo && changedValue) {
                 editor.getUndoRedoManager().addState( event, undoEvent );
+            }
+
+            editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
+                                            // gets reverted back - need to select the correct one in the nodeMenu as well
+                                            //
+                                            // note: need to do this after addState(), since addState() may trigger some
+                                            //       extensions which modify valiues visible in node menu
         },
 
         handleModification: function(event)
