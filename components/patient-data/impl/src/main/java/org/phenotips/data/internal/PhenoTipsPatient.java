@@ -336,7 +336,7 @@ public class PhenoTipsPatient implements Patient
             result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
-        if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
+        if (onlyFieldNames == null || onlyFieldNames.contains(PHENOTYPE_POSITIVE_PROPERTY)) {
             result.put(JSON_KEY_FEATURES, featuresToJSON());
             result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
         }
@@ -358,10 +358,6 @@ public class PhenoTipsPatient implements Patient
         try {
             JSONArray jsonFeatures =
                 joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
-
-            if (jsonFeatures.length() == 0) {
-                return;
-            }
 
             // keep this instance of PhenotipsPatient in sync with the document: reset features
             this.features = new TreeSet<Feature>();
@@ -393,6 +389,11 @@ public class PhenoTipsPatient implements Patient
 
             // as in constructor: make unmodifiable
             this.features = Collections.unmodifiableSet(this.features);
+
+            // to reset values in the document null them first
+            for (String type : PHENOTYPE_PROPERTIES) {
+                data.set(type, null, context);
+            }
 
             // update the values in the document (overwriting the old list, if any)
             for (String type : featuresMap.keySet()) {
