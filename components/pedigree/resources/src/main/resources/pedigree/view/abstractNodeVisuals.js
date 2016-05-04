@@ -8,7 +8,7 @@
  * @param {Number} x The x coordinate on the canvas
  * @param {Number} y The y coordinate on the canvas
  */
-define([], function(){
+define(["pedigree/model/helpers"], function(Helpers) {
     var AbstractNodeVisuals = Class.create({
 
         initialize: function(node, x, y) {
@@ -18,7 +18,7 @@ define([], function(){
             this._absoluteY  = y;
             this._hoverBox   = null;
             this._isGrown    = false;
-            this._anonimized = false;
+            this._anonimized = {};
             //console.log("abstract node visuals end");
         },
 
@@ -43,7 +43,7 @@ define([], function(){
         },
 
         /**
-         * Updates whatever needs to change when node id changes (e.g. id label) 
+         * Updates whatever needs to change when node id changes (e.g. id label)
          *
          * @method onSetID
          */
@@ -51,10 +51,11 @@ define([], function(){
         },
 
         /**
-         * Removes all PII labels
+         * Controls how a node should be displayed (with or without certain fields, like PII or comments)
          */
-        setAnonimizedStatus: function(status) {
-            this._anonimized = status;
+        setAnonimizedStatus: function(anonimizeSettings) {
+            this._anonimized = Helpers.cloneObject(anonimizeSettings);
+            // implementations should redraw itself according to the new settings
         },
 
         /**
@@ -89,7 +90,7 @@ define([], function(){
         setPos: function(x, y, animate, callback) {
             //console.log("Node " + this.getNode().getID() + ", xy: " + x + "/" + y);
             this._absoluteX = x;
-            this._absoluteY = y; 
+            this._absoluteY = y;
             callback && callback();
         },
 
@@ -116,7 +117,7 @@ define([], function(){
          *
          * @method isGrown
          */
-        isGrown: function() { 
+        isGrown: function() {
             return this._isGrown;
         },
 

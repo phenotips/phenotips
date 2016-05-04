@@ -802,7 +802,7 @@ define([
         getLabels: function() {
             var labels = editor.getPaper().set();
             this.getSBLabel() && labels.push(this.getSBLabel());
-            if (!this._anonimized) {
+            if (!this._anonimized.hasOwnProperty("removePII") || !this._anonimized.removePII) {
                 if (this.getNameLabel()) {
                     this.getNameLabel().show();
                     labels.push(this.getNameLabel());
@@ -815,14 +815,17 @@ define([
                     this.getExternalIDLabel().show();
                     labels.push(this.getExternalIDLabel());
                 }
+            } else {
+                this.getNameLabel() && this.getNameLabel().hide();
+                this.getAgeLabel() && this.getAgeLabel().hide();
+                this.getExternalIDLabel() && this.getExternalIDLabel().hide();
+            }
+            if (!this._anonimized.hasOwnProperty("removeComments") || !this._anonimized.removeComments) {
                 if (this.getCommentsLabel()) {
                     this.getCommentsLabel().show();
                     labels.push(this.getCommentsLabel());
                 }
             } else {
-                this.getNameLabel() && this.getNameLabel().hide();
-                this.getAgeLabel() && this.getAgeLabel().hide();
-                this.getExternalIDLabel() && this.getExternalIDLabel().hide();
                 this.getCommentsLabel() && this.getCommentsLabel().hide();
             }
             var cancerLabels = this.getCancerAgeOfOnsetLabels();
