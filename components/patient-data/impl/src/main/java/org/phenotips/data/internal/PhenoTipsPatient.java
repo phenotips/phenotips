@@ -84,6 +84,11 @@ public class PhenoTipsPatient implements Patient
 
     private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
+    private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
+
+    private static final String[] PHENOTYPE_PROPERTIES =
+        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
+
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
     private static final String[] DISORDER_PROPERTIES = new String[] { DISORDER_PROPERTIES_OMIMID };
@@ -345,7 +350,7 @@ public class PhenoTipsPatient implements Patient
             result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
-        if (!this.features.isEmpty() && isFieldSuffixIncluded(selectedFields, PHENOTYPE_POSITIVE_PROPERTY)) {
+        if (isFieldSuffixIncluded(selectedFields, PHENOTYPE_POSITIVE_PROPERTY)) {
             result.put(JSON_KEY_FEATURES, featuresToJSON(selectedFields));
             result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(selectedFields));
         }
@@ -367,10 +372,6 @@ public class PhenoTipsPatient implements Patient
         try {
             JSONArray jsonFeatures =
                 joinArrays(json.optJSONArray(JSON_KEY_FEATURES), json.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES));
-
-            if (jsonFeatures.length() == 0) {
-                return;
-            }
 
             // keep this instance of PhenotipsPatient in sync with the document: reset features
             this.features = new TreeSet<Feature>();
@@ -402,6 +403,11 @@ public class PhenoTipsPatient implements Patient
 
             // as in constructor: make unmodifiable
             this.features = Collections.unmodifiableSet(this.features);
+
+            // to reset values in the document null them first
+            for (String type : PHENOTYPE_PROPERTIES) {
+                data.set(type, null, context);
+            }
 
             for (String type : featuresMap.keySet()) {
                 data.set(type, featuresMap.get(type), context);
