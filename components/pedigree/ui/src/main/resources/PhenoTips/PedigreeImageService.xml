@@ -46,12 +46,15 @@
 #end
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($docReference = $patient.document)
   #set ($isPatient = true)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #set ($docReference = $patient.document)
   #set ($isPatient = true)
 #elseif ("$!request.fid" != '')
   #set ($family = $services.families.getFamilyById($request.fid))
+  #set ($docReference = $family.getDocumentReference())
   #set ($isPatient = false)
 #end
 #if ("$!{request.outputSyntax}" == 'plain')
@@ -101,7 +104,7 @@
     #if (!$pedigree.endsWith('&lt;/svg&gt;'))
       #set ($pedigree = $pedigree.concat('&lt;/svg&gt;'))
     #end
-    #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($pedigree, $patient.document))
+    #set ($pedigreeRasterUrl = $services.svg.rasterizeToTemporaryResource($pedigree, $docReference))
     #if ("$!request.getParameter('force-download')" == '1')
       #set ($discard = $pedigreeRasterUrl.getParameters().put('force-download', '1'))
     #end
