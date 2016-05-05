@@ -50,7 +50,7 @@
   #set($familyInfo = $services.pedigrees.getFamilyAndPedigree($doc.getName()).toJSON())
   ##
   ## This is where all information about a family is inserted.
-  {{html clean='false'}}&lt;div id="family-info-json" class="hidden"&gt;$familyInfo.family&lt;/div&gt;{{/html}}
+  {{html clean='false'}}&lt;input id="family-info-json" type="hidden" value='$escapetool.xml($familyInfo.family)'&gt;{{/html}}
 
   #__hasDataToDisplay('external_id', $showExternalId)
   #if($showExternalId)
@@ -309,7 +309,7 @@
     var patientListHolder = $("#members").find(".fieldset");
     var reportsHolder = $('#member-medical-reports');
     var reportsSection = reportsHolder.parents("#reports");
-    var familyJson = $.parseJSON($('#family-info-json').html());
+    var familyJson = $.parseJSON($('#family-info-json').val());
     var patientJson = familyJson.familyMembers;
 
     var patientListDisplay = "";
