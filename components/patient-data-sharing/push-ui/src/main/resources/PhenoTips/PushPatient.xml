@@ -1678,7 +1678,8 @@ function _printObjectInternal(o, level) {
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
-$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
 #set ($service = $services.pushPatient)
 #set ($configuredServers = $service.getPushTargetsWithHistory(""))
 #foreach ($mapEntry in $configuredServers.entrySet())
