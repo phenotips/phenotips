@@ -134,13 +134,15 @@
           element.up().down().remove();
       if (geneNames[i] != "") {
         element._name = geneNames[i];
-        var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
-        var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
-        var triangle = new Element('span', {'class': "fa fa-exclamation-triangle", title: '$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardGenesymbol')'}).update(' ');
-        if (isSuggestSelected)
+        if (isSuggestSelected) {
+          var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton gene-info', 'title' : geneNames[i]});
+          var icon_helpController = new PhenoTips.widgets.HelpButton(infoTool);
           element.insert({after: infoTool});
-        else
+        }
+        else {
+          var triangle = new Element('span', {'class': "fa fa-exclamation-triangle", title: '$services.localization.render('phenotips.patientSheetCode.termSuggest.nonStandardGenesymbol')'}).update(' ');
           element.up().insert({top: triangle});
+        }
         ++i;
       }
     });
@@ -166,7 +168,9 @@
     fetchGeneDetails([el],[value], isSuggestSelected);
   }
 
-  fetchGeneDetails($$('input.gene-name'), null, true);
+  if (XWiki.contextaction == "edit") {
+    fetchGeneDetails($$('input.gene-name'), null, true);
+  }
 
   $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
     fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || [], true);
