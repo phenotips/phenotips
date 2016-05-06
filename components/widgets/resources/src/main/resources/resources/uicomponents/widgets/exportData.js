@@ -188,9 +188,46 @@ document.observe('xwiki:dom:loading', function() {
     }
     
     //============================================================================
-    // Column selection
-    var columnList = content.down('.section.columns ul');
-    if (columnList) {
+    // Push dialog check boxes and expand tools
+    var titles = content.select('.push-fields.section.columns > h5');
+      if (titles) {
+        titles.each(function(item, index){
+        var sectionList = item.next('ul');
+        var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
+        var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+" "+"$services.localization.render('phenotips.patientSheet.expandSection')");
+        var hideIcon = '<span class="fa fa-minus-square-o fa-lg"></span>';
+        var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+" "+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+        var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
+        var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
+        var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
+        item.insert({after: chapterExpandTools});
+        // section expand tools behaviour
+        [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
+          if (event.path[0].tagName != "INPUT") {
+            sectionList.toggleClassName('v-collapsed');
+            chapterShowWrapper.toggleClassName('v-collapsed');
+            chapterHideWrapper.toggleClassName('v-collapsed');
+          }
+        });
+        // leave patient info section expanded
+        if (index != 0) {
+          sectionList.toggleClassName('v-collapsed');
+          chapterHideWrapper.toggleClassName('v-collapsed');
+        } else {
+          chapterShowWrapper.toggleClassName('v-collapsed');
+        }
+        // section checkbox behaviour
+        item.down('input[type=checkbox]').observe('click', function(event) {
+          sectionList.select('input[type=checkbox]').each(function(elt) {elt.checked = event.element().checked});
+        });
+      });
+    }
+
+    //============================================================================
+    // Column selection "select all" tools
+    var checkboxList = content.select('.section.columns input[type=checkbox]');
+    var columnList = content.down('.section.columns h3');
+    if (columnList && checkboxList) {
       var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.label') ");
       var all = new Element('span', {'class' : 'selection-tool select-all'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.all')");
       var none = new Element('span', {'class' : 'selection-tool select-none'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.none')");
@@ -198,25 +235,26 @@ document.observe('xwiki:dom:loading', function() {
       var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')");
       selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
 
-      columnList.select('input[type=checkbox]').each(function(elt) {elt._originallyChecked = elt.checked});
+      checkboxList.each(function(elt) {elt._originallyChecked = elt.checked});
 
       all.observe('click', function(event) {
-        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = true});
+        checkboxList.each(function(elt) {elt.checked = true});
       });
       none.observe('click', function(event) {
-        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = false});
+        checkboxList.each(function(elt) {elt.checked = false});
       });
       invert.observe('click', function(event) {
-        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = !elt.checked});
+        checkboxList.each(function(elt) {elt.checked = !elt.checked});
       });
       restore.observe('click', function(event) {
-        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = elt._originallyChecked});
+        checkboxList.each(function(elt) {elt.checked = elt._originallyChecked});
       });
-      columnList.insert({'before' : selectionTools});
+      columnList.insert({'after' : selectionTools});
     }
 
+
     //============================================================================
-    // Column selection
+    // Column selection cancel button
     var cancelButton = $('export_cancel');
     if (cancelButton) {
       cancelButton.observe('click', function(event) {

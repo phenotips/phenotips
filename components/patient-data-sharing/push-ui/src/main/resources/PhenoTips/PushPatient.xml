@@ -1573,11 +1573,6 @@ function _printObjectInternal(o, level) {
   margin-top: 0.75em;
   margin-right: 3em;
 }
-.push-fields {
-  margin-left: 2em !important;
-  margin-bottom: 1.5em !important;
-  width: 90% !important;
-}
 .narrow-export-dialog.export-dialog {
   width: 60% !important;
 }
