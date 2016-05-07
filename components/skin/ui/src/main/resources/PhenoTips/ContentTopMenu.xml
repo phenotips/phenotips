@@ -1165,10 +1165,14 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** [[$services.localization.render('phenotips.contentTopMenu.moreActionsMenu.exportJSON')&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
 #end
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
-#if ($foreach.index == 0)
-** ----
-#end
-** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+  #set ($extensionContent = $services.rendering.render($e.execute(), 'xhtml/1.0'))
+  #if ($stringtool.isNotBlank($extensionContent) &amp;&amp; !$foreach.hasContent)
+    #if (!$foreach.hasContent)
+      ** ----
+      #set ($foreach.hasContent = true)
+    #end
+    ** {{html clean=false}}$extensionContent{{/html}}
+  #end
 #end
 )))## menu
 )))## container
