@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,23 +14,31 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
--->
+ */
+package org.phenotips.data.permissions.rest;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-access-rules</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient access rules</name>
+import org.phenotips.data.rest.model.VisibilityOptionsRepresentation;
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-    <module>rest</module>
-  </modules>
-</project>
+import org.xwiki.component.annotation.Role;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
+/**
+ * Resource for working with patient independent features of {@link org.phenotips.data.permissions.Visibility}.
+ *
+ * @version $Id$
+ * @since 1.3M1
+ */
+@Role
+@Path("/permissions/visibility")
+public interface VisibilityOptionsResource
+{
+    /**
+     * The system has several predefined options of visibility levels.
+     *
+     * @return all the visibility levels present in the system
+     */
+    @GET
+    VisibilityOptionsRepresentation getVisibilityOptions();
+}
