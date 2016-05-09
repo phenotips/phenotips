@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An iterator on a lazy, immutable patients collection.
@@ -35,7 +36,7 @@ import org.slf4j.Logger;
  */
 public class LazyPatientIterator implements Iterator<Patient>
 {
-    private static final Logger LOGGER;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LazyPatientIterator.class);
 
     private static final PatientRepository PATIENT_REPOSITORY;
 
@@ -43,17 +44,12 @@ public class LazyPatientIterator implements Iterator<Patient>
 
     static {
         PatientRepository patientRepository = null;
-        Logger logger = null;
         try {
-            logger =
-                    ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
             patientRepository =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(PatientRepository.class);
         } catch (ComponentLookupException e) {
-            logger.error("Error loading static components: {}", e.getMessage(), e);
+            LOGGER.error("Error loading static components: {}", e.getMessage(), e);
         }
-
-        LOGGER = logger;
         PATIENT_REPOSITORY = patientRepository;
     }
     /**

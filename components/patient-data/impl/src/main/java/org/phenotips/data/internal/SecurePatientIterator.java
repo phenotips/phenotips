@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An iterator on an immutable, secure patients collection. The function next() guarantees not to return null.
@@ -42,7 +43,7 @@ public class SecurePatientIterator implements Iterator<Patient>
 
     private static final DocumentAccessBridge BRIDGE;
 
-    private static final Logger LOGGER;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurePatientIterator.class);
 
     private Iterator<Patient> patientIterator;
 
@@ -51,18 +52,14 @@ public class SecurePatientIterator implements Iterator<Patient>
     private Patient nextPatient;
 
     static {
-        Logger logger = null;
         AuthorizationManager access = null;
         DocumentAccessBridge bridge = null;
         try {
-            logger = ComponentManagerRegistry.getContextComponentManager().getInstance(Logger.class);
             access = ComponentManagerRegistry.getContextComponentManager().getInstance(AuthorizationManager.class);
             bridge = ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
         } catch (ComponentLookupException e) {
-            logger.error("Error loading static components: {}", e.getMessage(), e);
+            LOGGER.error("Error loading static components: {}", e.getMessage(), e);
         }
-
-        LOGGER = logger;
         ACCESS = access;
         BRIDGE = bridge;
     }
