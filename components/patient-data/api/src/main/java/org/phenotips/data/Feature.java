@@ -19,6 +19,7 @@ package org.phenotips.data;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -91,4 +92,19 @@ public interface Feature extends VocabularyProperty
      * @todo move to VocabularyProperty and/or implement a VocabularyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
+
+    /**
+     * Returns a feature property name. Constructed from type property prefixing the {@code negative_} prefix for
+     * {@link #isPresent() negative observations}.
+     *
+     * @return the feature property name, usually a string ending in {@code phenotype}
+     */
+    String getPropertyName();
+
+    /**
+     * Returns optional custom categories for this non-standard feature.
+     *
+     * @return the feature categories string list
+     */
+    List<String> getCategories();
 }

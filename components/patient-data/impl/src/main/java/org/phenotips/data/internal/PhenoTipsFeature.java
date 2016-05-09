@@ -230,21 +230,13 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
         return this.notes;
     }
 
-    /**
-     * Returns propertyName.
-     *
-     * @return the propertyName
-     */
+    @Override
     public String getPropertyName()
     {
         return this.propertyName;
     }
 
-    /**
-     * Returns categories.
-     *
-     * @return the categories
-     */
+    @Override
     public List<String> getCategories()
     {
         return this.categories;

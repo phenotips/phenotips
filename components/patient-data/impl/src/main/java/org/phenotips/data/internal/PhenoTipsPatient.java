@@ -423,7 +423,7 @@ public class PhenoTipsPatient implements Patient
             }
 
             BaseObject metaObject = doc.newXObject(FeatureMetadatum.CLASS_REFERENCE, context);
-            metaObject.set(PhenoTipsFeature.META_PROPERTY_NAME, ((PhenoTipsFeature) feature).getPropertyName(),
+            metaObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
                 context);
             metaObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
             for (String type : metadataMap.keySet()) {
@@ -438,13 +438,13 @@ public class PhenoTipsPatient implements Patient
     {
         doc.removeXObjects(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE);
         for (Feature feature : this.features) {
-            List<String> categories = ((PhenoTipsFeature) feature).getCategories();
+            List<String> categories = feature.getCategories();
             if (categories.isEmpty()) {
                 continue;
             }
 
             BaseObject categoriesObject = doc.newXObject(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE, context);
-            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_NAME, ((PhenoTipsFeature) feature).getPropertyName(),
+            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
                 context);
             categoriesObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
             categoriesObject.set(PhenoTipsFeature.META_PROPERTY_CATEGORIES, categories, context);
