@@ -111,6 +111,7 @@
     $response.sendRedirect($pedigreeRasterUrl.serialize())
   #else
     $response.setContentType('image/svg+xml')##
+    set ($pedigree = $pedigree.replaceAll("&lt;a[^&gt;]*&gt;(.*?)&lt;/a&gt;", "$1"))
     $pedigree
   #end
 #end
