@@ -294,7 +294,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
                     List<String> listToStore = new LinkedList<>();
                     for (VocabularyProperty term : terms) {
-                        listToStore.add(term.getId());
+                        String name = StringUtils.isNotBlank(term.getId()) ? term.getId() : term.getName();
+                        listToStore.add(name);
                     }
                     dataHolder.set(propertyName, listToStore, context);
                 } else {
