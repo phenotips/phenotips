@@ -200,8 +200,16 @@ define([
             window.onbeforeunload = onLeavePageFunc;
 
             var onCloseButtonClickFunc = function(event) {
+                var urlQueryPatientID = window.self.location.href.toQueryParams().patient_id;
+                var urlQueryPatientAction = window.self.location.href.toQueryParams().action;
+                var redirectOnQuit  = function() { if (urlQueryPatientID && urlQueryPatientAction) {
+                                                       // redirecting back to the original patient form
+                                                       window.location = editor.getExternalEndpoint().getPhenotipsPatientURL(urlQueryPatientID, urlQueryPatientAction);
+                                                   } else {
+                                                       window.location = XWiki.currentDocument.getURL(XWiki.contextaction);
+                                                 }};
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
-                var quitFunc        = function() { window.location=XWiki.currentDocument.getURL(XWiki.contextaction); };
+                var quitFunc        = function() { redirectOnQuit(); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;
                                                    editor.getSaveLoadEngine().save(); }
 
