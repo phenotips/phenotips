@@ -6,16 +6,16 @@
 ## -----------Add/Delete buttons macros-------------------
 ##
 #macro (__gene_addTool $classname)
-{{html clean="false"}}<span class="buttonwrapper" style="position : relative"><label class="create-button-label">+</label><a class="button add-gene add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("$!{classname}.geneTable.newEntry")">$services.localization.render("$!{classname}.geneTable.newEntry")</a></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}
+{{html clean="false"}}<label class="create-button-label">+</label><span class="buttonwrapper"><a class="button add-gene add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("$!{classname}.geneTable.newEntry")">$services.localization.render("$!{classname}.geneTable.newEntry")</a></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}_hint").replace('"', '~~~"')"/}}
 #end
 ##
 #macro (__gene__deleteWithVariants__tool $geneObj $variantClassName)
-{{html clean="false"}}<span class="buttonwrapper" style="position : relative"><a class="action delete-gene button secondary" href="$doc.getURL('get', "geneclassname=${geneObj.xWikiClass.name}&amp;variantclassname=$variantClassName&amp;form_token=$!{services.csrf.getToken()}&amp;action=deletegene&amp;objnumber=$geneObj.number&amp;gene=")" title="$services.localization.render('phenotips.tableMacros.delete')">✖</a></span>{{/html}}##
+{{html clean="false"}}<span class="buttonwrapper actions"><a class="action delete-gene button secondary" href="$doc.getURL('get', "geneclassname=${geneObj.xWikiClass.name}&amp;variantclassname=$variantClassName&amp;form_token=$!{services.csrf.getToken()}&amp;action=deletegene&amp;objnumber=$geneObj.number&amp;gene=")" title="$services.localization.render('phenotips.tableMacros.delete')">✖</a></span>{{/html}}##
 #end
 ##
 ##
 #macro (__variant_addTool $classname $genesymbol)
-{{html clean="false"}}<span class="buttonwrapper" style="position : relative"><label class="create-button-label">+</label><a class="button add-variant add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;${classname}_genesymbol=$genesymbol&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("${classname}.variantTable.newEntry")"> $services.localization.render("${classname}.variantTable.newEntry")</a></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}.add.hint").replace('"', '~~~"')"/}}
+{{html clean="false"}}<span class="actions"><label class="create-button-label" style="top: .14em;">+</label><span class="buttonwrapper"><a class="button add-variant add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;xpage=plain&amp;xaction=lastentry&amp;withLabel=false&amp;${classname}_genesymbol=$genesymbol&amp;form_token=$!{services.csrf.getToken()}")" title="$services.localization.render("${classname}.variantTable.newEntry")"> $services.localization.render("${classname}.variantTable.newEntry")</a></span></span>{{/html}} {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("${classname}.add.hint").replace('"', '~~~"')"/}}
 #end
 ##
 #macro (__variant__deleteTool $object)
