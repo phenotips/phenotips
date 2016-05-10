@@ -112,14 +112,19 @@
 
 {{include reference="PhenoTips.TabelarDataMacros" /}}
 
-{{include reference="PhenoTips.GeneVariantMacros" /}}
-
 {{velocity}}
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
+$xwiki.jsfx.use('uicomponents/widgets/extraGeneVariantData.js', true)##     
+$xwiki.jsfx.use('uicomponents/widgets/geneValidation.js', true)##     
+$xwiki.jsfx.use('uicomponents/widgets/variantValidation.js', true)##      
+$xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##      
+#template('geneVariantMacros.vm')
 #set ($geneClassName = 'PhenoTips.GeneClass')
 #set ($variantClassName = 'PhenoTips.GeneVariantClass')
+#if ($xcontext.action == 'edit' || $doc.getObject($geneClassName))
 === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
-#__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'zygosity'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp']})
+  #__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'zygosity'], 'inputStrings' : ['cdna', 'protein','transcript','dbsnp']})
+#end
 {{/velocity}}</content>
     </property>
     <property>
