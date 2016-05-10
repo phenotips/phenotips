@@ -47,9 +47,9 @@
 
 .export-dialog .section {
   float: left;
-  width: 46%;
-  padding: 0 2% 1em;
-  margin: 0;
+  width: 48% !important;
+  padding: 0 1% 1em;
+  margin: 0 !important;
   border-radius: .6em;
 }
 .export-dialog .section:hover {
@@ -111,4 +111,29 @@
 .xdialog-box .question {
   padding: 4px 0 6px 25px;
   white-space: nowrap;
+}
+.push-fields.singlepatient{
+  margin-left: 1.5em !important;
+  margin-bottom: 1em !important;
+  width: 90% !important;
+}
+.push-fields .expand-tools {
+  display: inline-block;
+  color: #9F9F9F;
+  float: right;
+  font-size: 0.9em;
+  margin-right: -10px;
+  margin-top: -2.5em;
+}
+.push-fields h5 {
+  margin: 1em 0 .5em;
+}
+.push-fields h5 label {
+  cursor: pointer;
+}
+.push-fields h5 input[type=checkbox]{
+  margin: 0 0.2em 0.2em 0;
+}
+.v-collapsed {
+  display: none !important;
 }
