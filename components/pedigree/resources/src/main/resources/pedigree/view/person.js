@@ -1426,13 +1426,13 @@ define([
                     this.setDeathDate(null);
                 }
                 if(info.disorders) {
-                	var disordersCopy = Helpers.cloneObject(info.disorders);
+                    var disordersCopy = info.disorders.slice();
                     this.setDisorders(disordersCopy);
                 } else {
                     this.setDisorders([]);
                 }
                 if(info.cancers) {
-                	var cancersCopy = Helpers.cloneObject(info.cancers);
+                    var cancersCopy = Helpers.cloneObject(info.cancers);
                     this.setCancers(cancersCopy);
                 } else {
                     this.setCancers({});
@@ -1470,7 +1470,7 @@ define([
                 this.setHPO(hpoTerms);
 
                 if(info.ethnicities) {
-                    var ethnicitiesCopy = Helpers.cloneObject(info.ethnicities);
+                    var ethnicitiesCopy = info.ethnicities.slice();
                     this.setEthnicities(ethnicitiesCopy);
                 } else {
                     this.setEthnicities([]);

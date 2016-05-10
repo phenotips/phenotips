@@ -221,7 +221,7 @@ define([
             // TODO: review. The first one to review is "lifeStatus" which will be added to PhenoTips soon
             var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
                                    'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
-                                   'carrierStatus', 'lostContact', 'nodeNumber', 'lifeStatus' ];
+                                   'carrierStatus', 'lostContact', 'nodeNumber', 'lifeStatus', 'candidateGenes' ];
 
             var result = {};
             for (var i = 0; i < keepProperties.length; i++) {
