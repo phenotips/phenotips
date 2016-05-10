@@ -3,35 +3,37 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
   tools.Editor = Class.create({
 
     initialize : function () {
-      var geneTableListId = $$('.gene-table.extradata-list')[0].id;
-      this.geneClassName = geneTableListId.substring(geneTableListId.lastIndexOf('-') + 1);
-      this.geneVariantClassName = 'PhenoTips.GeneVariantClass';
+      var geneTable = $$('.gene-table.extradata-list')[0];
+      if (geneTable) {
+        var geneTableId = geneTable.id;
+        this.geneClassName = geneTableId.substring(geneTableId.lastIndexOf('-') + 1);
 
-      //if edit mode
-      if ($('inline')) {
-        this.warnSaving = false;
-        this.areaEditDataListenerArray = [];
-        this.getNewRowsTemplates();
-        this.createEditButtons('.variant-moreinfo-editbutton-row');
-        this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
-        $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
-        $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
-        $$('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
-        $$('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
-        $$('a.button.add-gene.add-data-button').invoke('observe', 'click', this.ajaxAddGeneData.bindAsEventListener(this));
-        $$('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
-        $$('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
-        //invoking click event to hide rows with empty inputs in 'more info' section
-        $$('.gene-table a.variant-edit-done').invoke('click');
-        this.lockGeneInput();
+        //if edit mode
+        if ($('inline')) {
+          this.warnSaving = false;
+          this.areaEditDataListenerArray = [];
+          this.getNewRowsTemplates();
+          this.createEditButtons('.variant-moreinfo-editbutton-row');
+          this.createEditDoneButtons('.variant-moreinfo-editdonebutton-row');
+          $$('.gene-table a.variant-edit').invoke('observe', 'click', this.editData.bindAsEventListener(this));
+          $$('.gene-table a.variant-edit-done').invoke('observe', 'click', this.editDoneData.bindAsEventListener(this));
+          $$('.variant.moreinfo').invoke('observe', 'click', this.areaEditData.bindAsEventListener(this));
+          $$('.gene a.delete-gene').invoke('observe', 'click', this.ajaxDeleteGeneData.bindAsEventListener(this));
+          $$('a.button.add-gene.add-data-button').invoke('observe', 'click', this.ajaxAddGeneData.bindAsEventListener(this));
+          $$('.variant a.delete-variant').invoke('observe', 'click', this.ajaxDeleteVariantData.bindAsEventListener(this));
+          $$('a.button.add-variant.add-data-button').invoke('observe', 'click', this.ajaxAddVariantData.bindAsEventListener(this));
+          //invoking click event to hide rows with empty inputs in 'more info' section
+          $$('.gene-table a.variant-edit-done').invoke('click');
+          this.lockGeneInput();
+        }
+
+        $$('.gene-table tr tr').each( function(item) {
+          item.toggleClassName('moreinfo-view', true);
+        });
+        this.createShowMoreinfoButtons('td.variant-row-count.variant');
+        this.createHideShowButtons('.variant.variant-title');
+        $$('.gene-table tr th')[0].width = '1em';
       }
-
-      $$('.gene-table tr tr').each( function(item) {
-        item.toggleClassName('moreinfo-view', true);
-      });
-      this.createShowMoreinfoButtons('td.variant-row-count.variant');
-      this.createHideShowButtons('.variant.variant-title');
-      $$('.gene-table tr th')[0].width = '1em';
     },
 
     areaEditData  : function (event) {
@@ -54,7 +56,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       }
     },
 
-     getNewRowsTemplates  : function () {
+    getNewRowsTemplates  : function () {
       var sizep = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ').size();
       var geneRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[0].previous();
       var buttonRowTemplateEl = $$('.variant-gene-ZZGENE_INDEX_PLACEHOLDERZZ')[sizep - 5];
