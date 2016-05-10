@@ -79,8 +79,9 @@ define([
             return this.patientSuggestService.getURL("get", 'outputSyntax=plain&rand='+ Math.random());
         },
 
-        getPhenotipsPatientURL: function(patientId) {
-            return new XWiki.Document(patientId, 'data').getURL();
+        // contextaction is optional parameter
+        getPhenotipsPatientURL: function(patientId, contextaction) {
+            return new XWiki.Document(patientId, 'data').getURL(contextaction);
         },
 
         getPedigreeTemplatesURL: function() {
