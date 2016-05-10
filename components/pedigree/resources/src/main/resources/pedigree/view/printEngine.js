@@ -79,8 +79,8 @@ define([
                 patientInfoHeight = 30;
                 var proband = editor.getNode(0);
                 if (options.anonymize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
-                    if (XWiki.currentDocument.space == 'data') {
-                        patientInfoHTML = "Patient " + XWiki.currentDocument.page;
+                    if (editor.getUrlQueryPatientID()) {
+                        patientInfoHTML = "Patient " + editor.getUrlQueryPatientID();
                     } else {
                         patientInfoHTML = "Family " + XWiki.currentDocument.page;
                     }
