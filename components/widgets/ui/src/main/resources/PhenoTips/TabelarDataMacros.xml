@@ -100,8 +100,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
     {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label&gt;${prop.translatedPrettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $options.mode, $targetObj)&lt;/td&gt;#end#if ($options.mode == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
-{{/velocity}}
-</content>
+{{/velocity}}</content>
   <object>
     <name>PhenoTips.TabelarDataMacros</name>
     <number>0</number>
