@@ -13,8 +13,8 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
         if ($('inline')) {
           // getting rid of 'for' attributes in labels and 'id' in inputs
           $$('.gene-table label.xwiki-form-listclass').each (function (label) {
-            label.setAttribute("for", "");
-            label.down('input').id = "";
+        	label.removeAttribute("for");
+        	label.down('input').removeAttribute("id");
           });
             
           this.warnSaving = false;
