@@ -353,7 +353,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       //invoking click event to show rows with empty inputs in 'more info' section
       newMoreInfoRow.select('a.variant-edit').invoke('click');
 
-      this.createShowMoreinfoButtons('td.variant-row-count.variant-' + varIndex);
+      this.createShowMoreinfoButtons('td.variant-row-count.variant-' + varIndex, true);
 
       newMoreInfoRow.select('.variant-moreinfo-editbutton-row tr').each( function(item) {
         item.toggleClassName('moreinfo-view', true);
@@ -436,15 +436,16 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       });
     },
 
-    createShowMoreinfoButtons : function (className) {
+    createShowMoreinfoButtons : function (className, newVariant) {
       $$(className).each(function(td) {
         var variantIndex = td.className.substring(td.className.lastIndexOf('-') + 1);
         var showMoreinfoWrapper = new Element('div',
           {
-            class :'show-moreinfo-button triRight',
+            class :'show-moreinfo-button',
             title : "$services.localization.render('PhenoTips.GeneVariantClass.showMoreinfo.hint')",
             id : 'PhenoTips.GeneVariantClass_' + variantIndex + '_showMoreinfo'
           });
+        showMoreinfoWrapper.addClassName((newVariant) ? 'triDown' : 'triRight');
         showMoreinfoWrapper.observe('click', function (event) {
           event.stop();
           event.element().up('tr').next().toggleClassName('v-collapsed');
