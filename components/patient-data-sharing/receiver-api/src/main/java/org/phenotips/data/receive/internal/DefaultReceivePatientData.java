@@ -509,6 +509,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             // (or fail if GUID is invalid or the patient is not created/authored by the user)
             String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
             User user = this.userManager.getUser(userName);
+            context.setUserReference(user.getProfileDocument());
 
             if (guid != null) {
                 affectedPatient = getPatientByGUID(guid);
@@ -545,7 +546,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             JSONObject patientData = new JSONObject(patientJSON);
-            context.setUserReference(user.getProfileDocument());
             affectedPatient.updateFromJSON(patientData);
 
             if (consentIds != null) {
