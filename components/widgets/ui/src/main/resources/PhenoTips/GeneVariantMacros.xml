@@ -43,6 +43,5 @@ $xwiki.jsfx.use('uicomponents/widgets/geneValidation.js', true)##
 $xwiki.jsfx.use('uicomponents/widgets/variantValidation.js', true)##
 $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 #template('geneVariantMacros.vm')
-{{/velocity}}
-  </content>
+{{/velocity}}</content>
 </xwikidoc>
