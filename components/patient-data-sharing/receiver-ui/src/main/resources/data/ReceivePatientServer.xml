@@ -18,28 +18,26 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>ReceivePatientServer</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1462976762000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1374267418000</creationDate>
-  <date>1374267552000</date>
-  <contentUpdateDate>1374267552000</contentUpdateDate>
+  <date>1462976876000</date>
+  <contentUpdateDate>1462976876000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <class>
     <name>PhenoTips.ReceivePatientServer</name>
     <customClass/>
@@ -49,19 +47,22 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <name>
+    <description>
+      <contenttype>PureText</contenttype>
       <customDisplay/>
       <disabled>0</disabled>
-      <name>name</name>
-      <number>1</number>
+      <editor>PureText</editor>
+      <name>description</name>
+      <number>3</number>
       <picker>0</picker>
-      <prettyName>Server Name</prettyName>
-      <size>20</size>
+      <prettyName>Description</prettyName>
+      <rows>2</rows>
+      <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </name>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </description>
     <ip>
       <customDisplay/>
       <disabled>0</disabled>
@@ -75,27 +76,24 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </ip>
-    <description>
-      <contenttype>PureText</contenttype>
+    <name>
       <customDisplay/>
       <disabled>0</disabled>
-      <editor>PureText</editor>
-      <name>description</name>
-      <number>4</number>
+      <name>name</name>
+      <number>1</number>
       <picker>0</picker>
-      <prettyName>Description</prettyName>
-      <rows>2</rows>
-      <size>30</size>
+      <prettyName>Server Name</prettyName>
+      <size>20</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-    </description>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </name>
     <user_token_life_in_days>
       <customDisplay/>
       <disabled>0</disabled>
       <name>user_token_life_in_days</name>
-      <number>6</number>
+      <number>4</number>
       <numberType>long</numberType>
       <prettyName>User token expire time in days, 0 = never</prettyName>
       <size>5</size>
@@ -105,5 +103,4 @@
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </user_token_life_in_days>
   </class>
-  <content/>
 </xwikidoc>
