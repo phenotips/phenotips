@@ -150,6 +150,10 @@ define([
 
             this._controller = new Controller();
 
+            //URL parameters of patient page from where the editor was opened
+            this._urlQueryPatientID = window.self.location.href.toQueryParams().patient_id || null;
+            this._urlQueryPatientAction = window.self.location.href.toQueryParams().action || null;
+
             //attach actions to buttons on the top bar
             var undoButton = $('action-undo');
             undoButton && undoButton.on("click", function(event) {
@@ -200,11 +204,9 @@ define([
             window.onbeforeunload = onLeavePageFunc;
 
             var onCloseButtonClickFunc = function(event) {
-                var urlQueryPatientID = window.self.location.href.toQueryParams().patient_id;
-                var urlQueryPatientAction = window.self.location.href.toQueryParams().action;
-                var redirectOnQuit  = function() { if (urlQueryPatientID && urlQueryPatientAction) {
+                var redirectOnQuit  = function() { if (this._urlQueryPatientID && this._urlQueryPatientAction) {
                                                        // redirecting back to the original patient form
-                                                       window.location = editor.getExternalEndpoint().getPhenotipsPatientURL(urlQueryPatientID, urlQueryPatientAction);
+                                                       window.location = editor.getExternalEndpoint().getPhenotipsPatientURL(this._urlQueryPatientID, this._urlQueryPatientAction);
                                                    } else {
                                                        window.location = XWiki.currentDocument.getURL(XWiki.contextaction);
                                                  }};
@@ -247,6 +249,13 @@ define([
             });
 
             //this.startAutoSave(30);
+        },
+
+        /**
+         * Returns patient ID from URL parameter if the editor was opened from patient
+         */
+        getUrlQueryPatientID: function() {
+            return this._urlQueryPatientID;
         },
 
         /**
