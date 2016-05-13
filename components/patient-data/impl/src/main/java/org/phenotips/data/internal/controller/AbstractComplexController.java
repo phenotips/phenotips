@@ -127,7 +127,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             Map.Entry<String, T> item = iterator.next();
             String itemKey = item.getKey();
             Object formattedValue = format(itemKey, item.getValue());
-            if (formattedValue != null && (selectedFieldNames == null || selectedFieldNames.contains(item.getKey()))) {
+            if (formattedValue != null
+                && (selectedFieldNames == null
+                || selectedFieldNames.contains(getControllingFieldName(item.getKey())))) {
                 if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
@@ -136,6 +138,14 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                 container.put(itemKey, formattedValue);
             }
         }
+    }
+
+    /**
+     * @return name of controlling field which is responsible for export fields grouping
+     */
+    protected String getControllingFieldName(String field)
+    {
+        return field;
     }
 
     /**
