@@ -21,6 +21,7 @@ import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
+import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -394,14 +395,59 @@ public class PhenoTipsPatient implements Patient
             // as in constructor: make unmodifiable
             this.features = Collections.unmodifiableSet(this.features);
 
-            // update the values in the document (overwriting the old list, if any)
             for (String type : featuresMap.keySet()) {
                 data.set(type, featuresMap.get(type), context);
             }
+
+            // update features' metadata objects in document
+            updateMetaData(doc, context);
+
+            // update features' categories objects in document
+            updateCategories(doc, context);
+
             context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
 
         } catch (Exception ex) {
             this.logger.warn("Failed to update patient features from JSON [{}]: {}", ex.getMessage(), ex);
+        }
+    }
+
+    private void updateMetaData(XWikiDocument doc, XWikiContext context) throws XWikiException
+    {
+        doc.removeXObjects(FeatureMetadatum.CLASS_REFERENCE);
+        for (Feature feature : this.features) {
+            @SuppressWarnings("unchecked")
+            Map<String, FeatureMetadatum> metadataMap = (Map<String, FeatureMetadatum>) feature.getMetadata();
+            if (metadataMap.isEmpty() && feature.getNotes().isEmpty()) {
+                continue;
+            }
+
+            BaseObject metaObject = doc.newXObject(FeatureMetadatum.CLASS_REFERENCE, context);
+            metaObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
+                context);
+            metaObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
+            for (String type : metadataMap.keySet()) {
+                PhenoTipsFeatureMetadatum metadatum = (PhenoTipsFeatureMetadatum) metadataMap.get(type);
+                metaObject.set(type, metadatum.getId(), context);
+            }
+            metaObject.set("comments", feature.getNotes(), context);
+        }
+    }
+
+    private void updateCategories(XWikiDocument doc, XWikiContext context) throws XWikiException
+    {
+        doc.removeXObjects(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE);
+        for (Feature feature : this.features) {
+            List<String> categories = feature.getCategories();
+            if (categories.isEmpty()) {
+                continue;
+            }
+
+            BaseObject categoriesObject = doc.newXObject(PhenoTipsFeature.CATEGORY_CLASS_REFERENCE, context);
+            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_NAME, feature.getPropertyName(),
+                context);
+            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_VALUE, feature.getValue(), context);
+            categoriesObject.set(PhenoTipsFeature.META_PROPERTY_CATEGORIES, categories, context);
         }
     }
 

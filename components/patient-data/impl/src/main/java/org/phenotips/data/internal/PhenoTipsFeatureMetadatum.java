@@ -35,6 +35,8 @@ import com.xpn.xwiki.objects.StringProperty;
  */
 public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsVocabularyProperty implements FeatureMetadatum
 {
+    private static final String TYPE_JSON_KEY_NAME = "type";
+
     /** @see #getType() */
     private Type type;
 
@@ -49,6 +51,18 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsVocabularyProper
         this.type = Type.valueOf(data.getName().toUpperCase(Locale.ROOT));
     }
 
+    /**
+     * Constructor for initializing from a JSON Object.
+     *
+     * @param json JSON object describing this property
+     */
+    PhenoTipsFeatureMetadatum(JSONObject json)
+    {
+        super(json);
+        String metaType = json.has(TYPE_JSON_KEY_NAME) ? json.getString(TYPE_JSON_KEY_NAME) : null;
+        this.type = Type.valueOf(metaType.toUpperCase(Locale.ROOT));
+    }
+
     @Override
     public String getType()
     {
@@ -59,7 +73,7 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsVocabularyProper
     public JSONObject toJSON()
     {
         JSONObject result = super.toJSON();
-        result.put("type", getType());
+        result.put(TYPE_JSON_KEY_NAME, getType());
         return result;
     }
 
