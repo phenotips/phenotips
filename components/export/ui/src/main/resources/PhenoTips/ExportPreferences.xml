@@ -91,7 +91,7 @@
  #end
  #if ($sectionContent != '')
 
- &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;$section.name&lt;/label&gt;&lt;/h5&gt;
+ &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
  &lt;ul class="field-list"&gt;
  $sectionContent
  &lt;/ul&gt;

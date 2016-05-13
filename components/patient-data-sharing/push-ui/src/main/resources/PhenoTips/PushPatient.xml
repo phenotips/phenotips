@@ -1260,7 +1260,7 @@
             if (form) {
                 // 1) get the list of selected data columns from the form
                 var selectedFields = [];
-                var fields = form.down('ul.field-list');
+                var fields = form.down('.push-fields');
                 var checkboxes = fields.select('input[name="columns"]');
                 checkboxes.each(function(item) {
                     if (item.checked) {
