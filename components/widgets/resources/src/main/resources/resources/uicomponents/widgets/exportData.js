@@ -203,7 +203,7 @@ document.observe('xwiki:dom:loading', function() {
         item.insert({after: chapterExpandTools});
         // section expand tools behaviour
         [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
-          if (event.path[0].tagName != "INPUT") {
+          if (!event.findElement('input')) {
             sectionList.toggleClassName('v-collapsed');
             chapterShowWrapper.toggleClassName('v-collapsed');
             chapterHideWrapper.toggleClassName('v-collapsed');
