@@ -3865,6 +3865,9 @@ hr {
   margin-left: 2%;
   margin-right: 0;
 }
+.half-width.date_of_death p {
+  margin: 0;
+}
 .third-width {
   width: 32%;
   float: left;
