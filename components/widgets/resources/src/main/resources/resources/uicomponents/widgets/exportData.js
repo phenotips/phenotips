@@ -202,12 +202,11 @@ document.observe('xwiki:dom:loading', function() {
         var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
         item.insert({after: chapterExpandTools});
         // section expand tools behaviour
-        [chapterShow, chapterHide, item].invoke('observe', 'click', function (event) {
-          if (!event.findElement('input')) {
-            sectionList.toggleClassName('v-collapsed');
-            chapterShowWrapper.toggleClassName('v-collapsed');
-            chapterHideWrapper.toggleClassName('v-collapsed');
-          }
+        [chapterShow, chapterHide, item.down('span')].invoke('observe', 'click', function (event) {
+          event.stop();
+          sectionList.toggleClassName('v-collapsed');
+          chapterShowWrapper.toggleClassName('v-collapsed');
+          chapterHideWrapper.toggleClassName('v-collapsed');
         });
         // leave patient info section expanded
         if (index != 0) {
