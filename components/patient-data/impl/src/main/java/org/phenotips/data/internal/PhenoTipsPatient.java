@@ -92,6 +92,8 @@ public class PhenoTipsPatient implements Patient
 
     private static final String[] DISORDER_PROPERTIES = new String[] { DISORDER_PROPERTIES_OMIMID };
 
+    private static final String PRENATAL_PHENOTYPE_TYPE = "prenatal_phenotype";
+
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
@@ -284,7 +286,7 @@ public class PhenoTipsPatient implements Patient
     {
         JSONArray featuresJSON = new JSONArray();
         for (Feature phenotype : this.features) {
-            if (StringUtils.isBlank(phenotype.getId())) {
+            if (StringUtils.isBlank(phenotype.getId()) || PRENATAL_PHENOTYPE_TYPE.equals(phenotype.getType())) {
                 continue;
             }
             JSONObject featureJSON = phenotype.toJSON();
@@ -299,7 +301,7 @@ public class PhenoTipsPatient implements Patient
     {
         JSONArray featuresJSON = new JSONArray();
         for (Feature phenotype : this.features) {
-            if (StringUtils.isNotBlank(phenotype.getId())) {
+            if (StringUtils.isNotBlank(phenotype.getId()) || PRENATAL_PHENOTYPE_TYPE.equals(phenotype.getType())) {
                 continue;
             }
             JSONObject featureJSON = phenotype.toJSON();
