@@ -219,7 +219,7 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
-        public JSONObject toJSON(Collection<String> onlyFieldNames)
+        public JSONObject toJSON(Collection<String> selectedFields)
         {
             return null;
         }

@@ -200,30 +200,30 @@ public class PhenoTipsPatient implements Patient
         }
     }
 
-    private boolean isFieldIncluded(Collection<String> includedFieldNames, String fieldName)
+    private boolean isFieldIncluded(Collection<String> selectedFields, String fieldName)
     {
-        return (includedFieldNames == null || includedFieldNames.contains(fieldName));
+        return (selectedFields == null || selectedFields.contains(fieldName));
     }
 
-    private boolean isFieldIncluded(Collection<String> includedFieldNames, String[] fieldNames)
+    private boolean isFieldIncluded(Collection<String> selectedFields, String[] fieldNames)
     {
-        if (includedFieldNames == null) {
+        if (selectedFields == null) {
             return true;
         }
         for (String fieldName : fieldNames) {
-            if (isFieldIncluded(includedFieldNames, fieldName)) {
+            if (isFieldIncluded(selectedFields, fieldName)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isFieldSuffixIncluded(Collection<String> includedFieldNames, String fieldSuffix)
+    private boolean isFieldSuffixIncluded(Collection<String> selectedFields, String fieldSuffix)
     {
-        if (includedFieldNames == null) {
+        if (selectedFields == null) {
             return true;
         }
-        for (String fieldName : includedFieldNames) {
+        for (String fieldName : selectedFields) {
             if (StringUtils.endsWith(fieldName, fieldSuffix)) {
                 return true;
             }
@@ -332,29 +332,29 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
-    public JSONObject toJSON(Collection<String> onlyFieldNames)
+    public JSONObject toJSON(Collection<String> selectedFields)
     {
         JSONObject result = new JSONObject();
 
-        if (isFieldIncluded(onlyFieldNames, JSON_KEY_ID)) {
+        if (isFieldIncluded(selectedFields, JSON_KEY_ID)) {
             result.put(JSON_KEY_ID, getDocument().getName());
         }
 
-        if (getReporter() != null && isFieldIncluded(onlyFieldNames, JSON_KEY_REPORTER)) {
+        if (getReporter() != null && isFieldIncluded(selectedFields, JSON_KEY_REPORTER)) {
             result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
-        if (!this.features.isEmpty() && isFieldSuffixIncluded(onlyFieldNames, PHENOTYPE_POSITIVE_PROPERTY)) {
-            result.put(JSON_KEY_FEATURES, featuresToJSON(onlyFieldNames));
-            result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(onlyFieldNames));
+        if (!this.features.isEmpty() && isFieldSuffixIncluded(selectedFields, PHENOTYPE_POSITIVE_PROPERTY)) {
+            result.put(JSON_KEY_FEATURES, featuresToJSON(selectedFields));
+            result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(selectedFields));
         }
 
-        if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISORDER_PROPERTIES)) {
+        if (!this.disorders.isEmpty() && isFieldIncluded(selectedFields, DISORDER_PROPERTIES)) {
             result.put(JSON_KEY_DISORDERS, diseasesToJSON());
         }
 
         for (PatientDataController<?> serializer : this.serializers.values()) {
-            serializer.writeJSON(this, result, onlyFieldNames);
+            serializer.writeJSON(this, result, selectedFields);
         }
 
         return result;
