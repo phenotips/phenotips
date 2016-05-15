@@ -17,7 +17,6 @@ org.phenotips.data.internal.controller.APGARController
 org.phenotips.data.internal.controller.ObstetricHistoryController
 org.phenotips.data.internal.controller.ParentalAgeController
 org.phenotips.data.internal.controller.PrenatalPerinatalHistoryController
-org.phenotips.data.internal.controller.PrenatalPhenotypeController
 org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.MetaDataController
 org.phenotips.data.internal.controller.EthnicityController

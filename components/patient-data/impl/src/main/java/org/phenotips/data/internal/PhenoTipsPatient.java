@@ -83,11 +83,6 @@ public class PhenoTipsPatient implements Patient
 
     private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
 
-    private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
-
-    private static final String[] PHENOTYPE_PROPERTIES =
-        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
-
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
     private static final String[] DISORDER_PROPERTIES = new String[] { DISORDER_PROPERTIES_OMIMID };
@@ -223,6 +218,19 @@ public class PhenoTipsPatient implements Patient
         return false;
     }
 
+    private boolean isFieldSuffixIncluded(Collection<String> includedFieldNames, String fieldSuffix)
+    {
+        if (includedFieldNames == null) {
+            return true;
+        }
+        for (String fieldName : includedFieldNames) {
+            if (StringUtils.endsWith(fieldName, fieldSuffix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String getId()
     {
@@ -280,11 +288,11 @@ public class PhenoTipsPatient implements Patient
     }
 
     /** creates & returns a new JSON array of all patient features (as JSON objects). */
-    private JSONArray featuresToJSON()
+    private JSONArray featuresToJSON(Collection<String> selectedFields)
     {
         JSONArray featuresJSON = new JSONArray();
         for (Feature phenotype : this.features) {
-            if (StringUtils.isBlank(phenotype.getId())) {
+            if (StringUtils.isBlank(phenotype.getId()) || !isFieldIncluded(selectedFields, phenotype.getType())) {
                 continue;
             }
             JSONObject featureJSON = phenotype.toJSON();
@@ -295,11 +303,11 @@ public class PhenoTipsPatient implements Patient
         return featuresJSON;
     }
 
-    private JSONArray nonStandardFeaturesToJSON()
+    private JSONArray nonStandardFeaturesToJSON(Collection<String> selectedFields)
     {
         JSONArray featuresJSON = new JSONArray();
         for (Feature phenotype : this.features) {
-            if (StringUtils.isNotBlank(phenotype.getId())) {
+            if (StringUtils.isNotBlank(phenotype.getId()) || !isFieldIncluded(selectedFields, phenotype.getType())) {
                 continue;
             }
             JSONObject featureJSON = phenotype.toJSON();
@@ -336,9 +344,9 @@ public class PhenoTipsPatient implements Patient
             result.put(JSON_KEY_REPORTER, getReporter().getName());
         }
 
-        if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
-            result.put(JSON_KEY_FEATURES, featuresToJSON());
-            result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
+        if (!this.features.isEmpty() && isFieldSuffixIncluded(onlyFieldNames, PHENOTYPE_POSITIVE_PROPERTY)) {
+            result.put(JSON_KEY_FEATURES, featuresToJSON(onlyFieldNames));
+            result.put(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON(onlyFieldNames));
         }
 
         if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISORDER_PROPERTIES)) {
