@@ -322,19 +322,11 @@ public class SexControllerTest
         json.put(DATA_NAME, SEX_OTHER);
         result = this.mocker.getComponentUnderTest().readJSON(json);
         Assert.assertEquals(SEX_OTHER, result.getValue());
-    }
-
-    @Test
-    public void readJSONReturnsUnknownSex() throws ComponentLookupException
-    {
-        JSONObject json = new JSONObject();
+        
+        json = new JSONObject();
         json.put(DATA_NAME, SEX_UNKNOWN);
-
-        PatientData<String> result = this.mocker.getComponentUnderTest().readJSON(json);
-
-        // Change this line to: Assert.assertEquals(SEX_UNKNOWN, result.getValue())
-        // if PhenoTips Implementation Changes to Support Unknown Gender
-        Assert.assertEquals("", result.getValue());
+        result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertEquals(SEX_UNKNOWN, result.getValue());
     }
 
     @Test

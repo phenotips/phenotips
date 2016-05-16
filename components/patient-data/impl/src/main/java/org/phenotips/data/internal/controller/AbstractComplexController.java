@@ -125,14 +125,15 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
 
         while (iterator.hasNext()) {
             Map.Entry<String, T> item = iterator.next();
-            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
+            String itemKey = item.getKey();
+            Object formattedValue = format(itemKey, item.getValue());
+            if (formattedValue != null && (selectedFieldNames == null || selectedFieldNames.contains(item.getKey()))) {
                 if (container == null) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
                     container = json.optJSONObject(getJsonPropertyName());
                 }
-                String itemKey = item.getKey();
-                container.put(itemKey, format(itemKey, item.getValue()));
+                container.put(itemKey, formattedValue);
             }
         }
     }
@@ -175,7 +176,8 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     @SuppressWarnings("unchecked")
     private Object format(String key, Object value)
     {
-        if (value == null) {
+        if (value == null || "Unknown".equals(value)
+            || (value instanceof Collection && ((Collection<?>) value).isEmpty())) {
             return null;
         }
         if (getBooleanFields().contains(key)) {
@@ -188,7 +190,6 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     }
 
     /** For converting JSON into internal representation. */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private Object inverseFormat(String key, Object value)
     {
         if (value != null) {
@@ -203,7 +204,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     }
                     return terms;
                 } else if (value instanceof JSONArray) {
-                    List list = new LinkedList();
+                    List<Object> list = new LinkedList<>();
                     for (Object o : (JSONArray) value) {
                         list.add(o);
                     }
@@ -272,7 +273,6 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         writeJSON(patient, json, null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void save(Patient patient)
     {
@@ -290,6 +290,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     continue;
                 }
                 if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
+                    @SuppressWarnings("unchecked")
                     List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
                     List<String> listToStore = new LinkedList<>();
                     for (VocabularyProperty term : terms) {
@@ -308,7 +309,6 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public PatientData<T> readJSON(JSONObject json)
     {
@@ -316,9 +316,10 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         JSONObject container = json.optJSONObject(getJsonPropertyName());
         if (container != null) {
             for (String propertyName : getProperties()) {
-                Object value = this.inverseFormat(propertyName, container.opt(propertyName));
+                @SuppressWarnings("unchecked")
+                T value = (T) this.inverseFormat(propertyName, container.opt(propertyName));
                 if (value != null) {
-                    result.put(propertyName, (T) value);
+                    result.put(propertyName, value);
                 }
             }
         }

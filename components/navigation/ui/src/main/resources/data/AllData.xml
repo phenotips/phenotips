@@ -63,12 +63,17 @@ $xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
 $xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
+$xwiki.jsx.use('PhenoTips.PatientConsent')##
+$xwiki.ssx.use('PhenoTips.PatientConsent')##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
 #set ($patientClassName = 'PhenoTips.PatientClass')
 #if ($config)

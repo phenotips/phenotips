@@ -93,7 +93,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
     #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
       &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
     #end
-    &lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;&lt;input type="submit" id="create-patient-record" title="$services.localization.render('phenotips.globalHeader.createPatient')" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
+    &lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;&lt;input type="submit" id="create-patient-record" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
   &lt;/div&gt;&lt;/form&gt;
 #end
 {{/html}}{{/velocity}}</content>

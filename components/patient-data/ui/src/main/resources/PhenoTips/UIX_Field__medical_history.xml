@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=1
-fields=medical_history
-required_consents=share_history</parameters>
+fields=medical_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

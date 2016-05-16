@@ -81,7 +81,9 @@ public class PhenoTipsPatient implements Patient
     /** Known phenotype properties. */
     private static final String PHENOTYPE_POSITIVE_PROPERTY = "phenotype";
 
-    private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
+    private static final String NEGATIVE_PHENOTYPE_PREFIX = "negative_";
+
+    private static final String PHENOTYPE_NEGATIVE_PROPERTY = NEGATIVE_PHENOTYPE_PREFIX + PHENOTYPE_POSITIVE_PROPERTY;
 
     private static final String[] PHENOTYPE_PROPERTIES =
         new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
@@ -365,8 +367,7 @@ public class PhenoTipsPatient implements Patient
             this.features = new TreeSet<Feature>();
 
             // new feature lists (for setting values in the Wiki document)
-            List<String> positiveValues = new LinkedList<String>();
-            List<String> negativeValues = new LinkedList<String>();
+            Map<String, List<String>> featuresMap = new TreeMap<>();
 
             for (int i = 0; i < jsonFeatures.length(); i++) {
                 JSONObject featureInJSON = jsonFeatures.optJSONObject(i);
@@ -376,11 +377,17 @@ public class PhenoTipsPatient implements Patient
 
                 Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
                 this.features.add(phenotipsFeature);
+                String featureType = phenotipsFeature.getType();
+                if (!phenotipsFeature.isPresent()) {
+                    featureType = NEGATIVE_PHENOTYPE_PREFIX + featureType;
+                }
 
-                if (phenotipsFeature.isPresent()) {
-                    positiveValues.add(phenotipsFeature.getValue());
+                if (featuresMap.keySet().contains(featureType)) {
+                    featuresMap.get(featureType).add(phenotipsFeature.getValue());
                 } else {
-                    negativeValues.add(phenotipsFeature.getValue());
+                    List<String> newFeatureType = new LinkedList<String>();
+                    newFeatureType.add(phenotipsFeature.getValue());
+                    featuresMap.put(featureType, newFeatureType);
                 }
             }
 
@@ -388,8 +395,9 @@ public class PhenoTipsPatient implements Patient
             this.features = Collections.unmodifiableSet(this.features);
 
             // update the values in the document (overwriting the old list, if any)
-            data.set(PHENOTYPE_POSITIVE_PROPERTY, positiveValues, context);
-            data.set(PHENOTYPE_NEGATIVE_PROPERTY, negativeValues, context);
+            for (String type : featuresMap.keySet()) {
+                data.set(type, featuresMap.get(type), context);
+            }
             context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
 
         } catch (Exception ex) {

@@ -19,13 +19,10 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
-import org.phenotips.data.ConsentStatus;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -33,14 +30,14 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Provider;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,11 +56,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class PatientXWikiConsentManagerTest
+public class PhenoTipsPatientConsentManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<ConsentManager> mocker =
-        new MockitoComponentMockingRule<ConsentManager>(PatientXWikiConsentManager.class);
+        new MockitoComponentMockingRule<ConsentManager>(PhenoTipsPatientConsentManager.class);
 
     /** Sets up initialization of the component with the given `baseObjects` */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -91,15 +88,34 @@ public class PatientXWikiConsentManagerTest
 
         baseObjects.add(mocks.consentConfig1);
         baseObjects.add(mocks.consentConfig2);
+        baseObjects.add(mocks.consentConfig3);
 
         doReturn(mocks.id1).when(mocks.consentConfig1).getStringValue(mocks.idKey);
-        doReturn(mocks.descr1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+        doReturn(mocks.label1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
             Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
+        doReturn(mocks.description1).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig1), any(XWikiContext.class));
         doReturn(mocks.req1).when(mocks.consentConfig1).getIntValue(mocks.requiredKey);
+        doReturn(mocks.affects1).when(mocks.consentConfig1).getIntValue(mocks.affectsFieldsKey);
+        doReturn(mocks.formFields1).when(mocks.consentConfig1).getListValue(mocks.fieldsKey);
+
         doReturn(mocks.id2).when(mocks.consentConfig2).getStringValue(mocks.idKey);
-        doReturn(mocks.descr2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+        doReturn(mocks.label2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
             Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
+        doReturn(mocks.description2).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig2), any(XWikiContext.class));
         doReturn(mocks.req2).when(mocks.consentConfig2).getIntValue(mocks.requiredKey);
+        doReturn(mocks.affects2).when(mocks.consentConfig2).getIntValue(mocks.affectsFieldsKey);
+        doReturn(mocks.formFields2).when(mocks.consentConfig2).getListValue(mocks.fieldsKey);
+
+        doReturn(mocks.id3).when(mocks.consentConfig3).getStringValue(mocks.idKey);
+        doReturn(mocks.label3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.labelKey), anyString(),
+            Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
+        doReturn(mocks.description3).when((XWikiDocument) configDoc).display(Matchers.eq(mocks.descriptionKey), anyString(),
+                Matchers.eq(mocks.consentConfig3), any(XWikiContext.class));
+        doReturn(mocks.req3).when(mocks.consentConfig3).getIntValue(mocks.requiredKey);
+        doReturn(mocks.affects3).when(mocks.consentConfig3).getIntValue(mocks.affectsFieldsKey);
+        doReturn(mocks.formFields3).when(mocks.consentConfig3).getListValue(mocks.fieldsKey);
 
         return mocks;
     }
@@ -107,32 +123,42 @@ public class PatientXWikiConsentManagerTest
     private class ConsentConfigurationMocks
     {
         static final String idKey = "id";
-
+        static final String labelKey = "label";
         static final String descriptionKey = "description";
-
         static final String requiredKey = "required";
+        static final String fieldsKey = "fields";
+        static final String affectsFieldsKey = "affectsFields";
 
         static final String id1 = "id1";
-
-        static final String descr1 = "clean description";
-
+        static final String label1 = "clean label";
+        static final String description1 = "description";
+        final List<String> formFields1 = Arrays.asList("field1", "field2", "field3");
+        Integer affects1 = 1;
         Integer req1 = 1;
-
         Boolean req1B = true;
 
         static final String id2 = "id2";
-
-        static final String descr2 = "non <div>clean</div> <p>description</p>";
-
-        static final String descr2C = "non clean description";
-
+        static final String label2 = "non <div>clean</div> <p>label</p>";
+        static final String label2expected = "non clean label";
+        static final String description2 = "";
+        final List<String> formFields2 = null;
+        Integer affects2 = 0;
         Integer req2 = 0;
-
         Boolean req2B = false;
 
-        BaseObject consentConfig1 = mock(BaseObject.class);
+        static final String id3 = "id3";
+        static final String label3 = "blah";
+        static final String description3 = "Long description with a link [[link>>http://abc.com]]";
+        final List<String> formFields3 = new LinkedList<String>();
+        Integer affects3 = 1;
+        Integer req3 = 1;
+        Boolean req3B = true;
 
+        BaseObject consentConfig1 = mock(BaseObject.class);
         BaseObject consentConfig2 = mock(BaseObject.class);
+        BaseObject consentConfig3 = mock(BaseObject.class);
+
+        public static final int NUM_CONSENTS = 3;
     }
 
     @Test
@@ -150,8 +176,8 @@ public class PatientXWikiConsentManagerTest
     }
 
     /**
-     * For testing normal initialization, when there are consents configured in the system. Also tests for description
-     * strings being properly cleaned.
+     * For testing normal initialization, when there are consents configured in the system. Also tests for
+     * label strings being properly cleaned.
      */
     @SuppressWarnings("static-access")
     @Test
@@ -159,14 +185,28 @@ public class PatientXWikiConsentManagerTest
     {
         ConsentConfigurationMocks mocks = this.setUpInitializationWithConfigurationMocks();
 
-        Consent consent1 = this.mocker.getComponentUnderTest().getSystemConsents().get(0);
-        Assert.assertSame(consent1.getId(), mocks.id1);
-        Assert.assertSame(consent1.getDescription(), mocks.descr1);
-        Assert.assertSame(consent1.isRequired(), mocks.req1B);
-        Consent consent2 = this.mocker.getComponentUnderTest().getSystemConsents().get(1);
-        Assert.assertSame(consent2.getId(), mocks.id2);
-        Assert.assertTrue(StringUtils.equals(consent2.getDescription(), mocks.descr2C));
-        Assert.assertSame(consent2.isRequired(), mocks.req2B);
+        Assert.assertSame(this.mocker.getComponentUnderTest().getSystemConsents().size(), mocks.NUM_CONSENTS);
+
+        for (Consent consent : this.mocker.getComponentUnderTest().getSystemConsents()) {
+            if (mocks.id1.equals(consent.getId())) {
+                Assert.assertSame(consent.getLabel(), mocks.label1);
+                Assert.assertSame(consent.getDescription(), mocks.description1);
+                Assert.assertSame(consent.isRequired(), mocks.req1B);
+                Assert.assertSame(consent.getFields().size(), mocks.formFields1.size());
+            } else if (mocks.id2.equals(consent.getId())) {
+                Assert.assertTrue(StringUtils.equals(consent.getLabel(), mocks.label2expected));
+                Assert.assertSame(consent.isRequired(), mocks.req2B);
+                Assert.assertSame(consent.getDescription(), null);  // expect to get null instead of empty descriptions
+                Assert.assertSame(consent.getFields(), null);
+            } else if (mocks.id3.equals(consent.getId())) {
+                Assert.assertTrue(StringUtils.equals(consent.getLabel(), mocks.label3));
+                Assert.assertSame(consent.isRequired(), mocks.req3B);
+                Assert.assertSame(consent.getDescription(), mocks.description3);
+                Assert.assertSame(consent.getFields().size(), 0);
+            } else {
+                Assert.fail("Found unexpected consent");
+            }
+        }
     }
 
     /**
@@ -190,14 +230,19 @@ public class PatientXWikiConsentManagerTest
         doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
         doReturn(consentIds).when(idsHolder).getListValue(anyString());
 
-        List<Consent> consents = this.mocker.getComponentUnderTest().loadConsentsFromPatient(patientId);
-        Assert.assertFalse(consents.isEmpty());
-        for (Consent consent : consents)
-        {
-            if (consentIds != null && consentIds.contains(consent.getId())) {
-                Assert.assertSame(consent.getStatus(), ConsentStatus.YES);
-            } else {
-                Assert.assertSame(consent.getStatus(), ConsentStatus.NO);
+        Set<Consent> consents = this.mocker.getComponentUnderTest().getMissingConsentsForPatient(patientId);
+        Assert.assertNotNull(consents);
+
+        if (consentIds == null) {
+            Assert.assertTrue(consents.size() == ConsentConfigurationMocks.NUM_CONSENTS);
+        } else {
+            // make sure the returned set of consents matches exactly the list of granted consents:
+            // no granted are missing and no extra are present
+            Assert.assertTrue(consents.size() == (ConsentConfigurationMocks.NUM_CONSENTS - consentIds.size()));
+            for (Consent consent : consents)
+            {
+                Assert.assertFalse(consentIds.contains(consent.getId()));
+                Assert.assertFalse(consent.isGranted());
             }
         }
     }
@@ -228,8 +273,34 @@ public class PatientXWikiConsentManagerTest
     {
         this.setUpInitializationWithConfigurationMocks();
         Patient patient = null;
-        /* if there is no patient, it means that there are no consents granted. */
-        Assert.assertFalse(this.mocker.getComponentUnderTest().loadConsentsFromPatient(patient).isEmpty());
+        Assert.assertNull(this.mocker.getComponentUnderTest().getMissingConsentsForPatient(patient));
+    }
+
+    @Test
+    public void testHasConsent() throws Exception
+    {
+        String patientId = "pid";
+
+        List<String> consentIds = new LinkedList<>();
+        consentIds.add(ConsentConfigurationMocks.id1);
+
+        this.setUpInitializationWithConfigurationMocks();
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        PatientRepository repository = this.mocker.getInstance(PatientRepository.class);
+        Patient patient = mock(Patient.class);
+        DocumentReference patientRef = mock(DocumentReference.class);
+        DocumentModelBridge patientDoc = mock(XWikiDocument.class);
+        BaseObject idsHolder = mock(BaseObject.class);
+
+        doReturn(patient).when(repository).getPatientById(patientId);
+        doReturn(patientRef).when(patient).getDocument();
+        doReturn(patientDoc).when(dab).getDocument(patientRef);
+        doReturn(idsHolder).when((XWikiDocument) patientDoc).getXObject(any(EntityReference.class));
+        doReturn(consentIds).when(idsHolder).getListValue(anyString());
+
+        Assert.assertTrue(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id1));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id2));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().hasConsent(patient, ConsentConfigurationMocks.id3));
     }
 
     private void setUpSettingConsents(BaseObject idsHolder, Patient patient, DocumentModelBridge patientDoc,
@@ -313,42 +384,13 @@ public class PatientXWikiConsentManagerTest
         List<String> existingIds = new LinkedList<>();
         List<String> testIds = new LinkedList<>();
         existingIds.add(consentMocks.id1);
-        testIds.add("id3");
+        existingIds.add(consentMocks.id2);
+        testIds.add("id_nonexistent");
         testIds.addAll(existingIds);
 
         this.mocker.getComponentUnderTest().setPatientConsents(patient, testIds);
 
         verify(idsHolder, times(1)).set(eq("granted"), eq(existingIds), eq(context));
         verify(wiki, times(1)).saveDocument(eq((XWikiDocument) patientDoc), anyString(), eq(true), eq(context));
-    }
-
-    @Test
-    public void testJson() throws ComponentLookupException
-    {
-        JSONObject j1 = new JSONObject("{j1: 1}");
-        JSONObject j2 = new JSONObject("{j2: 2}");
-        Consent c1 = mock(Consent.class);
-        doReturn(j1).when(c1).toJson();
-        Consent c2 = mock(Consent.class);
-        doReturn(j2).when(c2).toJson();
-        List<Consent> consents = new LinkedList<>();
-        consents.add(c1);
-        consents.add(c2);
-
-        JSONArray json = this.mocker.getComponentUnderTest().toJson(consents);
-        Assert.assertNotNull(json);
-        Assert.assertTrue(json.length() == 2);
-        boolean found1 = false;
-        boolean found2 = false;
-        for (int i = 0; i < json.length(); ++i) {
-            JSONObject o = json.getJSONObject(i);
-            if (o.similar(j1)) {
-                found1 = true;
-            } else if (o.similar(j2)) {
-                found2 = true;
-            }
-        }
-        Assert.assertTrue(found1);
-        Assert.assertTrue(found2);
     }
 }

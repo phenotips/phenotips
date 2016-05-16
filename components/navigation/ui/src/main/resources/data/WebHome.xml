@@ -1538,7 +1538,7 @@ $!value
 
 #end
 {{html clean=false}}
-&lt;form class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
+&lt;form class="xformInline" action="$escapetool.xml($doc.getURL($xcontext.action, $request.queryString))" method="post"&gt;&lt;div&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
   &lt;input type="hidden" name="doCreate" value="1" /&gt;
   &lt;input type="hidden" name="classTemplate" value="PhenoTips.PhenotypeMappingTemplate" /&gt;

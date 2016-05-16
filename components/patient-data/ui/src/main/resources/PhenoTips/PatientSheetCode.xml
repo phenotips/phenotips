@@ -1907,8 +1907,8 @@ document.observe('xwiki:dom:loaded', function()
        pfl : {
          evaluation : 'td.pfl_evaluation',
          valueHooks : {
-           'below-normal': 'HP:0000637',
-           'above-normal': 'HP:0012745'
+           'below-normal': 'HP:0012745',
+           'above-normal': 'HP:0000637'
          }
        },
        ipd : {
@@ -4075,7 +4075,7 @@ h1, h2, h3, h4 {
 
 .ethnicity label, .ethnicity .label {
   font-size: 100% !important;
-  color: #000 !important;
+  color: inherit !important;
   font-weight: bold !important;
 }
 /** --------------------------------------------- **/
@@ -4774,6 +4774,9 @@ h1, h2, h3, h4 {
 }
 .phenotype-details .collapsible {
   cursor: pointer !important;
+}
+.no ~ .phenotype-details dt:not(.comments), .no ~ .phenotype-details dd:not(.comments) {
+  display: none !important;
 }</code>
     </property>
     <property>
@@ -4887,7 +4890,8 @@ h1, h2, h3, h4 {
     <property>
       <code>#template('colorThemeInit.vm')
 .LV_validation_message {
-  position: static !important;
+  position: absolute;
+  display: block;
 }
 .LV_valid:empty {
   display: none;

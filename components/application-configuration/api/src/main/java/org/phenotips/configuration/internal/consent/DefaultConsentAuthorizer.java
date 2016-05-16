@@ -20,18 +20,17 @@ package org.phenotips.configuration.internal.consent;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.data.Consent;
 import org.phenotips.data.ConsentManager;
-import org.phenotips.data.ConsentStatus;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.apache.commons.codec.binary.StringUtils;
 
 /**
  * The default implementation of a {@link ConsentAuthorizer}. This is a temporary implementation, as the whole
@@ -58,15 +57,21 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
         if (!this.consentsGloballyEnabled()) {
             return elements;
         }
-        List<Consent> consents = this.consentManager.loadConsentsFromPatient(patient);
-        if (!authorizeInteraction(consents)) {
+        Set<Consent> missingConsents = this.consentManager.getMissingConsentsForPatient(patient);
+        if (missingConsents == null) {
+            // return an empty list in case of any errors
             return new LinkedList<>();
         }
 
-        List<String> granted = getGrantedIds(consents);
+        if (!containsRequiredConsents(missingConsents)) {
+            return new LinkedList<>();
+        }
+
+        Set<String> nonConsentedFields = this.getNonConsentedFieldSet(missingConsents);
+
         List<RecordElement> updatedElements = new LinkedList<>();
         for (RecordElement element : elements) {
-            if (this.isElementEnabled(element, granted)) {
+            if (this.isElementEnabled(element, nonConsentedFields)) {
                 updatedElements.add(element);
             }
         }
@@ -76,77 +81,82 @@ public class DefaultConsentAuthorizer implements ConsentAuthorizer
     @Override
     public boolean authorizeInteraction(Patient patient)
     {
-        List<Consent> consents = this.consentManager.loadConsentsFromPatient(patient);
-        return this.authorizeInteraction(consents);
+        return this.containsRequiredConsents(this.consentManager.getMissingConsentsForPatient(patient));
     }
 
-    @Override public boolean authorizeInteraction(Iterable<String> grantedConsents)
+    @Override
+    public boolean authorizeInteraction(Set<String> grantedConsents)
     {
-        for (Consent consent : this.consentManager.getSystemConsents()) {
-            boolean found = false;
+        Set<Consent> systemConsents = this.consentManager.getSystemConsents();
+        if (systemConsents == null) {
+            return true;
+        }
+        Set<Consent> missingConsents = new HashSet<Consent>();
+        for (Consent consent : systemConsents) {
+            if (grantedConsents == null || !grantedConsents.contains(consent.getId())) {
+                missingConsents.add(consent);
+            }
+        }
+        return containsRequiredConsents(missingConsents);
+    }
+
+    private boolean containsRequiredConsents(Set<Consent> missingConsents)
+    {
+        for (Consent consent : missingConsents) {
             if (consent.isRequired()) {
-                for (String granted : grantedConsents) {
-                    if (StringUtils.equals(granted, consent.getId())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    return false;
-                }
+                return false;
             }
         }
         return true;
-    }
-
-    private boolean authorizeInteraction(List<Consent> consents)
-    {
-        return !missingRequired(consents);
-    }
-
-    /** Should not display a form if any of the required consents are missing. */
-    private static boolean missingRequired(List<Consent> consents)
-    {
-        for (Consent consent : consents) {
-            if (consent.isRequired() && consent.getStatus() != ConsentStatus.YES) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
     public boolean isElementConsented(RecordElement element, Patient patient)
     {
-        List<Consent> consents = this.consentManager.loadConsentsFromPatient(patient);
-        return this.isElementEnabled(element, getGrantedIds(consents));
+        Set<Consent> missingConsents = this.consentManager.getMissingConsentsForPatient(patient);
+        return this.isElementEnabled(element, this.getNonConsentedFieldSet(missingConsents));
     }
 
     /**
      * @param granted must contain only ids of consents that have a {@link ConsentStatus#YES}.
      */
-    private boolean isElementEnabled(RecordElement element, List<String> granted)
+    private boolean isElementEnabled(RecordElement element, Set<String> missingFields)
     {
-        String requiredConsentsString = element.getExtension().getParameters().get("required_consents");
-        if (requiredConsentsString != null) {
-            String[] requiredConsents = requiredConsentsString.split(",");
-            for (String requiredConsent : requiredConsents) {
-                if (!granted.contains(requiredConsent.trim())) {
-                    return false;
-                }
-            }
+        if (missingFields == null) {
+            return true;
+        }
+        if (missingFields.size() == 0 || missingFields.contains(element.getExtension().getId())) {
+            return false;
         }
         return true;
     }
 
-    private static List<String> getGrantedIds(List<Consent> consents)
+    /**
+     * Returns the union of all fields which the provided set of missing consents prevents from
+     * being used. Returns an empty list if all fields are affected (not consented).
+     * Returns null if no fields are affected.
+     *
+     * @param missingConsents a set of presumably not granted consents
+     */
+    private Set<String> getNonConsentedFieldSet(Set<Consent> missingConsents)
     {
-        List<String> ids = new LinkedList<>();
-        for (Consent consent : consents) {
-            if (consent.getStatus() == ConsentStatus.YES) {
-                ids.add(consent.getId());
+        Set<String> notConsentedFields = new HashSet<String>();
+        for (Consent consent : missingConsents) {
+            if (consent.affectsAllFields()) {
+                // if at least one of the consents affects all fields no point to examine other consents
+                // since all fields are affected anyway
+                return new HashSet<String>();
             }
+            if (!consent.affectsSomeFields()) {
+                continue;
+            }
+            // special cases: affects all fields and affects no fields
+            notConsentedFields.addAll(consent.getFields());
         }
-        return ids;
+        // empty list implies "all affected", null implies "none affected"
+        if (notConsentedFields.size() == 0) {
+            return null;
+        }
+        return notConsentedFields;
     }
 }

@@ -41,7 +41,7 @@
 
 {{velocity wiki="true"}}{{{
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
-#set ($nonPatientClassProperties = ['doc.name', 'referrer', 'author', 'creationDate', 'date', 'genes', 'genes_comments', 'rejectedGenes', 'rejectedGenes_comments'])
+#set ($nonPatientClassProperties = ['doc.name', 'referrer', 'author', 'creationDate', 'date', 'genes', 'genes_status', 'genes_strategy', 'genes_comments', "variants", "variants_protein", "variants_transcript", "variants_dbsnp", "variants_zygosity", "variants_effect", "variants_interpretation", "variants_inheritance", "variants_evidence", "variants_segregation", "variants_sanger"])
 #set ($enabledFields = $request.getParameterValues('columns'))
 #set ($displayedFields = [])
 #set ($allFields = $nonPatientClassProperties)

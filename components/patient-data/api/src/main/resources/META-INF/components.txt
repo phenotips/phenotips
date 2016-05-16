@@ -1,1 +1,2 @@
 org.phenotips.data.script.PatientDataScriptService
+org.phenotips.data.script.ConsentManagerScriptService

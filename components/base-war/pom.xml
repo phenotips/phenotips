@@ -146,6 +146,13 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- Include the widget resources -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-widgets-resources</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Database connectors for MySQL and HSQLDB, the most commonly used ones. -->
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -196,6 +203,7 @@
                 <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                 <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                 <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                <xwikiDbHbmCommonExtraMappings>instance.hbm.xml</xwikiDbHbmCommonExtraMappings>
                 <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -243,6 +251,8 @@ extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/con
 extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
+activeinstalls.pingURL=https://stats.phenotips.org
+activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
@@ -289,6 +299,12 @@ rendering.transformations=macro
               <artifactId>pedigree-editor</artifactId>
               <type>jar</type>
               <targetPath>resources/uicomponents/</targetPath>
+            </overlay>
+            <overlay>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>phenotips-widgets-resources</artifactId>
+              <type>jar</type>
+              <targetPath>/</targetPath>
             </overlay>
             <overlay>
               <groupId>org.xwiki.platform</groupId>

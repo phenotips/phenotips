@@ -93,7 +93,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
         Map<String, Double> fieldSelection = new HashMap<String, Double>();
         Map<String, TermData> data = generator.transform(realOntologyUrl, fieldSelection);
-        if (data == null) {
+        if (data == null || data.isEmpty()) {
             return 2;
         }
         try {

@@ -34,6 +34,11 @@ import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +48,7 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,10 +56,14 @@ import org.apache.http.Consts;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,7 +92,7 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     private String scorerURL;
 
     /** The HTTP client used for contacting the MONARCH server. */
-    private CloseableHttpClient client = HttpClients.createSystem();
+    private CloseableHttpClient client;
 
     @Inject
     private CacheManager cacheManager;
@@ -94,11 +104,20 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     {
         try {
             this.scorerURL = this.configuration
-                .getProperty("phenotips.patientScoring.monarch.serviceURL", "http://monarchinitiative.org/score");
+                .getProperty("phenotips.patientScoring.monarch.serviceURL", "https://monarchinitiative.org/score");
             CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
             this.cache = this.cacheManager.createNewCache(config);
         } catch (CacheException ex) {
             throw new InitializationException("Failed to create cache", ex);
+        }
+        try {
+            SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustAllStrategy()).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, null, null,
+                NoopHostnameVerifier.INSTANCE);
+            this.client = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException ex) {
+            this.logger.warn("Failed to set custom certificate trust, using the default", ex);
+            this.client = HttpClients.createSystem();
         }
     }
 
@@ -189,5 +208,14 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     private Date now()
     {
         return Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT).getTime();
+    }
+
+    private static final class TrustAllStrategy implements TrustStrategy
+    {
+        @Override
+        public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException
+        {
+            return true;
+        }
     }
 }

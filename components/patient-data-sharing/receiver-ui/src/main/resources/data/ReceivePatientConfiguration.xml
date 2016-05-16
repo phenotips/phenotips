@@ -66,7 +66,7 @@ $xwiki.ssx.use($displayDocumentName)##
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${mainConfigurationClassname}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="${doc.getURL($xcontext.action, $request.queryString)}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
   Allow pushes from servers not listed below: ##
 {{/html}}##
@@ -77,6 +77,13 @@ $xwiki.ssx.use($displayDocumentName)##
     #end
     $doc.display("AllowPushesFromNonListedServers", "edit", $targetObj)
     ##
+  #if ($services.consentauthorizer.consentsGloballyEnabled())
+    {{html clean="false"}}
+    Accept data from old clients which do not ask the user to set consents when pushing: ##
+    {{/html}}##
+    $doc.display("AllowNoConsentsFromOldClients", "edit", $targetObj)
+  #end
+  ##
 {{html clean="false"}}
 &lt;div class="buttons"&gt;
     &lt;input class="button" type="submit" value="Save" /&gt;
@@ -87,7 +94,7 @@ $xwiki.ssx.use($displayDocumentName)##
 &lt;div class="hidden"&gt;
     &lt;input type="hidden" name="form_token" value="${escapetool.xml($services.csrf.token)}" /&gt;
     &lt;input type="hidden" name="classname" value="${serverConfigurationClassname}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="${doc.getURL($xcontext.action, $request.queryString)}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="${escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
   &lt;/div&gt;
 {{/html}}
   #__extradata_displayTable($serverConfigurationClassname, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})

@@ -32,5 +32,6 @@
   <modules>
     <module>ui</module>
     <module>api</module>
+    <module>resources</module>
   </modules>
 </project>

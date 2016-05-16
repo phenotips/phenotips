@@ -420,13 +420,11 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
     <!-- Configuration -->
@@ -685,6 +683,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-sharing-receiver-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>specificity-meter-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -742,6 +745,16 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-proxy-authentication</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-common</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-client-api</artifactId>
+      <version>1.0</version>
     </dependency>
 
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->

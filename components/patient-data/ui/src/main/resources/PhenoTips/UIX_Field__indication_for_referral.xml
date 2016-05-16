@@ -126,8 +126,7 @@ enabled=true
 required=
 order=11
 fields=indication_for_referral
-contains_PII=true
-required_consents=real</parameters>
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

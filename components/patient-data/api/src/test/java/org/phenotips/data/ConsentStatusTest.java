@@ -26,7 +26,6 @@ import org.junit.Test;
  * Tests for the {@link ConsentStatus}.
  *
  * @version $Id$
- * @since 1.0M1
  */
 public class ConsentStatusTest
 {

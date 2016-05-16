@@ -98,8 +98,8 @@ public class MonarchPatientScorerTest
 
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
         when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL",
-            "http://monarchinitiative.org/score"))
-                .thenReturn("http://monarchinitiative.org/score");
+            "https://monarchinitiative.org/score"))
+                .thenReturn("https://monarchinitiative.org/score");
 
         Feature feature = mock(Feature.class);
         when(feature.getId()).thenReturn("HP:1");
@@ -129,7 +129,7 @@ public class MonarchPatientScorerTest
         ClientProtocolException, IOException
     {
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
-        URI expectedURI = new URI("http://monarchinitiative.org/score");
+        URI expectedURI = new URI("https://monarchinitiative.org/score");
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -166,7 +166,7 @@ public class MonarchPatientScorerTest
         ClientProtocolException, IOException
     {
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
-        URI expectedURI = new URI("http://monarchinitiative.org/score");
+        URI expectedURI = new URI("https://monarchinitiative.org/score");
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -206,7 +206,7 @@ public class MonarchPatientScorerTest
     public void getSpecificitySearchesRemotely() throws Exception
     {
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
-        URI expectedURI = new URI("http://monarchinitiative.org/score");
+        URI expectedURI = new URI("https://monarchinitiative.org/score");
         CapturingMatcher<HttpPost> reqCapture = new CapturingMatcher<>();
         when(this.client.execute(Matchers.argThat(reqCapture))).thenReturn(this.response);
         when(this.response.getEntity()).thenReturn(this.responseEntity);
@@ -268,7 +268,7 @@ public class MonarchPatientScorerTest
         ClientProtocolException, IOException, InitializationException
     {
         when(this.configuration.getProperty("phenotips.patientScoring.monarch.serviceURL",
-            "http://monarchinitiative.org/score"))
+            "https://monarchinitiative.org/score"))
                 .thenReturn("http://proxy/score");
         Mockito.doReturn(this.features).when(this.patient).getFeatures();
         URI expectedURI = new URI("http://proxy/score");
@@ -279,6 +279,7 @@ public class MonarchPatientScorerTest
         // Since the component was already initialized in setUp() with the default URL, re-initialize it
         // with the new configuration mock
         ((Initializable) this.mocker.getComponentUnderTest()).initialize();
+        ReflectionUtils.setFieldValue(this.mocker.getComponentUnderTest(), "client", this.client);
         double score = this.mocker.getComponentUnderTest().getScore(this.patient);
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         String content =

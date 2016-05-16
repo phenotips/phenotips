@@ -125,8 +125,7 @@
 enabled=true
 required=
 order=5
-fields=prenatal_development
-required_consents=share_history</parameters>
+fields=prenatal_development</parameters>
     </property>
     <property>
       <scope>wiki</scope>

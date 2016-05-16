@@ -18,13 +18,11 @@
 package org.phenotips.data.push.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.data.ConsentManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.internal.controller.VersionsController;
 import org.phenotips.data.push.PushPatientData;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
-import org.phenotips.data.push.PushServerPatientStateResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.shareprotocol.ShareProtocol;
 
@@ -97,9 +95,6 @@ public class DefaultPushPatientData implements PushPatientData
     @Inject
     private Execution execution;
 
-    @Inject
-    private ConsentManager consentManager;
-
     /** HTTP client used for communicating with the remote server. */
     private final CloseableHttpClient client = HttpClients.createSystem();
 
@@ -159,7 +154,7 @@ public class DefaultPushPatientData implements PushPatientData
         List<NameValuePair> result = new LinkedList<>();
         result.add(new BasicNameValuePair(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
-            ShareProtocol.POST_PROTOCOL_VERSION));
+            ShareProtocol.CURRENT_PUSH_PROTOCOL_VERSION));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION, actionName));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, userName));
         if (StringUtils.isNotBlank(userToken)) {
@@ -218,55 +213,14 @@ public class DefaultPushPatientData implements PushPatientData
                     return null;
                 }
 
-                JSONObject responseJSON = new JSONObject(response);
-
-                return new DefaultPushServerConfigurationResponse(responseJSON);
-            }
-        } catch (Exception ex) {
-            this.logger.error("Failed to login: {}", ex.getMessage(), ex);
-        } finally {
-            if (method != null) {
-                method.releaseConnection();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
-        String userName, String password, String userToken)
-    {
-        this.logger.debug("===> Getting patient state for: [{}]", remoteServerIdentifier);
-
-        HttpPost method = null;
-
-        try {
-            List<NameValuePair> requestParameters =
-                generateRequestData(ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_STATE, userName, password, userToken);
-            if (remoteGUID != null) {
-                requestParameters.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_GUID, remoteGUID));
-            }
-
-            method = generateRequest(remoteServerIdentifier, requestParameters);
-            if (method == null) {
-                return null;
-            }
-
-            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
-                int returnCode = httpResponse.getStatusLine().getStatusCode();
-                this.logger.trace("GetPatientState HTTP return code: {}", returnCode);
-
-                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
-
-                // Can't be valid JSON with less than 2 characters: most likely empty response from an un-accepting
-                // server
-                if (response.length() < 2) {
+                try {
+                    JSONObject responseJSON = new JSONObject(response);
+                    return new DefaultPushServerConfigurationResponse(responseJSON);
+                } catch (Exception ex) {
+                    this.logger.error("Received invalid JSON reply from remote server: {}...",
+                        response.substring(0, 50));
                     return null;
                 }
-
-                JSONObject responseJSON = new JSONObject(response);
-
-                return new DefaultPushServerPatientStateResponse(responseJSON, consentManager);
             }
         } catch (Exception ex) {
             this.logger.error("Failed to login: {}", ex.getMessage(), ex);
@@ -279,7 +233,8 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, JSONObject patientState,
+    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields,
+        JSONObject patientState,
         String groupName, String remoteGUID, String remoteServerIdentifier, String userName, String password,
         String userToken)
     {
@@ -296,6 +251,7 @@ public class DefaultPushPatientData implements PushPatientData
             }
 
             String patientJSON = patient.toJSON(exportFields).toString();
+            this.logger.debug("Sending patient JSON: [{}]", patientJSON);
 
             data.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTJSON,
                 URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING)));

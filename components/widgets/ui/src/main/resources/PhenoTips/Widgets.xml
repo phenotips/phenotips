@@ -2400,7 +2400,7 @@ return PhenoTips;
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
           if (this.container.content) {
-            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.contentContainer]});
           }
         }.bind(this),
         onFailure: function (response) {
@@ -2785,7 +2785,7 @@ return PhenoTips;
       if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
         this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
       }
-      entry.fire('obrowser:entry:selected', {selected: "yes"});
+      entry.fire('obrowser:entry:selected', {selected: (entry.down('.selected.no')) ? "no" : "yes"});
     }
   },
   _unselectEntry: function (entry) {

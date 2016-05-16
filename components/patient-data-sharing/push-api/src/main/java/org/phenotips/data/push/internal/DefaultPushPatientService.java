@@ -26,7 +26,6 @@ import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerInfo;
-import org.phenotips.data.push.PushServerPatientStateResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.phenotips.data.securestorage.RemoteLoginData;
@@ -142,12 +141,19 @@ public class DefaultPushPatientService implements PushPatientService
 
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getDatabase(),
+                xwiki.getDocument(new DocumentReference(context.getWikiId(), "XWiki", "XWikiPreferences"), context);
+            List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(context.getWikiId(),
                 Constants.CODE_SPACE, "PushPatientServer"));
 
             Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
+            if (servers == null || servers.isEmpty()) {
+                return response;
+            }
+
             for (BaseObject serverConfiguration : servers) {
+                if (serverConfiguration == null) {
+                    continue;
+                }
                 this.logger.debug("   ...available: [{}]",
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
                 PushServerInfo info = new DefaultPushServerInfo(
@@ -158,7 +164,7 @@ public class DefaultPushPatientService implements PushPatientService
             }
             return response;
         } catch (Exception ex) {
-            this.logger.error("Failed to get server list: [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to get server list: {}", ex.getMessage(), ex);
             return Collections.emptySet();
         }
     }
@@ -285,27 +291,6 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
-        String remoteUserName, String password)
-    {
-        return this.internalService.getRemotePatientState(remoteServerIdentifier, remoteGUID,
-            remoteUserName, password, null);
-    }
-
-    @Override
-    public PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID)
-    {
-        RemoteLoginData storedData = getStoredData(remoteServerIdentifier);
-        if (storedData == null || storedData.getRemoteUserName() == null || storedData.getLoginToken() == null) {
-            return new DefaultPushServerPatientStateResponse(
-                DefaultPushServerResponse.generateIncorrectCredentialsJSON());
-        }
-
-        return this.internalService.getRemotePatientState(remoteServerIdentifier,
-            remoteGUID, storedData.getRemoteUserName(), null, storedData.getLoginToken());
-    }
-
-    @Override
     public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String patientState,
         String groupName, String remoteGUID, String remoteServerIdentifier)
     {
@@ -387,37 +372,15 @@ public class DefaultPushPatientService implements PushPatientService
             null);
     }
 
-    private JSONObject parsePatientStateToJSON(String patientStateString) {
-        /* since the state comes directly from the user side, taking some basic security precautions */
-        JSONObject patientState = new JSONObject();
+    private JSONObject parsePatientStateToJSON(String patientStateString)
+    {
+        // since the state comes directly from the user side, taking some basic security precautions
         try {
-            JSONObject parsedString = new JSONObject(patientStateString);
-            copyOverConsents(parsedString, patientState);
-        } catch(Exception ex) {
-            // do nothing
-        }
-        return patientState;
-    }
-
-    private JSONObject copyOverConsents(JSONObject from, JSONObject to) {
-        String key = "consents";
-        try {
-            /* should be an array of strings */
-            JSONArray value = from.getJSONArray(key);
-            boolean improper = false;
-            for (Object consent : value) {
-                if (consent.toString().split("[{\\[}\\]]").length > 1) {
-                    /* then contains JSON and not plain string. */
-                    improper = true;
-                    break;
-                }
-            }
-            if (!improper) {
-                to.put(key, value);
-            }
+            JSONObject patientState = new JSONObject(patientStateString);
+            // server will have to validate received JSON anyway, so only makin gsure we do send a valid JSON
+            return patientState;
         } catch (Exception ex) {
-            // do nothing
+            return new JSONObject();
         }
-        return to;
     }
 }

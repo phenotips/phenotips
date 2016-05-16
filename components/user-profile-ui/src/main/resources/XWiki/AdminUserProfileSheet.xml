@@ -96,7 +96,7 @@
         &lt;span class='buttonwrapper'&gt;
           &lt;input class='button' type='submit' name='save' value="$services.localization.render('platform.user.profileConfigureSaveButtonLabel')"/&gt;
         &lt;/span&gt;
-        &lt;input type='hidden' name='xredirect' value="$xredirect" /&gt;
+        &lt;input type='hidden' name='xredirect' value="$escapetool.xml($xredirect)" /&gt;
         &lt;input type='hidden' name='form_token' value="$formToken" /&gt;
       &lt;/dt&gt;
     #end

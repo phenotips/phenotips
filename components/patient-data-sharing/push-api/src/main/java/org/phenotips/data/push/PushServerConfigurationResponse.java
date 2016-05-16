@@ -23,6 +23,8 @@ import org.xwiki.stability.Unstable;
 
 import java.util.Set;
 
+import org.json.JSONArray;
+
 /**
  * API that allows pushing patient data to a remote PhenoTips instance.
  *
@@ -85,4 +87,11 @@ public interface PushServerConfigurationResponse extends PushServerResponse
      * @return User token (if provided by the remote server) or {@code null}.
      */
     String getRemoteUserToken();
+
+    /**
+     * Get the list of consents available on the remote server.
+     *
+     * @return The list of consents configured on the remote server.
+     * */
+    JSONArray getConsents();
 }

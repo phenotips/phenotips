@@ -141,6 +141,10 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
+        if (selectedFieldNames != null && !selectedFieldNames.contains("prenatal_phenotype")) {
+            return;
+        }
+
         PatientData<Integer> data = patient.getData(getName());
         if (data == null || !data.isNamed() || data.size() == 0) {
             return;
@@ -152,8 +156,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
         }
 
         for (String propertyName : this.getProperties()) {
-            if ((selectedFieldNames == null || selectedFieldNames.contains(propertyName))
-                && data.get(propertyName) != null) {
+            if (data.get(propertyName) != null) {
                 container.put(propertyName, data.get(propertyName));
             }
         }

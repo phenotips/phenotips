@@ -30,11 +30,13 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -52,6 +54,10 @@ import org.slf4j.Logger;
 @Singleton
 public class DefaultPatientConsentResourceImpl extends XWikiResource implements PatientConsentResource
 {
+    private static final Response.Status INVALID_CONSENT_ID_CODE = Response.Status.BAD_REQUEST;
+    private static final Response.Status PATIENT_NOT_FOUND = Response.Status.NOT_FOUND;
+    private static final Response.Status ACCESS_DENIED = Response.Status.FORBIDDEN;
+
     @Inject
     private Logger logger;
 
@@ -71,10 +77,10 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     public Response getConsents(String patientId)
     {
         this.logger.debug("Retrieving consents from patient record [{}] via REST", patientId);
-        Security security = this.securityCheck(patientId);
+        Security security = this.securityCheck(patientId, Right.VIEW);
         if (security.isAllowed()) {
-            List<Consent> consents = consentManager.loadConsentsFromPatient(security.getPatient());
-            JSONArray json = consentManager.toJson(consents);
+            Set<Consent> consents = consentManager.getAllConsentsForPatient(security.getPatient());
+            JSONArray json = consentManager.toJSON(consents);
             return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
         } else {
             return security.getFailResponse();
@@ -84,8 +90,11 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     @Override
     public Response grantConsent(String patientId, String id)
     {
-        Security security = this.securityCheck(patientId);
+        Security security = this.securityCheck(patientId, Right.EDIT);
         if (security.isAllowed()) {
+            if (!this.consentManager.isValidConsentId(id)) {
+                return Response.status(INVALID_CONSENT_ID_CODE).build();
+            }
             boolean status = this.consentManager.grantConsent(security.getPatient(), id);
             if (status) {
                 return Response.ok().build();
@@ -100,8 +109,11 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
     @Override
     public Response revokeConsent(String patientId, String id)
     {
-        Security security = this.securityCheck(patientId);
+        Security security = this.securityCheck(patientId, Right.EDIT);
         if (security.isAllowed()) {
+            if (!this.consentManager.isValidConsentId(id)) {
+                return Response.status(INVALID_CONSENT_ID_CODE).build();
+            }
             boolean status = this.consentManager.revokeConsent(security.getPatient(), id);
             if (status) {
                 return Response.ok().build();
@@ -113,19 +125,51 @@ public class DefaultPatientConsentResourceImpl extends XWikiResource implements 
         }
     }
 
-    private Security securityCheck(String patientId)
+    @Override
+    public Response assignConsents(@PathParam("patient_id") String patientId, String json)
+    {
+        try {
+            Security security = this.securityCheck(patientId, Right.EDIT);
+            if (security.isAllowed()) {
+                JSONArray consentsJSON = json == null ? null : new JSONArray(json);
+                Set<String> consentIds = new HashSet<String>();
+                for (int i = 0; i < consentsJSON.length(); i++) {
+                    String consentId = consentsJSON.optString(i);
+                    if (consentId != null) {
+                        if (!this.consentManager.isValidConsentId(consentId)) {
+                            return Response.status(INVALID_CONSENT_ID_CODE).build();
+                        }
+                        consentIds.add(consentId);
+                    }
+                }
+                boolean status = this.consentManager.setPatientConsents(security.getPatient(), consentIds);
+                if (status) {
+                    return Response.ok().build();
+                } else {
+                    return Response.serverError().build();
+                }
+            } else {
+                return security.getFailResponse();
+            }
+        } catch (Exception ex) {
+            this.logger.error("Could not process assign consents request [{}]: {}", json, ex);
+            return Response.serverError().build();
+        }
+    }
+
+    private Security securityCheck(String patientId, Right right)
     {
         Patient patient = this.repository.getPatientById(patientId);
         if (patient == null) {
             this.logger.debug("No such patient record: [{}]", patientId);
-            Response response = Response.status(Response.Status.NOT_FOUND).build();
+            Response response = Response.status(PATIENT_NOT_FOUND).build();
             return new Security(patient, response, false);
         }
         User currentUser = this.users.getCurrentUser();
-        if (!this.access.hasAccess(Right.VIEW, currentUser == null ? null : currentUser.getProfileDocument(),
+        if (!this.access.hasAccess(right, currentUser == null ? null : currentUser.getProfileDocument(),
             patient.getDocument())) {
             this.logger.debug("View access denied to user [{}] on patient record [{}]", currentUser, patientId);
-            Response response = Response.status(Response.Status.FORBIDDEN).build();
+            Response response = Response.status(ACCESS_DENIED).build();
             return new Security(patient, response, false);
         }
         return new Security(patient, null, true);

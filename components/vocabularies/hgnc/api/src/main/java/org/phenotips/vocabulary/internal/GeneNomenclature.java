@@ -22,7 +22,6 @@ import org.phenotips.vocabulary.internal.solr.AbstractCSVSolrVocabulary;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -128,10 +126,6 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         options.putAll(DISMAX_SEARCH_OPTIONS);
         SPELLCHECKED_TEXT_SEARCH_OPTIONS = Collections.unmodifiableMap(options);
     }
-
-    @Inject
-    @Named("xwikiproperties")
-    private ConfigurationSource configuration;
 
     @Override
     public String getDefaultSourceLocation()

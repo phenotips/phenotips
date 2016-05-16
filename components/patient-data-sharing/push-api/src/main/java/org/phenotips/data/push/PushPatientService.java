@@ -105,33 +105,6 @@ public interface PushPatientService
     PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier);
 
     /**
-     * Retrieves patient state from an existing record, or the patient state of a newly created record. Example of
-     * patient state are granted consents.
-     *
-     * @param remoteServerIdentifier server name as configured in TODO
-     * @param remoteGUID of a patient of interest (optional); could be {@link null}
-     * @param remoteUserName user name on the remote server
-     * @param password user password on the remote server
-     * @return server response, much alike the response retrieved by {@link #getRemoteConfiguration}. Could be
-     * {@link null} in case that no response was received.
-     */
-    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID,
-        String remoteUserName, String password);
-
-    /**
-     * Retrieves patient state from an existing record, or the patient state of a newly created record. Example of
-     * patient state are granted consents.
-     * This functions is the same as {@link #getRemotePatientState(String, String)}, with the exception that it uses
-     * a stored username and token for authentication.
-     *
-     * @param remoteServerIdentifier server name as configured in TODO
-     * @param remoteGUID of a patient of interest (optional); could be {@link null}
-     * @return server response, much alike the response retrieved by {@link #getRemoteConfiguration}. Could be
-     * {@link null} in case that no response was received.
-     */
-    PushServerPatientStateResponse getRemotePatientState(String remoteServerIdentifier, String remoteGUID);
-
-    /**
      * Removes stored remote login token, if any - for security purposes
      *
      * @param remoteServerIdentifier

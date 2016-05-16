@@ -285,8 +285,7 @@ required=
 order=14
 fields=
 contains_PII=true
-pt_class=PhenoTips.PedigreeClass
-required_consents=share_history</parameters>
+pt_class=PhenoTips.PedigreeClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -66,7 +66,6 @@ public class SuggestedPhenotypeTest
     }
 
     @Test
-    @SuppressWarnings("null")
     public void testEquals()
     {
         Assert.assertTrue(testInstance.equals(testInstance));

@@ -148,13 +148,6 @@ public class SexController implements PatientDataController<String>
         }
 
         String gender = parseGender(json.getString(DATA_NAME));
-
-        if (gender.toUpperCase().equals(SEX_UNKNOWN)) {
-            // while JSON supports explicitly defined "unknown" gender PhenoTips does not;
-            // equaivalent PhenoTips setting is an empty string in the database
-            gender = "";
-        }
-
         return new SimpleValuePatientData<>(DATA_NAME, gender);
     }
 

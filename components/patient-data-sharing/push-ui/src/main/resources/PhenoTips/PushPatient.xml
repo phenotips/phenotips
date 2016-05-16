@@ -122,9 +122,9 @@
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.PushPatientWidget = Class.create({
     initialize : function() {
-      /* Due to loading problems, this will be instantiated on first use. */
+      // Due to loading problems, this will be instantiated on first use
       this._consentsModule = null;
-      this._consentsModulePresent = PhenoTips.widgets.ConsentsModule ? true : false;
+
       // ---------------------------------------------------------------------
       // Search for the push patient elements. Exist if missing.
       // ---------------------------------------------------------------------
@@ -176,21 +176,10 @@
 	            //console.log("Initializing push to " + serverID);
 
 	            if (event.findElement('.editbody')) {
-	              // we're in edit mode; ask user if they want to save before exporting the data
-	              new XWiki.widgets.ConfirmationBox(
-	                {
-	                  onYes : function() {
-	                    document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-	                    document.observe('xwiki:document:saved', _this._observeSave);
-	                  },
-	                  onNo : function() {
-	                    _this._launchUI();
-	                  }
-	                },
-	                /* Interaction parameters */
-	                { confirmationText: "$services.localization.render('phenotips.PushPatient.confirmationText')", showCancelButton: true }
-	              );
-	            } else {
+	              // we're in edit mode
+	              document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+	              document.observe('xwiki:document:saved', _this._observeSave);
+  	            } else {
 	              _this._launchUI();
 	            }
 	          }
@@ -218,46 +207,46 @@
       this._container.insert(generateSection('server-selection', serverTitle, serverDesc))
                      .insert(generateSection('user-selection', "$services.localization.render('phenotips.patientSharing.push.dialog.authentication.label')","$services.localization.render('phenotips.patientSharing.push.dialog.authentication.hint')"))
                      .insert(generateSection('group-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.label')","$services.localization.render('phenotips.patientSharing.push.dialog.remoteGroup.hint')"));
-      if (this._consentsModulePresent) {
-        this._container.insert(generateSection('consents-section',
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')"));
-      }
-      if (!this._pushManyPatients) {
-          this._container.insert(generateSection('fields-selection',"$services.localization.render('phenotips.patientSharing.push.dialog.preview.label')","$services.localization.render('phenotips.patientSharing.push.dialog.preview.hint')"));
-      }
+
+      this._container.insert(generateSection('consents-section',
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.label')",
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.defaulthint')"));
+
+      // TODO: DATAPREVIEW: implement preview of the data being pushed which works with multi-patient push and with all data fields
+
+      this._retryButtonClass = 'button secondary push-retry-button';
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
-      var labelApprove = new Element('label', {'id':'approve-label'});
-      var approveMessage = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.multiplePatients')":
-                                                    "$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label.singlePatient')";
-      labelApprove.insert(this._checkBoxApprove).insert(approveMessage);
+      this._approveMessage = new Element('span', {'class': 'field-no-user-select'});
+      var labelApprove = new Element('label', {'id':'approve-label'}).update(this._checkBoxApprove).insert(this._approveMessage);
       this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
       this._approveElement.insert(labelApprove);
-      if (this._pushManyPatients) {
-          this._container.insert("&lt;br/&gt;");
-      }
       this._container.insert(this._approveElement);
 
       this._serverManager = this._container.down('#server-selection .section-contents');
       this._userManager   = this._container.down('#user-selection .section-contents');
       this._groupManager  = this._container.down('#group-selection .section-contents');
-      if (this._consentsModulePresent) {
-        this._consentsSection = this._container.down('#consents-section');
-        this._consentsManager = this._consentsSection.down('.section-contents');
-        /* the section should appear only if the remote has consents configured */
-        this._consentsSection.hide();
-        /* inserting the error message */
-        this._consentsManager.insert('&lt;div class="box warningmessage hidden error"&gt;' +
-          "$services.localization.render('phenotips.patientSharing.push.dialog.consents.warning')&lt;/div&gt;");
-      }
-      this._fieldsManager = this._pushManyPatients ? null : this._container.down('#fields-selection .section-contents');
+
+      this._consentsSection = this._container.down('#consents-section');
+      this._consentsManager = this._consentsSection.down('.section-contents');
+      // the section should appear only if the remote has consents configured
+      this._consentsSection.hide();
+      // inserting the error message
+      this._consentsManager.insert('&lt;div class="box warningmessage hidden error"&gt;' +
+        "$services.localization.render('phenotips.patientSharing.push.dialog.consents.warning')&lt;/div&gt;");
 
       this._initServerSelector();
       this._initMainFormActions();
 
       var title = this._pushManyPatients ? "$services.localization.render('phenotips.patientSharing.push.dialog.title.multiplePatients')" : "$services.localization.render('phenotips.patientSharing.push.dialog.title.singlePatient')".replace("__patientID__", this._patientId);
       this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': title, 'verticalPosition': 'top', 'removeOnClose': false});
+    },
+
+    _updateConsentHint: function(hint) {
+        var consentHint = $('consents-section').down('.intro');
+        if (consentHint) {
+          consentHint.update(hint);
+        }
     },
 
     _generateServerFirstMessage: function() {
@@ -268,17 +257,8 @@
       return new Element('div', {'class' : 'warningmessage'}).update("$services.localization.render('phenotips.PushPatient.serverAndUserFirstMessage')");
     },
 
-    _generateNoPatientJSONMessage: function(fieldList) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
-      var _this = this;
-      retryButton.observe('click', function(event) {
-        _this._generateDataPreview(fieldList);
-      });
-      return new Element('div', {'class' : 'errormessage'}).update("$services.localization.render('phenotips.PushPatient.noPatientMessage')").insert(retryButton);
-    },
-
     _generateNoServerListMessage: function() {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._launchUI();
@@ -287,7 +267,7 @@
     },
 
     _generateCantConnectToServerMessage: function(failMessage, username, password) {
-      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+      var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
       var _this = this;
       retryButton.observe('click', function(event) {
         _this._loginAndGetConfig(username, password);
@@ -308,7 +288,7 @@
 
       if (retryButton)
       {
-        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retry')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryButton.observe('click', function(event) {
           _this._pushPatient();
@@ -317,7 +297,7 @@
       }
       if (retryAsNew)
       {
-        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retryAsNew')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': "$services.localization.render('phenotips.PushPatient.retryAsNew')", 'class': this._retryButtonClass}).wrap('span', {'class' : 'buttonwrapper'});
         var _this = this;
         retryAsNewButton.observe('click', function(event) {
           _this._selectPushNewPatient();
@@ -332,7 +312,10 @@
       this._patientData = undefined;
 
       this._groupManager.update(this._generateServerAndUserFirstMessage());
-      !this._pushManyPatients &amp;&amp; this._fieldsManager.update(this._generateServerAndUserFirstMessage());
+      this._consentsSection.hide();
+
+      // TODO: DATAPREVIEW: if preview is implemented on the main push dialog page, need to display
+      //                    this._generateServerAndUserFirstMessage() error there
 
       this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
       this._approveElement.hide();
@@ -363,7 +346,7 @@
 
     _disableInputs: function(disableCancelAsWell) {
        // disable all UI elements while waiting for AJAX rerquest to complete
-       this._container.addClassName('loading');
+       this._container.addClassName('loading-indicator-large');
        var allInputs = this._container.getElementsByTagName('input');
        for (var i = 0; i &lt; allInputs.length; i++) {
           if (allInputs[i].disabled) {
@@ -381,7 +364,7 @@
     },
 
     _restoreInputs: function() {
-       this._container.removeClassName('loading');
+       this._container.removeClassName('loading-indicator-large');
        // but do not enable what was disbaled before
        var allInputs = this._container.getElementsByTagName('input');
        for (var i = 0; i &lt; allInputs.length; i++) {
@@ -401,6 +384,8 @@
 
       if (this.__launchUIAjaxInProgress) { return; }
 
+      this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
+
       // reset data about available push servers
       this._remoteServers       = {};
       this._numAvailableServers = 0;
@@ -410,7 +395,7 @@
       this._serverLoadMessages.update(new Element('div', {'class' : 'infomessage'}).update("$services.localization.render('phenotips.PushPatient.retrievingListMessage')"));
       this._serverLoadMessages.show();
       this._serverSelector.hide();
-      this._container.addClassName('loading');
+      this._container.addClassName('loading-indicator-large');
 
       //AJAX 1: Get available remote servers
       new Ajax.Request(this._serviceURL, {
@@ -444,7 +429,7 @@
         },
         onComplete : function() {
           _this.__launchUIAjaxInProgress = false;
-          _this._container.removeClassName('loading');
+          _this._container.removeClassName('loading-indicator-large');
           console.log("PUSH: getting remotes - complete");
         }
       });
@@ -531,9 +516,7 @@
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
             this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
-            if(_this._consentsModulePresent) {
-              this._populateConsentsList();
-            }
+            this._populateConsentsList(this._lastLoginResponse.consents);
           }
           else {
             console.log("--&gt; login failed!");
@@ -589,6 +572,10 @@
         }
         if (this._lastLoginResponse.serverconnectproblem) {
           this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.serverConnectProblem')", user_when_failed, password_when_failed));
+          return;
+        }
+        if (this._lastLoginResponse.incompatibleprotocol) {
+          this._userManager.update(this._generateCantConnectToServerMessage("$services.localization.render('phenotips.PushPatient.incompatibleServerProtocol')", user_when_failed, password_when_failed));
           return;
         }
       }
@@ -713,11 +700,12 @@
           this._remoteServers[this._selectedServer]["noUpdates"] = true;
       }
       this._displayGroupPicker(groupList);
-      if (this._pushManyPatients) {
-        this._showApproveCheckbox();
-      } else {
-        this._generateDataPreview(fieldList);
-      }
+
+      this._showApproveCheckbox();
+
+      // TODO: DATAPREVIEW: patient data should be shown at this point. Note that we have both single- and multi- patient push.
+      //                    for inspiration check previous implementation in git, search for _generateDataPreview()
+      //                    (which used _displayPatientData(), generateNoPatientJSONMessage(), _generatePatientDataPreview())
     },
 
     _displayGroupPicker: function(groupList) {
@@ -766,145 +754,29 @@
       }
     },
 
-    _generateDataPreview: function(fieldList) {
-      this._patientFieldList = fieldList;
-      var _this = this;
-      //AJAX 5: local AJAX request to get patient JSON to let the user see the actual data being pushed
-      new Ajax.Request(this._serviceURL, {
-        method: _this._container.method,
-        parameters : { "do":"getpatientjson", "patientid":_this._patientId, "fields":Object.toJSON(this._patientFieldList) },
-        onCreate : function() {
-          console.log("PUSH: get patient JSON - start");
-          _this._disableInputs();
-        },
-        onSuccess : function (response) {
-          console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-          _this._displayPatientData(response.responseJSON);
-        },
-        onFailure : function(response) {
-          console.log("PUSH: unable to get patient JSON");
-          _this._fieldsManager.update(_this._generateNoPatientJSONMessage(fieldList));
-        },
-        on0 : function (response) {
-          response.request.options.onFailure(response);
-        },
-        onComplete : function() {
-          _this._restoreInputs();
-          console.log("PUSH: get patient JSON - complete");
-        }
-      });
-    },
-
-    _displayPatientData: function(patientData) {
-      this._showApproveCheckbox();
-      this._patientData = patientData;
-      //console.log("Data: " + stringifyObject(patientData));
-      this._fieldsManager.update(this._generatePatientDataPreview(patientData));
-    },
-
     _showApproveCheckbox: function() {
       this._checkBoxApprove.checked = false;
       this._checkBoxApprove.enable();
       this._approveElement.show();
     },
 
-    _generatePatientDataPreview: function(patientJSON) {
-        var dataCategories = [
-           {
-              'name'     : 'external_id',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewIdentifier')",
-              'callback' : '__displayId'
-           },
-           {
-              'name'     : 'sex',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewSex')",
-              'callback' : '__displaySex'
-           },
-           {
-              'name'     : 'features',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewFeatures')",
-              'callback' : '__displayFeatures'
-           },
-           {
-              'name'     : 'disorders',
-              'title'    : "$services.localization.render('phenotips.PushPatient.dataPreviewDisorders')",
-              'callback' : '__displayFeatures'
-           },
-        ];
-        var result = new Element('dl');
-        var _this = this;
-        dataCategories.each(function(c) {
-           patientJSON[c.name] &amp;&amp; _this[c.callback] &amp;&amp; result.insert(new Element('dt').update(c.title || c.name)).insert(_this[c.callback](patientJSON[c.name]).addClassName('data-preview-section'));
-        });
-        return result;
-    },
-
-    __displayId : function(id) {
-        return new Element('dd').insert(id);
-    },
-    __displaySex : function(sex) {
-        return new Element('dd').insert(
-           (sex == "F") ? "$services.localization.render('phenotips.PushPatient.female')" :
-           (sex == "M") ? "$services.localization.render('phenotips.PushPatient.male')" :
-           (sex == "O") ? "$services.localization.render('phenotips.PushPatient.other')" :
-           "$services.localization.render('phenotips.PushPatient.unknown')");
-    },
-
-    __displayFeatures : function(features) {
-        var result = new Element('dd');
-        features.each(function (f) {
-          result.insert(new Element('div', {'class' : (f.observed == "no" ? "negative" : "")}).update((f.observed == "no" ? "$services.localization.render('phenotips.PushPatient.negative')" : "") + f.label).insert(f.id &amp;&amp; new Element('span', {'class' : 'hint'}).update(' (' + f.id + ')')  || '') );
-        });
-        return result;
-    },
-
     // ---------------------------------------------------------------------
     // Generate consents section UI
     // ---------------------------------------------------------------------
-    _populateConsentsList: function() {
-      var _this = this;
-      if (!this._consentsModule) {
-        this._consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
-      }
-      var consentsConfiguredOnRemote = true;
-      //AJAX 4: Consents present on the remote server
-      new Ajax.Request(this._serviceURL, {
-        method: _this._container.method,
-        parameters: { "do": "getremotepatientstate", 'serverid': this._selectedServer, "patientid": _this._patientId},
-          onCreate: function ()
-          {
-            console.log("PUSH: get patient state JSON - start");
-            _this._disableInputs();
-          },
-          onSuccess: function (response)
-          {
-            console.log("PUSH: Got response from server: " + stringifyObject(response.responseJSON));
-            /* iff there are any consents to grant - show the section */
-            if (response.responseJSON.consents.length &gt; 1) {
-              _this._consentsModule.init(_this._consentsManager, "edit", response.responseJSON.consents);
-            } else {
-              consentsConfiguredOnRemote = false;
-            }
-          },
-          onFailure: function (response)
-          {
-            console.log("PUSH: unable to get patient state JSON");
-            _this._consentsModule.init(_this._consentsManager, "edit", []);
-          },
-          on0: function (response)
-          {
-            _this._consentsModule.init(_this._consentsManager, "edit", []);
-          },
-          onComplete: function ()
-          {
-            if(consentsConfiguredOnRemote) {
-              _this._consentsSection.show();
-            }
-            _this._restoreInputs();
-            console.log("PUSH: get patient state JSON - complete");
-          }
+    _populateConsentsList: function(consentJSONArray) {
+        if (consentJSONArray == null || consentJSONArray.length == 0) {
+            this._consentsSection.hide();
+            return;
         }
-      );
+
+        var onConsentStateChange = function(consentName, consentState) {
+            this._pushResultSection.update("");
+        }.bind(this);
+        this._consentsManager.update("");
+        this._updateConsentHint(this._selectedServer + " " + "$services.localization.render('phenotips.patientSharing.push.dialog.consents.hint')");
+        this._consentsModule.init(this._consentsManager, "edit", consentJSONArray, false /* do not display consent details */, onConsentStateChange);
+
+        this._consentsSection.show();
     },
 
     // ---------------------------------------------------------------------
@@ -960,7 +832,7 @@
 
            var description = new Element('p', {'id': 'server-description'});
            var lastUpdated = serverData.pushAgeHours;
-           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')");
+           description.insert("$services.localization.render('phenotips.PushPatient.patientUploadedMessage')" + " " + this._selectedServer);
            if (lastUpdated &lt; 1) {
               description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedLessThanHour')");
            } else {
@@ -972,7 +844,7 @@
            }
 
            description.insert(" $services.localization.render('phenotips.PushPatient.patientUploadedAsID') ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
-           description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')")
+           description.insert("&lt;br/&gt;$services.localization.render('phenotips.PushPatient.patientUploadedUpdate')".replace("__serverID__", this._selectedServer))
            existingPatientDataInfo.insert(description);
 
            var _this = this;
@@ -992,6 +864,8 @@
                            .insert(serverData.desc &amp;&amp; new Element('dd', {'class' : 'hint'}).update(serverData.desc) || '')
                            .insert(existingPatientDataInfo || '')
         );
+
+        this._approveMessage.update("$services.localization.render('phenotips.patientSharing.push.dialog.confirmation.label')" + " " + this._selectedServer);
 
         if (!keepUserAndGroup) {
             this._serverInfo.show();
@@ -1033,7 +907,7 @@
       var buttons = new Element('div', {'class' : 'buttons'});
       buttons.insert(new Element('input', {type: 'hidden', name : 'xaction', 'value': 'push'}));
       buttons.insert(new Element('input', {type: 'hidden', name : 'patient', 'value': this._patientId}));
-      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.submit')" : "$services.localization.render('phenotips.PushPatient.button.push')";
+      var pushButtonTitle = this._pushManyPatients ? "$services.localization.render('phenotips.PushPatient.button.manyPatients.push')" : "$services.localization.render('phenotips.PushPatient.button.singlePatient.push')";
       buttons.insert(new Element('input', {type: 'submit', name : 'submit',  'value': pushButtonTitle, 'class' : 'button', 'id': 'push_patient_button'}).wrap('span', {'class' : 'buttonwrapper'}));
       buttons.insert(new Element('input', {type: 'button', name : 'close',   'value': "$services.localization.render('phenotips.PushPatient.button.cancel')", 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
       this._container.insert(buttons);
@@ -1048,22 +922,17 @@
 
       this._pushButton = buttons.down('input[name="submit"]');
       this._checkBoxApprove.observe("click", function(event) {
+        _this._pushResultSection.update("");
         if (_this._checkBoxApprove.checked) {
-          _this._pushResultSection.update("");
           _this._pushButton.enable();
-        }
-        else
+        } else {
           _this._pushButton.disable();
-          _this._pushResultSection.update("");
+        }
       });
 
       this._container.observe('submit', function(event) {
         event.stop();
-        if (_this._pushManyPatients) {
-            _this._pushMultiplePatients();
-        } else {
-            _this._pushPatient();
-        }
+        _this._pushSelectFieldsAndPatients();
       })  // observe('submit')
     },
 
@@ -1098,13 +967,23 @@
         }
     },
 
-    _pushPatient: function(patientID, callBack, columnList) {
+    _pushPatient: function(columnList, patientID, callBack) {
         var _this = this;
         if (_this._pushManyPatients &amp;&amp; (!patientID || !callBack)) {
             return;
         }
         if (!_this._pushManyPatients) {
             _this._pushResultSection.update("");
+        }
+
+        if (columnList) {
+            _this._lastSelectedColumnList = columnList;
+        } else {
+            columnList = _this._lastSelectedColumnList;
+        }
+        if (!columnList || columnList.length == 0) {
+            _this._pushResultSection.update(new Element('div', {'class' : 'errormessage'}).update("No columns were selected"));
+            return;
         }
 
         var patientID = patientID ? patientID : this._patientId;
@@ -1124,10 +1003,7 @@
             params["groupname"] = radioSelectValue;
         }
 
-        var patientState = {};
-        if (_this._consentsModulePresent &amp;&amp; _this._consentsModule) {
-          patientState["consents"] = _this._consentsModule.listUIGranted(/* the HTML holder can be omitted */);
-        }
+        var patientState = { "consents" : _this._consentsModule.listGrantedConsentIDs() };
         params["patientState"] = stringifyObject(patientState);
 
         console.log("PUSH request params: " + stringifyObject(params));
@@ -1184,6 +1060,9 @@
                     } else
                     if (res.cantconnect) {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedCantConnect')", true));
+                    } else
+                    if (res.missingconsent) {
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailedMissingConsent')", true));
                     } else {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("$services.localization.render('phenotips.PushPatient.pushFailed')", true));
                     }
@@ -1230,7 +1109,8 @@
         return url;
     },
 
-    _pushMultiplePatients: function() {
+
+    _pushSelectFieldsAndPatients: function() {
         var _this = this;
 
         var doMultiPush = function(patients, columns) {
@@ -1254,6 +1134,8 @@
                            reason = "$services.localization.render('phenotips.PushPatient.incorrectGuid')";
                        } else if (previousPushResult.accessdeniedguid) {
                            reason = "$services.localization.render('phenotips.PushPatient.accessDenied')";
+                       } else if (previousPushResult.missingconsent) {
+                           reason = "$services.localization.render('phenotips.PushPatient.pushFailedMissingConsent')";
                        }
                        pushResult.insert(' ' + reason + "&lt;br/&gt;");
                    } else {
@@ -1267,7 +1149,7 @@
                if (next &lt; patients.length) {
                    var nextPatientID = patients[next++];
                    pushResult.insert("$services.localization.render('phenotips.PushPatient.pushing')".replace("__nextPatientID__", nextPatientID));
-                   _this._pushPatient(nextPatientID, pushSingleFunc, columns);
+                   _this._pushPatient(columns, nextPatientID, pushSingleFunc);
                }
             }
 
@@ -1288,26 +1170,63 @@
               { confirmationText: confirmMessage, showCancelButton: false }
             );
         }
-        var pushPreferencesFail = function() {
+
+        if (_this._pushManyPatients) {
+          //-------------- push multiple
+          var exportTool = $('phenotips_export');
+          if (!exportTool) return;
+          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsAndPatientsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+          dialog.showDialog();
+
+          var pushPreferencesFail = function() {
             alert("Failed to get the list of patients to be pushed");
-        }
-        var exportTool = $('phenotips_export');
-        if (!exportTool) return;
-        var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.exportTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-        dialog.showDialog();
-        // =================================================================================
-        // Generate the dialog content
-        new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
-          onSuccess: function(transport) {
-            var content = dialog.dialogBox._x_contentPlug;
-            content.update(transport.responseText);
-            content.__dialog = dialog;
-            document.fire('xwiki:dom:updated', {'elements': [content],
-                                                'multiPushPreferences': content,
-                                                'callbackOK': pushCallBack,
-                                                'callbackFail': pushPreferencesFail});
           }
-        });
+
+          // =================================================================================
+          // Generate the dialog content
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1] + '&amp;push=true&amp;multipatient=true&amp;remoteserver='+this._selectedServer), {
+            parameters : {"enabledFields": this._lastLoginResponse.serverfields},
+            onSuccess: function(transport) {
+              var content = dialog.dialogBox._x_contentPlug;
+              content.update(transport.responseText);
+              content.__dialog = dialog;
+              document.fire('xwiki:dom:updated', {'elements': [content],
+                                                  'pushPreferences': content,
+                                                  'pushMulti': true,
+                                                  'callbackOK': pushCallBack,
+                                                  'callbackFail': pushPreferencesFail});
+            }
+          });
+        } else {
+          //-------------- push single
+          var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': "$services.localization.render('phenotips.pushPatient.selectFieldsTitle')", 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'narrow-export-dialog export-dialog'});
+          dialog.showDialog();
+
+          var singlePushPreferencesFail = function() {
+            alert("Failed to get the list of fields to be pushed");
+          }
+
+          var singlePushCallBack = function(columns) {
+            _this._pushPatient(columns);
+          }
+
+          // =================================================================================
+          // Generate the dialog content
+          new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'push=true&amp;singlepatient=false&amp;remoteserver='+this._selectedServer), {
+            parameters : {"enabledFields": this._lastLoginResponse.serverfields},
+            onSuccess: function(transport) {
+              var content = dialog.dialogBox._x_contentPlug;
+              content.update(transport.responseText);
+              content.__dialog = dialog;
+              document.fire('xwiki:dom:updated', {'elements': [content],
+                                                  'pushPreferences': content,
+                                                  'pushMulti': false,
+                                                  'callbackOK': singlePushCallBack,
+                                                  'callbackFail': singlePushPreferencesFail});
+            }
+          });
+
+        }
     }
 
   });
@@ -1317,21 +1236,27 @@
 // End PhenoTips augmentation.
 
 
-// overwrite thebehaviour of the "export/push to" button on the export preferences page:
+// overwrite the behaviour of the "export/push to" button on the export preferences page:
 // get the selected patients and fields and push using this javascript
 ['xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {
-        if (!event.memo || !event.memo.multiPushPreferences || !event.memo.callbackOK) {
+        if (!event.memo || !event.memo.pushPreferences || !event.memo.callbackOK) {
             return;
         }
-        var dialog       = event.memo.multiPushPreferences.__dialog;
+        var dialog       = event.memo.pushPreferences.__dialog;
         var callbackOK   = event.memo.callbackOK;
         var callbackFail = event.memo.callbackFail;
-        var pushButton = $('push-multiple-patients');
+        var pushMulti = event.memo.pushMulti;
+
+        var cancelButton = $('export_cancel');
+        cancelButton &amp;&amp; cancelButton.observe('click', function(event) {
+          dialog.closeDialog();
+        });
+
+        var pushButton = event.memo.pushMulti ? $('push-multiple-patients') : $('push-patient');
         pushButton &amp;&amp; pushButton.observe('click', function(event) {
             event.stop();
-            var liveMatchCounter = $('filter-match-count');
-            var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
+            var form = pushButton.up('form');
             if (form) {
                 // 1) get the list of selected data columns from the form
                 var selectedFields = [];
@@ -1343,7 +1268,14 @@
                     }
                 });
 
+                if (!pushMulti) {
+                  dialog.closeDialog();
+                  callbackOK(selectedFields);
+                  return;
+                }
+
                 // 2) get the list of filtered patients from the ExportFilter page
+                var liveMatchCounter = $('filter-match-count');
                 var url = "$xwiki.getURL('PhenoTips.ExportFilter', 'get')?list=true&amp;" + form.serialize();
                 var ajx = new Ajax.Request(url, {
                     method: 'get',
@@ -1597,6 +1529,13 @@ function _printObjectInternal(o, level) {
   margin: 3px;
 }
 
+#group-selection {
+  margin-bottom: 1.5em;
+}
+#consents-section {
+  margin-bottom: 1.5em;
+}
+
 #fields-selection dl {
   background: none repeat scroll 0 0 #FFFFFF;
   box-shadow: 0 0 3px #AAAAAA;
@@ -1608,9 +1547,10 @@ function _printObjectInternal(o, level) {
 #fields-selection .negative {
   color: $theme.notificationErrorColor;;
 }
+
 .confirm-push {
   padding: .5em;
-  margin: .5em 0;
+  margin: 0 0 0.5em 0;
   font-weight: bold;
 }
 .multi-push-results {
@@ -1625,7 +1565,34 @@ function _printObjectInternal(o, level) {
   max-height: 150px;
   width: 250px;
   padding: 0.5em;
-}</code>
+}
+.push-retry-button {
+  margin-left: 0.5em !important;
+}
+.consents {
+  margin-top: 0.75em;
+  margin-right: 3em;
+}
+.push-fields {
+  margin-left: 2em !important;
+  margin-bottom: 1.5em !important;
+  width: 90% !important;
+}
+.narrow-export-dialog.export-dialog {
+  width: 60% !important;
+}
+.loading-indicator-large {
+  background: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')") no-repeat center center;
+}
+.field-no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+</code>
     </property>
     <property>
       <name/>
@@ -1708,8 +1675,11 @@ function _printObjectInternal(o, level) {
     </class>
     <property>
       <content>{{velocity}}
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
+$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
 #set ($service = $services.pushPatient)
 #set ($configuredServers = $service.getPushTargetsWithHistory(""))
 #foreach ($mapEntry in $configuredServers.entrySet())
@@ -1742,3 +1712,4 @@ $xwiki.ssx.use('PhenoTips.PushPatient')##
     </property>
   </object>
 </xwikidoc>
+

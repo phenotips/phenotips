@@ -53,13 +53,13 @@ define([
                 if (node.getGender() == 'F') partnerGender = 'M';
                 if (node.getGender() == 'M') partnerGender = 'F';
                            
-                // static part (2 lines: going above the node + going to the left)
+                // static part (2 lines: going above the node + going to the right)
                 var splitLocationY = y-PedigreeEditorParameters.attributes.personHandleBreakY-4;
-                var path = [["M", x, y],["L", x, splitLocationY], ["L", x-PedigreeEditorParameters.attributes.personSiblingHandleLengthX, splitLocationY]];
+                var path = [["M", x, y],["L", x, splitLocationY], ["L", x+PedigreeEditorParameters.attributes.personSiblingHandleLengthX, splitLocationY]];
                 editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
                 
                 // sibling handle
-                this.generateHandle('sibling', x-PedigreeEditorParameters.attributes.personSiblingHandleLengthX+strokeWidth/3, splitLocationY, x-PedigreeEditorParameters.attributes.personSiblingHandleLengthX+strokeWidth/2, splitLocationY+PedigreeEditorParameters.attributes.personSiblingHandleLengthY,
+                this.generateHandle('sibling', x+PedigreeEditorParameters.attributes.personSiblingHandleLengthX-strokeWidth/3, splitLocationY, x+PedigreeEditorParameters.attributes.personSiblingHandleLengthX-strokeWidth/2, splitLocationY+PedigreeEditorParameters.attributes.personSiblingHandleLengthY,
                                     "Click to create a sibling or drag to an existing parentless person (valid choices will be highlighted in green)", "U");                
 
                 if (editor.getGraph().getParentRelationship(node.getID()) === null) {
@@ -77,18 +77,12 @@ define([
                     this.generateHandle('parent', x, splitLocationY, x, y - PedigreeEditorParameters.attributes.personHandleLength,
                                         "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green). Dragging to a person will create a new relationship.", "F", topHandleHint);
                 }
-                else {
-                    if (PedigreeEditorParameters.attributes.enableHandleHintImages) {
-                        var path = [["M", x, splitLocationY],["L", x, y-PedigreeEditorParameters.attributes.personHoverBoxRadius+4]];
-                        editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);                    
-                    }
-                }
-                
+
                 if (!node.isFetus() && node.getAdopted() != "adoptedOut") {
                     
                     if (node.getChildlessStatus() === null) {
                         // children handle
-                        //static part (going right below the node)            
+                        //static part (going right below the node)
                         var path = [["M", x, y],["L", x, y+PedigreeEditorParameters.attributes.personHandleBreakX]];
                         editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);            
                         this.generateHandle('child', x, y+PedigreeEditorParameters.attributes.personHandleBreakX-2, x, y+PedigreeEditorParameters.attributes.personHandleLength,
@@ -96,18 +90,18 @@ define([
                     }
                     
                     // partner handle
-                    var vertPosForPartnerHandles = y;                       
-                    //static part (going right form the node)            
-                    var path = [["M", x, vertPosForPartnerHandles],["L", x + PedigreeEditorParameters.attributes.personHandleBreakX, vertPosForPartnerHandles]];
+                    var vertPosForPartnerHandles = y;
+                    //static part (going left form the node)
+                    var path = [["M", x, vertPosForPartnerHandles],["L", x - PedigreeEditorParameters.attributes.personHandleBreakX, vertPosForPartnerHandles]];
                     editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
-                    this.generateHandle('partnerR', x + PedigreeEditorParameters.attributes.personHandleBreakX - 2, vertPosForPartnerHandles, x + PedigreeEditorParameters.attributes.personHandleLength, vertPosForPartnerHandles,
+                    this.generateHandle('partnerR', x - PedigreeEditorParameters.attributes.personHandleBreakX + 2, vertPosForPartnerHandles, x - PedigreeEditorParameters.attributes.personHandleLength, vertPosForPartnerHandles,
                                         "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)", partnerGender);
                 }
             }
             else {            
                 if (editor.getGraph().getParentRelationship(node.getID()) === null)
                     this.generateHandle('parent',   x, y, x, y - PedigreeEditorParameters.attributes.personHandleLength, "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green)");
-                
+
                 if (!node.isFetus() && node.getAdopted() != "adoptedOut") {
                     if (node.getChildlessStatus() === null)
                         this.generateHandle('child',x, y, x, y + PedigreeEditorParameters.attributes.personHandleLength, "Click to create a new child node or drag to an existing parentless node (valid choices will be highlighted in green)");            
@@ -115,9 +109,9 @@ define([
                     this.generateHandle('partnerL', x, y, x - PedigreeEditorParameters.attributes.personHandleLength, y, "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)");
                 }
             }
-                           
+
             this._currentHandles.push( editor.getPaper().setFinish() );
-                     
+
             //timer.printSinceLast("Generate handles ");
         },
 
@@ -264,7 +258,7 @@ define([
                     // if user selects anything the bubble will fire an even on its own
                 }
                 else if(handleType == "sibling") {
-                    var position = editor.getWorkspace().canvasToDiv(this.getNodeX() - PedigreeEditorParameters.attributes.personSiblingHandleLengthX,
+                    var position = editor.getWorkspace().canvasToDiv(this.getNodeX() + PedigreeEditorParameters.attributes.personSiblingHandleLengthX - 4,
                                                                      this.getNodeY() - PedigreeEditorParameters.attributes.personHandleBreakY+PedigreeEditorParameters.attributes.personSiblingHandleLengthY + 15);
                     editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);                
                 }

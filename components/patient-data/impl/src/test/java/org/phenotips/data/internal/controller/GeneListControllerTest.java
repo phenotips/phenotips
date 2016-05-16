@@ -47,7 +47,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -61,6 +60,7 @@ import com.xpn.xwiki.objects.BaseStringProperty;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -94,9 +94,11 @@ public class GeneListControllerTest
 
     private static final String GENES_ENABLING_FIELD_NAME = GENES_STRING;
 
-    private static final String GENES_COMMENTS_ENABLING_FIELD_NAME = "genes_comments";
-
     private static final String GENE_KEY = "gene";
+
+    private static final String STATUS_KEY = "status";
+
+    private static final String STRATEGY_KEY = "strategy";
 
     private static final String COMMENTS_KEY = "comments";
 
@@ -135,8 +137,10 @@ public class GeneListControllerTest
             ((AbstractComplexController<Map<String, String>>) this.mocker.getComponentUnderTest()).getProperties();
 
         Assert.assertTrue(result.contains(GENE_KEY));
+        Assert.assertTrue(result.contains(STATUS_KEY));
+        Assert.assertTrue(result.contains(STRATEGY_KEY));
         Assert.assertTrue(result.contains(COMMENTS_KEY));
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(4, result.size());
     }
 
     @Test
@@ -321,6 +325,8 @@ public class GeneListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(GENE_KEY, "geneName");
+        item.put(STATUS_KEY, "");
+        item.put(STRATEGY_KEY, "");
         item.put(COMMENTS_KEY, null);
         internalList.add(item);
 
@@ -342,6 +348,8 @@ public class GeneListControllerTest
 
         Map<String, String> item = new LinkedHashMap<>();
         item.put(GENE_KEY, "GENE");
+        item.put(STATUS_KEY, "Status");
+        item.put(STRATEGY_KEY, "Strategy");
         item.put(COMMENTS_KEY, "Comment");
         internalList.add(item);
 
@@ -350,7 +358,6 @@ public class GeneListControllerTest
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
         selectedFields.add(GENES_ENABLING_FIELD_NAME);
-        selectedFields.add(GENES_COMMENTS_ENABLING_FIELD_NAME);
 
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json, selectedFields);
 
@@ -358,12 +365,17 @@ public class GeneListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         JSONObject result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("GENE", result.get(GENE_KEY));
+        Assert.assertEquals("Status", result.get(STATUS_KEY));
+        String[] strategyArray = { "Strategy" };
+        Assert.assertEquals(new JSONArray(strategyArray).get(0), ((JSONArray) result.get(STRATEGY_KEY)).get(0));
         Assert.assertEquals("Comment", result.get(COMMENTS_KEY));
 
         json = new JSONObject();
         internalList = new LinkedList<>();
         item = new LinkedHashMap<>();
         item.put(GENE_KEY, "GENE");
+        item.put(STATUS_KEY, "Status");
+        item.put(STRATEGY_KEY, "Strategy");
         item.put(COMMENTS_KEY, "Comment");
         internalList.add(item);
         patientData = new IndexedPatientData<>(CONTROLLER_NAME, internalList);
@@ -377,7 +389,9 @@ public class GeneListControllerTest
         Assert.assertTrue(json.get(CONTROLLER_NAME) instanceof JSONArray);
         result = json.getJSONArray(CONTROLLER_NAME).getJSONObject(0);
         Assert.assertEquals("GENE", result.get(GENE_KEY));
-        Assert.assertEquals(1, result.length());
+        Assert.assertTrue(result.has(STATUS_KEY));
+        Assert.assertTrue(result.has(STRATEGY_KEY));
+        Assert.assertEquals(4, result.length());
     }
 
     @Test
@@ -491,7 +505,7 @@ public class GeneListControllerTest
         verify(o1).set("gene", "GENE1", context);
         verify(o1).set("comments", "Notes1", context);
         verify(o2).set("gene", "GENE2", context);
-        verify(o2, Mockito.never()).set(Matchers.eq("comments"), anyString(), Matchers.eq(context));
+        verify(o2, Mockito.never()).set(eq("comments"), anyString(), eq(context));
     }
 
     // ----------------------------------------Private methods----------------------------------------
