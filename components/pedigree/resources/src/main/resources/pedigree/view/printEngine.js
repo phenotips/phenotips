@@ -77,7 +77,7 @@ define([
             if (options.includePatientInfo) {
                 patientInfoHeight = 30;
                 var proband = editor.getNode(0);
-                if (options.anonimize || (!proband.getFirstName() && !proband.getLastName())) {
+                if (options.anonimize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
                     patientInfoHTML = "Patient " + XWiki.currentDocument.page;
                 } else {
                     // TODO: update to correct proband/family when fmaly studies are merged in
@@ -93,7 +93,7 @@ define([
                     patientInfoHTML += " by " + userFirstName + " " + userLastName;
                 }
                 var dateDisplayFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
-                if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY") {
+                if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY" || dateDisplayFormat == "Y") {
                     patientInfoHTML += " on " + date.getBestPrecisionStringDDMMYYY() + ".";
                 } else {
                     patientInfoHTML += " on " + date.getMonthName() + " " + date.getDay() + ", " + date.getYear() + ".";

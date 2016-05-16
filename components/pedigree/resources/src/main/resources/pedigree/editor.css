@@ -279,7 +279,7 @@
  */
 .menu-box {
   position: absolute;
-  width: 27em;
+  /*width: 27em;*/
   color: #000000;
   z-index: 100000;
 }
@@ -300,7 +300,7 @@
   min-width: 80px;
 }
 .relationship-menu {
-  width: 290px;
+  width: 290px !important;
 }
 .menu-box .tabs {
   margin-bottom: -1px !important;
@@ -358,6 +358,7 @@
   display: block;
   float: none;
   padding: .3em 1.2em 0.8em;
+  min-height: 5em;
 }
 .menu-box form {
   border: 1px solid #F5F5F5;
@@ -416,6 +417,9 @@
 }
 .menu-box .field-box .textarea-4-rows {
   height: 5.5em;
+}
+.menu-box .field-box .textarea-20-rows {
+  height: 28em;
 }
 .import-upload {
   display: block;
@@ -540,8 +544,12 @@
 .field-inputs label {
   font-family: Arial,Verdana,sans-serif;
 }
-.field-cancers {
+.menu-box .field-cancers {
   margin-bottom: 5px;
+  padding-top: 0.8em;
+}
+.menu-box .field-gender {
+  padding-top: 0.8em;
 }
 .menu-box .field-first_name {
   width: 48%;
@@ -646,12 +654,6 @@
 .menu-box .patient-menu-button:hover {
   background: #B1C2E2;
 }
-.menu-box .patient-no-cancers-button {
-  width: 88%;
-  margin-top: 10px;
-  float: left !important;
-  text-align: center;
-}
 
 /* ===========================================
  * NODE TYPE OPTIONS
@@ -722,7 +724,7 @@
 }
 .node-type-options .person-type-option.square span {
   display: inline-block;
-  width: 12px; 
+  width: 12px;
   height: 12px;
   border: 1px solid black;
 }
@@ -731,7 +733,7 @@
 }
 .node-type-options .person-type-option.diamond span {
   display: inline-block;
-  width: 10px; 
+  width: 10px;
   height: 10px;
   border: 1px solid black;
   -webkit-transform: rotate(45deg);
@@ -743,7 +745,7 @@
 }
 .node-type-options .person-type-option.circle span {
   display: inline-block;
-  width: 12px; 
+  width: 12px;
   height: 12px;
   border-radius: 50%;
   border: 1px solid black;
@@ -755,7 +757,7 @@
   font-weight: bold;
   font-size: 8px;
   position: absolute;
-  top: 8px; 
+  top: 8px;
   left: 10px;
 }
 .expand-arrow {
@@ -930,6 +932,9 @@
 .cancer-notes {
   margin-left: 2px;
 }
+.cancer-notes-textarea {
+  margin-bottom: 4px;
+}
 .cancer-header {
   color: #888;
 }
@@ -948,6 +953,13 @@
 }
 .cancer_field textarea {
   margin-top: 3px;
+}
+.menu-box .patient-no-cancers-button {
+  width: 88%;
+  max-width: 20em;
+  margin-top: 10px;
+  float: left !important;
+  text-align: center;
 }
 
 /* Option types */

@@ -35,8 +35,11 @@ define([
             this._isProband = (id == 0);
             !this._type && (this._type = "Person");
             this._setDefault();
-            var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
+            var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U";
             $super(x, y, gender, id);
+
+            var extensionParameters = { "node": this };
+            editor.getExtensionManager().callExtensions("personNodeCreated", extensionParameters);
 
             // need to assign after super() and explicitly pass gender to super()
             // because changing properties requires a redraw, which relies on gender
@@ -250,7 +253,7 @@ define([
          * @method setMonozygotic
          */
         setMonozygotic: function(monozygotic) {
-            if (monozygotic == this._monozygotic) return; 
+            if (monozygotic == this._monozygotic) return;
             this._monozygotic = monozygotic;
         },
 
@@ -270,7 +273,7 @@ define([
          * @method setEvaluated
          */
         setEvaluated: function(evaluationStatus) {
-            if (evaluationStatus == this._evaluated) return; 
+            if (evaluationStatus == this._evaluated) return;
             this._evaluated = evaluationStatus;
             this.getGraphics().updateEvaluationLabel();
         },
@@ -312,7 +315,7 @@ define([
          * (a twin group is all the twins from a given pregnancy)
          *
          * @method setTwinGroup
-         */    
+         */
         setTwinGroup: function(groupId) {
             this._twinGroup = groupId;
         },
@@ -514,7 +517,7 @@ define([
          *
          * @method setCarrier
          * @param status One of {'', 'carrier', 'affected', 'presymptomatic', 'uncertain'}
-         */    
+         */
         setCarrierStatus: function(status) {
             var numDisorders = this.getDisorders().length;
 
@@ -590,7 +593,7 @@ define([
          * @return {Array} List of disorder IDs.
          */
         getDisorders: function() {
-            //console.log("Get disorders: " + Helpers.stringifyObject(this._disorders)); 
+            //console.log("Get disorders: " + Helpers.stringifyObject(this._disorders));
             return this._disorders;
         },
 
@@ -634,7 +637,7 @@ define([
          * Removes disorder from the list of this node's disorders and updates the Legend.
          *
          * @method removeDisorder
-         * @param {Number} disorderID id of the disorder to be removed 
+         * @param {Number} disorderID id of the disorder to be removed
          */
         removeDisorder: function(disorderID) {
             if(this.hasDisorder(disorderID)) {
@@ -661,7 +664,7 @@ define([
             }
             for(var i = 0; i < disorders.length; i++) {
                 this.addDisorder( disorders[i] );
-            }        
+            }
             this.getGraphics().updateDisorderShapes();
             this.setCarrierStatus(); // update carrier status
         },
@@ -881,6 +884,9 @@ define([
          * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
          */
         remove: function($super) {
+            var extensionParameters = { "node": this };
+            editor.getExtensionManager().callExtensions("personNodeRemoved", extensionParameters);
+
             this.setDisorders([]);  // remove disorders form the legend
             this.setHPO([]);
             this.setGenes([]);
@@ -1002,7 +1008,7 @@ define([
             // TODO: only suggest posible birth dates which are after the latest
             //       birth date of any ancestors; only suggest death dates which are after birth date
 
-            return {
+            var menuData = {
                 identifier:    {value : this.getID()},
                 first_name:    {value : this.getFirstName(), disabled: this.isProband()},
                 last_name:     {value : this.getLastName(), disabled: this.isProband()},
@@ -1031,18 +1037,19 @@ define([
                 cancers:       {value : this.getCancers() },
                 phenotipsid:   {value : this.getPhenotipsPatientId() }
             };
+
+            var extensionParameters = { "menuData": menuData, "node": this };
+            menuData = editor.getExtensionManager().callExtensions("personGetNodeMenuData", extensionParameters).extendedData.menuData;
+
+            return menuData;
         },
 
         /**
          * Returns an object containing all the properties of this node
-         * except id, x, y & type 
+         * (except graph properties {id, x, y} which are independent of logical pedigree node properties)
          *
          * @method getProperties
-         * @return {Object} in the form
-         *
-         {
-           property: value
-         }
+         * @return {Object} with all node properties
          */
         getProperties: function($super) {
             // note: properties equivalent to default are not set
@@ -1093,6 +1100,10 @@ define([
                 info['lostContact'] = this.getLostContact();
             if (this.getPedNumber() != "")
                 info['nodeNumber'] = this.getPedNumber();
+
+            var extensionParameters = { "modelData": info, "node": this };
+            info = editor.getExtensionManager().callExtensions("personToModel", extensionParameters).extendedData.modelData;
+
             return info;
          },
 
@@ -1176,6 +1187,10 @@ define([
                 if (info.hasOwnProperty("lostContact") && this.getLostContact() != info.lostContact) {
                     this.setLostContact(info.lostContact);
                 }
+
+                var extensionParameters = { "modelData": info, "node": this };
+                editor.getExtensionManager().callExtensions("modelToPerson", extensionParameters);
+
                 return true;
             }
             return false;

@@ -24,7 +24,7 @@ define([
         getChildlessStatusLabel: function() {
             return this._childlessStatusLabel;
         },
-        
+
         /**
          * Updates the childless status icon for this Node based on the childless/infertility status.
          *
@@ -33,19 +33,19 @@ define([
         updateChildlessShapes: function() {
             var status = this.getNode().getChildlessStatus();
             this._childlessShape && this._childlessShape.remove();
-            
+
             if(status) {
               var x    = this.getX();
               var y    = this.getY();
               var r    = PedigreeEditorParameters.attributes.infertileMarkerWidth;
               var lowY = this.getBottomY() + PedigreeEditorParameters.attributes.infertileMarkerHeight;
-              
+
               var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
               if(status == 'infertile')
-                  childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
+                  childlessPath.push(["M", x - r, lowY + 6], ["l", 2 * r, 0]);
 
                 this._childlessShape = editor.getPaper().path(childlessPath);
-                if (status == 'childless' && this.getChildlessShapeAttr) {
+                if (this.getChildlessShapeAttr) {
                     this._childlessShape.attr(this.getChildlessShapeAttr());
                 } else {
                     this._childlessShape.attr(PedigreeEditorParameters.attributes.childlessShapeAttr);
@@ -62,7 +62,7 @@ define([
         updateChildlessStatusLabel: function() {
             this._childlessStatusLabel && this._childlessStatusLabel.remove();
             this._childlessStatusLabel = null;
-            
+
             var text = "";
             this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
 

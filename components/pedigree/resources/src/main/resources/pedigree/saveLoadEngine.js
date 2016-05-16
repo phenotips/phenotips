@@ -72,7 +72,7 @@ define([
             }
 
             if (!noUndo && !editor.isReadOnlyMode()) {
-                editor.getUndoRedoManager().addState(null, null, JSONString);
+                editor.getUndoRedoManager().addState({"eventName": "pedigreeLoaded"}, null, JSONString);
             }
 
             document.fire("pedigree:load:finish");
@@ -110,7 +110,7 @@ define([
             }
 
             if (!noUndo && !editor.isReadOnlyMode()) {
-                editor.getUndoRedoManager().addState(null, null, JSONString);
+                editor.getUndoRedoManager().addState({"eventName": "pedigreeImported"}, null, JSONString);
             }
 
             document.fire("pedigree:load:finish");

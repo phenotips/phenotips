@@ -66,6 +66,8 @@ $xwiki.ssx.use($displayDocumentName)##
     &lt;legend&gt;Graphics&lt;/legend&gt;
     &lt;dl&gt;
       &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_nonStandardAdoptedOutGraphic"&gt;${doc.display("nonStandardAdoptedOutGraphic", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')} ${targetObj.getxWikiClass().get('nonStandardAdoptedOutGraphic').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dt&gt;&lt;label for="${targetObj.getxWikiClass().name}_${targetObj.number}_lineStyle"&gt;${targetObj.getxWikiClass().get('lineStyle').translatedPrettyName}&lt;/label&gt;&lt;/dt&gt;
+      &lt;dd&gt;${doc.display("lineStyle", "edit", $targetObj).replaceAll('\{\{/?html.*?}}', '')}&lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/fieldset&gt;
 

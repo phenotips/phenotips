@@ -7,7 +7,7 @@
 define([
         "pedigree/model/helpers"
     ], function(
-        State
+        Helpers
     ){
     var UndoRedoManager = Class.create({
         initialize: function() {
@@ -93,7 +93,7 @@ define([
 
         /**
          * Pushes a new state to the end of the action stack
-         * 
+         *
          *   eventToGetToThisState - optional. Event which should bring the graph from the previous state to this tsate
          *   eventToGoBack         - optional. Event which should bring the graph back to the previous state
          *   serializedState       - optional. Serialized state of the graph as accepted by the load() funciton.
@@ -101,37 +101,55 @@ define([
          *                           automatically when needed if not provided.
          *
          * If one of the events is not provided a complete serializatiomn of the graph will be used to transition
-         * in that direction, which is less efficient (slower/requires more memory for state storage). 
+         * in that direction, which is less efficient (slower/requires more memory for state storage).
          *
          * @method addState
          */
         addState: function( eventToGetToThisState, eventToUndo, serializedState ) {
-           //this._debug_print_states();
+            //this._debug_print_states();
 
             // 1. remove all states after current state (i.e. all "redo" states) -
-            //    they are replaced by the current chain of states starting with this state 
-            if (this._currentState < this._size())
+            //    they are replaced by the current chain of states starting with this state
+            if (this._currentState < this._size()) {
                 this._stack.splice(this._currentState, this._stack.length - this._currentState);
+            }
+
+            // 2. let any extensions which should operate on any change do their modifications
+            //
+            //    If there are any modifications => need to ignore "eventToGetToThisState" and
+            //    "eventToGoBack" and create a new serialization (so that undo/redo operations
+            //    do not depend on extensions behaving consistently)
+            var eventInfoForExtension = { "originalEvent": eventToGetToThisState };
+            // convert specific implementation's details to a more standardized way
+            if (eventToGetToThisState && (typeof eventToGetToThisState == "object") && eventToGetToThisState.hasOwnProperty("eventName")) {
+                eventInfoForExtension.eventName = eventToGetToThisState.eventName;
+            } else {
+                eventInfoForExtension.eventName = "unknown";
+            }
+            if (eventToGetToThisState.eventName == "pedigree:node:setproperty") {
+                eventInfoForExtension.propertiesChanged = Helpers.cloneObject(eventToGetToThisState.memo.properties);
+                eventInfoForExtension.afectedNodeIDs = [ eventToGetToThisState.memo.nodeID ];
+            }
+
+            var extensionParameters = { "modificationEvent": eventInfoForExtension,
+                                        "serializedState": serializedState };
+            var extensionRunResult = editor.getExtensionManager().callExtensions("newPedigreeState", extensionParameters);
+            if (extensionRunResult.pedigreeChanged) {
+                eventToGetToThisState = null;
+                eventToUndo = null;
+                serializedState = null;
+            }
 
             if (!serializedState) {
                 serializedState = editor.getSaveLoadEngine().serialize();
             }
             //console.log("Serialized state: " + Helpers.stringifyObject(serializedState));
 
-            //if (!eventToGetToThisState && !serializedState)
-            //    serializedState = editor.getSaveLoadEngine().serialize();
-            //
-            //if (!eventToUndo && this._currentState > 0) {
-            //    // no event procided to undo this action AND have a current state:
-            //    // => current state needs to have a serialization
-            //    .. TODO
-            //}
-
             var state = new State( serializedState, eventToGetToThisState, eventToUndo );
 
-            // 2. push this new state to the array and increment the current index
+            // 3. push this new state to the array and increment the current index
 
-            // spcial case: consequtive name property changes are combined into one property change        
+            // spcial case: consequtive name property changes are combined into one property change
             var currentState = this._getCurrentState();
             if (eventToGetToThisState &&
                  currentState && currentState.eventToGetToThisState &&
@@ -146,8 +164,9 @@ define([
 
             this._addNewest(state);
 
-            if (this._size() > this._MAXUNDOSIZE)
+            if (this._size() > this._MAXUNDOSIZE) {
                 this._removeOldest();
+            }
 
             document.fire( "pedigree:historychange", null );
             //this._debug_print_states();
@@ -261,7 +280,7 @@ define([
      */
     var State = Class.create({
       initialize: function( serializedState, eventToGetToThisState, eventToUndo ) {
-          this.serializedState       = serializedState; 
+          this.serializedState       = serializedState;
           this.eventToGetToThisState = eventToGetToThisState;
           this.eventToUndo           = eventToUndo;
       }

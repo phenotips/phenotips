@@ -39,6 +39,13 @@ define ([], function(){
       };
     }
 
+    // For IE7, IE8, Firefox 3.x, Safari v4
+    if (!Array.isArray) {
+      Array.isArray = function(arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+      };
+    }
+
     // Fix for Safari v4 && v5
     if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.click && document.createEvent) {
         HTMLElement.prototype.click = function()
@@ -345,8 +352,7 @@ define ([], function(){
 
         if (typeof o === 'object')
         {
-
-            if (Object.prototype.toString.call(o) === '[object Array]')
+            if (Array.isArray(o))
             {
                 output = '[';
                 for (var i = 0; i < o.length; i++) {

@@ -98,12 +98,18 @@ define([
             mainDiv.insert(controlsDiv);
 
             var configListElement = new Element('table', {id : 'print-settings'});
-            var anonimize = new Element('input', {"type" : "checkbox", "value": "0", "name": "anonimize"});
-            anonimize.checked = false;
-            anonimize.observe('click', function() {
+            var removePII = new Element('input', {"type" : "checkbox", "value": "0", "name": "removePII"});
+            removePII.checked = false;
+            removePII.observe('click', function() {
                 _this._updatePreview();
             });
-            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(anonimize).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
+            configListElement.insert(new Element('label', {'class': 'import-mark-label1'}).insert(removePII).insert("Remove PII information (anonimize)").wrap('td').wrap('tr'));
+            var removeComments = new Element('input', {"type" : "checkbox", "value": "0", "name": "removeComments"});
+            removeComments.checked = false;
+            removeComments.observe('click', function() {
+                _this._updatePreview();
+            });
+            configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(removeComments).insert("Remove comments").wrap('td').wrap('tr'));
             var addLegend = new Element('input', {"type" : "checkbox", "value": "1", "name": "add-legend"});
             addLegend.checked = true;
             configListElement.insert(new Element('label', {'class': 'import-mark-label2'}).insert(addLegend).insert("Print legend on the bottom left sheet").wrap('td').wrap('tr'));
@@ -166,7 +172,10 @@ define([
         _generateOptions: function() {
             var patientInfo = $$('input[type=checkbox][name="patient-info"]')[0].checked;
 
-            var anonimize = $$('input[type=checkbox][name="anonimize"]')[0].checked;
+            var removePII = $$('input[type=checkbox][name="removePII"]')[0].checked;
+            var removeComments = $$('input[type=checkbox][name="removeComments"]')[0].checked;
+            var anonimize = { "removePII": removePII,
+                              "removeComments": removeComments };
 
             var closePrintVersion = $$('input[type=checkbox][name="close-print"]')[0].checked;
 

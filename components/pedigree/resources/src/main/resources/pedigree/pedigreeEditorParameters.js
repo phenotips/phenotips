@@ -12,6 +12,39 @@ define([], function(){
         }
     };
 
+    PedigreeEditorParameters.lineStyles = {
+        "thinLines": {
+            partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
+            partnershipLinesAdoptedIn: {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "--"},
+            consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
+            noContactLines:            {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "-.-."},
+            noContactAdoptedIn:        {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "-- ."},
+            noContactLinesConsangr:    {"stroke-width": 1.25, stroke : '#402058', "stroke-dasharray": "-.-."},
+            childlessShapeAttr:            {"stroke-width": 2.5, stroke: "#3C3C3C"},
+            partnershipChildlessShapeAttr: {"stroke-width": 2.0, stroke: "#3C3C3C"},
+        },
+        "regularLines": {
+            partnershipLines :         {"stroke-width": 2.0, stroke : '#303058'},
+            partnershipLinesAdoptedIn: {"stroke-width": 2.0, stroke : '#303058', "stroke-dasharray": "--"},
+            consangrPartnershipLines : {"stroke-width": 2.0, stroke : '#402058'},
+            noContactLines:            {"stroke-width": 2.0, stroke : '#303058', "stroke-dasharray": "-.-."},
+            noContactAdoptedIn:        {"stroke-width": 2.0, stroke : '#303058', "stroke-dasharray": "-- ."},
+            noContactLinesConsangr:    {"stroke-width": 2.0, stroke : '#402058', "stroke-dasharray": "-.-."},
+            childlessShapeAttr:            {"stroke-width": 2.6, stroke: "#3C3C3C"},
+            partnershipChildlessShapeAttr: {"stroke-width": 2.25, stroke: "#3C3C3C"},
+        },
+        "boldLines": {
+            partnershipLines :         {"stroke-width": 2.25, stroke : '#101028'},
+            partnershipLinesAdoptedIn: {"stroke-width": 2.25, stroke : '#101028', "stroke-dasharray": "--"},
+            consangrPartnershipLines : {"stroke-width": 2.25, stroke : '#200028'},
+            noContactLines:            {"stroke-width": 2.25, stroke : '#101028', "stroke-dasharray": "-.-."},
+            noContactAdoptedIn:        {"stroke-width": 2.25, stroke : '#101028', "stroke-dasharray": "-- ."},
+            noContactLinesConsangr:    {"stroke-width": 2.25, stroke : '#200028', "stroke-dasharray": "-.-."},
+            childlessShapeAttr:            {"stroke-width": 2.6, stroke: "#2C2C2C"},
+            partnershipChildlessShapeAttr: {"stroke-width": 2.25, stroke: "#2C2C2C"},
+        }
+    };
+
     PedigreeEditorParameters.attributes = {
         radius: 40,
         orbRadius: 6,
@@ -69,14 +102,14 @@ define([], function(){
         partnershipRadius: 7.0,
         partnershipHandleBreakY: 18,
         partnershipHandleLength: 36,
-        partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
-        partnershipLinesAdoptedIn: {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "--"},
-        consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
-        noContactLines:            {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "-.-."},
-        noContactAdoptedIn:        {"stroke-width": 1.25, stroke : '#303058', "stroke-dasharray": "-- ."},
-        noContactLinesConsangr:    {"stroke-width": 1.25, stroke : '#402058', "stroke-dasharray": "-.-."},
-        childlessShapeAttr:            {"stroke-width": 2.5, stroke: "#3C3C3C"},
-        partnershipChildlessShapeAttr: {"stroke-width": 2.0, stroke: "#3C3C3C"},
+        partnershipLines :         PedigreeEditorParameters.lineStyles.thinLines.partnershipLines,
+        partnershipLinesAdoptedIn: PedigreeEditorParameters.lineStyles.thinLines.partnershipLinesAdoptedIn,
+        consangrPartnershipLines : PedigreeEditorParameters.lineStyles.thinLines.consangrPartnershipLines,
+        noContactLines:            PedigreeEditorParameters.lineStyles.thinLines.noContactLines,
+        noContactAdoptedIn:        PedigreeEditorParameters.lineStyles.thinLines.noContactAdoptedIn,
+        noContactLinesConsangr:    PedigreeEditorParameters.lineStyles.thinLines.noContactLinesConsangr,
+        childlessShapeAttr:            PedigreeEditorParameters.lineStyles.thinLines.childlessShapeAttr,
+        partnershipChildlessShapeAttr: PedigreeEditorParameters.lineStyles.thinLines.partnershipChildlessShapeAttr,
         childlessLength: 14,
         parnershipChildlessLength: 27,
         graphToCanvasScale: 12,

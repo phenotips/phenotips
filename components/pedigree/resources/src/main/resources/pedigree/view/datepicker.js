@@ -97,7 +97,11 @@ define([
 
     getSelectedOption : function () {
        return (this.dropdown.selectedIndex >= 0) ? this.dropdown.options[this.dropdown.selectedIndex].innerHTML : '';
-    }
+    },
+
+    selectNone : function () {
+        this.dropdown.selectedIndex = 0;
+     }
   });
 
   var PedigreeFuzzyDatePicker = Class.create({
@@ -111,10 +115,11 @@ define([
       this.container = new Element('div', {'class' : 'fuzzy-date-picker'});
       this.__input.insert({after : this.container});
 
-      if (this.inputFormat == "DMY" || this.inputFormat == "MY") {
-          var hideDay = (this.inputFormat == "MY")
+      if (this.inputFormat == "DMY" || this.inputFormat == "MY" || this.inputFormat == "Y") {
+          var hideDay = (this.inputFormat == "MY" || this.inputFormat == "Y");
           this.container.insert(this.createDayDropdown(hideDay));
-          this.container.insert(this.createMonthDropdown());
+          var hideMonth = (this.inputFormat == "Y")
+          this.container.insert(this.createMonthDropdown(hideMonth));
           this.container.insert(this.createYearDropdown());
       } else {
           this.container.insert(this.createYearDropdown());
@@ -170,15 +175,21 @@ define([
       this.updateDate(doNotNotifyOnChange);
     },
 
-    createMonthDropdown : function() {
+    createMonthDropdown : function(hide) {
       this.monthSelector = new PedigreeFuzzyDatePickerDropdown({name: "month", alwaysEnabled: (this.inputFormat != "YMD")});
       this.monthSelector.populate(this.getZeroPaddedValueRange(1,12));
       this.monthSelector.disable();
       this.monthSelector.onSelect(this.monthSelected.bind(this));
+      if (hide) {
+          this.monthSelector.getElement().hide();
+      }
       return this.monthSelector.getElement();
     },
 
     monthSelected : function(doNotNotifyOnChange) {
+      if (this.inputFormat == "Y") {
+          this.monthSelector.selectNone();
+      }
       if (this.monthSelector.getSelectedValue() > 0) {
         this.daySelector.populate(this.getAvailableDays());
         this.daySelector.enable();
@@ -189,6 +200,9 @@ define([
         } else {
             this.daySelector.disable();
         }
+      }
+      if (this.inputFormat == "MY" || this.inputFormat == "MMY") {
+          this.daySelector.selectNone();
       }
       this.updateDate(doNotNotifyOnChange);
     },
@@ -248,13 +262,13 @@ define([
             }
         }
 
-        if (y > 0 || this.inputFormat == "DMY") {
+        if (y > 0 || this.inputFormat != "YMD") {
             var m = this.monthSelector.getSelectedValue();
             if (m > 0) {
                 dateObject["month"] = this.monthSelector.getSelectedOption();
             }
 
-            if (m > 0 || this.inputFormat == "DMY") {
+            if (m > 0 || this.inputFormat != "YMD") {
                 var d = this.daySelector.getSelectedValue();
                 if (d > 0) {
                     dateObject["day"] = this.daySelector.getSelectedOption();

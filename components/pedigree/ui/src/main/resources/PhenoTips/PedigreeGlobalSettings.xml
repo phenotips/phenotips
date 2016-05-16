@@ -65,7 +65,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|MMY=mmm yyyy</values>
+      <values>MDY=mmm dd, yyyy|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy|MMY=mmm yyyy</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateDisplayFormat>
     <dateInputFormat>
@@ -86,9 +86,30 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy</values>
+      <values>YMD=yyyy-mm-dd|DMY=dd-mm-yyyy|MY=mm-yyyy|Y=yyyy</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </dateInputFormat>
+    <lineStyle>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>lineStyle</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Pedigree line thickness</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>thin=Thin|regular=Regular|bold=Bold</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </lineStyle>
     <nonStandardAdoptedOutGraphic>
       <customDisplay/>
       <defaultValue>0</defaultValue>
