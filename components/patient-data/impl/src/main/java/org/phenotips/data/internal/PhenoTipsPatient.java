@@ -519,6 +519,10 @@ public class PhenoTipsPatient implements Patient
     @Override
     public void updateFromJSON(JSONObject json)
     {
+        if (json.length() == 0) {
+            return;
+        }
+
         try {
             // TODO: Check versions and throw if versions mismatch if necessary
             // TODO: Separate updateFromJSON and saveToDB? Move to PatientRepository?
