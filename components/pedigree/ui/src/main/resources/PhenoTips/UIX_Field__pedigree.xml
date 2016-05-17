@@ -134,16 +134,25 @@
     // Save before opening the pedigree
     // TODO: check if there is anything to save
     var pedigreeTrigger = $$('.pedigree-edit-trigger');
+    var openPedigreeEditor = function() {
+      var familyLink = $('familyId');
+      if (XWiki.currentDocument.space == 'data' &amp;&amp; familyLink) {
+        window.self.location = familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction;
+      } else {
+        window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
+      }
+    }
+
     if (pedigreeTrigger) {
        pedigreeTrigger.invoke('observe', 'click', function(event) {
         if ($('inline')) { //if edit mode
           event.stop();
           document.observe("xwiki:document:saved", function () {
-            window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
+            openPedigreeEditor();
           });
           document.fire("xwiki:actions:save", {"continue" : true, "form" : $('inline')});
         } else {
-          window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
+          openPedigreeEditor();
         }
       });
     }
