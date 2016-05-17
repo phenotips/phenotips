@@ -105,7 +105,7 @@ public class NonStandardFeatureCategoryUpdater extends AbstractEventListener
             for (String phenotype : phenotypes) {
                 if (!phenotype.matches("HP:[0-9]+")) {
                     List<String> category =
-                        getParameter(targetPropertyName + "__" + phenotype.replaceAll("[^a-zA-Z0-9_]+", "_")
+                        getParameter(targetPropertyName + "__suggested__" + phenotype.replaceAll("[^a-zA-Z0-9_]+", "_")
                             + "__category", patientRecordObj.getNumber());
                     if (category != null && !category.isEmpty()) {
                         storeCategory(phenotype, category, targetPropertyName, doc, context);
