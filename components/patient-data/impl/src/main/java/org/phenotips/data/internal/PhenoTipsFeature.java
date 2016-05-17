@@ -170,7 +170,12 @@ public class PhenoTipsFeature extends AbstractPhenoTipsVocabularyProperty implem
     PhenoTipsFeature(JSONObject json)
     {
         super(json);
-        this.present = (json.getString(OBSERVED_JSON_KEY_NAME).equals(JSON_PRESENTSTATUS_YES));
+        if (!json.has(TYPE_JSON_KEY_NAME)) {
+            throw new IllegalArgumentException();
+        }
+        this.present =
+            (json.has(OBSERVED_JSON_KEY_NAME))
+                ? (json.getString(OBSERVED_JSON_KEY_NAME).equals(JSON_PRESENTSTATUS_YES)) : true;
         this.type = json.getString(TYPE_JSON_KEY_NAME);
         this.propertyName = (this.present) ? this.type : NEGATIVE_PHENOTYPE_PREFIX + this.type;
         this.metadata = new TreeMap<String, FeatureMetadatum>();
