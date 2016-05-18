@@ -180,6 +180,11 @@ xwiki.store.attachment.recyclebin.hint=file
           </dependency>
           <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>family-studies-migrations</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>patient-data-default-impl</artifactId>
             <version>${project.version}</version>
             <exclusions>
