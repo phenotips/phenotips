@@ -2,12 +2,15 @@ var XWiki = (function(XWiki) {
   // Start XWiki augmentation
   var widgets = XWiki.widgets = XWiki.widgets || {};
 
-  widgets.GeneValidator = Class.create({
-    initialize : function(input) {
+  widgets.DuplicateValidator = Class.create({
+    initialize : function(input, selector, message) {
       this.input = input;
       this.valid = true;
       this.state = 'NEW';
       this.value = input.value;
+      this.selector = selector;
+      this.message = message;
+
       if (!this.input.__validation) {
         try {
           this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
@@ -24,12 +27,13 @@ var XWiki = (function(XWiki) {
         this.value = this.input.value;
         this.state = 'CHECKING';
         var el = this.input;
-        var genesymbols = [];
-        $$('.gene.col-label.gene-input-label').each( function (item) {
-          if (item.next() != el)
-            genesymbols.push(item.textContent || item.innerText);
+        var allItems = [];
+        $$(this.selector).each( function (item) {
+          if (item != el) {
+            allItems.push(item.value);
+          }
         });
-        if (genesymbols.indexOf(el.value) > -1) {
+        if (allItems.indexOf(el.value) > -1) {
           this.invalid();
         } else {
           this.available();
@@ -38,10 +42,13 @@ var XWiki = (function(XWiki) {
       }
     },
     validate : function(value) {
+      if (value.blank()) {
+        return true;
+      }
       if (this.state == 'DONE' &&
           this.value == value &&
           !this.valid) {
-        Validate.fail("This gene has already been entered.");
+        Validate.fail(this.message);
       }
       this.check();
       return true;
@@ -63,7 +70,12 @@ var XWiki = (function(XWiki) {
     ((event && event.memo.elements) || [$('body')]).each(function(element) {
       element.select('input.gene-name').each(function(input) {
         if (!input.__Gene_validator) {
-          input.__Gene_validator = new XWiki.widgets.GeneValidator(input);
+          input.__Gene_validator = new XWiki.widgets.DuplicateValidator(input, 'input.gene-name', "$services.localization.render('PhenoTips.GeneClass.geneAlreadyExist')");
+        }
+      });    
+      element.select('.variant.cdna input').each(function(input) {
+        if (!input.__Variant_validator) {
+          input.__Variant_validator = new XWiki.widgets.DuplicateValidator(input, '.variant.cdna input', "$services.localization.render('PhenoTips.GeneVariantClass.variantAlreadyExist')");
         }
       });
     });
@@ -72,22 +84,7 @@ var XWiki = (function(XWiki) {
 
   (XWiki.domIsLoaded && init()) || document.observe("xwiki:dom:loaded", init);
   document.observe('xwiki:dom:updated', init);
-  document.observe('ms:suggest:selected', function(event) {
-    var inputElement = event.findElement();
-    var genesymbols = [];
-    $$('.gene.col-label.gene-input-label').each( function (item) {
-      if (item.next() != inputElement)
-        genesymbols.push(item.textContent || item.innerText);
-    });
-    if (genesymbols.indexOf(event.memo.value) > -1) {
-      inputElement.__Gene_validator.input.value = event.memo.value;
-      inputElement.__Gene_validator.validate(event.memo.value);
-    } else {
-      var triggeredEvent = new Event('keyup');
-      inputElement.dispatchEvent(triggeredEvent);
-    }
-  });
-
+ 
   // End XWiki augmentation.
   return XWiki;
 }(XWiki || {}));

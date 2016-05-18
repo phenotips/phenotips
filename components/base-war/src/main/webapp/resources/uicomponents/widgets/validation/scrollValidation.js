@@ -78,5 +78,21 @@ require(['jquery'], function ($)
                 dialog.showDialog();
             }
         });
+
+        document.observe('xwiki:dom:updated', function (event) {
+            ((event && event.memo.elements) || [$('body')]).each(function(element) {
+                element.select(".mandatory input:not([type='hidden'])").each(function(field) {
+                    var jField = $(field);
+                    var position = jField.offset().top;
+                    var parent = $(jField.parents('.chapter')[0]);
+                    //Position could be 0, so in that case take the position of the parent section
+                    if (position == 0) {
+                        position = parent.offset().top;
+                    }
+                    var positionObject = {'field': jField, 'position': position, 'parent': parent};
+                    fieldsByPosition.push(positionObject);
+               });
+            });
+        });
     });
 });
