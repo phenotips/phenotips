@@ -1,5 +1,6 @@
 /**
- * ExternalEndpointsManager provides various URLs for family-services.
+ * ExternalEndpointsManager provides various URLs for family-services and abstracts away
+ * XWiki-specific URLs and initialization parameters.
  *
  * @class ExternalEndpointsManager
  * @constructor
@@ -10,6 +11,13 @@ define([
     ){
     var ExternalEndpointsManager = Class.create({
         initialize: function() {
+            // parent document is passed to the pedigree editor via URL parameters
+            this._parentDocumentID = window.self.location.href.toQueryParams().patient_id || XWiki.currentDocument.page;
+            // normally pedigree editor runs in Family space, however when a pedigree is created for a patient with no family, it
+            // initially opens in patient space ("data") and patient_id is not passed in the URL as it is redundant in that case
+            this._parentDocumentType = (window.self.location.href.toQueryParams().patient_id || XWiki.currentSpace == "data") ? "Patient" : "Family";
+            this._parentDocumentAction = window.self.location.href.toQueryParams().action || (XWiki.contextaction ? XWiki.contextaction : "view");
+
             this.exportMultiplePatients = new XWiki.Document('ExportMultiplePatients', 'PhenoTips');
 
             this.familyPedigreeInterface = new XWiki.Document('FamilyPedigreeInterface', 'PhenoTips');
@@ -30,6 +38,18 @@ define([
 
             // TODO: IE caches AJAX requests, so adding a random part to "load" URL to break that cache;
             //       investigate if this is still the case with new caching policy in PhenoTips
+        },
+
+        getParentDocument: function() {
+            var returnURL = (this._parentDocumentType == "Patient") ?
+                this.getPhenotipsPatientURL(this._parentDocumentID, this._parentDocumentAction) :
+                XWiki.currentDocument.getURL(this._parentDocumentAction);
+
+            return {
+                "id": this._parentDocumentID,
+                "type": this._parentDocumentType,
+                "returnURL": returnURL
+            }
         },
 
         getLoadPatientDataJSONURL: function(patientList) {
