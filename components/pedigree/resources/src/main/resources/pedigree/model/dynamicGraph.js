@@ -61,7 +61,7 @@ define([
 
         getCurrentPatientId: function()
         {
-            return editor.getUrlQueryPatientID() || XWiki.currentDocument.page;
+            return editor.getExternalEndpoint().getParentDocument().id;
         },
 
         getCurrentPatientNodeID: function()
