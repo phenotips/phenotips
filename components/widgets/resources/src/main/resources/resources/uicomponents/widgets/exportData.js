@@ -186,40 +186,107 @@ document.observe('xwiki:dom:loading', function() {
       }
       window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
     }
-    
+
     //============================================================================
     // Push dialog check boxes and expand tools
-    var titles = content.select('.push-fields.section.columns > h5');
+    var titles = content.select('.push-fields.section.columns > div h5');
       if (titles) {
-        titles.each(function(item, index){
-        var sectionList = item.next('ul');
-        var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
-        var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+" "+"$services.localization.render('phenotips.patientSheet.expandSection')");
-        var hideIcon = '<span class="fa fa-minus-square-o fa-lg"></span>';
-        var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+" "+"$services.localization.render('phenotips.patientSheet.collapseSection')");
-        var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
-        var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
-        var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
-        item.insert({after: chapterExpandTools});
-        // section expand tools behaviour
-        [chapterShow, chapterHide, item.down('span')].invoke('observe', 'click', function (event) {
-          event.stop();
-          sectionList.toggleClassName('v-collapsed');
-          chapterShowWrapper.toggleClassName('v-collapsed');
-          chapterHideWrapper.toggleClassName('v-collapsed');
-        });
-        // leave patient info section expanded
-        if (index != 0) {
-          sectionList.toggleClassName('v-collapsed');
-          chapterHideWrapper.toggleClassName('v-collapsed');
-        } else {
-          chapterShowWrapper.toggleClassName('v-collapsed');
-        }
-        // section checkbox behaviour
-        item.down('input[type=checkbox]').observe('click', function(event) {
-          sectionList.select('input[type=checkbox]').each(function(elt) {elt.checked = event.element().checked});
-        });
-      });
+        titles.each(function(item, index) {
+          var sectionList = item.next('ul');
+          var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
+          var chapterShow = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(showIcon+" "+"$services.localization.render('phenotips.patientSheet.expandSection')");
+          var hideIcon = '<span class="fa fa-minus-square-o fa-lg"></span>';
+          var chapterHide = new Element('button', {'class' : 'tool button secondary', 'type' : 'button'}).update(hideIcon+" "+"$services.localization.render('phenotips.patientSheet.collapseSection')");
+          var chapterShowWrapper = new Element('span', {'class' : 'buttonwrapper show'}).insert(chapterShow);
+          var chapterHideWrapper = new Element('span', {'class' : 'buttonwrapper hide'}).insert(chapterHide);
+          var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShowWrapper).insert(chapterHideWrapper);
+          item.insert({after: chapterExpandTools});
+          // section expand tools behaviour
+          [chapterShow, chapterHide, item.down('span')].invoke('observe', 'click', function (event) {
+            event.stop();
+            sectionList.toggleClassName('v-collapsed');
+            chapterShowWrapper.toggleClassName('v-collapsed');
+            chapterHideWrapper.toggleClassName('v-collapsed');
+          });
+          // leave patient info section expanded
+          if (index != 0) {
+            sectionList.toggleClassName('v-collapsed');
+            chapterHideWrapper.toggleClassName('v-collapsed');
+          } else {
+            chapterShowWrapper.toggleClassName('v-collapsed');
+          }
+
+          // checkbox behaviour:
+          //  1) parent checkbox sets child checkboxes to the same value
+          //  2) when not all child checkboxes are in the same state paret checkbox is set to an "indeterminate" state
+          // (see https://css-tricks.com/indeterminate-checkboxes and Prototype conversion @ http://codepen.io/anon/pen/BKeVRP)
+
+          var parentChildController = function(elt, onClick) {
+            var checked = elt.checked;
+            var container = elt.up(".checkbox_tree_container");
+
+            if (onClick) {
+              // set all child checkboxes to a determinate state equal to the current state of the checkbox
+              // note that this should not be done for initial values of the checkboxes
+              container.select('input[type="checkbox"]').each(function(elt){
+                elt.indeterminate = false;
+                elt.checked = checked;
+              });
+            }
+
+            // update parent checkboxes to set/unset/indetermninate, depending on all children
+            function checkSiblings(el) {
+              var parent = el.up('.checkbox_tree_container');
+              if (parent) {
+                var parentCheckbox = parent.down('input[type="checkbox"]');
+
+                var allSiblingsSameStatus = true;
+                el.siblings().each(function(sibling) {
+                  sibling.select('input[type="checkbox"]').each(function(elt) {
+                    if (elt.checked != checked) {
+                      allSiblingsSameStatus = false;
+                    }
+                  });
+                });
+
+                if (allSiblingsSameStatus && checked) {
+                  // mark parent node as checked
+                  parentCheckbox.indeterminate = false;
+                  parentCheckbox.checked = checked;
+                  // TODO: enable when/if we have nested categories
+                  // checkSiblings(parent);
+                } else if (allSiblingsSameStatus && !checked) {
+                  parentCheckbox.checked = checked;
+                  var hasCheckedChildren = (parent.select('input[type="checkbox"]:checked').length > 0);
+                  parentCheckbox.indeterminate = hasCheckedChildren;
+                  // TODO: enable when/if we have nested categories:
+                  // checkSiblings(parent);
+                } else {
+                  var setAllParentsIndeterminate = function(elt) {
+                    var parent = elt.up('.checkbox_tree_container');
+                    if (parent) {
+                      var parentChekcbox = parent.down('input[type="checkbox"]');
+                      parentCheckbox.indeterminate = true;
+                      parentCheckbox.checked = false;
+                      // TODO: enable when/if we have nested categories
+                      // setAllParentsIndeterminate(parent);
+                    }
+                  };
+                  setAllParentsIndeterminate(el);
+                }
+              }
+            }
+            checkSiblings(container);
+          }
+
+          // current structure is <div> <h5><parent_checkbox></h5> <ul>...<li>child_checkbox</li>...</ul> </div>
+          item.up('div').select('input[type=checkbox]').each(function(elt) {
+            elt.onchange = function() {
+              parentChildController(elt, true);  // update based on current state, and propagate state change if necessary
+            };
+            parentChildController(elt, false);   // initial update using pre-set values: do not propagate state
+          });
+       });
     }
 
     //============================================================================
@@ -234,19 +301,25 @@ document.observe('xwiki:dom:loading', function() {
       var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update("$services.localization.render('phenotips.DBWebHomeSheet.colSelect.restore')");
       selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
 
-      checkboxList.each(function(elt) {elt._originallyChecked = elt.checked});
+      checkboxList.each(function(elt) {
+          elt._originallyChecked = elt.checked;
+          elt._originallyIndeterminate = elt.indeterminate;
+      });
 
       all.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = true});
+        checkboxList.each(function(elt) { elt.checked = true; elt.indeterminate = false; });
       });
       none.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = false});
+        checkboxList.each(function(elt) {elt.checked = false; elt.indeterminate = false;});
       });
       invert.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = !elt.checked});
+        checkboxList.each(function(elt) {if (!elt.indeterminate) { elt.checked = !elt.checked; } });
       });
       restore.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = elt._originallyChecked});
+        checkboxList.each(function(elt) {
+          elt.checked = elt._originallyChecked;
+          elt.indeterminate = elt._originallyIndeterminate;
+        });
       });
       columnList.insert({'after' : selectionTools});
     }

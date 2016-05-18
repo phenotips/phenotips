@@ -137,3 +137,6 @@
 .v-collapsed {
   display: none !important;
 }
+.filter-match-count {
+  margin-left: 0.5em
+}
