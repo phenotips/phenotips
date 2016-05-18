@@ -537,17 +537,17 @@ public class DataToCellConverter
         if (present.contains("external_id")) {
             DataCell externalIdCell = new DataCell("Patient Identifier", hX, 1, StyleOption.HEADER);
             section.addCell(externalIdCell);
-            x++;
+            hX++;
         }
         if (present.contains("family_id")) {
-            DataCell familyIdCell = new DataCell("Family Identifier", x, 1, StyleOption.HEADER);
+            DataCell familyIdCell = new DataCell("Family Identifier", hX, 1, StyleOption.HEADER);
             section.addCell(familyIdCell);
-            x++;
+            hX++;
         }
         if (present.contains("birth_number")) {
-            DataCell birthNumberCell = new DataCell("Birth Number", x, 1, StyleOption.HEADER);
+            DataCell birthNumberCell = new DataCell("Birth Number", hX, 1, StyleOption.HEADER);
             section.addCell(birthNumberCell);
-            x++;
+            hX++;
         }
         // section.finalizeToMatrix();
         return section;
