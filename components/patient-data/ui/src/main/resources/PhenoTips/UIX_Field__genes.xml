@@ -177,7 +177,7 @@
   });
 
   $$('input.gene-name').invoke('observe', 'change', function (event) {
-    updateInfoIcon(event.element(), null);
+    updateInfo(event.element(), null, false);
   });
 
   document.observe("xwiki:dom:updated", function(event) {
