@@ -2,7 +2,7 @@ var XWiki = (function(XWiki) {
   // Start XWiki augmentation
   var widgets = XWiki.widgets = XWiki.widgets || {};
 
-  widgets.GeneValidator = Class.create({
+  widgets.GeneVariantValidator = Class.create({
     initialize : function(input) {
       this.input = input;
       this.valid = true;
@@ -10,7 +10,7 @@ var XWiki = (function(XWiki) {
       this.value = input.value;
       if (!this.input.__validation) {
         try {
-          this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+          this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500, displayMessageWhenEmpty: true});
         }
         catch(err) {
           //console.log(err);
@@ -20,28 +20,33 @@ var XWiki = (function(XWiki) {
         this.input.__validation.add(this.validate.bind(this));
     },
     check : function() {
-      if (this.input.value != this.value) {
+      if (this.input.value.blank() || this.input.value != this.value) {
         this.value = this.input.value;
         this.state = 'CHECKING';
         var el = this.input;
-        var genesymbols = [];
-        $$('.gene.col-label.gene-input-label').each( function (item) {
-          if (item.next() != el)
-            genesymbols.push(item.textContent || item.innerText);
-        });
-        if (genesymbols.indexOf(el.value) > -1) {
+        if (el.value.blank()) {
           this.invalid();
-        } else {
-          this.available();
+        } else if (this.input.className.include('gene-name')){
+          var genesymbols = [];
+          $$('.gene.col-label.gene-input-label').each( function (item) {
+            if (item.next() != el) {
+              genesymbols.push(item.textContent || item.innerText);
+            }
+          });
+          if (genesymbols.indexOf(el.value) > -1) {
+            this.invalid();
+          } else {
+            this.available();
+          }
         }
         this.responded();
       }
     },
     validate : function(value) {
-      if (this.state == 'DONE' &&
-          this.value == value &&
-          !this.valid) {
-        Validate.fail("This gene has already been entered.");
+      if ((this.state == 'DONE' && this.value == value && !this.valid) ||
+          (this.state == 'NEW' && value.blank())) {
+        var message = (value.blank()) ? "Input is blank." : "This gene has already been entered.";
+        Validate.fail(message);
       }
       this.check();
       return true;
@@ -61,9 +66,14 @@ var XWiki = (function(XWiki) {
 
   var init = function(event) {
     ((event && event.memo.elements) || [$('body')]).each(function(element) {
-      element.select('input.gene-name').each(function(input) {
+      element.select('[name^="PhenoTips.GeneClass_"][name$="_gene"]').each(function(input) {
         if (!input.__Gene_validator) {
-          input.__Gene_validator = new XWiki.widgets.GeneValidator(input);
+          input.__Gene_validator = new XWiki.widgets.GeneVariantValidator(input);
+        }
+      });
+	  element.select('[name^="PhenoTips.GeneVariantClass_"][name$="_cdna"]').each(function(input) {
+        if (!input.__Variant_validator) {
+          input.__Variant_validator = new XWiki.widgets.GeneVariantValidator(input);
         }
       });
     });
@@ -72,21 +82,6 @@ var XWiki = (function(XWiki) {
 
   (XWiki.domIsLoaded && init()) || document.observe("xwiki:dom:loaded", init);
   document.observe('xwiki:dom:updated', init);
-  document.observe('ms:suggest:selected', function(event) {
-    var inputElement = event.findElement();
-    var genesymbols = [];
-    $$('.gene.col-label.gene-input-label').each( function (item) {
-      if (item.next() != inputElement)
-        genesymbols.push(item.textContent || item.innerText);
-    });
-    if (genesymbols.indexOf(event.memo.value) > -1) {
-      inputElement.__Gene_validator.input.value = event.memo.value;
-      inputElement.__Gene_validator.validate(event.memo.value);
-    } else {
-      var triggeredEvent = new Event('keyup');
-      inputElement.dispatchEvent(triggeredEvent);
-    }
-  });
 
   // End XWiki augmentation.
   return XWiki;
