@@ -92,4 +92,13 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     {
         return Collections.emptyList();
     }
+
+    @Override
+    protected String getControllingFieldName(String field)
+    {
+        if (field == GESTATION_TWIN) {
+            return MULTIPLE_GESTATION;
+        }
+        return field;
+    }
 }

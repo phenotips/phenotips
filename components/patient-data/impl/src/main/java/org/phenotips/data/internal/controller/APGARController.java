@@ -176,7 +176,7 @@ public class APGARController implements PatientDataController<Integer>
             for (String propertyName : getProperties()) {
                 try {
                     /* could be 'unknown' rather than an int */
-                    String value = container.getString(propertyName);
+                    String value = container.optString(propertyName);
                     if (NumberUtils.isDigits(value)) {
                         parsed.put(propertyName, Integer.valueOf(value));
                     }

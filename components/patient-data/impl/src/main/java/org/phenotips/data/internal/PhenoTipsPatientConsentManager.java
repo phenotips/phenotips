@@ -23,6 +23,7 @@ import org.phenotips.data.ConsentManager;
 import org.phenotips.data.ConsentStatus;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
@@ -37,7 +38,6 @@ import org.xwiki.model.reference.EntityReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,6 +90,9 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
 
     @Inject
     private Provider<XWikiContext> contextProvider;
+
+    @Inject
+    private TranslationManager translationManager;
 
     private EntityReference consentReference =
         new EntityReference("PatientConsentConfiguration", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
@@ -152,6 +155,10 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             String id = xwikiConsent.getStringValue("id");
             String label = cleanDescription(
                     configDoc.display("label", RENDERING_MODE, xwikiConsent, contextProvider.get()));
+            if (label == null || label.length() == 0) {
+                label = id + " "
+                        + this.translationManager.translate("PhenoTips.PatientConsentManager_emptyLabelPostfix");
+            }
             String description = cleanDescription(
                     configDoc.display("description", RENDERING_MODE, xwikiConsent, contextProvider.get()));
             boolean required = intToBool(xwikiConsent.getIntValue("required"));
@@ -246,7 +253,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
     @SuppressWarnings("unchecked")
     private Set<String> readConsentIdsFromPatientDoc(Patient patient)
     {
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new LinkedHashSet<String>();
         try {
             DocumentModelBridge patientDocBridge = bridge.getDocument(patient.getDocument());
             XWikiDocument patientDoc = (XWikiDocument) patientDocBridge;

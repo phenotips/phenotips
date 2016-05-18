@@ -68,7 +68,7 @@
             (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp;
             $xwiki.getDocument($eClass).getxWikiClass().properties.size() &gt; 0
             )
-         #set ($itemContent = "&lt;li&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name)) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
+         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${eCMeta.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($valueList.contains($eCMeta.name)) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
      #end
@@ -82,7 +82,7 @@
                !$ignored.fields.contains($eField) &amp;&amp;
                (!($remoteEnabledFields.size() &gt; 0) || $remoteEnabledFields.contains($eField))
             )
-            #set ($itemContent = "&lt;li&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;${f.translatedPrettyName}&lt;/label&gt;&lt;/li&gt;")
+            #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label for=""${targetFieldName}_${f.name}""&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${f.name}"" value=""$f.name""#if ($valueList.contains($f.name)) checked=""checked""#end/&gt;${f.translatedPrettyName}&lt;/label&gt;&lt;/li&gt;")
             #set ($sectionContent = $sectionContent.concat($itemContent))
           #end
        #end
@@ -91,10 +91,12 @@
  #end
  #if ($sectionContent != '')
 
- &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
+ &lt;div class="checkbox_tree_container"&gt;
+ &lt;h5&gt;&lt;label for=""&gt;&lt;input type="checkbox" name="" id="" value="" /&gt;&lt;span class="section-name-header field-no-user-select"&gt;$section.name&lt;/span&gt;&lt;/label&gt;&lt;/h5&gt;
  &lt;ul class="field-list"&gt;
  $sectionContent
  &lt;/ul&gt;
+ &lt;/div&gt;
  #end
 #end
 &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;{{/html}}
@@ -210,13 +212,19 @@
   #set($selectedValues = [])
 #end
 
-{{html clean="false" filter="indent"}}&lt;form class="xform" action="${escapetool.xml($request.get('export_endpoint'))}" method="post"&gt;&lt;div&gt;{{/html}}
+#set ($form_action = $!{escapetool.xml($!{request.get('export_endpoint')})})
+#if (!$form_action)
+  #set ($form_action = "none")
+#end
+{{html clean="false" filter="indent"}}&lt;form class="xform" action="$form_action" method="post"&gt;&lt;div&gt;{{/html}}
 
 #if (!$request.singlepatient)
 (% class="section filters"%)(((
 === (% class="step" %)1(%%) $services.localization.render('phenotips.exportPreferences.filterTitle') ===
  #__filters_display('export-filters')
+
  {{info}} $services.localization.render('phenotips.exportPreferences.numMatchingRecords', [ "**(% id='filter-match-count'%) (%%)**" ]) {{/info}}
+
  )))##section filters
 #end
 

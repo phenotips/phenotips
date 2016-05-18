@@ -98,9 +98,18 @@ public class DefaultPatientsResourceImpl extends XWikiResource implements Patien
             this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
+        if (json == null) {
+            // json == null does not create an exception when initializing a JSONObject
+            // need to handle it separately to give explicit BAD_REQUEST to the user
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+        JSONObject jsonInput;
         try {
-            JSONObject jsonInput = json == null ? null : new JSONObject(json);
-
+            jsonInput = new JSONObject(json);
+        } catch (Exception ex) {
+            throw new WebApplicationException(Status.BAD_REQUEST);
+        }
+        try {
             Patient patient = this.repository.createNewPatient();
             patient.updateFromJSON(jsonInput);
 

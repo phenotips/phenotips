@@ -474,6 +474,18 @@
               <field>POST_PROTOCOL_VERSION</field>
               <justification>Renamed to better reflect its meaning</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/data/Feature</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getPropertyName()</method>
+              <justification>New methods for extending pushable data</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/Feature</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.List getCategories()</method>
+              <justification>New methods for extending pushable data</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
