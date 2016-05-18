@@ -33,6 +33,7 @@
 
   <properties>
     <ptwar.path>${project.build.directory}/ptwar</ptwar.path>
+    <ctwar.path>${project.build.directory}/ctwar</ctwar.path>
     <data.path>${project.build.directory}/phenotips</data.path>
     <db.path>${data.path}/data</db.path>
     <xwiki.properties.environment.permanentDirectory>/var/lib/phenotips/data</xwiki.properties.environment.permanentDirectory>
@@ -44,6 +45,19 @@
       <artifactId>phenotips-war</artifactId>
       <version>${project.version}</version>
       <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>clinical-text-analysis-extension-ctakes-service</artifactId>
+      <version>${textAnalysis.version}</version>
+      <type>war</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -86,6 +100,30 @@
               </artifactItems>
               <excludes>**\/xwiki.cfg,**/xwiki.properties,**/hibernate.cfg.xml</excludes>
               <outputDirectory>${ptwar.path}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unzip-ctakes</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>clinical-text-analysis-extension-ctakes-service</artifactId>
+                  <version>${textAnalysis.version}</version>
+                  <type>war</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${ctwar.path}</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -210,6 +248,15 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
                 </source>
               </sources>
             </mapping>
+            <!-- Copy the CTAKES webapp -->
+            <mapping>
+              <directory>/var/lib/phenotips/webapps/ctakes</directory>
+              <sources>
+                <source>
+                  <location>${ctwar.path}</location>
+                </source>
+              </sources>
+            </mapping>
             <!-- Copy the custom PhenoTips/XWiki configuration files into the webapp -->
             <mapping>
               <directory>/var/lib/phenotips/webapp/WEB-INF</directory>
@@ -244,6 +291,10 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
                 <source>
                   <location>${project.build.outputDirectory}/context.xml</location>
                   <destination>phenotips.xml</destination>
+                </source>
+                <source>
+                  <location>${project.build.outputDirectory}/ctakes.xml</location>
+                  <destination>ctakes.xml</destination>
                 </source>
               </sources>
             </mapping>
