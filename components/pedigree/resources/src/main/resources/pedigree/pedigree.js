@@ -215,7 +215,9 @@ define([
             window.onbeforeunload = onLeavePageFunc;
 
             var onCloseButtonClickFunc = function(event) {
-                var redirectOnQuit  = function() { window.location = editor.getExternalEndpoint().getParentDocument().returnURL; };
+                var redirectOnQuit  = function() { window.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' +
+                                                                     encodeURIComponent(editor.getExternalEndpoint().getParentDocument().returnURL));
+                                                 };
                 var dontQuitFunc    = function() { window.onbeforeunload = onLeavePageFunc; };
                 var quitFunc        = function() { redirectOnQuit(); };
                 var saveAndQuitFunc = function() { editor._afterSaveFunc = quitFunc;

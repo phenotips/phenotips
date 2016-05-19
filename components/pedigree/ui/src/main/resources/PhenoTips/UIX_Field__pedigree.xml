@@ -137,7 +137,7 @@
     var openPedigreeEditor = function() {
       var familyLink = $('familyId');
       if (XWiki.currentDocument.space == 'data' &amp;&amp; familyLink) {
-        window.self.location = familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction;
+        window.self.location = XWiki.currentDocument.getURL('cancel', 'xredirect=' + encodeURIComponent(familyLink.href + '?sheet=PhenoTips.PedigreeEditor&amp;patient_id=' + XWiki.currentDocument.page + '&amp;action=' + XWiki.contextaction));
       } else {
         window.self.location.search = '?sheet=PhenoTips.PedigreeEditor';
       }
