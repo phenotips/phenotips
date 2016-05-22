@@ -176,10 +176,6 @@
     updateInfo(event.element(), null, false);
   });
 
-  $$('input.gene-name').invoke('observe', 'change', function (event) {
-    updateInfo(event.element(), null, false);
-  });
-
   document.observe("xwiki:dom:updated", function(event) {
     if (event.memo &amp;&amp; event.memo.elements) {
       event.memo.elements.each(function (elt) {
