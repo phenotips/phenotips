@@ -110,6 +110,15 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     }
 
     @Override
+    public boolean isAdministrator(Patient patient, DocumentReference user)
+    {
+        if (patient == null || patient.getDocument() == null) {
+            return false;
+        }
+        return this.rights.hasAccess(Right.ADMIN, user, patient.getDocument());
+    }
+
+    @Override
     public Owner getOwner(Patient patient)
     {
         if (patient == null || patient.getDocument() == null) {

@@ -39,6 +39,8 @@ public interface PatientAccessHelper
 
     boolean isAdministrator(Patient patient);
 
+    boolean isAdministrator(Patient patient, DocumentReference user);
+
     Owner getOwner(Patient patient);
 
     boolean setOwner(Patient patient, EntityReference userOrGroup);
