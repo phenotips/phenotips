@@ -135,7 +135,7 @@ public class DefaultMeasurementChartResourcesResourceImpl extends AbstractMeasur
             chartsJson.put(chartJson);
         }
         JSONObject resp = new JSONObject();
-        resp.accumulate("charts", chartsJson);
+        resp.put("charts", chartsJson);
 
         return Response.ok(resp, MediaType.APPLICATION_JSON_TYPE).build();
     }
