@@ -287,7 +287,7 @@ public class DefaultPatientAccessTest
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
         when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
-        when(helper.isAdministrator(p)).thenReturn(true);
+        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(true);
         AccessLevel owner = new OwnerAccessLevel();
         when(manager.resolveAccessLevel("owner")).thenReturn(owner);
         Assert.assertSame(owner, pa.getAccessLevel());
@@ -303,7 +303,7 @@ public class DefaultPatientAccessTest
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
         when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
-        when(helper.isAdministrator(p)).thenReturn(false);
+        when(helper.isAdministrator(p, COLLABORATOR)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
         when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);
@@ -311,6 +311,50 @@ public class DefaultPatientAccessTest
         AccessLevel view = new ViewAccessLevel();
         when(publicV.getDefaultAccessLevel()).thenReturn(view);
         Assert.assertSame(edit, pa.getAccessLevel());
+    }
+
+    /**
+     * {@link PatientAccess#getAccessLevel(user)} returns the specified collaborator access for a collaborator.
+     */
+    @Test
+    public void getAccessLevelForCollaboratorAsAdministrator() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        PermissionsManager manager = mock(PermissionsManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        AccessLevel edit = new EditAccessLevel();
+        when(helper.isAdministrator(p, COLLABORATOR)).thenReturn(false);
+        when(helper.getCurrentUser()).thenReturn(OTHER_USER);
+        when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
+        Visibility publicV = mock(Visibility.class);
+        when(helper.getVisibility(p)).thenReturn(publicV);
+        AccessLevel view = new ViewAccessLevel();
+        when(publicV.getDefaultAccessLevel()).thenReturn(view);
+        Assert.assertSame(edit, pa.getAccessLevel(COLLABORATOR));
+    }
+
+    /**
+     * {@link PatientAccess#getAccessLevel(user)} returns owner access for an administrator.
+     */
+    @Test
+    public void getAccessLevelForAdministratorAsCollaborator() throws ComponentLookupException
+    {
+        Patient p = mock(Patient.class);
+        PatientAccessHelper helper = mock(PatientAccessHelper.class);
+        PermissionsManager manager = mock(PermissionsManager.class);
+        PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
+        AccessLevel edit = new EditAccessLevel();
+        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(true);
+        when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
+        when(helper.getAccessLevel(p, OTHER_USER)).thenReturn(edit);
+        Visibility publicV = mock(Visibility.class);
+        when(helper.getVisibility(p)).thenReturn(publicV);
+        AccessLevel owner = new OwnerAccessLevel();
+        when(manager.resolveAccessLevel("owner")).thenReturn(owner);
+        Assert.assertSame(owner, pa.getAccessLevel(OTHER_USER));
     }
 
     /** {@link PatientAccess#getAccessLevel()} returns the default visibility access for non-collaborators. */
@@ -323,7 +367,7 @@ public class DefaultPatientAccessTest
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
         when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel none = new NoAccessLevel();
-        when(helper.isAdministrator(p)).thenReturn(false);
+        when(helper.isAdministrator(p, OTHER_USER)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
         when(helper.getAccessLevel(p, OTHER_USER)).thenReturn(none);
         Visibility publicV = mock(Visibility.class);

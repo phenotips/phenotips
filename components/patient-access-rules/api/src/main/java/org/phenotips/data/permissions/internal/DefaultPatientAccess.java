@@ -25,6 +25,7 @@ import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
@@ -142,7 +143,7 @@ public class DefaultPatientAccess implements PatientAccess
         if (user == null) {
             return getVisibility().getDefaultAccessLevel();
         }
-        if (isOwner(user) || this.helper.isAdministrator(this.patient)) {
+        if (isOwner(user) || this.helper.isAdministrator(this.patient, new DocumentReference(user))) {
             return this.manager.resolveAccessLevel("owner");
         }
         AccessLevel userAccess = this.helper.getAccessLevel(this.patient, user);
