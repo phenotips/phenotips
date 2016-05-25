@@ -107,7 +107,7 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
@@ -326,7 +326,7 @@
         <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -619,9 +619,6 @@ label.selected, label.subterm-selected {
   display: inline;
   font-weight: bold;
 }</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
