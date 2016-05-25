@@ -133,7 +133,8 @@
 enabled=true
 required=
 order=1
-fields=</parameters>
+fields=relative_type,relative_of
+pt_class=PhenoTips.RelativeClass</parameters>
     </property>
     <property>
       <scope>wiki</scope>
