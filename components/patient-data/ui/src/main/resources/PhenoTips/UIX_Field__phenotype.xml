@@ -29,8 +29,8 @@
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822210000</date>
-  <contentUpdateDate>1401822210000</contentUpdateDate>
+  <date>1464195721000</date>
+  <contentUpdateDate>1463889090000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.UIXField.phenotype')</title>
   <comment/>
@@ -62,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -107,10 +107,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -138,7 +138,7 @@
   var phBrowserCollapseAllWrapper = new Element('span', {'class' : 'buttonwrapper collapse-all'}).insert(phBrowserCollapseAll);
   var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAllWrapper).insert(phBrowserCollapseAllWrapper);
 
-  $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
+  $$('.chapter.phenotype-info .browser .non-moving h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
     item.insert({'top': new Element('span', {'class' : 'expand-tool'}).update('▼')});
   });
@@ -169,13 +169,13 @@
   }
 
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
-     if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
-       toggleCategory(item);
-     }
-     item.observe('click', function() {
-       toggleCategory(item);
-       relayoutSummaryStickyBox();
-     });
+    if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
+      toggleCategory(item);
+    }
+    item.observe('click', function() {
+      toggleCategory(item);
+      relayoutSummaryStickyBox();
+    });
   });
   phBrowserExpandAllWrapper.observe('click', function(event){
     event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item) {
@@ -195,7 +195,7 @@
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
   // ------------------------------------------------------------------------
-  var offsetTop = $('patient-record-actions') &amp;&amp; $('patient-record-actions').getHeight() || 0;
+  var offsetTop = 0;
   var qsBox = $('quick-search-box');
   if (qsBox) {
     var content = qsBox.up('div');
@@ -233,12 +233,12 @@
     var sSticky  = new StickyBox(summary, container, {offsetTop : offsetTop, offsetBottom: offsetBottom, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
     summary.observe('size:changed', function(event) {
       if (!event.memo) {
-         summaryContent.style.height = '';
-         summaryContent.style.overflow = '';
+        summaryContent.style.height = '';
+        summaryContent.style.overflow = '';
       } else {
-         summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
-         summaryContent.style.overflow = 'auto';
-         summary.style.overflow = '';
+        summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
+        summaryContent.style.overflow = 'auto';
+        summary.style.overflow = '';
       }
     });
   }
@@ -278,7 +278,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -294,6 +294,22 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -323,10 +339,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -347,6 +363,8 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 0px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
 }
 .quick-search-box {
+  float: left;
+  width: 100%;
   border: 0 none;
   z-index: 1000;
   background-color: $theme.menuBackgroundColor;
@@ -482,6 +500,10 @@
   margin: .5em .75% 0em !important;
   padding-right: .75%;
 }
+.non-moving {
+  margin-top: 75px !important;
+}
+
 .current-phenotype-selection {
   padding: 0 !important;
   background-color: #FFFFFF;
@@ -615,6 +637,9 @@ label.selected, label.subterm-selected {
 }</code>
     </property>
     <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
       <name/>
     </property>
     <property>
@@ -686,7 +711,7 @@ label.selected, label.subterm-selected {
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -736,6 +761,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     (% class="selector-panels"%)(((
     (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
     #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
+    (% class="non-moving" %)(((
     (% class="browser-title"%)
     === **$services.localization.render('phenotips.UIXField.phenotype.browseCategories')** ===
   #end
@@ -744,6 +770,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   )))
   #if ($xcontext.action == 'edit')
     #__phenotypeMeta_displayAll('edit')##
+    )))## non-moving
     )))## browse-phenotype-categories
     (% class="half-width selector-panel current-phenotype-selection"%)(((
     (% class='sub-panel'%)(((
