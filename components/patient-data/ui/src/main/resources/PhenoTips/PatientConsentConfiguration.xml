@@ -128,8 +128,10 @@ $xwiki.jsx.use($displayDocName)##
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
  #foreach ($element in $section.enabledElements)
-   #set ($itemContent = "&lt;li&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""$!{prefix}$!{name}"" value=""$element.extension.id"" #if ($value.contains(""$element.extension.id"")) checked=""checked"" #end/&gt; $element.name&lt;/label&gt;&lt;/li&gt;")
-   #set ($sectionContent = $sectionContent.concat($itemContent))
+   #if ($element.extension.parameters.get('fields') || $element.extension.parameters.get('pt_class'))
+     #set ($itemContent = "&lt;li&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""$!{prefix}$!{name}"" value=""$element.extension.id"" #if ($value.contains(""$element.extension.id"")) checked=""checked"" #end/&gt; $element.name&lt;/label&gt;&lt;/li&gt;")
+     #set ($sectionContent = $sectionContent.concat($itemContent))
+   #end
  #end
  #if ($sectionContent.trim() != '')
  **$section.name**
