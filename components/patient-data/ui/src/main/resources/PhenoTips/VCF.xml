@@ -235,7 +235,8 @@
 enabled=true
 required=
 order=2
-fields=</parameters>
+fields=filename,reference_genome
+pt_class=PhenoTips.VCF</parameters>
     </property>
     <property>
       <scope>wiki</scope>
