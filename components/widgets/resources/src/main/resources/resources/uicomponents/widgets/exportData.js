@@ -174,7 +174,6 @@ document.observe('xwiki:dom:loading', function() {
     //============================================================================
     // Date pickers: create pickers and copy existing dates
     if (typeof (XWiki.widgets.DateTimePicker) != "undefined") {
-      var crtYear = new Date().getFullYear();
       if (tableFilters) {
         content.select('.xwiki-date').each(function(input) {
           var source = tableFilters.down('input[name="' + input.name + '"]');
@@ -184,7 +183,12 @@ document.observe('xwiki:dom:loading', function() {
           }
         });
       }
-      window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+      if (window.dateTimePicker) {
+        window.dateTimePicker.attachPickers(content);
+      } else {
+        var crtYear = new Date().getFullYear();
+        window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+      }
     }
 
     //============================================================================
