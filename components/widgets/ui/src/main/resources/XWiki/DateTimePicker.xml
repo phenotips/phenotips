@@ -2331,7 +2331,7 @@ CalendarDateSelect = Class.create({
       <code>var XWiki = (function (XWiki) {
   var widgets = XWiki.widgets = XWiki.widgets || {};
   widgets.DateTimePicker = Class.create({
-    selector : "input.xwiki-date",
+    selector : "input.xwiki-date:not(.initialized)",
     options : {
       year_range: 10,
       time: false,
@@ -2349,6 +2349,7 @@ CalendarDateSelect = Class.create({
       dateInputs.invoke('observe', 'click', this.onClick.bindAsEventListener(this));
       dateInputs.each(function(element) {
         element.readOnly = true;
+        element.addClassName('initialized');
       });
     },
     onClick : function(event) {
@@ -2362,7 +2363,6 @@ CalendarDateSelect = Class.create({
         Event.fire(target, 'xwiki:date:changed');
         Event.fire(target, 'xwiki:form:field-value-changed');
       }
-      target.addClassName('initialized');
       target._selector = new CalendarDateSelect(target, cOptions);
     }
   });
