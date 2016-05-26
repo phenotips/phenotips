@@ -684,7 +684,11 @@ var PhenoTips = (function(PhenoTips) {
             this._renderPercentileSd(pctlEl, resp.responseJSON);
             this._selectAssocPhenotypes(resp.responseJSON['associated-terms']);
           }).bind(this),
-          onFailure: function (response) {}
+          onFailure: function (response) {
+            if (response.status == 500) {
+              pctlEl.innerText = '';
+            }
+          }
         });
       } else {
         this._renderPercentileSd(pctlEl, null);
