@@ -138,7 +138,7 @@
   var phBrowserCollapseAllWrapper = new Element('span', {'class' : 'buttonwrapper collapse-all'}).insert(phBrowserCollapseAll);
   var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAllWrapper).insert(phBrowserCollapseAllWrapper);
 
-  $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
+  $$('.chapter.phenotype-info .browser .non-moving h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
     item.insert({'top': new Element('span', {'class' : 'expand-tool'}).update('▼')});
   });
@@ -195,7 +195,7 @@
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
   // ------------------------------------------------------------------------
-  var offsetTop = $('patient-record-actions') &amp;&amp; $('patient-record-actions').getHeight() || 0;
+  var offsetTop = 0;
   var qsBox = $('quick-search-box');
   if (qsBox) {
     var content = qsBox.up('div');
@@ -347,6 +347,8 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 0px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
 }
 .quick-search-box {
+  float: left;
+  width: 100%;
   border: 0 none;
   z-index: 1000;
   background-color: $theme.menuBackgroundColor;
@@ -482,6 +484,10 @@
   margin: .5em .75% 0em !important;
   padding-right: .75%;
 }
+.non-moving {
+  margin-top: 75px;
+}
+
 .current-phenotype-selection {
   padding: 0 !important;
   background-color: #FFFFFF;
@@ -736,6 +742,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     (% class="selector-panels"%)(((
     (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
     #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
+    (% class="non-moving" %)(((
     (% class="browser-title"%)
     === **$services.localization.render('phenotips.UIXField.phenotype.browseCategories')** ===
   #end
@@ -744,6 +751,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   )))
   #if ($xcontext.action == 'edit')
     #__phenotypeMeta_displayAll('edit')##
+    )))## non-moving
     )))## browse-phenotype-categories
     (% class="half-width selector-panel current-phenotype-selection"%)(((
     (% class='sub-panel'%)(((
