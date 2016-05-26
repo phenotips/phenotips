@@ -4504,13 +4504,6 @@ h1, h2, h3, h4 {
 .background-suggestions ul {
   list-style-type: none;
   margin: 0;
-  padding-left: 0.8em;
-  -moz-column-count: 2;
-  -moz-column-gap: 1em;
-  -webkit-column-count: 2;
-  -webkit-column-gap: 1em;
-  column-count: 2;
-  column-gap: 1em;
 }
 
 #diffDiagnosis-search-results {
