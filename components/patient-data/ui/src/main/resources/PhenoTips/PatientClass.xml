@@ -752,12 +752,12 @@
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </icsi>
     <identifier>
-      <customDisplay/>
+      <customDisplay>{{velocity}}$!value{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>identifier</name>
       <number>1</number>
       <numberType>long</numberType>
-      <prettyName>Identifier</prettyName>
+      <prettyName>PhenoTips identifier</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
