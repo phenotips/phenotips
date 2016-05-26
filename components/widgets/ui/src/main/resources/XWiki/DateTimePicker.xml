@@ -2958,15 +2958,8 @@ iframe.ie6_blocker {
   display:none;
 }
 
-.calendar_date_select .cds_header select.month {
-  width:6.429em;
-}
 *html div.calendar_date_select .cds_header select.month {
   width:5.714em;
-}
-
-.calendar_date_select .cds_header select.year {
-  width:4.357em;
 }
 
 .calendar_date_select .cds_buttons a {
