@@ -13,9 +13,9 @@ define([], function(){
                                       { "comment":    "id desanitation",
                                         "introduced": "Mar2015",
                                         "func":       "updateId"},
-                                     /* { "comment":    "proband link",
+                                      { "comment":    "proband link",
                                         "introduced": "Nov2015",
-                                        "func":       "updateNode0ProbandLink"},*/
+                                        "func":       "updateNode0ProbandLink"},
                                       { "comment":    "version info",
                                         "introduced": "Nov2015",
                                         "func":       "updateJSONVersionInfo"}
@@ -149,7 +149,6 @@ define([], function(){
         /* - assumes input is in the pre-Nov-2015 format
          * - returns null if there were no changes; returns new JSON if there was a change
          */
-        /*
         updateNode0ProbandLink: function(pedigreeJSON) {
             // check if at least one node is linked to the current patient.
             // Iff none are, assumenode 0 is the proband and link it to the patient
@@ -170,6 +169,7 @@ define([], function(){
 
             var currentPatient = XWiki.currentDocument.page;
 
+            /*
             //look through all person nodes for a node linked to the current patient
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
@@ -179,7 +179,7 @@ define([], function(){
                         if (node.prop.phenotipsId == currentPatient) {
 
                             // if there is no proband make this node the proband
-                            // if ther eis proband, we are done
+                            // if there is proband, we are done
                             if (!data.hasOwnProperty("probandNodeID")) {
                                 data["probandNodeID"] = i;
                                 return JSON.stringify(data);
@@ -190,9 +190,9 @@ define([], function(){
                         }
                     }
                 }
-            }
+            }*/
 
-            // no nodes are linked ot the current patient. Either link the proband node or node 0 if no
+            // no nodes are linked to the current patient. Either link the proband node or node 0 if no
             // proband is defined
             if (!data.hasOwnProperty("probandNodeID")) {
                 var probandID = 0;
@@ -200,7 +200,7 @@ define([], function(){
             } else {
                 var probandID = data["probandNodeID"];
             }
-
+            /*
             // assign node with id = 0 to be the proband
             for (var i = 0; i < data.GG.length; i++) {
                 var node = data.GG[i];
@@ -217,9 +217,9 @@ define([], function(){
                         break;
                     }
                 }
-            }
+            }*/
             return JSON.stringify(data);
-        },*/
+        },
 
         updateJSONVersionInfo: function(pedigreeJSON) {
             var data = JSON.parse(pedigreeJSON);

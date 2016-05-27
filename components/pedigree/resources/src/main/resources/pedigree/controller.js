@@ -956,7 +956,7 @@ define([
             }
         }
     }
-    
+
     Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties, skipConfirmDialogue)
     {
         var onCancelAssignPatient = function() {
@@ -973,7 +973,7 @@ define([
                 callbackOnValid(clearParameter, false);
             }
         }
-        
+
         if (skipConfirmDialogue) {
     		// assigning a new patient
         	processLinkCallback(false);
@@ -1027,7 +1027,11 @@ define([
 
                             var processLinking = function(topMessage, notesMessage) {
                                 var alreadyWasInFamily = editor.isFamilyMember(linkID);
-                                if (!alreadyWasInFamily && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
+                                var firstPatientInFamily = (editor.getFamilyData().getAllFamilyMembersList.length == 0) &&
+                                                           (linkID == editor.getGraph().getCurrentPatientId());
+                                if ( !firstPatientInFamily
+                                     && !alreadyWasInFamily
+                                     && !editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
                                     editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
                                             "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                                             notesMessage + "</div>",
@@ -1051,7 +1055,7 @@ define([
                 },
                 parameters: {"family_id": editor.getFamilyData().getFamilyId(), "patient_to_link_id": linkID }
             });
-    	}        
+    	}
     }
 
     return Controller;
