@@ -104,7 +104,16 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   #set ($groups = "('${stringtool.join($groups, ""','"")}')")
   #set ($o = $services.model.serialize($xcontext.userReference, 'default'))
   #set ($os = $services.model.serialize($xcontext.userReference, 'compactwiki'))
-  #set ($filterWhere = "${filterWhere} and ((doc.creator in ('${o}', '${os}') and not exists (from BaseObject own where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName)) or exists (from BaseObject accessObj, StringProperty accessProp where accessObj.className in ('PhenoTips.OwnerClass', 'PhenoTips.CollaboratorClass') and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessProp.value in ${groups}) or exists (from BaseObject visibilityObj, StringProperty visibilityProp where visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityObj.id = visibilityProp.id.id and visibilityProp.id.name = 'visibility' and visibilityProp.value = 'public'))")
+  #set ($visibilityThreshold = $services.permissions.resolveVisibility('public').permissiveness)
+  #set ($publicVisibilities = [])
+  #foreach($visibility in $services.permissions.listVisibilityOptions())
+    #if ($visibility.permissiveness &gt;= $visibilityThreshold)
+      #set ($discard = $publicVisibilities.add($visibility.name))
+    #end
+  #end
+  #set ($publicVisibilities = $stringtool.join($publicVisibilities, "','"))
+  #set ($publicVisibilities = "'${publicVisibilities}'")
+  #set ($filterWhere = "${filterWhere} and ((doc.creator in ('${o}', '${os}') and not exists (from BaseObject own where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName)) or exists (from BaseObject accessObj, StringProperty accessProp where accessObj.className in ('PhenoTips.OwnerClass', 'PhenoTips.CollaboratorClass') and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessProp.value in ${groups}) or exists (from BaseObject visibilityObj, StringProperty visibilityProp where visibilityObj.name = doc.fullName and visibilityObj.className = 'PhenoTips.VisibilityClass' and visibilityObj.id = visibilityProp.id.id and visibilityProp.id.name = 'visibility' and visibilityProp.value in (${publicVisibilities})))")
 #end
 #set ($options = {
   'className'         : $patientClassName,
