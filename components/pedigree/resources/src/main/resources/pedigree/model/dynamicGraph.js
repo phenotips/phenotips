@@ -352,9 +352,9 @@ define([
             }
 
             if (patientObject.hasOwnProperty("genes")) {
-                this.DG.GG.properties[0].genes = patientObject.genes;
+                this.DG.GG.properties[id].genes = patientObject.genes;
             } else {
-                delete this.DG.GG.properties[0].genes;
+                delete this.DG.GG.properties[id].genes;
             }
 
             // pedigree-specific properties (may be added by pedigree controller)

@@ -49,11 +49,17 @@ import org.slf4j.Logger;
 @Component
 public class PedigreeProcessorImpl implements PedigreeProcessor
 {
-    private static final String JSON_KEY_FEATURES = "features";
+    private static final String PATIENT_JSON_KEY_FEATURES = "features";
+    private static final String PEDIGREE_JSON_KEY_FEATURES = PATIENT_JSON_KEY_FEATURES;
 
-    private static final String JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
+    private static final String PATIENT_JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
+    private static final String PEDIGREE_JSON_KEY_NON_STANDARD_FEATURES = PATIENT_JSON_KEY_NON_STANDARD_FEATURES;
 
-    private static final String JSON_KEY_FAMILY_HISTORY = "family_history";
+    private static final String PATIENT_JSON_KEY_GENES = "genes";
+    private static final String PEDIGREE_JSON_KEY_GENES = PATIENT_JSON_KEY_GENES;
+
+    private static final String PATIENT_JSON_KEY_FAMILY_HISTORY = "family_history";
+    private static final String PEDIGREE_JSON_KEY_FAMILY_HISTORY = PATIENT_JSON_KEY_FAMILY_HISTORY;
 
     @Inject
     private Logger logger;
@@ -113,6 +119,7 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
             phenotipsPatient = exchangePhenotypes(externalPatient, phenotipsPatient, this.hpoService, this.logger);
             phenotipsPatient = exchangeDisorders(externalPatient, phenotipsPatient, this.omimService, this.logger);
             phenotipsPatient = exchangeFamilyHistory(externalPatient, phenotipsPatient);
+            phenotipsPatient = exchangeGenes(externalPatient, phenotipsPatient);
         } catch (Exception ex) {
             this.logger.error("Could not convert patient. {}", ex.getMessage());
         }
@@ -127,7 +134,8 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
 
     private static JSONObject exchangeFamilyHistory(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
     {
-        phenotipsPatientJSON.put(JSON_KEY_FAMILY_HISTORY, pedigreePatient.opt(JSON_KEY_FAMILY_HISTORY));
+        phenotipsPatientJSON.put(PATIENT_JSON_KEY_FAMILY_HISTORY,
+                                 pedigreePatient.opt(PEDIGREE_JSON_KEY_FAMILY_HISTORY));
         return phenotipsPatientJSON;
     }
 
@@ -170,14 +178,14 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
     private static JSONObject exchangePhenotypes(JSONObject pedigreePatient,
         JSONObject phenotipsPatientJSON, Vocabulary hpoService, Logger logger)
     {
-        JSONArray pedigreeFeatures = pedigreePatient.optJSONArray(JSON_KEY_FEATURES);
+        JSONArray pedigreeFeatures = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_FEATURES);
         if (pedigreeFeatures != null) {
-            phenotipsPatientJSON.put(JSON_KEY_FEATURES, pedigreeFeatures);
+            phenotipsPatientJSON.put(PATIENT_JSON_KEY_FEATURES, pedigreeFeatures);
         }
 
-        JSONArray pedigreeNonStdFeatures = pedigreePatient.optJSONArray(JSON_KEY_NON_STANDARD_FEATURES);
+        JSONArray pedigreeNonStdFeatures = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_NON_STANDARD_FEATURES);
         if (pedigreeNonStdFeatures != null) {
-            phenotipsPatientJSON.put(JSON_KEY_NON_STANDARD_FEATURES, pedigreeNonStdFeatures);
+            phenotipsPatientJSON.put(PATIENT_JSON_KEY_NON_STANDARD_FEATURES, pedigreeNonStdFeatures);
         }
 
         return phenotipsPatientJSON;
@@ -204,6 +212,15 @@ public class PedigreeProcessorImpl implements PedigreeProcessor
         }
 
         phenotipsPatientJSON.put(disordersKey, internalTerms);
+        return phenotipsPatientJSON;
+    }
+
+    private static JSONObject exchangeGenes(JSONObject pedigreePatient, JSONObject phenotipsPatientJSON)
+    {
+        JSONArray pedigreeGenes = pedigreePatient.optJSONArray(PEDIGREE_JSON_KEY_GENES);
+        if (pedigreeGenes != null) {
+            phenotipsPatientJSON.put(PATIENT_JSON_KEY_GENES, pedigreeGenes);
+        }
         return phenotipsPatientJSON;
     }
 

@@ -1256,7 +1256,7 @@ define([
           *  ...since B is assumed to have been removed, C and E added, and D and Z left as is.
           *
           *  2) Any qualifiers that A or D or Z above had should be preserved; new features are assumed
-          *  to have no qualifiers since UI doe snto support them (yet). C is assumd ot have no qualifiers
+          *  to have no qualifiers since UI does not support them (yet). C is assumd ot have no qualifiers
           *  as well since old qualifiers applied to the "non observed" version of the feature.
           *
           *  3) Another complication is that PhenoTips stores "standard" (with an HPPO id) and

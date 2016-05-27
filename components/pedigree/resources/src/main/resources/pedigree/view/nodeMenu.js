@@ -669,7 +669,7 @@ define([
                 	        editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
                 		}
                     };
-                		 
+
                     var _onPatientCreated = function(response) {
                 	    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
                 	        console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
@@ -703,7 +703,7 @@ define([
                     processLinking("When you create a new patient and add to this family:<br>",
                 		    "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
                 		    "2) This pedigree can be edited by any user with access to any member of the family.");
-                	
+
                     _this.reposition();
                 });
                 patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
