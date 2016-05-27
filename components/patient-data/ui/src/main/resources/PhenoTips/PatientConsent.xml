@@ -172,8 +172,10 @@
       var assignConsentsUrl = consentsBlock.attr("assign-url");
       var consents = {};
       try {
-        consents = JSON.parse(consentsBlock.children(".patient-consents-json").html());
-      } catch(err) {}
+        consents = JSON.parse($('#patient-consents-json').attr('value'));
+      } catch(err) {
+        console &amp;&amp; console.log(err);
+      }
 
       var consentsModule = PhenoTips.widgets.ConsentsModule.createNew();
       consentsModule.init(consentsBlock, action, consents, true, null, consentsBlock);
@@ -769,11 +771,11 @@
   #if ($services.consentauthorizer.consentsGloballyEnabled())
     #set($consentAssignUrl = "/rest/patients/${doc.getName()}/consents/assign")
     #set($patientId = $doc.getName())
-    #set($consnents = $services.patientconsents.getAllConsentsForPatient("$patientId"))
+    #set($consents = $services.patientconsents.getAllConsentsForPatient("$patientId"))
     (% id='consents-block' class='$xcontext.action' assign-url='$consentAssignUrl'%)(((
       {{html clean='false' wiki='false'}}
         &lt;div class='patient-id hidden'&gt;${patientId}&lt;/div&gt;
-        &lt;div class='patient-consents-json hidden'&gt;${consnents.toString()}&lt;/div&gt;
+        &lt;input type="hidden" id="patient-consents-json" class="patient-consents-json" value='$escapetool.xml($jsontool.serialize($consents))'/&gt;
       {{/html}}
       (% class='consents-title' %)(((
         ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
