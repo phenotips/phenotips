@@ -119,10 +119,24 @@ define([
             },
             {
                 'name' : 'candidate_genes',
-                'label' : 'Genotype information: candidate genes',
+                'label' : 'Genotype: candidate genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
-                'function' : 'setGenes'
+                'function' : 'setCandidateGenes'
+            },
+            {
+                'name' : 'casual_genes',
+                'label' : 'Genotype: confirmed casual genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setCasualGenes'
+            },
+            {
+                'name' : 'rejected_genes',
+                'label' : 'Genotype: rejected genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setRejectedGenes' // not needed: read only for now
             },
             {
                 'name' : 'date_of_birth',

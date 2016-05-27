@@ -351,17 +351,10 @@ define([
                 delete this.DG.GG.properties[id].disorders;
             }
 
-            var genes = [];
             if (patientObject.hasOwnProperty("genes")) {
-                // e.g.: "genes":[{"gene":"E2F2","comments":""}]
-                for (var i = 0; i < patientObject.genes.length; i++) {
-                    genes.push(patientObject.genes[i].gene);
-                }
-            }
-            if (genes.length > 0) {
-                this.DG.GG.properties[id].candidateGenes = genes;
+                this.DG.GG.properties[id].genes = patientObject.genes;
             } else {
-                delete this.DG.GG.properties[id].candidateGenes;
+                delete this.DG.GG.properties[id].genes;
             }
 
             // pedigree-specific properties (may be added by pedigree controller)

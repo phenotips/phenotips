@@ -48,7 +48,8 @@ define([
         getSettings: function() {
             // TODO: filter out items which are currently not being displayed on the pedigree
             return {"colors": {"disorders": editor.getDisorderLegend().getAllColors(),
-                               "genes": editor.getGeneLegend().getAllColors(),
+                               "candidateGenes": editor.getCandidateGeneLegend().getAllColors(),
+                               "casualGenes": editor.getCasualGeneLegend().getAllColors(),
                                "cancers": editor.getCancerLegend().getAllColors() },
                     "names": {"disorders": editor.getDisorderLegend().getAllNames() } };
         },
@@ -61,8 +62,11 @@ define([
                 if (settingsObject.colors.hasOwnProperty("disorders")) {
                     editor.getDisorderLegend().setAllPreferredColors(settingsObject.colors.disorders);
                 }
-                if (settingsObject.colors.hasOwnProperty("genes")) {
-                    editor.getGeneLegend().setAllPreferredColors(settingsObject.colors.genes);
+                if (settingsObject.colors.hasOwnProperty("candidateGenes")) {
+                    editor.getCandidateGeneLegend().setAllPreferredColors(settingsObject.colors.candidateGenes);
+                }
+                if (settingsObject.colors.hasOwnProperty("casualGenes")) {
+                    editor.getCasualGeneLegend().setAllPreferredColors(settingsObject.colors.casualGenes);
                 }
             }
         },
@@ -455,7 +459,8 @@ define([
             this._lineSet.replaceIDs(changedIdsSet);
 
             editor.getCancerLegend().replaceIDs(changedIdsSet);
-            editor.getGeneLegend().replaceIDs(changedIdsSet);
+            editor.getCandidateGeneLegend().replaceIDs(changedIdsSet);
+            editor.getCasualGeneLegend().replaceIDs(changedIdsSet);
             editor.getHPOLegend().replaceIDs(changedIdsSet);
             editor.getDisorderLegend().replaceIDs(changedIdsSet);
         },
