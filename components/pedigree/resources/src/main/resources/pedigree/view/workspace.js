@@ -598,8 +598,13 @@ define([
          * @param {Number} nodeID The id of the node
          */
         centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
-            if (nodeID < 0) {  // proband for a family
-                nodeID = 0;
+            if (nodeID < 0) {
+                // no proband - find any person node to center around
+                for (nodeID = 0; nodeID <= editor.getGraph().getMaxNodeId(); nodeID++) {
+                    if (editor.getGraph().isPerson(nodeID)) {
+                        break;
+                    }
+                }
             }
             var node = editor.getNode(nodeID);
             if(node) {
