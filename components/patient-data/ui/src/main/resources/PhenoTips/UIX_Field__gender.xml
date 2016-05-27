@@ -114,7 +114,9 @@
 #if ($xcontext.action == 'edit' &amp;&amp; "$!obj.getProperty('gender').value" == '')
 $obj.set('gender','U')
 #end
-#__displayFormatted('2-col' 'gender' '' 'gender' 'group-title')
+#if ($xcontext.action == 'edit' || ("$!obj.getValue('gender')" != 'U' &amp;&amp; "$!obj.getValue('gender')" != ''))
+  #__displayFormatted('2-col' 'gender' '' 'gender' 'group-title')
+#end
 {{/velocity}}</content>
     </property>
     <property>
