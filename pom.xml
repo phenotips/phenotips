@@ -486,6 +486,12 @@
               <method>java.util.List getCategories()</method>
               <justification>New methods for extending pushable data</justification>
             </difference>
+            <difference>
+              <className>org/phenotips/configuration/RecordSection</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isExpandedByDefault()</method>
+              <justification>New methods for configuring which sections should be collapsed and expanded in edit mode by default</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

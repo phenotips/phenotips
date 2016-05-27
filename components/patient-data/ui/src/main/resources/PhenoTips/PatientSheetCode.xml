@@ -2222,7 +2222,7 @@ document.observe('xwiki:dom:loaded', function()
   </object>
   <object>
     <name>PhenoTips.PatientSheetCode</name>
-    <number>8</number>
+    <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>fee0fd2a-16d1-45ac-8a44-16af9afec0f7</guid>
     <class>
@@ -2327,9 +2327,9 @@ document.observe('xwiki:dom:loaded', function()
       event.element().up('.chapter').toggleClassName('collapsed');
     });
   });
-  $$('.chapter:not(.patient-info)').each(function(item) {
-     if (!(window.location.hash &amp;&amp; item.down(window.location.hash))) {
-       item.addClassName('collapsed');
+  $$('.chapter').each(function(item) {
+     if (window.location.hash &amp;&amp; item.down(window.location.hash)) {
+       item.removeClassName('collapsed');
      }
   });
 });</code>
