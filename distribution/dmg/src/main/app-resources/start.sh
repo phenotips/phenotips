@@ -23,6 +23,6 @@ START_OPTS="$START_OPTS '-Xdock:name=${bundleName}'"
 [ -n "${iconFile}" ] &&
   START_OPTS="$START_OPTS '-Xdock:icon=../${iconFile}'"
 export START_OPTS
-export JAVA_HOME="${JAVA_HOME:-`/usr/libexec/java_home`}"
+export JAVA_HOME="`/usr/libexec/java_home -v 1.7+`"
 myDir="${0%/*}"
 sh "$myDir/../Resources/${standaloneDir}/start.sh"
