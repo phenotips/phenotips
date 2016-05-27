@@ -281,7 +281,7 @@ define([
          * Returns a class managing external connections for pedigree editor, e.g. load/save URLs etc.
          *
          * @method getPreferencesManager
-         * @return {ExternalAPIs}
+         * @return {ExternalEndpointsManager}
          */
         getExternalEndpoint: function() {
             return this._externalEndpointManager;

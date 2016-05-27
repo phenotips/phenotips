@@ -19,7 +19,7 @@ define(["pedigree/model/helpers"], function(Helpers){
             if (response.responseJSON) {
                 // only set preferences which are given in the template
                 Helpers.setByTemplate(this.preferences, response.responseJSON);
-                console.log("Loaded preferences: " + stringifyObject(response.responseJSON));
+                console.log("Loaded preferences: " + Helpers.stringifyObject(response.responseJSON));
             } else {
                 console.log("Failed to loaded properties, no JSON");
             }
