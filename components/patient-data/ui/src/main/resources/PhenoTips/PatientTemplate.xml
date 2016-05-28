@@ -735,7 +735,7 @@
         <name>health_card</name>
         <number>11</number>
         <picker>0</picker>
-        <prettyName>Provincial Health Card #</prettyName>
+        <prettyName>Health card information</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
