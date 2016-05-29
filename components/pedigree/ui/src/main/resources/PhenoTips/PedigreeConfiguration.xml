@@ -41,7 +41,6 @@
 #set ($displayDocumentName = 'PhenoTips.PedigreeConfiguration')
 #set ($displayDocument = $xwiki.getDocument($displayDocumentName))
 #set ($mainConfigurationClassname = 'PhenoTips.PedigreeGlobalSettings')
-#set ($existingConfigs = $preferencesDoc.getObjects($mainConfigurationClassname))
 
 #set ($targetObj = $doc.getObject($mainConfigurationClassname))
 #if (!$targetObj)
