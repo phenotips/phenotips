@@ -392,6 +392,19 @@
             </difference>
 
             <difference>
+              <className>org/phenotips/data/permissions/PermissionsManager</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.Collection listAllVisibilityOptions()</method>
+              <justification>New methods in support of disabled visibilities.</justification>
+            </difference>
+            <difference>
+              <className>org/phenotips/data/permissions/Visibility</className>
+              <differenceType>7012</differenceType>
+              <method>boolean isDisabled()</method>
+              <justification>New methods in support of disabled visibilities.</justification>
+            </difference>
+
+            <difference>
               <className>**</className>
               <differenceType>7006</differenceType>
               <method>net.sf.json.* toJSON(*)</method>

@@ -45,13 +45,24 @@ public class PermissionsManagerScriptService implements ScriptService
     private PermissionsManager manager;
 
     /**
-     * Get the visibility options available.
+     * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
      *
-     * @return a collection of enabled visibilities
+     * @return a collection of enabled visibilities, may be empty if none are enabled
      */
     public Collection<Visibility> listVisibilityOptions()
     {
         return this.manager.listVisibilityOptions();
+    }
+
+    /**
+     * Get all visibility options available in the platform, including {@link Visibility#isDisabled() disabled} ones.
+     *
+     * @return a collection of visibilities, may be empty if none are available
+     * @since 1.3M2
+     */
+    public Collection<Visibility> listAllVisibilityOptions()
+    {
+        return this.manager.listAllVisibilityOptions();
     }
 
     public Visibility resolveVisibility(String name)

@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions.internal.visibility;
 
 import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.translation.TranslationManager;
 
@@ -161,5 +162,14 @@ public class PublicVisibilityTest
         Assert.assertNotEquals(edit.hashCode(), other.hashCode());
         other = new MockVisibility("private", 50, none);
         Assert.assertNotEquals(edit.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void isDisabled() throws Exception
+    {
+        PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
+        when(config.isVisibilityDisabled("public")).thenReturn(true, false);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDisabled());
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDisabled());
     }
 }

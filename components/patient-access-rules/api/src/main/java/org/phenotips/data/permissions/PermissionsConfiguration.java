@@ -17,41 +17,34 @@
  */
 package org.phenotips.data.permissions;
 
-import org.phenotips.data.Patient;
+import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
-import java.util.Collection;
-
 /**
+ * Various configurations for the permissions module.
+ *
  * @version $Id$
- * @since 1.0M9
+ * @since 1.3M2
  */
 @Unstable
 @Role
-public interface PermissionsManager
+public interface PermissionsConfiguration
 {
-    /**
-     * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
-     *
-     * @return a collection of enabled visibilities, may be empty if none are enabled
-     */
-    Collection<Visibility> listVisibilityOptions();
+    /** The XClass used for storing the configuration. */
+    EntityReference VISIBILITY_CONFIGURATION_CLASS_REFERENCE =
+        new EntityReference("VisibilityConfigurationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    /** The document where preferences are stored. */
+    EntityReference PREFERENCES_DOCUMENT =
+        new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
 
     /**
-     * Get all visibility options available in the platform, including {@link Visibility#isDisabled() disabled} ones.
-     *
-     * @return a collection of visibilities, may be empty if none are available
-     * @since 1.3M2
+     * @param visibilityName the {@link Visibility#getName() name} of the visibility to check
+     * @return {@code true} if the specified visibility is disabled in the configuration, {@code false} otherwise
      */
-    Collection<Visibility> listAllVisibilityOptions();
-
-    Visibility resolveVisibility(String name);
-
-    Collection<AccessLevel> listAccessLevels();
-
-    AccessLevel resolveAccessLevel(String name);
-
-    PatientAccess getPatientAccess(Patient targetPatient);
+    boolean isVisibilityDisabled(String visibilityName);
 }

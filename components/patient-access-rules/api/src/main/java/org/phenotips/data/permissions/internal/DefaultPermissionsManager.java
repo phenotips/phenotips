@@ -57,6 +57,18 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Override
     public Collection<Visibility> listVisibilityOptions()
     {
+        Collection<Visibility> result = new TreeSet<>();
+        for (Visibility visibility : listAllVisibilityOptions()) {
+            if (!visibility.isDisabled()) {
+                result.add(visibility);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Collection<Visibility> listAllVisibilityOptions()
+    {
         try {
             Collection<Visibility> result = new TreeSet<Visibility>();
             result.addAll(this.componentManager.get().<Visibility>getInstanceList(Visibility.class));

@@ -17,6 +17,7 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.translation.TranslationManager;
 
@@ -44,6 +45,9 @@ public abstract class AbstractVisibility implements Visibility
     @Inject
     @Named("plain/1.0")
     private BlockRenderer renderer;
+
+    @Inject
+    private PermissionsConfiguration configuration;
 
     protected AbstractVisibility(int permissiveness)
     {
@@ -104,5 +108,11 @@ public abstract class AbstractVisibility implements Visibility
     public int getPermissiveness()
     {
         return this.permissiveness;
+    }
+
+    @Override
+    public boolean isDisabled()
+    {
+        return this.configuration.isVisibilityDisabled(getName());
     }
 }

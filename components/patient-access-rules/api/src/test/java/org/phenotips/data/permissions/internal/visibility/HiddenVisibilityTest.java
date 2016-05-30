@@ -18,6 +18,7 @@
 package org.phenotips.data.permissions.internal.visibility;
 
 import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.translation.TranslationManager;
 
@@ -142,5 +143,14 @@ public class HiddenVisibilityTest
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(new MockVisibility("open", 100, other)) < 0);
         // Other types of visibilities are placed after
         Assert.assertTrue(this.mocker.getComponentUnderTest().compareTo(mock(Visibility.class)) < 0);
+    }
+
+    @Test
+    public void isDisabled() throws Exception
+    {
+        PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
+        when(config.isVisibilityDisabled("hidden")).thenReturn(true, false);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDisabled());
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDisabled());
     }
 }

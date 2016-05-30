@@ -25,15 +25,23 @@ import org.phenotips.data.permissions.internal.AbstractVisibility;
  */
 public class MockVisibility extends AbstractVisibility
 {
-    private String name;
+    private final String name;
 
-    private AccessLevel access;
+    private final AccessLevel access;
 
-    protected MockVisibility(String name, int permissiveness, AccessLevel access)
+    private final boolean disabled;
+
+    public MockVisibility(String name, int permissiveness, AccessLevel access)
+    {
+        this(name, permissiveness, access, false);
+    }
+
+    public MockVisibility(String name, int permissiveness, AccessLevel access, boolean disabled)
     {
         super(permissiveness);
         this.name = name;
         this.access = access;
+        this.disabled = disabled;
     }
 
     @Override
@@ -46,5 +54,11 @@ public class MockVisibility extends AbstractVisibility
     public AccessLevel getDefaultAccessLevel()
     {
         return this.access;
+    }
+
+    @Override
+    public boolean isDisabled()
+    {
+        return this.disabled;
     }
 }

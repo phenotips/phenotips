@@ -71,6 +71,8 @@ public class DefaultPermissionsManagerTest
 
     private Visibility publicVisibility = new MockVisibility("public", 50, this.view);
 
+    private Visibility disabledOpenVisibility = new MockVisibility("open", 80, this.edit, true);
+
     /** Basic tests for {@link PermissionsManager#listAccessLevels()}. */
     @Test
     public void listAccessLevels() throws ComponentLookupException
@@ -141,14 +143,15 @@ public class DefaultPermissionsManagerTest
         Assert.assertNull(this.mocker.getComponentUnderTest().resolveAccessLevel(" "));
     }
 
-    /** Basic tests for {@link PermissionsManager#listVisibilityOptions()}. */
+    /** Basic test for {@link PermissionsManager#listVisibilityOptions()}. */
     @Test
-    public void listVisibilityOptionsReordersByPriority() throws ComponentLookupException
+    public void listVisibilityOptionsSkipsDisabledVisibilitiesAndReordersByPriority() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         List<Visibility> visibilities = new ArrayList<>();
         visibilities.add(this.publicVisibility);
         visibilities.add(this.privateVisibility);
+        visibilities.add(this.disabledOpenVisibility);
         when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(visibilities);
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertEquals(2, returnedVisibilities.size());
@@ -157,12 +160,54 @@ public class DefaultPermissionsManagerTest
         Assert.assertSame(this.publicVisibility, it.next());
     }
 
+    /** Basic test for {@link PermissionsManager#listAllVisibilityOptions()}. */
+    @Test
+    public void listAllVisibilityOptionsReordersByPriority() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        List<Visibility> visibilities = new ArrayList<>();
+        visibilities.add(this.publicVisibility);
+        visibilities.add(this.privateVisibility);
+        visibilities.add(this.disabledOpenVisibility);
+        when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(visibilities);
+        Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listAllVisibilityOptions();
+        Assert.assertEquals(3, returnedVisibilities.size());
+        Iterator<Visibility> it = returnedVisibilities.iterator();
+        Assert.assertSame(this.privateVisibility, it.next());
+        Assert.assertSame(this.publicVisibility, it.next());
+        Assert.assertSame(this.disabledOpenVisibility, it.next());
+    }
+
     /** {@link PermissionsManager#listVisibilityOptions()} returns an empty list when no implementations available. */
     @Test
     public void listVisibilityOptionsWithNoComponents() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(Collections.<Visibility>emptyList());
+        Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
+        Assert.assertTrue(returnedVisibilities.isEmpty());
+    }
+
+    /**
+     * {@link PermissionsManager#listAllVisibilityOptions()} returns an empty list when no implementations available.
+     */
+    @Test
+    public void listAllVisibilityOptionsWithNoComponentsReturnsEmptyList() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(Collections.<Visibility>emptyList());
+        Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listAllVisibilityOptions();
+        Assert.assertTrue(returnedVisibilities.isEmpty());
+    }
+
+    /** {@link PermissionsManager#listVisibilityOptions()} returns an empty list when all visibilities are disabled. */
+    @Test
+    public void listVisibilityOptionsWithOnlyDisabledVisibilitiesReturnsEmptyList() throws ComponentLookupException
+    {
+        ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
+        List<Visibility> visibilities = new ArrayList<>();
+        visibilities.add(this.disabledOpenVisibility);
+        when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(visibilities);
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertTrue(returnedVisibilities.isEmpty());
     }

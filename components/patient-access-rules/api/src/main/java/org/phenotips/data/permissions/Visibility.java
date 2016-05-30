@@ -53,4 +53,11 @@ public interface Visibility extends Comparable<Visibility>
     int getPermissiveness();
 
     AccessLevel getDefaultAccessLevel();
+
+    /**
+     * @return {@code true} if this visibility is disabled in the configuration, and shouldn't be available as an option
+     *         when choosing the visibility of a record
+     * @since 1.3M2
+     */
+    boolean isDisabled();
 }
