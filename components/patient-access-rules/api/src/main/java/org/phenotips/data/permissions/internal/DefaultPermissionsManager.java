@@ -70,7 +70,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<Visibility> listAllVisibilityOptions()
     {
         try {
-            Collection<Visibility> result = new TreeSet<Visibility>();
+            Collection<Visibility> result = new TreeSet<>();
             result.addAll(this.componentManager.get().<Visibility>getInstanceList(Visibility.class));
             return result;
         } catch (ComponentLookupException ex) {
@@ -95,7 +95,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<AccessLevel> listAccessLevels()
     {
         try {
-            Collection<AccessLevel> result = new TreeSet<AccessLevel>();
+            Collection<AccessLevel> result = new TreeSet<>();
             result.addAll(this.componentManager.get().<AccessLevel>getInstanceList(AccessLevel.class));
             Iterator<AccessLevel> it = result.iterator();
             while (it.hasNext()) {

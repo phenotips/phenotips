@@ -180,7 +180,7 @@ public class DefaultPermissionsManagerTest
 
     /** {@link PermissionsManager#listVisibilityOptions()} returns an empty list when no implementations available. */
     @Test
-    public void listVisibilityOptionsWithNoComponents() throws ComponentLookupException
+    public void listVisibilityOptionsWithNoComponentsEmptyList() throws ComponentLookupException
     {
         ComponentManager cm = this.mocker.getInstance(ComponentManager.class, "context");
         when(cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(Collections.<Visibility>emptyList());
