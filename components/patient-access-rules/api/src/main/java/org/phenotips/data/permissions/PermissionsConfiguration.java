@@ -43,6 +43,11 @@ public interface PermissionsConfiguration
         new EntityReference("XWikiPreferences", EntityType.DOCUMENT, Constants.XWIKI_SPACE_REFERENCE);
 
     /**
+     * @return the name of the default visibility to set for new patient records, {@code null} if none is configured
+     */
+    String getDefaultVisibility();
+
+    /**
      * @param visibilityName the {@link Visibility#getName() name} of the visibility to check
      * @return {@code true} if the specified visibility is disabled in the configuration, {@code false} otherwise
      */

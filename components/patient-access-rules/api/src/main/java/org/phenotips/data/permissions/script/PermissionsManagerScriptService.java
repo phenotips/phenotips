@@ -65,6 +65,17 @@ public class PermissionsManagerScriptService implements ScriptService
         return this.manager.listAllVisibilityOptions();
     }
 
+    /**
+     * Get the default visibility to set for new patient records.
+     *
+     * @return a visibility, or {@code null} if none is configured or the configured one isn't valid
+     * @since 1.3M2
+     */
+    public Visibility getDefaultVisibility()
+    {
+        return this.manager.getDefaultVisibility();
+    }
+
     public Visibility resolveVisibility(String name)
     {
         return this.manager.resolveVisibility(name);

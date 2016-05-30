@@ -47,6 +47,14 @@ public interface PermissionsManager
      */
     Collection<Visibility> listAllVisibilityOptions();
 
+    /**
+     * Get the default visibility to set for new patient records.
+     *
+     * @return a visibility, or {@code null} if none is configured or the configured one isn't valid
+     * @since 1.3M2
+     */
+    Visibility getDefaultVisibility();
+
     Visibility resolveVisibility(String name);
 
     Collection<AccessLevel> listAccessLevels();

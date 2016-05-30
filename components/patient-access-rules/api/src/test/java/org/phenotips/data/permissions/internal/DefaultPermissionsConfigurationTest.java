@@ -17,11 +17,14 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.PermissionsManager;
+import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -55,10 +58,16 @@ public class DefaultPermissionsConfigurationTest
         new MockitoComponentMockingRule<PermissionsConfiguration>(DefaultPermissionsConfiguration.class);
 
     @Mock
+    private DocumentReference visibilityClassReference;
+
+    @Mock
     private DocumentReference visibilityConfigurationClassReference;
 
     @Mock
     private DocumentReference preferencesDocumentReference;
+
+    @Mock
+    private DocumentReference patientTemplateReference;
 
     @Mock
     private EntityReferenceSerializer<String> serializer;
@@ -75,10 +84,14 @@ public class DefaultPermissionsConfigurationTest
 
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
+        when(resolver.resolve(Visibility.CLASS_REFERENCE)).thenReturn(this.visibilityClassReference);
         when(resolver.resolve(PermissionsConfiguration.VISIBILITY_CONFIGURATION_CLASS_REFERENCE)).thenReturn(
             this.visibilityConfigurationClassReference);
         when(resolver.resolve(PermissionsConfiguration.PREFERENCES_DOCUMENT)).thenReturn(
             this.preferencesDocumentReference);
+        when(resolver.resolve(
+            new EntityReference("PatientTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE)))
+                .thenReturn(this.patientTemplateReference);
 
         this.dab = this.mocker.getInstance(DocumentAccessBridge.class);
 
@@ -91,6 +104,10 @@ public class DefaultPermissionsConfigurationTest
             .thenReturn("xwiki:PhenoTips.VisibilityConfigurationClass");
         when(this.resolver.resolve("xwiki:PhenoTips.VisibilityConfigurationClass"))
             .thenReturn(this.visibilityConfigurationClassReference);
+        when(this.serializer.serialize(this.visibilityClassReference))
+            .thenReturn("xwiki:PhenoTips.VisibilityClass");
+        when(this.resolver.resolve("xwiki:PhenoTips.VisibilityClass"))
+            .thenReturn(this.visibilityClassReference);
     }
 
     @Test
@@ -111,5 +128,33 @@ public class DefaultPermissionsConfigurationTest
                 .thenReturn(null);
         Assert.assertFalse(this.mocker.getComponentUnderTest().isVisibilityDisabled("private"));
         Assert.assertFalse(this.mocker.getComponentUnderTest().isVisibilityDisabled("open"));
+    }
+
+    @Test
+    public void getDefaultVisibilityChecksPatientTemplate() throws ComponentLookupException
+    {
+        when(this.dab.getProperty(new ObjectPropertyReference("visibility",
+            new BaseObjectReference(this.visibilityClassReference, 0, this.patientTemplateReference))))
+                .thenReturn("public");
+        Assert.assertEquals("public", this.mocker.getComponentUnderTest().getDefaultVisibility());
+    }
+
+    @Test
+    public void getDefaultVisibilityWithMissingConfigurationReturnsNull() throws ComponentLookupException
+    {
+        when(this.dab.getProperty(new ObjectPropertyReference("visibility",
+            new BaseObjectReference(this.visibilityClassReference, 0, this.patientTemplateReference))))
+                .thenReturn(null);
+        Assert.assertNull(this.mocker.getComponentUnderTest().getDefaultVisibility());
+    }
+
+    @Test
+    public void getDefaultVisibilityWithEmptyConfigurationReturnsNull() throws ComponentLookupException
+    {
+        when(this.dab.getProperty(new ObjectPropertyReference("visibility",
+            new BaseObjectReference(this.visibilityClassReference, 0, this.patientTemplateReference))))
+                .thenReturn("", " ");
+        Assert.assertNull(this.mocker.getComponentUnderTest().getDefaultVisibility());
+        Assert.assertNull(this.mocker.getComponentUnderTest().getDefaultVisibility());
     }
 }

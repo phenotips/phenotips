@@ -17,10 +17,13 @@
  */
 package org.phenotips.data.permissions.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.data.permissions.PermissionsConfiguration;
+import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -32,6 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.objects.BaseObjectReference;
 
 /**
@@ -41,12 +46,25 @@ import com.xpn.xwiki.objects.BaseObjectReference;
 @Singleton
 public class DefaultPermissionsConfiguration implements PermissionsConfiguration
 {
+    private static final EntityReference TEMPLATE_DOCUMENT =
+        new EntityReference("PatientTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     @Inject
     @Named("current")
     private DocumentReferenceResolver<EntityReference> resolver;
 
     @Inject
     private DocumentAccessBridge dab;
+
+    @Override
+    public String getDefaultVisibility()
+    {
+        DocumentReference preferencesDocument = this.resolver.resolve(TEMPLATE_DOCUMENT);
+        DocumentReference configurationClassDocument = this.resolver.resolve(Visibility.CLASS_REFERENCE);
+        String visibilityName = (String) this.dab.getProperty(new ObjectPropertyReference("visibility",
+            new BaseObjectReference(configurationClassDocument, 0, preferencesDocument)));
+        return StringUtils.defaultIfBlank(visibilityName, null);
+    }
 
     @Override
     public boolean isVisibilityDisabled(String visibilityName)

@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsConfiguration;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
@@ -54,6 +55,9 @@ public class DefaultPermissionsManager implements PermissionsManager
     @Named("context")
     private Provider<ComponentManager> componentManager;
 
+    @Inject
+    private PermissionsConfiguration configuration;
+
     @Override
     public Collection<Visibility> listVisibilityOptions()
     {
@@ -76,6 +80,12 @@ public class DefaultPermissionsManager implements PermissionsManager
         } catch (ComponentLookupException ex) {
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public Visibility getDefaultVisibility()
+    {
+        return resolveVisibility(this.configuration.getDefaultVisibility());
     }
 
     @Override

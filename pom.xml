@@ -398,6 +398,12 @@
               <justification>New methods in support of disabled visibilities.</justification>
             </difference>
             <difference>
+              <className>org/phenotips/data/permissions/PermissionsManager</className>
+              <differenceType>7012</differenceType>
+              <method>org.phenotips.data.permissions.Visibility getDefaultVisibility()</method>
+              <justification>New API method.</justification>
+            </difference>
+            <difference>
               <className>org/phenotips/data/permissions/Visibility</className>
               <differenceType>7012</differenceType>
               <method>boolean isDisabled()</method>
