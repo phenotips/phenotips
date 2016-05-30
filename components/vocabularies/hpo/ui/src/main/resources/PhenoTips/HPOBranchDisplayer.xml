@@ -93,7 +93,7 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 &lt;div class="hpo-branch"&gt;
 #_displayChildren($startWith, true)
 #if($field.getProperty('multiSelect').value == 1)
-  &lt;input type='hidden' name="${prefix}${name}" value='' checked='checked'/&gt;
+  &lt;input type='hidden' name="${prefix}${name}" value=''/&gt;
 #end
 &lt;/div&gt;
 {{/html}}
