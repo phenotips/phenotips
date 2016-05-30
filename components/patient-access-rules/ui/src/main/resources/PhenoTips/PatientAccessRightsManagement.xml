@@ -357,13 +357,13 @@
 
 {{html clean=false}}
 &lt;form id="welcome_${targetDocName}" method="post" action="${targetDoc.getURL('save')}" class="xform half"&gt;
-&lt;fieldset&gt;&lt;dl&gt;
+&lt;fieldset&gt;&lt;dl id="default-visibility-selection"&gt;
 &lt;dt&gt;&lt;label for="${fullPrefix}private"&gt;$services.localization.render("phenotips.patientAccessRightsManagement.defaultVisibilityOption")&lt;/label&gt;
 &lt;span class="xHint"&gt;$services.localization.render("phenotips.patientAccessRightsManagement.defaultVisibilityHint")&lt;/span&gt;&lt;/dt&gt;
-#foreach ($visibility in $services.permissions.listVisibilityOptions())
+#foreach ($visibility in $services.permissions.listAllVisibilityOptions())
   &lt;dd&gt;
     &lt;label for="${fullPrefix}${visibility.name}"&gt;
-      &lt;input id="${fullPrefix}${visibility.name}" name="${prefix}visibility" type="radio" value="$!escapetool.xml($visibility.name)"#if ($currentValue == $visibility.name) checked="checked"#end /&gt; $visibility.label&lt;/label&gt;
+      &lt;input id="${fullPrefix}${visibility.name}" name="${prefix}visibility" type="radio" value="$!escapetool.xml($visibility.name)"#if ($currentValue == $visibility.name) checked="checked"#end /&gt; &lt;span&gt;$visibility.label&lt;/span&gt;&lt;/label&gt;
     &lt;span class="xHint"&gt;${visibility.description}&lt;/span&gt;
   &lt;/dd&gt;
 #end
@@ -390,7 +390,7 @@
       <displayInSection>access</displayInSection>
     </property>
     <property>
-      <heading>Default patient visibility</heading>
+      <heading>Default visibility</heading>
     </property>
     <property>
       <iconAttachment/>
