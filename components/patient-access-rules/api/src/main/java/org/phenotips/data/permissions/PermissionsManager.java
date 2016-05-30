@@ -32,6 +32,11 @@ import java.util.Collection;
 @Role
 public interface PermissionsManager
 {
+    /**
+     * Get the visibility options available.
+     *
+     * @return a collection of available visibilities
+     */
     Collection<Visibility> listVisibilityOptions();
 
     Visibility resolveVisibility(String name);

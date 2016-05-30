@@ -34,6 +34,7 @@ import javax.inject.Singleton;
 
 /**
  * @version $Id$
+ * @since 1.0M9
  */
 @Component
 @Named("permissions")
@@ -43,6 +44,11 @@ public class PermissionsManagerScriptService implements ScriptService
     @Inject
     private PermissionsManager manager;
 
+    /**
+     * Get the visibility options available.
+     *
+     * @return a collection of enabled visibilities
+     */
     public Collection<Visibility> listVisibilityOptions()
     {
         return this.manager.listVisibilityOptions();
