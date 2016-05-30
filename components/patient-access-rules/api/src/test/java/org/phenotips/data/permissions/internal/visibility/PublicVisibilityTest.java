@@ -165,6 +165,12 @@ public class PublicVisibilityTest
     }
 
     @Test
+    public void getPermissiveness() throws ComponentLookupException
+    {
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().getPermissiveness());
+    }
+
+    @Test
     public void isDisabled() throws Exception
     {
         PermissionsConfiguration config = this.mocker.getInstance(PermissionsConfiguration.class);
